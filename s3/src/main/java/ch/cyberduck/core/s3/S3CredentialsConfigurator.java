@@ -126,6 +126,34 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         if(optional.isPresent()) {
             final Map.Entry<String, BasicProfile> entry = optional.get();
             final BasicProfile basicProfile = entry.getValue();
+            final String tokenCode;
+            if(basicProfile.getProperties().containsKey("mfa_serial")) {
+                try {
+                    tokenCode = prompt.prompt(
+                            host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                            String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                                    basicProfile.getPropertyValue("mfa_serial")),
+                            new LoginOptions(host.getProtocol())
+                                    .password(true)
+                                    .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                                    .keychain(false)
+                    ).getPassword();
+                }
+                catch(LoginCanceledException e) {
+                    log.warn(String.format("Canceled MFA prompt for profile %s", basicProfile));
+                    return credentials;
+                }
+            }
+            else {
+                tokenCode = null;
+            }
+            final Integer durationSeconds;
+            if(basicProfile.getProperties().containsKey("duration_seconds")) {
+                durationSeconds = Integer.valueOf(basicProfile.getPropertyValue("duration_seconds"));
+            }
+            else {
+                durationSeconds = null;
+            }
             if(basicProfile.isRoleBasedProfile()) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Configure credentials from role based profile %s", basicProfile.getProfileName()));
@@ -157,36 +185,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                                 sourceProfile.getAwsSecretAccessKey(),
                                 sourceProfile.getAwsSessionToken());
                     }
-                    final String tokenCode;
-                    if(basicProfile.getProperties().containsKey("mfa_serial")) {
-                        try {
-                            tokenCode = prompt.prompt(
-                                    host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                                    String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                                            basicProfile.getPropertyValue("mfa_serial")),
-                                    new LoginOptions(host.getProtocol())
-                                            .password(true)
-                                            .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                                            .keychain(false)
-                            ).getPassword();
-                        }
-                        catch(LoginCanceledException e) {
-                            log.warn(String.format("Canceled MFA prompt for profile %s", basicProfile));
-                            return credentials;
-                        }
-                    }
-                    else {
-                        tokenCode = null;
-                    }
-                    final Integer durationSeconds;
-                    if(basicProfile.getProperties().containsKey("duration_seconds")) {
-                        durationSeconds = Integer.valueOf(basicProfile.getPropertyValue("duration_seconds"));
-                    }
-                    else {
-                        durationSeconds = null;
-                    }
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
-                    // Role using the long-lived AWS credentials
+                    // role using the long-lived AWS credentials
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
                             .withExternalId(basicProfile.getRoleExternalId())
                             .withRoleArn(basicProfile.getRoleArn())
@@ -219,6 +219,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     }
                     catch(AWSSecurityTokenServiceException e) {
                         log.warn(e.getErrorMessage(), e);
+                        return credentials;
                     }
                 }
             }
@@ -233,55 +234,53 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     if(null == cached) {
                         return credentials;
                     }
-                    credentials.setUsername(cached.accessKey);
-                    credentials.setPassword(cached.secretKey);
-                    credentials.setToken(cached.sessionToken);
+                    return credentials
+                            .withUsername(cached.accessKey)
+                            .withPassword(cached.secretKey)
+                            .withToken(cached.sessionToken);
                 }
-                else if(StringUtils.isNotBlank(basicProfile.getAwsSessionToken())) {
-                    // No need to obtain session token if preconfigured in profile
+                if(tokenCode != null) {
+                    // Obtain session token
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Set session token credentials from profile %s", profile));
+                        log.debug(String.format("Get session token from credentials in profile %s", basicProfile.getProfileName()));
                     }
-                    credentials.setUsername(basicProfile.getAwsAccessIdKey());
-                    credentials.setPassword(basicProfile.getAwsSecretAccessKey());
-                    credentials.setToken(basicProfile.getAwsSessionToken());
-                }
-                else {
-                    if(host.getProtocol().isTokenConfigurable()) {
-                        // Obtain session token
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Get session token from credentials in profile %s", basicProfile.getProfileName()));
-                        }
-                        final AWSSecurityTokenService service = this.getTokenService(host,
-                                host.getRegion(),
-                                basicProfile.getAwsAccessIdKey(),
-                                basicProfile.getAwsSecretAccessKey(),
-                                basicProfile.getAwsSessionToken());
-                        final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest();
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
-                        }
-                        try {
-                            final GetSessionTokenResult sessionTokenResult = service.getSessionToken(sessionTokenRequest);
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Set credentials from %s", sessionTokenResult));
-                            }
-                            credentials.setUsername(sessionTokenResult.getCredentials().getAccessKeyId());
-                            credentials.setPassword(sessionTokenResult.getCredentials().getSecretAccessKey());
-                            credentials.setToken(sessionTokenResult.getCredentials().getSessionToken());
-                        }
-                        catch(AWSSecurityTokenServiceException e) {
-                            log.warn(e.getErrorMessage(), e);
-                        }
+                    final AWSSecurityTokenService service = this.getTokenService(host,
+                            host.getRegion(),
+                            basicProfile.getAwsAccessIdKey(),
+                            basicProfile.getAwsSecretAccessKey(),
+                            basicProfile.getAwsSessionToken());
+                    //  The purpose of the sts:GetSessionToken operation is to authenticate the user using MFA.
+                    final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest()
+                            // The value provided by the MFA device, if MFA is required
+                            .withTokenCode(tokenCode)
+                            // Specify this value if the IAM user has a policy that requires MFA authentication
+                            .withSerialNumber(basicProfile.getPropertyValue("mfa_serial"))
+                            .withDurationSeconds(durationSeconds);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
                     }
-                    else {
+                    try {
+                        final GetSessionTokenResult sessionTokenResult = service.getSessionToken(sessionTokenRequest);
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Set static credentials from profile %s", basicProfile.getProfileName()));
+                            log.debug(String.format("Set credentials from %s", sessionTokenResult));
                         }
-                        credentials.setUsername(basicProfile.getAwsAccessIdKey());
-                        credentials.setPassword(basicProfile.getAwsSecretAccessKey());
+                        return credentials
+                                .withUsername(sessionTokenResult.getCredentials().getAccessKeyId())
+                                .withPassword(sessionTokenResult.getCredentials().getSecretAccessKey())
+                                .withToken(sessionTokenResult.getCredentials().getSessionToken());
+                    }
+                    catch(AWSSecurityTokenServiceException e) {
+                        log.warn(e.getErrorMessage(), e);
+                        return credentials;
                     }
                 }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set credentials from profile %s", basicProfile.getProfileName()));
+                }
+                return credentials
+                        .withUsername(basicProfile.getAwsAccessIdKey())
+                        .withPassword(basicProfile.getAwsSecretAccessKey())
+                        .withToken(basicProfile.getAwsSessionToken());
             }
         }
         return credentials;
