@@ -19,7 +19,6 @@ import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -40,6 +39,8 @@ import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 
 public class STSAssumeRoleAuthorizationService {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleAuthorizationService.class);
@@ -62,7 +63,8 @@ public class STSAssumeRoleAuthorizationService {
 
     public STSTokens authorize(final Host bookmark, final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
-        request.withWebIdentityToken(StringUtils.isNotBlank(oauth.getIdToken()) ? oauth.getIdToken() : oauth.getAccessToken());
+        final String token = StringUtils.isNotBlank(oauth.getIdToken()) ? oauth.getIdToken() : oauth.getAccessToken();
+        request.withWebIdentityToken(token);
         if(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds") != 0) {
             request.withDurationSeconds(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds"));
         }
@@ -76,7 +78,20 @@ public class STSAssumeRoleAuthorizationService {
             request.withRoleSessionName(new HostPreferences(bookmark).getProperty("s3.assumerole.rolesessionname"));
         }
         else {
-            request.withRoleSessionName(new AsciiRandomStringService().random());
+            try {
+                final String sub = JWT.decode(token).getSubject();
+                if(StringUtils.isNotBlank(sub)) {
+                    request.withRoleSessionName(sub);
+                }
+                else {
+                    log.warn(String.format("Missing subject in decoding JWT %s", token));
+                    request.withRoleSessionName(new AsciiRandomStringService().random());
+                }
+            }
+            catch(JWTDecodeException e) {
+                log.warn(String.format("Failure decoding JWT %s", token));
+                request.withRoleSessionName(new AsciiRandomStringService().random());
+            }
         }
         try {
             final AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(request);
