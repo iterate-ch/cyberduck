@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
+
 public final class CredentialsConfiguratorFactory {
 
     private CredentialsConfiguratorFactory() {
@@ -29,6 +31,11 @@ public final class CredentialsConfiguratorFactory {
      * @return Configurator for default settings
      */
     public static CredentialsConfigurator get(final Protocol protocol) {
-        return protocol.getCredentialsFinder().reload();
+        try {
+            return protocol.getCredentialsFinder().reload();
+        }
+        catch(LoginCanceledException e) {
+            return CredentialsConfigurator.DISABLED;
+        }
     }
 }

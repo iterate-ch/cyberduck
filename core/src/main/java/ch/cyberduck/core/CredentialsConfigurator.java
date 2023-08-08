@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
+
 public interface CredentialsConfigurator {
 
     /**
@@ -27,7 +29,7 @@ public interface CredentialsConfigurator {
      */
     Credentials configure(Host host);
 
-    CredentialsConfigurator reload();
+    CredentialsConfigurator reload() throws LoginCanceledException;
 
     CredentialsConfigurator DISABLED = new CredentialsConfigurator() {
         @Override
