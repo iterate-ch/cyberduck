@@ -64,33 +64,33 @@ public class STSAssumeRoleAuthorizationService {
     public STSTokens authorize(final Host bookmark, final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
         final String token = StringUtils.isNotBlank(oauth.getIdToken()) ? oauth.getIdToken() : oauth.getAccessToken();
-        request.withWebIdentityToken(token);
+        request.setWebIdentityToken(token);
         if(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds") != 0) {
-            request.withDurationSeconds(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds"));
+            request.setDurationSeconds(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds"));
         }
         if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"))) {
-            request.withPolicy(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"));
+            request.setPolicy(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"));
         }
         if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"))) {
-            request.withRoleArn(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"));
+            request.setRoleArn(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"));
         }
         if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.rolesessionname"))) {
-            request.withRoleSessionName(new HostPreferences(bookmark).getProperty("s3.assumerole.rolesessionname"));
+            request.setRoleSessionName(new HostPreferences(bookmark).getProperty("s3.assumerole.rolesessionname"));
         }
         else {
             try {
                 final String sub = JWT.decode(token).getSubject();
                 if(StringUtils.isNotBlank(sub)) {
-                    request.withRoleSessionName(sub);
+                    request.setRoleSessionName(sub);
                 }
                 else {
                     log.warn(String.format("Missing subject in decoding JWT %s", token));
-                    request.withRoleSessionName(new AsciiRandomStringService().random());
+                    request.setRoleSessionName(new AsciiRandomStringService().random());
                 }
             }
             catch(JWTDecodeException e) {
                 log.warn(String.format("Failure decoding JWT %s", token));
-                request.withRoleSessionName(new AsciiRandomStringService().random());
+                request.setRoleSessionName(new AsciiRandomStringService().random());
             }
         }
         try {
