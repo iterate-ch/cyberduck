@@ -37,6 +37,8 @@ import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
+import com.amazonaws.services.securitytoken.model.AssumeRoleWithSAMLRequest;
+import com.amazonaws.services.securitytoken.model.AssumeRoleWithSAMLResult;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
 import com.auth0.jwt.JWT;
@@ -59,6 +61,37 @@ public class STSAssumeRoleAuthorizationService {
 
     public STSAssumeRoleAuthorizationService(final AWSSecurityTokenService service) {
         this.service = service;
+    }
+
+    public STSTokens authorize(final Host bookmark, final String sAMLAssertion) throws BackgroundException {
+        final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
+        if(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds") != 0) {
+            request.setDurationSeconds(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds"));
+        }
+        if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"))) {
+            request.setPolicy(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"));
+        }
+        if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"))) {
+            request.setRoleArn(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"));
+        }
+        try {
+            final AssumeRoleWithSAMLResult result = service.assumeRoleWithSAML(request);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received assume role identity result %s", result));
+            }
+            final Credentials credentials = bookmark.getCredentials();
+            final STSTokens tokens = new STSTokens(result.getCredentials().getAccessKeyId(),
+                    result.getCredentials().getSecretAccessKey(),
+                    result.getCredentials().getSessionToken(),
+                    result.getCredentials().getExpiration().getTime());
+            credentials.setUsername(tokens.getAccessKey());
+            credentials.setPassword(tokens.getSecretAccessKey());
+            credentials.setToken(tokens.getSessionToken());
+            return tokens;
+        }
+        catch(AWSSecurityTokenServiceException e) {
+            throw new LoginFailureException(e.getErrorMessage(), e);
+        }
     }
 
     public STSTokens authorize(final Host bookmark, final OAuthTokens oauth) throws BackgroundException {
