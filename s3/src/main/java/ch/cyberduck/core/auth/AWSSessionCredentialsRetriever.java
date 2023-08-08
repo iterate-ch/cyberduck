@@ -32,6 +32,7 @@ import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -82,7 +83,7 @@ public class AWSSessionCredentialsRetriever {
         }
 
         @Override
-        public Configurator reload() {
+        public Configurator reload() throws LoginCanceledException {
             return this;
         }
 

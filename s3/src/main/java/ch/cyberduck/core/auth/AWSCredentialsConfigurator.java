@@ -19,6 +19,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +67,7 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public CredentialsConfigurator reload() {
+    public CredentialsConfigurator reload() throws LoginCanceledException {
         for(AWSCredentialsProvider provider : providers) {
             provider.refresh();
         }

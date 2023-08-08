@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
@@ -91,7 +92,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public CredentialsConfigurator reload() {
+    public CredentialsConfigurator reload() throws LoginCanceledException {
         configuration.refresh();
         return this;
     }

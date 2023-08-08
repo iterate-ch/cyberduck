@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
+
 public final class JumpHostConfiguratorFactory {
 
     private JumpHostConfiguratorFactory() {
@@ -29,6 +31,11 @@ public final class JumpHostConfiguratorFactory {
      * @return Configurator for default settings
      */
     public static JumphostConfigurator get(final Protocol protocol) {
-        return protocol.getJumpHostFinder().reload();
+        try {
+            return protocol.getJumpHostFinder().reload();
+        }
+        catch(LoginCanceledException e) {
+            return JumphostConfigurator.DISABLED;
+        }
     }
 }

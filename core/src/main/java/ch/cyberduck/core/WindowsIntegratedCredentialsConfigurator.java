@@ -15,6 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +52,7 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
     }
 
     @Override
-    public CredentialsConfigurator reload() {
+    public CredentialsConfigurator reload() throws LoginCanceledException {
         return this;
     }
 }
