@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sts;
+package ch.cyberduck.core.s3;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -20,8 +20,6 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.s3.S3ExceptionMappingService;
-import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
