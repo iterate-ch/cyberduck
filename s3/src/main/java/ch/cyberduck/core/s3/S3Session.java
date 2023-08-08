@@ -209,6 +209,20 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.addInterceptorLast(sts = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key));
             configuration.setServiceUnavailableRetryStrategy(new STSAssumeRoleTokenExpiredResponseInterceptor(this, oauth, sts, prompt));
         }
+        else {
+            if(S3Session.isAwsHostname(host.getHostname())) {
+                // Try auto-configure
+                if(Scheme.isURL(host.getProtocol().getContext())) {
+                    configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
+                            new AWSSessionCredentialsRetriever.Configurator(trust, key, this, host.getProtocol().getContext())
+                    ));
+                }
+                else {
+                    configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
+                            new AWSProfileSTSCredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt)));
+                }
+            }
+        }
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             final String header = HTTP.EXPECT_DIRECTIVE;
             if(log.isDebugEnabled()) {
@@ -261,24 +275,15 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 request.setHeader(S3_ALTERNATE_DATE, SignatureUtils.formatAwsFlavouredISO8601Date(client.getCurrentTimeWithOffset()));
             }
         });
-        if(host.getProtocol().isTokenConfigurable()) {
-            configuration.addInterceptorLast(new HttpRequestInterceptor() {
-                @Override
-                public void process(final HttpRequest request, final HttpContext context) {
-                    final ProviderCredentials credentials = client.getProviderCredentials();
-                    if(credentials instanceof AWSSessionCredentials) {
-                        request.setHeader(SECURITY_TOKEN, ((AWSSessionCredentials) credentials).getSessionToken());
-                    }
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                final ProviderCredentials credentials = client.getProviderCredentials();
+                if(credentials instanceof AWSSessionCredentials) {
+                    request.setHeader(SECURITY_TOKEN, ((AWSSessionCredentials) credentials).getSessionToken());
                 }
-            });
-            configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
-                    S3Session.isAwsHostname(host.getHostname()) ?
-                            Scheme.isURL(host.getProtocol().getContext()) ?
-                                    // Obtain credentials from instance metadata
-                                    new AWSSessionCredentialsRetriever.Configurator(trust, key, this, host.getProtocol().getContext()) :
-                                    new AWSProfileSTSCredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt) : CredentialsConfigurator.DISABLED
-            ));
-        }
+            }
+        });
         switch(authenticationHeaderSignatureVersion) {
             case AWS4HMACSHA256:
                 configuration.addInterceptorLast(new S3AWS4SignatureRequestInterceptor(this));
@@ -294,46 +299,45 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(Scheme.isURL(host.getProtocol().getContext())) {
-            try {
-                // Obtain credentials from instance metadata
-                final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
-                client.setProviderCredentials(new AWSSessionCredentials(temporary.getUsername(), temporary.getPassword(),
-                        temporary.getToken()));
-            }
-            catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException |
-                  InteroperabilityException e) {
-                log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
-                throw new LoginFailureException(e.getDetail(false), e);
-            }
+        if(host.getProtocol().isOAuthConfigurable()) {
+            // Get temporary credentials from STS using Web Identity (OIDC) token
+            final STSTokens tokens = sts.refresh(oauth.authorize(host, prompt, cancel));
+            client.setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKey(),
+                    tokens.getSecretAccessKey(), tokens.getSessionToken()));
         }
         else {
-            if(host.getProtocol().isOAuthConfigurable()) {
-                // Get temporary credentials from STS using Web Identity (OIDC) token
-                final STSTokens tokens = sts.refresh(oauth.authorize(host, prompt, cancel));
-                client.setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKey(),
-                        tokens.getSecretAccessKey(), tokens.getSessionToken()));
-            }
-            else {
-                final Credentials credentials;
-                // Only for AWS
-                if(isAwsHostname(host.getHostname())) {
-                    // Try auto-configure
+            final Credentials credentials;
+            // Only for AWS
+            if(isAwsHostname(host.getHostname())) {
+                // Try auto-configure
+                if(Scheme.isURL(host.getProtocol().getContext())) {
+                    try {
+                        // Obtain credentials from instance metadata
+                        credentials = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
+                    }
+                    catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException |
+                          NotfoundException |
+                          InteroperabilityException e) {
+                        log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
+                        throw new LoginFailureException(e.getDetail(false), e);
+                    }
+                }
+                else {
                     credentials = new AWSProfileSTSCredentialsConfigurator(
                             new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
                 }
-                else {
-                    credentials = host.getCredentials();
-                }
-                if(StringUtils.isNotBlank(credentials.getToken())) {
-                    client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                            new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
-                                    credentials.getToken()));
-                }
-                else {
-                    client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                            new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
-                }
+            }
+            else {
+                credentials = host.getCredentials();
+            }
+            if(StringUtils.isNotBlank(credentials.getToken())) {
+                client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                        new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                                credentials.getToken()));
+            }
+            else {
+                client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                        new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
             }
         }
         if(host.getCredentials().isPassed()) {
