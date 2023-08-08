@@ -54,12 +54,12 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
         if(executionCount <= MAX_RETRIES) {
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_BAD_REQUEST:
-                    final S3ServiceException failure;
                     try {
                         if(null != response.getEntity()) {
                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                            failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
+                            final S3ServiceException failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
                                     EntityUtils.toString(response.getEntity()));
+                            failure.setResponseCode(response.getStatusLine().getStatusCode());
                             if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
                                 if(log.isWarnEnabled()) {
                                     log.warn(String.format("Handle failure %s", failure));
