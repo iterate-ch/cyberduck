@@ -15,6 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.ExpiredTokenException;
@@ -40,11 +41,11 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
     private static final int MAX_RETRIES = 1;
 
     private final Host host;
-    private final AWSProfileSTSCredentialsConfigurator configurator;
+    private final CredentialsConfigurator configurator;
 
     public S3TokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         this.host = session.getHost();
-        this.configurator = new AWSProfileSTSCredentialsConfigurator(trust, key, prompt);
+        this.configurator = new AWSProfileSTSCredentialsConfigurator(trust, key, prompt).reload();
     }
 
     @Override
