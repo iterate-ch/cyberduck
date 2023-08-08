@@ -38,8 +38,6 @@ import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 
-import static com.amazonaws.services.s3.Headers.SECURITY_TOKEN;
-
 public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAuthorizationService implements HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleCredentialsRequestInterceptor.class);
 
@@ -101,8 +99,6 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
             if(log.isInfoEnabled()) {
                 log.info(String.format("Authorizing service request with STS tokens %s", tokens));
             }
-            request.setHeader(SECURITY_TOKEN, tokens.getSessionToken());
-
             session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKey(), tokens.getSecretAccessKey(),
                     tokens.getSessionToken()));
         }
