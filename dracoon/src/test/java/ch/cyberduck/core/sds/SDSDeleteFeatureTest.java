@@ -18,19 +18,30 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AntiVirusAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomPoliciesRequest;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -120,5 +131,42 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     public void testIsRecursive() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         assertTrue(new SDSDeleteFeature(session, nodeid).isRecursive());
+    }
+
+    @Test
+    public void testDeleteEicar() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        new NodesApi(session.getClient()).setRoomPolicies(new RoomPoliciesRequest().virusProtectionEnabled(true),
+                Long.valueOf(nodeid.getVersionId(room)), StringUtils.EMPTY);
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] eicar = "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*".getBytes();
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(eicar, out);
+        out.close();
+        final TransferStatus status = new TransferStatus();
+        status.setLength(eicar.length);
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)));
+        final Node node = feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
+        final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
+        assertEquals(eicar.length, attributes.getSize());
+        while(!PathAttributes.Verdict.malicious.equals(new SDSAttributesFinderFeature(session, nodeid).find(test).getVerdict())) {
+            // Wait for verdict
+        }
+        try {
+            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            fail();
+        }
+        catch(AntiVirusAccessDeniedException e) {
+            // Expected
+        }
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(test))),
+                new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DefaultFindFeature(session).find(test));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
