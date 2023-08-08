@@ -21,7 +21,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -68,8 +67,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
 import ch.cyberduck.core.sts.S3TokenExpiredResponseInterceptor;
-import ch.cyberduck.core.sts.STSAssumeRoleTokenExpiredResponseInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
+import ch.cyberduck.core.sts.STSAssumeRoleTokenExpiredResponseInterceptor;
 import ch.cyberduck.core.sts.STSTokens;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -111,8 +110,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final PreferencesReader preferences
             = new HostPreferences(host);
 
+    /**
+     * Handle authentication with OpenID connect retrieving token for STS
+     */
     private OAuth2RequestInterceptor oauth;
+    /**
+     * Swap OIDC Id token with temporary security credentials
+     */
     private STSAssumeRoleCredentialsRequestInterceptor sts;
+    /**
+     * Fetch latest temporary session token from AWS CLI configuration or instance metadata
+     */
+    private S3TokenExpiredResponseInterceptor token;
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
 
@@ -199,7 +208,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
+    protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
             configuration.addInterceptorLast(oauth = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
@@ -213,12 +222,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(S3Session.isAwsHostname(host.getHostname())) {
                 // Try auto-configure
                 if(Scheme.isURL(host.getProtocol().getContext())) {
-                    configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
+                    configuration.setServiceUnavailableRetryStrategy(token = new S3TokenExpiredResponseInterceptor(this,
                             new AWSSessionCredentialsRetriever.Configurator(trust, key, this, host.getProtocol().getContext())
                     ));
                 }
                 else {
-                    configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
+                    configuration.setServiceUnavailableRetryStrategy(token = new S3TokenExpiredResponseInterceptor(this,
                             new AWSProfileSTSCredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt)));
                 }
             }
@@ -309,22 +318,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             final Credentials credentials;
             // Only for AWS
             if(isAwsHostname(host.getHostname())) {
-                // Try auto-configure
-                if(Scheme.isURL(host.getProtocol().getContext())) {
-                    try {
-                        // Obtain credentials from instance metadata
-                        credentials = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
-                    }
-                    catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException |
-                          NotfoundException |
-                          InteroperabilityException e) {
-                        log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
-                        throw new LoginFailureException(e.getDetail(false), e);
-                    }
+                try {
+                    // Try auto-configure
+                    credentials = token.refresh();
                 }
-                else {
-                    credentials = new AWSProfileSTSCredentialsConfigurator(
-                            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
+                catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException |
+                      NotfoundException | InteroperabilityException e) {
+                    log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
+                    throw new LoginFailureException(e.getDetail(false), e);
                 }
             }
             else {
