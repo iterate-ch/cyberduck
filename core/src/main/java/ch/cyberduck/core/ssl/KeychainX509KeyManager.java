@@ -68,7 +68,9 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
         if(aliases.isEmpty()) {
             aliases.addAll(super.list());
         }
-        return new ArrayList<>(aliases);
+        final ArrayList<String> list = new ArrayList<>(aliases);
+        list.sort(String::compareTo);
+        return list;
     }
 
     protected String find(final Key key) {
