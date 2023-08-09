@@ -15,8 +15,10 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
@@ -37,7 +39,10 @@ public class S3OidcProfileTest {
         assertEquals("minio", profile.getOAuthClientId());
         assertEquals("password", profile.getOAuthClientSecret());
         assertNotNull(profile.getOAuthAuthorizationUrl());
-        assertNotNull(profile.getOAuthTokenUrl());
+        assertEquals("http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/token", profile.getOAuthTokenUrl());
+        assertEquals("http://localhost:9000", profile.getSTSEndpoint());
         assertFalse(profile.getOAuthScopes().isEmpty());
+        assertTrue(profile.getOAuthScopes().contains("openid"));
+        assertEquals("", new HostPreferences(new Host(profile)).getProperty("s3.assumerole.rolearn"));
     }
 }
