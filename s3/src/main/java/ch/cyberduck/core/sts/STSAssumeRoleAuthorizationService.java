@@ -65,14 +65,15 @@ public class STSAssumeRoleAuthorizationService {
 
     public STSTokens authorize(final Host bookmark, final String sAMLAssertion) throws BackgroundException {
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
-        if(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds") != 0) {
-            request.setDurationSeconds(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds"));
+        final HostPreferences preferences = new HostPreferences(bookmark);
+        if(preferences.getInteger("s3.assumerole.durationseconds") != 0) {
+            request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
         }
-        if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"))) {
-            request.setPolicy(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.policy"))) {
+            request.setPolicy(preferences.getProperty("s3.assumerole.policy"));
         }
-        if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"))) {
-            request.setRoleArn(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolearn"))) {
+            request.setRoleArn(preferences.getProperty("s3.assumerole.rolearn"));
         }
         try {
             final AssumeRoleWithSAMLResult result = service.assumeRoleWithSAML(request);
@@ -110,17 +111,18 @@ public class STSAssumeRoleAuthorizationService {
             token = oauth.getAccessToken();
         }
         request.setWebIdentityToken(token);
-        if(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds") != 0) {
-            request.setDurationSeconds(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds"));
+        final HostPreferences preferences = new HostPreferences(bookmark);
+        if(preferences.getInteger("s3.assumerole.durationseconds") != 0) {
+            request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
         }
-        if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"))) {
-            request.setPolicy(new HostPreferences(bookmark).getProperty("s3.assumerole.policy"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.policy"))) {
+            request.setPolicy(preferences.getProperty("s3.assumerole.policy"));
         }
-        if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"))) {
-            request.setRoleArn(new HostPreferences(bookmark).getProperty("s3.assumerole.rolearn"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolearn"))) {
+            request.setRoleArn(preferences.getProperty("s3.assumerole.rolearn"));
         }
-        if(StringUtils.isNotBlank(new HostPreferences(bookmark).getProperty("s3.assumerole.rolesessionname"))) {
-            request.setRoleSessionName(new HostPreferences(bookmark).getProperty("s3.assumerole.rolesessionname"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname"))) {
+            request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname"));
         }
         else {
             try {
