@@ -85,7 +85,7 @@ public class STSAssumeRoleAuthorizationService {
                     result.getCredentials().getSecretAccessKey(),
                     result.getCredentials().getSessionToken(),
                     result.getCredentials().getExpiration().getTime());
-            credentials.setUsername(tokens.getAccessKey());
+            credentials.setUsername(tokens.getAccessKeyId());
             credentials.setPassword(tokens.getSecretAccessKey());
             credentials.setToken(tokens.getSessionToken());
             return tokens;
@@ -150,7 +150,7 @@ public class STSAssumeRoleAuthorizationService {
                     result.getCredentials().getSecretAccessKey(),
                     result.getCredentials().getSessionToken(),
                     result.getCredentials().getExpiration().getTime());
-            credentials.setUsername(tokens.getAccessKey());
+            credentials.setUsername(tokens.getAccessKeyId());
             credentials.setPassword(tokens.getSecretAccessKey());
             credentials.setToken(tokens.getSessionToken());
             return tokens;

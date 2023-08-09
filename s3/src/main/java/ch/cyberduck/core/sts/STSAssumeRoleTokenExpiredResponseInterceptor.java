@@ -90,7 +90,7 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                     try {
                         log.warn(String.format("Attempt to refresh STS token for failure %s", response));
                         final STSTokens tokens = sts.refresh(oauth.getTokens());
-                        session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKey(),
+                        session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(),
                                 tokens.getSecretAccessKey(), tokens.getSessionToken()));
                         // Try again
                         return true;
