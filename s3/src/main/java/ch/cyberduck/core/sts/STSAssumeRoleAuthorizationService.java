@@ -96,7 +96,19 @@ public class STSAssumeRoleAuthorizationService {
 
     public STSTokens authorize(final Host bookmark, final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
-        final String token = StringUtils.isNotBlank(oauth.getIdToken()) ? oauth.getIdToken() : oauth.getAccessToken();
+        final String token;
+        if(StringUtils.isNotBlank(oauth.getIdToken())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Assume role with OIDC Id token for %s", bookmark));
+            }
+            token = oauth.getIdToken();
+        }
+        else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Assume role with OAuth access token for %s", bookmark));
+            }
+            token = oauth.getAccessToken();
+        }
         request.setWebIdentityToken(token);
         if(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds") != 0) {
             request.setDurationSeconds(new HostPreferences(bookmark).getInteger("s3.assumerole.durationseconds"));
