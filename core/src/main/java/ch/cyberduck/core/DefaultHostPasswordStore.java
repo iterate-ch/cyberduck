@@ -237,7 +237,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
                         bookmark.getPort(), this.getOAuthHostname(bookmark),
-                        String.format("%s OIDC Id Token", prefix), credentials.getOauth().getRefreshToken());
+                        String.format("%s OIDC Id Token", prefix), credentials.getOauth().getIdToken());
             }
         }
     }
