@@ -48,7 +48,7 @@ public abstract class AbstractOidcTest {
 
     static {
         compose = new DockerComposeContainer<>(
-                new File("src/test/resources/oidcTestcontainer/docker-compose.yml"))
+                new File(AbstractOidcTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
                 .withPull(false)
                 .withLocalCompose(true)
                 .withOptions("--compatibility")
