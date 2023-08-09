@@ -22,13 +22,13 @@ public final class STSTokens {
     public static final STSTokens EMPTY
             = new STSTokens(null, null, null, Long.MAX_VALUE);
 
-    private final String accessKey;
+    private final String accessKeyId;
     private final String secretAccessKey;
-    private final Long expiryInMilliseconds;
     private final String sessionToken;
+    private final Long expiryInMilliseconds;
 
-    public STSTokens(final String accessKey, final String secretAccessKey, final String sessionToken, final Long expiryInMilliseconds) {
-        this.accessKey = accessKey;
+    public STSTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken, final Long expiryInMilliseconds) {
+        this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
         this.sessionToken = sessionToken;
         this.expiryInMilliseconds = expiryInMilliseconds;
@@ -38,8 +38,8 @@ public final class STSTokens {
         return StringUtils.isNotEmpty(sessionToken);
     }
 
-    public String getAccessKey() {
-        return accessKey;
+    public String getAccessKeyId() {
+        return accessKeyId;
     }
 
     public String getSecretAccessKey() {
@@ -61,7 +61,7 @@ public final class STSTokens {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("OAuthTokens{");
-        sb.append("accessKey='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(accessKey)))).append('\'');
+        sb.append("accessKey='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(accessKeyId)))).append('\'');
         sb.append(", secretAccessKey='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(secretAccessKey)))).append('\'');
         sb.append(", sessionToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(secretAccessKey)))).append('\'');
         sb.append(", expiryInMilliseconds=").append(expiryInMilliseconds);

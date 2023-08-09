@@ -73,7 +73,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
      */
     public STSTokens save(final STSTokens tokens) throws LocalAccessDeniedException {
         host.getCredentials()
-                .withUsername(tokens.getAccessKey())
+                .withUsername(tokens.getAccessKeyId())
                 .withPassword(tokens.getSecretAccessKey())
                 .withToken(tokens.getSessionToken())
                 .withSaved(new LoginOptions().keychain);
@@ -99,7 +99,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
             if(log.isInfoEnabled()) {
                 log.info(String.format("Authorizing service request with STS tokens %s", tokens));
             }
-            session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKey(), tokens.getSecretAccessKey(),
+            session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
                     tokens.getSessionToken()));
         }
     }
