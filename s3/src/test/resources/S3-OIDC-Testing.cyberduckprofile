@@ -59,6 +59,7 @@
         <key>Properties</key>
         <array>
             <string>s3.bucket.virtualhost.disable=true</string>
+            <string>s3.assumerole.rolearn=</string>
         </array>
     </dict>
 </plist>

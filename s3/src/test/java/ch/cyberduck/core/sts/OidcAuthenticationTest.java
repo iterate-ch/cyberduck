@@ -62,21 +62,21 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test
     public void testInvalidUserName() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertThrows(LoginFailureException.class, () -> session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test
     public void testInvalidPassword() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalidPassword"));
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertThrows(LoginFailureException.class, () -> session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 

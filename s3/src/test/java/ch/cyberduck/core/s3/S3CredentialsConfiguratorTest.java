@@ -41,7 +41,7 @@ public class S3CredentialsConfiguratorTest {
     @Test
     public void readFailureForInvalidAWSCredentialsProfileEntry() throws Exception {
         final Credentials credentials = new Credentials("test_s3_profile");
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath()),
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(this.getClass().getResource("/invalid/.aws").getFile()),
                 new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials));
         assertEquals(credentials, verify);
@@ -49,7 +49,7 @@ public class S3CredentialsConfiguratorTest {
 
     @Test
     public void readSuccessForValidAWSCredentialsProfileEntry() throws Exception {
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(this.getClass().getResource("/valid/.aws").getFile())
                 , new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
         assertEquals("EXAMPLEKEYID", verify.getUsername());
