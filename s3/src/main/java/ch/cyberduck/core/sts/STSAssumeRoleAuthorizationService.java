@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.internal.StaticCredentialsProvider;
@@ -53,7 +54,7 @@ public class STSAssumeRoleAuthorizationService {
         this(AWSSecurityTokenServiceClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(bookmark.getProtocol().getSTSEndpoint(), null))
-                .withCredentials(new StaticCredentialsProvider(new AnonymousAWSCredentials()))
+                .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
                 .withClientConfiguration(new CustomClientConfiguration(bookmark,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getProtocol().getSTSEndpoint()), key))
                 .build());
