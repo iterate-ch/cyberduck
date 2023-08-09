@@ -42,8 +42,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class OidcAuthorizationTest extends AbstractOidcTest {
@@ -86,7 +85,7 @@ public class OidcAuthorizationTest extends AbstractOidcTest {
         session.close();
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void testAuthorizationNoWritePermissionOnBucket() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
@@ -94,9 +93,7 @@ public class OidcAuthorizationTest extends AbstractOidcTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertThrows(AccessDeniedException.class, () -> new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus()));
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         session.close();
     }
