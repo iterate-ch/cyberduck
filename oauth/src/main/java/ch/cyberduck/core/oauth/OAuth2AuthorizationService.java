@@ -141,21 +141,18 @@ public class OAuth2AuthorizationService {
         switch(flowType) {
             case AuthorizationCode:
                 response = this.authorizeWithCode(bookmark, prompt);
-                return credentials.withOauth(new OAuthTokens(
-                                response.getAccessToken(), response.getRefreshToken(),
-                                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken()))
-                        .withSaved(new LoginOptions().keychain).getOauth();
+                break;
             case PasswordGrant:
                 response = this.authorizeWithPassword(credentials);
-                return credentials.withOauth(new OAuthTokens(
-                                response.getAccessToken(), response.getRefreshToken(),
-                                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken()))
-                        .withSaved(new LoginOptions().keychain).getOauth();
+                break;
             default:
                 throw new LoginCanceledException();
         }
+        return credentials.withOauth(new OAuthTokens(
+                        response.getAccessToken(), response.getRefreshToken(),
+                        null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                                System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken()))
+                .withSaved(new LoginOptions().keychain).getOauth();
     }
 
     private IdTokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
