@@ -141,6 +141,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         catch(ConcurrentException | KeyStoreException e) {
             log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
+        list.sort(String::compareTo);
         return list;
     }
 
