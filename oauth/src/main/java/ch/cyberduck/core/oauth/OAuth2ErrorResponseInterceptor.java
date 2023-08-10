@@ -18,6 +18,7 @@ package ch.cyberduck.core.oauth;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -52,14 +53,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
                     try {
-                        try {
-                            log.warn(String.format("Attempt to refresh OAuth tokens for failure %s", response));
-                            service.save(service.refresh());
-                        }
-                        catch(InteroperabilityException | LoginFailureException e) {
-                            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
-                            service.save(service.authorize(bookmark, prompt, new DisabledCancelCallback()));
-                        }
+                        this.refresh(response);
                         // Try again
                         return true;
                     }
@@ -73,5 +67,18 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                 break;
         }
         return false;
+    }
+
+    protected OAuthTokens refresh(final HttpResponse response) throws BackgroundException {
+        OAuthTokens tokens;
+        try {
+            log.warn(String.format("Attempt to refresh OAuth tokens for failure %s", response));
+            tokens = service.refresh();
+        }
+        catch(InteroperabilityException | LoginFailureException e) {
+            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
+            tokens = service.authorize(bookmark, prompt, new DisabledCancelCallback());
+        }
+        return service.save(tokens);
     }
 }
