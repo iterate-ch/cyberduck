@@ -41,10 +41,10 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * Contains the transcript of the session while this action was running
      */
     private final StringBuffer transcript
-        = new StringBuffer();
+            = new StringBuffer();
 
     private static final String LINE_SEPARATOR
-        = System.getProperty("line.separator");
+            = System.getProperty("line.separator");
 
     private final AlertCallback alert;
     private final ProgressListener progress;
@@ -110,18 +110,23 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T run() throws BackgroundException {
+        final Session<?> session;
         try {
-            final Session<?> session = pool.borrow(this).withListener(this);
-            try {
-                return this.run(session);
-            }
-            finally {
-                pool.release(session.removeListener(this), failure);
-            }
+            session = pool.borrow(this).withListener(this);
         }
         catch(BackgroundException e) {
             failure = e;
             throw e;
+        }
+        try {
+            return this.run(session);
+        }
+        catch(BackgroundException e) {
+            failure = e;
+            throw e;
+        }
+        finally {
+            pool.release(session.removeListener(this), failure);
         }
     }
 
