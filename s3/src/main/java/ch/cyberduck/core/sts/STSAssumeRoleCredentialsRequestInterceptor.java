@@ -88,19 +88,17 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(tokens.isExpired()) {
             try {
-                this.save(this.refresh());
+                this.save(this.refresh(oauth.getTokens()));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Authorizing service request with STS tokens %s", tokens));
+                }
+                session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
+                        tokens.getSessionToken()));
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure %s refreshing STS tokens %s", e, tokens));
                 // Follow-up error 401 handled in error interceptor
             }
-        }
-        if(StringUtils.isNotBlank(tokens.getSessionToken())) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Authorizing service request with STS tokens %s", tokens));
-            }
-            session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
-                    tokens.getSessionToken()));
         }
     }
 }
