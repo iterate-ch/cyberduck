@@ -16,8 +16,10 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
@@ -58,54 +60,68 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
-                if(!super.retryRequest(response, executionCount, context)) {
+            case HttpStatus.SC_FORBIDDEN:
+            case HttpStatus.SC_BAD_REQUEST:
+                if(executionCount > MAX_RETRIES) {
+                    log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
                     return false;
                 }
-        }
-        switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_BAD_REQUEST:
-                try {
-                    if(null != response.getEntity()) {
+                if(null != response.getEntity()) {
+                    try {
                         EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                         final S3ServiceException failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
                                 EntityUtils.toString(response.getEntity()));
                         failure.setResponseCode(response.getStatusLine().getStatusCode());
-                        if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                        final BackgroundException type = new S3ExceptionMappingService().map(failure);
+                        final OAuthTokens oAuthTokens;
+                        if(type instanceof ExpiredTokenException) {
                             // 400 Bad Request (ExpiredToken) The provided token has expired
                             // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
                             // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
-                            if(log.isWarnEnabled()) {
-                                log.warn(String.format("Handle failure %s", failure));
+                            // No refresh of OAuth tokens
+                            oAuthTokens = oauth.getTokens();
+                        }
+                        else if(type instanceof LoginFailureException) {
+                            // 401 (InvalidAccessKeyId) The AWS access key ID that you provided does not exist in our records.
+                            // 401 (InvalidSecurity) The provided security credentials are not valid.
+                            // 403 (Forbidden) Access Denied
+                            try {
+                                // Refresh OAuth tokens
+                                oAuthTokens = super.refresh(response);
+                            }
+                            catch(BackgroundException e) {
+                                log.warn(String.format("Failure %s refreshing OAuth tokens", e));
+                                return false;
                             }
                         }
                         else {
                             // Ignore other 400 failures
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Ignore failure %s", type));
+                            }
+                            return false;
+                        }
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Handle failure %s", failure));
+                        }
+                        try {
+                            log.warn(String.format("Attempt to refresh STS token for failure %s", response));
+                            final STSTokens stsTokens = sts.refresh(oAuthTokens);
+                            session.getClient().setProviderCredentials(new AWSSessionCredentials(stsTokens.getAccessKeyId(),
+                                    stsTokens.getSecretAccessKey(), stsTokens.getSessionToken()));
+                            // Try again
+                            return true;
+                        }
+                        catch(BackgroundException e) {
+                            log.warn(String.format("Failure %s refreshing STS token", e));
                             return false;
                         }
                     }
-                }
-                catch(IOException e) {
-                    log.warn(String.format("Failure parsing response entity from %s", response));
-                }
-                // Break through
-            case HttpStatus.SC_UNAUTHORIZED:
-                if(executionCount <= MAX_RETRIES) {
-                    try {
-                        log.warn(String.format("Attempt to refresh STS token for failure %s", response));
-                        final STSTokens tokens = sts.refresh(oauth.getTokens());
-                        session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(),
-                                tokens.getSecretAccessKey(), tokens.getSessionToken()));
-                        // Try again
-                        return true;
-                    }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Failure %s refreshing STS token", e));
+                    catch(IOException e) {
+                        log.warn(String.format("Failure parsing response entity from %s", response));
+                        return false;
                     }
                 }
-                else {
-                    log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
-                }
-                break;
         }
         return false;
     }
