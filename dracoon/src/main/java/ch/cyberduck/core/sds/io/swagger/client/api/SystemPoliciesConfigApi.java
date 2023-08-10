@@ -9,16 +9,22 @@ import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.GuestUsersPoliciesConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.MfaPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.PasswordPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateClassificationPoliciesConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateGuestUsersPoliciesConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateMfaPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdatePasswordPoliciesConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateVirusProtectionPoliciesConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.VirusProtectionPoliciesConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class SystemPoliciesConfigApi {
+public class SystemPoliciesConfigApi {
   private ApiClient apiClient;
 
   public SystemPoliciesConfigApi() {
@@ -38,8 +44,8 @@ import java.util.Map;
   }
 
   /**
-   * Change classification policies (NEW)
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.30.0&lt;/h3&gt;  ### Description: Change current classification policies: * &#x60;shareClassificationPolicies&#x60;  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Classification policies is changed.  ### Further Information: &#x60;classificationRequiresSharePassword&#x60;: When a node has this classification or higher, it can not be shared without a password. &#x60;0&#x60; means no password will be enforced.  
+   * Change classification policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.30.0&lt;/h3&gt;  ### Description: Change current classification policies: * &#x60;shareClassificationPolicies&#x60;  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Classification policies are changed.  ### Further Information: &#x60;classificationRequiresSharePassword&#x60;: When a node has this classification or higher, it cannot be shared without a password. If the node is an encrypted file this policy has no effect. &#x60;0&#x60; means no password will be enforced.  
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return ClassificationPoliciesConfig
@@ -76,6 +82,88 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<ClassificationPoliciesConfig> localVarReturnType = new GenericType<ClassificationPoliciesConfig>() {};
+    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Change guest user policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.40.0&lt;/h3&gt;  ### Description: Change current guest user policies.    ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Guest user policies are changed.    ### Further Information: None.
+   * @param body  (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return GuestUsersPoliciesConfig
+   * @throws ApiException if fails to make API call
+   */
+  public GuestUsersPoliciesConfig changeGuestUsersPoliciesConfig(UpdateGuestUsersPoliciesConfig body, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling changeGuestUsersPoliciesConfig");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/system/config/policies/guest_users";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<GuestUsersPoliciesConfig> localVarReturnType = new GenericType<GuestUsersPoliciesConfig>() {};
+    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Change MFA policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.37.0&lt;/h3&gt;  ### Description: Change current multi-factor authentication policies.    ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Multi-factor authentication policies are changed.    ### Further Information: None.
+   * @param body  (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return MfaPoliciesConfig
+   * @throws ApiException if fails to make API call
+   */
+  public MfaPoliciesConfig changeMfaPoliciesConfig(UpdateMfaPoliciesConfig body, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling changeMfaPoliciesConfig");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/system/config/policies/mfa";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<MfaPoliciesConfig> localVarReturnType = new GenericType<MfaPoliciesConfig>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -120,6 +208,47 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
+   * Change virus protection policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.44.0&lt;/h3&gt;  ### Description: Change current virus protection policy.    ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Virus Protection policy is changed.    ### Further Information: None.
+   * @param body  (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return VirusProtectionPoliciesConfig
+   * @throws ApiException if fails to make API call
+   */
+  public VirusProtectionPoliciesConfig changeVirusProtectionPoliciesConfig(UpdateVirusProtectionPoliciesConfig body, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling changeVirusProtectionPoliciesConfig");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/system/config/policies/virus_protection";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<VirusProtectionPoliciesConfig> localVarReturnType = new GenericType<VirusProtectionPoliciesConfig>() {};
+    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
    * Enforce login password change for all users
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Enforce login password change for all users.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Login password change is enforced. Every user has to change their login password at next login.  ### Further Information: None.
    * @param xSdsAuthToken Authentication token (optional)
@@ -154,8 +283,8 @@ import java.util.Map;
     apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Request classification policies (NEW)
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.30.0&lt;/h3&gt;  ### Description:   Retrieve a list of classification policies: * &#x60;shareClassificationPolicies&#x60;  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: List of configured classification policies is returned.  ### Further Information: &#x60;classificationRequiresSharePassword&#x60;: When a node has this classification or higher, it can not be shared without a password. &#x60;0&#x60; means no password will be enforced. 
+   * Request classification policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.30.0&lt;/h3&gt;  ### Description:   Retrieve a list of classification policies: * &#x60;shareClassificationPolicies&#x60;  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: List of configured classification policies is returned.  ### Further Information: &#x60;classificationRequiresSharePassword&#x60;: When a node has this classification or higher, it cannot be shared without a password. If the node is an encrypted file this policy has no effect. &#x60;0&#x60; means no password will be enforced. 
    * @param xSdsAuthToken Authentication token (optional)
    * @return ClassificationPoliciesConfig
    * @throws ApiException if fails to make API call
@@ -187,6 +316,78 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<ClassificationPoliciesConfig> localVarReturnType = new GenericType<ClassificationPoliciesConfig>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request guest user policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.40.0&lt;/h3&gt;  ### Description:   Retrieve guest user policies.    ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Guest user policies are returned.  ### Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return GuestUsersPoliciesConfig
+   * @throws ApiException if fails to make API call
+   */
+  public GuestUsersPoliciesConfig requestGuestUsersPoliciesConfig(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/system/config/policies/guest_users";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<GuestUsersPoliciesConfig> localVarReturnType = new GenericType<GuestUsersPoliciesConfig>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request MFA policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.37.0&lt;/h3&gt;  ### Description:   Retrieve a list of multi-factor authentication policies.    ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: List of configured multi-factor authentication policies is returned.  ### Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return MfaPoliciesConfig
+   * @throws ApiException if fails to make API call
+   */
+  public MfaPoliciesConfig requestMfaPoliciesConfig(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/system/config/policies/mfa";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<MfaPoliciesConfig> localVarReturnType = new GenericType<MfaPoliciesConfig>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -265,6 +466,42 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<PasswordPoliciesConfig> localVarReturnType = new GenericType<PasswordPoliciesConfig>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request virus protection policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.44.0&lt;/h3&gt;  ### Description: Retrieve the virus protection policy.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Virus Protection policy is returned.  ### Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return VirusProtectionPoliciesConfig
+   * @throws ApiException if fails to make API call
+   */
+  public VirusProtectionPoliciesConfig requestVirusProtectionPoliciesConfig(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/system/config/policies/virus_protection";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<VirusProtectionPoliciesConfig> localVarReturnType = new GenericType<VirusProtectionPoliciesConfig>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
 }

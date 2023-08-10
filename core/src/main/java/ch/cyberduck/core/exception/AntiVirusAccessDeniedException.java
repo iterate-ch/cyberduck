@@ -15,13 +15,20 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
-public class AntiVirusAccessDeniedException extends AccessDeniedException {
+import ch.cyberduck.core.LocaleFactory;
+
+public class AntiVirusAccessDeniedException extends LockedException {
+
+    public AntiVirusAccessDeniedException() {
+        super(LocaleFactory.localizedString("Threat detected", "SDS"),
+                LocaleFactory.localizedString("Malicious content has been detected in this file. We recommend that you do not perform any further actions with the file and inform your system administrator immediately.", "SDS"));
+    }
 
     public AntiVirusAccessDeniedException(final String detail) {
-        super(detail);
+        super(LocaleFactory.localizedString("Threat detected", "SDS"), detail);
     }
 
     public AntiVirusAccessDeniedException(final String detail, final Throwable cause) {
-        super(detail, cause);
+        super(LocaleFactory.localizedString("Threat detected", "SDS"), detail, cause);
     }
 }

@@ -155,6 +155,14 @@ public class PathAttributes extends Attributes implements Serializable {
 
     private Map<String, String> custom = Collections.emptyMap();
 
+    private Verdict verdict;
+
+    public enum Verdict {
+        unknown,
+        clean,
+        malicious
+    }
+
     public PathAttributes() {
     }
 
@@ -264,6 +272,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(!custom.isEmpty()) {
             dict.setMapForKey(custom, "Custom");
+        }
+        if(verdict != null) {
+            dict.setStringForKey(verdict.name(), "Verdict");
         }
         return dict.getSerialized();
     }
@@ -605,6 +616,19 @@ public class PathAttributes extends Attributes implements Serializable {
     public PathAttributes withCustom(final String key, final String value) {
         custom = new HashMap<>(custom);
         custom.put(key, value);
+        return this;
+    }
+
+    public Verdict getVerdict() {
+        return verdict;
+    }
+
+    public void setVerdict(final Verdict verdict) {
+        this.verdict = verdict;
+    }
+
+    public PathAttributes withVerdict(final Verdict verdict) {
+        this.setVerdict(verdict);
         return this;
     }
 

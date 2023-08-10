@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class AuthApi {
+public class AuthApi {
   private ApiClient apiClient;
 
   public AuthApi() {
@@ -154,7 +154,7 @@ import java.util.Map;
   /**
    * Authenticate user (Login)
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.13.0&lt;/h3&gt;  ### Description: Authenticates user and provides an authentication token (&#x60;X-Sds-Auth-Token&#x60;) that is required for the most operations.  ### Precondition: Existing user that is **NOT** locked.  ### Postcondition: User is logged in.  ### Further Information: The provided token is valid for **two hours**, every usage resets this period to two full hours again.   Logging off invalidates the token.    ### Available authentication methods: &lt;details open style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Authentication Method (&#x60;authType&#x60;) | Description | | :--- | :--- | | &#x60;basic&#x60; | Log in with credentials stored in the database &lt;br&gt;Formerly known as &#x60;sql&#x60;.| | &#x60;active_directory&#x60; | Log in with Active Directory credentials | | &#x60;radius&#x60; | Log in with RADIUS username, PIN and token password.&lt;br&gt;Token (request parameter) may be set, otherwise this parameter is ignored. If token is set, password is optional. | | &#x60;openid&#x60; | Please use &#x60;POST /auth/openid/login&#x60; API to login with OpenID Connect identity |  &lt;/details&gt;
-   * @param body User credentials (required)
+   * @param body  (required)
    * @return LoginResponse
    * @throws ApiException if fails to make API call
    * @deprecated

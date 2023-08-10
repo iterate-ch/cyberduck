@@ -16,6 +16,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.EnableCustomerEncryptionReq
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
 import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse400;
+import ch.cyberduck.core.sds.io.swagger.client.model.MfaTotpConfirmationRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfigChangeRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfigList;
@@ -29,17 +30,19 @@ import ch.cyberduck.core.sds.io.swagger.client.model.SubscribedNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.SubscribedNodeList;
 import ch.cyberduck.core.sds.io.swagger.client.model.SubscribedUploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.SubscribedUploadShareList;
+import ch.cyberduck.core.sds.io.swagger.client.model.TotpSetupResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateSubscriptionsBulkRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateUserAccountRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserMfaStatusResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class UserApi {
+public class UserApi {
   private ApiClient apiClient;
 
   public UserApi() {
@@ -98,6 +101,45 @@ import java.util.Map;
     apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
+   * Confirm second factor TOTP setup with a generated OTP
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.37.0&lt;/h3&gt;  ### Description: Confirm second factor TOTP setup with a generated OTP.  ### Precondition: Authenticated user    ### Postcondition: Second factor TOTP is enabled.  ### Further Information: None.
+   * @param body  (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void confirmTotpSetup(MfaTotpConfirmationRequest body, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling confirmTotpSetup");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/user/account/mfa/totp";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
    * Create key pair and preserve copy of old private key
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Create user key pair and preserve copy of old private key.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is created.   Copy of old private key is preserved.  ### Further Information: You can submit your old private key, encrypted with your current password.   This allows migrating file keys encrypted with your old key pair to the new one.
    * @param body  (required)
@@ -135,6 +177,52 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Disable a MFA TOTP setup with generated OTP
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.37.0&lt;/h3&gt;  ### Description:   Delete multi-factor authentication TOTP setup with a valid OTP code.  ### Precondition: Authenticated user   Multi-factor authentication is **NOT** enforced  ### Postcondition: Second factor TOTP is disabled.  ### Further Information: None.
+   * @param id  (required)
+   * @param validOtp  (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteMfaTotpSetup(Long id, String validOtp, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteMfaTotpSetup");
+    }
+    // verify the required parameter 'validOtp' is set
+    if (validOtp == null) {
+      throw new ApiException(400, "Missing the required parameter 'validOtp' when calling deleteMfaTotpSetup");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/user/account/mfa/totp/{id}"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "valid_otp", validOtp));
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Activate client-side encryption for customer
@@ -178,6 +266,78 @@ import java.util.Map;
 
     GenericType<CustomerData> localVarReturnType = new GenericType<CustomerData>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request information about the user&#x27;s mfa status
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.37.0&lt;/h3&gt;  ### Description: Request information about the user&#x27;s mfa status  ### Precondition: Authenticated user.  ### Postcondition: None.  ### Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return UserMfaStatusResponse
+   * @throws ApiException if fails to make API call
+   */
+  public UserMfaStatusResponse getMfaStatusForUser(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/user/account/mfa";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<UserMfaStatusResponse> localVarReturnType = new GenericType<UserMfaStatusResponse>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request information to setup TOTP as second authentication factor
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.37.0&lt;/h3&gt;  ### Description:   Get setup information for multi-factor authentication (TOTP).  ### Precondition: Authenticated user.  ### Postcondition: None.   ### Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return TotpSetupResponse
+   * @throws ApiException if fails to make API call
+   */
+  public TotpSetupResponse getTotpSetupInformation(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/user/account/mfa/totp";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<TotpSetupResponse> localVarReturnType = new GenericType<TotpSetupResponse>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * List Download Share subscriptions
@@ -1598,17 +1758,13 @@ import java.util.Map;
   /**
    * Change avatar
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.11.0&lt;/h3&gt;  ### Description: Change the avatar.  ### Precondition: Authenticated user.  ### Postcondition: Avatar is changed.  ### Further Information: * Media type **MUST** be &#x60;jpeg&#x60; or &#x60;png&#x60; * File size **MUST** bei less than &#x60;5 MB&#x60; * Dimensions **MUST** be &#x60;256x256 px&#x60;
-   * @param file  (required)
+   * @param file  (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return Avatar
    * @throws ApiException if fails to make API call
    */
   public Avatar uploadAvatarAsMultipart(File file, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    // verify the required parameter 'file' is set
-    if (file == null) {
-      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadAvatarAsMultipart");
-    }
     // create path and map variables
     String localVarPath = "/v4/user/account/avatar";
 
@@ -1637,5 +1793,45 @@ import java.util.Map;
 
     GenericType<Avatar> localVarReturnType = new GenericType<Avatar>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Using emergency-code
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.37.0&lt;/h3&gt;  ### Description: Using emergency code for login  ### Precondition: User has MFA enabled and is already logged in with account/pw (aka pre-Auth-Role)  ### Postcondition: All MFA-setups for the user are deleted.  ### Further Information:   
+   * @param emergencyCode  (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void useEmergencyCode(String emergencyCode, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'emergencyCode' is set
+    if (emergencyCode == null) {
+      throw new ApiException(400, "Missing the required parameter 'emergencyCode' when calling useEmergencyCode");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/user/account/mfa";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "emergency_code", emergencyCode));
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
 }

@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AntiVirusAccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -89,14 +90,17 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
                 return Type.network;
             }
             if(cause instanceof SocketException
-                || cause instanceof IOResumeException
-                || cause instanceof TimeoutException // Used in Promise#retrieve
-                || cause instanceof SocketTimeoutException
-                || cause instanceof UnknownHostException) {
+                    || cause instanceof IOResumeException
+                    || cause instanceof TimeoutException // Used in Promise#retrieve
+                    || cause instanceof SocketTimeoutException
+                    || cause instanceof UnknownHostException) {
                 return Type.network;
             }
             if(cause instanceof QuotaException) {
                 return Type.quota;
+            }
+            if(cause instanceof AntiVirusAccessDeniedException) {
+                return Type.antivirus;
             }
         }
         return Type.application;

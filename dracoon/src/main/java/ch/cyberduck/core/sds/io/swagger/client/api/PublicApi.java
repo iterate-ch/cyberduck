@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class PublicApi {
+public class PublicApi {
   private ApiClient apiClient;
 
   public PublicApi() {
@@ -97,23 +97,58 @@ import java.util.Map;
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
+   * Check public Download Share password
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.36.0&lt;/h3&gt;  ### Description: Check password for a public Download Share  ### Precondition: None.  ### Postcondition: None.  ### Further Information: None.
+   * @param accessKey Access key (required)
+   * @param password Download share password (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void checkPublicDownloadSharePassword(String accessKey, String password) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'accessKey' is set
+    if (accessKey == null) {
+      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling checkPublicDownloadSharePassword");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/public/shares/downloads/{access_key}"
+      .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "password", password));
+
+
+    final String[] localVarAccepts = {
+      
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] {  };
+
+    apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
    * Complete file upload
    * ### Description: Finalize (chunked) upload via Upload Share.  ### Precondition: Valid upload ID.   Only returns users that owns one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt;  ### Postcondition: Finalizes upload.  ### Further Information: Chunked uploads (range requests) are supported.    Please ensure that all chunks have been transferred correctly before finishing the upload.   If file hash has been created in time a &#x60;201 Created&#x60; will be responded and hash will be part of response, otherwise it will be a &#x60;202 Accepted&#x60; without it. 
-   * @param body Mandatory for encrypted shares (required)
    * @param accessKey Access key (required)
    * @param uploadId Upload channel ID (required)
+   * @param body  (optional)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @return PublicUploadedFileData
    * @throws ApiException if fails to make API call
    * Range Requests
    * @see <a href="https://tools.ietf.org/html/rfc7233">Complete file upload Documentation</a>
    */
-  public PublicUploadedFileData completeFileUploadViaShare(UserFileKeyList body, String accessKey, String uploadId, String xSdsDateFormat) throws ApiException {
+  public PublicUploadedFileData completeFileUploadViaShare(String accessKey, String uploadId, UserFileKeyList body, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling completeFileUploadViaShare");
-    }
     // verify the required parameter 'accessKey' is set
     if (accessKey == null) {
       throw new ApiException(400, "Missing the required parameter 'accessKey' when calling completeFileUploadViaShare");
@@ -350,17 +385,13 @@ import java.util.Map;
   /**
    * Generate download URL
    * ### Description: Generate a download URL to retrieve a shared file.  ### Precondition: None.  ### Postcondition: Download URL and token are generated and returned.  ### Further Information: Use &#x60;downloadUrl&#x60; the download &#x60;token&#x60; is deprecated.
-   * @param body  (required)
    * @param accessKey Access key (required)
+   * @param body  (optional)
    * @return PublicDownloadTokenGenerateResponse
    * @throws ApiException if fails to make API call
    */
-  public PublicDownloadTokenGenerateResponse generateDownloadUrlPublic(PublicDownloadTokenGenerateRequest body, String accessKey) throws ApiException {
+  public PublicDownloadTokenGenerateResponse generateDownloadUrlPublic(String accessKey, PublicDownloadTokenGenerateRequest body) throws ApiException {
     Object localVarPostBody = body;
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling generateDownloadUrlPublic");
-    }
     // verify the required parameter 'accessKey' is set
     if (accessKey == null) {
       throw new ApiException(400, "Missing the required parameter 'accessKey' when calling generateDownloadUrlPublic");

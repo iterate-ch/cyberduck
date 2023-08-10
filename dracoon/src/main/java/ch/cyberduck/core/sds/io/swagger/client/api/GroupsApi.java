@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class GroupsApi {
+public class GroupsApi {
   private ApiClient apiClient;
 
   public GroupsApi() {
@@ -94,7 +94,7 @@ import java.util.Map;
   }
   /**
    * Create new user group
-   * ### Description: Create a new user group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  A new user group is created.  ### Further Information: * If a group should **NOT** expire, leave &#x60;expireAt&#x60; empty. * Group names are limited to **150** characters * **All** characters are allowed.
+   * ### Description: Create a new user group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  A new user group is created.  ### Further Information: * If a group should **NOT** expire, leave &#x60;expireAt&#x60; empty. * Group names are limited to **150** characters * Forbidden characters in group name: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;] 
    * @param body  (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param xSdsAuthToken Authentication token (optional)

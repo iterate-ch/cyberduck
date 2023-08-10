@@ -116,6 +116,10 @@ public class PathAttributesDictionary<T> {
         if(customObj != null) {
             attributes.setCustom(customObj);
         }
+        final String verdictObj = dict.stringForKey("Verdict");
+        if(verdictObj != null) {
+            attributes.setVerdict(PathAttributes.Verdict.valueOf(verdictObj));
+        }
         return attributes;
     }
 }
