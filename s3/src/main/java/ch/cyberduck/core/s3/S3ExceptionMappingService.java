@@ -73,6 +73,7 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
                             return new ConnectionTimeoutException(buffer.toString(), e);
                         case "ExpiredToken":
                         case "InvalidToken":
+                        case "TokenRefreshRequired":
                             return new ExpiredTokenException(buffer.toString(), e);
                     }
                 }

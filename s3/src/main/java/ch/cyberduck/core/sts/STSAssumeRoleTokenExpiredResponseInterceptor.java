@@ -71,6 +71,9 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                                 EntityUtils.toString(response.getEntity()));
                         failure.setResponseCode(response.getStatusLine().getStatusCode());
                         if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                            // 400 Bad Request (ExpiredToken) The provided token has expired
+                            // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
+                            // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
                             if(log.isWarnEnabled()) {
                                 log.warn(String.format("Handle failure %s", failure));
                             }
