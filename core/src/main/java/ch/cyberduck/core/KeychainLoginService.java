@@ -160,7 +160,7 @@ public class KeychainLoginService implements LoginService {
         }
         if(options.oauth) {
             prompt.warn(bookmark, LocaleFactory.localizedString("Login failed", "Credentials"), message,
-                    LocaleFactory.localizedString("Continue", "Credentials"),
+                    LocaleFactory.localizedString("Try Again", "Alert"),
                     LocaleFactory.localizedString("Cancel", "Localizable"), null);
             log.warn(String.format("Reset OAuth tokens for %s", bookmark));
             credentials.setOauth(OAuthTokens.EMPTY);
