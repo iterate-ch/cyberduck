@@ -18,15 +18,17 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.s3.S3ObjectListService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -42,14 +44,14 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
-public class OidcAuthenticationTest extends AbstractOidcTest {
+public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractOidcTest {
 
     @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         Credentials creds = host.getCredentials();
         assertNotEquals(StringUtils.EMPTY, creds.getUsername());
@@ -66,8 +68,8 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
     public void testInvalidUserName() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertThrows(LoginFailureException.class, () -> session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertThrows(LoginFailureException.class, () -> session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 
@@ -75,8 +77,8 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
     public void testInvalidPassword() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalidPassword"));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertThrows(LoginFailureException.class, () -> session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertThrows(LoginFailureException.class, () -> session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 
@@ -84,8 +86,8 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
     public void testTokenRefresh() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         String firstAccessToken = host.getCredentials().getOauth().getIdToken();
         String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
@@ -102,42 +104,45 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         session.close();
     }
 
-    /** only use with the below specified changes in the keycloak config json file and run as separate test
+    /**
+     * only use with the below specified changes in the keycloak config json file and run as separate test
      * set config keycloak-realm.json:
-     *      "access.token.lifespan": "930"
-     *      "ssoSessionMaxLifespan": 1100,
+     * "access.token.lifespan": "930"
+     * "ssoSessionMaxLifespan": 1100,
      */
     @Test
     @Ignore
-    public void testSTSCredentialsExpiredValidOAuthToken() throws BackgroundException, InterruptedException {
+    public void testSTSCredentialsExpiredOAuthToken() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
-        host.setProperty("s3.assumerole.durationseconds", "900");
-        assertEquals(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"), 900);
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         String firstAccessToken = host.getCredentials().getOauth().getAccessToken();
         String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
+        assertTrue(session.getClient().getProviderCredentials() instanceof AWSSessionCredentials);
+
+        String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        assertFalse(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).isEmpty());
         Thread.sleep(1000 * 910);
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        assertFalse(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).isEmpty());
         assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
+        assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
         assertEquals(firstAccessToken, host.getCredentials().getOauth().getAccessToken());
     }
 
     /**
-     *     This test fails if the x-minio Headers are not read because of InvalidAccessKeyId error code which has no response body.
-     *     Adjust the sleep time according to the network latency
+     * This test fails if the x-minio Headers are not read because of InvalidAccessKeyId error code which has no response body.
+     * Adjust the sleep time according to the network latency
      */
     @Test
     @Ignore
     public void testBucketRequestBeforeTokenExpiryFailsBecauseOfLatency() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         String firstAccessToken = host.getCredentials().getOauth().getIdToken();
         String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
@@ -145,7 +150,7 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         // Time of latency may vary and so the time needs to be adjusted accordingly
         Thread.sleep(28820);
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        assertFalse(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).isEmpty());
 
         assertNotEquals(firstAccessToken, host.getCredentials().getOauth().getIdToken());
         assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
