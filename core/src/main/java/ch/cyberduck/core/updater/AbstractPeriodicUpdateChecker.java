@@ -25,7 +25,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,6 +38,10 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
     private final Duration delay;
     private final Timer timer = new Timer("updater", true);
     private final Preferences preferences = PreferencesFactory.get();
+    /**
+     * Handlers receiving notification for updates
+     */
+    protected final Set<Handler> handlers = new HashSet<>();
 
     /**
      * Defaults to 24 hours
@@ -82,12 +88,17 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
     }
 
     @Override
+    public void addHandler(final Handler handler) {
+        handlers.add(handler);
+    }
+
+    @Override
     public boolean hasUpdatePrivileges() {
         return true;
     }
 
     @Override
-    public boolean isUpdateInProgress(final Object item) {
+    public boolean isUpdateInProgress() {
         return false;
     }
 
