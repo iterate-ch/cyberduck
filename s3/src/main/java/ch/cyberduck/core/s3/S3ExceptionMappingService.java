@@ -29,14 +29,41 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.util.EntityUtils;
+import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
 public class S3ExceptionMappingService extends AbstractExceptionMappingService<ServiceException> {
+
+    private static final String MINIO_ERROR_CODE = "x-minio-error-code";
+    private static final String MINIO_ERROR_DESCRIPTION = "x-minio-error-desc";
+
+    public BackgroundException map(HttpResponse response) throws IOException {
+        final S3ServiceException failure;
+        if(null == response.getEntity()) {
+            failure = new S3ServiceException(response.getStatusLine().getReasonPhrase());
+        }
+        else {
+            EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+            failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
+                    EntityUtils.toString(response.getEntity()));
+        }
+        failure.setResponseCode(response.getStatusLine().getStatusCode());
+        if(response.containsHeader(MINIO_ERROR_CODE)) {
+            failure.setErrorCode(response.getFirstHeader(MINIO_ERROR_CODE).getValue());
+        }
+        if(response.containsHeader(MINIO_ERROR_DESCRIPTION)) {
+            failure.setErrorMessage(response.getFirstHeader(MINIO_ERROR_DESCRIPTION).getValue());
+        }
+        return this.map(failure);
+    }
 
     @Override
     public BackgroundException map(final ServiceException e) {
