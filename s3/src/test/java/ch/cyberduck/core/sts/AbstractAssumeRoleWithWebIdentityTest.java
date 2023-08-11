@@ -39,16 +39,16 @@ import java.util.Collections;
 import java.util.HashSet;
 
 @Category(TestcontainerTest.class)
-public abstract class AbstractOidcTest {
+public abstract class AbstractAssumeRoleWithWebIdentityTest {
 
-    protected static final Logger log = LogManager.getLogger(AbstractOidcTest.class);
+    protected static final Logger log = LogManager.getLogger(AbstractAssumeRoleWithWebIdentityTest.class);
     protected static Profile profile = null;
     private static Network network;
     private static final DockerComposeContainer<?> compose;
 
     static {
         compose = new DockerComposeContainer<>(
-                new File(AbstractOidcTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
+                new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
                 .withPull(false)
                 .withLocalCompose(true)
                 .withOptions("--compatibility")
@@ -69,7 +69,7 @@ public abstract class AbstractOidcTest {
     private Profile readProfile() throws AccessDeniedException {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         return new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3-OIDC-Testing.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
     }
 
     @AfterClass
