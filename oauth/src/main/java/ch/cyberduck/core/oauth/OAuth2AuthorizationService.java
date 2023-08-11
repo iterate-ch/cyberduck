@@ -32,7 +32,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -169,32 +168,11 @@ public class OAuth2AuthorizationService {
             );
         }
         // Start OAuth2 flow within browser
-        final ClientParametersAuthentication clientParameters;
-        if(StringUtils.isBlank(clientid)) {
-            if(null != new HostPreferences(bookmark).getProperty("oauth.clientid")) {
-                clientParameters = new ClientParametersAuthentication(new HostPreferences(bookmark).getProperty("oauth.clientid"), StringUtils.EMPTY);
-            }
-            else {
-                final Credentials clientid = prompt.prompt(bookmark,
-                        LocaleFactory.localizedString(Profile.OAUTH_CLIENT_ID_KEY, "Credentials"),
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions(bookmark.getProtocol())
-                                .user(true).password(true)
-                                .passwordPlaceholder(LocaleFactory.localizedString(Profile.OAUTH_CLIENT_ID_KEY, "Credentials")));
-                if(clientid.isSaved()) {
-                    bookmark.setProperty("oauth.clientid", clientid.getPassword());
-                }
-                clientParameters = new ClientParametersAuthentication(clientid.getUsername(), StringUtils.EMPTY);
-            }
-        }
-        else {
-            clientParameters = new ClientParametersAuthentication(clientid, clientsecret);
-        }
         final AuthorizationCodeFlow.Builder flowBuilder = new AuthorizationCodeFlow.Builder(
                 method,
                 transport, json,
                 new GenericUrl(tokenServerUrl),
-                clientParameters,
+                new ClientParametersAuthentication(clientid, clientsecret),
                 clientid,
                 authorizationServerUrl)
                 .setScopes(scopes)
