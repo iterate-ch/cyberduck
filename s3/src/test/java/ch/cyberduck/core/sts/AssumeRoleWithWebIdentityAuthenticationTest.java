@@ -44,7 +44,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
-public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractOidcTest {
+public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeRoleWithWebIdentityTest {
 
     @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
