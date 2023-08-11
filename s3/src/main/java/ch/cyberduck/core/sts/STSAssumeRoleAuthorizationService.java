@@ -71,7 +71,7 @@ public class STSAssumeRoleAuthorizationService {
     public STSTokens authorize(final Host bookmark, final String sAMLAssertion) throws BackgroundException {
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
         final HostPreferences preferences = new HostPreferences(bookmark);
-        if(preferences.getInteger("s3.assumerole.durationseconds") != 0) {
+        if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
             request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.policy"))) {
@@ -108,7 +108,7 @@ public class STSAssumeRoleAuthorizationService {
         }
         request.setWebIdentityToken(token);
         final HostPreferences preferences = new HostPreferences(bookmark);
-        if(preferences.getInteger("s3.assumerole.durationseconds") != 0) {
+        if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
             request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.policy"))) {
