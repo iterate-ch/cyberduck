@@ -32,7 +32,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
@@ -66,61 +65,55 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                     log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
                     return false;
                 }
-                if(null != response.getEntity()) {
-                    try {
-                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                        final S3ServiceException failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
-                                EntityUtils.toString(response.getEntity()));
-                        failure.setResponseCode(response.getStatusLine().getStatusCode());
-                        final BackgroundException type = new S3ExceptionMappingService().map(failure);
-                        final OAuthTokens oAuthTokens;
-                        if(type instanceof ExpiredTokenException) {
-                            // 400 Bad Request (ExpiredToken) The provided token has expired
-                            // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
-                            // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
-                            // No refresh of OAuth tokens
-                            oAuthTokens = oauth.getTokens();
-                        }
-                        else if(type instanceof LoginFailureException) {
-                            // 401 (InvalidAccessKeyId) The AWS access key ID that you provided does not exist in our records.
-                            // 401 (InvalidSecurity) The provided security credentials are not valid.
-                            // 403 (Forbidden) Access Denied
-                            try {
-                                // Refresh OAuth tokens
-                                oAuthTokens = super.refresh(response);
-                            }
-                            catch(BackgroundException e) {
-                                log.warn(String.format("Failure %s refreshing OAuth tokens", e));
-                                return false;
-                            }
-                        }
-                        else {
-                            // Ignore other 400 failures
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Ignore failure %s", type));
-                            }
-                            return false;
-                        }
-                        if(log.isWarnEnabled()) {
-                            log.warn(String.format("Handle failure %s", failure));
-                        }
+                try {
+                    final BackgroundException type = new S3ExceptionMappingService().map(response);
+                    final OAuthTokens oAuthTokens;
+                    if(type instanceof ExpiredTokenException) {
+                        // 400 Bad Request (ExpiredToken) The provided token has expired
+                        // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
+                        // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
+                        // No refresh of OAuth tokens
+                        oAuthTokens = oauth.getTokens();
+                    }
+                    else if(type instanceof LoginFailureException) {
+                        // 401 (InvalidAccessKeyId) The AWS access key ID that you provided does not exist in our records.
+                        // 401 (InvalidSecurity) The provided security credentials are not valid.
+                        // 403 (Forbidden) Access Denied
                         try {
-                            log.warn(String.format("Attempt to refresh STS token for failure %s", response));
-                            final STSTokens stsTokens = sts.refresh(oAuthTokens);
-                            session.getClient().setProviderCredentials(new AWSSessionCredentials(stsTokens.getAccessKeyId(),
-                                    stsTokens.getSecretAccessKey(), stsTokens.getSessionToken()));
-                            // Try again
-                            return true;
+                            // Refresh OAuth tokens
+                            oAuthTokens = super.refresh(response);
                         }
                         catch(BackgroundException e) {
-                            log.warn(String.format("Failure %s refreshing STS token", e));
+                            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
                             return false;
                         }
                     }
-                    catch(IOException e) {
-                        log.warn(String.format("Failure parsing response entity from %s", response));
+                    else {
+                        // Ignore other 400 failures
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Ignore failure %s", type));
+                        }
                         return false;
                     }
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Handle failure %s", response));
+                    }
+                    try {
+                        log.warn(String.format("Attempt to refresh STS token for failure %s", response));
+                        final STSTokens stsTokens = sts.refresh(oAuthTokens);
+                        session.getClient().setProviderCredentials(new AWSSessionCredentials(stsTokens.getAccessKeyId(),
+                                stsTokens.getSecretAccessKey(), stsTokens.getSessionToken()));
+                        // Try again
+                        return true;
+                    }
+                    catch(BackgroundException e) {
+                        log.warn(String.format("Failure %s refreshing STS token", e));
+                        return false;
+                    }
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure parsing response entity from %s", response));
+                    return false;
                 }
         }
         return false;
