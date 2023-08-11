@@ -43,6 +43,6 @@ public class S3OidcProfileTest {
         assertEquals("http://localhost:9000", profile.getSTSEndpoint());
         assertFalse(profile.getOAuthScopes().isEmpty());
         assertTrue(profile.getOAuthScopes().contains("openid"));
-        assertEquals("", new HostPreferences(new Host(profile)).getProperty("s3.assumerole.rolearn"));
+        assertNull(new HostPreferences(new Host(profile)).getProperty("s3.assumerole.rolearn"));
     }
 }
