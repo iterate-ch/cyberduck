@@ -53,29 +53,23 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_BAD_REQUEST:
                     try {
-                        if(null != response.getEntity()) {
-                            EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                            final S3ServiceException failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
-                                    EntityUtils.toString(response.getEntity()));
-                            failure.setResponseCode(response.getStatusLine().getStatusCode());
-                            if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
-                                if(log.isWarnEnabled()) {
-                                    log.warn(String.format("Handle failure %s", failure));
-                                }
-                                final Credentials credentials = configurator.configure(session.getHost());
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Reconfigure client with credentials %s", credentials));
-                                }
-                                if(credentials.isTokenAuthentication()) {
-                                    session.getClient().setProviderCredentials(new AWSSessionCredentials(
-                                            credentials.getUsername(), credentials.getPassword(), credentials.getToken()));
-                                }
-                                else {
-                                    session.getClient().setProviderCredentials(new AWSCredentials(
-                                            credentials.getUsername(), credentials.getPassword()));
-                                }
-                                return true;
+                        if(new S3ExceptionMappingService().map(response) instanceof ExpiredTokenException) {
+                            if(log.isWarnEnabled()) {
+                                log.warn(String.format("Handle failure %s", response));
                             }
+                            final Credentials credentials = configurator.configure(session.getHost());
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Reconfigure client with credentials %s", credentials));
+                            }
+                            if(credentials.isTokenAuthentication()) {
+                                session.getClient().setProviderCredentials(new AWSSessionCredentials(
+                                        credentials.getUsername(), credentials.getPassword(), credentials.getToken()));
+                            }
+                            else {
+                                session.getClient().setProviderCredentials(new AWSCredentials(
+                                        credentials.getUsername(), credentials.getPassword()));
+                            }
+                            return true;
                         }
                     }
                     catch(IOException e) {

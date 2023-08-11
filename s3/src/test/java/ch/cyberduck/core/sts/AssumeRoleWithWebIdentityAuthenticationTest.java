@@ -124,9 +124,9 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
 
         String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         Thread.sleep(1000 * 910);
-        assertFalse(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
         assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
         assertEquals(firstAccessToken, host.getCredentials().getOauth().getAccessToken());
@@ -150,7 +150,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         // Time of latency may vary and so the time needs to be adjusted accordingly
         Thread.sleep(28820);
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
         assertNotEquals(firstAccessToken, host.getCredentials().getOauth().getIdToken());
         assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
