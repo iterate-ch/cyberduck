@@ -46,7 +46,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
-public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractOidcTest {
+public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRoleWithWebIdentityTest {
 
     @Test
     public void testAuthorizationFindBucket() throws BackgroundException {
