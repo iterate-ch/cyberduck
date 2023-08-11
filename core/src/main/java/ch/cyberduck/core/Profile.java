@@ -50,6 +50,9 @@ public class Profile implements Protocol {
      */
     private final Protocol parent;
 
+    public static final String OAUTH_CLIENT_ID_KEY = "OAuth Client ID";
+    public static  final String OAUTH_CLIENT_SECRET_KEY = "OAuth Client Secret";
+
     private Local disk;
     private Local icon;
 
@@ -512,7 +515,7 @@ public class Profile implements Protocol {
 
     @Override
     public String getOAuthClientId() {
-        final String v = this.value("OAuth Client ID");
+        final String v = this.value(OAUTH_CLIENT_ID_KEY);
         if(StringUtils.isBlank(v)) {
             return parent.getOAuthClientId();
         }
@@ -521,7 +524,7 @@ public class Profile implements Protocol {
 
     @Override
     public String getOAuthClientSecret() {
-        final String v = this.value("OAuth Client Secret");
+        final String v = this.value(OAUTH_CLIENT_SECRET_KEY);
         if(StringUtils.isBlank(v)) {
             return parent.getOAuthClientSecret();
         }

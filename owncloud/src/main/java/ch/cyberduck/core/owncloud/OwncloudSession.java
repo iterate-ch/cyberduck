@@ -21,6 +21,8 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
@@ -60,10 +62,10 @@ public class OwncloudSession extends DAVSession {
     }
 
     @Override
-    protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) {
+    protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = super.getConfiguration(proxy, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
-            authorizationService = new OAuth2RequestInterceptor(configuration.build(), host)
+            authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()))
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             configuration.addInterceptorLast(authorizationService);

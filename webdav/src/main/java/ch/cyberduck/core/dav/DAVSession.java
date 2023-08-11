@@ -109,7 +109,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
-    protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) {
+    protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
         return configuration;
