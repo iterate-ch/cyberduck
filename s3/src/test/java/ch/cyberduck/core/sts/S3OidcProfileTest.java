@@ -35,7 +35,7 @@ public class S3OidcProfileTest {
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3-OIDC-Testing.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         assertEquals("minio", profile.getOAuthClientId());
         assertEquals("password", profile.getOAuthClientSecret());
         assertNotNull(profile.getOAuthAuthorizationUrl());
