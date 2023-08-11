@@ -22,6 +22,8 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
@@ -50,9 +52,9 @@ public class HubicSession extends SwiftSession {
     }
 
     @Override
-    protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host)
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));

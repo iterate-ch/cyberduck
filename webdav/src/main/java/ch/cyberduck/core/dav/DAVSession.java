@@ -105,10 +105,14 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        // Always inject new pool to builder on connect because the pool is shutdown on disconnect
-        final HttpClientBuilder pool = builder.build(proxy, this, prompt);
-        pool.setRedirectStrategy(new DAVRedirectStrategy(redirect));
-        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), pool);
+        final HttpClientBuilder configuration = this.getConfiguration(proxy, prompt);
+        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
+    }
+
+    protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) throws ConnectionCanceledException {
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
+        return configuration;
     }
 
     @Override
@@ -123,44 +127,46 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final CredentialsProvider provider = new BasicCredentialsProvider();
-        provider.setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
-                new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                        preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
-        );
-        provider.setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
-                new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                        preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
-        );
-        provider.setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
-                new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
-        provider.setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
-                new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
-        provider.setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
-                new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
-        client.setCredentials(provider);
-        if(preferences.getBoolean("webdav.basic.preemptive")) {
-            switch(proxy.getType()) {
-                case DIRECT:
-                case SOCKS:
-                    // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-                    client.enablePreemptiveAuthentication(host.getHostname(),
-                            host.getPort(),
-                            host.getPort(),
-                            Charset.forName(preferences.getProperty("http.credentials.charset"))
-                    );
-                    break;
-                default:
-                    client.disablePreemptiveAuthentication();
+        if(host.getProtocol().isPasswordConfigurable()) {
+            final CredentialsProvider provider = new BasicCredentialsProvider();
+            provider.setCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
+                    new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                            preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+            );
+            provider.setCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
+                    new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                            preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+            );
+            provider.setCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
+                    new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+            provider.setCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
+                    new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+            provider.setCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
+                    new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+            client.setCredentials(provider);
+            if(preferences.getBoolean("webdav.basic.preemptive")) {
+                switch(proxy.getType()) {
+                    case DIRECT:
+                    case SOCKS:
+                        // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+                        client.enablePreemptiveAuthentication(host.getHostname(),
+                                host.getPort(),
+                                host.getPort(),
+                                Charset.forName(preferences.getProperty("http.credentials.charset"))
+                        );
+                        break;
+                    default:
+                        client.disablePreemptiveAuthentication();
+                }
             }
-        }
-        else {
-            client.disablePreemptiveAuthentication();
+            else {
+                client.disablePreemptiveAuthentication();
+            }
         }
         if(host.getCredentials().isPassed()) {
             if(log.isWarnEnabled()) {

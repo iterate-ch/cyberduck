@@ -25,6 +25,7 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +55,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     private final HostPasswordStore store = PasswordStoreFactory.get();
     private final Host host;
 
-    public OAuth2RequestInterceptor(final HttpClient client, final Host host) {
+    public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
         this(client, host,
                 Scheme.isURL(host.getProtocol().getOAuthTokenUrl()) ? host.getProtocol().getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
@@ -63,12 +64,12 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 host.getProtocol().getOAuthClientId(),
                 host.getProtocol().getOAuthClientSecret(),
                 host.getProtocol().getOAuthScopes(),
-                host.getProtocol().isOAuthPKCE());
+                host.getProtocol().isOAuthPKCE(), prompt);
     }
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
-                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
-        super(client, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
+                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
+        super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
         this.host = host;
     }
 

@@ -24,7 +24,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.HostParserException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -125,10 +127,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     }
 
     @Override
-    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException {
+    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException, ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(
-                builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host) {
+                builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, prompt) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {

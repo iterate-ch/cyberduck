@@ -156,7 +156,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     }
                 }
             }
-        }).build(), host) {
+        }).build(), host, prompt) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request instanceof HttpRequestWrapper) {

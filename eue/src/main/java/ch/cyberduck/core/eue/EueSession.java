@@ -107,7 +107,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                 request.addHeader(HttpHeaders.AUTHORIZATION,
                         String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
             }
-        }).build(), host)
+        }).build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));

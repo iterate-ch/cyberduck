@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -90,21 +92,23 @@ public class OAuth2AuthorizationService {
 
     private final HttpTransport transport;
 
-    public OAuth2AuthorizationService(final HttpClient client,
+    public OAuth2AuthorizationService(final HttpClient client, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
-                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
-        this(new ApacheHttpTransport(client),
-                tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
+                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
+        this(new ApacheHttpTransport(client), host,
+                tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
     }
 
-    public OAuth2AuthorizationService(final HttpTransport transport,
+    public OAuth2AuthorizationService(final HttpTransport transport, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
-                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
+                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
         this.transport = transport;
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
-        this.clientid = clientid;
-        this.clientsecret = clientsecret;
+        this.clientid = prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
+                Profile.OAUTH_CLIENT_ID_KEY, "Credentials"), clientid);
+        this.clientsecret = prompt(host, prompt, Profile.OAUTH_CLIENT_SECRET_KEY, LocaleFactory.localizedString(
+                Profile.OAUTH_CLIENT_SECRET_KEY, "Credentials"), clientsecret);
         this.scopes = scopes;
         this.pkce = pkce;
     }
@@ -165,11 +169,32 @@ public class OAuth2AuthorizationService {
             );
         }
         // Start OAuth2 flow within browser
+        final ClientParametersAuthentication clientParameters;
+        if(StringUtils.isBlank(clientid)) {
+            if(null != new HostPreferences(bookmark).getProperty("oauth.clientid")) {
+                clientParameters = new ClientParametersAuthentication(new HostPreferences(bookmark).getProperty("oauth.clientid"), StringUtils.EMPTY);
+            }
+            else {
+                final Credentials clientid = prompt.prompt(bookmark,
+                        LocaleFactory.localizedString(Profile.OAUTH_CLIENT_ID_KEY, "Credentials"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        new LoginOptions(bookmark.getProtocol())
+                                .user(true).password(true)
+                                .passwordPlaceholder(LocaleFactory.localizedString(Profile.OAUTH_CLIENT_ID_KEY, "Credentials")));
+                if(clientid.isSaved()) {
+                    bookmark.setProperty("oauth.clientid", clientid.getPassword());
+                }
+                clientParameters = new ClientParametersAuthentication(clientid.getUsername(), StringUtils.EMPTY);
+            }
+        }
+        else {
+            clientParameters = new ClientParametersAuthentication(clientid, clientsecret);
+        }
         final AuthorizationCodeFlow.Builder flowBuilder = new AuthorizationCodeFlow.Builder(
                 method,
                 transport, json,
                 new GenericUrl(tokenServerUrl),
-                new ClientParametersAuthentication(clientid, clientsecret),
+                clientParameters,
                 clientid,
                 authorizationServerUrl)
                 .setScopes(scopes)
@@ -355,4 +380,20 @@ public class OAuth2AuthorizationService {
         }
     }
 
+    /**
+     * Prompt for value if missing
+     */
+    private static String prompt(final Host bookmark, final LoginCallback prompt,
+                                 final String property, final String message, final String value) throws LoginCanceledException {
+        if(null == value) {
+            final Credentials input = prompt.prompt(bookmark, message,
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    new LoginOptions().icon(bookmark.getProtocol().disk()));
+            if(input.isSaved()) {
+                bookmark.setProperty(property, input.getPassword());
+            }
+            return input.getPassword();
+        }
+        return value;
+    }
 }
