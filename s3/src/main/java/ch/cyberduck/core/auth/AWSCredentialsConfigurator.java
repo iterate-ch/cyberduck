@@ -25,6 +25,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.security.ProviderCredentials;
 
+import java.util.Arrays;
+
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -49,6 +51,9 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
             for(AWSCredentialsProvider provider : providers) {
                 try {
                     final AWSCredentials c = provider.getCredentials();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Configure %s with %s", host, c));
+                    }
                     credentials.setUsername(c.getAWSAccessKeyId());
                     credentials.setPassword(c.getAWSSecretKey());
                     if(c instanceof AWSSessionCredentials) {
@@ -68,6 +73,9 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
     public CredentialsConfigurator reload() throws LoginCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Reload from %s", Arrays.toString(providers)));
+        }
         for(AWSCredentialsProvider provider : providers) {
             provider.refresh();
         }
