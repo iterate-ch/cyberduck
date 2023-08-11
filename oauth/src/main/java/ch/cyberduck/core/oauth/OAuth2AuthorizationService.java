@@ -174,7 +174,7 @@ public class OAuth2AuthorizationService {
                 method,
                 transport, json,
                 new GenericUrl(tokenServerUrl),
-                new ClientParametersAuthentication(clientid, clientsecret),
+                new ClientParametersAuthentication(clientid, StringUtils.isNotBlank(clientsecret) ? clientsecret : null),
                 clientid,
                 authorizationServerUrl)
                 .setScopes(scopes)
