@@ -210,7 +210,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
             configuration.addInterceptorLast(oauth = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, prompt)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization())));
             configuration.addInterceptorLast(sts = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key));
