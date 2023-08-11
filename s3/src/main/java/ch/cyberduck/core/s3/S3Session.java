@@ -113,7 +113,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
      */
     private OAuth2RequestInterceptor oauth;
     /**
-     * Swap OIDC Id token with temporary security credentials
+     * Swap OIDC Id token for temporary security credentials
      */
     private STSAssumeRoleCredentialsRequestInterceptor sts;
     /**
