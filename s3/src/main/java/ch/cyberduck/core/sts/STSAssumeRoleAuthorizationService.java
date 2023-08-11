@@ -98,18 +98,9 @@ public class STSAssumeRoleAuthorizationService {
 
     public STSTokens authorize(final Host bookmark, final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
-        final String token;
-        if(StringUtils.isNotBlank(oauth.getIdToken())) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Assume role with OIDC Id token for %s", bookmark));
-            }
-            token = oauth.getIdToken();
-        }
-        else {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Assume role with OAuth access token for %s", bookmark));
-            }
-            token = oauth.getAccessToken();
+        final String token = oauth.getIdToken();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Assume role with OIDC Id token for %s", bookmark));
         }
         request.setWebIdentityToken(token);
         final HostPreferences preferences = new HostPreferences(bookmark);
@@ -122,22 +113,23 @@ public class STSAssumeRoleAuthorizationService {
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolearn"))) {
             request.setRoleArn(preferences.getProperty("s3.assumerole.rolearn"));
         }
+        final String sub;
+        try {
+            sub = JWT.decode(token).getSubject();
+        }
+        catch(JWTDecodeException e) {
+            log.warn(String.format("Failure %s decoding JWT %s", e, token));
+            throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
+        }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname"))) {
             request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname"));
         }
         else {
-            try {
-                final String sub = JWT.decode(token).getSubject();
-                if(StringUtils.isNotBlank(sub)) {
-                    request.setRoleSessionName(sub);
-                }
-                else {
-                    log.warn(String.format("Missing subject in decoding JWT %s", token));
-                    request.setRoleSessionName(new AsciiRandomStringService().random());
-                }
+            if(StringUtils.isNotBlank(sub)) {
+                request.setRoleSessionName(sub);
             }
-            catch(JWTDecodeException e) {
-                log.warn(String.format("Failure decoding JWT %s", token));
+            else {
+                log.warn(String.format("Missing subject in decoding JWT %s", token));
                 request.setRoleSessionName(new AsciiRandomStringService().random());
             }
         }
