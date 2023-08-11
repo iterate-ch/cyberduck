@@ -525,7 +525,7 @@ public class Profile implements Protocol {
     @Override
     public String getOAuthClientSecret() {
         final String v = this.value(OAUTH_CLIENT_SECRET_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return parent.getOAuthClientSecret();
         }
         return v;
