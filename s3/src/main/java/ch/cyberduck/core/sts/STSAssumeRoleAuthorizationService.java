@@ -18,6 +18,9 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
@@ -49,19 +51,21 @@ public class STSAssumeRoleAuthorizationService {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleAuthorizationService.class);
 
     private final AWSSecurityTokenService service;
+    private final LoginCallback prompt;
 
-    public STSAssumeRoleAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key) {
+    public STSAssumeRoleAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         this(AWSSecurityTokenServiceClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(bookmark.getProtocol().getSTSEndpoint(), null))
                 .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
                 .withClientConfiguration(new CustomClientConfiguration(bookmark,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getProtocol().getSTSEndpoint()), key))
-                .build());
+                .build(), prompt);
     }
 
-    public STSAssumeRoleAuthorizationService(final AWSSecurityTokenService service) {
+    public STSAssumeRoleAuthorizationService(final AWSSecurityTokenService service, final LoginCallback prompt) {
         this.service = service;
+        this.prompt = prompt;
     }
 
     public STSTokens authorize(final Host bookmark, final String sAMLAssertion) throws BackgroundException {
@@ -112,6 +116,22 @@ public class STSAssumeRoleAuthorizationService {
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolearn"))) {
             request.setRoleArn(preferences.getProperty("s3.assumerole.rolearn"));
+        }
+        else {
+            if(StringUtils.EMPTY.equals(preferences.getProperty("s3.assumerole.rolearn"))) {
+                // When defined in connection profile but with empty value
+                if(log.isDebugEnabled()) {
+                    log.debug("Prompt for Role ARN");
+                }
+                final Credentials input = prompt.prompt(bookmark,
+                        LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        new LoginOptions().icon(bookmark.getProtocol().disk()));
+                if(input.isSaved()) {
+                    bookmark.setProperty("s3.assumerole.rolearn", input.getPassword());
+                }
+                request.setRoleArn(input.getPassword());
+            }
         }
         final String sub;
         try {

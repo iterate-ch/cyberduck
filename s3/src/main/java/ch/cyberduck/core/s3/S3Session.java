@@ -213,7 +213,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, prompt)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization())));
-            configuration.addInterceptorLast(sts = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key));
+            configuration.addInterceptorLast(sts = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt));
             configuration.setServiceUnavailableRetryStrategy(new STSAssumeRoleTokenExpiredResponseInterceptor(this, oauth, sts, prompt));
         }
         else {
