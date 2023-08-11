@@ -134,6 +134,9 @@ public class STSAssumeRoleAuthorizationService {
             }
         }
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Use request %s", request));
+            }
             final AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(request);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Received assume role identity result %s", result));
