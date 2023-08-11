@@ -329,14 +329,17 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             else {
                 credentials = host.getCredentials();
             }
-            if(StringUtils.isNotBlank(credentials.getToken())) {
-                client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                        new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
-                                credentials.getToken()));
+            if(credentials.isAnonymousLogin()) {
+                client.setProviderCredentials(null);
             }
             else {
-                client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                        new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
+                if(StringUtils.isNotBlank(credentials.getToken())) {
+                    client.setProviderCredentials(new AWSSessionCredentials(
+                            credentials.getUsername(), credentials.getPassword(), credentials.getToken()));
+                }
+                else {
+                    client.setProviderCredentials(new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
+                }
             }
         }
         if(host.getCredentials().isPassed()) {
