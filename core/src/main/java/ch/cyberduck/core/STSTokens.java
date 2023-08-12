@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sts;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -17,6 +17,9 @@ package ch.cyberduck.core.sts;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Temporary access credentials
+ */
 public final class STSTokens {
 
     public static final STSTokens EMPTY
@@ -26,6 +29,10 @@ public final class STSTokens {
     private final String secretAccessKey;
     private final String sessionToken;
     private final Long expiryInMilliseconds;
+
+    public STSTokens(final String sessionToken) {
+        this(null, null, sessionToken, -1L);
+    }
 
     public STSTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken, final Long expiryInMilliseconds) {
         this.accessKeyId = accessKeyId;

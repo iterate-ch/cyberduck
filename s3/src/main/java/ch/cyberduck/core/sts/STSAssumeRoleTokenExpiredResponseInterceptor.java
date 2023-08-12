@@ -17,6 +17,7 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;

@@ -21,7 +21,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3Session;
@@ -74,9 +76,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
      */
     public STSTokens save(final STSTokens tokens) throws LocalAccessDeniedException {
         host.getCredentials()
-                .withUsername(tokens.getAccessKeyId())
-                .withPassword(tokens.getSecretAccessKey())
-                .withToken(tokens.getSessionToken())
+                .withTokens(tokens)
                 .withSaved(new LoginOptions().keychain);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Save new tokens %s for %s", tokens, host));

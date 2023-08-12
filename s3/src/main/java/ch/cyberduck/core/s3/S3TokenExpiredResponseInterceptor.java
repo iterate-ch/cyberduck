@@ -23,12 +23,9 @@ import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
 
@@ -61,9 +58,10 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Reconfigure client with credentials %s", credentials));
                             }
-                            if(credentials.isTokenAuthentication()) {
+                            if(credentials.getTokens().validate()) {
                                 session.getClient().setProviderCredentials(new AWSSessionCredentials(
-                                        credentials.getUsername(), credentials.getPassword(), credentials.getToken()));
+                                        credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
+                                        credentials.getTokens().getSessionToken()));
                             }
                             else {
                                 session.getClient().setProviderCredentials(new AWSCredentials(

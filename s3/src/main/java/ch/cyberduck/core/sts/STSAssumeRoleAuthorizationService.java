@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -90,9 +91,7 @@ public class STSAssumeRoleAuthorizationService {
                     result.getCredentials().getSecretAccessKey(),
                     result.getCredentials().getSessionToken(),
                     result.getCredentials().getExpiration().getTime());
-            credentials.setUsername(tokens.getAccessKeyId());
-            credentials.setPassword(tokens.getSecretAccessKey());
-            credentials.setToken(tokens.getSessionToken());
+            credentials.setTokens(tokens);
             return tokens;
         }
         catch(AWSSecurityTokenServiceException e) {
@@ -162,14 +161,10 @@ public class STSAssumeRoleAuthorizationService {
                 log.debug(String.format("Received assume role identity result %s", result));
             }
             final Credentials credentials = bookmark.getCredentials();
-            final STSTokens tokens = new STSTokens(result.getCredentials().getAccessKeyId(),
+            return credentials.withTokens(new STSTokens(result.getCredentials().getAccessKeyId(),
                     result.getCredentials().getSecretAccessKey(),
                     result.getCredentials().getSessionToken(),
-                    result.getCredentials().getExpiration().getTime());
-            credentials.setUsername(tokens.getAccessKeyId());
-            credentials.setPassword(tokens.getSecretAccessKey());
-            credentials.setToken(tokens.getSessionToken());
-            return tokens;
+                    result.getCredentials().getExpiration().getTime())).getTokens();
         }
         catch(AWSSecurityTokenServiceException e) {
             throw new STSExceptionMappingService().map(e);
