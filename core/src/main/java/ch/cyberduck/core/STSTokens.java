@@ -17,6 +17,8 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 /**
  * Temporary access credentials
  */
@@ -63,6 +65,35 @@ public final class STSTokens {
 
     public boolean isExpired() {
         return System.currentTimeMillis() >= expiryInMilliseconds;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final STSTokens stsTokens = (STSTokens) o;
+        if(!Objects.equals(accessKeyId, stsTokens.accessKeyId)) {
+            return false;
+        }
+        if(!Objects.equals(secretAccessKey, stsTokens.secretAccessKey)) {
+            return false;
+        }
+        if(!Objects.equals(sessionToken, stsTokens.sessionToken)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = accessKeyId != null ? accessKeyId.hashCode() : 0;
+        result = 31 * result + (secretAccessKey != null ? secretAccessKey.hashCode() : 0);
+        result = 31 * result + (sessionToken != null ? sessionToken.hashCode() : 0);
+        return result;
     }
 
     @Override

@@ -17,6 +17,8 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 public final class OAuthTokens {
     public static final OAuthTokens EMPTY = new OAuthTokens(null, null, Long.MAX_VALUE, null);
 
@@ -58,6 +60,35 @@ public final class OAuthTokens {
 
     public boolean isExpired() {
         return System.currentTimeMillis() >= expiryInMilliseconds;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final OAuthTokens that = (OAuthTokens) o;
+        if(!Objects.equals(accessToken, that.accessToken)) {
+            return false;
+        }
+        if(!Objects.equals(refreshToken, that.refreshToken)) {
+            return false;
+        }
+        if(!Objects.equals(idToken, that.idToken)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = accessToken != null ? accessToken.hashCode() : 0;
+        result = 31 * result + (refreshToken != null ? refreshToken.hashCode() : 0);
+        result = 31 * result + (idToken != null ? idToken.hashCode() : 0);
+        return result;
     }
 
     @Override
