@@ -15,7 +15,6 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
-
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.test.TestcontainerTest;
@@ -31,25 +30,22 @@ import static ch.cyberduck.core.sts.STSTestSetup.*;
 
 @Category(TestcontainerTest.class)
 public abstract class AbstractAssumeRoleWithWebIdentityTest {
+    protected static final Logger log = LogManager.getLogger(AbstractAssumeRoleWithWebIdentityTest.class);
+
     protected static final int MILLIS = 1000;
 
     // lag to wait after token expiry
     protected static final int LAG = 10 * MILLIS;
 
-    protected static final Logger log = LogManager.getLogger(AbstractAssumeRoleWithWebIdentityTest.class);
     protected static int OAUTH_TTL_SECS = 30;
 
     protected static Profile profile = null;
 
-
     @ClassRule
     public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
-
 
     @Before
     public void setup() throws BackgroundException {
         profile = readProfile();
     }
-
-
 }

@@ -43,12 +43,11 @@ import com.google.gson.JsonObject;
 public class STSTestSetup {
     private static final Logger log = LogManager.getLogger(STSTestSetup.class);
 
-    public static DockerComposeContainer prepareDockerComposeContainer(String tempFile) {
+    public static DockerComposeContainer prepareDockerComposeContainer(final String keyCloakRealmTempFile) {
         log.info("Preparing docker compose container...");
-        System.out.println(tempFile);
         return new DockerComposeContainer<>(
                 new File(STSTestSetup.class.getResource("/testcontainer/docker-compose.yml").getFile()))
-                .withEnv("KEYCLOAK_REALM_JSON", tempFile)
+                .withEnv("KEYCLOAK_REALM_JSON", keyCloakRealmTempFile)
                 .withPull(false)
                 .withLocalCompose(true)
                 .withOptions("--compatibility")
@@ -56,13 +55,13 @@ public class STSTestSetup {
                 .withExposedService("minio_1", 9000, Wait.forListeningPort());
     }
 
-    public static String getKeyCloakFile(Map<String, String > replacements) {
+    public static String getKeyCloakFile(Map<String, String> replacements) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = new Gson().fromJson(new InputStreamReader(STSTestSetup.class.getResourceAsStream("/testcontainer/keycloak/keycloak-realm.json")), JsonElement.class);
         JsonObject jo = je.getAsJsonObject();
 
         for(Map.Entry<String, String> replacement : replacements.entrySet()) {
-            updateJsonValues(jo,replacement.getKey(), replacement.getValue());
+            updateJsonValues(jo, replacement.getKey(), replacement.getValue());
         }
 
         String content = gson.toJson(jo);
@@ -78,13 +77,15 @@ public class STSTestSetup {
     }
 
     private static void updateJsonValues(JsonObject jsonObj, String key, String newVal) {
-        for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+        for(Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
             JsonElement element = entry.getValue();
-            if (element.isJsonArray()) {
+            if(element.isJsonArray()) {
                 updateJsonValues(element.getAsJsonArray(), key, newVal);
-            } else if (element.isJsonObject()) {
-                updateJsonValues(element.getAsJsonObject(), key,newVal);
-            } else if (entry.getKey().equals(key)) {
+            }
+            else if(element.isJsonObject()) {
+                updateJsonValues(element.getAsJsonObject(), key, newVal);
+            }
+            else if(entry.getKey().equals(key)) {
                 jsonObj.remove(key);
                 jsonObj.addProperty(key, newVal);
                 break;
@@ -93,14 +94,14 @@ public class STSTestSetup {
     }
 
     private static void updateJsonValues(JsonArray asJsonArray, String key, String newVal) {
-        for (int index = 0; index < asJsonArray.size(); index++) {
+        for(int index = 0; index < asJsonArray.size(); index++) {
             JsonElement element = asJsonArray.get(index);
-            if (element.isJsonArray()) {
+            if(element.isJsonArray()) {
                 updateJsonValues(element.getAsJsonArray(), key, newVal);
-            } else if (element.isJsonObject()) {
-                updateJsonValues(element.getAsJsonObject(), key,newVal);
             }
-
+            else if(element.isJsonObject()) {
+                updateJsonValues(element.getAsJsonObject(), key, newVal);
+            }
         }
     }
 
@@ -113,5 +114,4 @@ public class STSTestSetup {
         return new ProfilePlistReader(factory).read(
                 STSTestSetup.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
     }
-
 }

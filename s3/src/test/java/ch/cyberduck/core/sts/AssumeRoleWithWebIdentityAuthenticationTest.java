@@ -21,7 +21,9 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
@@ -44,22 +46,22 @@ import static org.junit.Assert.*;
 public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeRoleWithWebIdentityTest {
 
     @Test
-    public void testSuccessfulLoginViaOidc() throws BackgroundException {
+    public void testSuccessfulLogin() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        Credentials creds = host.getCredentials();
-        assertNotEquals(StringUtils.EMPTY, creds.getUsername());
-        assertNotEquals(StringUtils.EMPTY, creds.getPassword());
+        final Credentials credentials = host.getCredentials();
+        assertEquals("95555b63-6798-45a4-9a65-8fb38ad49a97", credentials.getUsername());
+        assertNotEquals(StringUtils.EMPTY, credentials.getPassword());
 
-        assertNotNull(creds.getTokens().getAccessKeyId());
-        assertNotNull(creds.getTokens().getSecretAccessKey());
-        assertNotNull(creds.getTokens().getSessionToken());
-        assertNotNull(creds.getOauth().getIdToken());
-        assertNotNull(creds.getOauth().getRefreshToken());
-        assertNotEquals(Optional.of(Long.MAX_VALUE).get(), creds.getOauth().getExpiryInMilliseconds());
+        assertNotNull(credentials.getTokens().getAccessKeyId());
+        assertNotNull(credentials.getTokens().getSecretAccessKey());
+        assertNotNull(credentials.getTokens().getSessionToken());
+        assertNotNull(credentials.getOauth().getIdToken());
+        assertNotNull(credentials.getOauth().getRefreshToken());
+        assertNotEquals(Optional.of(Long.MAX_VALUE).get(), credentials.getOauth().getExpiryInMilliseconds());
         session.close();
     }
 
@@ -88,9 +90,10 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        String firstAccessToken = host.getCredentials().getOauth().getIdToken();
-        String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
-        String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
+        final OAuthTokens oauth = host.getCredentials().getOauth();
+        assertTrue(oauth.validate());
+        final STSTokens tokens = host.getCredentials().getTokens();
+        assertTrue(tokens.validate());
 
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
@@ -98,11 +101,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         Thread.sleep(MILLIS * OAUTH_TTL_SECS + LAG);
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
-        assertNotEquals(firstAccessToken, host.getCredentials().getOauth().getIdToken());
-        assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
-        assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
+        assertNotEquals(oauth, host.getCredentials().getOauth());
+        assertNotEquals(tokens, host.getCredentials().getTokens());
         session.close();
     }
-
-
 }
