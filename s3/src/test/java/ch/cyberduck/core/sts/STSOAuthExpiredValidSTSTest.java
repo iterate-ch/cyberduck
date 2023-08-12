@@ -45,11 +45,6 @@ public class STSOAuthExpiredValidSTSTest {
 
     private static final int OAUTH_TTL_SECS = 5;
 
-    /**
-     * Adjust OAuth token TTL in Keycloak:
-     * "access.token.lifespan": "930"
-     * "ssoSessionMaxLifespan": 1100,
-     */
     private static Map<String, String> overrideKeycloakDefaults() {
         Map<String, String> m = new HashMap<>();
         m.put("access.token.lifespan", Integer.toString(OAUTH_TTL_SECS));
