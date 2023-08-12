@@ -308,7 +308,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
             // Get temporary credentials from STS using Web Identity (OIDC) token
-            final STSTokens tokens = sts.refresh(oauth.authorize(host, prompt, cancel));
+            final STSTokens tokens = sts.authorize(host, oauth.authorize(host, prompt, cancel));
             client.setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(),
                     tokens.getSecretAccessKey(), tokens.getSessionToken()));
         }
