@@ -62,11 +62,19 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     }
 
     public STSTokens refresh() throws BackgroundException {
-        return this.refresh(oauth.refresh());
+        return this.tokens = this.authorize(host, oauth.refresh());
     }
 
-    public STSTokens refresh(final OAuthTokens oauth) throws BackgroundException {
-        return this.tokens = this.authorize(host, oauth);
+    public STSTokens refresh(final OAuthTokens oauthTokens) throws BackgroundException {
+        try {
+            return this.tokens = this.authorize(host, oauthTokens);
+        }
+        catch(ExpiredTokenException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Failure %s authorizing. Retry with refreshed OAuth tokens", e));
+            }
+            return this.tokens = this.authorize(host, oauth.refresh());
+        }
     }
 
     /**

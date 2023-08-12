@@ -19,7 +19,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -28,9 +27,7 @@ import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.security.AWSSessionCredentials;
@@ -59,7 +56,6 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_UNAUTHORIZED:
             case HttpStatus.SC_FORBIDDEN:
             case HttpStatus.SC_BAD_REQUEST:
                 if(executionCount > MAX_RETRIES) {
@@ -69,23 +65,24 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                 try {
                     final BackgroundException type = new S3ExceptionMappingService().map(response);
                     final OAuthTokens oAuthTokens;
-                    if(type instanceof ExpiredTokenException) {
+                    if(type instanceof LoginFailureException) {
+                        // 403 Forbidden (InvalidAccessKeyId) The provided token has expired
                         // 400 Bad Request (ExpiredToken) The provided token has expired
                         // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
                         // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
-                        // No refresh of OAuth tokens
-                        oAuthTokens = oauth.getTokens();
-                    }
-                    else if(type instanceof LoginFailureException) {
-                        // 401 (InvalidAccessKeyId) The AWS access key ID that you provided does not exist in our records.
-                        // 401 (InvalidSecurity) The provided security credentials are not valid.
-                        // 403 (Forbidden) Access Denied
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Handle failure %s", response));
+                        }
                         try {
-                            // Refresh OAuth tokens
-                            oAuthTokens = super.refresh(response);
+                            log.warn(String.format("Attempt to refresh STS token for failure %s", response));
+                            final STSTokens stsTokens = sts.refresh(oauth.getTokens());
+                            session.getClient().setProviderCredentials(new AWSSessionCredentials(stsTokens.getAccessKeyId(),
+                                    stsTokens.getSecretAccessKey(), stsTokens.getSessionToken()));
+                            // Try again
+                            return true;
                         }
                         catch(BackgroundException e) {
-                            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
+                            log.warn(String.format("Failure %s refreshing STS token", e));
                             return false;
                         }
                     }
@@ -94,21 +91,6 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Ignore failure %s", type));
                         }
-                        return false;
-                    }
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Handle failure %s", response));
-                    }
-                    try {
-                        log.warn(String.format("Attempt to refresh STS token for failure %s", response));
-                        final STSTokens stsTokens = sts.refresh(oAuthTokens);
-                        session.getClient().setProviderCredentials(new AWSSessionCredentials(stsTokens.getAccessKeyId(),
-                                stsTokens.getSecretAccessKey(), stsTokens.getSessionToken()));
-                        // Try again
-                        return true;
-                    }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Failure %s refreshing STS token", e));
                         return false;
                     }
                 }
