@@ -17,65 +17,39 @@ package ch.cyberduck.core.sts;
 
 
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.containers.wait.strategy.Wait;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
+import static ch.cyberduck.core.sts.STSTestSetup.*;
 
 @Category(TestcontainerTest.class)
 public abstract class AbstractAssumeRoleWithWebIdentityTest {
+    protected static final int MILLIS = 1000;
+
+    // lag to wait after token expiry
+    protected static final int LAG = 10 * MILLIS;
 
     protected static final Logger log = LogManager.getLogger(AbstractAssumeRoleWithWebIdentityTest.class);
+    protected static int OAUTH_TTL_SECS = 30;
+
     protected static Profile profile = null;
-    private static Network network;
-    private static final DockerComposeContainer<?> compose;
 
-    static {
-        compose = new DockerComposeContainer<>(
-                new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
-                .withPull(false)
-                .withLocalCompose(true)
-                .withOptions("--compatibility")
-                .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-                .withExposedService("minio_1", 9000, Wait.forListeningPort());
-    }
 
-    @BeforeClass
-    public static void beforeAll() {
-        compose.start();
-    }
+    @ClassRule
+    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
+
 
     @Before
     public void setup() throws BackgroundException {
         profile = readProfile();
     }
 
-    private Profile readProfile() throws AccessDeniedException {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        return new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
-    }
 
-    @AfterClass
-    public static void disconnect() {
-        if(compose == null && network != null) {
-            network.close();
-        }
-    }
 }
