@@ -29,7 +29,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
@@ -40,12 +39,7 @@ import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.RFC822DateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
@@ -107,19 +101,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final PreferencesReader preferences
             = new HostPreferences(host);
 
-    /**
-     * Handle authentication with OpenID connect retrieving token for STS
-     */
-    private OAuth2RequestInterceptor oauth;
-    /**
-     * Swap OIDC Id token for temporary security credentials
-     */
-    private STSAssumeRoleCredentialsRequestInterceptor sts;
-    /**
-     * Fetch latest temporary session token from AWS CLI configuration or instance metadata
-     */
-    private S3TokenExpiredResponseInterceptor token;
-
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
 
     private final Versioning versioning = preferences.getBoolean("s3.versioning.enable")
@@ -150,6 +131,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
+    private S3CredentialsStrategy authentication;
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
             = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
@@ -208,25 +190,39 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
-            configuration.addInterceptorLast(oauth = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
+            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
                     .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, prompt)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization())));
-            configuration.addInterceptorLast(sts = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt));
+                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+            configuration.addInterceptorLast(oauth);
+            final STSAssumeRoleCredentialsRequestInterceptor sts = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt, cancel);
+            configuration.addInterceptorLast(sts);
             configuration.setServiceUnavailableRetryStrategy(new STSAssumeRoleTokenExpiredResponseInterceptor(this, oauth, sts, prompt));
+            authentication = sts;
         }
         else {
             if(S3Session.isAwsHostname(host.getHostname())) {
+                final S3TokenExpiredResponseInterceptor interceptor;
                 // Try auto-configure
                 if(Scheme.isURL(host.getProtocol().getContext())) {
-                    configuration.setServiceUnavailableRetryStrategy(token = new S3TokenExpiredResponseInterceptor(this,
-                            new AWSSessionCredentialsRetriever.Configurator(trust, key, this, host.getProtocol().getContext())
-                    ));
+                    interceptor = new S3TokenExpiredResponseInterceptor(this,
+                            new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext())
+                    );
                 }
                 else {
-                    configuration.setServiceUnavailableRetryStrategy(token = new S3TokenExpiredResponseInterceptor(this,
-                            new S3CredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt)));
+                    interceptor = new S3TokenExpiredResponseInterceptor(this, new S3CredentialsStrategy() {
+                        @Override
+                        public Credentials get() {
+                            return new S3CredentialsConfigurator(
+                                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
+                        }
+                    });
                 }
+                configuration.setServiceUnavailableRetryStrategy(interceptor);
+                authentication = interceptor;
+            }
+            else {
+                authentication = host::getCredentials;
             }
         }
         if(preferences.getBoolean("s3.upload.expect-continue")) {
@@ -305,50 +301,27 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(host.getProtocol().isOAuthConfigurable()) {
-            // Get temporary credentials from STS using Web Identity (OIDC) token
-            final STSTokens tokens = sts.authorize(host, oauth.authorize(host, prompt, cancel));
-            client.setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(),
-                    tokens.getSecretAccessKey(), tokens.getSessionToken()));
+        final Credentials credentials = authentication.get();
+        if(credentials.isAnonymousLogin()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Connect with no credentials to %s", host));
+            }
+            client.setProviderCredentials(null);
         }
         else {
-            final Credentials credentials;
-            // Only for AWS
-            if(isAwsHostname(host.getHostname())) {
-                try {
-                    // Try auto-configure
-                    credentials = token.refresh();
-                }
-                catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException |
-                      NotfoundException | InteroperabilityException e) {
-                    log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
-                    throw new LoginFailureException(e.getDetail(false), e);
-                }
-            }
-            else {
-                credentials = host.getCredentials();
-            }
-            if(credentials.isAnonymousLogin()) {
+            if(credentials.getTokens().validate()) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Connect with no credentials to %s", host));
+                    log.debug(String.format("Connect with session credentials to %s", host));
                 }
-                client.setProviderCredentials(null);
+                client.setProviderCredentials(new AWSSessionCredentials(
+                        credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
+                        credentials.getTokens().getSessionToken()));
             }
             else {
-                if(credentials.getTokens().validate()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Connect with session credentials to %s", host));
-                    }
-                    client.setProviderCredentials(new AWSSessionCredentials(
-                            credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
-                            credentials.getTokens().getSessionToken()));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Connect with basic credentials to %s", host));
                 }
-                else {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Connect with basic credentials to %s", host));
-                    }
-                    client.setProviderCredentials(new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
-                }
+                client.setProviderCredentials(new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
             }
         }
         if(host.getCredentials().isPassed()) {
