@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.STSTokens;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -213,9 +214,11 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Set credentials from %s", assumeRoleResult));
                         }
-                        credentials.setUsername(assumeRoleResult.getCredentials().getAccessKeyId());
-                        credentials.setPassword(assumeRoleResult.getCredentials().getSecretAccessKey());
-                        credentials.setToken(assumeRoleResult.getCredentials().getSessionToken());
+                        credentials.setTokens(new STSTokens(
+                                assumeRoleResult.getCredentials().getAccessKeyId(),
+                                assumeRoleResult.getCredentials().getSecretAccessKey(),
+                                assumeRoleResult.getCredentials().getSessionToken(),
+                                assumeRoleResult.getCredentials().getExpiration().getTime()));
                     }
                     catch(AWSSecurityTokenServiceException e) {
                         log.warn(e.getErrorMessage(), e);
@@ -234,10 +237,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     if(null == cached) {
                         return credentials;
                     }
-                    return credentials
-                            .withUsername(cached.accessKey)
-                            .withPassword(cached.secretKey)
-                            .withToken(cached.sessionToken);
+                    return credentials.withTokens(new STSTokens(
+                            cached.accessKey, cached.secretKey, cached.sessionToken, Long.valueOf(cached.expiration)));
                 }
                 if(tokenCode != null) {
                     // Obtain session token
@@ -264,10 +265,11 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Set credentials from %s", sessionTokenResult));
                         }
-                        return credentials
-                                .withUsername(sessionTokenResult.getCredentials().getAccessKeyId())
-                                .withPassword(sessionTokenResult.getCredentials().getSecretAccessKey())
-                                .withToken(sessionTokenResult.getCredentials().getSessionToken());
+                        return credentials.withTokens(new STSTokens(
+                                sessionTokenResult.getCredentials().getAccessKeyId(),
+                                sessionTokenResult.getCredentials().getSecretAccessKey(),
+                                sessionTokenResult.getCredentials().getSessionToken(),
+                                sessionTokenResult.getCredentials().getExpiration().getTime()));
                     }
                     catch(AWSSecurityTokenServiceException e) {
                         log.warn(e.getErrorMessage(), e);
@@ -277,10 +279,11 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Set credentials from profile %s", basicProfile.getProfileName()));
                 }
-                return credentials
-                        .withUsername(basicProfile.getAwsAccessIdKey())
-                        .withPassword(basicProfile.getAwsSecretAccessKey())
-                        .withToken(basicProfile.getAwsSessionToken());
+                return credentials.withTokens(new STSTokens(
+                        basicProfile.getAwsAccessIdKey(),
+                        basicProfile.getAwsSecretAccessKey(),
+                        basicProfile.getAwsSessionToken(),
+                        -1L));
             }
         }
         return credentials;

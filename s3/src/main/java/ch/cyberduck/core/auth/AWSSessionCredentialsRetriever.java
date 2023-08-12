@@ -27,7 +27,10 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,7 +41,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.EnumSet;
 
 import com.google.gson.stream.JsonReader;
@@ -73,7 +76,6 @@ public class AWSSessionCredentialsRetriever {
     }
 
     public static class Configurator implements CredentialsConfigurator {
-
         private final AWSSessionCredentialsRetriever retriever;
         private final String url;
 
@@ -126,6 +128,7 @@ public class AWSSessionCredentialsRetriever {
             String key = null;
             String secret = null;
             String token = null;
+            Date expiration = null;
             while(reader.hasNext()) {
                 final String name = reader.nextName();
                 final String value = reader.nextString();
@@ -139,14 +142,18 @@ public class AWSSessionCredentialsRetriever {
                     case "Token":
                         token = value;
                         break;
+                    case "Expiration":
+                        try {
+                            expiration = new ISO8601DateParser().parse(value);
+                        }
+                        catch(InvalidDateException e) {
+                            log.warn(String.format("Failure %s parsing %s", e, value));
+                        }
+                        break;
                 }
             }
             reader.endObject();
-            final Credentials credentials = new Credentials(key, secret);
-            if(StringUtils.isNotBlank(token)) {
-                credentials.setToken(token);
-            }
-            return credentials;
+            return new Credentials().withTokens(new STSTokens(key, secret, token, expiration != null ? expiration.getTime() : -1L));
         }
         catch(MalformedJsonException e) {
             throw new InteroperabilityException("Invalid JSON response", e);

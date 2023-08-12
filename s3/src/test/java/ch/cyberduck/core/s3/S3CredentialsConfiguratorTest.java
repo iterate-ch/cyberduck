@@ -52,8 +52,8 @@ public class S3CredentialsConfiguratorTest {
         final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
                 , new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
-        assertEquals("EXAMPLEKEYID", verify.getUsername());
-        assertEquals("EXAMPLESECRETKEY", verify.getPassword());
-        assertEquals("EXAMPLETOKEN", verify.getToken());
+        assertEquals("EXAMPLEKEYID", verify.getTokens().getAccessKeyId());
+        assertEquals("EXAMPLESECRETKEY", verify.getTokens().getSecretAccessKey());
+        assertEquals("EXAMPLETOKEN", verify.getTokens().getSessionToken());
     }
 }

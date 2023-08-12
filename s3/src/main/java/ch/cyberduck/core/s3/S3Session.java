@@ -29,6 +29,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
@@ -67,12 +68,10 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleTokenExpiredResponseInterceptor;
-import ch.cyberduck.core.sts.STSTokens;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -336,12 +335,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 client.setProviderCredentials(null);
             }
             else {
-                if(StringUtils.isNotBlank(credentials.getToken())) {
+                if(credentials.getTokens().validate()) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Connect with session credentials to %s", host));
                     }
                     client.setProviderCredentials(new AWSSessionCredentials(
-                            credentials.getUsername(), credentials.getPassword(), credentials.getToken()));
+                            credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
+                            credentials.getTokens().getSessionToken()));
                 }
                 else {
                     if(log.isDebugEnabled()) {
