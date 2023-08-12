@@ -4,32 +4,31 @@ services:
 
   keycloak:
     hostname: keycloak
-    build: keycloak
+    image: quay.io/keycloak/keycloak:21.1.1
     ports:
       - "8080:8080"
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      PROXY_ADDRESS_FORWARDING: "true"
       KEYCLOAK_LOGLEVEL: DEBUG
       DB_VENDOR: h2
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
+
     volumes:
-      - ./keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
+      - ${KEYCLOAK_REALM_JSON:-./keycloak/keycloak-realm.json}:/opt/keycloak/data/import/keycloak-realm.json
     command: start-dev --import-realm --db=dev-mem --health-enabled=true
     networks:
       - testContainerNetwork
-
   healthcheck:
     hostname: healthcheck
     image: busybox
     depends_on:
       keycloak:
         condition: service_started
-    command:  sh -c "until wget -q -O- http://keycloak:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
+    command: sh -c "until wget -q -O- http://keycloak:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
     healthcheck:
-      test: ["CMD-SHELL", "exit 0"]
+      test: [ "CMD-SHELL", "exit 0" ]
       interval: 1s
       timeout: 1s
       retries: 5
