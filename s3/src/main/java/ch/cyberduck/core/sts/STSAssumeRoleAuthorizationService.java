@@ -161,10 +161,12 @@ public class STSAssumeRoleAuthorizationService {
                 log.debug(String.format("Received assume role identity result %s", result));
             }
             final Credentials credentials = bookmark.getCredentials();
-            return credentials.withTokens(new STSTokens(result.getCredentials().getAccessKeyId(),
-                    result.getCredentials().getSecretAccessKey(),
-                    result.getCredentials().getSessionToken(),
-                    result.getCredentials().getExpiration().getTime())).getTokens();
+            return credentials
+                    .withUsername(sub)
+                    .withTokens(new STSTokens(result.getCredentials().getAccessKeyId(),
+                            result.getCredentials().getSecretAccessKey(),
+                            result.getCredentials().getSessionToken(),
+                            result.getCredentials().getExpiration().getTime())).getTokens();
         }
         catch(AWSSecurityTokenServiceException e) {
             throw new STSExceptionMappingService().map(e);
