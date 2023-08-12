@@ -60,10 +60,10 @@ public final class STSTokens {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("OAuthTokens{");
-        sb.append("accessKey='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(accessKeyId)))).append('\'');
+        final StringBuilder sb = new StringBuilder("STSTokens{");
+        sb.append("accessKeyId='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(accessKeyId)))).append('\'');
         sb.append(", secretAccessKey='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(secretAccessKey)))).append('\'');
-        sb.append(", sessionToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(secretAccessKey)))).append('\'');
+        sb.append(", sessionToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(sessionToken)))).append('\'');
         sb.append(", expiryInMilliseconds=").append(expiryInMilliseconds);
         sb.append('}');
         return sb.toString();
