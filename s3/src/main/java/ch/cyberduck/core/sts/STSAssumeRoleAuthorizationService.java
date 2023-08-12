@@ -96,7 +96,7 @@ public class STSAssumeRoleAuthorizationService {
             return tokens;
         }
         catch(AWSSecurityTokenServiceException e) {
-            throw new LoginFailureException(e.getErrorMessage(), e);
+            throw new STSExceptionMappingService().map(e);
         }
     }
 
@@ -172,7 +172,7 @@ public class STSAssumeRoleAuthorizationService {
             return tokens;
         }
         catch(AWSSecurityTokenServiceException e) {
-            throw new LoginFailureException(e.getErrorMessage(), e);
+            throw new STSExceptionMappingService().map(e);
         }
     }
 }
