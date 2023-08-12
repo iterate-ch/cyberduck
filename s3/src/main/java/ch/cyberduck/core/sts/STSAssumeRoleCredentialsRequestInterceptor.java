@@ -77,19 +77,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         }
     }
 
-    /**
-     * Save updated tokens in keychain
-     *
-     * @return Same tokens saved
-     */
     public STSTokens save(final STSTokens tokens) throws LocalAccessDeniedException {
-        host.getCredentials()
-                .withTokens(tokens)
-                .withSaved(new LoginOptions().keychain);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Save new tokens %s for %s", tokens, host));
-        }
-        store.save(host);
         return tokens;
     }
 
