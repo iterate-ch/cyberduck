@@ -20,9 +20,15 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
+import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -31,14 +37,15 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.DockerComposeContainer;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
 import static ch.cyberduck.core.sts.AbstractAssumeRoleWithWebIdentityTest.LAG;
 import static ch.cyberduck.core.sts.AbstractAssumeRoleWithWebIdentityTest.MILLIS;
 import static ch.cyberduck.core.sts.STSTestSetup.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
 
 @Category(TestcontainerTest.class)
 public class STSOAuthExpiredValidSTSTest {
@@ -52,22 +59,35 @@ public class STSOAuthExpiredValidSTSTest {
     }
 
     @ClassRule
-    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile(overrideKeycloakDefaults()));
+    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(
+            getKeyCloakFile(overrideKeycloakDefaults())
+    );
 
     @Test
     public void testOAuthExpiry() throws BackgroundException, InterruptedException {
-        // TODO STS refresh in this case of early OAuth expiry...
         final Profile profile = readProfile();
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        assertFalse(host.getCredentials().getOauth().isExpired());
+        final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+
+        final OAuthTokens oauth = host.getCredentials().getOauth();
+        assertTrue(oauth.validate());
+        assertFalse(oauth.isExpired());
+        final STSTokens tokens = host.getCredentials().getTokens();
+        assertTrue(tokens.validate());
+
         Thread.sleep(MILLIS * OAUTH_TTL_SECS + LAG);
+
         assertTrue(host.getCredentials().getOauth().isExpired());
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+
+        assertNotEquals(oauth, host.getCredentials().getOauth());
+        assertNotEquals(tokens, host.getCredentials().getTokens());
+
         session.close();
     }
-
-
 }

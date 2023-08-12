@@ -20,11 +20,14 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Session;
@@ -40,8 +43,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.amazonaws.auth.AWSSessionCredentials;
-
 import static ch.cyberduck.core.sts.AbstractAssumeRoleWithWebIdentityTest.LAG;
 import static ch.cyberduck.core.sts.AbstractAssumeRoleWithWebIdentityTest.MILLIS;
 import static ch.cyberduck.core.sts.STSTestSetup.*;
@@ -49,7 +50,6 @@ import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class STSCredentialsExpiredValidOAuthTokenTest {
-
 
     /**
      * Adjust OAuth token TTL in Keycloak:
@@ -68,9 +68,8 @@ public class STSCredentialsExpiredValidOAuthTokenTest {
             getKeyCloakFile(overrideKeycloakDefaults())
     );
 
-
     @Test
-    @Ignore("Takes 15 minutes, skip by default") // TODO does this test run through?
+    @Ignore("Takes 15 minutes, skip by default")
     public void testSTSCredentialsExpiredValidOAuthToken() throws BackgroundException, InterruptedException {
         final Profile profile = readProfile();
         // 900 secs = 15 min is mininmum value: https://min.io/docs/minio/linux/developers/security-token-service/AssumeRoleWithWebIdentity.html
@@ -80,24 +79,21 @@ public class STSCredentialsExpiredValidOAuthTokenTest {
 
         assertEquals(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"), assumeRoleDurationSeconds);
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        String firstAccessToken = host.getCredentials().getOauth().getAccessToken();
-        String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
-        assertTrue(session.getClient().getProviderCredentials() instanceof AWSSessionCredentials);
+        final OAuthTokens oauth = host.getCredentials().getOauth();
+        assertTrue(oauth.validate());
+        final STSTokens tokens = host.getCredentials().getTokens();
+        assertTrue(tokens.validate());
 
-        String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
         Thread.sleep(MILLIS * assumeRoleDurationSeconds + LAG);
 
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
-        assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
-        assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
-        assertEquals(firstAccessToken, host.getCredentials().getOauth().getAccessToken());
+        assertEquals(oauth, host.getCredentials().getOauth());
+        assertNotEquals(tokens, host.getCredentials().getTokens());
     }
-
-
 }
