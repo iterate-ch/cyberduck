@@ -34,9 +34,15 @@ import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -54,7 +60,7 @@ import java.util.EnumSet;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.MalformedJsonException;
 
-public class AWSSessionCredentialsRetriever {
+public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
     private static final Logger log = LogManager.getLogger(AWSSessionCredentialsRetriever.class);
 
     private final TranscriptListener transcript;
@@ -101,6 +107,7 @@ public class AWSSessionCredentialsRetriever {
         }
     }
 
+    @Override
     public Credentials get() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure credentials from %s", url));
@@ -115,6 +122,11 @@ public class AWSSessionCredentialsRetriever {
             final Credentials credentials = this.parse(in);
             connection.close();
             return credentials;
+        }
+        catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException |
+              InteroperabilityException e) {
+            log.warn(String.format("Failure %s to retrieve session credentials", e));
+            throw new LoginFailureException(e.getDetail(false), e);
         }
         finally {
             connection.removeListener(transcript);

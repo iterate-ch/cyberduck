@@ -16,7 +16,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
@@ -31,17 +30,25 @@ import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 
-public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
+/**
+ * Fetch latest temporary session token from AWS CLI configuration or instance metadata
+ */
+public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements S3CredentialsStrategy {
     private static final Logger log = LogManager.getLogger(S3TokenExpiredResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
     private final S3Session session;
-    private final CredentialsConfigurator configurator;
+    private final S3CredentialsStrategy configurator;
 
-    public S3TokenExpiredResponseInterceptor(final S3Session session, final CredentialsConfigurator configurator) {
+    public S3TokenExpiredResponseInterceptor(final S3Session session, final S3CredentialsStrategy configurator) {
         this.session = session;
         this.configurator = configurator;
+    }
+
+    @Override
+    public Credentials get() throws BackgroundException {
+        return configurator.get();
     }
 
     @Override
@@ -54,7 +61,7 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                             if(log.isWarnEnabled()) {
                                 log.warn(String.format("Handle failure %s", response));
                             }
-                            final Credentials credentials = configurator.configure(session.getHost());
+                            final Credentials credentials = configurator.get();
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Reconfigure client with credentials %s", credentials));
                             }
@@ -73,6 +80,9 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                     catch(IOException e) {
                         log.warn(String.format("Failure parsing response entity from %s", response));
                     }
+                    catch(BackgroundException e) {
+                        log.warn(String.format("Failure %s retrieving credentials", e));
+                    }
             }
         }
         else {
@@ -81,9 +91,5 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
             }
         }
         return false;
-    }
-
-    public Credentials refresh() throws BackgroundException {
-        return configurator.reload().configure(session.getHost());
     }
 }

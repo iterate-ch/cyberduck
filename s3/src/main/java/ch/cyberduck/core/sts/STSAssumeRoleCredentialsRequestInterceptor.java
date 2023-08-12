@@ -15,10 +15,10 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.STSTokens;
@@ -26,9 +26,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -40,7 +42,10 @@ import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 
-public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAuthorizationService implements HttpRequestInterceptor {
+/**
+ * Swap OIDC Id token for temporary security credentials
+ */
+public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAuthorizationService implements S3CredentialsStrategy, HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleCredentialsRequestInterceptor.class);
 
     /**
@@ -49,16 +54,24 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     private STSTokens tokens = STSTokens.EMPTY;
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
+    /**
+     * Handle authentication with OpenID connect retrieving token for STS
+     */
     private final OAuth2RequestInterceptor oauth;
     private final S3Session session;
     private final Host host;
+    private final LoginCallback prompt;
+    private final CancelCallback cancel;
 
     public STSAssumeRoleCredentialsRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
-                                                      final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+                                                      final X509TrustManager trust, final X509KeyManager key,
+                                                      final LoginCallback prompt, final CancelCallback cancel) {
         super(session.getHost(), trust, key, prompt);
         this.oauth = oauth;
         this.session = session;
         this.host = session.getHost();
+        this.prompt = prompt;
+        this.cancel = cancel;
     }
 
     public STSTokens refresh() throws BackgroundException {
@@ -97,5 +110,11 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
                 // Follow-up error 401 handled in error interceptor
             }
         }
+    }
+
+    @Override
+    public Credentials get() throws BackgroundException {
+        // Get temporary credentials from STS using Web Identity (OIDC) token
+        return host.getCredentials().withTokens(this.authorize(host, oauth.authorize(host, prompt, cancel)));
     }
 }
