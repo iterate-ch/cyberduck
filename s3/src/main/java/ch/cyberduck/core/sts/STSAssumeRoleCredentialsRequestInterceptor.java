@@ -19,12 +19,10 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.s3.S3Session;
@@ -75,12 +73,8 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     }
 
     public STSTokens refresh() throws BackgroundException {
-        return this.tokens = this.authorize(host, oauth.refresh());
-    }
-
-    public STSTokens refresh(final OAuthTokens oauthTokens) throws BackgroundException {
         try {
-            return this.tokens = this.authorize(host, oauthTokens);
+            return this.tokens = this.authorize(host, oauth.authorize(host, prompt, cancel));
         }
         catch(ExpiredTokenException e) {
             if(log.isWarnEnabled()) {
@@ -90,15 +84,11 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         }
     }
 
-    public STSTokens save(final STSTokens tokens) throws LocalAccessDeniedException {
-        return tokens;
-    }
-
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(tokens.isExpired()) {
             try {
-                this.save(this.refresh(oauth.getTokens()));
+                this.refresh();
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Authorizing service request with STS tokens %s", tokens));
                 }
@@ -115,6 +105,6 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     @Override
     public Credentials get() throws BackgroundException {
         // Get temporary credentials from STS using Web Identity (OIDC) token
-        return host.getCredentials().withTokens(this.authorize(host, oauth.authorize(host, prompt, cancel)));
+        return host.getCredentials().withTokens(this.refresh());
     }
 }
