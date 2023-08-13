@@ -161,9 +161,10 @@ static NSTableColumn *localSelectionColumn;
 {
 	NSPoint where = [self convertPoint:[event locationInWindow] fromView:nil];
 	NSInteger row = [self rowAtPoint:where];
+	NSObject *item = [self itemAtRow:row];
 	if(row >= 0) {
-		if([[self delegate] respondsToSelector:@selector(tableView:shouldSelectRow:)]) {
-			if([[self delegate] tableView:self shouldSelectRow:row])
+		if([[self delegate] respondsToSelector:@selector(outlineView:shouldSelectItem:)]) {
+			if([[self delegate] outlineView:self shouldSelectItem:item])
 				[self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:[self isRowSelected:row]];
 		} 
 		else {
