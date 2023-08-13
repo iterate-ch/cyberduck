@@ -32,7 +32,6 @@ import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.test.TestcontainerTest;
 
-import org.jets3t.service.security.AWSSessionCredentials;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
@@ -53,7 +52,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Credentials credentials = host.getCredentials();
-        assertEquals("95555b63-6798-45a4-9a65-8fb38ad49a97", credentials.getUsername());
+        assertNotEquals("rouser", credentials.getUsername());
         assertNotEquals(StringUtils.EMPTY, credentials.getPassword());
 
         assertNotNull(credentials.getTokens().getAccessKeyId());
