@@ -40,7 +40,6 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
     private static final int MAX_RETRIES = 1;
 
     private final S3Session session;
-    private final OAuth2RequestInterceptor oauth;
     private final STSAssumeRoleCredentialsRequestInterceptor sts;
 
     public STSAssumeRoleTokenExpiredResponseInterceptor(final S3Session session,
@@ -49,7 +48,6 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                                                         final LoginCallback prompt) {
         super(session.getHost(), oauth, prompt);
         this.session = session;
-        this.oauth = oauth;
         this.sts = sts;
     }
 
@@ -75,7 +73,7 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                         }
                         try {
                             log.warn(String.format("Attempt to refresh STS token for failure %s", response));
-                            final STSTokens stsTokens = sts.refresh(oauth.getTokens());
+                            final STSTokens stsTokens = sts.refresh();
                             session.getClient().setProviderCredentials(new AWSSessionCredentials(stsTokens.getAccessKeyId(),
                                     stsTokens.getSecretAccessKey(), stsTokens.getSessionToken()));
                             // Try again
