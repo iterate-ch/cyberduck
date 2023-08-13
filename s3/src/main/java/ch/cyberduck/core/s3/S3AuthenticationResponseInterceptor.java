@@ -17,7 +17,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ExpiredTokenException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 
 import org.apache.http.HttpResponse;
@@ -31,37 +31,42 @@ import org.jets3t.service.security.AWSSessionCredentials;
 import java.io.IOException;
 
 /**
- * Fetch latest temporary session token from AWS CLI configuration or instance metadata
+ * Update credentials on authentication failure
  */
-public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements S3CredentialsStrategy {
-    private static final Logger log = LogManager.getLogger(S3TokenExpiredResponseInterceptor.class);
+public class S3AuthenticationResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements S3CredentialsStrategy {
+    private static final Logger log = LogManager.getLogger(S3AuthenticationResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
     private final S3Session session;
-    private final S3CredentialsStrategy configurator;
+    private final S3CredentialsStrategy authenticator;
 
-    public S3TokenExpiredResponseInterceptor(final S3Session session, final S3CredentialsStrategy configurator) {
+    public S3AuthenticationResponseInterceptor(final S3Session session, final S3CredentialsStrategy authenticator) {
         this.session = session;
-        this.configurator = configurator;
+        this.authenticator = authenticator;
     }
 
     @Override
     public Credentials get() throws BackgroundException {
-        return configurator.get();
+        return authenticator.get();
     }
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         if(executionCount <= MAX_RETRIES) {
             switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_FORBIDDEN:
                 case HttpStatus.SC_BAD_REQUEST:
                     try {
-                        if(new S3ExceptionMappingService().map(response) instanceof ExpiredTokenException) {
+                        if(new S3ExceptionMappingService().map(response) instanceof LoginFailureException) {
+                            // 403 Forbidden (InvalidAccessKeyId) The provided token has expired
+                            // 400 Bad Request (ExpiredToken) The provided token has expired
+                            // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
+                            // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
                             if(log.isWarnEnabled()) {
                                 log.warn(String.format("Handle failure %s", response));
                             }
-                            final Credentials credentials = configurator.get();
+                            final Credentials credentials = authenticator.get();
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Reconfigure client with credentials %s", credentials));
                             }

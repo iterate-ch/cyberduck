@@ -61,7 +61,6 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
-import ch.cyberduck.core.sts.STSAssumeRoleTokenExpiredResponseInterceptor;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -197,20 +196,22 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.addInterceptorLast(oauth);
             final STSAssumeRoleCredentialsRequestInterceptor sts = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt, cancel);
             configuration.addInterceptorLast(sts);
-            configuration.setServiceUnavailableRetryStrategy(new STSAssumeRoleTokenExpiredResponseInterceptor(this, oauth, sts, prompt));
+            configuration.setServiceUnavailableRetryStrategy(new S3AuthenticationResponseInterceptor(this, sts));
             authentication = sts;
         }
         else {
             if(S3Session.isAwsHostname(host.getHostname())) {
-                final S3TokenExpiredResponseInterceptor interceptor;
+                final S3AuthenticationResponseInterceptor interceptor;
                 // Try auto-configure
                 if(Scheme.isURL(host.getProtocol().getContext())) {
-                    interceptor = new S3TokenExpiredResponseInterceptor(this,
+                    // Fetch temporary session token from instance metadata
+                    interceptor = new S3AuthenticationResponseInterceptor(this,
                             new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext())
                     );
                 }
                 else {
-                    interceptor = new S3TokenExpiredResponseInterceptor(this, new S3CredentialsStrategy() {
+                    // Fetch temporary session token from AWS CLI configuration
+                    interceptor = new S3AuthenticationResponseInterceptor(this, new S3CredentialsStrategy() {
                         @Override
                         public Credentials get() {
                             return new S3CredentialsConfigurator(
