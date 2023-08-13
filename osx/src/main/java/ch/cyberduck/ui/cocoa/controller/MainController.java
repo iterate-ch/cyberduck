@@ -906,11 +906,6 @@ public class MainController extends BundleController implements NSApplication.De
         NSWindow.setAllowsAutomaticWindowTabbing(true);
         // Load main menu
         this.loadBundle();
-        // Open default windows
-        if(preferences.getBoolean("browser.open.untitled")) {
-            final BrowserController c = newDocument();
-            c.window().makeKeyAndOrderFront(null);
-        }
         if(preferences.getBoolean("queue.window.open.default")) {
             TransferController c = TransferControllerFactory.get();
             c.window().makeKeyAndOrderFront(null);
@@ -932,9 +927,22 @@ public class MainController extends BundleController implements NSApplication.De
                         final BrowserController browser = newDocument(true, host.getUuid());
                         browser.mount(host);
                     }
+                    if(sessions.isEmpty()) {
+                        if(preferences.getBoolean("browser.open.untitled")) {
+                            final BrowserController c = newDocument();
+                            c.window().makeKeyAndOrderFront(null);
+                        }
+                    }
                     sessions.clear();
                 }
             });
+        }
+        else {
+            // Open default windows
+            if(preferences.getBoolean("browser.open.untitled")) {
+                final BrowserController c = newDocument();
+                c.window().makeKeyAndOrderFront(null);
+            }
         }
         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
         // Load all bookmarks in background
