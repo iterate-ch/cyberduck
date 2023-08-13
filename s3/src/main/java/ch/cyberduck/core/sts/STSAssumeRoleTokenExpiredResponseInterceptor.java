@@ -16,7 +16,6 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -61,9 +60,7 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                     return false;
                 }
                 try {
-                    final BackgroundException type = new S3ExceptionMappingService().map(response);
-                    final OAuthTokens oAuthTokens;
-                    if(type instanceof LoginFailureException) {
+                    if(new S3ExceptionMappingService().map(response) instanceof LoginFailureException) {
                         // 403 Forbidden (InvalidAccessKeyId) The provided token has expired
                         // 400 Bad Request (ExpiredToken) The provided token has expired
                         // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
@@ -83,13 +80,6 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                             log.warn(String.format("Failure %s refreshing STS token", e));
                             return false;
                         }
-                    }
-                    else {
-                        // Ignore other 400 failures
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Ignore failure %s", type));
-                        }
-                        return false;
                     }
                 }
                 catch(IOException e) {
