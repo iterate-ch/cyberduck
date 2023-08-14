@@ -16,18 +16,24 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostFilter;
 
 public final class NSDictionaryHostFilter implements HostFilter {
-    private final NSDictionary item;
+
+    private final NSObject uuid;
 
     public NSDictionaryHostFilter(final NSDictionary item) {
-        this.item = item;
+        this(item.objectForKey("UUID"));
+    }
+
+    public NSDictionaryHostFilter(final NSObject uuid) {
+        this.uuid = uuid;
     }
 
     @Override
     public boolean accept(final Host host) {
-        return host.getUuid().equals(item.objectForKey("UUID").toString());
+        return host.getUuid().equals(uuid.toString());
     }
 }

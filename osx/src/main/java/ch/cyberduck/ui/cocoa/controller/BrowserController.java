@@ -1732,6 +1732,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         bookmarkTable.setAllowsColumnResizing(false);
         bookmarkTable.setAllowsColumnSelection(false);
         bookmarkTable.setAllowsColumnReordering(false);
+        bookmarkTable.setAutosaveName("Bookmarks");
         bookmarkTable.setAutosaveExpandedItems(true);
         bookmarkTable.sizeToFit();
     }

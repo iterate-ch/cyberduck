@@ -52,6 +52,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.browser.BookmarkColumn;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
+import ch.cyberduck.ui.cocoa.controller.NSDictionaryHostFilter;
 import ch.cyberduck.ui.cocoa.controller.TransferControllerFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -119,6 +120,31 @@ public class BookmarkTableDataSource extends OutlineDataSource {
      */
     public AbstractHostCollection getSource() {
         return source;
+    }
+
+    /**
+     * Invoked by outlineView to return the item for the archived object.
+     */
+    public NSObject outlineView_itemForPersistentObject(NSOutlineView view, NSObject object) {
+        final NSString uuid = Rococoa.cast(object, NSString.class);
+        final NSDictionaryHostFilter filter = new NSDictionaryHostFilter(uuid);
+        final Host selected = source.stream().filter(filter::accept).findFirst().orElse(null);
+        if(null == selected) {
+            // Group row
+            return uuid;
+        }
+        return selected.serialize(new PlistSerializer());
+    }
+
+    /**
+     * Invoked by outlineView to return an archived object for item.
+     */
+    public NSObject outlineView_persistentObjectForItem(NSOutlineView view, NSObject item) {
+        if(item.isKindOfClass(NSString.CLASS)) {
+            return item;
+        }
+        final NSDictionary dict = Rococoa.cast(item, NSDictionary.class);
+        return dict.objectForKey("UUID");
     }
 
     @Override
