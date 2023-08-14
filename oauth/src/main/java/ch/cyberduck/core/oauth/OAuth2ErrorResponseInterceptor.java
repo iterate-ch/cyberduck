@@ -75,7 +75,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
             log.warn(String.format("Attempt to refresh OAuth tokens for failure %s", response));
             tokens = service.refresh();
         }
-        catch(InteroperabilityException | LoginFailureException e) {
+        catch(LoginFailureException e) {
             log.warn(String.format("Failure %s refreshing OAuth tokens", e));
             tokens = service.authorize(bookmark, prompt, new DisabledCancelCallback());
         }

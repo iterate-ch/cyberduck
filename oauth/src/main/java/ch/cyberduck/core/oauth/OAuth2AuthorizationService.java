@@ -27,7 +27,6 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -123,7 +122,7 @@ public class OAuth2AuthorizationService {
                 try {
                     return credentials.withOauth(this.refresh(saved)).withSaved(new LoginOptions().keychain).getOauth();
                 }
-                catch(LoginFailureException | InteroperabilityException e) {
+                catch(LoginFailureException e) {
                     log.warn(String.format("Failure refreshing tokens from %s for %s", saved, bookmark));
                     // Continue with new OAuth 2 flow
                 }
