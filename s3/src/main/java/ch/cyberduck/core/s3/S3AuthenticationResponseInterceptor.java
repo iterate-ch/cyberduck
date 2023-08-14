@@ -58,13 +58,14 @@ public class S3AuthenticationResponseInterceptor extends DisabledServiceUnavaila
                 case HttpStatus.SC_FORBIDDEN:
                 case HttpStatus.SC_BAD_REQUEST:
                     try {
-                        if(new S3ExceptionMappingService().map(response) instanceof LoginFailureException) {
+                        final BackgroundException failure = new S3ExceptionMappingService().map(response);
+                        if(failure instanceof LoginFailureException) {
                             // 403 Forbidden (InvalidAccessKeyId) The provided token has expired
                             // 400 Bad Request (ExpiredToken) The provided token has expired
                             // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
                             // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
                             if(log.isWarnEnabled()) {
-                                log.warn(String.format("Handle failure %s", response));
+                                log.warn(String.format("Handle failure %s from response %s", failure, response));
                             }
                             final Credentials credentials = authenticator.get();
                             if(log.isDebugEnabled()) {
