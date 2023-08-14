@@ -103,4 +103,41 @@ public class ProfileTest {
         assertTrue(profile.getProperties().containsKey("empty.prop"));
         assertEquals(StringUtils.EMPTY, profile.getProperties().get("empty.prop"));
     }
+
+    @Test
+    public void testSubstitution() {
+        final Profile profile = new Profile(new TestProtocol(), new Deserializer<String>() {
+            @Override
+            public String stringForKey(final String key) {
+                return "${application.identifier}";
+            }
+
+            @Override
+            public String objectForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public <L> List<L> listForKey(final String key) {
+                return (List<L>) Collections.singletonList("prop=${application.identifier}");
+            }
+
+            @Override
+            public Map<String, String> mapForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public boolean booleanForKey(final String key) {
+                return false;
+            }
+
+            @Override
+            public List<String> keys() {
+                return null;
+            }
+        });
+        assertEquals("io.cyberduck", profile.getProvider());
+        assertEquals("io.cyberduck", profile.getProperties().get("prop"));
+    }
 }
