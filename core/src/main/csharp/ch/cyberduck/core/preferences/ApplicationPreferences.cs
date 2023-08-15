@@ -126,7 +126,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
         public void Load()
         {
-            if (userConfig.Exists)
+            if (!userConfig.Exists)
             {
                 try
                 {
