@@ -100,16 +100,19 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final OAuthTokens oauth = host.getCredentials().getOauth();
+        final Credentials credentials = host.getCredentials();
+        final OAuthTokens oauth = credentials.getOauth();
         assertTrue(oauth.validate());
-        final STSTokens tokens = host.getCredentials().getTokens();
+        final STSTokens tokens = credentials.getTokens();
         assertTrue(tokens.validate());
-        host.getCredentials().reset();
 
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
-        Thread.sleep(MILLIS * OAUTH_TTL_SECS + LAG);
+        Thread.sleep(MILLIS * OAUTH_TTL_SECS);
+        assertTrue(credentials.getOauth().isExpired());
+        assertTrue(credentials.getTokens().isExpired());
+
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
         session.close();
