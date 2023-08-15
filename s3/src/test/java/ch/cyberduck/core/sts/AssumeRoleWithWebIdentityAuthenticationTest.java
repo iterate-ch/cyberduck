@@ -24,12 +24,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ExpiredTokenException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
@@ -37,12 +34,14 @@ import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.security.AWSSessionCredentials;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -54,6 +53,14 @@ import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeRoleWithWebIdentityTest {
+
+    @ClassRule
+    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
+
+    @Before
+    public void setup() throws BackgroundException {
+        profile = readProfile();
+    }
 
     @Test
     public void testSuccessfulLogin() throws BackgroundException {
