@@ -12,7 +12,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -113,32 +113,6 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testConnectSessionTokenFromService() throws Exception {
-        final S3Protocol protocol = new S3Protocol() {
-            @Override
-            public boolean isTokenConfigurable() {
-                return true;
-            }
-        };
-        final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials(
-                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledProxyFinder().find(host.getHostname()), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
-        session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-    }
-
-    @Test
     public void testConnectDefaultPath() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
@@ -157,7 +131,7 @@ public class S3SessionTest extends AbstractS3Test {
     public void testCustomHostnameUnknown() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, "testu.cyberduck.ch", new Credentials(
                 PROPERTIES.get("s3.key"), "s"
         ));
@@ -254,12 +228,12 @@ public class S3SessionTest extends AbstractS3Test {
                 super.verify(hostname, certs, cipher);
             }
         },
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener()
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()
         );
         c.connect(session, new DisabledCancelCallback());
         assertTrue(verified.get());

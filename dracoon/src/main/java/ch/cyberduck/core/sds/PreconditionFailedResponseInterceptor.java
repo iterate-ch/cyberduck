@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,24 +29,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseInterceptor {
-
     private static final Logger log = LogManager.getLogger(PreconditionFailedResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
-    private final Host bookmark;
     private final OAuth2RequestInterceptor service;
-    private final LoginCallback prompt;
     private final ServiceUnavailableRetryStrategy next;
 
     public PreconditionFailedResponseInterceptor(final Host bookmark,
                                                  final OAuth2RequestInterceptor service,
                                                  final LoginCallback prompt,
                                                  final ServiceUnavailableRetryStrategy next) {
-        super(bookmark, service, prompt);
-        this.bookmark = bookmark;
+        super(bookmark, service);
         this.service = service;
-        this.prompt = prompt;
         this.next = next;
     }
 
@@ -58,7 +52,7 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
                 if(executionCount <= MAX_RETRIES) {
                     try {
                         log.warn(String.format("Invalidate OAuth tokens due to failed precondition %s", response));
-                        service.save(service.authorize(bookmark, prompt, new DisabledCancelCallback()));
+                        service.save(service.authorize());
                         // Try again
                         return true;
                     }

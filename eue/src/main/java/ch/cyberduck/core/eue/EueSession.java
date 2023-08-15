@@ -22,7 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.UrlProvider;
@@ -31,7 +30,6 @@ import ch.cyberduck.core.eue.io.swagger.client.api.GetUserSharesApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UserInfoApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
@@ -110,7 +108,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         }).build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService));
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
@@ -173,17 +171,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        try {
-            authorizationService.refresh(authorizationService.authorize(host, prompt, cancel));
-        }
-        catch(InteroperabilityException e) {
-            // Perm.INVALID_GRANT
-            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
-            // Reset OAuth Tokens
-            host.getCredentials().setOauth(OAuthTokens.EMPTY);
-            authorizationService.authorize(host, prompt, cancel
-            );
-        }
+        final Credentials credentials = authorizationService.validate();
         try {
             final StringBuilder url = new StringBuilder();
             url.append(host.getProtocol().getScheme().toString()).append("://");
@@ -213,7 +201,6 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
             }
-            final Credentials credentials = host.getCredentials();
             credentials.setUsername(new UserInfoApi(new EueApiClient(this))
                     .userinfoGet(null, null).getAccount().getOsServiceId());
             if(StringUtils.isNotBlank(host.getProperty("pacs.url"))) {

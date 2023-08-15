@@ -19,10 +19,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ExpiredTokenException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.s3.S3Session;
@@ -39,6 +40,9 @@ import org.apache.logging.log4j.Logger;
 import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 
 /**
  * Swap OIDC Id token for temporary security credentials
@@ -58,7 +62,6 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     private final OAuth2RequestInterceptor oauth;
     private final S3Session session;
     private final Host host;
-    private final LoginCallback prompt;
     private final CancelCallback cancel;
 
     public STSAssumeRoleCredentialsRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
@@ -68,19 +71,19 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         this.oauth = oauth;
         this.session = session;
         this.host = session.getHost();
-        this.prompt = prompt;
         this.cancel = cancel;
     }
 
-    public STSTokens refresh() throws BackgroundException {
+    public STSTokens refresh(final OAuthTokens oidc) throws BackgroundException {
         try {
-            return this.tokens = this.authorize(host, oauth.authorize(host, prompt, cancel));
+            return this.tokens = this.authorize(oidc);
         }
-        catch(ExpiredTokenException e) {
+        catch(LoginFailureException e) {
+            // Expired STS tokens
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Failure %s authorizing. Retry with refreshed OAuth tokens", e));
             }
-            return this.tokens = this.authorize(host, oauth.refresh());
+            return this.tokens = this.authorize(oauth.refresh(oidc));
         }
     }
 
@@ -88,7 +91,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(tokens.isExpired()) {
             try {
-                this.refresh();
+                this.refresh(oauth.getTokens());
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Authorizing service request with STS tokens %s", tokens));
                 }
@@ -105,6 +108,19 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     @Override
     public Credentials get() throws BackgroundException {
         // Get temporary credentials from STS using Web Identity (OIDC) token
-        return host.getCredentials().withTokens(this.refresh());
+        final Credentials credentials = oauth.validate();
+        final OAuthTokens identity = credentials.getOauth();
+        final String token = identity.getIdToken();
+        final String sub;
+        try {
+            sub = JWT.decode(token).getSubject();
+        }
+        catch(JWTDecodeException e) {
+            throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
+        }
+        final STSTokens tokens = this.refresh(identity);
+        return credentials
+                .withUsername(sub)
+                .withTokens(tokens);
     }
 }
