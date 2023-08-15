@@ -37,8 +37,11 @@ import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.testcontainers.containers.DockerComposeContainer;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -47,6 +50,15 @@ import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRoleWithWebIdentityTest {
+
+    @ClassRule
+    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
+
+    @Before
+    public void setup() throws BackgroundException {
+        profile = readProfile();
+    }
+
 
     @Test
     public void testAuthorizationFindBucket() throws BackgroundException {
