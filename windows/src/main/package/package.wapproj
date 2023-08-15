@@ -20,7 +20,7 @@
     <PropertyGroup>
         <ProjectName>Cyberduck</ProjectName>
         <ProjectGuid>55cdd736-9a8a-4091-ac99-60e2f9c73269</ProjectGuid>
-        <TargetPlatformVersion>10.0.22000.0</TargetPlatformVersion>
+        <TargetPlatformVersion>10.0.22621.0</TargetPlatformVersion>
         <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
         <NoWarn>$(NoWarn);NU1702</NoWarn>
         <EntryPointProjectUniqueName>..\csharp\Cyberduck.csproj</EntryPointProjectUniqueName>

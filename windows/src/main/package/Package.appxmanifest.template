@@ -28,6 +28,7 @@
 
         <virtualization:FileSystemWriteVirtualization>
             <virtualization:ExcludedDirectories>
+                <virtualization:ExcludedDirectory>$(KnownFolder:LocalAppData)\Cyberduck</virtualization:ExcludedDirectory>
                 <virtualization:ExcludedDirectory>$(KnownFolder:RoamingAppData)\Cyberduck</virtualization:ExcludedDirectory>
                 <virtualization:ExcludedDirectory>$(KnownFolder:RoamingAppData)\iterate_GmbH</virtualization:ExcludedDirectory>
             </virtualization:ExcludedDirectories>
