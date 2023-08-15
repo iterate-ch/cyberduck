@@ -53,9 +53,10 @@ public class STSAssumeRoleAuthorizationService {
 
     private final AWSSecurityTokenService service;
     private final LoginCallback prompt;
+    private final Host bookmark;
 
     public STSAssumeRoleAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
-        this(AWSSecurityTokenServiceClientBuilder
+        this(bookmark, AWSSecurityTokenServiceClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(bookmark.getProtocol().getSTSEndpoint(), null))
                 .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
@@ -64,12 +65,13 @@ public class STSAssumeRoleAuthorizationService {
                 .build(), prompt);
     }
 
-    public STSAssumeRoleAuthorizationService(final AWSSecurityTokenService service, final LoginCallback prompt) {
+    public STSAssumeRoleAuthorizationService(final Host bookmark, final AWSSecurityTokenService service, final LoginCallback prompt) {
+        this.bookmark = bookmark;
         this.service = service;
         this.prompt = prompt;
     }
 
-    public STSTokens authorize(final Host bookmark, final String sAMLAssertion) throws BackgroundException {
+    public STSTokens authorize(final String sAMLAssertion) throws BackgroundException {
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
         final HostPreferences preferences = new HostPreferences(bookmark);
         if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
@@ -99,13 +101,12 @@ public class STSAssumeRoleAuthorizationService {
         }
     }
 
-    public STSTokens authorize(final Host bookmark, final OAuthTokens oauth) throws BackgroundException {
+    public STSTokens authorize(final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
-        final String token = oauth.getIdToken();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Assume role with OIDC Id token for %s", bookmark));
         }
-        request.setWebIdentityToken(token);
+        request.setWebIdentityToken(oauth.getIdToken());
         final HostPreferences preferences = new HostPreferences(bookmark);
         if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
             request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
@@ -134,10 +135,10 @@ public class STSAssumeRoleAuthorizationService {
         }
         final String sub;
         try {
-            sub = JWT.decode(token).getSubject();
+            sub = JWT.decode(oauth.getIdToken()).getSubject();
         }
         catch(JWTDecodeException e) {
-            log.warn(String.format("Failure %s decoding JWT %s", e, token));
+            log.warn(String.format("Failure %s decoding JWT %s", e, oauth.getIdToken()));
             throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname"))) {
@@ -148,7 +149,7 @@ public class STSAssumeRoleAuthorizationService {
                 request.setRoleSessionName(sub);
             }
             else {
-                log.warn(String.format("Missing subject in decoding JWT %s", token));
+                log.warn(String.format("Missing subject in decoding JWT %s", oauth.getIdToken()));
                 request.setRoleSessionName(new AsciiRandomStringService().random());
             }
         }
@@ -160,13 +161,10 @@ public class STSAssumeRoleAuthorizationService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Received assume role identity result %s", result));
             }
-            final Credentials credentials = bookmark.getCredentials();
-            return credentials
-                    .withUsername(sub)
-                    .withTokens(new STSTokens(result.getCredentials().getAccessKeyId(),
-                            result.getCredentials().getSecretAccessKey(),
-                            result.getCredentials().getSessionToken(),
-                            result.getCredentials().getExpiration().getTime())).getTokens();
+            return new STSTokens(result.getCredentials().getAccessKeyId(),
+                    result.getCredentials().getSecretAccessKey(),
+                    result.getCredentials().getSessionToken(),
+                    result.getCredentials().getExpiration().getTime());
         }
         catch(AWSSecurityTokenServiceException e) {
             throw new STSExceptionMappingService().map(e);

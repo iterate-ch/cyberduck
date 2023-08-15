@@ -1,19 +1,6 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledCertificateIdentityCallback;
-import ch.cyberduck.core.DisabledCertificateStore;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
@@ -36,6 +23,7 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.jets3t.service.security.AWSSessionCredentials;
 import org.jets3t.service.utils.SignatureUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,6 +33,7 @@ import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -113,29 +102,57 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testConnectSessionTokenFromService() throws Exception {
-        final S3Protocol protocol = new S3Protocol() {
-            @Override
-            public boolean isTokenConfigurable() {
-                return true;
-            }
-        };
-        final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials(
-                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
-        ));
+    public void testConnectAssumeRoleExpiredOAuthTokensGoogleOpenIdLogin() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/Google OpenID Connect.cyberduckprofile"));
+        final Credentials credentials = new Credentials()
+                .withOauth(new OAuthTokens(
+                        "ya29.a0AfB_byAaM7-JnzKV71Vx5FDF7MMRVFyWcY4fVqNC5RvNaT5GdDEpa5-PF8Y8b39PRsDPC0u6mUHkAxUUpcci5Ot-wa2yfWzLDVuSZgwuY00iIlbYLdvkVLDbOml4d1oHrsdjFt-6Q1tqldhRLEws1MfUeSmo954qaCgYKAWMSARESFQHsvYlsEQWIAOetO5AHPFEamfC2RA0167",
+                        "1//090ctVUrOlPdFCgYIARAAGAkSNwF-L9IryKRKVn8OyvhA6ucwXXX6kAjA3em7Y75REfSrX1mJCpKDw1rDVdm93SWGgwAwQXQLWr8",
+                        Long.MAX_VALUE,
+                        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjkxMWUzOWUyNzkyOGFlOWYxZTlkMWUyMTY0NmRlOTJkMTkzNTFiNDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiOTk2MTI1NDE0MjMyLXM5MjJidmR0MjFuY2VlaDVkcTFnYjZhdjhwbHBqN2hyLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiOTk2MTI1NDE0MjMyLXM5MjJidmR0MjFuY2VlaDVkcTFnYjZhdjhwbHBqN2hyLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE1NjUyMTU2MDEwMDA2MDY0NTU1IiwiYXRfaGFzaCI6IkhSbjB6T2dINjZlMHlXRjc1Zk1QbUEiLCJpYXQiOjE2OTE4NzQ5NjUsImV4cCI6MTY5MTg3ODU2NX0.ULt2XdSf3w4ZTfMkrMOP9B10zS6Dy3wWGuZm2-wAsYIzFcyRKooEKAZmtyVJgc6sDo09gN30b_tGCy_p3XZtSn_k-PsGL4Tqd1mPz0DJq_UPCfOyxfu9LMe9kp3wwaUV4BKlwj6UbiXpe1b1v3ftXLmVtpXuQ6zbJFOem89D4RMEH5I_GGjwFk9OHs3_h2NdELN6m7050i_2PsbKWb2NGZ19Q_wy5CABOjhYj1PfrytvXIewx6mmQQZIYK0aQb_mSUZFfOB93feDbyumw-nIdzc37Lcdt08L25S3gv4tIyXMGM3gHSApUT98c4x5NN9pn6IKjspiSduhN3J6xjTaYA"))
+                .withTokens(STSTokens.EMPTY);
+        final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
         assertNotNull(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledProxyFinder().find(host.getHostname()), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertNotEquals(STSTokens.EMPTY, credentials.getTokens());
+    }
+
+    @Test
+    public void testConnectAssumeRoleExpiredOAuthTokensGoogleOpenIdList() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/Google OpenID Connect.cyberduckprofile"));
+        final Credentials credentials = new Credentials()
+                .withOauth(new OAuthTokens(
+                        "ya29.a0AfB_byAaM7-JnzKV71Vx5FDF7MMRVFyWcY4fVqNC5RvNaT5GdDEpa5-PF8Y8b39PRsDPC0u6mUHkAxUUpcci5Ot-wa2yfWzLDVuSZgwuY00iIlbYLdvkVLDbOml4d1oHrsdjFt-6Q1tqldhRLEws1MfUeSmo954qaCgYKAWMSARESFQHsvYlsEQWIAOetO5AHPFEamfC2RA0167",
+                        "1//090ctVUrOlPdFCgYIARAAGAkSNwF-L9IryKRKVn8OyvhA6ucwXXX6kAjA3em7Y75REfSrX1mJCpKDw1rDVdm93SWGgwAwQXQLWr8",
+                        Long.MAX_VALUE,
+                        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjkxMWUzOWUyNzkyOGFlOWYxZTlkMWUyMTY0NmRlOTJkMTkzNTFiNDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiOTk2MTI1NDE0MjMyLXM5MjJidmR0MjFuY2VlaDVkcTFnYjZhdjhwbHBqN2hyLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiOTk2MTI1NDE0MjMyLXM5MjJidmR0MjFuY2VlaDVkcTFnYjZhdjhwbHBqN2hyLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE1NjUyMTU2MDEwMDA2MDY0NTU1IiwiYXRfaGFzaCI6IkhSbjB6T2dINjZlMHlXRjc1Zk1QbUEiLCJpYXQiOjE2OTE4NzQ5NjUsImV4cCI6MTY5MTg3ODU2NX0.ULt2XdSf3w4ZTfMkrMOP9B10zS6Dy3wWGuZm2-wAsYIzFcyRKooEKAZmtyVJgc6sDo09gN30b_tGCy_p3XZtSn_k-PsGL4Tqd1mPz0DJq_UPCfOyxfu9LMe9kp3wwaUV4BKlwj6UbiXpe1b1v3ftXLmVtpXuQ6zbJFOem89D4RMEH5I_GGjwFk9OHs3_h2NdELN6m7050i_2PsbKWb2NGZ19Q_wy5CABOjhYj1PfrytvXIewx6mmQQZIYK0aQb_mSUZFfOB93feDbyumw-nIdzc37Lcdt08L25S3gv4tIyXMGM3gHSApUT98c4x5NN9pn6IKjspiSduhN3J6xjTaYA"))
+                .withTokens(new STSTokens(
+                        "ASIA5RMYTHDIR37CTCXI",
+                        "TsnhChH4FlBt7hql2KnzrwNizmktJnO8YzDQwFqx",
+                        "FQoDYXdzEN3//////////wEaDLAz85HLZTQ7zu6/OSKrAfwLewUMHKaswh5sXv50BgMwbeKfCoMATjagvM+KV9++z0I6rItmMectuYoEGCOcnWHKZxtvpZAGcjlvgEDPw1KRYu16riUnd2Yo3doskqAoH0dlL2nH0eoj0d81H5e6IjdlGCm1E3K3zQPFLfMbvn1tdDQR1HV8o9eslmxo54hWMY2M14EpZhcXQMlns0mfYLYHLEVvgpz/8xYjR0yKDxJlXSATEpXtowHtqSi8tL7aBQ==",
+                        -1L
+                ));
+        final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
+        final S3Session session = new S3Session(host);
+        assertNotNull(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
-        session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
+        assertNotNull(session.getClient());
+        session.getClient().setProviderCredentials(new AWSSessionCredentials(
+                credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
+                credentials.getTokens().getSessionToken()));
+        new S3BucketListService(session).list(
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
+    }
+
+    public void testConnectAssumeRoleExpiredSessionTokensActiveDirectoryOpenId() throws Exception {
+
     }
 
     @Test
@@ -157,7 +174,7 @@ public class S3SessionTest extends AbstractS3Test {
     public void testCustomHostnameUnknown() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, "testu.cyberduck.ch", new Credentials(
                 PROPERTIES.get("s3.key"), "s"
         ));
@@ -254,12 +271,12 @@ public class S3SessionTest extends AbstractS3Test {
                 super.verify(hostname, certs, cipher);
             }
         },
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener()
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()
         );
         c.connect(session, new DisabledCancelCallback());
         assertTrue(verified.get());

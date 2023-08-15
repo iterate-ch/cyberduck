@@ -28,7 +28,6 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
@@ -114,7 +113,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             .withParameter("login_hint", preferences.getProperty("storegate.login.hint"));
         // Force login even if browser session already exists
         authorizationService.withParameter("prompt", "login");
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService));
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
         final StoregateApiClient client = new StoregateApiClient(apache);
@@ -135,7 +134,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.authorize(host, controller, cancel);
+        final Credentials credentials = authorizationService.validate();
         try {
             final HttpRequestBase request = new HttpPost(
                 new HostUrlProvider().withUsername(false).withPath(true).get(
@@ -174,7 +173,6 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             finally {
                 EntityUtils.consume(response.getEntity());
             }
-            final Credentials credentials = host.getCredentials();
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();
             if(log.isDebugEnabled()) {

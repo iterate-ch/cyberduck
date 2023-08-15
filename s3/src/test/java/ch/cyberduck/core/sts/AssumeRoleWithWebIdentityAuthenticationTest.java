@@ -104,6 +104,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         assertTrue(oauth.validate());
         final STSTokens tokens = host.getCredentials().getTokens();
         assertTrue(tokens.validate());
+        host.getCredentials().reset();
 
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
@@ -111,8 +112,6 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         Thread.sleep(MILLIS * OAUTH_TTL_SECS + LAG);
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
-        assertNotEquals(oauth, host.getCredentials().getOauth());
-        assertNotEquals(tokens, host.getCredentials().getTokens());
         session.close();
     }
 

@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.StringAppender;
@@ -32,7 +33,6 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -70,8 +70,11 @@ public class OAuth2AuthorizationService {
     private final JsonFactory json
             = new GsonFactory();
 
+    private final Host host;
+    private final Credentials credentials;
     private final String tokenServerUrl;
     private final String authorizationServerUrl;
+    private final LoginCallback prompt;
 
     private final String clientid;
     private final String clientsecret;
@@ -92,17 +95,22 @@ public class OAuth2AuthorizationService {
 
     public OAuth2AuthorizationService(final HttpClient client, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
-                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
+                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
+                                      final LoginCallback prompt) throws LoginCanceledException {
         this(new ApacheHttpTransport(client), host,
                 tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
     }
 
     public OAuth2AuthorizationService(final HttpTransport transport, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
-                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
+                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
+                                      final LoginCallback prompt) throws LoginCanceledException {
         this.transport = transport;
+        this.host = host;
+        this.credentials = host.getCredentials();
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
+        this.prompt = prompt;
         this.clientid = prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
                 Profile.OAUTH_CLIENT_ID_KEY, "Credentials"), clientid);
         this.clientsecret = prompt(host, prompt, Profile.OAUTH_CLIENT_SECRET_KEY, LocaleFactory.localizedString(
@@ -111,38 +119,49 @@ public class OAuth2AuthorizationService {
         this.pkce = pkce;
     }
 
-    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = bookmark.getCredentials();
+    /**
+     * Authorize when cached tokens expired otherwise return
+     * @return Tokens retrieved
+     */
+    public Credentials validate() throws BackgroundException {
         final OAuthTokens saved = credentials.getOauth();
         if(saved.validate()) {
             // Found existing tokens
             if(saved.isExpired()) {
-                log.warn(String.format("Refresh expired access tokens %s", saved));
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Refresh expired access tokens %s", saved));
+                }
                 // Refresh expired access key
                 try {
-                    return credentials.withOauth(this.refresh(saved)).withSaved(new LoginOptions().keychain).getOauth();
+                    return credentials.withOauth(this.refresh(saved));
                 }
                 catch(LoginFailureException e) {
-                    log.warn(String.format("Failure refreshing tokens from %s for %s", saved, bookmark));
+                    log.warn(String.format("Failure refreshing tokens from %s for %s", saved, host));
                     // Continue with new OAuth 2 flow
                 }
             }
             else {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Returned saved OAuth tokens %s for %s", saved, bookmark));
+                    log.debug(String.format("Returned saved OAuth tokens %s for %s", saved, host));
                 }
-                return saved;
+                return credentials;
             }
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Start new OAuth flow for %s with missing access token", bookmark));
-        }
+        return credentials.withOauth(this.authorize());
+    }
 
+    /**
+     * @return Tokens retrieved
+     */
+    public OAuthTokens authorize() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Start new OAuth flow for %s with missing access token", host));
+        }
         final IdTokenResponse response;
         // Save access token, refresh token and id token
         switch(flowType) {
             case AuthorizationCode:
-                response = this.authorizeWithCode(bookmark, prompt);
+                response = this.authorizeWithCode(host, prompt);
                 break;
             case PasswordGrant:
                 response = this.authorizeWithPassword(credentials);
@@ -150,11 +169,10 @@ public class OAuth2AuthorizationService {
             default:
                 throw new LoginCanceledException();
         }
-        return credentials.withOauth(new OAuthTokens(
-                        response.getAccessToken(), response.getRefreshToken(),
-                        null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken()))
-                .withSaved(new LoginOptions().keychain).getOauth();
+        return new OAuthTokens(
+                response.getAccessToken(), response.getRefreshToken(),
+                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken());
     }
 
     private IdTokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
@@ -370,7 +388,7 @@ public class OAuth2AuthorizationService {
     /**
      * Prompt for value if missing
      */
-    private static String prompt(final Host bookmark, final LoginCallback prompt,
+    private static String prompt(final Host bookmark, final PasswordCallback prompt,
                                  final String property, final String message, final String value) throws LoginCanceledException {
         if(null == value) {
             final Credentials input = prompt.prompt(bookmark, message,

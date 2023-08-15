@@ -182,7 +182,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         configuration.setServiceUnavailableRetryStrategy(new PreconditionFailedResponseInterceptor(host, authorizationService, prompt,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt)));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
@@ -219,7 +219,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         LocaleFactory.localizedString("Your DRACOON environment is outdated and no longer works with this application. Please contact your administrator.", "SDS"));
             }
         }
-        final Credentials credentials = host.getCredentials();
+        final Credentials credentials;
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
@@ -234,8 +234,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.warn(String.format("Failure to parse software version %s", version));
                     }
                 }
-                authorizationService.authorize(host, prompt, cancel);
+                credentials = authorizationService.validate();
                 break;
+            default:
+                credentials = host.getCredentials();
         }
         final UserAccount account;
         try {
