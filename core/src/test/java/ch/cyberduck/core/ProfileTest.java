@@ -20,12 +20,12 @@ import ch.cyberduck.core.serializer.Deserializer;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ProfileTest {
 
@@ -119,7 +119,10 @@ public class ProfileTest {
 
             @Override
             public <L> List<L> listForKey(final String key) {
-                return (List<L>) Collections.singletonList("prop=${application.identifier}");
+                return (List<L>) Arrays.asList(
+                        "prop=${application.identifier}",
+                        "unknown=${unknown}"
+                        );
             }
 
             @Override
@@ -136,8 +139,15 @@ public class ProfileTest {
             public List<String> keys() {
                 return null;
             }
-        });
+        }) {
+            @Override
+            public String getOAuthClientSecret() {
+                return "${notfound}";
+            }
+        };
         assertEquals("io.cyberduck", profile.getProvider());
+        assertEquals("${notfound}", profile.getOAuthClientSecret());
         assertEquals("io.cyberduck", profile.getProperties().get("prop"));
+        assertEquals("${unknown}", profile.getProperties().get("unknown"));
     }
 }
