@@ -27,6 +27,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
@@ -95,7 +97,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     }
 
     @Override
-    protected StoregateApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected StoregateApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         final PreferencesReader preferences = new HostPreferences(host);
         authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
@@ -104,7 +106,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                 request.addHeader(HttpHeaders.AUTHORIZATION,
                     String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
             }
-        }).build(), host)
+        }).build(), host, prompt)
             .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
                 Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                     host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())

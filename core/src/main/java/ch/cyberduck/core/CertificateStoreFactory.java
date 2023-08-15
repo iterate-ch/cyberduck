@@ -27,7 +27,7 @@ public class CertificateStoreFactory extends Factory<CertificateStore> {
 
     private Constructor<CertificateStore> constructor;
 
-    protected CertificateStoreFactory() {
+    private CertificateStoreFactory() {
         super("factory.certificatestore.class");
     }
 

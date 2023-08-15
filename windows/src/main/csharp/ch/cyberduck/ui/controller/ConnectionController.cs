@@ -46,7 +46,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private ConnectionController(Host bookmark,
             LoginInputValidator validator, LoginOptions options) : base(bookmark, validator, options)
         {
-            View.SavePasswordChecked = _options.keychain();
+            View.SavePasswordEnabled = _options.keychain();
+            View.SavePasswordChecked = bookmark.getCredentials().isSaved();
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
             View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password); };
         }

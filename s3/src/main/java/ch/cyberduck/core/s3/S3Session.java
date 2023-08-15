@@ -36,6 +36,7 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.date.RFC822DateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -61,13 +62,25 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.STSCredentialsConfigurator;
+import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -76,11 +89,26 @@ import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
+import org.jets3t.service.security.ProviderCredentials;
+import org.jets3t.service.utils.RestUtils;
+import org.jets3t.service.utils.ServiceUtils;
+import org.jets3t.service.utils.SignatureUtils;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import com.amazonaws.auth.internal.SignerConstants;
+
+import static com.amazonaws.services.s3.Headers.*;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = LogManager.getLogger(S3Session.class);
@@ -93,12 +121,15 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final Versioning versioning = preferences.getBoolean("s3.versioning.enable")
             ? new S3VersioningFeature(this, acl) : null;
 
-    private final Glacier glacier = new Glacier(this, trust, key);
+    private final RegionEndpointCache regions = new RegionEndpointCache();
+
+    private final Glacier glacier = new Glacier(this, new S3LocationFeature(this, regions), trust, key);
 
     private final Encryption encryption = S3Session.isAwsHostname(host.getHostname())
-            ? new KMSEncryptionFeature(this, acl, trust, key) : null;
+            ? new KMSEncryptionFeature(this, new S3LocationFeature(this, regions), acl, trust, key) : null;
 
-    private final WebsiteCloudFrontDistributionConfiguration cloudfront = new WebsiteCloudFrontDistributionConfiguration(this, trust, key) {
+    private final WebsiteCloudFrontDistributionConfiguration cloudfront = new WebsiteCloudFrontDistributionConfiguration(this,
+            new S3LocationFeature(this, regions), trust, key) {
         @Override
         public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
             final Distribution distribution = super.read(container, method, prompt);
@@ -117,8 +148,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
             = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
-
-    private final RegionEndpointCache regions = new RegionEndpointCache();
 
     public S3Session(final Host host) {
         super(host, new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -179,6 +208,197 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
                     new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
         }
+        if(preferences.getBoolean("s3.upload.expect-continue")) {
+            final String header = HTTP.EXPECT_DIRECTIVE;
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Add request handler for %s", header));
+            }
+            configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) {
+                    if(HttpPut.METHOD_NAME.equals(request.getRequestLine().getMethod())) {
+                        // #7621
+                        request.addHeader(header, HTTP.EXPECT_CONTINUE);
+                    }
+                }
+            });
+        }
+        if(preferences.getBoolean("s3.bucket.requesterpays")) {
+            // Only for AWS
+            if(S3Session.isAwsHostname(host.getHostname())) {
+                final String header = REQUESTER_PAYS_HEADER;
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Add request handler for %s", header));
+                }
+                configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                    @Override
+                    public void process(final HttpRequest request, final HttpContext context) {
+                        // Downloading Objects in Requester Pays Buckets
+                        if(HttpGet.METHOD_NAME.equals(request.getRequestLine().getMethod()) || HttpPost.METHOD_NAME.equals(request.getRequestLine().getMethod())) {
+                            // For GET and POST requests, include x-amz-request-payer : requester in the header
+                            request.addHeader(header, "requester");
+                        }
+                    }
+                });
+            }
+        }
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                // Ensure the required Host header is set prior to signing.
+                final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
+                if(host != null) {
+                    request.setHeader(HttpHeaders.HOST, host.toHostString());
+                }
+            }
+        });
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            private final RFC822DateFormatter formatter = new RFC822DateFormatter();
+
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                request.setHeader(S3_ALTERNATE_DATE, SignatureUtils.formatAwsFlavouredISO8601Date(client.getCurrentTimeWithOffset()));
+            }
+        });
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                final ProviderCredentials credentials = client.getProviderCredentials();
+                if(credentials instanceof AWSSessionCredentials) {
+                    request.setHeader(SECURITY_TOKEN, ((AWSSessionCredentials) credentials).getSessionToken());
+                }
+            }
+        });
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) throws IOException {
+                if(!client.isAuthenticatedConnection()) {
+                    log.warn(String.format("Skip authentication request %s", request));
+                    return;
+                }
+                final ProviderCredentials credentials = client.getProviderCredentials();
+                final String bucketName = context.getAttribute("bucket").toString();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Use bucket name %s from context for %s signature", bucketName, authenticationHeaderSignatureVersion));
+                }
+                final URI uri;
+                try {
+                    uri = new URI(request.getRequestLine().getUri());
+                }
+                catch(URISyntaxException e) {
+                    throw new IOException(e);
+                }
+                switch(authenticationHeaderSignatureVersion) {
+                    case AWS2: {
+                        String path = uri.getRawPath();
+                        // If bucket name is not already part of the full path, add it.
+                        // This can be the case if the Host name has a bucket-name prefix,
+                        // or if the Host name constitutes the bucket name for DNS-redirects.
+                        if(!StringUtils.startsWith(path, bucketName)) {
+                            path = String.format("/%s%s", bucketName, path);
+                        }
+                        final String queryString = uri.getRawQuery();
+                        if(StringUtils.isNotBlank(queryString)) {
+                            path += String.format("?%s", queryString);
+                        }
+                        // Generate a canonical string representing the operation.
+                        final String canonicalString = RestUtils.makeServiceCanonicalString(
+                                request.getRequestLine().getMethod(),
+                                path,
+                                this.getHeadersAsObject(request),
+                                null,
+                                getRestHeaderPrefix(),
+                                client.getResourceParameterNames());
+                        // Sign the canonical string.
+                        final String signedCanonical = ServiceUtils.signWithHmacSha1(
+                                credentials.getSecretKey(), canonicalString);
+                        // Add encoded authorization to connection as HTTP Authorization header.
+                        final String authorizationString = getSignatureIdentifier() + " "
+                                + credentials.getAccessKey() + ":" + signedCanonical;
+                        request.setHeader(HttpHeaders.AUTHORIZATION, authorizationString);
+                        break;
+                    }
+                    case AWS4HMACSHA256: {
+                        String region = regions.getRegionForBucketName(bucketName);
+                        if(null == region) {
+                            final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
+                            if(host != null) {
+                                try {
+                                    region = SignatureUtils.awsRegionForRequest(new URI(host.toURI()));
+                                }
+                                catch(URISyntaxException e) {
+                                    throw new IOException(e);
+                                }
+                            }
+                            if(region != null) {
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Cache region %s for bucket %s", region, bucketName));
+                                }
+                                regions.putRegionForBucketName(bucketName, region);
+                            }
+                        }
+                        if(null == region) {
+                            region = host.getRegion();
+                        }
+                        if(null == region) {
+                            region = new HostPreferences(host).getProperty("s3.location");
+                        }
+                        final HttpUriRequest message = (HttpUriRequest) request;
+                        String requestPayloadHexSHA256Hash =
+                                SignatureUtils.awsV4GetOrCalculatePayloadHash(message);
+                        message.setHeader(SignerConstants.X_AMZ_CONTENT_SHA256, requestPayloadHexSHA256Hash);
+                        // Generate AWS-flavoured ISO8601 timestamp string
+                        final String timestampISO8601 = message.getFirstHeader(S3_ALTERNATE_DATE).getValue();
+                        // Canonical request string
+                        final String canonicalRequestString =
+                                SignatureUtils.awsV4BuildCanonicalRequestString(uri,
+                                        request.getRequestLine().getMethod(), this.getHeadersAsString(request), requestPayloadHexSHA256Hash);
+                        // String to sign
+                        final String stringToSign = SignatureUtils.awsV4BuildStringToSign(
+                                authenticationHeaderSignatureVersion.toString(), canonicalRequestString,
+                                timestampISO8601, region);
+                        // Signing key
+                        final byte[] signingKey = SignatureUtils.awsV4BuildSigningKey(
+                                credentials.getSecretKey(), timestampISO8601, region);
+                        // Request signature
+                        final String signature = ServiceUtils.toHex(ServiceUtils.hmacSHA256(
+                                signingKey, ServiceUtils.stringToBytes(stringToSign)));
+                        // Authorization header value
+                        final String authorizationHeaderValue =
+                                SignatureUtils.awsV4BuildAuthorizationHeaderValue(
+                                        credentials.getAccessKey(), signature,
+                                        authenticationHeaderSignatureVersion.toString(), canonicalRequestString,
+                                        timestampISO8601, region);
+                        message.setHeader(HttpHeaders.AUTHORIZATION, authorizationHeaderValue);
+                        break;
+                    }
+                }
+            }
+
+            final class HttpHeaderFilter implements Predicate<Header> {
+                @Override
+                public boolean test(final Header header) {
+                    return !new HostPreferences(host).getList("s3.signature.headers.exclude").stream()
+                            .filter(s -> StringUtils.equalsIgnoreCase(s, header.getName())).findAny().isPresent();
+                }
+            }
+
+            private Map<String, String> getHeadersAsString(final HttpRequest request) {
+                final Map<String, String> headers = new HashMap<>();
+                for(Header header : Arrays.stream(request.getAllHeaders()).filter(new HttpHeaderFilter()).collect(Collectors.toList())) {
+                    headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())), StringUtils.trim(header.getValue()));
+                }
+                return headers;
+            }
+
+            private Map<String, Object> getHeadersAsObject(final HttpRequest request) {
+                final Map<String, Object> headers = new HashMap<>();
+                for(Header header : Arrays.stream(request.getAllHeaders()).filter(new HttpHeaderFilter()).collect(Collectors.toList())) {
+                    headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())), StringUtils.trim(header.getValue()));
+                }
+                return headers;
+            }
+        });
         final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, configuration);
         client.setRegionEndpointCache(regions);
         return client;
@@ -203,7 +423,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Only for AWS
             if(isAwsHostname(host.getHostname())) {
                 // Try auto-configure
-                credentials = new STSCredentialsConfigurator(
+                credentials = new AWSProfileSTSCredentialsConfigurator(
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
             }
             else {
@@ -240,8 +460,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 }
                 //
                 host.setProperty("s3.location", location.getIdentifier());
-                // Used when creating canonical string for signature
-                client.getConfiguration().setProperty("storage-service.default-region", location.getIdentifier());
             }
         }
         catch(AccessDeniedException | InteroperabilityException e) {

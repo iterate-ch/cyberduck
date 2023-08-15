@@ -2401,7 +2401,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                        new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder,
+                        new CreateVaultWorker(region, passphrase, VaultFactory.get(folder,
                                 new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
                                 new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.config.filename"),
                                 new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
@@ -2421,7 +2421,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Path directory = new UploadTargetFinder(workdir).find(this.getSelectedPath());
         if(directory.attributes().getVault() != null) {
             // Lock and remove all open vaults
-            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVault(), directory.attributes().getVault()) {
+            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory.attributes().getVault()) {
                 @Override
                 public void cleanup(final Path vault) {
                     if(vault != null) {
@@ -2432,8 +2432,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else {
             // Unlock vault
-            this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new LoadingVaultLookupListener(pool.getVault(),
-                    PasswordStoreFactory.get(), PasswordCallbackFactory.get(this)), directory) {
+            this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new LoadingVaultLookupListener(pool.getVaultRegistry(),
+                    PasswordCallbackFactory.get(this)), directory) {
                 @Override
                 public void cleanup(final Vault vault) {
                     if(vault != null) {
@@ -3398,8 +3398,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 pool.shutdown();
                 pool = SessionPool.DISCONNECTED;
-                cache.clear();
                 setWorkdir(null);
+                cache.clear();
+                for(Editor editor : editors.values()) {
+                    editor.close();
+                }
+                editors.clear();
                 window.setTitle(StringUtils.EMPTY);
                 if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
                     window.setSubtitle(StringUtils.EMPTY);
@@ -3541,7 +3545,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(action.equals(Foundation.selector("lockUnlockEncryptedVaultButtonClicked:"))) {
             if(this.isMounted()) {
                 final Path selected = new UploadTargetFinder(this.workdir()).find(this.getSelectedPath());
-                final VaultRegistry registry = pool.getVault();
+                final VaultRegistry registry = pool.getVaultRegistry();
                 if(registry.contains(selected)) {
                     item.setTitle(LocaleFactory.localizedString("Lock Vault", "Cryptomator"));
                     item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
@@ -3603,6 +3607,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         for(Editor editor : editors.values()) {
             editor.close();
         }
+        editors.clear();
         temporary.shutdown();
         quicklook.close();
 

@@ -70,6 +70,8 @@ import ch.cyberduck.core.profiles.PeriodicProfilesUpdater;
 import ch.cyberduck.core.profiles.ProfilesUpdater;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
+import ch.cyberduck.core.sparkle.MenuItemSparkleUpdateHandler;
+import ch.cyberduck.core.sparkle.NotificationSparkleUpdateHandler;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -295,7 +297,14 @@ public class MainController extends BundleController implements NSApplication.De
      * Remove software update menu item if no update feed available
      */
     private void updateUpdateMenu() {
-        if(!updater.hasUpdatePrivileges()) {
+        if(updater.hasUpdatePrivileges()) {
+            final NSMenuItem item = this.applicationMenu.itemAtIndex(new NSInteger(1));
+            updater.addHandler(new MenuItemSparkleUpdateHandler(item));
+            if(preferences.getBoolean("update.check.auto")) {
+                updater.addHandler(new NotificationSparkleUpdateHandler(updater));
+            }
+        }
+        else {
             this.applicationMenu.removeItemAtIndex(new NSInteger(1));
         }
     }
@@ -901,7 +910,7 @@ public class MainController extends BundleController implements NSApplication.De
      * (applicationWillFinishLaunching is sent before applicationOpenFile.)
      */
     @Override
-    public void applicationDidFinishLaunching(NSNotification notification) {
+    public void applicationWillFinishLaunching(NSNotification notification) {
         // Opt-in of automatic window tabbing
         NSWindow.setAllowsAutomaticWindowTabbing(true);
         // Load main menu
@@ -1256,11 +1265,17 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.check(false);
                 break;
             default:
+                String action = null;
                 if(StringUtils.contains(url, ":oauth")) {
+                    action = StringUtils.substringAfter(url, ":oauth");
+                }
+                if(StringUtils.contains(url, "://oauth")) {
+                    action = StringUtils.substringAfter(url, "://oauth");
+                }
+                if(null != action) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Handle %s as OAuth callback", url));
                     }
-                    final String action = StringUtils.substringAfter(url, ":oauth");
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String state = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
@@ -1276,7 +1291,7 @@ public class MainController extends BundleController implements NSApplication.De
                     oauth.notify(state, code);
                 }
                 else if(StringUtils.startsWith(url, CteraProtocol.CTERA_REDIRECT_URI)) {
-                    final String action = StringUtils.removeStart(url, String.format("%s:", preferences.getProperty("oauth.handler.scheme")));
+                    action = StringUtils.removeStart(url, String.format("%s:", preferences.getProperty("oauth.handler.scheme")));
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String code = StringUtils.EMPTY;
                     for(NameValuePair pair : pairs) {
@@ -1433,7 +1448,11 @@ public class MainController extends BundleController implements NSApplication.De
         final Selector action = item.action();
         if(action.equals(Foundation.selector("updateMenuClicked:"))) {
             if(updater.hasUpdatePrivileges()) {
-                return !updater.isUpdateInProgress(item);
+                if(item.representedObject() != null) {
+                    // Allow to run update when found
+                    return true;
+                }
+                return !updater.isUpdateInProgress();
             }
             return false;
         }

@@ -81,8 +81,14 @@ namespace Ch.Cyberduck.Core.Date
         public static DateTime ConvertJavaMillisecondsToDateTime(long javaMS)
         {
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS * TimeSpan.TicksPerMillisecond));
-            return dt;
+            try
+            {
+                return utcBaseTime.Add(new TimeSpan(javaMS * TimeSpan.TicksPerMillisecond));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return DateTime.Now;
+            }
         }
 
         public static long ConvertDateTimeToJavaMilliseconds(DateTime dateTime)

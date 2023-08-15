@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -68,7 +67,7 @@ public class FTPWriteFeature extends AppendWriteFeature<Void> {
                         throw new FTPExceptionMappingService().map(e);
                     }
                 }
-            }, new DisabledProgressListener());
+            });
             return new ReadReplyOutputStream(out, status);
         }
         catch(IOException e) {

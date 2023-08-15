@@ -21,16 +21,16 @@ import ch.cyberduck.core.Factory;
 
 public class IconCacheFactory extends Factory<IconCache> {
 
-    protected IconCacheFactory() {
+    private IconCacheFactory() {
         super("factory.iconcache.class");
     }
 
-    private static IconCache cache;
+    private static IconCache singleton;
 
     public static synchronized <I> IconCache<I> get() {
-        if(null == cache) {
-            cache = new IconCacheFactory().create();
+        if(null == singleton) {
+            singleton = new IconCacheFactory().create();
         }
-        return cache;
+        return singleton;
     }
 }

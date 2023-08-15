@@ -191,10 +191,11 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             }
             final StorageObject object = new StorageObject(containerService.getKey(file));
             object.setETag(complete.getEtag());
-            if(status.getTimestamp() != null) {
-                object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
-            }
             object.setContentLength(size);
+            object.setStorageClass(multipart.getStorageClass());
+            if(multipart.getMetadata() != null) {
+                object.addAllMetadata(multipart.getMetadata());
+            }
             // Mark parent status as complete
             status.withResponse(new S3AttributesAdapter().toAttributes(object)).setComplete();
             return object;

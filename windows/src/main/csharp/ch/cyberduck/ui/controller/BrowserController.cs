@@ -346,6 +346,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Editor editor = entry.Value;
                 editor.close();
             }
+            _editors.Clear();
             base.Invalidate();
         }
 
@@ -355,13 +356,13 @@ namespace Ch.Cyberduck.Ui.Controller
             if (directory.attributes().getVault() != null)
             {
                 // Lock and remove all open vaults
-                LockVaultAction lockVault = new LockVaultAction(this, Session.getVault(), directory.attributes().getVault());
+                LockVaultAction lockVault = new LockVaultAction(this, Session.getVaultRegistry(), directory.attributes().getVault());
                 Background(lockVault);
             }
             else
             {
                 // Unlock vault
-                LoadVaultAction loadVault = new LoadVaultAction(this, Session.getVault(), directory);
+                LoadVaultAction loadVault = new LoadVaultAction(this, Session.getVaultRegistry(), directory);
                 Background(loadVault);
             }
         }
@@ -1185,7 +1186,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (IsBrowser() && IsMounted() && !PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect"))
             {
                 Path selected = new UploadTargetFinder(Workdir).find(SelectedPath);
-                VaultRegistry registry = Session.getVault();
+                VaultRegistry registry = Session.getVaultRegistry();
                 if (registry.contains(selected))
                 {
                     View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Lock Vault", "Cryptomator"));
@@ -2057,7 +2058,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateNewVault()
         {
-            return IsMounted() && Session.getVault() != VaultRegistry.DISABLED &&
+            return IsMounted() && Session.getVaultRegistry() != VaultRegistry.DISABLED &&
                    null == Workdir.attributes().getVault() &&
                    ((Directory)Session.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
@@ -2927,6 +2928,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 Session = SessionPool.DISCONNECTED;
                 SetWorkdir(null);
                 _cache.clear();
+                foreach (KeyValuePair<Path, Editor> entry in _editors)
+                {
+                    Editor editor = entry.Value;
+                    editor.close();
+                }
+                _editors.Clear();
                 _navigation.clear();
                 View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
                 disconnected();
@@ -3783,7 +3790,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerLoadVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
                     : base(new LoadingVaultLookupListener(registry,
-                        PasswordStoreFactory.get(), PasswordCallbackFactory.get(controller)), directory)
+                        PasswordCallbackFactory.get(controller)), directory)
                 {
                     _controller = controller;
                     _directory = directory;

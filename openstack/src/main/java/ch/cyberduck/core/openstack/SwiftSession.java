@@ -30,7 +30,9 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
@@ -71,7 +73,7 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         pool.disableContentCompression();

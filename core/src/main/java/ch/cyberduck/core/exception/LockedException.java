@@ -16,11 +16,20 @@ package ch.cyberduck.core.exception;
  */
 
 public class LockedException extends AccessDeniedException {
+
     public LockedException(final String detail) {
         super(detail);
     }
 
+    public LockedException(final String message, final String detail) {
+        super(message, detail);
+    }
+
     public LockedException(final String detail, final Throwable cause) {
         super(detail, cause);
+    }
+
+    public LockedException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
     }
 }

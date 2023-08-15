@@ -19,6 +19,7 @@ package ch.cyberduck.core.diagnostics;
 
 import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostnameConfiguratorFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -30,10 +31,10 @@ import java.net.InetAddress;
 public class DefaultInetAddressReachability extends DisabledReachability {
 
     @Override
-    public boolean isReachable(final Host host) {
+    public boolean isReachable(final Host bookmark) {
         try {
-            return InetAddress.getByName(host.getHostname()).isReachable(
-                    ConnectionTimeoutFactory.get().getTimeout() * 1000
+            return InetAddress.getByName(HostnameConfiguratorFactory.get(bookmark.getProtocol()).getHostname(bookmark.getHostname())).isReachable(
+                    ConnectionTimeoutFactory.get(bookmark).getTimeout() * 1000
             );
         }
         catch(IOException e) {

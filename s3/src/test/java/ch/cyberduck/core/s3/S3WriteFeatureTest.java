@@ -64,18 +64,18 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         out.close();
         test.withAttributes(new S3AttributesAdapter().toAttributes(out.getStatus()));
         assertTrue(new S3FindFeature(session, acl).find(test));
-        assertEquals(1630305150672L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
-        assertEquals(1630305150672L, new S3ObjectListService(session, acl, true).list(container,
+        assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
+        assertEquals(1630305150000L, new S3ObjectListService(session, acl, true).list(container,
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
-        assertEquals(1630305150672L, new S3VersionedObjectListService(session, acl, 1, true).list(container,
+        assertEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 1, true).list(container,
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
-        assertNotEquals(1630305150672L, new S3ObjectListService(session, acl, false).list(container,
+        assertNotEquals(1630305150000L, new S3ObjectListService(session, acl, false).list(container,
                 new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
-        assertNotEquals(1630305150672L, new S3VersionedObjectListService(session, acl, 1, false).list(container,
+        assertNotEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 1, false).list(container,
                 new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
         final Path moved = new S3MoveFeature(session, acl).move(test, new Path(container,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(1630305150672L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
+        assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

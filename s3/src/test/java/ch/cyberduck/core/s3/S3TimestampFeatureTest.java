@@ -30,6 +30,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -37,24 +39,33 @@ import static org.junit.Assert.assertEquals;
 public class S3TimestampFeatureTest extends AbstractS3Test {
 
     @Test
-    public void testFindTimesteamp() throws Exception {
+    public void testFindTimestamp() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withTimestamp(1530305150672L));
-        assertEquals(1530305150672L, status.getResponse().getModificationDate());
-        assertEquals(1530305150672L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
+        assertEquals(1530305150000L, status.getResponse().getModificationDate());
+        assertEquals(1530305150000L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
         final S3TimestampFeature feature = new S3TimestampFeature(session);
         feature.setTimestamp(test, 1630305150672L);
-        assertEquals(1630305150672L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
-        test.attributes().setModificationDate(1630305150672L);
+        assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
+        test.attributes().setModificationDate(1630305150000L);
         final Path found = new S3ObjectListService(session, acl, true).list(bucket, new DisabledListProgressListener()).find(new DefaultPathPredicate(test));
-        assertEquals(1630305150672L, found.attributes().getModificationDate());
+        assertEquals(1630305150000L, found.attributes().getModificationDate());
         final Path moved = new S3MoveFeature(session, acl).move(test, new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(1630305150672L, moved.attributes().getModificationDate());
-        assertEquals(1630305150672L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
+        assertEquals(1630305150000L, moved.attributes().getModificationDate());
+        assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFindMillisecondsTimestamp() throws Exception {
+        final Map<String, String> headers = new HashMap<>();
+        headers.put("Mtime", "1530305150672"); // milliseconds
+        assertEquals(1530305150672L, S3TimestampFeature.fromHeaders(headers).longValue());
+        headers.put("Mtime", "1530305150"); // seconds
+        assertEquals(1530305150000L, S3TimestampFeature.fromHeaders(headers).longValue());
     }
 }

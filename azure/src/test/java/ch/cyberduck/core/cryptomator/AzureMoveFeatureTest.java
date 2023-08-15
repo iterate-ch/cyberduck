@@ -60,7 +60,7 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path folder = cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());

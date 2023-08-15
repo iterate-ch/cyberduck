@@ -4,6 +4,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -12,6 +13,7 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -125,7 +127,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                completed.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
+                completed.add(new DefaultRetryCallable<MultipartPart>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
                     @Override
                     public MultipartPart call() throws BackgroundException {
                         final Map<String, String> parameters = new HashMap<>();
@@ -159,7 +161,16 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                                 null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
                                 part.getContentLength());
                     }
-                }, overall).call());
+                }, overall) {
+                    @Override
+                    public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+                        if(super.retry(failure, progress, cancel)) {
+                            canceled.set(null);
+                            return true;
+                        }
+                        return false;
+                    }
+                }.call());
                 offset += len;
             }
             catch(BackgroundException e) {

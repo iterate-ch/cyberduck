@@ -55,7 +55,7 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)), new FTPWriteFeature(session), cryptomator).touch(
@@ -72,7 +72,7 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)), new FTPWriteFeature(session), cryptomator).touch(
@@ -88,7 +88,7 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)), new FTPWriteFeature(session), cryptomator).touch(

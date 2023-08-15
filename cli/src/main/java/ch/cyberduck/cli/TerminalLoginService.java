@@ -26,6 +26,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,7 +44,7 @@ public class TerminalLoginService extends KeychainLoginService {
     }
 
     @Override
-    public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
+    public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
         final Credentials credentials = bookmark.getCredentials();
         if(input.hasOption(TerminalOptionsBuilder.Params.anonymous.name())) {
             credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));

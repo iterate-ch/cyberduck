@@ -22,7 +22,7 @@ import ch.cyberduck.core.local.features.Trash;
 
 public class LocalTrashFactory extends Factory<Trash> {
 
-    protected LocalTrashFactory() {
+    private LocalTrashFactory() {
         super("factory.trash.class");
     }
 

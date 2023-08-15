@@ -31,7 +31,7 @@ public class CertificateTrustCallbackFactory extends Factory<CertificateTrustCal
 
     private Constructor<? extends CertificateTrustCallback> constructor;
 
-    protected CertificateTrustCallbackFactory() {
+    private CertificateTrustCallbackFactory() {
         super("factory.certificatetrustcallback.class");
     }
 
@@ -53,11 +53,16 @@ public class CertificateTrustCallbackFactory extends Factory<CertificateTrustCal
         }
     }
 
+    private static CertificateTrustCallbackFactory singleton;
+
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static CertificateTrustCallback get(final Controller c) {
-        return new CertificateTrustCallbackFactory().create(c);
+    public static synchronized CertificateTrustCallback get(final Controller c) {
+        if(null == singleton) {
+            singleton = new CertificateTrustCallbackFactory();
+        }
+        return singleton.create(c);
     }
 }

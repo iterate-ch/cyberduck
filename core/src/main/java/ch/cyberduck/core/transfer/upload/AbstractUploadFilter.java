@@ -48,8 +48,8 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -64,9 +64,7 @@ import java.util.EnumSet;
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = LogManager.getLogger(AbstractUploadFilter.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
+    private final PreferencesReader preferences;
     private final Session<?> session;
     private final SymlinkResolver<Local> symlinkResolver;
     private final Filter<Path> hidden = SearchFilterFactory.HIDDEN_FILTER;
@@ -82,6 +80,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.options = options;
         this.find = session.getFeature(Find.class);
         this.attribute = session.getFeature(AttributesFinder.class);
+        this.preferences = new HostPreferences(session.getHost());
     }
 
     @Override
@@ -157,8 +156,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(options.temporary) {
                 final Move feature = session.getFeature(Move.class);
                 final Path renamed = new Path(file.getParent(),
-                    MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
-                        file.getName(), new AlphanumericRandomStringService().random()), file.getType());
+                        MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
+                                file.getName(), new AlphanumericRandomStringService().random()), file.getType());
                 if(feature.isSupported(file, renamed)) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Set temporary filename %s", renamed));
@@ -199,7 +198,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(feature != null) {
                 if(status.isExists()) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Getting permission of {0}", "Status"),
-                        file.getName()));
+                            file.getName()));
                     try {
                         status.setAcl(feature.getPermission(file));
                     }
@@ -233,7 +232,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(feature != null) {
                 if(status.isExists()) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                        file.getName()));
+                            file.getName()));
                     try {
                         status.setMetadata(feature.getMetadata(file));
                     }
@@ -251,7 +250,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(feature != null) {
                 if(status.isExists()) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                        file.getName()));
+                            file.getName()));
                     try {
                         status.setEncryption(feature.getEncryption(file));
                     }
@@ -270,7 +269,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature != null) {
                     if(status.isExists()) {
                         progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                            file.getName()));
+                                file.getName()));
                         try {
                             status.setStorageClass(feature.getClass(file));
                         }
@@ -289,7 +288,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final ChecksumCompute feature = session.getFeature(Write.class).checksum(file, status);
                 if(feature != null) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
-                        file.getName()));
+                            file.getName()));
                     try {
                         status.setChecksum(feature.compute(local.getInputStream(), status));
                     }
@@ -342,7 +341,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature != null) {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                            file.getName(), status.getAcl()));
+                                file.getName(), status.getAcl()));
                         feature.setPermission(file, status.getAcl());
                     }
                     catch(BackgroundException e) {
@@ -357,7 +356,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     if(feature != null) {
                         try {
                             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                                file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
+                                    file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
                             feature.setTimestamp(file, status);
                         }
                         catch(BackgroundException e) {

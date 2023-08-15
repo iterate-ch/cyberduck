@@ -22,7 +22,10 @@ import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.Host;
 
+import org.apache.commons.lang3.concurrent.LazyInitializer;
+
 import java.net.Socket;
+import java.security.KeyStore;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +43,10 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
 
     public KeychainX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore callback) {
         super(prompt, bookmark, callback);
+    }
+
+    public KeychainX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore callback, final LazyInitializer<KeyStore> keystore) {
+        super(prompt, bookmark, callback, keystore);
     }
 
     @Override
@@ -61,7 +68,9 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
         if(aliases.isEmpty()) {
             aliases.addAll(super.list());
         }
-        return new ArrayList<>(aliases);
+        final ArrayList<String> list = new ArrayList<>(aliases);
+        list.sort(String::compareTo);
+        return list;
     }
 
     protected String find(final Key key) {

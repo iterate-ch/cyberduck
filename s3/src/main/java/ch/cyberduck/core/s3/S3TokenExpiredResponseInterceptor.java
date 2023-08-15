@@ -15,15 +15,13 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.ExpiredTokenException;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.STSCredentialsConfigurator;
+import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -33,6 +31,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 
@@ -41,12 +40,12 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
 
     private static final int MAX_RETRIES = 1;
 
-    private final Host host;
-    private final STSCredentialsConfigurator configurator;
+    private final S3Session session;
+    private final AWSProfileSTSCredentialsConfigurator configurator;
 
     public S3TokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
-        this.host = session.getHost();
-        this.configurator = new STSCredentialsConfigurator(trust, key, prompt);
+        this.session = session;
+        this.configurator = new AWSProfileSTSCredentialsConfigurator(trust, key, prompt);
     }
 
     @Override
@@ -61,13 +60,16 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                             failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
                                     EntityUtils.toString(response.getEntity()));
                             if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
-                                try {
-                                    host.setCredentials(configurator.configure(host));
-                                    return true;
+                                if(log.isWarnEnabled()) {
+                                    log.warn(String.format("Handle failure %s", failure));
                                 }
-                                catch(LoginFailureException | LoginCanceledException e) {
-                                    log.warn(String.format("Attempt to renew expired token failed. %s", e.getMessage()));
+                                final Credentials credentials = configurator.configure(session.getHost());
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Reconfigure client with credentials %s", credentials));
                                 }
+                                session.getClient().setProviderCredentials(new AWSSessionCredentials(
+                                        credentials.getUsername(), credentials.getPassword(), credentials.getToken()));
+                                return true;
                             }
                         }
                     }

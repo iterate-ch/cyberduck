@@ -24,6 +24,8 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -57,16 +59,16 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
 
     private final BoxFileidProvider fileid = new BoxFileidProvider(this);
 
-    protected OAuth2RequestInterceptor authorizationService;
+    private OAuth2RequestInterceptor authorizationService;
 
     public BoxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
     @Override
-    public CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    public CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host)
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));

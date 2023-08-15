@@ -28,9 +28,13 @@ Translations to new languages are welcome. We use [Transifex](https://www.transi
 
 Make sure to subscribe to the [localization mailing list](http://lists.cyberduck.ch/mailman/listinfo/cyberduck-localization).
 
-## Support & Documentation
+## Documentation
 
-For general help about using Cyberduck, please refer to the [documentation](https://docs.cyberduck.io).
+For general help about using Cyberduck, please refer to the [documentation](https://docs.cyberduck.io). The documentation is maintained in its own [repository](https://github.com/iterate-ch/docs).
+
+## Additional Connection Profiles
+
+Additional connection profiles not bundled by default but available in _Preferences → Profiles_ are maintained in its own [repository](https://github.com/iterate-ch/profiles).
 
 ## Snapshot and Beta builds
 

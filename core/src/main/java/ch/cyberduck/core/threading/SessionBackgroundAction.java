@@ -41,10 +41,10 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * Contains the transcript of the session while this action was running
      */
     private final StringBuffer transcript
-        = new StringBuffer();
+            = new StringBuffer();
 
     private static final String LINE_SEPARATOR
-        = System.getProperty("line.separator");
+            = System.getProperty("line.separator");
 
     private final AlertCallback alert;
     private final ProgressListener progress;
@@ -97,27 +97,27 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T call() throws BackgroundException {
+        return new DefaultRetryCallable<>(pool.getHost(), new BackgroundExceptionCallable<T>() {
+            @Override
+            public T call() throws BackgroundException {
+                // Reset status
+                SessionBackgroundAction.this.reset();
+                // Run action
+                return SessionBackgroundAction.this.run();
+            }
+        }, this, this).call();
+    }
+
+    @Override
+    public T run() throws BackgroundException {
+        final Session<?> session;
         try {
-            return new DefaultRetryCallable<>(pool.getHost(), new BackgroundExceptionCallable<T>() {
-                @Override
-                public T call() throws BackgroundException {
-                    // Reset status
-                    SessionBackgroundAction.this.reset();
-                    // Run action
-                    return SessionBackgroundAction.this.run();
-                }
-            }, this, this).call();
+            session = pool.borrow(this).withListener(this);
         }
         catch(BackgroundException e) {
             failure = e;
             throw e;
         }
-    }
-
-    @Override
-    public T run() throws BackgroundException {
-        final Session<?> session = pool.borrow(this).withListener(this);
-        BackgroundException failure = null;
         try {
             return this.run(session);
         }

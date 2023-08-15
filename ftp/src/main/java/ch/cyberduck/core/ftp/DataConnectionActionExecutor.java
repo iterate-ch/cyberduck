@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -46,11 +45,10 @@ public class DataConnectionActionExecutor {
     }
 
     /**
-     * @param action   Action that needs to open a data connection
-     * @param listener Progress callback
+     * @param action Action that needs to open a data connection
      * @return True if action was successful
      */
-    public <T> T data(final DataConnectionAction<T> action, final ProgressListener listener) throws IOException, BackgroundException {
+    public <T> T data(final DataConnectionAction<T> action) throws IOException, BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
             final FTPConnectMode mode = session.getConnectMode();

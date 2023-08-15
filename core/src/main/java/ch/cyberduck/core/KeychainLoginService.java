@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -44,7 +45,7 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
+    public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
@@ -137,7 +138,7 @@ public class KeychainLoginService implements LoginService {
      * @return True if credentials have been updated
      * @throws LoginCanceledException Prompt canceled by user
      */
-    public boolean prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException {
+    public boolean prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException {
         final Credentials credentials = bookmark.getCredentials();
         if(options.password) {
             final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
@@ -158,6 +159,9 @@ public class KeychainLoginService implements LoginService {
             credentials.setToken(input.getPassword());
         }
         if(options.oauth) {
+            prompt.warn(bookmark, LocaleFactory.localizedString("Login failed", "Credentials"), message,
+                    LocaleFactory.localizedString("Continue", "Credentials"),
+                    LocaleFactory.localizedString("Cancel", "Localizable"), null);
             log.warn(String.format("Reset OAuth tokens for %s", bookmark));
             credentials.setOauth(OAuthTokens.EMPTY);
         }
@@ -187,29 +191,35 @@ public class KeychainLoginService implements LoginService {
         }
         try {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempt authentication for %s", bookmark));
+                log.debug(String.format("Attempt authentication for %s", session));
             }
             session.login(proxy, prompt, cancel);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Login successful for session %s", session));
+                log.debug(String.format("Login successful for %s", session));
             }
             listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
             this.save(bookmark);
             return true;
         }
         catch(LoginFailureException e) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Login failed for %s", session));
+            }
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
             credentials.setPassed(false);
             final LoginOptions options = new LoginOptions(bookmark.getProtocol());
-            final StringAppender details = new StringAppender();
-            details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
-            details.append(e.getDetail());
-            if(this.prompt(bookmark, details.toString(), prompt, options)) {
+            if(this.prompt(bookmark, e.getDetail(), prompt, options)) {
                 // Retry
                 return false;
             }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Reset credentials for %s", bookmark));
+            }
             // No updated credentials. Nullify input
-            credentials.reset();
+            switch(session.getHost().getProtocol().getStatefulness()) {
+                case stateless:
+                    credentials.reset();
+            }
             throw e;
         }
     }
@@ -233,6 +243,12 @@ public class KeychainLoginService implements LoginService {
         // Flag for successful authentication
         credentials.setPassed(true);
         // Nullify password and tokens
-        credentials.reset();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Reset credentials for %s", bookmark));
+        }
+        switch(bookmark.getProtocol().getStatefulness()) {
+            case stateless:
+                credentials.reset();
+        }
     }
 }

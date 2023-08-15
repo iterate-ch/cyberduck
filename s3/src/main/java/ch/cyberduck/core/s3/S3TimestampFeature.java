@@ -15,17 +15,24 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Maps;
 
 public class S3TimestampFeature extends DefaultTimestampFeature {
 
     // Interoperable with rclone
-    public static final String METADATA_MODIFICATION_DATE = "Mtime";
+    private static final String METADATA_MODIFICATION_DATE = "Mtime";
 
     private final S3Session session;
 
@@ -38,5 +45,33 @@ public class S3TimestampFeature extends DefaultTimestampFeature {
         final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
         final Map<String, String> metadata = feature.getMetadata(file);
         feature.setMetadata(file, status.withMetadata(metadata));
+    }
+
+    public static Header toHeader(final Long millis) {
+        return new Header(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(millis / 1000));
+    }
+
+    public static Long fromHeaders(final Map<String, String> response) {
+        final Map<String, String> headers = new HashMap<>(response.entrySet()
+                .stream()
+                .map(entry -> Maps.immutableEntry(StringUtils.lowerCase(entry.getKey()), entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        if(headers.containsKey(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))) {
+            try {
+                return normalizeToMilliseconds(Double.valueOf(headers.get(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))).longValue());
+            }
+            catch(NumberFormatException ignored) {
+                // ignore
+            }
+        }
+        return -1L;
+    }
+
+    private static Long normalizeToMilliseconds(final Long ts) {
+        if(String.valueOf(ts).length() < 12) {
+            // Assume ts in seconds
+            return ts * 1000;
+        }
+        return ts;
     }
 }

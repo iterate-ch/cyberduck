@@ -20,11 +20,14 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -46,10 +49,14 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         final Path test = new BrickTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0L, test.attributes().getSize());
         final Path target = new BrickMoveFeature(session).move(test,
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
+        final PathAttributes targetAttr = new BrickAttributesFinderFeature(session).find(target);
+        assertEquals(test.attributes().getModificationDate(), targetAttr.getModificationDate());
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), targetAttr));
         new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

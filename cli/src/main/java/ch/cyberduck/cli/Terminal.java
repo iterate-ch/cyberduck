@@ -74,6 +74,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
 import ch.cyberduck.core.worker.AttributesWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
@@ -276,14 +277,14 @@ public class Terminal {
             final Host host = new CommandLineUriParser(input, protocols).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input),
                     login, new TerminalHostKeyVerifier(reader), progress);
+            final VaultRegistry registry = VaultRegistryFactory.get(login);
             source = SessionPoolFactory.create(connect, transcript, host,
                     new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
-                    VaultRegistryFactory.create(login));
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)), registry);
             final Path remote;
             if(StringUtils.startsWith(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
-                remote = new TildePathExpander(home).expand(new CommandLinePathParser(input, protocols).parse(uri));
+                remote = new Path(new TildePathExpander(home).expand(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute()), EnumSet.of(Path.Type.directory));
             }
             else {
                 remote = new CommandLinePathParser(input, protocols).parse(uri);
@@ -292,7 +293,7 @@ public class Terminal {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
                     final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
-                    vault = new TildePathExpander(home).expand(new Path(input.getOptionValue(action.name()), EnumSet.of(Path.Type.directory, Path.Type.vault)));
+                    vault = new Path(new TildePathExpander(home).expand(input.getOptionValue(action.name())), EnumSet.of(Path.Type.directory, Path.Type.vault));
                 }
                 else {
                     vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));
@@ -301,8 +302,8 @@ public class Terminal {
                     log.debug(String.format("Attempting to load vault from %s", vault));
                 }
                 try {
-                    this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
-                            PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault)));
+                    this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVaultRegistry(),
+                            new TerminalPasswordCallback()), vault)));
                 }
                 catch(TerminalBackgroundException e) {
                     return Exit.failure;
@@ -367,8 +368,7 @@ public class Terminal {
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     destination = SessionPoolFactory.create(connect, transcript, target,
                             new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
-                            new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
-                            VaultRegistryFactory.create(new TerminalPasswordCallback()));
+                            new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)), registry);
                     return this.transfer(login, new CopyTransfer(
                                     host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))).withCache(cache),
                             source, destination);
@@ -389,8 +389,12 @@ public class Terminal {
 
     protected void configure(final CommandLine input) {
         final boolean preserve = input.hasOption(TerminalOptionsBuilder.Params.preserve.name());
+        preferences.setDefault("queue.upload.acl.change", String.valueOf(preserve));
         preferences.setDefault("queue.upload.permissions.change", String.valueOf(preserve));
         preferences.setDefault("queue.upload.timestamp.change", String.valueOf(preserve));
+        preferences.setDefault("queue.upload.file.metadata.change", String.valueOf(preserve));
+        preferences.setDefault("queue.upload.file.redundancy.change", String.valueOf(preserve));
+        preferences.setDefault("queue.upload.file.encryption.change", String.valueOf(preserve));
         preferences.setDefault("queue.download.permissions.change", String.valueOf(preserve));
         preferences.setDefault("queue.download.timestamp.change", String.valueOf(preserve));
         final boolean retry = input.hasOption(TerminalOptionsBuilder.Params.retry.name());

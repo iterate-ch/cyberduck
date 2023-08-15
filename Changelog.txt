@@ -1,6 +1,41 @@
 Cyberduck
 https://cyberduck.io/
 
+8.6.3
+- [Bugfix] Failure configuring credentials from AWS CLI setup (S3) (#14970)
+- [Bugfix] Frequent broken pipe errors (FTP) (#14969)
+
+8.6.2
+- [Feature] Allow to open connections without copying authentication code after login (Microsoft OneDrive, Sharepoint)
+- [Bugfix] Segmented downloads with multiple connections per file causes transfers to fail (#13374)
+- [Bugfix] Use recommended part size from authorization response for large file uploads (Backblaze B2) (#14856)
+- [Bugfix] Skip determining if directory only contains hidden files (Backblaze B2) (#14775)
+- [Bugfix] Does not show folders by default that do not contain a .bzEmpty placeolder file (Backblaze B2) (#14768)
+- [Bugfix] Make settings in Preferences → Connection → Timeouts apply for transfers (#14737)
+- [Bugfix] Copy or move files between containers (Azure) (#14826)
+- [Bugfix] Upload with glob pattern including folders for local source has wrong target on server (CLI) (#14800)
+- [Bugfix] Should not attempt to read metadata of existing files with no --preserve flag passed (CLI) (#14802)
+- [Bugfix] Resolve tilde prefix in default path to home directory (SFTP)
+
+8.6.1
+- [Bugfix] Parse seconds or milliseconds from Mtime in metadata (S3)
+
+8.6.0
+- [Feature] Add preference "Use Keychain" when unlocking vaults (Cryptomator) (#14662)
+- [Bugfix] Slow listing of directory contents (Backblaze B2) (#14527)
+- [Bugfix] Set newly calculated nonces and checksum when retrying upload (Cryptomator) (#14547)
+- [Bugfix] Allow tilde character in keys (S3, Google Storage) (#14590)
+- [Bugfix] Support sso_session configuration directive (S3) (#14568)
+- [Bugfix] Allow synchronizing of folders with different folder names as parameters (CLI) (#13911)
+- [Bugfix] Only prompt for password when creating share when account is subscribed to professional plan (Dropbox) (#14581)
+- [Bugfix] File permission changes not applying recursively (SFTP, FTP) (#14004)
+- [Bugfix] No result set when searching for shared files (Google Drive) (#14612)
+- [Bugfix] Make Bonjour installation optional (Windows) (#13416)
+- [Bugfix] Allow uninstall of Bonjour components (Windows) (#13416)
+- [Bugfix] Error parsing MLST response from Serv-U FTP Server (FTP) (#14652)
+- [Bugfix] Set timestamps in metadata interoperable with rclone (S3) (#14639)
+- [Bugfix] Failure configuring CloudFront distributions for bucket (S3) (#14669)
+
 8.5.9
 - [Bugfix] Requires force quit after opening file multiple times in external editor (macOS) (#14412)
 

@@ -23,7 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class ApplicationBadgeLabelerFactory extends Factory<ApplicationBadgeLabeler> {
 
-    public ApplicationBadgeLabelerFactory() {
+    private ApplicationBadgeLabelerFactory() {
         super("factory.badgelabeler.class");
     }
 

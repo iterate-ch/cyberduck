@@ -22,7 +22,7 @@ import ch.cyberduck.core.local.features.Symlink;
 
 public class LocalSymlinkFactory extends Factory<Symlink> {
 
-    public LocalSymlinkFactory() {
+    private LocalSymlinkFactory() {
         super("factory.symlink.class");
     }
 

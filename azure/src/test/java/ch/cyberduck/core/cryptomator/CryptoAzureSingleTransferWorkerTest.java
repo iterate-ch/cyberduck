@@ -77,7 +77,7 @@ public class CryptoAzureSingleTransferWorkerTest extends AbstractAzureTest {
     public void testUpload() throws Exception {
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());

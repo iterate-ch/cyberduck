@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class QuarantineServiceFactory extends Factory<QuarantineService> {
 
-    public QuarantineServiceFactory() {
+    private QuarantineServiceFactory() {
         super("factory.quarantine.class");
     }
 

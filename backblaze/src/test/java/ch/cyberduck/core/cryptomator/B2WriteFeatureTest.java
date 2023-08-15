@@ -72,7 +72,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);

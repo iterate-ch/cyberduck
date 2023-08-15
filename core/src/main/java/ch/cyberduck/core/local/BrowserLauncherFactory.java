@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class BrowserLauncherFactory extends Factory<BrowserLauncher> {
 
-    public BrowserLauncherFactory() {
+    private BrowserLauncherFactory() {
         super("factory.browserlauncher.class");
     }
 

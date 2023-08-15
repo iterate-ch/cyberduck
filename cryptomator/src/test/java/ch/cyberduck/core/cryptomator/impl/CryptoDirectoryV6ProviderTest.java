@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator.impl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
@@ -101,7 +100,7 @@ public class CryptoDirectoryV6ProviderTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
-        }, new DisabledPasswordStore());
+        });
         final CryptoDirectory provider = new CryptoDirectoryV6Provider(home, vault);
         assertNotNull(provider.toEncrypted(session, null, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));

@@ -28,7 +28,7 @@ public final class SystemConfigurationDiagnostics implements Reachability.Diagno
      */
     @Override
     public void diagnose(final Host bookmark) {
-        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(SystemConfigurationReachability.toURL(bookmark));
+        final SystemConfigurationReachability.Native monitor = SystemConfigurationReachability.Native.monitorForUrl(SystemConfigurationReachability.toURL(bookmark));
         monitor.diagnoseInteractively();
     }
 }

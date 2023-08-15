@@ -53,6 +53,9 @@ import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.shared.TildeResolvingHomeFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -357,7 +360,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new CustomOriginCloudFrontDistributionConfiguration(host, trust, key);
         }
         if(type == Home.class) {
-            return (T) new FTPWorkdirService(this);
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new TildeResolvingHomeFeature(host, new FTPWorkdirService(this)));
         }
         if(type == Touch.class) {
             return (T) new FTPTouchFeature(this);

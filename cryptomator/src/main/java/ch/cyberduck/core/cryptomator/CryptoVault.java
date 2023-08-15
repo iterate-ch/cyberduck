@@ -97,13 +97,14 @@ public class CryptoVault implements Vault {
      */
     private final Path home;
     private final Path masterkey;
+
     private final Path config;
     private final Path vault;
     private int vaultVersion;
     private int nonceSize;
 
+    private final PasswordStore keychain = PasswordStoreFactory.get();
     private final Preferences preferences = PreferencesFactory.get();
-
     private Cryptor cryptor;
     private CryptorCache fileNameCryptor;
 
@@ -132,11 +133,11 @@ public class CryptoVault implements Vault {
         }
     }
 
-    public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
-        return this.create(session, null, credentials, keychain, version);
+    public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final int version) throws BackgroundException {
+        return this.create(session, null, credentials, version);
     }
 
-    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final int version) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
             try {
@@ -182,7 +183,7 @@ public class CryptoVault implements Vault {
                     .withClaim(JSON_KEY_SHORTENING_THRESHOLD, CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD)
                     .sign(algorithm);
             new ContentWriter(session).write(config, conf.getBytes(StandardCharsets.US_ASCII));
-            this.open(this.getVaultConfig(conf).withMasterkeyFile(masterkeyFile), passphrase);
+            this.open(parseVaultConfigFromJWT(conf).withMasterkeyFile(masterkeyFile), passphrase);
         }
         else {
             this.open(new VaultConfig(version, CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
@@ -201,21 +202,15 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) throws BackgroundException {
-        return this.create(session, region, credentials, keychain, VAULT_VERSION);
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+        return this.create(session, region, credentials, VAULT_VERSION);
     }
 
     @Override
-    public synchronized CryptoVault load(final Session<?> session, final PasswordCallback prompt, final PasswordStore keychain) throws BackgroundException {
+    public synchronized CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
         if(this.isUnlocked()) {
             log.warn(String.format("Skip unlock of open vault %s", this));
             return this;
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt to read master key from %s", masterkey));
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Read master key %s", masterkey));
         }
         final Host bookmark = session.getHost();
         String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
@@ -225,19 +220,18 @@ public class CryptoVault implements Vault {
             passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
         }
-        final VaultConfig vaultConfig = this.getVaultConfig(session);
-        this.unlock(vaultConfig, passphrase, bookmark, prompt,
-                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
-                keychain);
-        return this;
+        return this.unlock(session, prompt, bookmark, passphrase);
     }
 
-    private VaultConfig getVaultConfig(final Session<?> session) throws BackgroundException {
+    private VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
         try {
             final String token = new ContentReader(session).read(config);
-            return this.getVaultConfig(token).withMasterkeyFile(this.readMasterkeyFile(session, masterkey));
+            return parseVaultConfigFromJWT(token).withMasterkeyFile(this.readMasterkeyFile(session, masterkey));
         }
         catch(NotfoundException e) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Ignore failure reading %s", config));
+            }
             final MasterkeyFile mkfile = this.readMasterkeyFile(session, masterkey);
             return new VaultConfig(mkfile.version,
                     mkfile.version == VAULT_VERSION_DEPRECATED ?
@@ -247,7 +241,8 @@ public class CryptoVault implements Vault {
         }
     }
 
-    private VaultConfig getVaultConfig(final String token) {
+
+    public static VaultConfig parseVaultConfigFromJWT(final String token) {
         final DecodedJWT decoded = JWT.decode(token);
         return new VaultConfig(
                 decoded.getClaim(JSON_KEY_VAULTVERSION).asInt(),
@@ -257,6 +252,9 @@ public class CryptoVault implements Vault {
     }
 
     private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path masterkey) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Read master key %s", masterkey));
+        }
         try (Reader reader = new ContentReader(session).getReader(masterkey)) {
             return MasterkeyFile.read(reader);
         }
@@ -265,14 +263,23 @@ public class CryptoVault implements Vault {
         }
     }
 
-    private void unlock(final VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
-                        final String message, final PasswordStore keychain) throws BackgroundException {
+    public CryptoVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+        final VaultConfig vaultConfig = this.readVaultConfig(session);
+        this.unlock(vaultConfig, passphrase, bookmark, prompt,
+                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
+        );
+        return this;
+    }
+
+    public void unlock(final VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
+                       final String message) throws BackgroundException {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = prompt.prompt(
                     bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
                     new LoginOptions()
+                            .save(preferences.getBoolean("cryptomator.vault.keychain"))
                             .user(false)
                             .anonymous(false)
                             .icon("cryptomator.tiff")
@@ -282,7 +289,7 @@ public class CryptoVault implements Vault {
             }
         }
         else {
-            credentials = new VaultCredentials(passphrase).withSaved(preferences.getBoolean("vault.keychain"));
+            credentials = new VaultCredentials(passphrase).withSaved(false);
         }
         try {
             this.open(vaultConfig, credentials.getPassword());
@@ -297,7 +304,7 @@ public class CryptoVault implements Vault {
         }
         catch(CryptoAuthenticationException e) {
             this.unlock(vaultConfig, null, bookmark, prompt, String.format("%s %s.", e.getDetail(),
-                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())), keychain);
+                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())));
         }
     }
 
@@ -321,33 +328,33 @@ public class CryptoVault implements Vault {
         fileNameCryptor = null;
     }
 
-    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
+    protected CryptoFilename createFilenameProvider(final VaultConfig vaultConfig) {
         switch(vaultConfig.version) {
             case VAULT_VERSION_DEPRECATED:
-                this.open(vaultConfig, passphrase, new CryptoFilenameV6Provider(vault), new CryptoDirectoryV6Provider(vault, this));
-                break;
+                return new CryptoFilenameV6Provider(vault);
             default:
-                this.open(vaultConfig, passphrase, new CryptoFilenameV7Provider(vaultConfig.getShorteningThreshold()),
-                        new CryptoDirectoryV7Provider(vault, this));
-                break;
+                return new CryptoFilenameV7Provider(vaultConfig.getShorteningThreshold());
         }
     }
 
-    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase, final CryptoFilename filenameProvider,
-                        final CryptoDirectory directoryProvider) throws BackgroundException {
-        this.vaultVersion = vaultConfig.version;
-        final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Initialized crypto provider %s", provider));
+    protected CryptoDirectory createDirectoryProvider(final VaultConfig vaultConfig) {
+        switch(vaultConfig.version) {
+            case VAULT_VERSION_DEPRECATED:
+                return new CryptoDirectoryV6Provider(vault, this);
+            default:
+                return new CryptoDirectoryV7Provider(vault, this);
         }
+    }
+
+    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
+        this.open(vaultConfig, passphrase, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
+    }
+
+    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase,
+                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         try {
             final Masterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
-            vaultConfig.verify(masterKey.getEncoded(), VAULT_VERSION);
-            this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
-            this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
-            this.filenameProvider = filenameProvider;
-            this.directoryProvider = directoryProvider;
-            this.nonceSize = vaultConfig.getNonceSize();
+            this.open(vaultConfig, masterKey, filenameProvider, directoryProvider);
         }
         catch(IllegalArgumentException | IOException e) {
             throw new VaultException("Failure reading key file", e);
@@ -355,6 +362,25 @@ public class CryptoVault implements Vault {
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
+    }
+
+    protected void open(final VaultConfig vaultConfig, final Masterkey masterKey) throws BackgroundException {
+        this.open(vaultConfig, masterKey, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
+    }
+
+    protected void open(final VaultConfig vaultConfig, final Masterkey masterKey,
+                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
+        this.vaultVersion = vaultConfig.version;
+        final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Initialized crypto provider %s", provider));
+        }
+        vaultConfig.verify(masterKey.getEncoded(), VAULT_VERSION);
+        this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
+        this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
+        this.filenameProvider = filenameProvider;
+        this.directoryProvider = directoryProvider;
+        this.nonceSize = vaultConfig.getNonceSize();
     }
 
     private Masterkey getMasterKey(final MasterkeyFile mkFile, final CharSequence passphrase) throws IOException {
@@ -761,7 +787,7 @@ public class CryptoVault implements Vault {
         private final DecodedJWT token;
         private MasterkeyFile mkfile;
 
-        private VaultConfig(int version, int shorteningThreshold, CryptorProvider.Scheme cipherCombo, String algorithm, DecodedJWT token) {
+        public VaultConfig(int version, int shorteningThreshold, CryptorProvider.Scheme cipherCombo, String algorithm, DecodedJWT token) {
             this.version = version;
             this.shorteningThreshold = shorteningThreshold;
             this.cipherCombo = cipherCombo;

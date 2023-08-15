@@ -54,18 +54,21 @@ public class TerminalPasswordCallback implements PasswordCallback {
             final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
             final Credentials credentials = new Credentials();
             credentials.setPassword(StringUtils.strip(String.valueOf(input)));
-            return this.prompt(options, credentials);
+            return this.options(options, credentials);
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);
         }
     }
 
-    protected Credentials prompt(final LoginOptions options, final Credentials credentials) {
+    /**
+     * Handle options and configure credentials accordingly
+     */
+    protected Credentials options(final LoginOptions options, final Credentials credentials) {
         if(options.keychain) {
             if(!PreferencesFactory.get().getBoolean("keychain.secure")) {
                 console.printf(String.format("WARNING! Passwords are stored in plain text in %s.",
-                    LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials").getAbbreviatedPath()));
+                        LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials").getAbbreviatedPath()));
             }
             credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
         }

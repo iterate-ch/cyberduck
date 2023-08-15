@@ -235,22 +235,24 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
      * @return Parsed keys and values
      */
     protected Map<String, Map<String, String>> parseFacts(final String line) {
-        final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(.*)");
+        final Pattern p = Pattern.compile("\\s*(\\S+\\=\\S+;)*\\s(.*)");
         final Matcher result = p.matcher(line);
         final Map<String, Map<String, String>> file = new HashMap<>();
         if(result.matches()) {
             final String filename = result.group(2);
             final Map<String, String> facts = new HashMap<>();
-            for(String fact : result.group(1).split(";")) {
-                String key = StringUtils.substringBefore(fact, "=");
-                if(StringUtils.isBlank(key)) {
-                    continue;
+            if(null != result.group(1)) {
+                for(String fact : result.group(1).split(";")) {
+                    String key = StringUtils.substringBefore(fact, "=");
+                    if(StringUtils.isBlank(key)) {
+                        continue;
+                    }
+                    String value = StringUtils.substringAfter(fact, "=");
+                    if(StringUtils.isBlank(value)) {
+                        continue;
+                    }
+                    facts.put(key.toLowerCase(Locale.ROOT), value);
                 }
-                String value = StringUtils.substringAfter(fact, "=");
-                if(StringUtils.isBlank(value)) {
-                    continue;
-                }
-                facts.put(key.toLowerCase(Locale.ROOT), value);
             }
             file.put(filename, facts);
             return file;

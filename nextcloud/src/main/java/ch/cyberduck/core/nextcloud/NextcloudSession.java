@@ -30,6 +30,9 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -43,7 +46,7 @@ public class NextcloudSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Home.class) {
-            return (T) new NextcloudHomeFeature(host);
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new NextcloudHomeFeature(host));
         }
         if(type == ListService.class) {
             return (T) new NextcloudListService(this);

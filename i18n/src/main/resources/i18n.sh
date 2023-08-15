@@ -20,8 +20,8 @@ workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
-arch="`/usr/bin/arch`"
-tx="/usr/local/bin/tx"
+arch="$(/usr/bin/arch)"
+tx="$workdir/tx"
 extension=".xib"
 
 usage() {
@@ -43,13 +43,13 @@ init() {
 	for n in `ls $base_language | grep $extension | grep -v ~$extension`; do
 	{
 		echo "Copying $n"
-		cp -R $base_language/$n $language/$n
+		cp -R $base_language/$n "$language"/$n
 	}
 	done
 	for stringsfile in `ls $base_language | grep .strings | grep -v .strings.1`; do
 	{
 		echo "Copying $stringsfile"
-		cp -R $base_language/$stringsfile $language/$stringsfile
+		cp -R $base_language/"$stringsfile" "$language"/"$stringsfile"
 	}
 	done
 	cp $base_language/License.txt $language/
@@ -85,16 +85,15 @@ import_strings() {
 		# force update
 		echo "*** Updating $nib... (force) in $language..."
 		$nibtool    --reference-external-strings-file \
-                    --write $language/$nib$extension \
-                    --import-strings-file $language/$nib.strings \
-                    $base_language/$nib$extension
+                --write $language/$nib$extension \
+                --import-strings-file $language/$nib.strings \
+                $base_language/$nib$extension
 	}
   else
 	{
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
 	  # Checkout previous version from base language
-    # shellcheck disable=SC2046
     git show $(git log -2 --format="%H" $base_language/$nib$extension | tail -n 1):./$base_language/$nib$extension > $base_language/$nib$extension.prev.xib
 		$nibtool    --write $language/$nib$extension \
                 --incremental-file $language/$nib$extension \
@@ -114,41 +113,35 @@ export_strings() {
 
 export_strings_legacy() {
 	if [ "$language" = "all" ] ; then
-	{
 		echo "*** Updating all localizations...";
     for lproj in $(ls . | grep lproj); do
       language=$lproj;
       echo "*** Updating $language Localization...";
-          if [ "$nibfile" = "all" ] ; then
+        if [ "$stringsfile" = "all" ] ; then
           for n in $(ls $language | grep $extension); do
             nib=`basename $n $extension`
             echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
             $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
           done;
-          fi;
-          if [ "$nibfile" != "all" ] ; then
-        nib=`basename $nibfile $extension`
+        else
+          nib=`basename $stringsfile ".strings"`
+          echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
+          $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
+        fi;
+    done;
+	else
+		echo "*** Updating $language Localization...";
+      if [ "$stringsfile" = "all" ] ; then
+        for n in `ls $language | grep $extension`; do
+          nib=`basename $n $extension`
+          echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
+          $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
+        done;
+      else
+        nib=`basename $stringsfile ".strings"`
         echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
         $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
-          fi;
-    done;
-	}
-	else
-	{
-		echo "*** Updating $language Localization...";
-        if [ "$nibfile" = "all" ] ; then
-    		for n in `ls $language | grep $extension`; do
-    			nib=`basename $n $extension`
-    			echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
-    			$convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
-    		done;
-        fi;
-        if [ "$nibfile" != "all" ] ; then
-			nib=`basename $nibfile $extension`
-			echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
-			$convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
-        fi;
-	}
+      fi;
 	fi;
 }
 
@@ -201,36 +194,32 @@ tx_push() {
             for s in `ls en.lproj | grep .strings | grep -v .strings.1`; do
                 strings=`basename $s .strings`
                 echo "*** Updating $strings.strings...";
-                $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
-                $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive --skip
+                $tx push --force --translation cyberduck.$strings
             done;
         fi;
         if [ "$stringsfile" != "all" ] ; then
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
-            $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
-            $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive --skip
+            $tx push --force --translation cyberduck.$strings
         fi;
 	}
 	else
 	{
-		echo "*** Updating $language Localization...";
+		    echo "*** Updating $language Localization...";
         if [ "$stringsfile" = "all" ] ; then
             echo "*** Updating all .strings...";
             for s in `ls en.lproj | grep .strings | grep -v .strings.1`; do
                 strings=`basename $s .strings`
                 lang=`basename $language .lproj`
                 echo "*** Updating $strings.strings...";
-                $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings -l $lang --source-language en --type=STRINGS --execute
-                $tx --traceback push --source --translations -l $lang --resource=cyberduck.$strings --force --no-interactive --skip
+                $tx push --force --translation -l $lang cyberduck.$strings
             done;
         fi;
         if [ "$stringsfile" != "all" ] ; then
             strings=`basename $stringsfile .strings`
             lang=`basename $language .lproj`
             echo "*** Updating $strings.strings...";
-            $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings -l $lang --source-language en --type=STRINGS --execute
-            $tx --traceback push --source -l $lang --translations -l $lang --resource=cyberduck.$strings --force --no-interactive --skip
+            $tx push --force --translation -l $lang cyberduck.$strings
         fi;
 	}
 	fi;
@@ -242,23 +231,23 @@ tx_pull() {
 		echo "*** Updating all localizations...";
 		for lproj in `ls . | grep lproj`; do
 			language=$lproj;
-            lang=`basename $language .lproj`
-            echo "*** Updating $language Localization...";
-            if [ "$stringsfile" = "all" ] ; then
-                echo "*** Updating all .strings...";
-                for s in `ls en.lproj | grep .strings | grep -v .strings.1`; do
-                    strings=`basename $s .strings`
-                    lang=`basename $language .lproj`
-                    echo "*** Updating $strings.strings...";
-                    $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
-                done;
-            fi;
-            if [ "$stringsfile" != "all" ] ; then
-                strings=`basename $stringsfile .strings`
-                lang=`basename $language .lproj`
-                echo "*** Updating $strings.strings...";
-                $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
-            fi;
+      lang=`basename $language .lproj`
+      echo "*** Updating $language Localization...";
+      if [ "$stringsfile" = "all" ] ; then
+          echo "*** Updating all .strings...";
+          for s in `ls en.lproj | grep .strings | grep -v .strings.1`; do
+              strings=`basename $s .strings`
+              lang=`basename $language .lproj`
+              echo "*** Updating $strings.strings...";
+              $tx pull --force -l $lang cyberduck.$strings
+          done;
+      fi;
+      if [ "$stringsfile" != "all" ] ; then
+          strings=`basename "$stringsfile" .strings`
+          lang=`basename "$language" .lproj`
+          echo "*** Updating $strings.strings...";
+          $tx pull --force -l $lang cyberduck.$strings
+      fi;
 		done;
 	}
 	else
@@ -267,17 +256,17 @@ tx_pull() {
         if [ "$stringsfile" = "all" ] ; then
             echo "*** Updating all .strings...";
             for s in `ls en.lproj | grep .strings | grep -v .strings.1`; do
-                strings=`basename $s .strings`
-                lang=`basename $language .lproj`
+                strings=`basename "$s" .strings`
+                lang=`basename "$language" .lproj`
                 echo "*** Updating $strings.strings...";
-                $tx --traceback pull --source -l $lang --resource=cyberduck.$strings --force
+                $tx pull --force -l $lang cyberduck.$strings
             done;
         fi;
         if [ "$stringsfile" != "all" ] ; then
-            strings=`basename $stringsfile .strings`
-            lang=`basename $language .lproj`
+            strings=`basename "$stringsfile" .strings`
+            lang=`basename "$language" .lproj`
             echo "*** Updating $strings.strings...";
-            $tx --traceback pull --source -l $lang --resource=cyberduck.$strings --force
+            $tx pull --force -l $lang cyberduck.$strings
         fi;
 	}
 	fi;

@@ -151,10 +151,9 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testMoveToExistingFile() throws Exception {
         final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final String name = new AlphanumericRandomStringService().random();
-        final Path test = new GraphTouchFeature(session, fileid).touch(new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path temp = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new GraphMoveFeature(session, fileid).move(temp, new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new GraphMoveFeature(session, fileid).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new GraphItemListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());

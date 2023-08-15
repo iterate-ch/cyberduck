@@ -25,8 +25,9 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
 
@@ -74,21 +75,13 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
                 });
             }
         }
-        if(!object.getModifiableMetadata().isEmpty()) {
-            final HashMap<String, String> metadata = new HashMap<>();
-            final Map<String, Object> source = object.getModifiableMetadata();
-            for(Map.Entry<String, Object> entry : source.entrySet()) {
-                metadata.put(entry.getKey(), entry.getValue().toString());
-            }
+        final Map<String, String> metadata = Maps.transformValues(object.getModifiableMetadata(), Object::toString);
+        if(!metadata.isEmpty()) {
             attributes.setMetadata(metadata);
-            if(object.containsMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE)) {
-                try {
-                    attributes.setModificationDate(Double.valueOf(object.getMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE).toString()).longValue());
-                }
-                catch(NumberFormatException ignored) {
-                    // ignore
-                }
-            }
+        }
+        final Long mtime = S3TimestampFeature.fromHeaders(Maps.transformValues(object.getMetadataMap(), Object::toString));
+        if(-1L != mtime) {
+            attributes.setModificationDate(mtime);
         }
         return attributes;
     }

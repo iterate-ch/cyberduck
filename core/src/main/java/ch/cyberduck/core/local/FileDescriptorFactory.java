@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class FileDescriptorFactory extends Factory<FileDescriptor> {
 
-    protected FileDescriptorFactory() {
+    private FileDescriptorFactory() {
         super("factory.filedescriptor.class");
     }
 

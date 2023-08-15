@@ -54,7 +54,7 @@ public class DefaultTouchFeatureTest extends AbstractSFTPTest {
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)
         ), new SFTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());

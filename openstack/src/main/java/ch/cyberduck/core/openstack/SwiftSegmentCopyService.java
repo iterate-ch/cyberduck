@@ -58,6 +58,6 @@ public class SwiftSegmentCopyService implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source) && !containerService.isContainer(target);
+        return new SwiftDefaultCopyFeature(session, regionService).isSupported(source, target);
     }
 }

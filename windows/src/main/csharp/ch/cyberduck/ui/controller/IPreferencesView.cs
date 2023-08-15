@@ -112,6 +112,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool UseSystemProxy { set; get; }
         bool DebugLog { set; get; }
         bool AutoDetectVault { get; set; }
+        bool VaultUseKeychain { get; set; }
         void PopulateBookmarkSize(IList<KeyValuePair<int, string>> sizes);
         void MarkDownloadSkipRegex(int position);
         void MarkUploadSkipRegex(int position);
@@ -201,6 +202,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler RetryDelayChangedEvent;
         event VoidHandler RetriesChangedEvent;
         event VoidHandler CryptomatorAutoDetectVaultChangedEvent;
+        event VoidHandler CryptomatorUseKeychainChangedEvent;
         //todo introduce Enums to handle the objects directly instead of using strings
         void PopulateBookmarks(List<KeyValueIconTriple<Host, string>> bookmarks);
         void PopulateEditors(List<KeyValueIconTriple<Application, string>> editors);

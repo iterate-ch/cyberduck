@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class WatchServiceFactory extends Factory<RegisterWatchService> {
 
-    protected WatchServiceFactory() {
+    private WatchServiceFactory() {
         super("factory.watchservice.class");
     }
 

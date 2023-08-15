@@ -21,6 +21,7 @@ namespace Ch.Cyberduck.Core.Refresh.Views
 
             this.WhenActivated(d =>
             {
+                d(this.OneWayBind(ViewModel, vm => vm.Busy, v => v.HeadersGrid.IsReadOnly));
                 d(this.OneWayBind(ViewModel, vm => vm.Busy, v => v.Status.IsBusy));
                 d(this.OneWayBind(ViewModel, vm => vm.Metadata, v => v.HeadersGrid.ItemsSource));
                 d(this.OneWayBind(ViewModel, vm => vm.MetadataMenuItems, v => v.metadataButtonMenu.ItemsSource));

@@ -43,7 +43,7 @@ public class S3SearchFeature implements Search {
         if(workdir.isRoot()) {
             if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
                 final AttributedList<Path> result = new AttributedList<>();
-                final AttributedList<Path> buckets = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(workdir, listener);
+                final AttributedList<Path> buckets = new S3BucketListService(session).list(workdir, listener);
                 for(Path bucket : buckets) {
                     result.addAll(filter(regex, new S3ObjectListService(session, acl).list(bucket, listener, null)));
                 }

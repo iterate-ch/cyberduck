@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.AntiVirusAccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
@@ -163,6 +164,13 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                                     case -10012:
                                         // [-10012] Wrong token.
                                         return new ExpiredTokenException(buffer.toString(), failure);
+                                }
+                                break;
+                            case HttpStatus.SC_FORBIDDEN:
+                                switch(errorCode) {
+                                    case -40764: // Anti-virus scan still in progress
+                                    case -40765:  // Anti-virus scan determined malicious file
+                                        return new AntiVirusAccessDeniedException(buffer.toString(), failure);
                                 }
                                 break;
                         }

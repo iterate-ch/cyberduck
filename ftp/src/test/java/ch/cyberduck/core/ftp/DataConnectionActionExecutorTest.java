@@ -21,7 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -84,7 +83,7 @@ public class DataConnectionActionExecutorTest extends AbstractFTPTest {
                 return super.fallback(action);
             }
         };
-        f.data(action, new DisabledProgressListener());
+        f.data(action);
         assertEquals(1, count.get());
     }
 
@@ -108,7 +107,7 @@ public class DataConnectionActionExecutorTest extends AbstractFTPTest {
                 return super.fallback(action);
             }
         };
-        f.data(action, new DisabledProgressListener());
+        f.data(action);
         assertEquals(1, count.get());
     }
 }

@@ -90,7 +90,7 @@ public class EueExceptionMappingService extends AbstractExceptionMappingService<
         switch(failure.getCode()) {
             case HttpStatus.SC_UNPROCESSABLE_ENTITY:
                 return new LockedException(buffer.toString(), failure);
-            case 429:
+            case HttpStatus.SC_TOO_MANY_REQUESTS:
                 final Optional<Map.Entry<String, List<String>>> header
                         = failure.getResponseHeaders().entrySet().stream().filter(e -> HttpHeaders.RETRY_AFTER.equals(e.getKey())).findAny();
                 if(header.isPresent()) {

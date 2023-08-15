@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class RolesApi {
+public class RolesApi {
   private ApiClient apiClient;
 
   public RolesApi() {
@@ -41,7 +41,7 @@ import java.util.Map;
   /**
    * Assign group(s) to the role
    * ### Description: Assign group(s) to a role.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; grant permission on desired role&lt;/span&gt; required.  ### Postcondition: One or more groups will be added to a role.  ### Further Information: None.
-   * @param body Group IDs (required)
+   * @param body  (required)
    * @param roleId Role ID (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return RoleGroupList
@@ -88,7 +88,7 @@ import java.util.Map;
   /**
    * Assign user(s) to the role
    * ### Description: Assign user(s) to a role.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; grant permission on desired role&lt;/span&gt; required.  ### Postcondition: One or more users will be added to a role.  ### Further Information: None.
-   * @param body User IDs (required)
+   * @param body  (required)
    * @param roleId Role ID (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return RoleUserList
@@ -267,7 +267,7 @@ import java.util.Map;
   /**
    * Revoke granted role from group(s)
    * ### Description:   Revoke granted group(s) from a role.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; grant permission on desired role&lt;/span&gt; required.   For each role, at least one non-expiring user **MUST** remain who may grant the role.  ### Postcondition: One or more groups will be removed from a role.  ### Further Information: None.
-   * @param body Group IDs (required)
+   * @param body  (required)
    * @param roleId Role ID (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return RoleGroupList
@@ -314,7 +314,7 @@ import java.util.Map;
   /**
    * Revoke granted role from user(s)
    * ### Description:   Revoke granted user(s) from a role.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; grant permission on desired role&lt;/span&gt; required.   For each role, at least one non-expiring user **MUST** remain who may grant the role.  ### Postcondition: One or more users will be removed from a role.  ### Further Information: None.
-   * @param body User IDs (required)
+   * @param body  (required)
    * @param roleId Role ID (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return RoleUserList

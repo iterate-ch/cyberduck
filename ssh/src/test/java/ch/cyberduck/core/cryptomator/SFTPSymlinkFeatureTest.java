@@ -61,7 +61,7 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path target = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)

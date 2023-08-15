@@ -17,6 +17,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -52,6 +53,12 @@ public class SDSDeleteFeature implements Delete {
                     log.warn(String.format("Delete file %s already in trash", file));
                     new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(Collections.singletonList(
                             Long.parseLong(nodeid.getVersionId(file)))), StringUtils.EMPTY);
+                }
+                else if(file.attributes().getVerdict() == PathAttributes.Verdict.malicious) {
+                    // Delete malicious file
+                    log.warn(String.format("Delete file %s marked as malicious", file));
+                    new NodesApi(session.getClient()).removeMaliciousFile(
+                            Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY);
                 }
                 else {
                     new NodesApi(session.getClient()).removeNode(

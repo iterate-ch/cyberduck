@@ -45,7 +45,6 @@ public class AzureCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(AzureCopyFeature.class);
 
     private final AzureSession session;
-
     private final OperationContext context;
 
     private final PathContainerService containerService
@@ -74,7 +73,7 @@ public class AzureCopyFeature implements Copy {
             }
             listener.sent(status.getLength());
             // Copy original file attributes
-            return copy.withAttributes(source.attributes());
+            return copy.withAttributes(new AzureAttributesFinderFeature(session, context).find(copy));
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);

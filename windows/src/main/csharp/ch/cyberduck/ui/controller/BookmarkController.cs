@@ -596,48 +596,49 @@ namespace Ch.Cyberduck.Ui.Controller
                 var view = PreferencesController.Instance.View;
                 view.SelectProfilesTab();
                 view.Show();
-                return;
             }
-
-            _host.setPort(selected.getDefaultPort());
-            if (!_host.getProtocol().isHostnameConfigurable())
+            else
             {
-                // Previously selected protocol had a default hostname. Change to default
-                // of newly selected protocol.
-                _host.setHostname(selected.getDefaultHostname());
-            }
+                _host.setPort(selected.getDefaultPort());
+                if (!_host.getProtocol().isHostnameConfigurable())
+                {
+                    // Previously selected protocol had a default hostname. Change to default
+                    // of newly selected protocol.
+                    _host.setHostname(selected.getDefaultHostname());
+                }
 
-            if (!selected.isHostnameConfigurable())
-            {
-                // Hostname of newly selected protocol is not configurable. Change to default.
-                _host.setHostname(selected.getDefaultHostname());
-            }
+                if (!selected.isHostnameConfigurable())
+                {
+                    // Hostname of newly selected protocol is not configurable. Change to default.
+                    _host.setHostname(selected.getDefaultHostname());
+                }
 
-            if (Utils.IsNotBlank(selected.getDefaultHostname()))
-            {
-                // Prefill with default hostname
-                _host.setHostname(selected.getDefaultHostname());
-            }
+                if (Utils.IsNotBlank(selected.getDefaultHostname()))
+                {
+                    // Prefill with default hostname
+                    _host.setHostname(selected.getDefaultHostname());
+                }
 
-            if (Objects.equals(_host.getDefaultPath(), _host.getProtocol().getDefaultPath()) ||
-                !selected.isPathConfigurable())
-            {
-                _host.setDefaultPath(selected.getDefaultPath());
-            }
+                if (Objects.equals(_host.getDefaultPath(), _host.getProtocol().getDefaultPath()) ||
+                    !selected.isPathConfigurable())
+                {
+                    _host.setDefaultPath(selected.getDefaultPath());
+                }
 
-            _host.setProtocol(selected);
-            int port = HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname());
-            if (port != -1)
-            {
-                // External configuration found
-                _host.setPort(port);
-            }
+                _host.setProtocol(selected);
+                int port = HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname());
+                if (port != -1)
+                {
+                    // External configuration found
+                    _host.setPort(port);
+                }
 
-            _options.configure(selected);
-            _validator.configure(selected);
-            ItemChanged();
+                _options.configure(selected);
+                _validator.configure(selected);
+                ItemChanged();
+                Reachable();
+            }
             Update();
-            Reachable();
         }
 
         private void View_ChangedTimezoneEvent()

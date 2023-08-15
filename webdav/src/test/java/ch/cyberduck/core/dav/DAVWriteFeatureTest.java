@@ -269,7 +269,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     public void testAppend() throws Exception {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(feature.append(test, new TransferStatus().withLength(0L).withRemote(new DAVAttributesFinderFeature(session).find(test))).append);
+        assertTrue(feature.append(test, new TransferStatus().exists(true).withLength(0L).withRemote(new DAVAttributesFinderFeature(session).find(test))).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

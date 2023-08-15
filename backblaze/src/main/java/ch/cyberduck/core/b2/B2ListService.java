@@ -25,14 +25,14 @@ import java.util.Collections;
 
 public class B2ListService implements ListService {
 
-    private final B2BucketListService buckets;
-    private final B2ObjectListService objects;
+    private final B2Session session;
+    private final B2VersionIdProvider fileid;
 
     private Path bucket;
 
     public B2ListService(final B2Session session, final B2VersionIdProvider fileid) {
-        buckets = new B2BucketListService(session, fileid);
-        objects = new B2ObjectListService(session, fileid);
+        this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -43,9 +43,9 @@ public class B2ListService implements ListService {
                 listener.chunk(directory, buckets);
                 return buckets;
             }
-            return buckets.list(directory, listener);
+            return new B2BucketListService(session, fileid).list(directory, listener);
         }
-        return objects.list(directory, listener);
+        return new B2ObjectListService(session, fileid).list(directory, listener);
     }
 
     /**

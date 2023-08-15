@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -64,7 +63,7 @@ public class CryptoChecksumComputeTest {
             }
         };
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
         final ByteBuffer header = cryptomator.getFileHeaderCryptor().encryptHeader(cryptomator.getFileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024
         final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));

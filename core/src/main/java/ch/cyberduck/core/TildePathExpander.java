@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 public class TildePathExpander {
 
     public static final String PREFIX
-            = String.format("%s%s", Path.DELIMITER, Path.HOME);
+            = String.format("%s%s%s", Path.DELIMITER, Path.HOME, Path.DELIMITER);
 
     private final Path workdir;
 
@@ -31,14 +31,18 @@ public class TildePathExpander {
         this.workdir = workdir;
     }
 
-    public Path expand(final Path remote) {
+    public String expand(final String remote) {
         return this.expand(remote, PREFIX);
     }
 
-    protected Path expand(final Path remote, final String format) {
-        if(remote.getAbsolute().startsWith(format)) {
-            return new Path(StringUtils.replaceOnce(remote.getAbsolute(), format, workdir.getAbsolute()),
-                    remote.getType());
+    /**
+     * @param remote Path
+     * @param prefix Prefix to replace in path
+     * @return Absolute path with prefix replaced with working directory path
+     */
+    public String expand(final String remote, final String prefix) {
+        if(remote.startsWith(prefix)) {
+            return StringUtils.replaceOnce(remote, prefix, workdir.getAbsolute() + Path.DELIMITER);
         }
         return remote;
     }

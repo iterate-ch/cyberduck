@@ -84,7 +84,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
@@ -119,7 +119,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final CryptoWriteFeature<File> writer = new CryptoWriteFeature<>(session, new DriveWriteFeature(session, fileid), cryptomator);

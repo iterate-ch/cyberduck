@@ -35,6 +35,14 @@ public class AccessDeniedException extends BackgroundException {
         super(LocaleFactory.localizedString("Access denied", "Error"), detail, cause);
     }
 
+    public AccessDeniedException(final String message, final String detail) {
+        super(message, detail);
+    }
+
+    public AccessDeniedException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
+    }
+
     @Override
     public String getHelp() {
         return LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support");

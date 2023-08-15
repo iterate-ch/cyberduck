@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.concurrency.Interruptibles;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
@@ -260,7 +261,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return this;
     }
 
-    public void setFailure() {
+    @Override
+    public void setFailure(final BackgroundException failure) {
         complete.set(false);
         done.countDown();
     }
@@ -741,7 +743,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("Temporary{");
+            final StringBuilder sb = new StringBuilder("Displayname{");
+            sb.append("remote=").append(remote);
             sb.append(", local=").append(local);
             sb.append('}');
             return sb.toString();

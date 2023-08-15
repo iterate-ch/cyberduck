@@ -19,9 +19,11 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -40,10 +42,16 @@ public class B2DeleteFeature implements Delete {
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
+    private final VersioningConfiguration versioning;
 
     public B2DeleteFeature(final B2Session session, final B2VersionIdProvider fileid) {
+        this(session, fileid, new VersioningConfiguration(new HostPreferences(session.getHost()).getBoolean("b2.listing.versioning.enable")));
+    }
+
+    public B2DeleteFeature(final B2Session session, final B2VersionIdProvider fileid, final VersioningConfiguration versioning) {
         this.session = session;
         this.fileid = fileid;
+        this.versioning = versioning;
     }
 
     @Override
@@ -79,7 +87,7 @@ public class B2DeleteFeature implements Delete {
                 }
                 else if(file.isFile()) {
                     try {
-                        if(null == file.attributes().getVersionId()) {
+                        if(!versioning.isEnabled() || null == file.attributes().getVersionId()) {
                             // Add hide marker
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Add hide marker %s of %s", file.attributes().getVersionId(), file));

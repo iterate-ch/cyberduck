@@ -25,6 +25,8 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
@@ -63,9 +65,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     }
 
     @Override
-    protected Storage connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected Storage connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+        authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));

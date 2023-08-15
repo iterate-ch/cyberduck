@@ -17,52 +17,48 @@ package ch.cyberduck.core;
 
 
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class ConnectionTimeoutFactory extends Factory<ConnectionTimeout> {
-    private static final Logger log = LogManager.getLogger(ConnectionTimeoutFactory.class);
 
-    private static final ConnectionTimeoutFactory factory = new ConnectionTimeoutFactory();
-    private final ConnectionTimeout instance;
-
-    private final Constructor<? extends ConnectionTimeout> constructor;
+    private Constructor<? extends ConnectionTimeout> constructor;
 
     private ConnectionTimeoutFactory() {
         super("factory.connectiontimeout.class");
-        instance = create();
-
-        constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, PreferencesReader.class);
     }
 
-    public ConnectionTimeout create(final PreferencesReader preferences) {
-        ConnectionTimeout temp = instance;
-        if(constructor != null) {
-            try {
-                temp = constructor.newInstance(preferences);
+    public ConnectionTimeout create(final PreferencesReader preferences) throws FactoryException {
+        try {
+            if(null == constructor) {
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, PreferencesReader.class);
             }
-            catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
-                log.error(String.format("Failure loading host connection timeout class %s. %s", clazz, e.getMessage()));
-            }
+            return constructor.newInstance(preferences);
         }
-        return temp;
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
     }
+
+    private static ConnectionTimeoutFactory singleton;
 
     public static ConnectionTimeout get() {
-        return factory.instance;
+        return get(PreferencesFactory.get());
     }
 
     public static ConnectionTimeout get(final Host host) {
         return get(new HostPreferences(host));
     }
 
-    public static ConnectionTimeout get(final PreferencesReader preferences) {
-        return factory.create(preferences);
+    public static synchronized ConnectionTimeout get(final PreferencesReader preferences) {
+        if(null == singleton) {
+            singleton = new ConnectionTimeoutFactory();
+        }
+        return singleton.create(preferences);
     }
 }

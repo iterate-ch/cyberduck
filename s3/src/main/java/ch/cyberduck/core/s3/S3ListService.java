@@ -56,7 +56,7 @@ public class S3ListService implements ListService {
                 }
                 // List all buckets
                 try {
-                    return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
+                    return new S3BucketListService(session).list(directory, listener);
                 }
                 catch(InteroperabilityException e) {
                     // Bucket set in hostname that leads to parser failure for XML reply

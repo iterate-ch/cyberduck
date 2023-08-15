@@ -42,7 +42,7 @@ public class S3BucketListService implements RootListService {
     private final S3LocationFeature.S3Region region;
 
     public S3BucketListService(final S3Session session) {
-        this(session, new S3LocationFeature.S3Region(null));
+        this(session, new S3LocationFeature.S3Region(session.getHost().getRegion()));
     }
 
     public S3BucketListService(final S3Session session, final S3LocationFeature.S3Region region) {

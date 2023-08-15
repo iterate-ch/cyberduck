@@ -107,7 +107,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                 request.addHeader(HttpHeaders.AUTHORIZATION,
                         String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
             }
-        }).build(), host)
+        }).build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
@@ -174,8 +174,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            authorizationService.refresh(authorizationService.authorize(host, prompt, cancel
-            ));
+            authorizationService.refresh(authorizationService.authorize(host, prompt, cancel));
         }
         catch(InteroperabilityException e) {
             // Perm.INVALID_GRANT
@@ -277,7 +276,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     }
 
     public UserSharesModel userShares() throws BackgroundException {
-        if(this.userShares.get() == null) {
+        if(userShares.get() == null) {
             try {
                 userShares.set(new GetUserSharesApi(new EueApiClient(this)).shareGet(null, null));
             }

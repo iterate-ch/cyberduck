@@ -87,7 +87,7 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
                 credentials.setPassword(String.valueOf(input));
                 Arrays.fill(input, ' ');
             }
-            return this.prompt(options, credentials);
+            return this.options(options, credentials);
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);

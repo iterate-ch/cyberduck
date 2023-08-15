@@ -81,7 +81,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
@@ -106,7 +106,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path target = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)
         ), new GraphWriteFeature(session, fileid), cryptomator).touch(source, new TransferStatus());
@@ -129,7 +129,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory));
         final Path target = new Path(targetFolder, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)
         ), new GraphWriteFeature(session, fileid), cryptomator).touch(source, new TransferStatus());
@@ -150,7 +150,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(folder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
@@ -183,7 +183,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());
@@ -209,7 +209,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
         assertTrue(new DefaultFindFeature(session).find(clearFolder));
         assertTrue(new DefaultFindFeature(session).find(clearFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         // move directory into vault
@@ -234,7 +234,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());
@@ -261,7 +261,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());

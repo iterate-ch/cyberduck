@@ -33,6 +33,10 @@ import java.lang.reflect.InvocationTargetException;
 public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
     private static final Logger log = LogManager.getLogger(TransferPromptControllerFactory.class);
 
+    private TransferPromptControllerFactory() {
+        //
+    }
+
     public TransferPrompt create(final Controller c, final Transfer transfer, final SessionPool source, final SessionPool destination) {
         final String clazz = PreferencesFactory.get().getProperty(
                 String.format("factory.transferpromptcallback.%s.class", transfer.getType().name()));

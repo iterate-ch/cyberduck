@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
@@ -38,12 +39,15 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultRegistry;
 
@@ -331,6 +335,9 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
+        }
+        if(type == Home.class) {
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host));
         }
         return host.getProtocol().getFeature(type);
     }
