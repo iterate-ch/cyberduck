@@ -20,12 +20,12 @@ import ch.cyberduck.core.serializer.Deserializer;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ProfileTest {
 
@@ -102,5 +102,52 @@ public class ProfileTest {
         });
         assertTrue(profile.getProperties().containsKey("empty.prop"));
         assertEquals(StringUtils.EMPTY, profile.getProperties().get("empty.prop"));
+    }
+
+    @Test
+    public void testSubstitution() {
+        final Profile profile = new Profile(new TestProtocol(), new Deserializer<String>() {
+            @Override
+            public String stringForKey(final String key) {
+                return "${application.identifier}";
+            }
+
+            @Override
+            public String objectForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public <L> List<L> listForKey(final String key) {
+                return (List<L>) Arrays.asList(
+                        "prop=${application.identifier}",
+                        "unknown=${unknown}"
+                        );
+            }
+
+            @Override
+            public Map<String, String> mapForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public boolean booleanForKey(final String key) {
+                return false;
+            }
+
+            @Override
+            public List<String> keys() {
+                return null;
+            }
+        }) {
+            @Override
+            public String getOAuthClientSecret() {
+                return "${notfound}";
+            }
+        };
+        assertEquals("io.cyberduck", profile.getProvider());
+        assertEquals("${notfound}", profile.getOAuthClientSecret());
+        assertEquals("io.cyberduck", profile.getProperties().get("prop"));
+        assertEquals("${unknown}", profile.getProperties().get("unknown"));
     }
 }

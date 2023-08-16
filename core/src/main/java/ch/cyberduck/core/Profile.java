@@ -29,11 +29,14 @@ import ch.cyberduck.core.serializer.Serializer;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.commons.text.lookup.StringLookupFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +46,9 @@ import java.util.stream.Collectors;
 
 public class Profile implements Protocol {
     private static final Logger log = LogManager.getLogger(Profile.class);
+
+    private static final StringSubstitutor substitutor = new StringSubstitutor(
+            StringLookupFactory.INSTANCE.functionStringLookup(s -> PreferencesFactory.get().getProperty(s)));
 
     private final Deserializer<?> dict;
     /**
@@ -547,7 +553,7 @@ public class Profile implements Protocol {
         }
         return properties.stream().distinct().collect(Collectors.toMap(
                 property -> StringUtils.contains(property, '=') ? StringUtils.substringBefore(property, '=') : property,
-                property -> StringUtils.contains(property, '=') ? StringUtils.substringAfter(property, '=') : StringUtils.EMPTY));
+                property -> StringUtils.contains(property, '=') ? substitutor.replace(StringUtils.substringAfter(property, '=')) : StringUtils.EMPTY));
     }
 
     @Override
@@ -570,7 +576,7 @@ public class Profile implements Protocol {
     }
 
     private String value(final String key) {
-        return dict.stringForKey(key);
+        return substitutor.replace(dict.stringForKey(key));
     }
 
     private List<String> list(final String key) {
@@ -578,7 +584,9 @@ public class Profile implements Protocol {
         if(null == list) {
             return Collections.emptyList();
         }
-        return list;
+        final ArrayList<String> substituted = new ArrayList<>(list);
+        substituted.replaceAll(substitutor::replace);
+        return substituted;
     }
 
     private boolean bool(final String key) {
