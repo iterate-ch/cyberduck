@@ -18,15 +18,12 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -56,13 +53,7 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
 
     protected static Profile profile = null;
 
-    @ClassRule
-    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
 
-    @Before
-    public void setup() throws BackgroundException {
-        profile = readProfile();
-    }
 
     public static DockerComposeContainer prepareDockerComposeContainer(final String keyCloakRealmTempFile) {
         log.info("Preparing docker compose container...");
