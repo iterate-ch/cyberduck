@@ -915,41 +915,18 @@ public class MainController extends BundleController implements NSApplication.De
         NSWindow.setAllowsAutomaticWindowTabbing(true);
         // Load main menu
         this.loadBundle();
-        // Open default windows
-        if(preferences.getBoolean("browser.open.untitled")) {
-            final BrowserController c = newDocument();
-            c.window().makeKeyAndOrderFront(null);
-        }
         if(preferences.getBoolean("queue.window.open.default")) {
             TransferController c = TransferControllerFactory.get();
             c.window().makeKeyAndOrderFront(null);
         }
-        if(preferences.getBoolean("browser.serialize")) {
-            this.background(new AbstractBackgroundAction<Void>() {
-                @Override
-                public Void run() throws BackgroundException {
-                    sessions.load();
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    for(Host host : sessions) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("New browser for saved session %s", host));
-                        }
-                        final BrowserController browser = newDocument(true, host.getUuid());
-                        browser.mount(host);
-                    }
-                    sessions.clear();
-                }
-            });
-        }
         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
-        // Load all bookmarks in background
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public Void run() throws BackgroundException {
+                if(preferences.getBoolean("browser.serialize")) {
+                    sessions.load();
+                }
+                // Load all bookmarks in background
                 bookmarks.load();
                 bookmarksSemaphore.countDown();
                 return null;
@@ -957,11 +934,26 @@ public class MainController extends BundleController implements NSApplication.De
 
             @Override
             public void cleanup() {
-                if(preferences.getBoolean("browser.open.untitled")) {
-                    if(preferences.getProperty("browser.open.bookmark.default") != null) {
-                        openDefaultBookmark(newDocument());
+                for(Host host : sessions) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("New browser for saved session %s", host));
+                    }
+                    final BrowserController browser = newDocument(true, host.getUuid());
+                    browser.mount(host);
+                }
+                if(sessions.isEmpty()) {
+                    // Open default windows
+                    if(preferences.getBoolean("browser.open.untitled")) {
+                        if(preferences.getProperty("browser.open.bookmark.default") != null) {
+                            openDefaultBookmark(newDocument());
+                        }
+                        else {
+                            final BrowserController c = newDocument();
+                            c.window().makeKeyAndOrderFront(null);
+                        }
                     }
                 }
+                sessions.clear();
                 // Set delegate for NSService
                 NSApplication.sharedApplication().setServicesProvider(MainController.this.id());
             }
