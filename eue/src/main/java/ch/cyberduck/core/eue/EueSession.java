@@ -338,7 +338,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         if(type == UrlProvider.class) {
             return (T) new EueShareUrlProvider(host, userShares.get());
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) new EueShareFeature(this, resourceid);
         }
         if(type == Quota.class) {

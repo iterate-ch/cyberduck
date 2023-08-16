@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -43,7 +44,7 @@ public class StoregateShareFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
             new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(new StoregateShareFeature(session, nodeid).toDownloadUrl(test, null, new DisabledPasswordCallback()).getUrl());
+        assertNotNull(new StoregateShareFeature(session, nodeid).toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -53,7 +54,7 @@ public class StoregateShareFeatureTest extends AbstractStoregateTest {
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        assertNotNull(new StoregateShareFeature(session, nodeid).toUploadUrl(room, null, new DisabledPasswordCallback()).getUrl());
+        assertNotNull(new StoregateShareFeature(session, nodeid).toUploadUrl(room, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

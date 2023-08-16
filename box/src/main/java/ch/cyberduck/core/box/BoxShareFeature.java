@@ -35,12 +35,12 @@ import ch.cyberduck.core.box.io.swagger.client.model.FoldersfolderIdaddSharedLin
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import java.net.URI;
 import java.text.MessageFormat;
 
-public class BoxShareFeature implements PromptUrlProvider {
+public class BoxShareFeature implements Share {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
@@ -60,7 +60,7 @@ public class BoxShareFeature implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         if(file.isDirectory()) {
             return this.createFolderSharedLink(file, callback);
         }
@@ -68,7 +68,7 @@ public class BoxShareFeature implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         throw new UnsupportedException();
     }
 

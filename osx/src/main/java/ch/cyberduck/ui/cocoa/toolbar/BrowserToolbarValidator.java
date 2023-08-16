@@ -33,7 +33,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Restore;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
@@ -286,16 +286,16 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(share.action())) {
             if(this.isBrowser() && controller.isMounted()) {
                 final Path selected = null != controller.getSelectedPath() ? controller.getSelectedPath() : controller.workdir();
-                return controller.getSession().getFeature(PromptUrlProvider.class) != null &&
-                    controller.getSession().getFeature(PromptUrlProvider.class).isSupported(selected, PromptUrlProvider.Type.download);
+                return controller.getSession().getFeature(Share.class) != null &&
+                    controller.getSession().getFeature(Share.class).isSupported(selected, Share.Type.download);
             }
             return false;
         }
         else if(action.equals(requestfiles.action())) {
             if(this.isBrowser() && controller.isMounted()) {
                 final Path selected = null != controller.getSelectedPath() ? controller.getSelectedPath() : controller.workdir();
-                return controller.getSession().getFeature(PromptUrlProvider.class) != null &&
-                        controller.getSession().getFeature(PromptUrlProvider.class).isSupported(selected, PromptUrlProvider.Type.upload);
+                return controller.getSession().getFeature(Share.class) != null &&
+                        controller.getSession().getFeature(Share.class).isSupported(selected, Share.Type.upload);
             }
             return false;
         }

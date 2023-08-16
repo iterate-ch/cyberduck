@@ -26,7 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -48,15 +48,15 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     public void testSharePasswordProtected() throws Exception {
         final Path file = new DropboxTouchFeature(session).touch(
             new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        final DescriptiveUrl url = provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+        final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
+        final DescriptiveUrl url = provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials().withPassword(new AlphanumericRandomStringService().random());
             }
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
-        assertEquals(url, provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+        assertEquals(url, provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials().withPassword(new AlphanumericRandomStringService().random());
@@ -69,15 +69,15 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     public void testShareFileDownloadPublic() throws Exception {
         final Path file = new DropboxTouchFeature(session).touch(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        final DescriptiveUrl url = provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+        final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
+        final DescriptiveUrl url = provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return bookmark.getCredentials();
             }
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
-        assertEquals(url, provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+        assertEquals(url, provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return bookmark.getCredentials();
@@ -90,8 +90,8 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     public void testShareFileDownloadPassword() throws Exception {
         final Path file = new DropboxTouchFeature(session).touch(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        assertThrows(InteroperabilityException.class, () -> provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+        final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
+        assertThrows(InteroperabilityException.class, () -> provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new Credentials().withPassword(new AlphanumericRandomStringService().random());
@@ -104,15 +104,15 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     public void testShareDownloadFolderPublic() throws Exception {
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        final DescriptiveUrl url = provider.toDownloadUrl(folder, null, new DisabledPasswordCallback() {
+        final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
+        final DescriptiveUrl url = provider.toDownloadUrl(folder, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return bookmark.getCredentials();
             }
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
-        assertEquals(url, provider.toDownloadUrl(folder, null, new DisabledPasswordCallback() {
+        assertEquals(url, provider.toDownloadUrl(folder, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return bookmark.getCredentials();
@@ -124,11 +124,11 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     @Test
     public void testRequestFiles() throws Exception {
         final Path root = new DefaultHomeFinderService(session).find();
-        assertFalse(new DropboxPasswordShareUrlProvider(session).isSupported(root, PromptUrlProvider.Type.upload));
+        assertFalse(new DropboxPasswordShareFeature(session).isSupported(root, Share.Type.upload));
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
                 new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        assertNotEquals(DescriptiveUrl.EMPTY, provider.toUploadUrl(folder, null, new DisabledPasswordCallback() {
+        final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
+        assertNotEquals(DescriptiveUrl.EMPTY, provider.toUploadUrl(folder, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return bookmark.getCredentials();

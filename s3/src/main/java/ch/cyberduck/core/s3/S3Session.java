@@ -593,7 +593,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this, distributions);
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) new S3PublicUrlProvider(this, acl);
         }
         if(type == Find.class) {

@@ -23,7 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,13 +40,13 @@ import com.dropbox.core.v2.sharing.RequestedVisibility;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
 import com.dropbox.core.v2.sharing.SharedLinkSettings;
 
-public class DropboxShareUrlProvider implements PromptUrlProvider<Void, Void> {
-    private static final Logger log = LogManager.getLogger(DropboxShareUrlProvider.class);
+public class DropboxShareFeature implements Share<Void, Void> {
+    private static final Logger log = LogManager.getLogger(DropboxShareFeature.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;
 
-    public DropboxShareUrlProvider(final DropboxSession session) {
+    public DropboxShareFeature(final DropboxSession session) {
         this.session = session;
         this.containerService = new DropboxPathContainerService(session);
     }
@@ -58,7 +58,7 @@ public class DropboxShareUrlProvider implements PromptUrlProvider<Void, Void> {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         final SharedLinkSettings settings = this.toSettings(file, callback).build();
         try {
             try {
@@ -102,7 +102,7 @@ public class DropboxShareUrlProvider implements PromptUrlProvider<Void, Void> {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             final FileRequest request = new DbxUserFileRequestsRequests(session.getClient())
                     .create(file.getName(), file.isRoot() ? file.getAbsolute() : containerService.getKey(file));

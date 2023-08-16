@@ -151,7 +151,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == UrlProvider.class) {
             return (T) new B2UrlProvider(this);
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) new B2AuthorizedUrlProvider(this, fileid);
         }
         if(type == Find.class) {

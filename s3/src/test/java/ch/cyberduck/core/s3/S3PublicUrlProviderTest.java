@@ -21,7 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -42,9 +42,9 @@ public class S3PublicUrlProviderTest extends AbstractS3Test {
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
         final S3PublicUrlProvider provider = new S3PublicUrlProvider(session, new S3AccessControlListFeature(session));
-        assertFalse(provider.isSupported(bucket, PromptUrlProvider.Type.download));
-        assertTrue(provider.isSupported(test, PromptUrlProvider.Type.download));
-        final DescriptiveUrl url = provider.toDownloadUrl(test, null, new DisabledPasswordCallback());
+        assertFalse(provider.isSupported(bucket, Share.Type.download));
+        assertTrue(provider.isSupported(test, Share.Type.download));
+        final DescriptiveUrl url = provider.toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertNotNull(url.getUrl());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

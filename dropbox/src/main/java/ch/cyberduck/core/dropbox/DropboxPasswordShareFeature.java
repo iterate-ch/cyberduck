@@ -28,11 +28,11 @@ import java.text.MessageFormat;
 import com.dropbox.core.v2.sharing.RequestedVisibility;
 import com.dropbox.core.v2.sharing.SharedLinkSettings;
 
-public class DropboxPasswordShareUrlProvider extends DropboxShareUrlProvider {
+public class DropboxPasswordShareFeature extends DropboxShareFeature {
 
     private final DropboxSession session;
 
-    public DropboxPasswordShareUrlProvider(final DropboxSession session) {
+    public DropboxPasswordShareFeature(final DropboxSession session) {
         super(session);
         this.session = session;
     }

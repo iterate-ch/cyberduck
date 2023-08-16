@@ -23,7 +23,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
@@ -67,8 +67,8 @@ public class NextcloudSession extends DAVSession {
         if(type == UrlProvider.class) {
             return (T) new NextcloudUrlProvider(this);
         }
-        if(type == PromptUrlProvider.class) {
-            return (T) new NextcloudShareProvider(this);
+        if(type == Share.class) {
+            return (T) new NextcloudShareFeature(this);
         }
         if(type == Versioning.class) {
             return (T) new NextcloudVersioningFeature(this);
