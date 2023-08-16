@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +36,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
-public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void> {
+public class DropboxTemporaryUrlProvider implements Share<Void, Void> {
     private static final Logger log = LogManager.getLogger(DropboxTemporaryUrlProvider.class);
 
     private final DropboxSession session;
@@ -48,7 +48,7 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create temporary link for %s", file));
@@ -70,7 +70,7 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create temporary upload link for %s", file));

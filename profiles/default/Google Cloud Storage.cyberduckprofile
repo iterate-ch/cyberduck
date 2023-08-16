@@ -37,6 +37,8 @@
         </array>
         <key>OAuth Client ID</key>
         <string>996125414232-s922bvdt21nceeh5dq1gb6av8plpj7hr.apps.googleusercontent.com</string>
+        <key>OAuth Client Secret</key>
+        <string/>
         <key>OAuth Redirect Url</key>
         <string>io.cyberduck:oauth</string>
         <key>Password Configurable</key>

@@ -21,24 +21,17 @@
     <PackageReference Update="Microsoft.Build.Utilities.Core" Version="17.1.0" />
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
+    <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.647-beta" />
     <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.22000.196" />
     <PackageReference Update="NUnit" Version="3.13.3" />
     <PackageReference Update="NUnit.Console" Version="3.16.0" />
     <PackageReference Update="NUnit.ConsoleRunner" Version="3.16.0" GeneratePathProperty="true" />
     <PackageReference Update="NUnit3TestAdapter" Version="4.3.1" />
     <PackageReference Update="ObjectListView.Official" Version="2.9.1" />
+    <PackageReference Update="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.2.3" />
     <PackageReference Update="ReactiveUI.WPF" Version="17.1.50" />
     <PackageReference Update="StructureMap" Version="2.6.4.1" />
     <PackageReference Update="System.Memory" Version="4.5.5" />
-
-    <!-- Build-Supports -->
-    <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.647-beta">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Update="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.2.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
 
     <GlobalPackageReference Include="MSBuildTasks" Version="1.5.0.235" GeneratePathProperty="true" />
   </ItemGroup>

@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +38,7 @@ import java.util.TimeZone;
 
 import synapticloop.b2.exception.B2ApiException;
 
-public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
+public class B2AuthorizedUrlProvider implements Share<Void, Void> {
     private static final Logger log = LogManager.getLogger(B2AuthorizedUrlProvider.class);
 
     private final PathContainerService containerService
@@ -62,10 +62,10 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void none, final PasswordCallback callback) throws BackgroundException {
         final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
-            URIEncoder.encode(containerService.getContainer(file).getName()),
-            URIEncoder.encode(containerService.getKey(file)));
+                URIEncoder.encode(containerService.getContainer(file).getName()),
+                URIEncoder.encode(containerService.getKey(file)));
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create download authorization for %s", file));
@@ -91,7 +91,7 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void none, final PasswordCallback callback) throws BackgroundException {
         return DescriptiveUrl.EMPTY;
     }
 }

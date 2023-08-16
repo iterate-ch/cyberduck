@@ -2124,6 +2124,22 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSButton updateAutoCheckbox;
+
+    public void setUpdateAutoCheckbox(NSButton b) {
+        this.updateCheckbox = b;
+        this.updateCheckbox.setTarget(this.id());
+        this.updateCheckbox.setAction(Foundation.selector("updateAutoCheckboxClicked:"));
+        this.updateCheckbox.setState(preferences.getBoolean("update.check.auto") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void updateAutoCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.NSOnState;
+        preferences.setProperty("update.check.auto", enabled);
+    }
+
+    @Outlet
     private NSButton updateCheckButton;
 
     public void setUpdateCheckButton(NSButton b) {

@@ -20,11 +20,11 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import org.jets3t.service.acl.Permission;
 
-public class GoogleStoragePublicUrlProvider implements PromptUrlProvider<Void, Void> {
+public class GoogleStoragePublicUrlProvider implements Share<Void, Void> {
 
     private final GoogleStorageSession session;
 
@@ -42,7 +42,7 @@ public class GoogleStoragePublicUrlProvider implements PromptUrlProvider<Void, V
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         final GoogleStorageAccessControlListFeature acl = new GoogleStorageAccessControlListFeature(session);
         final Acl permission = acl.getPermission(file);
         final Acl.GroupUser everyone = new Acl.GroupUser(Acl.GroupUser.EVERYONE);
@@ -55,7 +55,7 @@ public class GoogleStoragePublicUrlProvider implements PromptUrlProvider<Void, V
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) {
         return DescriptiveUrl.EMPTY;
     }
 }

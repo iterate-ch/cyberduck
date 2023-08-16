@@ -41,7 +41,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
@@ -236,7 +236,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         if(type == Lock.class) {
             return (T) new BrickLockFeature(this);
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) new BrickShareFeature(this);
         }
         return super._getFeature(type);

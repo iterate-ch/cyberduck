@@ -33,6 +33,8 @@
         <string>https://api.dropboxapi.com/1/oauth2/token</string>
         <key>OAuth Client ID</key>
         <string>rjqgs45ntjp1va9</string>
+        <key>OAuth Client Secret</key>
+        <string/>
         <key>OAuth Redirect Url</key>
         <string>x-cyberduck-action:oauth</string>
         <key>Password Configurable</key>

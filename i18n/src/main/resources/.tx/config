@@ -385,3 +385,11 @@ type          = STRINGS
 minimum_perc  = 0
 resource_name = Upload
 
+
+[o:cyberduck:p:cyberduck:r:Share]
+file_filter   = <lang>.lproj/Share.strings
+source_file   = en.lproj/Share.strings
+source_lang   = en
+type          = STRINGS
+minimum_perc  = 0
+resource_name = Upload

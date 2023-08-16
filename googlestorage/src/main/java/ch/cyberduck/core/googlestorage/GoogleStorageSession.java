@@ -149,7 +149,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         if(type == UrlProvider.class) {
             return (T) new GoogleStorageUrlProvider(this);
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) new GoogleStoragePublicUrlProvider(this);
         }
         if(type == Search.class) {

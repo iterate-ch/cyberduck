@@ -21,7 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -33,10 +33,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 
-public class GraphPromptUrlProvider implements PromptUrlProvider {
+public class GraphSharedLinkFeature implements Share {
     private final GraphSession session;
 
-    public GraphPromptUrlProvider(final GraphSession session) {
+    public GraphSharedLinkFeature(final GraphSession session) {
         this.session = session;
     }
 
@@ -49,12 +49,12 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(Path file, Object options, PasswordCallback callback)
-        throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(Path file, final Sharee sharee, Object options, PasswordCallback callback)
+            throws BackgroundException {
         final DriveItem item = session.getItem(file);
         try {
             return new DescriptiveUrl(URI.create(Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
-                DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
+                    DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -65,7 +65,7 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(Path file, Object options, PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(Path file, final Sharee sharee, Object options, PasswordCallback callback) throws BackgroundException {
         return DescriptiveUrl.EMPTY;
     }
 }

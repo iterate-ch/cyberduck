@@ -26,7 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.SharesApi;
@@ -55,13 +55,13 @@ import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 
-public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest, CreateUploadShareRequest> {
-    private static final Logger log = LogManager.getLogger(SDSSharesUrlProvider.class);
+public class SDSShareFeature implements Share<CreateDownloadShareRequest, CreateUploadShareRequest> {
+    private static final Logger log = LogManager.getLogger(SDSShareFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
-    public SDSSharesUrlProvider(final SDSSession session, final SDSNodeIdProvider nodeid) {
+    public SDSShareFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
         this.nodeid = nodeid;
     }
@@ -105,7 +105,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, CreateDownloadShareRequest options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, CreateDownloadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create download share for %s", file));
@@ -178,7 +178,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create upload share for %s", file));

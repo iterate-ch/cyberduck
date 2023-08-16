@@ -108,6 +108,7 @@
                 <outlet property="uownerr" destination="170" id="506"/>
                 <outlet property="uownerw" destination="154" id="507"/>
                 <outlet property="uownerx" destination="156" id="508"/>
+                <outlet property="updateAutoCheckbox" destination="bhz-d7-jSQ" id="Coht0aiF"/>
                 <outlet property="updateCheckButton" destination="319" id="509"/>
                 <outlet property="updateCheckbox" destination="317" id="510"/>
                 <outlet property="updateFeedPopup" destination="324" id="511"/>
@@ -127,7 +128,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="3200" height="1775"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1800" height="1125"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1525,26 +1526,34 @@
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="314"/>
         <customView id="315" userLabel="Panel Update">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="137"/>
+            <rect key="frame" x="0.0" y="0.0" width="507" height="153"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <box fixedFrame="YES" title="Posodobitve" translatesAutoresizingMaskIntoConstraints="NO" id="316">
-                    <rect key="frame" x="17" y="16" width="473" height="101"/>
+                    <rect key="frame" x="17" y="16" width="473" height="117"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="V20-wh-cwb">
-                        <rect key="frame" x="4" y="5" width="465" height="81"/>
+                        <rect key="frame" x="4" y="5" width="465" height="97"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="317">
-                                <rect key="frame" x="10" y="54" width="346" height="18"/>
+                                <rect key="frame" x="10" y="70" width="346" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Samodejno preveri za posodobitve Cyberducka med:" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bhz-d7-jSQ">
+                                <rect key="frame" x="10" y="48" width="435" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Automatically download and install updates" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="NvW-EF-5oW">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="324">
-                                <rect key="frame" x="248" y="48" width="95" height="26"/>
+                                <rect key="frame" x="248" y="64" width="95" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -1553,7 +1562,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="319">
-                                <rect key="frame" x="134" y="11" width="197" height="32"/>
+                                <rect key="frame" x="146" y="2" width="197" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Preveri za posodobive zdaj" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1564,7 +1573,7 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-1302.5" y="331.5"/>
+            <point key="canvasLocation" x="-1302.5" y="339.5"/>
         </customView>
         <customView id="327" userLabel="Panel Bandwidth">
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
