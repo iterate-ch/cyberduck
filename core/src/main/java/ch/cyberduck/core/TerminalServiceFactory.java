@@ -20,7 +20,7 @@ package ch.cyberduck.core;
 
 public class TerminalServiceFactory extends Factory<TerminalService> {
 
-    public TerminalServiceFactory() {
+    private TerminalServiceFactory() {
         super("factory.terminalservice.class");
     }
 

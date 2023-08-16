@@ -60,7 +60,7 @@ public class GraphExceptionMappingService extends AbstractExceptionMappingServic
             buffer.append(failure.getMessage());
             buffer.append(failure.getErrorMessage());
             switch(failure.getResponseCode()) {
-                case 429:
+                case HttpStatus.SC_TOO_MANY_REQUESTS:
                     // Rate limit
                     if(failure.getRetry() != null) {
                         return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(failure.getRetry()));

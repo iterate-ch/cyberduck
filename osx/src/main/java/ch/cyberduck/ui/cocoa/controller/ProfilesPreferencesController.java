@@ -21,6 +21,7 @@ import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.OutlineDataSource;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
@@ -160,11 +161,11 @@ public class ProfilesPreferencesController extends BundleController {
         return panelProfiles;
     }
 
-    protected void load() {
+    protected void load(final WindowController controller) {
         if(repository.isEmpty()) {
             try {
                 progressIndicator.startAnimation(null);
-                this.background(new ProfilesWorkerBackgroundAction(this,
+                this.background(new ProfilesWorkerBackgroundAction(controller,
                         new ProfilesSynchronizeWorker(protocols, ProfilesFinder.Visitor.Prefetch) {
                             @Override
                             public void cleanup(final Set<ProfileDescription> set) {

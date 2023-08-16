@@ -2421,7 +2421,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Path directory = new UploadTargetFinder(workdir).find(this.getSelectedPath());
         if(directory.attributes().getVault() != null) {
             // Lock and remove all open vaults
-            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVault(), directory.attributes().getVault()) {
+            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory.attributes().getVault()) {
                 @Override
                 public void cleanup(final Path vault) {
                     if(vault != null) {
@@ -2432,7 +2432,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else {
             // Unlock vault
-            this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new LoadingVaultLookupListener(pool.getVault(),
+            this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new LoadingVaultLookupListener(pool.getVaultRegistry(),
                     PasswordCallbackFactory.get(this)), directory) {
                 @Override
                 public void cleanup(final Vault vault) {
@@ -3545,7 +3545,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(action.equals(Foundation.selector("lockUnlockEncryptedVaultButtonClicked:"))) {
             if(this.isMounted()) {
                 final Path selected = new UploadTargetFinder(this.workdir()).find(this.getSelectedPath());
-                final VaultRegistry registry = pool.getVault();
+                final VaultRegistry registry = pool.getVaultRegistry();
                 if(registry.contains(selected)) {
                     item.setTitle(LocaleFactory.localizedString("Lock Vault", "Cryptomator"));
                     item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));

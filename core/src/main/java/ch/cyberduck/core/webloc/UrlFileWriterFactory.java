@@ -19,7 +19,7 @@ import ch.cyberduck.core.Factory;
 
 public class UrlFileWriterFactory extends Factory<UrlFileWriter> {
 
-    public UrlFileWriterFactory() {
+    private UrlFileWriterFactory() {
         super("factory.urlfilewriter.class");
     }
 

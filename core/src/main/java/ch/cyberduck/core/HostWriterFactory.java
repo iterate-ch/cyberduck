@@ -22,7 +22,7 @@ import ch.cyberduck.core.serializer.Writer;
 
 public class HostWriterFactory extends Factory<Writer<Host>> {
 
-    protected HostWriterFactory() {
+    private HostWriterFactory() {
         super("factory.writer.host.class");
     }
 

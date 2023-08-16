@@ -17,7 +17,7 @@ package ch.cyberduck.core;
 
 public class ProviderHelpServiceFactory extends Factory<ProviderHelpService> {
 
-    public ProviderHelpServiceFactory() {
+    private ProviderHelpServiceFactory() {
         super("factory.providerhelpservice.class");
     }
 

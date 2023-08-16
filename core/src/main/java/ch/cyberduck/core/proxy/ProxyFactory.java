@@ -24,7 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class ProxyFactory extends Factory<ProxyFinder> {
 
-    protected ProxyFactory() {
+    private ProxyFactory() {
         super("factory.proxy.class");
     }
 

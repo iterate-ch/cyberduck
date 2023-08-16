@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -32,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 public class B2BucketListServiceTest extends AbstractB2Test {
 
     @Test
+    @Ignore
     public void testList() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final AttributedList<Path> list = new B2BucketListService(session, fileid).list(

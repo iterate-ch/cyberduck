@@ -107,7 +107,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     public static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
 
-    protected OAuth2RequestInterceptor authorizationService;
+    private OAuth2RequestInterceptor authorizationService;
 
     private final PreferencesReader preferences = new HostPreferences(host);
 

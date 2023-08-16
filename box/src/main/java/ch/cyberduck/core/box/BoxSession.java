@@ -57,7 +57,7 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
 
     private final BoxFileidProvider fileid = new BoxFileidProvider(this);
 
-    protected OAuth2RequestInterceptor authorizationService;
+    private OAuth2RequestInterceptor authorizationService;
 
     public BoxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);

@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
 public final class DownloadFilterOptions {
@@ -48,8 +47,8 @@ public final class DownloadFilterOptions {
         wherefrom = preferences.getBoolean("queue.download.wherefrom");
         icon = preferences.getBoolean("queue.download.icon.update");
         checksum = preferences.getBoolean("queue.download.checksum.calculate");
-        quarantine = PreferencesFactory.get().getBoolean("queue.download.quarantine");
-        open = PreferencesFactory.get().getBoolean("queue.download.complete.open");
+        quarantine = preferences.getBoolean("queue.download.quarantine");
+        open = preferences.getBoolean("queue.download.complete.open");
     }
 
     @Override

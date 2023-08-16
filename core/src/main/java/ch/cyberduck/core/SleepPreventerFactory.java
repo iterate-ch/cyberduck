@@ -22,7 +22,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class SleepPreventerFactory extends Factory<SleepPreventer> {
 
-    protected SleepPreventerFactory() {
+    private SleepPreventerFactory() {
         super("factory.sleeppreventer.class");
     }
 

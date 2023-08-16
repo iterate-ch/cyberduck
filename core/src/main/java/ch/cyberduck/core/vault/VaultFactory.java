@@ -29,7 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 public class VaultFactory extends Factory<Vault> {
     private static final Logger log = LogManager.getLogger(VaultFactory.class);
 
-    protected VaultFactory() {
+    private VaultFactory() {
         super("factory.vault.class");
     }
 

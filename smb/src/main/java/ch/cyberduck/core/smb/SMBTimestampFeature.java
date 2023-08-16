@@ -52,7 +52,6 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
         }
         catch(SMBApiException e) {
             throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);        }
-
     }
     
 }

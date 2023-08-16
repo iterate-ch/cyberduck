@@ -17,7 +17,7 @@ package ch.cyberduck.core;
 
 public class ProxyCredentialsStoreFactory extends Factory<ProxyCredentialsStore> {
 
-    protected ProxyCredentialsStoreFactory() {
+    private ProxyCredentialsStoreFactory() {
         super("factory.proxycredentialsstore.class");
     }
 

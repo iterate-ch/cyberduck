@@ -31,7 +31,7 @@ public class CertificateIdentityCallbackFactory extends Factory<CertificateIdent
 
     private Constructor<? extends CertificateIdentityCallback> constructor;
 
-    protected CertificateIdentityCallbackFactory() {
+    private CertificateIdentityCallbackFactory() {
         super("factory.certificateidentitycallback.class");
     }
 
@@ -53,11 +53,16 @@ public class CertificateIdentityCallbackFactory extends Factory<CertificateIdent
         }
     }
 
+    private static CertificateIdentityCallbackFactory singleton;
+
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static CertificateIdentityCallback get(final Controller c) {
-        return new CertificateIdentityCallbackFactory().create(c);
+    public static synchronized CertificateIdentityCallback get(final Controller c) {
+        if(null == singleton) {
+            singleton = new CertificateIdentityCallbackFactory();
+        }
+        return singleton.create(c);
     }
 }

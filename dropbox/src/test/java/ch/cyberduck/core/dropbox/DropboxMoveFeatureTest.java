@@ -22,10 +22,13 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -52,7 +55,9 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertTrue(new DefaultFindFeature(session).find(target));
         assertNotEquals(target.attributes().getVersionId(), file.attributes().getVersionId());
         assertEquals(target.attributes().getModificationDate(), file.attributes().getModificationDate());
-        assertEquals(target.attributes(), new DropboxAttributesFinderFeature(session).find(target));
+        final PathAttributes targetAttributes = new DropboxAttributesFinderFeature(session).find(target);
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, file.attributes(), targetAttributes));
+        assertEquals(target.attributes(), targetAttributes);
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

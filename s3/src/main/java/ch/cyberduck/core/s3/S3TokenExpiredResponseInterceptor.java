@@ -18,12 +18,10 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.ExpiredTokenException;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.STSCredentialsConfigurator;
+import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -42,11 +40,11 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
     private static final int MAX_RETRIES = 1;
 
     private final Host host;
-    private final STSCredentialsConfigurator configurator;
+    private final AWSProfileSTSCredentialsConfigurator configurator;
 
     public S3TokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         this.host = session.getHost();
-        this.configurator = new STSCredentialsConfigurator(trust, key, prompt);
+        this.configurator = new AWSProfileSTSCredentialsConfigurator(trust, key, prompt);
     }
 
     @Override
@@ -61,13 +59,8 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                             failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
                                     EntityUtils.toString(response.getEntity()));
                             if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
-                                try {
-                                    host.setCredentials(configurator.configure(host));
-                                    return true;
-                                }
-                                catch(LoginFailureException | LoginCanceledException e) {
-                                    log.warn(String.format("Attempt to renew expired token failed. %s", e.getMessage()));
-                                }
+                                host.setCredentials(configurator.configure(host));
+                                return true;
                             }
                         }
                     }

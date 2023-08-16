@@ -41,7 +41,6 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -159,8 +158,7 @@ public class UploadTransfer extends Transfer {
         final AttributesFinder attributes;
         if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
             find = new CachingFindFeature(cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
-            attributes = new CachingAttributesFinderFeature(cache,
-                    source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+            attributes = new CachingAttributesFinderFeature(cache, source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         }
         else {
             find = new CachingFindFeature(cache, source.getFeature(Find.class));
@@ -320,7 +318,7 @@ public class UploadTransfer extends Transfer {
                          final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Transfer file %s with options %s", file, options));
+            log.debug(String.format("Transfer file %s with options %s and status %s", file, options, segment));
         }
         if(local.isSymbolicLink()) {
             final Symlink feature = source.getFeature(Symlink.class);
@@ -342,7 +340,7 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
             // Transfer
             final Upload upload = source.getFeature(Upload.class);
-            final Object reply = upload.upload(file, local, bandwidth, new UploadStreamListener(this, streamListener), segment, connectionCallback);
+            final Object reply = upload.upload(file, local, bandwidth, streamListener, segment, connectionCallback);
         }
     }
 
@@ -357,20 +355,5 @@ public class UploadTransfer extends Transfer {
     public void stop() {
         cache.clear();
         super.stop();
-    }
-
-    private static final class UploadStreamListener extends DelegateStreamListener {
-        private final UploadTransfer transfer;
-
-        public UploadStreamListener(final UploadTransfer transfer, final StreamListener delegate) {
-            super(delegate);
-            this.transfer = transfer;
-        }
-
-        @Override
-        public void sent(final long bytes) {
-            transfer.addTransferred(bytes);
-            super.sent(bytes);
-        }
     }
 }

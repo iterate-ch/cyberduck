@@ -89,7 +89,6 @@ public class SMBListService implements ListService {
             } else {
                 throw new SMBExceptionMappingService().map("Listing directory {0} failed", e, directory);
             }
-
         }
     }
 

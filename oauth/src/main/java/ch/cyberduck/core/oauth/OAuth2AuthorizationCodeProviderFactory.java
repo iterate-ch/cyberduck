@@ -19,7 +19,7 @@ import ch.cyberduck.core.Factory;
 
 public class OAuth2AuthorizationCodeProviderFactory extends Factory<OAuth2AuthorizationCodeProvider> {
 
-    public OAuth2AuthorizationCodeProviderFactory() {
+    private OAuth2AuthorizationCodeProviderFactory() {
         super("factory.authorizationcodeprovider.class");
     }
 

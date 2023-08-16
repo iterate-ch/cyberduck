@@ -30,13 +30,17 @@ import java.lang.reflect.InvocationTargetException;
 public class ActionOperationBatcherFactory extends Factory<ActionOperationBatcher> {
     private static final Logger log = LogManager.getLogger(ActionOperationBatcherFactory.class);
 
-    public ActionOperationBatcherFactory() {
+    private Constructor<? extends ActionOperationBatcher> constructor;
+
+    private ActionOperationBatcherFactory() {
         super("factory.autorelease.class");
     }
 
     public ActionOperationBatcher create(final Integer batchsize) {
         try {
-            final Constructor<? extends ActionOperationBatcher> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
+            if(null == constructor) {
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
+            }
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", batchsize.getClass()));
                 // Call default constructor for disabled implementations
@@ -50,11 +54,16 @@ public class ActionOperationBatcherFactory extends Factory<ActionOperationBatche
         }
     }
 
-    public static ActionOperationBatcher get() {
+    private static ActionOperationBatcherFactory singleton;
+
+    public static synchronized ActionOperationBatcher get() {
         return get(1);
     }
 
-    public static ActionOperationBatcher get(final Integer batchsize) {
-        return new ActionOperationBatcherFactory().create(batchsize);
+    public static synchronized ActionOperationBatcher get(final Integer batchsize) {
+        if(null == singleton) {
+            singleton = new ActionOperationBatcherFactory();
+        }
+        return singleton.create(batchsize);
     }
 }

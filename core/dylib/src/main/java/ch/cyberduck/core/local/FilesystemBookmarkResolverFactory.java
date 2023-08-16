@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 public class FilesystemBookmarkResolverFactory extends Factory<FilesystemBookmarkResolver<NSURL>> {
     private static final Logger log = LogManager.getLogger(FilesystemBookmarkResolverFactory.class);
 
-    public FilesystemBookmarkResolverFactory() {
+    private FilesystemBookmarkResolverFactory() {
         super("factory.bookmarkresolver.class");
     }
 

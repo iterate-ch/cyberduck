@@ -31,6 +31,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.impl.rest.httpclient.JetS3tRequestAuthorizer;
 import org.jets3t.service.utils.ServiceUtils;
 
 public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
@@ -38,9 +39,9 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
 
     private final RequestEntityRestStorageService service;
     private final Host host;
-    private final RequestEntityRestStorageService authorizer;
+    private final JetS3tRequestAuthorizer authorizer;
 
-    public S3BucketRegionRedirectStrategy(final RequestEntityRestStorageService service, final Host host, final RequestEntityRestStorageService authorizer) {
+    public S3BucketRegionRedirectStrategy(final RequestEntityRestStorageService service, final Host host, final JetS3tRequestAuthorizer authorizer) {
         this.service = service;
         this.host = host;
         this.authorizer = authorizer;

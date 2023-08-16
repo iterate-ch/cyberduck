@@ -1,6 +1,19 @@
 Cyberduck
 https://cyberduck.io/
 
+8.6.2
+- [Bugfix] Segmented downloads with multiple connections per file causes transfers to fail (#13374)
+- [Bugfix] Use recommended part size from authorization response for large file uploads (Backblaze B2) (#14856)
+- [Bugfix] Skip determining if directory only contains hidden files (Backblaze B2) (#14775)
+- [Bugfix] Does not show folders by default that do not contain a .bzEmpty placeolder file (Backblaze B2) (#14768)
+- [Bugfix] Make settings in Preferences → Connection → Timeouts apply for transfers (#14737)
+- [Bugfix] Copy or move files between containers (Azure) (#14826)
+- [Bugfix] Upload with glob pattern including folders for local source has wrong target on server (CLI) (#14800)
+- [Bugfix] Should not attempt to read metadata of existing files with no --preserve flag passed (CLI) (#14802)
+
+8.6.1
+- [Bugfix] Parse seconds or milliseconds from Mtime in metadata (S3)
+
 8.6.0
 - [Feature] Add preference "Use Keychain" when unlocking vaults (Cryptomator) (#14662)
 - [Bugfix] Slow listing of directory contents (Backblaze B2) (#14527)

@@ -148,8 +148,15 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     public void testListNotFoundFolderMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
-        ));
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.bucket.virtualhost.disable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         final S3Session session = new S3Session(host);
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());

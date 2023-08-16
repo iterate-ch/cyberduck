@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class SchemeHandlerFactory extends Factory<SchemeHandler> {
 
-    protected SchemeHandlerFactory() {
+    private SchemeHandlerFactory() {
         super("factory.schemehandler.class");
     }
 

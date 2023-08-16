@@ -5,7 +5,7 @@ import ch.cyberduck.core.local.features.Touch;
 
 public class LocalTouchFactory extends Factory<Touch> {
 
-    public LocalTouchFactory() {
+    private LocalTouchFactory() {
         super("factory.touch.class");
     }
 

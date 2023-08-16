@@ -19,7 +19,7 @@ import ch.cyberduck.core.Factory;
 
 public class ApplicationLoginRegistryFactory extends Factory<ApplicationLoginRegistry> {
 
-    public ApplicationLoginRegistryFactory() {
+    private ApplicationLoginRegistryFactory() {
         super("factory.applicationloginregistry.class");
     }
 

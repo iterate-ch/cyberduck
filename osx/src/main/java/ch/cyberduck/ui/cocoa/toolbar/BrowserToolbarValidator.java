@@ -102,7 +102,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             case cryptomator: {
                 final Path selected = new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath());
-                final VaultRegistry registry = controller.getSession().getVault();
+                final VaultRegistry registry = controller.getSession().getVaultRegistry();
                 if(registry.contains(selected)) {
                     item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                 }
@@ -238,11 +238,11 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 );
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
-            return this.isBrowser() && controller.isMounted() && controller.getSession().getVault() != VaultRegistry.DISABLED &&
-                null == controller.workdir().attributes().getVault() &&
-                controller.getSession().getFeature(Directory.class).isSupported(
-                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
-                );
+            return this.isBrowser() && controller.isMounted() && controller.getSession().getVaultRegistry() != VaultRegistry.DISABLED &&
+                    null == controller.workdir().attributes().getVault() &&
+                    controller.getSession().getFeature(Directory.class).isSupported(
+                            new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
+                    );
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
@@ -407,7 +407,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(cryptomator.action())) {
             if(this.isBrowser() && controller.isMounted() && !PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
                 final Path selected = new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath());
-                final VaultRegistry registry = controller.getSession().getVault();
+                final VaultRegistry registry = controller.getSession().getVaultRegistry();
                 if(registry.contains(selected)) {
                     // Allow to lock vault
                     return true;

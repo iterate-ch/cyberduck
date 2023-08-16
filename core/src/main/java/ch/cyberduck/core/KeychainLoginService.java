@@ -187,17 +187,20 @@ public class KeychainLoginService implements LoginService {
         }
         try {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempt authentication for %s", bookmark));
+                log.debug(String.format("Attempt authentication for %s", session));
             }
             session.login(proxy, prompt, cancel);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Login successful for session %s", session));
+                log.debug(String.format("Login successful for %s", session));
             }
             listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
             this.save(bookmark);
             return true;
         }
         catch(LoginFailureException e) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Login failed for %s", session));
+            }
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
             credentials.setPassed(false);
             final LoginOptions options = new LoginOptions(bookmark.getProtocol());
@@ -208,8 +211,14 @@ public class KeychainLoginService implements LoginService {
                 // Retry
                 return false;
             }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Reset credentials for %s", bookmark));
+            }
             // No updated credentials. Nullify input
-            credentials.reset();
+            switch(session.getHost().getProtocol().getStatefulness()) {
+                case stateless:
+                    credentials.reset();
+            }
             throw e;
         }
     }
@@ -233,6 +242,12 @@ public class KeychainLoginService implements LoginService {
         // Flag for successful authentication
         credentials.setPassed(true);
         // Nullify password and tokens
-        credentials.reset();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Reset credentials for %s", bookmark));
+        }
+        switch(bookmark.getProtocol().getStatefulness()) {
+            case stateless:
+                credentials.reset();
+        }
     }
 }

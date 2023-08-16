@@ -23,7 +23,7 @@ import ch.cyberduck.core.transfer.Transfer;
 
 public class TransferWriterFactory extends Factory<Writer<Transfer>> {
 
-    protected TransferWriterFactory() {
+    private TransferWriterFactory() {
         super("factory.writer.transfer.class");
     }
 

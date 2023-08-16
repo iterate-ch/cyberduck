@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -64,7 +65,12 @@ public class VaultRegistryDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
-        return proxy.isSupported(file);
+        try {
+            return registry.find(session, file, false).getFeature(session, Delete.class, proxy).isSupported(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.isSupported(file);
+        }
     }
 
     @Override
