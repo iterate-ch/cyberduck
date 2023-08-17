@@ -372,6 +372,9 @@ public class OAuth2AuthorizationService {
             }
             return input.getPassword();
         }
+        if(StringUtils.isBlank(value)) {
+            return null;
+        }
         return value;
     }
 }
