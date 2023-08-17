@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 @Optional
@@ -62,6 +63,26 @@ public interface Share<Download, Upload> {
 
         public String getDescription() {
             return description;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            final Sharee sharee = (Sharee) o;
+            if(!Objects.equals(identifier, sharee.identifier)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return identifier != null ? identifier.hashCode() : 0;
         }
 
         @Override
