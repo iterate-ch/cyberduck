@@ -2572,38 +2572,40 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this)) {
                             @Override
                             public void cleanup(final DescriptiveUrl url) {
-                                // Display
-                                final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
-                                        MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                                        LocaleFactory.localizedString("Continue", "Credentials"),
-                                        null != url.getUrl() ? LocaleFactory.localizedString("Copy", "Main") : null,
-                                        null)) {
-                                    @Override
-                                    public void callback(final int returncode) {
-                                        switch(returncode) {
-                                            case SheetCallback.CANCEL_OPTION:
-                                                final NSPasteboard pboard = NSPasteboard.generalPasteboard();
-                                                pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-                                                if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
-                                                    log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
-                                                }
+                                if(null != url) {
+                                    // Display
+                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
+                                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
+                                            LocaleFactory.localizedString("Continue", "Credentials"),
+                                            null != url.getUrl() ? LocaleFactory.localizedString("Copy", "Main") : null,
+                                            null)) {
+                                        @Override
+                                        public void callback(final int returncode) {
+                                            switch(returncode) {
+                                                case SheetCallback.CANCEL_OPTION:
+                                                    final NSPasteboard pboard = NSPasteboard.generalPasteboard();
+                                                    pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+                                                    if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
+                                                        log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
+                                                    }
+                                            }
                                         }
-                                    }
 
-                                    @Override
-                                    public NSView getAccessoryView(final NSAlert alert) {
-                                        if(null == url.getUrl()) {
-                                            return null;
+                                        @Override
+                                        public NSView getAccessoryView(final NSAlert alert) {
+                                            if(null == url.getUrl()) {
+                                                return null;
+                                            }
+                                            final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+                                            field.setEditable(false);
+                                            field.setSelectable(true);
+                                            field.cell().setWraps(false);
+                                            field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            return field;
                                         }
-                                        final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
-                                        field.setEditable(false);
-                                        field.setSelectable(true);
-                                        field.cell().setWraps(false);
-                                        field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                                        return field;
-                                    }
-                                };
-                                alert.beginSheet(BrowserController.this);
+                                    };
+                                    alert.beginSheet(BrowserController.this);
+                                }
                             }
                         }
                 )
@@ -2617,37 +2619,39 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new UploadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this)) {
                             @Override
                             public void cleanup(final DescriptiveUrl url) {
-                                final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
-                                        MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                                        LocaleFactory.localizedString("Continue", "Credentials"),
-                                        null != url.getUrl() ? LocaleFactory.localizedString("Copy", "Main") : null,
-                                        null)) {
-                                    @Override
-                                    public void callback(final int returncode) {
-                                        switch(returncode) {
-                                            case SheetCallback.CANCEL_OPTION:
-                                                final NSPasteboard pboard = NSPasteboard.generalPasteboard();
-                                                pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-                                                if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
-                                                    log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
-                                                }
+                                if(null != url) {
+                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
+                                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
+                                            LocaleFactory.localizedString("Continue", "Credentials"),
+                                            null != url.getUrl() ? LocaleFactory.localizedString("Copy", "Main") : null,
+                                            null)) {
+                                        @Override
+                                        public void callback(final int returncode) {
+                                            switch(returncode) {
+                                                case SheetCallback.CANCEL_OPTION:
+                                                    final NSPasteboard pboard = NSPasteboard.generalPasteboard();
+                                                    pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+                                                    if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
+                                                        log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
+                                                    }
+                                            }
                                         }
-                                    }
 
-                                    @Override
-                                    public NSView getAccessoryView(final NSAlert alert) {
-                                        if(null == url.getUrl()) {
-                                            return null;
+                                        @Override
+                                        public NSView getAccessoryView(final NSAlert alert) {
+                                            if(null == url.getUrl()) {
+                                                return null;
+                                            }
+                                            final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+                                            field.setEditable(false);
+                                            field.setSelectable(true);
+                                            field.cell().setWraps(false);
+                                            field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            return field;
                                         }
-                                        final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
-                                        field.setEditable(false);
-                                        field.setSelectable(true);
-                                        field.cell().setWraps(false);
-                                        field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                                        return field;
-                                    }
-                                };
-                                alert.beginSheet(BrowserController.this);
+                                    };
+                                    alert.beginSheet(BrowserController.this);
+                                }
                             }
                         }
                 )
