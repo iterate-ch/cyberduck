@@ -14,6 +14,7 @@
 //
 
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Properties;
 using java.security;
 using java.util;
@@ -23,40 +24,28 @@ using org.apache.logging.log4j.core.config;
 using sun.security.mscapi;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Windows.Storage;
-using CorePreferences = ch.cyberduck.core.preferences.Preferences;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
     using System = java.lang.System;
 
-    public class ApplicationPreferences : CorePreferences
+    public class ApplicationPreferences : DefaultPreferences
     {
         private static readonly char[] CultureSeparator = new[] { '_', '-' };
         private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
         private readonly Locales locales;
-        private readonly ConcurrentDictionary<string, Preference> preferences = new();
-        private readonly FileInfo userConfig;
+        private SettingsDictionary store;
 
         public ApplicationPreferences(Locales locales, IRuntime runtime)
         {
             this.locales = locales;
             Runtime.Current = runtime;
-
-            // store in Packaged cache folder (to ensure clearing after uninstall)
-            // store in roaming app data, if not packaged
-            var configDirectory = runtime.Packaged
-                ? ApplicationData.Current.LocalCacheFolder.Path
-                : Path.Combine(EnvironmentInfo.AppDataPath, runtime.DataFolderName);
-
-            userConfig = new(Path.Combine(configDirectory, $"{runtime.ProductName}.user.config"));
 
             System.setProperty("jna.boot.library.path", runtime.Location);
         }
@@ -65,10 +54,9 @@ namespace Ch.Cyberduck.Core.Preferences
 
         public override void deleteProperty(string property)
         {
-            preferences.AddOrUpdate(property, Preference.Empty, static (_, preference) => preference with { Runtime = null });
+            store.Remove(property);
+            SharedSettings.Default.CdSettingsDirty = true;
         }
-
-        public override string getDefault(string property) => preferences.TryGetValue(property, out var value) ? value.Default : null;
 
         public string GetDefaultLanguage()
         {
@@ -111,40 +99,29 @@ namespace Ch.Cyberduck.Core.Preferences
 
         public override string getProperty(string property)
         {
-            if (!preferences.TryGetValue(property, out var settings))
+            if (store[property] is not string value || string.IsNullOrWhiteSpace(value))
             {
-                return null;
+                value = getDefault(property);
             }
-            if (!string.IsNullOrWhiteSpace(settings.Runtime))
-            {
-                return settings.Runtime;
-            }
-            return settings.Default;
+            return value;
         }
 
         public override void load() => Load();
 
         public void Load()
         {
-            if (!userConfig.Exists)
+            var settings = SharedSettings.Default;
+            store = (settings.CdSettings ??= new());
+            if (settings.Migrate)
             {
-                try
+                settings.Migrate = false;
+                foreach (DictionaryEntry entry in LoadLocalUserConfig())
                 {
-                    MigrateUserConfig();
+                    store.Add((string)entry.Key, (string)entry.Value);
                 }
-                catch
-                {
-                    // Silently skip failures in migrating the user.config.
-                }
-            }
 
-            try
-            {
-                ParseUserConfig();
-            }
-            catch (Exception ex)
-            {
-                Log.error("Failure loading preferences", ex);
+                settings.CdSettingsDirty = true;
+                Save();
             }
         }
 
@@ -159,33 +136,7 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             try
             {
-                userConfig.Directory.Create();
-            }
-            catch (Exception error)
-            {
-                Log.error($"Failure creating user.config directory {userConfig.Directory.FullName}", error);
-            }
-            try
-            {
-                using var stream = userConfig.Open(FileMode.Create, FileAccess.Write, FileShare.Read);
-                using StreamWriter writer = new(stream, Encoding.UTF8);
-                foreach (var item in preferences)
-                {
-                    var value = item.Value.Runtime;
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        continue;
-                    }
-
-                    if (item.Key.IndexOf('=') != -1)
-                    {
-                        writer.WriteLine($"\"{item.Key}\"={value}");
-                    }
-                    else
-                    {
-                        writer.WriteLine($"{item.Key}={value}");
-                    }
-                }
+                SharedSettings.Default.Save();
             }
             catch (Exception ex)
             {
@@ -193,14 +144,10 @@ namespace Ch.Cyberduck.Core.Preferences
             }
         }
 
-        public override void setDefault(string property, string value)
-        {
-            preferences.AddOrUpdate(property, (_, @default) => new(@default, default), (_, preference, @default) => preference with { Default = @default }, value);
-        }
-
         public override void setProperty(string property, string value)
         {
-            preferences.AddOrUpdate(property, (_, value) => new(default, value), (_, preference, value) => preference with { Runtime = value }, value);
+            store[property] = value;
+            SharedSettings.Default.CdSettingsDirty = true;
         }
 
         public override List systemLocales() => locales.systemLocales();
@@ -399,7 +346,7 @@ namespace Ch.Cyberduck.Core.Preferences
             }
         }
 
-        private static StringDictionary LoadUserConfig()
+        private static StringDictionary LoadLocalUserConfig()
         {
             var settingsInstance = Settings.Default;
             if (settingsInstance.UpgradeSettings)
@@ -418,93 +365,6 @@ namespace Ch.Cyberduck.Core.Preferences
             }
 
             return settingsInstance.CdSettings;
-        }
-
-        private void MigrateUserConfig()
-        {
-            StringDictionary userConfig;
-            try
-            {
-                userConfig = LoadUserConfig();
-            }
-            catch
-            {
-                return;
-            }
-
-            if (userConfig is null or { Count: 0 })
-            {
-                return;
-            }
-
-            foreach (DictionaryEntry item in userConfig)
-            {
-                setProperty((string)item.Key, (string)item.Value);
-            }
-        }
-
-        private void ParseUserConfig()
-        {
-            if (!userConfig.Exists)
-            {
-                return;
-            }
-
-            using var stream = userConfig.OpenRead();
-            using StreamReader reader = new(stream);
-
-            while (!reader.EndOfStream)
-            {
-                string line;
-                try
-                {
-                    line = reader.ReadLine();
-                }
-                catch
-                {
-                    continue;
-                }
-
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    continue;
-                }
-
-                if (line[0] is ';' or '#' or '/')
-                {
-                    continue;
-                }
-
-                int offset = 0;
-                var hay = line.AsSpan().Trim();
-                ReadOnlySpan<char> key = default;
-                int search;
-                while ((search = hay.Slice(offset).IndexOf('=')) != -1)
-                {
-                    key = hay.Slice(0, offset + search).Trim();
-                    if (key[0] != '"' || key.Length > 1 && key[key.Length - 2] == '"')
-                    {
-                        break;
-                    }
-                    offset += search + 1;
-                }
-                if (search == -1)
-                {
-                    continue;
-                }
-                // strip quotation marks from key
-                if (key[0] == '"' && key.Length > 1 && key[key.Length - 1] == '"')
-                {
-                    key = key.Slice(1, key.Length - 2);
-                }
-                var value = hay.Slice(offset + search + 1).Trim();
-                // strip quotation marks from value
-                if (value[0] == '"' && value.Length > 1 && value[value.Length - 1] == '"')
-                {
-                    value = value.Slice(1, value.Length - 2);
-                }
-                setProperty(key.ToString(), value.ToString());
-            }
         }
 
         private static string TryToMatchLocale(string sysLocale, List appLocales)

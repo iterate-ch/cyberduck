@@ -53,12 +53,22 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Update="ch\cyberduck\properties\SharedSettings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SharedSettings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <None Update="ch\cyberduck\properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Ch.Cyberduck.Properties</CustomToolNamespace>
+    </None>
+    <None Update="ch\cyberduck\properties\SharedSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>SharedSettings.Designer.cs</LastGenOutput>
       <CustomToolNamespace>Ch.Cyberduck.Properties</CustomToolNamespace>
     </None>
   </ItemGroup>
