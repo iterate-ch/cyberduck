@@ -15,11 +15,6 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -48,12 +42,7 @@ import com.google.gson.JsonObject;
 public abstract class AbstractAssumeRoleWithWebIdentityTest {
     protected static final Logger log = LogManager.getLogger(AbstractAssumeRoleWithWebIdentityTest.class);
 
-    protected static final long MILLIS = 1000;
-    protected static int OAUTH_TTL_SECS = 5;
-
-    protected static Profile profile = null;
-
-
+    protected static final int OAUTH_TTL_MILLIS = 5000;
 
     public static DockerComposeContainer prepareDockerComposeContainer(final String keyCloakRealmTempFile) {
         log.info("Preparing docker compose container...");
@@ -117,13 +106,7 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
         }
     }
 
-    public static String getKeyCloakFile() {
+    protected static String getKeyCloakFile() {
         return getKeyCloakFile(Collections.emptyMap());
-    }
-
-    public static Profile readProfile() throws AccessDeniedException {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        return new ProfilePlistReader(factory).read(
-                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
     }
 }
