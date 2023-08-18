@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.STSTokens;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,10 +35,10 @@ import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.security.AWSSessionCredentials;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -57,13 +58,10 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
     @ClassRule
     public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
 
-    @Before
-    public void setup() throws BackgroundException {
-        profile = readProfile();
-    }
-
     @Test
     public void testSuccessfulLogin() throws BackgroundException {
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -84,6 +82,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
 
     @Test
     public void testInvalidUserName() throws BackgroundException {
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -93,6 +93,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
 
     @Test
     public void testInvalidPassword() throws BackgroundException {
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalidPassword"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -102,6 +104,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
 
     @Test
     public void testTokenRefresh() throws BackgroundException, InterruptedException {
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -116,7 +120,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
-        Thread.sleep(MILLIS * OAUTH_TTL_SECS);
+        Thread.sleep(OAUTH_TTL_MILLIS);
         assertTrue(credentials.getOauth().isExpired());
         assertTrue(credentials.getTokens().isExpired());
 
@@ -132,7 +136,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
      */
     @Test
     public void testLoginInvalidOAuthTokensLogin() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Credentials credentials = new Credentials("rouser", "rouser")
                 .withOauth(new OAuthTokens(
                         "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDQmpaYUNSeU5USmZqV0VmMU1fZXZLRVliMEdGLXU0QzhjZ3RZYnBtZUlFIn0.eyJleHAiOjE2OTE5OTc3MzUsImlhdCI6MTY5MTk5NzcwNSwianRpIjoiNDA1MGUxMGYtNzZjNC00MjYwLTk1YTctZTMyMTE2YTA3N2NlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9jeWJlcmR1Y2tyZWFsbSIsInN1YiI6IjMzNGRiZWIwLTE5NWQtNDJhMS1hMWQ2LTEyODFmMDBiZmIxZCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im1pbmlvIiwic2Vzc2lvbl9zdGF0ZSI6IjNkZDY0MDVlLTNkMGMtNDVjOS05MTZkLTllYTNkNWY1ODVkYiIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwidXNlciJdfSwic2NvcGUiOiJvcGVuaWQgbWluaW8tYXV0aG9yaXphdGlvbiIsInNpZCI6IjNkZDY0MDVlLTNkMGMtNDVjOS05MTZkLTllYTNkNWY1ODVkYiIsInBvbGljeSI6WyJyZWFkb25seSJdfQ.uKxLmSW6j2EQEo86j0WZOKWgavhS8Ub7TjrnynUi4m1ls0SchvgCilVpzIzNdFL9Y7khiqxl7si5BezbTLPgwyh4GDgrHcJwBk5D6aOcaH6hYcAtcbOiu1KEyfj1O_lwvDCHb-J07TIEeuvquOs2nD7FxqafHjLe-3pL6JuTtBtlx8WKloO9PY-Dn-ntuyqikr7ysLcDBfFJda487cmeTADxiMQ_MmoidW3uGXn0Ps6vhRgteUQO5JTKMa7MT1PKMTY8iNnSdNVuhKkBodnkXMSo5JEt4veqR9Yh-WPT_XL8caUiGInYvHty-n6-yhGhNckrlvtmJc0dJsts4hi1Mw",
@@ -156,7 +161,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
      */
     @Test
     public void testBucketListInvalidOAuthTokensList() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Credentials credentials = new Credentials("rouser", "rouser")
                 .withOauth(OAuthTokens.EMPTY)
                 .withTokens(new STSTokens(

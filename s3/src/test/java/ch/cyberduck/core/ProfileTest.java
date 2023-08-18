@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sts;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -29,7 +29,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
-public class S3OidcProfileTest {
+public class ProfileTest {
 
     @Test
     public void testDefaultProfile() throws Exception {

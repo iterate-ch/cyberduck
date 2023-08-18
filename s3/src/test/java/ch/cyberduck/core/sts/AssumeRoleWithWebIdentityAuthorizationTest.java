@@ -24,6 +24,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -31,9 +33,11 @@ import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3TouchFeature;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -45,6 +49,7 @@ import org.testcontainers.containers.DockerComposeContainer;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
@@ -54,14 +59,10 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
     @ClassRule
     public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
 
-    @Before
-    public void setup() throws BackgroundException {
-        profile = readProfile();
-    }
-
-
     @Test
     public void testAuthorizationFindBucket() throws BackgroundException {
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -73,6 +74,8 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
 
     @Test
     public void testAuthorizationUserReadAccessOnBucket() throws BackgroundException {
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -85,6 +88,8 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
 
     @Test
     public void testAuthorizationWritePermissionOnBucket() throws BackgroundException {
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -100,6 +105,8 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
 
     @Test
     public void testAuthorizationNoWritePermissionOnBucket() throws BackgroundException {
+        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+                AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
