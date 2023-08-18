@@ -133,7 +133,7 @@
         <dependency>
             <groupId>com.nulab-inc</groupId>
             <artifactId>zxcvbn</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.1</version>
         </dependency>
         <dependency>
             <groupId>com.joyent.util</groupId>
