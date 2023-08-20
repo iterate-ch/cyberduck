@@ -62,11 +62,6 @@ public class DownloadShareWorker<Options> extends Worker<DescriptiveUrl> {
     }
 
     @Override
-    public DescriptiveUrl initialize() {
-        return DescriptiveUrl.EMPTY;
-    }
-
-    @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
             this.toString(Collections.singletonList(file)), LocaleFactory.localizedString("URL", "Download"));
