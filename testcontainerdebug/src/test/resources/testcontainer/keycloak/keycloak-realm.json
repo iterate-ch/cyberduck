@@ -1,0 +1,231 @@
+{
+    "id": "cyberduckrealm",
+    "realm": "cyberduckrealm",
+    "displayName": "Cyberduck",
+    "enabled": true,
+    "sslRequired": "external",
+    "defaultRole": {
+        "name": "user",
+        "description": "User"
+    },
+    "roles": {
+        "realm": [
+            {
+                "name": "user",
+                "description": "User",
+                "composite": false
+            },
+            {
+                "name": "admin",
+                "description": "Administrator",
+                "composite": true,
+                "composites": {
+                    "realm": [
+                        "user"
+                    ],
+                    "client": {
+                        "realm-management": [
+                            "realm-admin"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "syncer",
+                "description": "Syncer",
+                "composite": true,
+                "composites": {
+                    "client": {
+                        "realm-management": [
+                            "view-users",
+                            "manage-users"
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    "users": [
+        {
+            "username": "rawuser",
+            "enabled": true,
+            "email": "readandwrite@test.com",
+            "attributes": {
+                "policy": "readwrite"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "rawuser"
+                }
+            ],
+            "realmRoles": [
+                "user"
+            ],
+            "clientRoles": {
+                "account": [
+                    "view-profile",
+                    "manage-account"
+                ]
+            }
+        },
+        {
+            "username": "rouser",
+            "enabled": true,
+            "email": "readonly@test.com",
+            "attributes": {
+                "policy": "readonly"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "rouser"
+                }
+            ],
+            "realmRoles": [
+                "user"
+            ],
+            "clientRoles": {
+                "account": [
+                    "view-profile",
+                    "manage-account"
+                ]
+            }
+        }
+    ],
+    "scopeMappings": [
+    ],
+    "clients": [
+        {
+            "clientId": "minio",
+            "rootUrl": "${authBaseUrl}",
+            "baseUrl": "/realms/cyberduckrealm/account/",
+            "surrogateAuthRequired": false,
+            "enabled": true,
+            "alwaysDisplayInConsole": true,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "password",
+            "redirectUris": [
+                "*"
+            ],
+            "webOrigins": [
+                "http://minio:9000"
+            ],
+            "notBefore": 0,
+            "bearerOnly": false,
+            "consentRequired": false,
+            "standardFlowEnabled": true,
+            "implicitFlowEnabled": false,
+            "directAccessGrantsEnabled": true,
+            "serviceAccountsEnabled": false,
+            "publicClient": false,
+            "frontchannelLogout": false,
+            "protocol": "openid-connect",
+            "attributes": {
+                "access.token.lifespan": "5",
+                "saml.force.post.binding": "false",
+                "saml.multivalued.roles": "false",
+                "oauth2.device.authorization.grant.enabled": "false",
+                "use.jwks.url": "true",
+                "backchannel.logout.revoke.offline.tokens": "false",
+                "s3IdentityProviderEndpoint": "http://minio:9000",
+                "s3IdentityProviderSecretKey": "cyberduckSecretKey",
+                "saml.server.signature.keyinfo.ext": "false",
+                "use.refresh.tokens": "true",
+                "oidc.ciba.grant.enabled": "false",
+                "use.jwks.string": "false",
+                "backchannel.logout.session.required": "false",
+                "client_credentials.use_refresh_token": "false",
+                "require.pushed.authorization.requests": "false",
+                "saml.client.signature": "false",
+                "s3IdentityProviderAccessKey": "cyberduckAccessKey",
+                "id.token.as.detached.signature": "false",
+                "saml.assertion.signature": "false",
+                "saml.encrypt": "false",
+                "saml.server.signature": "false",
+                "exclude.session.state.from.auth.response": "false",
+                "saml.artifact.binding": "false",
+                "saml_force_name_id_format": "false",
+                "tls.client.certificate.bound.access.tokens": "false",
+                "saml.authnstatement": "false",
+                "display.on.consent.screen": "false",
+                "s3IdentityProviderEnabled": "true",
+                "saml.onetimeuse.condition": "false"
+            },
+            "authenticationFlowBindingOverrides": {},
+            "fullScopeAllowed": true,
+            "nodeReRegistrationTimeout": -1,
+            "defaultClientScopes": [
+                "web-origins",
+                "roles",
+                "profile",
+                "minio-authorization",
+                "email"
+            ],
+            "optionalClientScopes": [
+                "address",
+                "phone",
+                "offline_access",
+                "microprofile-jwt"
+            ],
+            "protocolMappers": [
+                {
+                    "name": "realm roles",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-realm-role-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "access.token.claim": "true",
+                        "claim.name": "realm_access.roles",
+                        "jsonType.label": "String",
+                        "multivalued": "true"
+                    }
+                },
+                {
+                    "name": "client roles",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-client-role-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "access.token.claim": "true",
+                        "claim.name": "resource_access.${client_id}.roles",
+                        "jsonType.label": "String",
+                        "multivalued": "true",
+                        "usermodel.clientRoleMapping.clientId": "cryptomatorhub"
+                    }
+                }
+            ]
+        }
+    ],
+    "clientScopes": [
+        {
+            "name": "minio-authorization",
+            "protocol": "openid-connect",
+            "attributes": {
+                "include.in.token.scope": "true",
+                "display.on.consent.screen": "true"
+            },
+            "protocolMappers": [
+                {
+                    "name": "minio-policy-mapper",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-attribute-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "aggregate.attrs": "true",
+                        "multivalued": "true",
+                        "userinfo.token.claim": "true",
+                        "user.attribute": "policy",
+                        "id.token.claim": "true",
+                        "access.token.claim": "true",
+                        "claim.name": "policy",
+                        "jsonType.label": "String"
+                    }
+                }
+            ]
+        }
+    ],
+    "browserSecurityHeaders": {
+        "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self' http://localhost:*; object-src 'none';"
+    }
+}
