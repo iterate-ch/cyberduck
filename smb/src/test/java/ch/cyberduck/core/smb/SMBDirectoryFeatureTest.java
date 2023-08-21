@@ -20,8 +20,6 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
@@ -40,8 +38,8 @@ public class SMBDirectoryFeatureTest extends AbstractSMBTest {
     @Test
     public void testMakeDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        session.getFeature(Directory.class).mkdir(test, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(test));
-        assertThrows(ConflictException.class, () -> session.getFeature(Directory.class).mkdir(test, new TransferStatus()));
+        new SMBDirectoryFeature(session).mkdir(test, new TransferStatus());
+        assertTrue(new SMBFindFeature(session).find(test));
+        assertThrows(ConflictException.class, () -> new SMBDirectoryFeature(session).mkdir(test, new TransferStatus()));
     }
 }

@@ -18,10 +18,7 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -43,18 +40,18 @@ public class SMBTouchFeatureTest extends AbstractSMBTest {
     public void testTouchLongFilename() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path template = new Path(home, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
-        final Path test = session.getFeature(Touch.class).touch(template, new TransferStatus())
-                .withAttributes(session.getFeature(AttributesFinder.class).find(template));
-        assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(test.attributes(), session.getFeature(AttributesFinder.class).find(test));
+        final Path test = new SMBTouchFeature(session).touch(template, new TransferStatus())
+                .withAttributes(new SMBAttributesFinderFeature(session).find(template));
+        assertTrue(new SMBFindFeature(session).find(test));
+        assertEquals(test.attributes(), new SMBAttributesFinderFeature(session).find(test));
     }
 
     @Test
     public void testTouchLongFilenameEncryptedDefaultFeature() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path template = new Path(home, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
-        final Path test = session.getFeature(Touch.class).touch(template, new TransferStatus())
-                .withAttributes(session.getFeature(AttributesFinder.class).find(template));
+        final Path test = new SMBTouchFeature(session).touch(template, new TransferStatus())
+                .withAttributes(new SMBAttributesFinderFeature(session).find(template));
         assertTrue(new DefaultFindFeature(session).find(test));
     }
 
@@ -62,14 +59,12 @@ public class SMBTouchFeatureTest extends AbstractSMBTest {
     public void testTouchDeleteTouchLongFilename() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path template = new Path(home, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
-        final Path test = session.getFeature(Touch.class).touch(template, new TransferStatus())
-                .withAttributes(session.getFeature(AttributesFinder.class).find(template));
-
-
-        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        final Path test2 = session.getFeature(Touch.class).touch(template, new TransferStatus())
-                .withAttributes(session.getFeature(AttributesFinder.class).find(template));
-        assertTrue(session.getFeature(Find.class).find(test2));
-        assertEquals(test.attributes(), session.getFeature(AttributesFinder.class).find(test2));
+        final Path test = new SMBTouchFeature(session).touch(template, new TransferStatus())
+                .withAttributes(new SMBAttributesFinderFeature(session).find(template));
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path test2 = new SMBTouchFeature(session).touch(template, new TransferStatus())
+                .withAttributes(new SMBAttributesFinderFeature(session).find(template));
+        assertTrue(new SMBFindFeature(session).find(test2));
+        assertEquals(test.attributes(), new SMBAttributesFinderFeature(session).find(test2));
     }
 }

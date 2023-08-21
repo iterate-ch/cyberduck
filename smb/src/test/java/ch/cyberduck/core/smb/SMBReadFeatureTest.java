@@ -17,11 +17,8 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -43,6 +40,13 @@ import static org.junit.Assert.*;
 @Category(TestcontainerTest.class)
 public class SMBReadFeatureTest extends AbstractSMBTest {
 
+    @Test(expected = NotfoundException.class)
+    public void testReadNotFound() throws Exception {
+        final TransferStatus status = new TransferStatus();
+        new SMBReadFeature(session).read(new Path(new DefaultHomeFinderService(session).find(),
+                "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+    }
+
     @Test
     public void testReadRange() throws Exception {
         final TransferStatus status = new TransferStatus();
@@ -52,21 +56,21 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new Path(home, "folder", EnumSet.of(Path.Type.file));
         final Path test = new Path(folder, "L0-file.txt", EnumSet.of(Path.Type.file));
-        final Write writer = session.getFeature(Write.class);
+        final Write writer = new SMBWriteFeature(session);
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(content.length, session.getFeature(ListService.class).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, writer.append(test, status.withRemote(session.getFeature(AttributesFinder.class).find(test))).size, 0L);
+        assertTrue(new SMBFindFeature(session).find(test));
+        assertEquals(content.length, new SMBListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, writer.append(test, status.withRemote(new SMBAttributesFinderFeature(session).find(test))).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);
             final TransferStatus read = new TransferStatus();
             read.setOffset(23); // offset within chunk
             read.setAppend(true);
             read.withLength(40000); // ensure to read at least two chunks
-            final InputStream in = session.getFeature(Read.class).read(test, read, new DisabledConnectionCallback());
+            final InputStream in = new SMBReadFeature(session).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
             System.arraycopy(content, 23, reference, 0, reference.length);
@@ -78,7 +82,7 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
             read.setOffset(65536); // offset at the beginning of a new chunk
             read.setAppend(true);
             read.withLength(40000); // ensure to read at least two chunks
-            final InputStream in = session.getFeature(Read.class).read(test, read, new DisabledConnectionCallback());
+            final InputStream in = new SMBReadFeature(session).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
             System.arraycopy(content, 65536, reference, 0, reference.length);
@@ -90,7 +94,7 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
             read.setOffset(65537); // offset at the beginning+1 of a new chunk
             read.setAppend(true);
             read.withLength(40000); // ensure to read at least two chunks
-            final InputStream in = session.getFeature(Read.class).read(test, read, new DisabledConnectionCallback());
+            final InputStream in = new SMBReadFeature(session).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
             System.arraycopy(content, 65537, reference, 0, reference.length);

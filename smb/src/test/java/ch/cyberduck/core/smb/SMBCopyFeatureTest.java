@@ -21,9 +21,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -47,9 +45,9 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         final Path destinationFolder = new Path(home, "other_folder", EnumSet.of(Path.Type.directory));
 
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.getFeature(Copy.class).copy(file, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
 
-        ListService list = session.getFeature(ListService.class);
+        ListService list = new SMBListService(session);
         assertTrue(list.list(home, null).contains(file));
         assertTrue(list.list(destinationFolder, null).contains(copy));
     }
@@ -61,11 +59,11 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         final Path destinationFolder = new Path(home, "other_folder", EnumSet.of(Path.Type.directory));
         final Path file = new Path(home, "folder/L0-file.txt", EnumSet.of(Path.Type.file));
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(copy, new TransferStatus());
+        new SMBTouchFeature(session).touch(copy, new TransferStatus());
 
-        session.getFeature(Copy.class).copy(file, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new SMBCopyFeature(session).copy(file, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
 
-        ListService list = session.getFeature(ListService.class);
+        ListService list = new SMBListService(session);
         assertTrue(list.list(sourceFolder, null).contains(file));
         assertTrue(list.list(destinationFolder, null).contains(copy));
     }
@@ -77,7 +75,7 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         final Path destinationFolder = new Path(home, "other_folder", EnumSet.of(Path.Type.directory));
         final Path destination = new Path(destinationFolder, "new_empty_folder", EnumSet.of(Path.Type.directory));
 
-        session.getFeature(Copy.class).copy(source, destination, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new SMBCopyFeature(session).copy(source, destination, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
 
         Find find = new DefaultFindFeature(session);
         assertTrue(find.find(source));

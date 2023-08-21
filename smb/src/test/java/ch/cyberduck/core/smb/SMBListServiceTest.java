@@ -17,7 +17,6 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.TestcontainerTest;
@@ -41,7 +40,7 @@ public class SMBListServiceTest extends AbstractSMBTest {
         final Path testFile = new Path(testFolder, "L0-file.txt", EnumSet.of(Path.Type.file));
         final Path innerFolder = new Path(testFolder, "L1", EnumSet.of(Path.Type.directory));
 
-        AttributedList<Path> result = session.getFeature(ListService.class).list(testFolder, new DisabledListProgressListener());
+        AttributedList<Path> result = new SMBListService(session).list(testFolder, new DisabledListProgressListener());
         assertEquals(2, result.size());
         assertTrue(result.contains(testFile));
         assertTrue(result.contains(innerFolder));
@@ -52,7 +51,7 @@ public class SMBListServiceTest extends AbstractSMBTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path emptyFolder = new Path(home, "empty_folder", EnumSet.of(Path.Type.directory));
 
-        AttributedList<Path> result = session.getFeature(ListService.class).list(emptyFolder, new DisabledListProgressListener());
+        AttributedList<Path> result = new SMBListService(session).list(emptyFolder, new DisabledListProgressListener());
         assertEquals(0, result.size());
     }
 
