@@ -44,10 +44,8 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(Path file, TransferStatus status) throws BackgroundException {
-        Set<AccessMask> accessMask = new HashSet<>();
-        accessMask.add(AccessMask.MAXIMUM_ALLOWED);
-
-        try (File fileEntry = session.share.openFile(file.getAbsolute(), accessMask,
+        try (File fileEntry = session.share.openFile(file.getAbsolute(),
+                Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                 Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                 Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                 SMB2CreateDisposition.FILE_OPEN,

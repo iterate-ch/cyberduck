@@ -48,15 +48,14 @@ public class SMBCopyFeature implements Copy {
     public Path copy(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
                      StreamListener listener) throws BackgroundException {
         try {
-            Set<AccessMask> accessMask = new HashSet<>();
-            accessMask.add(AccessMask.MAXIMUM_ALLOWED);
-
-            File sourceFile = session.share.openFile(source.getAbsolute(), accessMask,
+            File sourceFile = session.share.openFile(source.getAbsolute(),
+                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
 
-            File targetFile = session.share.openFile(target.getAbsolute(), accessMask,
+            File targetFile = session.share.openFile(target.getAbsolute(),
+                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
