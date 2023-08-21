@@ -48,6 +48,7 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
                     return new ConflictException(exception.getMessage(), exception.getCause());
                 case STATUS_FILE_LOCK_CONFLICT:
                 case STATUS_LOCK_NOT_GRANTED:
+                case STATUS_SHARING_VIOLATION:
                     return new LockedException(exception.getMessage(), exception.getCause());
                 case STATUS_LOGON_FAILURE:
                 case STATUS_PASSWORD_EXPIRED:
