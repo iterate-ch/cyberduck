@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,11 +48,6 @@ public class SMBCopyFeature implements Copy {
     public Path copy(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
                      StreamListener listener) throws BackgroundException {
         try {
-            Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
-            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
-            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_WRITE);
-            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_DELETE);
-
             Set<FileAttributes> fileAttributes = new HashSet<>();
             fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
             Set<SMB2CreateOptions> createOptions = new HashSet<>();
@@ -62,10 +58,10 @@ public class SMBCopyFeature implements Copy {
             createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
             File sourceFile = session.share.openFile(source.getAbsolute(), accessMask, fileAttributes,
-                    shareAccessSet, SMB2CreateDisposition.FILE_OPEN, createOptions);
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN, createOptions);
 
             File targetFile = session.share.openFile(target.getAbsolute(), accessMask, fileAttributes,
-                    shareAccessSet, SMB2CreateDisposition.FILE_OPEN_IF, createOptions);
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF, createOptions);
 
             try {
                 sourceFile.remoteCopyTo(targetFile);

@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,11 +44,6 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(Path file, TransferStatus status) throws BackgroundException {
-        Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_WRITE);
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_DELETE);
-
         Set<FileAttributes> fileAttributes = new HashSet<>();
         fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
         Set<SMB2CreateOptions> createOptions = new HashSet<>();
@@ -57,7 +53,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
 
         createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-        try (File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, SMB2CreateDisposition.FILE_OPEN, createOptions)) {
+        try (File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN, createOptions)) {
             FileTime creationTime = fileEntry.getFileInformation().getBasicInformation().getCreationTime();
             FileTime time = FileTime.ofEpochMillis(status.getTimestamp());
 

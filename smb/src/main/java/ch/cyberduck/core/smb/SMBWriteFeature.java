@@ -25,6 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,11 +50,6 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
     public StatusOutputStream<Void> write(Path file, TransferStatus status, ConnectionCallback callback)
             throws BackgroundException {
         try {
-            Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
-            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
-            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_WRITE);
-            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_DELETE);
-
             Set<FileAttributes> fileAttributes = new HashSet<>();
             fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
             Set<SMB2CreateOptions> createOptions = new HashSet<>();
@@ -65,7 +61,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
 
             File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes,
-                    shareAccessSet, SMB2CreateDisposition.FILE_OPEN_IF, createOptions);
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF, createOptions);
 
             return new VoidStatusOutputStream(new SMBOutputStream(fileEntry.getOutputStream(), fileEntry));
         }

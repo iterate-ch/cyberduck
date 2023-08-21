@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.Delete.Callback;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,11 +53,6 @@ public class SMBMoveFeature implements Move {
     public Path move(Path source, Path target, TransferStatus status, Callback delete, ConnectionCallback prompt)
             throws BackgroundException {
 
-        Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_WRITE);
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_DELETE);
-
         Set<FileAttributes> fileAttributes = new HashSet<>();
         fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
         Set<SMB2CreateOptions> createOptions = new HashSet<>();
@@ -77,7 +73,7 @@ public class SMBMoveFeature implements Move {
         String src = source.getAbsolute();
         String dst = new SmbPath(session.share.getSmbPath(), target.getAbsolute()).getPath();
 
-        try (DiskEntry file = session.share.open(src, accessMask, fileAttributes, shareAccessSet,
+        try (DiskEntry file = session.share.open(src, accessMask, fileAttributes, Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                 SMB2CreateDisposition.FILE_OPEN, createOptions)) {
             file.rename(dst, status.isExists());
         }

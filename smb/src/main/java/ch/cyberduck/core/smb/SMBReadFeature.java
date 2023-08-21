@@ -17,6 +17,7 @@ package ch.cyberduck.core.smb;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,9 +52,6 @@ public class SMBReadFeature implements Read {
     @Override
     public InputStream read(Path file, TransferStatus status, ConnectionCallback callback) throws BackgroundException {
         try {
-            Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
-            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
-
             Set<FileAttributes> fileAttributes = new HashSet<>();
             fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
             Set<SMB2CreateOptions> createOptions = new HashSet<>();
@@ -63,7 +61,7 @@ public class SMBReadFeature implements Read {
 
             createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, SMB2CreateDisposition.FILE_OPEN, createOptions);
+            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN, createOptions);
 
             InputStream stream = fileEntry.getInputStream();
 
