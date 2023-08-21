@@ -52,16 +52,14 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
         try {
             Set<FileAttributes> fileAttributes = new HashSet<>();
             fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
-            Set<SMB2CreateOptions> createOptions = new HashSet<>();
 
             Set<AccessMask> accessMask = new HashSet<>();
             accessMask.add(AccessMask.MAXIMUM_ALLOWED);
 
-            createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
-
 
             File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes,
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF, createOptions);
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF,
+                    Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
 
             return new VoidStatusOutputStream(new SMBOutputStream(fileEntry.getOutputStream(), fileEntry));
         }

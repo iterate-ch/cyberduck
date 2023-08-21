@@ -55,26 +55,15 @@ public class SMBMoveFeature implements Move {
 
         Set<FileAttributes> fileAttributes = new HashSet<>();
         fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
-        Set<SMB2CreateOptions> createOptions = new HashSet<>();
 
         Set<AccessMask> accessMask = new HashSet<>();
         accessMask.add(AccessMask.MAXIMUM_ALLOWED);
-
-        if(source.isDirectory()) {
-            createOptions.add(SMB2CreateOptions.FILE_DIRECTORY_FILE);
-        }
-        else if(source.isFile()) {
-            createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
-        }
-        else {
-            throw new IllegalArgumentException("Path '" + source.getAbsolute() + "' can't be resolved to file nor directory");
-        }
 
         String src = source.getAbsolute();
         String dst = new SmbPath(session.share.getSmbPath(), target.getAbsolute()).getPath();
 
         try (DiskEntry file = session.share.open(src, accessMask, fileAttributes, Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                SMB2CreateDisposition.FILE_OPEN, createOptions)) {
+                SMB2CreateDisposition.FILE_OPEN, Collections.singleton(source.isDirectory() ? SMB2CreateOptions.FILE_DIRECTORY_FILE : SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
             file.rename(dst, status.isExists());
         }
         catch(SMBRuntimeException e) {

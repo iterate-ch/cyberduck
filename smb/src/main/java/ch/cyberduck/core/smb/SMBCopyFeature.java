@@ -50,18 +50,17 @@ public class SMBCopyFeature implements Copy {
         try {
             Set<FileAttributes> fileAttributes = new HashSet<>();
             fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
-            Set<SMB2CreateOptions> createOptions = new HashSet<>();
 
             Set<AccessMask> accessMask = new HashSet<>();
             accessMask.add(AccessMask.MAXIMUM_ALLOWED);
 
-            createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
-
             File sourceFile = session.share.openFile(source.getAbsolute(), accessMask, fileAttributes,
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN, createOptions);
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN,
+                    Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
 
             File targetFile = session.share.openFile(target.getAbsolute(), accessMask, fileAttributes,
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF, createOptions);
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF,
+                    Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
 
             try {
                 sourceFile.remoteCopyTo(targetFile);
