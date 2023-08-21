@@ -20,6 +20,11 @@ services:
     command: start-dev --import-realm --db=dev-mem --health-enabled=true
     networks:
       - testContainerNetwork
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+
   healthcheck:
     hostname: healthcheck
     image: busybox
@@ -32,6 +37,10 @@ services:
       interval: 1s
       timeout: 1s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 50M
     networks:
       - testContainerNetwork
 
@@ -63,6 +72,10 @@ services:
     command: server /data --console-address :9001
     networks:
       - testContainerNetwork
+    deploy:
+      resources:
+        limits:
+          memory: 150M
 
   createbuckets:
     hostname: bucketcreator
@@ -82,6 +95,9 @@ services:
       "
     networks:
       - testContainerNetwork
-
+    deploy:
+      resources:
+        limits:
+          memory: 50M
 networks:
   testContainerNetwork:
