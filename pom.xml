@@ -508,6 +508,7 @@
                         </systemPropertyVariables>
                         <environmentVariables>
                             <DYLD_FALLBACK_FRAMEWORK_PATH>${project.build.directory}</DYLD_FALLBACK_FRAMEWORK_PATH>
+                            <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
                         </environmentVariables>
                         <excludedGroups>${excludedGroups}</excludedGroups>
                         <trimStackTrace>false</trimStackTrace>
