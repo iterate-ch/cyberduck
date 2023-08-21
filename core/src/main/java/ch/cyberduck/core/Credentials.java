@@ -349,13 +349,14 @@ public class Credentials implements Comparable<Credentials> {
                 Objects.equals(password, that.password) &&
                 Objects.equals(token, that.token) &&
                 Objects.equals(tokens, that.tokens) &&
+                Objects.equals(oauth, that.oauth) &&
                 Objects.equals(identity, that.identity) &&
                 Objects.equals(certificate, that.certificate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, password, tokens, identity, certificate);
+        return Objects.hash(user, password, token, tokens, oauth, identity, certificate);
     }
 
     @Override
