@@ -60,7 +60,6 @@ public class SMBMoveFeature implements Move {
         Set<FileAttributes> fileAttributes = new HashSet<>();
         fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
         Set<SMB2CreateOptions> createOptions = new HashSet<>();
-        SMB2CreateDisposition smb2CreateDisposition = SMB2CreateDisposition.FILE_OPEN_IF;
 
         Set<AccessMask> accessMask = new HashSet<>();
         accessMask.add(AccessMask.MAXIMUM_ALLOWED);
@@ -79,7 +78,7 @@ public class SMBMoveFeature implements Move {
         String dst = new SmbPath(session.share.getSmbPath(), target.getAbsolute()).getPath();
 
         try (DiskEntry file = session.share.open(src, accessMask, fileAttributes, shareAccessSet,
-                smb2CreateDisposition, createOptions)) {
+                SMB2CreateDisposition.FILE_OPEN, createOptions)) {
             file.rename(dst, status.isExists());
         }
         catch(SMBRuntimeException e) {
