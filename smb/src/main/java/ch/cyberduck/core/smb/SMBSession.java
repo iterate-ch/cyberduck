@@ -16,12 +16,14 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -39,6 +41,7 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,7 +58,7 @@ import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 
-public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
+public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     private static final Logger log = LogManager.getLogger(SMBSession.class);
 
     protected Connection connection;
@@ -64,68 +67,62 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
 
     public SMBSession(final Host h) {
         super(h);
-        SmbConfig config = SmbConfig.builder()
-                .withSocketFactory(new ProxySocketFactory(h))
-                .withTimeout(ConnectionTimeoutFactory.get(new HostPreferences(h)).getTimeout(), TimeUnit.SECONDS)
-                .withSoTimeout(ConnectionTimeoutFactory.get(new HostPreferences(h)).getTimeout(), TimeUnit.SECONDS)
-                .withAuthenticators(new NtlmAuthenticator.Factory())
-                .withDfsEnabled(true)
-                .build();
-        client = new SMBClient(config);
     }
 
     @Override
-    protected SMBClient connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt, CancelCallback cancel)
-            throws BackgroundException {
-
+    protected Connection connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            this.connection = client.connect(getHost().getHostname(), getHost().getPort());
+            final SMBClient client = new SMBClient(SmbConfig.builder()
+                    .withSocketFactory(new ProxySocketFactory(host))
+                    .withTimeout(ConnectionTimeoutFactory.get(new HostPreferences(host)).getTimeout(), TimeUnit.SECONDS)
+                    .withSoTimeout(ConnectionTimeoutFactory.get(new HostPreferences(host)).getTimeout(), TimeUnit.SECONDS)
+                    .withAuthenticators(new NtlmAuthenticator.Factory())
+                    .withDfsEnabled(true)
+                    .build());
+            return connection = client.connect(getHost().getHostname(), getHost().getPort());
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        return client;
     }
 
     @Override
-    public void login(Proxy proxy, LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final AuthenticationContext context;
-        final String domain, username, shareString;
-        String[] parts = host.getCredentials().getUsername().split("/", 0);
-        final String domainUsername = parts[0];
-        if(parts.length > 1) {
-            shareString = parts[1];
-        }
-        else {
-            throw new BackgroundException("Share name missing", "Share name must be specified after /");
-        }
-
-        parts = domainUsername.split("@", 0);
-        if(parts.length == 0) {
-            throw new BackgroundException("Username missing", "Username must be specified");
-        }
-        else if(parts.length == 1) {
-            username = parts[0];
-            domain = new HostPreferences(host).getProperty("smb.domain.default");
-        }
-        else {
-            username = domainUsername.substring(0, domainUsername.lastIndexOf('@'));
-            domain = domainUsername.substring(domainUsername.lastIndexOf('@') + 1);
-        }
-        if(host.getCredentials().isAnonymousLogin()) {
+        final Credentials credentials = host.getCredentials();
+        if(credentials.isAnonymousLogin()) {
             context = AuthenticationContext.guest();
         }
         else {
-            context = new AuthenticationContext(username, host.getCredentials().getPassword().toCharArray(), domain);
+            final String domain, username;
+            if(credentials.getUsername().contains("@")) {
+                username = StringUtils.substringBefore(credentials.getUsername(), '@');
+                domain = StringUtils.substringAfter(credentials.getUsername(), '@');
+            }
+            else {
+                username = credentials.getUsername();
+                domain = new HostPreferences(host).getProperty("smb.domain.default");
+            }
+            context = new AuthenticationContext(username, credentials.getPassword().toCharArray(), domain);
         }
         try {
             session = connection.authenticate(context);
-            share = (DiskShare) session.connectShare(shareString);
+            final String shareName;
+            if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
+                // Use share name from context in profile
+                shareName = host.getProtocol().getContext();
+            }
+            else {
+                shareName = prompt.prompt(host,
+                        LocaleFactory.localizedString("Share Name"),
+                        LocaleFactory.localizedString("Enter the share name to connect to."),
+                        new LoginOptions().icon(host.getProtocol().disk()).keychain(false)).getPassword();
+            }
+            share = (DiskShare) session.connectShare(shareName);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"), e);
         }
-
     }
 
     @Override
@@ -150,7 +147,6 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
                 connection.close();
                 connection = null;
             }
-            client.close();
         }
         catch(IOException e) {
             log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
@@ -205,5 +201,4 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         return super._getFeature(type);
     }
-
 }

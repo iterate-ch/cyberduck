@@ -20,22 +20,8 @@
         <key>Protocol</key>
         <string>smb</string>
         <key>Vendor</key>
-        <string>iterate GmbH</string>
-        <key>Bundled</key>
-        <true/>
-        <key>Description</key>
-        <string>SMB (Server Message Block)</string>
-        <key>Path Configurable</key>
-        <true/>
-        <key>Hostname Configurable</key>
-        <true/>
-        <key>Username Configurable</key>
-        <true/>
-        <key>Username Placeholder</key>
-        <string>username@domain</string>
-        <key>Password Configurable</key>
-        <true/>
-        <key>Anonymous Configurable</key>
-        <true/>
+        <string>test</string>
+        <key>Context</key>
+        <string>user</string>
     </dict>
 </plist>

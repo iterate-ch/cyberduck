@@ -16,30 +16,12 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class SMBProtocol extends AbstractProtocol {
-
-    @Override
-    public boolean validate(final Credentials credentials, final LoginOptions options) {
-        if(super.validate(credentials, options)) {
-            if(credentials.getUsername().split("/", 0).length <= 1) {
-                // credentials are missing share name
-                return false;
-            }
-            if(credentials.getUsername().split("@", 0).length <= 0) {
-                // username is missing
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public String getIdentifier() {

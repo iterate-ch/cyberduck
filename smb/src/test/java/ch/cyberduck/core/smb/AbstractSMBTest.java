@@ -20,14 +20,20 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 @Category(TestcontainerTest.class)
 public abstract class AbstractSMBTest {
@@ -41,8 +47,11 @@ public abstract class AbstractSMBTest {
     public void setup() throws BackgroundException {
         container.stop();
         container.start();
-        final Host host = new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445));
-        host.setCredentials(new Credentials("smbj/user", "pass"));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SMBProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/test.cyberduckprofile"));
+        final Host host = new Host(profile, container.getHost(), container.getMappedPort(445))
+                .withCredentials(new Credentials("smbj", "pass"));
         session = new SMBSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
