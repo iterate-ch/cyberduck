@@ -28,11 +28,11 @@ public class SMBProtocol extends AbstractProtocol {
     @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         if(super.validate(credentials, options)) {
-            if (credentials.getUsername().split("/", 0).length <= 1) {
+            if(credentials.getUsername().split("/", 0).length <= 1) {
                 // credentials are missing share name
                 return false;
             }
-            if (credentials.getUsername().split("@", 0).length <= 0){
+            if(credentials.getUsername().split("@", 0).length <= 0) {
                 // username is missing
                 return false;
             }
