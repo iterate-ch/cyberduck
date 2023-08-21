@@ -51,9 +51,6 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
         log.info(keyCloakRealmTempFile);
         try {
             log.info(Files.readAllLines(Paths.get(keyCloakRealmTempFile)));
-            if(true) {
-                throw new RuntimeException("bla");
-            }
         }
         catch(IOException e) {
             throw new RuntimeException(e);
@@ -80,7 +77,7 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
         log.info("donedone");
         log.info(content);
         try {
-            final Path tempFile = Files.createTempFile(null, null);
+            final Path tempFile = Files.createTempFile(Paths.get("."), null, null);
             Files.write(tempFile, content.getBytes(StandardCharsets.UTF_8));
             return tempFile.toAbsolutePath().toString();
 
