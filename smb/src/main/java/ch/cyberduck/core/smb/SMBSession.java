@@ -5,7 +5,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
-
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -75,8 +74,8 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
 
     @Override
     public void login(Proxy proxy, LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
+        final AuthenticationContext context;
         final String domain, username, shareString;
-
         String[] parts = host.getCredentials().getUsername().split("/", 0);
         final String domainUsername = parts[0];
         if(parts.length > 1) {
@@ -98,11 +97,14 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             username = domainUsername.substring(0, domainUsername.lastIndexOf('@'));
             domain = domainUsername.substring(domainUsername.lastIndexOf('@') + 1);
         }
-
-        final AuthenticationContext ac = new AuthenticationContext(username, host.getCredentials().getPassword().toCharArray(), domain);
-
+        if(host.getCredentials().isAnonymousLogin()) {
+            context = AuthenticationContext.guest();
+        }
+        else {
+            context = new AuthenticationContext(username, host.getCredentials().getPassword().toCharArray(), domain);
+        }
         try {
-            session = connection.authenticate(ac);
+            session = connection.authenticate(context);
             share = (DiskShare) session.connectShare(shareString);
         }
         catch(SMBRuntimeException e) {
