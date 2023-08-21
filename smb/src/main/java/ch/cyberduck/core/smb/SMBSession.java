@@ -14,6 +14,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
@@ -179,6 +180,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         if(type == Timestamp.class) {
             return (T) new SMBTimestampFeature(this);
+        }
+        if(type == Quota.class) {
+            return (T) new SMBQuotaFeature(this);
         }
         return super._getFeature(type);
     }
