@@ -24,80 +24,80 @@ services:
       resources:
         limits:
           memory: 300M
-  #
-  #  healthcheck:
-  #    hostname: healthcheck
-  #    image: busybox
-  #    depends_on:
-  #      keycloak:
-  #        condition: service_started
-  #    command: sh -c "until wget -q -O- http://keycloak:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
-  #    healthcheck:
-  #      test: [ "CMD-SHELL", "exit 0" ]
-  #      interval: 1s
-  #      timeout: 1s
-  #      retries: 5
-  #    deploy:
-  #      resources:
-  #        limits:
-  #          memory: 50M
-  #    networks:
-  #      - testContainerNetwork
 
-#  minio:
-#    hostname: minio
-#    build: minio
-#    depends_on:
-#      healthcheck:
-#        condition: service_completed_successfully
-#    restart: on-failure
-#    ports:
-#      - "9000:9000"
-#      - "9001:9001"
-#    volumes:
-#      - ./data:/data
-#    environment:
-#      MINIO_ROOT_USER: cyberduckAccessKey
-#      MINIO_ROOT_PASSWORD: cyberduckSecretKey
-#      MINIO_IDENTITY_OPENID_CONFIG_URL: http://keycloak:8080/realms/cyberduckrealm/.well-known/openid-configuration
-#      MINIO_IDENTITY_OPENID_CLIENT_ID: minio
-#      MINIO_IDENTITY_OPENID_CLIENT_SECRET: password
-#      MINIO_IDENTITY_OPENID_DISPLAY_NAME: SSO_Keycloak
-#      MINIO_IDENTITY_OPENID_SCOPES: openid,minio-authorization
-#      MINIO_IDENTITY_OPENID_REDIRECT_URI_DYNAMIC: "on"
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl --fail http://minio:9001/login || exit 1" ]
-#      interval: 10s
-#      retries: 5
-#    command: server /data --console-address :9001
-#    networks:
-#      - testContainerNetwork
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 150M
-#
-#  createbuckets:
-#    hostname: bucketcreator
-#    image: minio/mc
-#    depends_on:
-#      - minio
-#    volumes:
-#      - ./testfile.txt:/testfile.txt
-#    entrypoint: >
-#      /bin/sh -c "
-#      /usr/bin/mc alias set myminio http://minio:9000 cyberduckAccessKey cyberduckSecretKey;
-#      /usr/bin/mc mb myminio/cyberduckbucket;
-#      /usr/bin/mc policy set public myminio/cyberduckbucket;
-#      /usr/bin/mc share upload --recursive myminio/mydata;
-#      /usr/bin/mc cp /testfile.txt myminio/cyberduckbucket/testfile.txt;
-#      exit 0;
-#      "
-#    networks:
-#      - testContainerNetwork
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 50M
+  healthcheck:
+    hostname: healthcheck
+    image: busybox
+    depends_on:
+      keycloak:
+        condition: service_started
+    command: sh -c "until wget -q -O- http://keycloak:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
+    healthcheck:
+      test: [ "CMD-SHELL", "exit 0" ]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 10M
+    networks:
+      - testContainerNetwork
+
+  minio:
+    hostname: minio
+    build: minio
+    depends_on:
+      healthcheck:
+        condition: service_completed_successfully
+    restart: on-failure
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data:/data
+    environment:
+      MINIO_ROOT_USER: cyberduckAccessKey
+      MINIO_ROOT_PASSWORD: cyberduckSecretKey
+      MINIO_IDENTITY_OPENID_CONFIG_URL: http://keycloak:8080/realms/cyberduckrealm/.well-known/openid-configuration
+      MINIO_IDENTITY_OPENID_CLIENT_ID: minio
+      MINIO_IDENTITY_OPENID_CLIENT_SECRET: password
+      MINIO_IDENTITY_OPENID_DISPLAY_NAME: SSO_Keycloak
+      MINIO_IDENTITY_OPENID_SCOPES: openid,minio-authorization
+      MINIO_IDENTITY_OPENID_REDIRECT_URI_DYNAMIC: "on"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://minio:9001/login || exit 1" ]
+      interval: 10s
+      retries: 5
+    command: server /data --console-address :9001
+    networks:
+      - testContainerNetwork
+    deploy:
+      resources:
+        limits:
+          memory: 150M
+
+  createbuckets:
+    hostname: bucketcreator
+    image: minio/mc
+    depends_on:
+      - minio
+    volumes:
+      - ./testfile.txt:/testfile.txt
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 cyberduckAccessKey cyberduckSecretKey;
+      /usr/bin/mc mb myminio/cyberduckbucket;
+      /usr/bin/mc policy set public myminio/cyberduckbucket;
+      /usr/bin/mc share upload --recursive myminio/mydata;
+      /usr/bin/mc cp /testfile.txt myminio/cyberduckbucket/testfile.txt;
+      exit 0;
+      "
+    networks:
+      - testContainerNetwork
+    deploy:
+      resources:
+        limits:
+          memory: 10M
 networks:
   testContainerNetwork:
