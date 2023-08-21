@@ -52,8 +52,8 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
                 .withPull(false)
                 .withLocalCompose(true)
                 .withOptions("--compatibility")
-                .withExposedService("keycloak_1", 8080, Wait.forListeningPort());
-//                .withExposedService("minio_1", 9000, Wait.forListeningPort());
+                .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
+                .withExposedService("minio_1", 9000, Wait.forListeningPort());
         log.info("Preparing docker compose container...");
         return container;
     }
