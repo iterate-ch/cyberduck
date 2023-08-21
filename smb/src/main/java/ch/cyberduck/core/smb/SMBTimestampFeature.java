@@ -58,7 +58,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
 
         createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-        try (File fileEntry = session.share.openFile(SMBUtils.convertedAbsolutePath(file), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions)) {
+        try (File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions)) {
             FileTime creationTime = fileEntry.getFileInformation().getBasicInformation().getCreationTime();
             FileTime time = FileTime.ofEpochMillis(status.getTimestamp());
 

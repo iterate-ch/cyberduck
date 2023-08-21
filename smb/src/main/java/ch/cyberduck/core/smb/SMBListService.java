@@ -40,13 +40,12 @@ public class SMBListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
 
-        String dst = SMBUtils.convertedAbsolutePath(directory);
         final AttributedList<Path> result = new AttributedList<>();
 
         try {
 
 
-            for(FileIdBothDirectoryInformation f : session.share.list(dst)) {
+            for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
                 String fileName = f.getFileName();
                 if(fileName.equals(".") || fileName.equals("..")) {
                     continue; // skip the . and .. directories

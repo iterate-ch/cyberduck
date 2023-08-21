@@ -75,8 +75,8 @@ public class SMBMoveFeature implements Move {
             throw new IllegalArgumentException("Path '" + source.getAbsolute() + "' can't be resolved to file nor directory");
         }
 
-        String src = SMBUtils.convertedAbsolutePath(source);
-        String dst = SMBUtils.convertedAbsolutePath(target);
+        String src = source.getAbsolute();
+        String dst = new SmbPath(session.share.getSmbPath(), target.getAbsolute()).getPath();
 
         try (DiskEntry file = session.share.open(src, accessMask, fileAttributes, shareAccessSet,
                 smb2CreateDisposition, createOptions)) {

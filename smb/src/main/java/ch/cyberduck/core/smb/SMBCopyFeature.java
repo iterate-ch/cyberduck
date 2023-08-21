@@ -86,10 +86,10 @@ public class SMBCopyFeature implements Copy {
 
         createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-        File sourceFile = session.share.openFile(SMBUtils.convertedAbsolutePath(source), accessMask, fileAttributes,
+        File sourceFile = session.share.openFile(source.getAbsolute(), accessMask, fileAttributes,
                 shareAccessSet, smb2CreateDisposition, createOptions);
 
-        File targetFile = session.share.openFile(SMBUtils.convertedAbsolutePath(target), accessMask, fileAttributes,
+        File targetFile = session.share.openFile(target.getAbsolute(), accessMask, fileAttributes,
                 shareAccessSet, smb2CreateDisposition, createOptions);
 
         try {

@@ -39,7 +39,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
 
         try {
 
-            FileAllInformation fileInformation = session.share.getFileInformation(SMBUtils.convertedAbsolutePath(file));
+            FileAllInformation fileInformation = session.share.getFileInformation(file.getAbsolute());
             if(file.isDirectory() && !fileInformation.getStandardInformation().isDirectory()) {
                 throw new NotfoundException("Path found but type is not directory");
             }

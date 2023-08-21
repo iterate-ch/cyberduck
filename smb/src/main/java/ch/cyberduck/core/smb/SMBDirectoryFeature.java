@@ -34,7 +34,7 @@ public class SMBDirectoryFeature implements Directory<Integer> {
     @Override
     public Path mkdir(Path folder, TransferStatus status) throws BackgroundException {
         try {
-            session.share.mkdir(SMBUtils.convertedAbsolutePath(folder));
+            session.share.mkdir(folder.getAbsolute());
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot create folder {0}", e, folder);

@@ -65,7 +65,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
 
-            File fileEntry = session.share.openFile(SMBUtils.convertedAbsolutePath(file), accessMask, fileAttributes,
+            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes,
                     shareAccessSet, smb2CreateDisposition, createOptions);
 
             return new VoidStatusOutputStream(new SMBOutputStream(fileEntry.getOutputStream(), fileEntry));

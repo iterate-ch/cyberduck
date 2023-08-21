@@ -64,7 +64,7 @@ public class SMBReadFeature implements Read {
 
             createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-            File fileEntry = session.share.openFile(SMBUtils.convertedAbsolutePath(file), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions);
+            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions);
 
             InputStream stream = fileEntry.getInputStream();
 

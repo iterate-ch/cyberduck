@@ -40,10 +40,10 @@ public class SMBDeleteFeature implements Delete {
 
             try {
                 if(file.isFile() || file.isSymbolicLink()) {
-                    session.share.rm(SMBUtils.convertedAbsolutePath(file));
+                    session.share.rm(file.getAbsolute());
                 }
                 else if(file.isDirectory()) {
-                    session.share.rmdir(SMBUtils.convertedAbsolutePath(file), true);
+                    session.share.rmdir(file.getAbsolute(), true);
                 }
             }
             catch(SMBRuntimeException e) {
