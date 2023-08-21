@@ -3,7 +3,7 @@ name: Unit Tests
 on:
   push:
     branches:
-      - master
+      - feature/GH-13804-oidc-memory-limits
   pull_request:
     branches:
       - master
