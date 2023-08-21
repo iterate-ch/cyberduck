@@ -52,13 +52,11 @@ public class SMBReadFeature implements Read {
     @Override
     public InputStream read(Path file, TransferStatus status, ConnectionCallback callback) throws BackgroundException {
         try {
-            Set<FileAttributes> fileAttributes = new HashSet<>();
-            fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
-
             Set<AccessMask> accessMask = new HashSet<>();
             accessMask.add(AccessMask.FILE_READ_DATA);
 
-            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes,
+            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask,
+                    Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));

@@ -53,8 +53,6 @@ public class SMBMoveFeature implements Move {
     public Path move(Path source, Path target, TransferStatus status, Callback delete, ConnectionCallback prompt)
             throws BackgroundException {
 
-        Set<FileAttributes> fileAttributes = new HashSet<>();
-        fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
 
         Set<AccessMask> accessMask = new HashSet<>();
         accessMask.add(AccessMask.MAXIMUM_ALLOWED);
@@ -62,7 +60,9 @@ public class SMBMoveFeature implements Move {
         String src = source.getAbsolute();
         String dst = new SmbPath(session.share.getSmbPath(), target.getAbsolute()).getPath();
 
-        try (DiskEntry file = session.share.open(src, accessMask, fileAttributes, Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+        try (DiskEntry file = session.share.open(src, accessMask,
+                Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                 SMB2CreateDisposition.FILE_OPEN, Collections.singleton(source.isDirectory() ? SMB2CreateOptions.FILE_DIRECTORY_FILE : SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
             file.rename(dst, status.isExists());
         }
