@@ -12,6 +12,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
@@ -146,6 +147,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Find.class) {
+            return (T) new SMBFindFeature(this);
+        }
         if(type == ListService.class) {
             return (T) new SMBListService(this);
         }
