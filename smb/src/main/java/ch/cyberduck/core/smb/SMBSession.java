@@ -161,7 +161,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
 
     @Override
     public boolean isConnected() {
-        return connection != null && connection.isConnected();
+        return connection != null && connection.isConnected() && share.isConnected();
     }
 
     @Override
