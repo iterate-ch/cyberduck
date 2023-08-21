@@ -46,8 +46,11 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
 
     public static DockerComposeContainer prepareDockerComposeContainer(final String keyCloakRealmTempFile) {
         log.info("Preparing docker compose container...");
+        File file = new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile());
+        log.info(file);
+        log.info(file.exists());
         DockerComposeContainer container = new DockerComposeContainer<>(
-                new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
+                file)
                 .withEnv("KEYCLOAK_REALM_JSON", keyCloakRealmTempFile)
                 .withPull(false)
                 .withLocalCompose(true)
