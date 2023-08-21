@@ -78,7 +78,11 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withAuthenticators(new NtlmAuthenticator.Factory())
                     .withDfsEnabled(true)
                     .build());
-            return client.connect(getHost().getHostname(), getHost().getPort());
+            final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Connected to %s", connection.getConnectionContext()));
+            }
+            return connection;
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
