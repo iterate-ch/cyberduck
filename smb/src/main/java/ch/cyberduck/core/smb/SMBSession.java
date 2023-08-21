@@ -16,6 +16,7 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
@@ -82,7 +82,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             this.connection = client.connect(getHost().getHostname(), getHost().getPort());
         }
         catch(IOException e) {
-            throw new HttpExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
         return client;
     }
