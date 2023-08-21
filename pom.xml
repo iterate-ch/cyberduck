@@ -32,6 +32,7 @@
         <module>oauth</module>
         <module>irods</module>
         <module>spectra</module>
+        <module>atestcontainerdebug</module>
         <module>s3</module>
         <module>googlestorage</module>
         <module>openstack</module>
