@@ -8,7 +8,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import com.hierynomus.msfscc.fileinformation.FileAllInformation;
-import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.smbj.common.SMBRuntimeException;
 
 public class SMBAttributesFinderFeature implements AttributesFinder {
 
@@ -40,7 +40,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
 
             return attributes;
         }
-        catch(SMBApiException e) {
+        catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }

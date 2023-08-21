@@ -15,7 +15,8 @@ import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
-import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.smbj.common.SMBRuntimeException;
+import com.hierynomus.smbj.common.SmbPath;
 import com.hierynomus.smbj.share.DiskEntry;
 
 public class SMBMoveFeature implements Move {
@@ -66,7 +67,7 @@ public class SMBMoveFeature implements Move {
                 smb2CreateDisposition, createOptions)) {
             file.rename(dst, status.isExists());
         }
-        catch(SMBApiException e) {
+        catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
         }
 

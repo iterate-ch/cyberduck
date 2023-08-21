@@ -15,7 +15,7 @@ import com.hierynomus.msfscc.fileinformation.FileBasicInformation;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
-import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
 
 public class SMBTimestampFeature extends DefaultTimestampFeature {
@@ -50,7 +50,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
             FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, time, time, time, FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
             fileEntry.setFileInformation(fileBasicInformation);
         }
-        catch(SMBApiException e) {
+        catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
         }
     }

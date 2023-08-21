@@ -20,7 +20,7 @@ import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
-import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
 
 public class SMBWriteFeature extends AppendWriteFeature<Void> {
@@ -55,7 +55,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
             return new VoidStatusOutputStream(new SMBOutputStream(fileEntry.getOutputStream(), fileEntry));
         }
-        catch(SMBApiException e) {
+        catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
         }
 

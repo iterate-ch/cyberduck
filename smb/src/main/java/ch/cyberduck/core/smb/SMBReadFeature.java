@@ -15,7 +15,7 @@ import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
-import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
 
 import ch.cyberduck.core.ConnectionCallback;
@@ -67,7 +67,8 @@ public class SMBReadFeature implements Read {
             }
 
             return new SMBInputStream(stream, fileEntry);
-        } catch(SMBApiException e) {
+        }
+        catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Download {0} failed", e, file);
         }
     }

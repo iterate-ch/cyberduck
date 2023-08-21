@@ -27,7 +27,7 @@ import java.util.EnumSet;
 
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
-import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.smbj.common.SMBRuntimeException;
 
 public class SMBListService implements ListService {
 
@@ -79,7 +79,7 @@ public class SMBListService implements ListService {
             }
             return result;
         }
-        catch(SMBApiException e) {
+        catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }

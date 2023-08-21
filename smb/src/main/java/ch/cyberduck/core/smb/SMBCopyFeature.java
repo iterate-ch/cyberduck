@@ -17,9 +17,9 @@ import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
-import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.protocol.commons.buffer.Buffer.BufferException;
 import com.hierynomus.protocol.transport.TransportException;
+import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
 
 public class SMBCopyFeature implements Copy {
@@ -42,7 +42,7 @@ public class SMBCopyFeature implements Copy {
             }
             return target;
         }
-        catch(SMBApiException e) {
+        catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }

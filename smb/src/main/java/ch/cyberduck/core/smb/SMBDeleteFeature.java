@@ -8,7 +8,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
-import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.smbj.common.SMBRuntimeException;
 
 public class SMBDeleteFeature implements Delete {
 
@@ -31,7 +31,7 @@ public class SMBDeleteFeature implements Delete {
                     session.share.rmdir(SMBUtils.convertedAbsolutePath(file), true);
                 }
             }
-            catch(SMBApiException e) {
+            catch(SMBRuntimeException e) {
                 throw new SMBExceptionMappingService().map("Cannot delete {0}", e, file);
             }
 
