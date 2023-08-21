@@ -106,7 +106,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         else if(parts.length == 1) {
             username = parts[0];
-            domain = "WORKGROUP";
+            domain = new HostPreferences(host).getProperty("smb.domain.default");
         }
         else {
             username = domainUsername.substring(0, domainUsername.lastIndexOf('@'));
