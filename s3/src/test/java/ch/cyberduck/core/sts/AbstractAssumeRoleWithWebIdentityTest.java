@@ -51,6 +51,9 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
         log.info(keyCloakRealmTempFile);
         try {
             log.info(Files.readAllLines(Paths.get(keyCloakRealmTempFile)));
+            if(true) {
+                throw new RuntimeException("bla");
+            }
         }
         catch(IOException e) {
             throw new RuntimeException(e);
@@ -72,11 +75,10 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
         JsonElement je = new Gson().fromJson(new InputStreamReader(AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/testcontainer/keycloak/keycloak-realm.json")), JsonElement.class);
         JsonObject jo = je.getAsJsonObject();
 
-        for(Map.Entry<String, String> replacement : replacements.entrySet()) {
-            updateJsonValues(jo, replacement.getKey(), replacement.getValue());
-        }
 
         String content = gson.toJson(jo);
+        log.info("donedone");
+        log.info(content);
         try {
             final Path tempFile = Files.createTempFile(null, null);
             Files.write(tempFile, content.getBytes(StandardCharsets.UTF_8));
