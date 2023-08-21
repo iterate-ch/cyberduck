@@ -103,7 +103,7 @@
                 <executions>
                     <execution>
                         <id>show-memory-consumption</id>
-                        <phase>test</phase>
+                        <phase>process-test-classes</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
