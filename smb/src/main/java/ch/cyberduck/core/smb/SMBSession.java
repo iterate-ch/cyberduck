@@ -61,7 +61,6 @@ import com.hierynomus.smbj.share.DiskShare;
 public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     private static final Logger log = LogManager.getLogger(SMBSession.class);
 
-    protected Connection connection;
     protected DiskShare share;
     protected Session session;
 
@@ -79,7 +78,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withAuthenticators(new NtlmAuthenticator.Factory())
                     .withDfsEnabled(true)
                     .build());
-            return connection = client.connect(getHost().getHostname(), getHost().getPort());
+            return client.connect(getHost().getHostname(), getHost().getPort());
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -106,7 +105,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             context = new AuthenticationContext(username, credentials.getPassword().toCharArray(), domain);
         }
         try {
-            session = connection.authenticate(context);
+            session = client.authenticate(context);
             final String shareName;
             if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
                 // Use share name from context in profile
@@ -143,10 +142,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     @Override
     protected void disconnect() {
         try {
-            if(connection != null) {
-                connection.close();
-                connection = null;
-            }
+            client.close();
         }
         catch(IOException e) {
             log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
@@ -157,7 +153,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     @Override
     public boolean isConnected() {
-        return connection != null && connection.isConnected() && share.isConnected();
+        return client != null && client.isConnected() && share.isConnected();
     }
 
     @Override
