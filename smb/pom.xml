@@ -22,7 +22,10 @@
     </parent>
     <artifactId>smb</artifactId>
     <packaging>jar</packaging>
-
+    <properties>
+        <smbj.version>0.12.2</smbj.version>
+        <testcontainers.version>1.18.3</testcontainers.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -39,7 +42,7 @@
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>smbj</artifactId>
-            <version>0.12.2</version>
+            <version>${smbj.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -50,7 +53,7 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.18.0</version>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
