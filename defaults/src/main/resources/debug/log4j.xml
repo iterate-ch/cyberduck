@@ -20,6 +20,7 @@
         </Console>
     </Appenders>
     <Loggers>
+        <Logger name="org.testcontainers" additivity="true" level="debug"/>
         <Logger name="org.apache.http.wire" additivity="false" level="error"/>
         <Logger name="org.apache.http.headers" additivity="false" level="error"/>
         <Logger name="ch.cyberduck" additivity="true" level="debug"/>
