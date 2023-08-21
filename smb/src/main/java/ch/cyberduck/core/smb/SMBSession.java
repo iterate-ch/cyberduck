@@ -35,6 +35,7 @@ import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.SMBClient;
 import com.hierynomus.smbj.SmbConfig;
 import com.hierynomus.smbj.auth.AuthenticationContext;
+import com.hierynomus.smbj.auth.NtlmAuthenticator;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
@@ -53,6 +54,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
                 .withSocketFactory(new ProxySocketFactory(h))
                 .withTimeout(ConnectionTimeoutFactory.get(new HostPreferences(h)).getTimeout(), TimeUnit.SECONDS)
                 .withSoTimeout(ConnectionTimeoutFactory.get(new HostPreferences(h)).getTimeout(), TimeUnit.SECONDS)
+                .withAuthenticators(new NtlmAuthenticator.Factory())
                 .withDfsEnabled(true)
                 .build();
         client = new SMBClient(config);
