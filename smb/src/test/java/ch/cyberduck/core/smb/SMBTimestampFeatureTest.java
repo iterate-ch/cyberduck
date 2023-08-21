@@ -1,7 +1,7 @@
 package ch.cyberduck.core.smb;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
