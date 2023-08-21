@@ -46,14 +46,16 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
 
     public static DockerComposeContainer prepareDockerComposeContainer(final String keyCloakRealmTempFile) {
         log.info("Preparing docker compose container...");
-        return new DockerComposeContainer<>(
+        DockerComposeContainer container = new DockerComposeContainer<>(
                 new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
                 .withEnv("KEYCLOAK_REALM_JSON", keyCloakRealmTempFile)
                 .withPull(false)
                 .withLocalCompose(true)
                 .withOptions("--compatibility")
-                .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-                .withExposedService("minio_1", 9000, Wait.forListeningPort());
+                .withExposedService("keycloak_1", 8080, Wait.forListeningPort());
+//                .withExposedService("minio_1", 9000, Wait.forListeningPort());
+        log.info("Preparing docker compose container...");
+        return container;
     }
 
     public static String getKeyCloakFile(Map<String, String> replacements) {
