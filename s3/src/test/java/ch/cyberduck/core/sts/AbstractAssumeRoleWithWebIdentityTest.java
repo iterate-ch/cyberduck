@@ -57,7 +57,7 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
         }
         DockerComposeContainer container = new DockerComposeContainer<>(
                 file)
-                .withEnv("KEYCLOAK_REALM_JSON", keyCloakRealmTempFile)
+                //.withEnv("KEYCLOAK_REALM_JSON", keyCloakRealmTempFile)
                 .withPull(false)
                 .withLocalCompose(true)
                 .withOptions("--compatibility")
@@ -77,7 +77,7 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
         log.info("donedone");
         log.info(content);
         try {
-            final Path tempFile = Files.createTempFile(Paths.get("."), null, null);
+            final Path tempFile = Files.createTempFile(Paths.get("."), null, ".json");
             Files.write(tempFile, content.getBytes(StandardCharsets.UTF_8));
             return tempFile.toAbsolutePath().toString();
 
