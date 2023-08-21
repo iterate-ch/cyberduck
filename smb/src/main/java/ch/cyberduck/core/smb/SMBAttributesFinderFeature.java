@@ -29,30 +29,25 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
 
     private final SMBSession session;
 
-    public SMBAttributesFinderFeature(SMBSession session) {
+    public SMBAttributesFinderFeature(final SMBSession session) {
         this.session = session;
     }
 
     @Override
-    public PathAttributes find(Path file, ListProgressListener listener) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         final PathAttributes attributes = new PathAttributes();
-
         try {
-
-            FileAllInformation fileInformation = session.share.getFileInformation(file.getAbsolute());
+            final FileAllInformation fileInformation = session.share.getFileInformation(file.getAbsolute());
             if(file.isDirectory() && !fileInformation.getStandardInformation().isDirectory()) {
-                throw new NotfoundException("Path found but type is not directory");
+                throw new NotfoundException(String.format("File %s found but type is not directory", file.getName()));
             }
             else if(file.isFile() && fileInformation.getStandardInformation().isDirectory()) {
-                throw new NotfoundException("Path found but type is not file");
+                throw new NotfoundException(String.format("File %s found but type is not file", file.getName()));
             }
-
             attributes.setAccessedDate(fileInformation.getBasicInformation().getLastAccessTime().toEpochMillis());
             attributes.setModificationDate(fileInformation.getBasicInformation().getLastWriteTime().toEpochMillis());
             attributes.setCreationDate(fileInformation.getBasicInformation().getCreationTime().toEpochMillis());
             attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
-            attributes.setDisplayname(file.getName());
-
             return attributes;
         }
         catch(SMBRuntimeException e) {

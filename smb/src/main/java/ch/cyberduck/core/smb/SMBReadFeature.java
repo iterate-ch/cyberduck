@@ -15,16 +15,21 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.commons.io.input.ProxyInputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.io.input.ProxyInputStream;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
@@ -34,61 +39,45 @@ import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
 
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.transfer.TransferStatus;
-
 public class SMBReadFeature implements Read {
     private static final Logger logger = LogManager.getLogger(SMBReadFeature.class);
 
     private final SMBSession session;
 
-    public SMBReadFeature(SMBSession session) {
+    public SMBReadFeature(final SMBSession session) {
         this.session = session;
     }
 
     @Override
-    public InputStream read(Path file, TransferStatus status, ConnectionCallback callback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            Set<AccessMask> accessMask = new HashSet<>();
-            accessMask.add(AccessMask.FILE_READ_DATA);
-
-            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask,
+            if(!session.share.fileExists(file.getAbsolute())) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+            final File entry = session.share.openFile(file.getAbsolute(),
+                    Collections.singleton(AccessMask.FILE_READ_DATA),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                    SMB2CreateDisposition.FILE_OPEN,
+                    SMB2CreateDisposition.FILE_OPEN_IF,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-
-            InputStream stream = fileEntry.getInputStream();
-
+            final InputStream stream = entry.getInputStream();
             if(status.isAppend()) {
-                try {
-                    long skipped = stream.skip(status.getOffset());
-                    if(skipped != status.getOffset()) {
-                        logger.log(Level.WARN, "Could not skip %d bytes in file %s.", status.getOffset(), file);
-                    }
-                }
-                catch(IOException e) {
-                    fileEntry.close();
-                    throw new BackgroundException(e);
-                }
+                stream.skip(status.getOffset());
             }
-
-            return new SMBInputStream(stream, fileEntry);
+            return new SMBInputStream(stream, entry);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Download {0} failed", e, file);
         }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
+        }
     }
 
     private static final class SMBInputStream extends ProxyInputStream {
-
         private final File file;
 
-
-        public SMBInputStream(InputStream stream, File file) {
+        public SMBInputStream(final InputStream stream, final File file) {
             super(stream);
             this.file = file;
         }
@@ -97,11 +86,10 @@ public class SMBReadFeature implements Read {
         public void close() throws IOException {
             try {
                 super.close();
-            } finally {
+            }
+            finally {
                 file.close();
             }
         }
-
     }
-
 }

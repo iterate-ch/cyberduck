@@ -16,6 +16,7 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -23,8 +24,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
@@ -40,35 +39,33 @@ public class SMBCopyFeature implements Copy {
 
     private final SMBSession session;
 
-    public SMBCopyFeature(SMBSession session) {
+    public SMBCopyFeature(final SMBSession session) {
         this.session = session;
     }
 
     @Override
-    public Path copy(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
-                     StreamListener listener) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status,
+                     final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
         try {
-            File sourceFile = session.share.openFile(source.getAbsolute(),
+            try (final File sourceFile = session.share.openFile(source.getAbsolute(),
                     Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN,
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                    SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-
-            File targetFile = session.share.openFile(target.getAbsolute(),
-                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
-                    Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF,
-                    Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-
-            try {
+                 final File targetFile = session.share.openFile(target.getAbsolute(),
+                         Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                         SMB2CreateDisposition.FILE_OPEN_IF,
+                         Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
                 sourceFile.remoteCopyTo(targetFile);
             }
-            catch(TransportException | BufferException e) {
-                throw new BackgroundException(e);
+            catch(TransportException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
             }
-            finally {
-                sourceFile.close();
-                targetFile.close();
+            catch(BufferException e) {
+                throw new BackgroundException(e);
             }
             return target;
         }

@@ -23,13 +23,11 @@ import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.output.ProxyOutputStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.io.output.ProxyOutputStream;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
@@ -42,35 +40,31 @@ import com.hierynomus.smbj.share.File;
 public class SMBWriteFeature extends AppendWriteFeature<Void> {
     private final SMBSession session;
 
-    public SMBWriteFeature(SMBSession session) {
+    public SMBWriteFeature(final SMBSession session) {
         this.session = session;
     }
 
     @Override
-    public StatusOutputStream<Void> write(Path file, TransferStatus status, ConnectionCallback callback)
-            throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            File fileEntry = session.share.openFile(file.getAbsolute(),
+            final File entry = session.share.openFile(file.getAbsolute(),
                     Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ), SMB2CreateDisposition.FILE_OPEN_IF,
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                    SMB2CreateDisposition.FILE_OPEN_IF,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-
-            return new VoidStatusOutputStream(new SMBOutputStream(fileEntry.getOutputStream(), fileEntry));
+            return new VoidStatusOutputStream(new SMBOutputStream(entry.getOutputStream(), entry));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
         }
-
-
     }
 
     private static final class SMBOutputStream extends ProxyOutputStream {
-
         private final File file;
         private long fileSize;
 
-        public SMBOutputStream(OutputStream stream, File file) {
+        public SMBOutputStream(final OutputStream stream, final File file) {
             super(stream);
             this.file = file;
         }
@@ -79,7 +73,8 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
         public void close() throws IOException {
             try {
                 super.close();
-            } finally {
+            }
+            finally {
                 file.flush();
                 file.setLength(fileSize);
                 file.close();
@@ -87,11 +82,9 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
         }
 
         @Override
-        protected void afterWrite(int n) throws IOException {
+        protected void afterWrite(final int n) throws IOException {
             fileSize += n;
             super.afterWrite(n);
         }
-
     }
-
 }

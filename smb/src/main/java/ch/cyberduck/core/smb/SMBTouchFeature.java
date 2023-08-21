@@ -20,7 +20,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 public class SMBTouchFeature extends DefaultTouchFeature<Void> {
 
-    public SMBTouchFeature(SMBSession session) {
+    public SMBTouchFeature(final SMBSession session) {
         super(new SMBWriteFeature(session));
     }
 

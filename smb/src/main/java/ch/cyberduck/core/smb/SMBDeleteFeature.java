@@ -29,15 +29,14 @@ public class SMBDeleteFeature implements Delete {
 
     private final SMBSession session;
 
-    public SMBDeleteFeature(SMBSession session) {
+    public SMBDeleteFeature(final SMBSession session) {
         this.session = session;
     }
 
     @Override
-    public void delete(Map<Path, TransferStatus> files, PasswordCallback prompt, Callback callback) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files.keySet()) {
             callback.delete(file);
-
             try {
                 if(file.isFile() || file.isSymbolicLink()) {
                     session.share.rm(file.getAbsolute());
@@ -49,7 +48,6 @@ public class SMBDeleteFeature implements Delete {
             catch(SMBRuntimeException e) {
                 throw new SMBExceptionMappingService().map("Cannot delete {0}", e, file);
             }
-
         }
     }
 
@@ -57,5 +55,4 @@ public class SMBDeleteFeature implements Delete {
     public boolean isRecursive() {
         return true;
     }
-
 }

@@ -23,8 +23,6 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
@@ -39,7 +37,7 @@ public class SMBMoveFeature implements Move {
 
     private final SMBSession session;
 
-    public SMBMoveFeature(SMBSession session) {
+    public SMBMoveFeature(final SMBSession session) {
         this.session = session;
     }
 
@@ -48,26 +46,19 @@ public class SMBMoveFeature implements Move {
         return true;
     }
 
-
     @Override
-    public Path move(Path source, Path target, TransferStatus status, Callback delete, ConnectionCallback prompt)
-            throws BackgroundException {
-        String src = source.getAbsolute();
-        String dst = new SmbPath(session.share.getSmbPath(), target.getAbsolute()).getPath();
-
-        try (DiskEntry file = session.share.open(src,
+    public Path move(final Path source, final Path target, final TransferStatus status, final Callback delete, final ConnectionCallback prompt) throws BackgroundException {
+        try (DiskEntry file = session.share.open(source.getAbsolute(),
                 Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                 Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                 Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                SMB2CreateDisposition.FILE_OPEN, Collections.singleton(source.isDirectory() ? SMB2CreateOptions.FILE_DIRECTORY_FILE : SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
-            file.rename(dst, status.isExists());
+                SMB2CreateDisposition.FILE_OPEN,
+                Collections.singleton(source.isDirectory() ? SMB2CreateOptions.FILE_DIRECTORY_FILE : SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
+            file.rename(new SmbPath(session.share.getSmbPath(), target.getAbsolute()).getPath(), status.isExists());
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
         }
-
         return target;
-
     }
-
 }

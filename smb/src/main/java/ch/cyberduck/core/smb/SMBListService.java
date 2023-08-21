@@ -23,6 +23,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.EnumSet;
 
 import com.hierynomus.msfscc.FileAttributes;
@@ -30,51 +33,42 @@ import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
 public class SMBListService implements ListService {
+    private static final Logger log = LogManager.getLogger(SMBListService.class);
 
     private final SMBSession session;
 
-    public SMBListService(SMBSession session) {
+    public SMBListService(final SMBSession session) {
         this.session = session;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-
         final AttributedList<Path> result = new AttributedList<>();
-
         try {
-
-
             for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
-                String fileName = f.getFileName();
-                if(fileName.equals(".") || fileName.equals("..")) {
-                    continue; // skip the . and .. directories
+                final String filename = f.getFileName();
+                if(filename.equals(".") || filename.equals("..")) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Skip %s", f.getFileName()));
+                    }
+                    continue;
                 }
-                EnumSet<Type> type = EnumSet.noneOf(Type.class);
+                final EnumSet<Type> type = EnumSet.noneOf(Type.class);
                 long fileAttributes = f.getFileAttributes();
-
                 // check for all relevant file types and add them to the EnumSet
                 if((fileAttributes & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0) {
                     type.add(Type.directory);
                 }
-                if((fileAttributes & FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue()) != 0) {
+                else {
                     type.add(Type.file);
                 }
-
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setAccessedDate(f.getLastAccessTime().toEpochMillis());
-                attributes.setModificationDate(f.getLastWriteTime().toEpochMillis());
-                attributes.setCreationDate(f.getCreationTime().toEpochMillis());
-                attributes.setSize(f.getEndOfFile());
-                attributes.setDisplayname(f.getFileName());
-
-                // default to file
-                if(type.isEmpty()) {
-                    type.add(Type.file);
-                }
-
-                result.add(new Path(directory, fileName, type, attributes));
-
+                final PathAttributes attr = new PathAttributes();
+                attr.setAccessedDate(f.getLastAccessTime().toEpochMillis());
+                attr.setModificationDate(f.getLastWriteTime().toEpochMillis());
+                attr.setCreationDate(f.getCreationTime().toEpochMillis());
+                attr.setSize(f.getEndOfFile());
+                attr.setDisplayname(f.getFileName());
+                result.add(new Path(directory, filename, type, attr));
             }
             return result;
         }

@@ -27,7 +27,7 @@ public class SMBDirectoryFeature implements Directory<Integer> {
 
     private final SMBSession session;
 
-    public SMBDirectoryFeature(SMBSession session) {
+    public SMBDirectoryFeature(final SMBSession session) {
         this.session = session;
     }
 
@@ -46,5 +46,4 @@ public class SMBDirectoryFeature implements Directory<Integer> {
     public SMBDirectoryFeature withWriter(Write<Integer> writer) {
         return this;
     }
-
 }
