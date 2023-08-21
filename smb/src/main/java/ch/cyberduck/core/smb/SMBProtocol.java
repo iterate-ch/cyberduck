@@ -52,16 +52,6 @@ public class SMBProtocol extends AbstractProtocol {
     }
 
     @Override
-    public DirectoryTimestamp getDirectoryTimestamp() {
-        return DirectoryTimestamp.implicit;
-    }
-
-    @Override
-    public Statefulness getStatefulness() {
-        return Statefulness.stateless;
-    }
-
-    @Override
     public String getDescription() {
         return LocaleFactory.localizedString("SMB (Server Message Block)");
     }
