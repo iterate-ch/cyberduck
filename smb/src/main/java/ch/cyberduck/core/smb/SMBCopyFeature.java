@@ -19,11 +19,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,11 +47,36 @@ public class SMBCopyFeature implements Copy {
     public Path copy(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
                      StreamListener listener) throws BackgroundException {
         try {
-            if(source.isFile()) {
-                copyFile(source, target);
+            Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
+            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
+            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_WRITE);
+            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_DELETE);
+
+            Set<FileAttributes> fileAttributes = new HashSet<>();
+            fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
+            Set<SMB2CreateOptions> createOptions = new HashSet<>();
+            SMB2CreateDisposition smb2CreateDisposition = SMB2CreateDisposition.FILE_OPEN_IF;
+
+            Set<AccessMask> accessMask = new HashSet<>();
+            accessMask.add(AccessMask.MAXIMUM_ALLOWED);
+
+            createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
+
+            File sourceFile = session.share.openFile(source.getAbsolute(), accessMask, fileAttributes,
+                    shareAccessSet, smb2CreateDisposition, createOptions);
+
+            File targetFile = session.share.openFile(target.getAbsolute(), accessMask, fileAttributes,
+                    shareAccessSet, smb2CreateDisposition, createOptions);
+
+            try {
+                sourceFile.remoteCopyTo(targetFile);
             }
-            else {
-                copyDirectory(target);
+            catch(TransportException | BufferException e) {
+                throw new BackgroundException(e);
+            }
+            finally {
+                sourceFile.close();
+                targetFile.close();
             }
             return target;
         }
@@ -61,48 +84,4 @@ public class SMBCopyFeature implements Copy {
             throw new SMBExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
-
-    private void copyDirectory(Path target) throws BackgroundException {
-        if(!session.share.folderExists(target.toString())) {
-            session.getFeature(Directory.class).mkdir(target, null);
-        }
-
-    }
-
-    private void copyFile(Path source, Path target) throws BackgroundException {
-
-        Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_WRITE);
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_DELETE);
-
-        Set<FileAttributes> fileAttributes = new HashSet<>();
-        fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
-        Set<SMB2CreateOptions> createOptions = new HashSet<>();
-        SMB2CreateDisposition smb2CreateDisposition = SMB2CreateDisposition.FILE_OPEN_IF;
-
-        Set<AccessMask> accessMask = new HashSet<>();
-        accessMask.add(AccessMask.MAXIMUM_ALLOWED);
-
-        createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
-
-        File sourceFile = session.share.openFile(source.getAbsolute(), accessMask, fileAttributes,
-                shareAccessSet, smb2CreateDisposition, createOptions);
-
-        File targetFile = session.share.openFile(target.getAbsolute(), accessMask, fileAttributes,
-                shareAccessSet, smb2CreateDisposition, createOptions);
-
-        try {
-            sourceFile.remoteCopyTo(targetFile);
-        }
-        catch(TransportException | BufferException e) {
-            throw new BackgroundException(e);
-        }
-        finally {
-            sourceFile.close();
-            targetFile.close();
-        }
-
-    }
-
 }

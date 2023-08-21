@@ -19,9 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
@@ -64,21 +62,5 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         ListService list = new SMBListService(session);
         assertTrue(list.list(sourceFolder, null).contains(file));
         assertTrue(list.list(destinationFolder, null).contains(copy));
-    }
-
-    @Test
-    public void testCopyDirectory() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
-        final Path source = new Path(home, "empty_folder", EnumSet.of(Path.Type.directory));
-        final Path destinationFolder = new Path(home, "other_folder", EnumSet.of(Path.Type.directory));
-        final Path destination = new Path(destinationFolder, "new_empty_folder", EnumSet.of(Path.Type.directory));
-
-        new SMBCopyFeature(session).copy(source, destination, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-
-        Find find = new DefaultFindFeature(session);
-        assertTrue(find.find(source));
-        assertTrue(find.find(destinationFolder));
-        final Path newLocation = new Path(destinationFolder, "new_empty_folder", EnumSet.of(Path.Type.directory));
-        assertTrue(find.find(newLocation));
     }
 }
