@@ -346,11 +346,11 @@ public class Credentials implements Comparable<Credentials> {
         }
         final Credentials that = (Credentials) o;
         return Objects.equals(user, that.user) &&
-            Objects.equals(password, that.password) &&
+                Objects.equals(password, that.password) &&
                 Objects.equals(token, that.token) &&
-            Objects.equals(tokens, that.tokens) &&
-            Objects.equals(identity, that.identity) &&
-            Objects.equals(certificate, that.certificate);
+                Objects.equals(tokens, that.tokens) &&
+                Objects.equals(identity, that.identity) &&
+                Objects.equals(certificate, that.certificate);
     }
 
     @Override
