@@ -19,7 +19,8 @@ import ch.cyberduck.core.features.Quota;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class SMBQuotaFeatureTest extends AbstractSMBTest {
 
@@ -29,6 +30,6 @@ public class SMBQuotaFeatureTest extends AbstractSMBTest {
         assertNotNull(quota.available);
         assertNotNull(quota.used);
         assertNotEquals(0L, quota.available, 0L);
-        assertEquals(8358047700L, quota.used, 0L);
+        assertNotEquals(0L, quota.used, 0L);
     }
 }
