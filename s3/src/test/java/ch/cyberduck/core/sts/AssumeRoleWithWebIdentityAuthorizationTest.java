@@ -41,7 +41,6 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -57,11 +56,11 @@ import static org.junit.Assert.*;
 public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRoleWithWebIdentityTest {
 
     @ClassRule
-    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
+    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer();
 
     @Test
     public void testAuthorizationFindBucket() throws BackgroundException {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
@@ -74,7 +73,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
 
     @Test
     public void testAuthorizationUserReadAccessOnBucket() throws BackgroundException {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
@@ -88,7 +87,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
 
     @Test
     public void testAuthorizationWritePermissionOnBucket() throws BackgroundException {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
@@ -105,7 +104,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
 
     @Test
     public void testAuthorizationNoWritePermissionOnBucket() throws BackgroundException {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
