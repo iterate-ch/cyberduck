@@ -56,7 +56,7 @@ import static org.junit.Assert.*;
 public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeRoleWithWebIdentityTest {
 
     @ClassRule
-    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer(getKeyCloakFile());
+    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer();
 
     @Test
     public void testSuccessfulLogin() throws BackgroundException {
