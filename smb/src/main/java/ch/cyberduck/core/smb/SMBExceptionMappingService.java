@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.hierynomus.mserref.NtStatus;
 import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
@@ -37,38 +38,43 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
     @Override
     public BackgroundException map(final SMBRuntimeException failure) {
         if(failure instanceof SMBApiException) {
-            switch(((SMBApiException) failure).getStatus()) {
+            final StringBuilder buffer = new StringBuilder();
+            final SMBApiException e = (SMBApiException) failure;
+            // NTSTATUS
+            final NtStatus status = e.getStatus();
+            this.append(buffer, String.format("%s (0x%08x)", status.name(), e.getStatusCode()));
+            switch(status) {
                 case STATUS_BAD_NETWORK_NAME:
                 case STATUS_NOT_FOUND:
                 case STATUS_OBJECT_NAME_NOT_FOUND:
                 case STATUS_OBJECT_PATH_NOT_FOUND:
                 case STATUS_PATH_NOT_COVERED:
-                    return new NotfoundException(failure.getMessage(), failure.getCause());
+                    return new NotfoundException(buffer.toString(), failure.getCause());
                 case STATUS_NOT_IMPLEMENTED:
                 case STATUS_NOT_SUPPORTED:
-                    return new UnsupportedException(failure.getMessage(), failure.getCause());
+                    return new UnsupportedException(buffer.toString(), failure.getCause());
                 case STATUS_ACCESS_DENIED:
-                    return new AccessDeniedException(failure.getMessage(), failure.getCause());
+                    return new AccessDeniedException(buffer.toString(), failure.getCause());
                 case STATUS_OBJECT_NAME_COLLISION:
-                    return new ConflictException(failure.getMessage(), failure.getCause());
+                    return new ConflictException(buffer.toString(), failure.getCause());
                 case STATUS_FILE_LOCK_CONFLICT:
                 case STATUS_LOCK_NOT_GRANTED:
                 case STATUS_SHARING_VIOLATION:
-                    return new LockedException(failure.getMessage(), failure.getCause());
+                    return new LockedException(buffer.toString(), failure.getCause());
                 case STATUS_LOGON_FAILURE:
                 case STATUS_PASSWORD_EXPIRED:
                 case STATUS_ACCOUNT_DISABLED:
                 case STATUS_LOGON_TYPE_NOT_GRANTED:
-                    return new LoginFailureException(failure.getMessage(), failure.getCause());
+                    return new LoginFailureException(buffer.toString(), failure.getCause());
                 case STATUS_DISK_FULL:
-                    return new QuotaException(failure.getMessage(), failure.getCause());
+                    return new QuotaException(buffer.toString(), failure.getCause());
                 case STATUS_IO_TIMEOUT:
-                    return new ConnectionTimeoutException(failure.getMessage(), failure.getCause());
+                    return new ConnectionTimeoutException(buffer.toString(), failure.getCause());
                 case STATUS_CONNECTION_DISCONNECTED:
                 case STATUS_CONNECTION_RESET:
-                    return new ConnectionRefusedException(failure.getMessage(), failure.getCause());
+                    return new ConnectionRefusedException(buffer.toString(), failure.getCause());
                 default:
-                    return new InteroperabilityException(failure.getMessage(), failure.getCause());
+                    return new InteroperabilityException(buffer.toString(), failure.getCause());
             }
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
