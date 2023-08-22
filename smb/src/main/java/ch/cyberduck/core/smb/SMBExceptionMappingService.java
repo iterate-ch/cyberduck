@@ -27,47 +27,57 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.UnsupportedException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
 public class SMBExceptionMappingService extends AbstractExceptionMappingService<SMBRuntimeException> {
     @Override
-    public BackgroundException map(final SMBRuntimeException exception) {
-        if(exception instanceof SMBApiException) {
-            switch(((SMBApiException) exception).getStatus()) {
+    public BackgroundException map(final SMBRuntimeException failure) {
+        if(failure instanceof SMBApiException) {
+            switch(((SMBApiException) failure).getStatus()) {
                 case STATUS_BAD_NETWORK_NAME:
                 case STATUS_NOT_FOUND:
                 case STATUS_OBJECT_NAME_NOT_FOUND:
                 case STATUS_OBJECT_PATH_NOT_FOUND:
                 case STATUS_PATH_NOT_COVERED:
-                    return new NotfoundException(exception.getMessage(), exception.getCause());
+                    return new NotfoundException(failure.getMessage(), failure.getCause());
                 case STATUS_NOT_IMPLEMENTED:
                 case STATUS_NOT_SUPPORTED:
-                    return new UnsupportedException(exception.getMessage(), exception.getCause());
+                    return new UnsupportedException(failure.getMessage(), failure.getCause());
                 case STATUS_ACCESS_DENIED:
-                    return new AccessDeniedException(exception.getMessage(), exception.getCause());
+                    return new AccessDeniedException(failure.getMessage(), failure.getCause());
                 case STATUS_OBJECT_NAME_COLLISION:
-                    return new ConflictException(exception.getMessage(), exception.getCause());
+                    return new ConflictException(failure.getMessage(), failure.getCause());
                 case STATUS_FILE_LOCK_CONFLICT:
                 case STATUS_LOCK_NOT_GRANTED:
                 case STATUS_SHARING_VIOLATION:
-                    return new LockedException(exception.getMessage(), exception.getCause());
+                    return new LockedException(failure.getMessage(), failure.getCause());
                 case STATUS_LOGON_FAILURE:
                 case STATUS_PASSWORD_EXPIRED:
                 case STATUS_ACCOUNT_DISABLED:
                 case STATUS_LOGON_TYPE_NOT_GRANTED:
-                    return new LoginFailureException(exception.getMessage(), exception.getCause());
+                    return new LoginFailureException(failure.getMessage(), failure.getCause());
                 case STATUS_DISK_FULL:
-                    return new QuotaException(exception.getMessage(), exception.getCause());
+                    return new QuotaException(failure.getMessage(), failure.getCause());
                 case STATUS_IO_TIMEOUT:
-                    return new ConnectionTimeoutException(exception.getMessage(), exception.getCause());
+                    return new ConnectionTimeoutException(failure.getMessage(), failure.getCause());
                 case STATUS_CONNECTION_DISCONNECTED:
                 case STATUS_CONNECTION_RESET:
-                    return new ConnectionRefusedException(exception.getMessage(), exception.getCause());
+                    return new ConnectionRefusedException(failure.getMessage(), failure.getCause());
                 default:
-                    return new InteroperabilityException(exception.getMessage(), exception.getCause());
+                    return new InteroperabilityException(failure.getMessage(), failure.getCause());
             }
         }
-        return new BackgroundException(exception.getMessage(), exception.getCause());
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof TransportException) {
+                final Throwable root = ExceptionUtils.getRootCause(failure);
+                return new ConnectionRefusedException(root.getMessage(), cause);
+            }
+        }
+        final Throwable root = ExceptionUtils.getRootCause(failure);
+        return new BackgroundException(root.getMessage(), root);
     }
 }
