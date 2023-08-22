@@ -71,5 +71,8 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
         }
+        finally {
+            session.releaseShare(file);
+        }
     }
 }

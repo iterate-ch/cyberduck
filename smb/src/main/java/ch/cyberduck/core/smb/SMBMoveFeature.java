@@ -65,6 +65,9 @@ public class SMBMoveFeature implements Move {
                     try (final DiskShare targetShare = session.openShare(target)) {
                         file.rename(new SmbPath(targetShare.getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
                     }
+                    finally {
+                        session.releaseShare(target);
+                    }
                 }
             }
             catch(SMBRuntimeException e) {
@@ -73,6 +76,9 @@ public class SMBMoveFeature implements Move {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+        }
+        finally {
+            session.releaseShare(source);
         }
         return target;
     }

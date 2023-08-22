@@ -41,22 +41,23 @@ public class SMBFindFeature implements Find {
             return true;
         }
         try {
-            try {
-                try (final DiskShare share = session.openShare(file)) {
-                    if(new SMBPathContainerService(session).isContainer(file)) {
-                        return true;
-                    }
-                    if(file.isDirectory()) {
-                        return share.folderExists(new SMBPathContainerService(session).getKey(file));
-                    }
-                    return share.fileExists(new SMBPathContainerService(session).getKey(file));
+            try (final DiskShare share = session.openShare(file)) {
+                if(new SMBPathContainerService(session).isContainer(file)) {
+                    return true;
                 }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+                if(file.isDirectory()) {
+                    return share.folderExists(new SMBPathContainerService(session).getKey(file));
                 }
+                return share.fileExists(new SMBPathContainerService(session).getKey(file));
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
             }
             catch(SMBRuntimeException e) {
                 throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
+            finally {
+                session.releaseShare(file);
             }
         }
         catch(NotfoundException e) {

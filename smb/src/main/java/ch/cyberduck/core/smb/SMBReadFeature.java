@@ -62,7 +62,7 @@ public class SMBReadFeature implements Read {
             if(status.isAppend()) {
                 stream.skip(status.getOffset());
             }
-            return new SMBInputStream(stream, share, entry);
+            return new SMBInputStream(file, stream, share, entry);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Download {0} failed", e, file);
@@ -72,28 +72,35 @@ public class SMBReadFeature implements Read {
         }
     }
 
-    private static final class SMBInputStream extends ProxyInputStream {
+    private final class SMBInputStream extends ProxyInputStream {
+        private final Path file;
         private final DiskShare share;
-        private final File file;
+        private final File handle;
 
-        public SMBInputStream(final InputStream stream, final DiskShare share, final File file) {
+        public SMBInputStream(final Path file, final InputStream stream, final DiskShare share, final File handle) {
             super(stream);
-            this.share = share;
             this.file = file;
+            this.share = share;
+            this.handle = handle;
         }
 
         @Override
         public void close() throws IOException {
             try {
                 try {
+                try {
                     super.close();
                 }
                 finally {
-                    file.close();
+                    handle.close();
                 }
             }
             finally {
                 share.close();
+            }
+            }
+            finally {
+                session.releaseShare(file);
             }
         }
     }

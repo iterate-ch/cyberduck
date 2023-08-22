@@ -46,31 +46,33 @@ public class SMBCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status,
                      final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
-        try {
-            try (final File sourceFile = session.openShare(source).openFile(new SMBPathContainerService(session).getKey(source),
-                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
-                    Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                    SMB2CreateDisposition.FILE_OPEN,
-                    Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-                 final File targetFile = session.openShare(target).openFile(new SMBPathContainerService(session).getKey(target),
-                         Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
-                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                         SMB2CreateDisposition.FILE_OPEN_IF,
-                         Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
-                sourceFile.remoteCopyTo(targetFile);
-            }
-            catch(TransportException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
-            }
-            catch(BufferException e) {
-                throw new BackgroundException(e);
-            }
-            return target;
+        try (final File sourceFile = session.openShare(source).openFile(new SMBPathContainerService(session).getKey(source),
+                Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                SMB2CreateDisposition.FILE_OPEN,
+                Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
+             final File targetFile = session.openShare(target).openFile(new SMBPathContainerService(session).getKey(target),
+                     Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                     SMB2CreateDisposition.FILE_OPEN_IF,
+                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
+            sourceFile.remoteCopyTo(targetFile);
+        }
+        catch(TransportException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
+        }
+        catch(BufferException e) {
+            throw new BackgroundException(e);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot copy {0}", e, source);
         }
+        finally {
+            session.releaseShare(source);
+            session.releaseShare(target);
+        }
+        return target;
     }
 }

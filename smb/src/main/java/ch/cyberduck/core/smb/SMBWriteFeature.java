@@ -55,38 +55,45 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN_IF,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-            return new VoidStatusOutputStream(new SMBOutputStream(entry.getOutputStream(), share, entry));
+            return new VoidStatusOutputStream(new SMBOutputStream(file, entry.getOutputStream(), share, entry));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 
-    private static final class SMBOutputStream extends ProxyOutputStream {
+    private final class SMBOutputStream extends ProxyOutputStream {
+        private final Path file;
         private final DiskShare share;
-        private final File file;
+        private final File handle;
         private long fileSize;
 
-        public SMBOutputStream(final OutputStream stream, final DiskShare share, final File file) {
+        public SMBOutputStream(final Path file, final OutputStream stream, final DiskShare share, final File handle) {
             super(stream);
-            this.share = share;
             this.file = file;
+            this.share = share;
+            this.handle = handle;
         }
 
         @Override
         public void close() throws IOException {
             try {
                 try {
-                    super.close();
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        handle.flush();
+                        handle.setLength(fileSize);
+                        handle.close();
+                    }
                 }
                 finally {
-                    file.flush();
-                    file.setLength(fileSize);
-                    file.close();
+                    share.close();
                 }
             }
             finally {
-                share.close();
+                session.releaseShare(file);
             }
         }
 

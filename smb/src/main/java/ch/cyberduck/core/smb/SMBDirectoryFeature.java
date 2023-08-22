@@ -37,16 +37,17 @@ public class SMBDirectoryFeature implements Directory<Integer> {
 
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-        try {
-            try (final DiskShare share = session.openShare(folder)) {
-                share.mkdir(new SMBPathContainerService(session).getKey(folder));
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
-            }
+        try (final DiskShare share = session.openShare(folder)) {
+            share.mkdir(new SMBPathContainerService(session).getKey(folder));
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot create folder {0}", e, folder);
+        }
+        finally {
+            session.releaseShare(folder);
         }
         return folder;
     }

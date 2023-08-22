@@ -67,6 +67,9 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
             }
+            finally {
+                session.releaseShare(file);
+            }
         }
         else {
             try (final DiskShare share = session.openShare(file)) {
@@ -88,6 +91,9 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+            }
+            finally {
+                session.releaseShare(file);
             }
         }
     }

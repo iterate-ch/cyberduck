@@ -51,8 +51,11 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import com.hierynomus.protocol.transport.TransportException;
@@ -76,6 +79,8 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     private Session session;
     private SMBListService shares;
+
+    private final Map<String, ReentrantLock> locks = new HashMap<>();
 
     public SMBSession(final Host h) {
         super(h);
@@ -165,8 +170,18 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     public DiskShare openShare(final Path file) throws BackgroundException {
+        final String shareName = new SMBPathContainerService(this).getContainer(file).getName();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Await lock for %s", shareName));
+        }
+        final ReentrantLock lock = locks.getOrDefault(shareName, new ReentrantLock());
+        lock.lock();
+        locks.put(shareName, lock);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Acquired lock for %s", shareName));
+        }
         try {
-            final Share share = session.connectShare(new SMBPathContainerService(this).getContainer(file).getName());
+            final Share share = session.connectShare(shareName);
             if(share instanceof DiskShare) {
                 return (DiskShare) share;
             }
@@ -175,6 +190,19 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot read container configuration", e);
         }
+    }
+
+    public void releaseShare(final Path file) {
+        final String shareName = new SMBPathContainerService(this).getContainer(file).getName();
+        final ReentrantLock lock = locks.get(shareName);
+        if(null == lock) {
+            log.warn(String.format("Mising lock for %s", shareName));
+            return;
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Release lock for %s", shareName));
+        }
+        lock.unlock();
     }
 
     @Override

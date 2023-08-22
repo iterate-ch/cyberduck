@@ -103,6 +103,9 @@ public class SMBListService implements ListService {
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
             }
+            finally {
+                session.releaseShare(directory);
+            }
         }
         return result;
     }
