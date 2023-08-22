@@ -20,13 +20,19 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -39,40 +45,28 @@ import static org.junit.Assert.*;
 public class SMBSessionTest extends AbstractSMBTest {
 
     @Test
-    public void testLoginSuccessWithoutDomain() throws Exception {
-        {
-            final Host host = new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445));
-            host.setCredentials(new Credentials("smbj", "pass"));
-            final SMBSession session = new SMBSession(host);
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            session.login(Proxy.DIRECT, new DisabledLoginCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                    return new Credentials().withPassword("user");
-                }
-            }, new DisabledCancelCallback());
-        }
-        {
-            final Host host = new Host(new SMBProtocol() {
-                @Override
-                public String getContext() {
-                    return "user";
-                }
-            }, container.getHost(), container.getMappedPort(445));
-            host.setCredentials(new Credentials("smbj", "pass"));
-            final SMBSession session = new SMBSession(host);
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        }
+    public void testLoginSuccessWithShareInContext() throws Exception {
+        final Host host = new Host(new SMBProtocol() {
+            @Override
+            public String getContext() {
+                return "user";
+            }
+        }, container.getHost(), container.getMappedPort(445));
+        host.setCredentials(new Credentials("smbj", "pass"));
+        final SMBSession session = new SMBSession(host);
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
     }
 
     @Test
-    public void testLoginFailMissingSharename() throws Exception {
+    public void testLoginSuccessWithListAllShares() throws Exception {
         final Host host = new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445));
         host.setCredentials(new Credentials("smbj@WORKGROUP", "pass"));
         final SMBSession session = new SMBSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertThrows(ConnectionCanceledException.class, () -> session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
     }
 
     @Test
@@ -88,5 +82,14 @@ public class SMBSessionTest extends AbstractSMBTest {
         assertNull(session.getFeature(UnixPermission.class));
         assertNull(session.getFeature(DistributionConfiguration.class));
         assertNotNull(session.getFeature(Touch.class));
+        assertNotNull(session.getFeature(AttributesFinder.class));
+        assertNotNull(session.getFeature(Copy.class));
+        assertNotNull(session.getFeature(Move.class));
+        assertNotNull(session.getFeature(Delete.class));
+        assertNotNull(session.getFeature(ListService.class));
+        assertNotNull(session.getFeature(PathContainerService.class));
+        assertNotNull(session.getFeature(Quota.class));
+        assertNotNull(session.getFeature(Read.class));
+        assertNotNull(session.getFeature(Write.class));
     }
 }

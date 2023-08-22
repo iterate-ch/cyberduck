@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,8 +57,16 @@ public class SMBListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> result = new AttributedList<>();
         if(directory.isRoot()) {
-            for(String share : shares) {
-                result.add(new Path(share, EnumSet.of(Path.Type.directory, Path.Type.volume)));
+            for(String s : shares) {
+                final Path share = new Path(s, EnumSet.of(Type.directory, Type.volume));
+                try {
+                    result.add(share.withAttributes(new SMBAttributesFinderFeature(session).find(share)));
+                }
+                catch(UnsupportedException e) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Skip unsupprted share %s", s));
+                    }
+                }
             }
         }
         else {

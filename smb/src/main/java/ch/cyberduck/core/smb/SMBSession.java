@@ -27,7 +27,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -51,8 +51,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.SMBClient;
@@ -64,12 +65,17 @@ import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.Share;
+import com.rapid7.client.dcerpc.mssrvs.ServerService;
+import com.rapid7.client.dcerpc.mssrvs.dto.NetShareInfo;
+import com.rapid7.client.dcerpc.mssrvs.dto.NetShareInfo0;
+import com.rapid7.client.dcerpc.transport.RPCTransport;
+import com.rapid7.client.dcerpc.transport.SMBTransportFactories;
 
 public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     private static final Logger log = LogManager.getLogger(SMBSession.class);
 
     private Session session;
-    private Set<String> shares;
+    private SMBListService shares;
 
     public SMBSession(final Host h) {
         super(h);
@@ -118,25 +124,44 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
         try {
             session = client.authenticate(context);
-            final String shareName;
             if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Connect to share %s from profile context", host.getProtocol().getContext()));
+                }
                 // Use share name from context in profile
-                shares = Collections.singleton(host.getProtocol().getContext());
+                shares = new SMBListService(this, Collections.singleton(host.getProtocol().getContext()));
             }
             else {
-                shares = Collections.singleton(prompt.prompt(host,
-                        LocaleFactory.localizedString("Share Name"),
-                        LocaleFactory.localizedString("Enter the share name to connect to."),
-                        new LoginOptions().icon(host.getProtocol().disk()).keychain(false)).getPassword());
+                if(log.isDebugEnabled()) {
+                    log.debug("Attempt to list available shares");
+                }
+                try {
+                    // An SRVSVC_HANDLE pointer that identifies the server.
+                    final RPCTransport transport = SMBTransportFactories.SRVSVC.getTransport(session);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Obtained transport %s", transport));
+                    }
+                    final ServerService lookup = new ServerService(transport);
+                    final List<NetShareInfo0> info = lookup.getShares0();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Retrieved share info %s", info));
+                    }
+                    shares = new SMBListService(this, info.stream().map(NetShareInfo::getNetName).collect(Collectors.toSet()));
+                }
+                catch(IOException e) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Failure %s getting share info from server", e));
+                    }
+                    shares = new SMBListService(this, Collections.singleton(prompt.prompt(host,
+                            LocaleFactory.localizedString("Share Name"),
+                            LocaleFactory.localizedString("Enter the share name to connect to."),
+                            new LoginOptions().icon(host.getProtocol().disk()).keychain(false)).getPassword()));
+                }
             }
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"), e);
         }
-    }
-
-    public Set<String> getShares() {
-        return shares;
     }
 
     public DiskShare openShare(final Path file) throws BackgroundException {
@@ -145,7 +170,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             if(share instanceof DiskShare) {
                 return (DiskShare) share;
             }
-            throw new InteroperabilityException(String.format("Unsupported share %s", share.getSmbPath().getShareName()));
+            throw new UnsupportedException(String.format("Unsupported share %s", share.getSmbPath().getShareName()));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot read container configuration", e);
@@ -194,7 +219,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             return (T) new SMBFindFeature(this);
         }
         if(type == ListService.class) {
-            return (T) new SMBListService(this, shares);
+            return (T) shares;
         }
         if(type == Directory.class) {
             return (T) new SMBDirectoryFeature(this);
