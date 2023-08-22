@@ -39,6 +39,7 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
                 case STATUS_NOT_FOUND:
                 case STATUS_OBJECT_NAME_NOT_FOUND:
                 case STATUS_OBJECT_PATH_NOT_FOUND:
+                case STATUS_PATH_NOT_COVERED:
                     return new NotfoundException(exception.getMessage(), exception.getCause());
                 case STATUS_NOT_IMPLEMENTED:
                 case STATUS_NOT_SUPPORTED:
@@ -63,15 +64,10 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
                 case STATUS_CONNECTION_DISCONNECTED:
                 case STATUS_CONNECTION_RESET:
                     return new ConnectionRefusedException(exception.getMessage(), exception.getCause());
-                case STATUS_PATH_NOT_COVERED:
-                    return new UnsupportedException("This folder is a DFS Share, which is currently not supported", exception.getCause());
-
                 default:
                     return new InteroperabilityException(exception.getMessage(), exception.getCause());
             }
         }
-        else {
-            return new BackgroundException(exception.getMessage(), exception.getCause());
-        }
+        return new BackgroundException(exception.getMessage(), exception.getCause());
     }
 }
