@@ -42,6 +42,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.random.SecureRandomProviderFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -83,6 +84,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withSoTimeout(ConnectionTimeoutFactory.get(new HostPreferences(host)).getTimeout(), TimeUnit.SECONDS)
                     .withAuthenticators(new NtlmAuthenticator.Factory())
                     .withDfsEnabled(true)
+                    .withRandomProvider(SecureRandomProviderFactory.get().provide())
                     .build());
             final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
             if(log.isDebugEnabled()) {
