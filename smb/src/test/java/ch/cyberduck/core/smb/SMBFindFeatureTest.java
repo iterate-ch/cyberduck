@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -34,8 +33,13 @@ import static org.junit.Assert.assertTrue;
 public class SMBFindFeatureTest extends AbstractSMBTest {
 
     @Test
+    public void testFindShareNotFound() throws Exception {
+        assertFalse(new SMBFindFeature(session).find(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume))));
+    }
+
+    @Test
     public void testFindNotFound() throws Exception {
-        assertFalse(new SMBFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertFalse(new SMBFindFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
     }
 
     @Test

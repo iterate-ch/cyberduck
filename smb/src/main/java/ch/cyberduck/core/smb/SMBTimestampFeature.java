@@ -15,11 +15,13 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import com.hierynomus.msdtyp.AccessMask;
@@ -31,6 +33,7 @@ import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.Directory;
+import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBTimestampFeature extends DefaultTimestampFeature {
@@ -44,37 +47,47 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isDirectory()) {
-            try (final Directory entry = session.share.openDirectory(file.getAbsolute(),
-                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
-                    Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                    SMB2CreateDisposition.FILE_OPEN,
-                    Collections.singleton(SMB2CreateOptions.FILE_DIRECTORY_FILE))) {
-                final FileTime creationTime = entry.getFileInformation().getBasicInformation().getCreationTime();
-                final FileTime epochMillis = FileTime.ofEpochMillis(status.getTimestamp());
-                final FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, epochMillis, epochMillis, epochMillis,
-                        FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
-                entry.setFileInformation(fileBasicInformation);
+            try (final DiskShare share = session.openShare(file)) {
+                try (final Directory entry = share.openDirectory(new SMBPathContainerService(session).getKey(file),
+                        Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                        Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                        Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                        SMB2CreateDisposition.FILE_OPEN,
+                        Collections.singleton(SMB2CreateOptions.FILE_DIRECTORY_FILE))) {
+                    final FileTime creationTime = entry.getFileInformation().getBasicInformation().getCreationTime();
+                    final FileTime epochMillis = FileTime.ofEpochMillis(status.getTimestamp());
+                    final FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, epochMillis, epochMillis, epochMillis,
+                            FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
+                    entry.setFileInformation(fileBasicInformation);
+                }
+                catch(SMBRuntimeException e) {
+                    throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
+                }
             }
-            catch(SMBRuntimeException e) {
-                throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
             }
         }
         else {
-            try (final File entry = session.share.openFile(file.getAbsolute(),
-                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
-                    Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                    SMB2CreateDisposition.FILE_OPEN,
-                    Collections.singleton(SMB2CreateOptions.FILE_DIRECTORY_FILE))) {
-                final FileTime creationTime = entry.getFileInformation().getBasicInformation().getCreationTime();
-                final FileTime epochMillis = FileTime.ofEpochMillis(status.getTimestamp());
-                final FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, epochMillis, epochMillis, epochMillis,
-                        FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
-                entry.setFileInformation(fileBasicInformation);
+            try (final DiskShare share = session.openShare(file)) {
+                try (final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
+                        Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                        Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                        Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                        SMB2CreateDisposition.FILE_OPEN,
+                        Collections.singleton(SMB2CreateOptions.FILE_DIRECTORY_FILE))) {
+                    final FileTime creationTime = entry.getFileInformation().getBasicInformation().getCreationTime();
+                    final FileTime epochMillis = FileTime.ofEpochMillis(status.getTimestamp());
+                    final FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, epochMillis, epochMillis, epochMillis,
+                            FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
+                    entry.setFileInformation(fileBasicInformation);
+                }
+                catch(SMBRuntimeException e) {
+                    throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
+                }
             }
-            catch(SMBRuntimeException e) {
-                throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
             }
         }
     }

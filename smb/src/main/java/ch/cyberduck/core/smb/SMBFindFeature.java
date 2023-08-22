@@ -15,12 +15,17 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
+import java.io.IOException;
+
 import com.hierynomus.smbj.common.SMBRuntimeException;
+import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBFindFeature implements Find {
 
@@ -32,14 +37,30 @@ public class SMBFindFeature implements Find {
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        try {
-            if(file.isDirectory()) {
-                return session.share.folderExists(file.getAbsolute());
-            }
-            return session.share.fileExists(file.getAbsolute());
+        if(file.isRoot()) {
+            return true;
         }
-        catch(SMBRuntimeException e) {
-            throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        try {
+            try {
+                try (final DiskShare share = session.openShare(file)) {
+                    if(new SMBPathContainerService(session).isContainer(file)) {
+                        return true;
+                    }
+                    if(file.isDirectory()) {
+                        return share.folderExists(new SMBPathContainerService(session).getKey(file));
+                    }
+                    return share.fileExists(new SMBPathContainerService(session).getKey(file));
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+                }
+            }
+            catch(SMBRuntimeException e) {
+                throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
+        }
+        catch(NotfoundException e) {
+            return false;
         }
     }
 }

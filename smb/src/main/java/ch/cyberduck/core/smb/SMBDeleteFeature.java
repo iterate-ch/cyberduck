@@ -15,15 +15,18 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.hierynomus.smbj.common.SMBRuntimeException;
+import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBDeleteFeature implements Delete {
 
@@ -37,16 +40,19 @@ public class SMBDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files.keySet()) {
             callback.delete(file);
-            try {
+            try (final DiskShare share = session.openShare(file)) {
                 if(file.isFile() || file.isSymbolicLink()) {
-                    session.share.rm(file.getAbsolute());
+                    share.rm(new SMBPathContainerService(session).getKey(file));
                 }
                 else if(file.isDirectory()) {
-                    session.share.rmdir(file.getAbsolute(), true);
+                    share.rmdir(new SMBPathContainerService(session).getKey(file), true);
                 }
             }
             catch(SMBRuntimeException e) {
                 throw new SMBExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
             }
         }
     }

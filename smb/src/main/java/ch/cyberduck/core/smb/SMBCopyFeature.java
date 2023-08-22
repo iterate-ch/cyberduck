@@ -47,13 +47,13 @@ public class SMBCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status,
                      final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
         try {
-            try (final File sourceFile = session.share.openFile(source.getAbsolute(),
+            try (final File sourceFile = session.openShare(source).openFile(new SMBPathContainerService(session).getKey(source),
                     Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-                 final File targetFile = session.share.openFile(target.getAbsolute(),
+                 final File targetFile = session.openShare(target).openFile(new SMBPathContainerService(session).getKey(target),
                          Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                          Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                          Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),

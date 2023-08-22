@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,6 +36,7 @@ import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
+import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBReadFeature implements Read {
@@ -50,21 +50,19 @@ public class SMBReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DiskShare share = session.openShare(file);
         try {
-            if(!session.share.fileExists(file.getAbsolute())) {
-                throw new NotfoundException(file.getAbsolute());
-            }
-            final File entry = session.share.openFile(file.getAbsolute(),
+            final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
                     Collections.singleton(AccessMask.FILE_READ_DATA),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                    SMB2CreateDisposition.FILE_OPEN_IF,
+                    SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
             final InputStream stream = entry.getInputStream();
             if(status.isAppend()) {
                 stream.skip(status.getOffset());
             }
-            return new SMBInputStream(stream, entry);
+            return new SMBInputStream(stream, share, entry);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Download {0} failed", e, file);
@@ -75,20 +73,27 @@ public class SMBReadFeature implements Read {
     }
 
     private static final class SMBInputStream extends ProxyInputStream {
+        private final DiskShare share;
         private final File file;
 
-        public SMBInputStream(final InputStream stream, final File file) {
+        public SMBInputStream(final InputStream stream, final DiskShare share, final File file) {
             super(stream);
+            this.share = share;
             this.file = file;
         }
 
         @Override
         public void close() throws IOException {
             try {
-                super.close();
+                try {
+                    super.close();
+                }
+                finally {
+                    file.close();
+                }
             }
             finally {
-                file.close();
+                share.close();
             }
         }
     }

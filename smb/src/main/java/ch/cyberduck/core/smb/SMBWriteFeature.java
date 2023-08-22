@@ -35,6 +35,7 @@ import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
+import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBWriteFeature extends AppendWriteFeature<Void> {
@@ -46,14 +47,15 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DiskShare share = session.openShare(file);
         try {
-            final File entry = session.share.openFile(file.getAbsolute(),
+            final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
                     Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN_IF,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-            return new VoidStatusOutputStream(new SMBOutputStream(entry.getOutputStream(), entry));
+            return new VoidStatusOutputStream(new SMBOutputStream(entry.getOutputStream(), share, entry));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
@@ -61,23 +63,30 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
     }
 
     private static final class SMBOutputStream extends ProxyOutputStream {
+        private final DiskShare share;
         private final File file;
         private long fileSize;
 
-        public SMBOutputStream(final OutputStream stream, final File file) {
+        public SMBOutputStream(final OutputStream stream, final DiskShare share, final File file) {
             super(stream);
+            this.share = share;
             this.file = file;
         }
 
         @Override
         public void close() throws IOException {
             try {
-                super.close();
+                try {
+                    super.close();
+                }
+                finally {
+                    file.flush();
+                    file.setLength(fileSize);
+                    file.close();
+                }
             }
             finally {
-                file.flush();
-                file.setLength(fileSize);
-                file.close();
+                share.close();
             }
         }
 

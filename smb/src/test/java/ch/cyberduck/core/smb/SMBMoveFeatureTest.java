@@ -15,6 +15,7 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -29,7 +30,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -48,7 +48,8 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         final Move move = new SMBMoveFeature(session);
 
         // rename file
-        final Path fileRenamed = move.move(file, new Path(folder, "userTest_v2.txt", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path fileRenamed = move.move(file, new Path(folder, "userTest_v2.txt", EnumSet.of(Path.Type.file)), new TransferStatus(),
+                new Delete.DisabledCallback(), new DisabledConnectionCallback());
 
         assertFalse(new SMBFindFeature(session).find(file));
         assertTrue(new SMBFindFeature(session).find(fileRenamed));
@@ -68,7 +69,8 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final Path workdir = new DefaultHomeFinderService(session).find();
-        final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SMBMoveFeature(session).move(test, new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path target = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SMBMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 }

@@ -15,12 +15,12 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Quota;
-
-import com.hierynomus.msfscc.fileinformation.ShareInfo;
-import com.hierynomus.smbj.common.SMBRuntimeException;
 
 public class SMBQuotaFeature implements Quota {
 
@@ -32,12 +32,13 @@ public class SMBQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
-        try {
-            final ShareInfo info = session.share.getShareInformation();
-            return new Space(info.getTotalSpace() - info.getFreeSpace(), info.getFreeSpace());
+        long used = 0L;
+        long available = 0L;
+        for(Path container : new SMBListService(session, session.getShares()).list(Home.ROOT, new DisabledListProgressListener())) {
+            final PathAttributes attr = new SMBAttributesFinderFeature(session).find(container);
+            used += attr.getSize();
+            available += attr.getQuota() - attr.getSize();
         }
-        catch(SMBRuntimeException e) {
-            throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, Home.ROOT);
-        }
+        return new Quota.Space(used, available);
     }
 }

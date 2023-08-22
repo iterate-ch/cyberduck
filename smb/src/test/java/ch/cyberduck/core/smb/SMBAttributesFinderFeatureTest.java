@@ -35,8 +35,15 @@ import static org.junit.Assert.*;
 public class SMBAttributesFinderFeatureTest extends AbstractSMBTest {
 
     @Test(expected = NotfoundException.class)
+    public void testFindShareNotFound() throws Exception {
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final SMBAttributesFinderFeature f = new SMBAttributesFinderFeature(session);
+        f.find(test);
+    }
+
+    @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SMBAttributesFinderFeature f = new SMBAttributesFinderFeature(session);
         f.find(test);
     }
@@ -79,7 +86,7 @@ public class SMBAttributesFinderFeatureTest extends AbstractSMBTest {
     @Test
     public void testFindNoPropfind() throws Exception {
         final SMBAttributesFinderFeature f = new SMBAttributesFinderFeature(session);
-        final Path file = new Path("/userTest.txt", EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), "userTest.txt", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertNotNull(attributes);
     }

@@ -24,7 +24,10 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -46,6 +49,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.hierynomus.protocol.transport.TransportException;
@@ -57,12 +62,13 @@ import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
+import com.hierynomus.smbj.share.Share;
 
 public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     private static final Logger log = LogManager.getLogger(SMBSession.class);
 
-    protected DiskShare share;
-    protected Session session;
+    private Session session;
+    private Set<String> shares;
 
     public SMBSession(final Host h) {
         super(h);
@@ -113,18 +119,34 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             final String shareName;
             if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
                 // Use share name from context in profile
-                shareName = host.getProtocol().getContext();
+                shares = Collections.singleton(host.getProtocol().getContext());
             }
             else {
-                shareName = prompt.prompt(host,
+                shares = Collections.singleton(prompt.prompt(host,
                         LocaleFactory.localizedString("Share Name"),
                         LocaleFactory.localizedString("Enter the share name to connect to."),
-                        new LoginOptions().icon(host.getProtocol().disk()).keychain(false)).getPassword();
+                        new LoginOptions().icon(host.getProtocol().disk()).keychain(false)).getPassword());
             }
-            share = (DiskShare) session.connectShare(shareName);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"), e);
+        }
+    }
+
+    public Set<String> getShares() {
+        return shares;
+    }
+
+    public DiskShare openShare(final Path file) throws BackgroundException {
+        try {
+            final Share share = session.connectShare(new SMBPathContainerService(this).getContainer(file).getName());
+            if(share instanceof DiskShare) {
+                return (DiskShare) share;
+            }
+            throw new InteroperabilityException(String.format("Unsupported share %s", share.getSmbPath().getShareName()));
+        }
+        catch(SMBRuntimeException e) {
+            throw new SMBExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
 
@@ -157,17 +179,20 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     @Override
     public boolean isConnected() {
-        return client != null && client.isConnected() && share.isConnected();
+        return super.isConnected() && client.isConnected();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == PathContainerService.class) {
+            return (T) new SMBPathContainerService(this);
+        }
         if(type == Find.class) {
             return (T) new SMBFindFeature(this);
         }
         if(type == ListService.class) {
-            return (T) new SMBListService(this);
+            return (T) new SMBListService(this, shares);
         }
         if(type == Directory.class) {
             return (T) new SMBDirectoryFeature(this);

@@ -16,12 +16,14 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete.Callback;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import com.hierynomus.msdtyp.AccessMask;
@@ -32,6 +34,7 @@ import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.common.SmbPath;
 import com.hierynomus.smbj.share.DiskEntry;
+import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBMoveFeature implements Move {
 
@@ -48,16 +51,28 @@ public class SMBMoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Callback delete, final ConnectionCallback prompt) throws BackgroundException {
-        try (DiskEntry file = session.share.open(source.getAbsolute(),
-                Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
-                Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                SMB2CreateDisposition.FILE_OPEN,
-                Collections.singleton(source.isDirectory() ? SMB2CreateOptions.FILE_DIRECTORY_FILE : SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
-            file.rename(new SmbPath(session.share.getSmbPath(), target.getAbsolute()).getPath(), status.isExists());
+        try (final DiskShare sourceShare = session.openShare(source)) {
+            try (DiskEntry file = sourceShare.open(new SMBPathContainerService(session).getKey(source),
+                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                    Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                    SMB2CreateDisposition.FILE_OPEN,
+                    Collections.singleton(source.isDirectory() ? SMB2CreateOptions.FILE_DIRECTORY_FILE : SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
+                if(new SMBPathContainerService(session).getContainer(source).equals(new SMBPathContainerService(session).getContainer(target))) {
+                    file.rename(new SmbPath(sourceShare.getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
+                }
+                else {
+                    try (final DiskShare targetShare = session.openShare(target)) {
+                        file.rename(new SmbPath(targetShare.getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
+                    }
+                }
+            }
+            catch(SMBRuntimeException e) {
+                throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
+            }
         }
-        catch(SMBRuntimeException e) {
-            throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
         }
         return target;
     }

@@ -52,6 +52,7 @@ public abstract class AbstractSMBTest {
                 this.getClass().getResourceAsStream("/test.cyberduckprofile"));
         final Host host = new Host(profile, container.getHost(), container.getMappedPort(445))
                 .withCredentials(new Credentials("smbj", "pass"));
+        host.setDefaultPath("/user");
         session = new SMBSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
