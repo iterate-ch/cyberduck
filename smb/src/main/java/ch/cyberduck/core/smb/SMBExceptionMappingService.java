@@ -35,6 +35,7 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
     public BackgroundException map(final SMBRuntimeException exception) {
         if(exception instanceof SMBApiException) {
             switch(((SMBApiException) exception).getStatus()) {
+                case STATUS_BAD_NETWORK_NAME:
                 case STATUS_NOT_FOUND:
                 case STATUS_OBJECT_NAME_NOT_FOUND:
                 case STATUS_OBJECT_PATH_NOT_FOUND:
