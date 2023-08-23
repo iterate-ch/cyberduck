@@ -15,6 +15,7 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
@@ -42,7 +43,8 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
             final SMBApiException e = (SMBApiException) failure;
             // NTSTATUS
             final NtStatus status = e.getStatus();
-            this.append(buffer, String.format("%s (0x%08x)", status.name(), e.getStatusCode()));
+            this.append(buffer, String.format("%s (0x%08x)",
+                    LocaleFactory.localizedString(status.name(), "SMB"), e.getStatusCode()));
             switch(status) {
                 case STATUS_BAD_NETWORK_NAME:
                 case STATUS_NOT_FOUND:
