@@ -293,6 +293,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         }
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.ftp), String.valueOf(true));
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
+        this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.smb), String.valueOf(false));
 
         // TTL for DNS queries
         Security.setProperty("networkaddress.cache.ttl", "10");
