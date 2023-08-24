@@ -153,7 +153,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         final String shareName = new SMBPathContainerService(this).getContainer(file).getName();
         final ReentrantLock lock = locks.get(shareName);
         if(null == lock) {
-            log.warn(String.format("Mising lock for %s", shareName));
+            log.warn(String.format("Missing lock for %s", shareName));
             return;
         }
         if(log.isDebugEnabled()) {
