@@ -18,6 +18,7 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,6 +56,7 @@ public class SMBProtocol extends AbstractProtocol {
 
     @Override
     public String getUsernamePlaceholder() {
-        return "username@domain/share";
+        return String.format("%s@%s", LocaleFactory.localizedString("Username", "Credentials"),
+                PreferencesFactory.get().getProperty("smb.domain.default"));
     }
 }
