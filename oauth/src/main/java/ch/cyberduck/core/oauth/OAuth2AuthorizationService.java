@@ -152,7 +152,7 @@ public class OAuth2AuthorizationService {
         // Save access key and refresh key
         return credentials.withOauth(new OAuthTokens(
                 response.getAccessToken(), response.getRefreshToken(),
-                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                null == response.getExpiresInSeconds() ? Long.MAX_VALUE :
                         System.currentTimeMillis() + response.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
     }
 
