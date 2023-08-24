@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class FileLocksApi {
   private ApiClient apiClient;
 
@@ -70,7 +70,7 @@ public class FileLocksApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/filelocks/{fileId}"
+    String localVarPath = "/v4.2/filelocks/{fileId}"
       .replaceAll("\\{" + "fileId" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -129,7 +129,7 @@ public class FileLocksApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/filelocks/{fileId}/{lockId}"
+    String localVarPath = "/v4.2/filelocks/{fileId}/{lockId}"
       .replaceAll("\\{" + "fileId" + "\\}", apiClient.escapeString(fileId.toString()))
       .replaceAll("\\{" + "lockId" + "\\}", apiClient.escapeString(lockId.toString()));
 
@@ -183,7 +183,7 @@ public class FileLocksApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/filelocks/{fileId}"
+    String localVarPath = "/v4.2/filelocks/{fileId}"
       .replaceAll("\\{" + "fileId" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -250,7 +250,7 @@ public class FileLocksApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/filelocks/{fileId}/{lockId}"
+    String localVarPath = "/v4.2/filelocks/{fileId}/{lockId}"
       .replaceAll("\\{" + "fileId" + "\\}", apiClient.escapeString(fileId.toString()))
       .replaceAll("\\{" + "lockId" + "\\}", apiClient.escapeString(lockId.toString()));
 

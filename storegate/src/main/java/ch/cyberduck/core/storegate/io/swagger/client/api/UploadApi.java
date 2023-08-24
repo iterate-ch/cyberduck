@@ -8,6 +8,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class UploadApi {
   private ApiClient apiClient;
 
@@ -61,7 +62,7 @@ public class UploadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/upload/resumable";
+    String localVarPath = "/v4.2/upload/resumable";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -90,24 +91,24 @@ public class UploadApi {
   /**
    * Upload a file using a multipart request containing first a metadata (see reponse) part and a then the filedata part.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
-   * @return FileMetadata
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public FileMetadata uploadPostMultipart() throws ApiException {
+  public File uploadPostMultipart() throws ApiException {
     return uploadPostMultipartWithHttpInfo().getData();
       }
 
   /**
    * Upload a file using a multipart request containing first a metadata (see reponse) part and a then the filedata part.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
-   * @return ApiResponse&lt;FileMetadata&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileMetadata> uploadPostMultipartWithHttpInfo() throws ApiException {
+  public ApiResponse<File> uploadPostMultipartWithHttpInfo() throws ApiException {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/upload";
+    String localVarPath = "/v4.2/upload";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -129,17 +130,17 @@ public class UploadApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<FileMetadata> localVarReturnType = new GenericType<FileMetadata>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Upload a file to a share using a multipart request containing first a metadata (see reponse) part and a then the filedata part.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param shareid The shareId (required)
-   * @return FileMetadata
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public FileMetadata uploadPostMultipartShare(String shareid) throws ApiException {
+  public File uploadPostMultipartShare(String shareid) throws ApiException {
     return uploadPostMultipartShareWithHttpInfo(shareid).getData();
       }
 
@@ -147,10 +148,10 @@ public class UploadApi {
    * Upload a file to a share using a multipart request containing first a metadata (see reponse) part and a then the filedata part.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param shareid The shareId (required)
-   * @return ApiResponse&lt;FileMetadata&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileMetadata> uploadPostMultipartShareWithHttpInfo(String shareid) throws ApiException {
+  public ApiResponse<File> uploadPostMultipartShareWithHttpInfo(String shareid) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'shareid' is set
@@ -159,7 +160,7 @@ public class UploadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/upload/shares/{shareid}"
+    String localVarPath = "/v4.2/upload/shares/{shareid}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()));
 
     // query params
@@ -182,7 +183,7 @@ public class UploadApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<FileMetadata> localVarReturnType = new GenericType<FileMetadata>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -212,7 +213,7 @@ public class UploadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/upload/resumable";
+    String localVarPath = "/v4.2/upload/resumable";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -271,7 +272,7 @@ public class UploadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/upload/shares/{shareid}/resumable"
+    String localVarPath = "/v4.2/upload/shares/{shareid}/resumable"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()));
 
     // query params
@@ -301,10 +302,10 @@ public class UploadApi {
    * Upload a chunk to the resumable upload.              Use Content-Length and Content-Range to describe the chunk size and offset.              Use Content-Length &#x3D; 0 and Content-Range &#x3D; *_/Length to query upload status.
    * 
    * @param uploadId The uploadId (required)
-   * @return FileMetadata
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public FileMetadata uploadPutResumable(String uploadId) throws ApiException {
+  public File uploadPutResumable(String uploadId) throws ApiException {
     return uploadPutResumableWithHttpInfo(uploadId).getData();
       }
 
@@ -312,10 +313,10 @@ public class UploadApi {
    * Upload a chunk to the resumable upload.              Use Content-Length and Content-Range to describe the chunk size and offset.              Use Content-Length &#x3D; 0 and Content-Range &#x3D; *_/Length to query upload status.
    * 
    * @param uploadId The uploadId (required)
-   * @return ApiResponse&lt;FileMetadata&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileMetadata> uploadPutResumableWithHttpInfo(String uploadId) throws ApiException {
+  public ApiResponse<File> uploadPutResumableWithHttpInfo(String uploadId) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'uploadId' is set
@@ -324,7 +325,7 @@ public class UploadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/upload/resumable";
+    String localVarPath = "/v4.2/upload/resumable";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -347,7 +348,7 @@ public class UploadApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<FileMetadata> localVarReturnType = new GenericType<FileMetadata>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
 }

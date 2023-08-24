@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class PublicApi {
   private ApiClient apiClient;
 
@@ -55,7 +55,7 @@ public class PublicApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/public/version";
+    String localVarPath = "/v4.2/public/version";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();

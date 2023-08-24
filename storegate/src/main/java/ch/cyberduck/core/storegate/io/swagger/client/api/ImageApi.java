@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class ImageApi {
   private ApiClient apiClient;
 
@@ -42,11 +42,12 @@ public class ImageApi {
    * @param width Thumbnail width (optional)
    * @param height Thumbnail height (optional)
    * @param rotate Thumbnail rotation (optional)
+   * @param quality Thumbnail quality (90 is default) (optional)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String imageGetImageFile(String id, Integer version, Integer width, Integer height, Integer rotate) throws ApiException {
-    return imageGetImageFileWithHttpInfo(id, version, width, height, rotate).getData();
+  public String imageGetImageFile(String id, Integer version, Integer width, Integer height, Integer rotate, Integer quality) throws ApiException {
+    return imageGetImageFileWithHttpInfo(id, version, width, height, rotate, quality).getData();
       }
 
   /**
@@ -57,10 +58,11 @@ public class ImageApi {
    * @param width Thumbnail width (optional)
    * @param height Thumbnail height (optional)
    * @param rotate Thumbnail rotation (optional)
+   * @param quality Thumbnail quality (90 is default) (optional)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> imageGetImageFileWithHttpInfo(String id, Integer version, Integer width, Integer height, Integer rotate) throws ApiException {
+  public ApiResponse<String> imageGetImageFileWithHttpInfo(String id, Integer version, Integer width, Integer height, Integer rotate, Integer quality) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -69,7 +71,7 @@ public class ImageApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/images/fileid/{id}"
+    String localVarPath = "/v4.2/images/fileid/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -81,6 +83,7 @@ public class ImageApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "rotate", rotate));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
 
     
     
@@ -139,7 +142,7 @@ public class ImageApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/images/shares/{shareid}/fileid/{id}"
+    String localVarPath = "/v4.2/images/shares/{shareid}/fileid/{id}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
@@ -202,7 +205,7 @@ public class ImageApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/images/mediaid/{mediaid}"
+    String localVarPath = "/v4.2/images/mediaid/{mediaid}"
       .replaceAll("\\{" + "mediaid" + "\\}", apiClient.escapeString(mediaid.toString()));
 
     // query params
@@ -271,7 +274,7 @@ public class ImageApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/images/shares/{shareid}/mediaid/{mediaid}"
+    String localVarPath = "/v4.2/images/shares/{shareid}/mediaid/{mediaid}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
       .replaceAll("\\{" + "mediaid" + "\\}", apiClient.escapeString(mediaid.toString()));
 

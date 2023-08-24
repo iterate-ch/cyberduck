@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class PublicSharesApi {
   private ApiClient apiClient;
 
@@ -107,7 +107,7 @@ public class PublicSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/publicshares/{id}/files"
+    String localVarPath = "/v4.2/publicshares/{id}/files"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -166,7 +166,7 @@ public class PublicSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/publicshares/{id}/file"
+    String localVarPath = "/v4.2/publicshares/{id}/file"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -247,7 +247,7 @@ public class PublicSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/publicshares/{id}/media"
+    String localVarPath = "/v4.2/publicshares/{id}/media"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -304,7 +304,7 @@ public class PublicSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/publicshares/{id}"
+    String localVarPath = "/v4.2/publicshares/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -356,7 +356,7 @@ public class PublicSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/publicshares/{id}/uploadnotification"
+    String localVarPath = "/v4.2/publicshares/{id}/uploadnotification"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -382,4 +382,64 @@ public class PublicSharesApi {
 
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
+  /**
+   * Validate password for shared with PasswordIDWithBankID, has brute force protection.
+   * 
+   * @param id The share id (required)
+   * @param password The password as a body parameter (required)
+   * @return Boolean
+   * @throws ApiException if fails to make API call
+   */
+  public Boolean publicSharesVerifyPassword(String id, String password) throws ApiException {
+    return publicSharesVerifyPasswordWithHttpInfo(id, password).getData();
+      }
+
+  /**
+   * Validate password for shared with PasswordIDWithBankID, has brute force protection.
+   * 
+   * @param id The share id (required)
+   * @param password The password as a body parameter (required)
+   * @return ApiResponse&lt;Boolean&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Boolean> publicSharesVerifyPasswordWithHttpInfo(String id, String password) throws ApiException {
+    Object localVarPostBody = password;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling publicSharesVerifyPassword");
+    }
+    
+    // verify the required parameter 'password' is set
+    if (password == null) {
+      throw new ApiException(400, "Missing the required parameter 'password' when calling publicSharesVerifyPassword");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/publicshares/{id}/password"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<Boolean> localVarReturnType = new GenericType<Boolean>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
 }

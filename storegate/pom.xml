@@ -61,7 +61,7 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <inputSpec>https://ws1-stage.storegate.se/api/v4.0/swagger</inputSpec>
+                                    <inputSpec>https://ws1-stage.storegate.se/api/v4.2/swagger</inputSpec>
                                     <language>java</language>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.storegate.io.swagger.client.model</modelPackage>

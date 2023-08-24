@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class BillingApi {
   private ApiClient apiClient;
 
@@ -59,7 +59,7 @@ public class BillingApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/billing/invoices";
+    String localVarPath = "/v4.2/billing/invoices";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -111,7 +111,7 @@ public class BillingApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/billing/invoices/{id}"
+    String localVarPath = "/v4.2/billing/invoices/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -157,7 +157,7 @@ public class BillingApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/billing/info";
+    String localVarPath = "/v4.2/billing/info";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -208,7 +208,7 @@ public class BillingApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/billing/status";
+    String localVarPath = "/v4.2/billing/status";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -260,7 +260,7 @@ public class BillingApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/billing/info";
+    String localVarPath = "/v4.2/billing/info";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();

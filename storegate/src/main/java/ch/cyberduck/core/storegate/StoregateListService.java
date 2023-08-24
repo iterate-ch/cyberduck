@@ -69,7 +69,7 @@ public class StoregateListService implements ListService {
                 int fileCount = 0;
                 FileContents files;
                 do {
-                    files = new FilesApi(this.session.getClient()).filesGet(URIEncoder.encode(fileid.getPrefixedPath(directory)),
+                    files = new FilesApi(this.session.getClient()).filesGetById(URIEncoder.encode(fileid.getFileId(directory)),
                             pageIndex,
                             chunksize,
                             "Name asc",

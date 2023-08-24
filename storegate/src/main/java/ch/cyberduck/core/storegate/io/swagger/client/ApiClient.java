@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import org.glassfish.jersey.logging.LoggingFeature;
 import java.util.Collection;
@@ -50,7 +51,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.auth.HttpBasicAuth;
 import ch.cyberduck.core.storegate.io.swagger.client.auth.ApiKeyAuth;
 import ch.cyberduck.core.storegate.io.swagger.client.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
   protected String basePath = "https://ws1-stage.storegate.se:443/api";
@@ -288,7 +289,7 @@ public class ApiClient {
   public int getReadTimeout() {
     return readTimeout;
   }
-  
+
   /**
    * Set the read timeout (in milliseconds).
    * A value of 0 means no timeout, otherwise values must be between 1 and
@@ -614,9 +615,9 @@ public class ApiClient {
     }
 
     if (tempFolderPath == null)
-      return File.createTempFile(prefix, suffix);
+      return Files.createTempFile(prefix, suffix).toFile();
     else
-      return File.createTempFile(prefix, suffix, new File(tempFolderPath));
+      return Files.createTempFile(Paths.get(tempFolderPath), prefix, suffix).toFile();
   }
 
   /**

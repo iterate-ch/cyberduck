@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class MediaSharesApi {
   private ApiClient apiClient;
 
@@ -63,7 +63,7 @@ public class MediaSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/mediashares/{id}"
+    String localVarPath = "/v4.2/mediashares/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -116,7 +116,7 @@ public class MediaSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/mediashares/{id}"
+    String localVarPath = "/v4.2/mediashares/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -169,7 +169,7 @@ public class MediaSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/mediashares/mediaid/{id}"
+    String localVarPath = "/v4.2/mediashares/mediaid/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -222,7 +222,7 @@ public class MediaSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/mediashares/mediaid/{id}"
+    String localVarPath = "/v4.2/mediashares/mediaid/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -275,7 +275,7 @@ public class MediaSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/mediashares";
+    String localVarPath = "/v4.2/mediashares";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -334,7 +334,7 @@ public class MediaSharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/mediashares/{id}"
+    String localVarPath = "/v4.2/mediashares/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params

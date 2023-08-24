@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class GroupsApi {
   private ApiClient apiClient;
 
@@ -70,7 +70,7 @@ public class GroupsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/groups/{id}/users"
+    String localVarPath = "/v4.2/groups/{id}/users"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -123,7 +123,7 @@ public class GroupsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/groups";
+    String localVarPath = "/v4.2/groups";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -174,7 +174,7 @@ public class GroupsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/groups/{id}"
+    String localVarPath = "/v4.2/groups/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -227,7 +227,7 @@ public class GroupsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/groups/{id}"
+    String localVarPath = "/v4.2/groups/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -280,7 +280,7 @@ public class GroupsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/groups/{id}/users"
+    String localVarPath = "/v4.2/groups/{id}/users"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -326,7 +326,7 @@ public class GroupsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/groups";
+    String localVarPath = "/v4.2/groups";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -384,7 +384,7 @@ public class GroupsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/groups/{id}/users/{userId}"
+    String localVarPath = "/v4.2/groups/{id}/users/{userId}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()))
       .replaceAll("\\{" + "userId" + "\\}", apiClient.escapeString(userId.toString()));
 
@@ -445,7 +445,7 @@ public class GroupsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/groups/{id}"
+    String localVarPath = "/v4.2/groups/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params

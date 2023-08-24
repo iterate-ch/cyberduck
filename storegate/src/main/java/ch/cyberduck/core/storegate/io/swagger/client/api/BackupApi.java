@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class BackupApi {
   private ApiClient apiClient;
 
@@ -64,7 +64,7 @@ public class BackupApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/backup/clients/{id}"
+    String localVarPath = "/v4.2/backup/clients/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -110,7 +110,7 @@ public class BackupApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/backup/clients";
+    String localVarPath = "/v4.2/backup/clients";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -162,7 +162,7 @@ public class BackupApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/backup/clients/{id}/size"
+    String localVarPath = "/v4.2/backup/clients/{id}/size"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -215,7 +215,7 @@ public class BackupApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/backup/clients/{id}"
+    String localVarPath = "/v4.2/backup/clients/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -261,7 +261,7 @@ public class BackupApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/backup/policy";
+    String localVarPath = "/v4.2/backup/policy";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -313,7 +313,7 @@ public class BackupApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/backup/clients";
+    String localVarPath = "/v4.2/backup/clients";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -371,7 +371,7 @@ public class BackupApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/backup/clients/{id}/queuesize"
+    String localVarPath = "/v4.2/backup/clients/{id}/queuesize"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -430,7 +430,7 @@ public class BackupApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/backup/clients/{id}/settings"
+    String localVarPath = "/v4.2/backup/clients/{id}/settings"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params

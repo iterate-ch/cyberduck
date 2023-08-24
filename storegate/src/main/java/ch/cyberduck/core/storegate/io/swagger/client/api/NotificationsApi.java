@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class NotificationsApi {
   private ApiClient apiClient;
 
@@ -58,7 +58,7 @@ public class NotificationsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/notifications/alerts";
+    String localVarPath = "/v4.2/notifications/alerts";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -103,7 +103,7 @@ public class NotificationsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/notifications/backupreports";
+    String localVarPath = "/v4.2/notifications/backupreports";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -154,7 +154,7 @@ public class NotificationsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/notifications/alerts";
+    String localVarPath = "/v4.2/notifications/alerts";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -205,7 +205,7 @@ public class NotificationsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/notifications/backupreports";
+    String localVarPath = "/v4.2/notifications/backupreports";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();

@@ -8,13 +8,16 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
+import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UploadAttachmentRequest;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UploadAttachmentsFromServerRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class InternalClientApi {
   private ApiClient apiClient;
 
@@ -61,7 +64,7 @@ public class InternalClientApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/client/dirlist/{folderId}"
+    String localVarPath = "/v4.2/client/dirlist/{folderId}"
       .replaceAll("\\{" + "folderId" + "\\}", apiClient.escapeString(folderId.toString()));
 
     // query params
@@ -114,7 +117,7 @@ public class InternalClientApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/client/filelist/{folderId}"
+    String localVarPath = "/v4.2/client/filelist/{folderId}"
       .replaceAll("\\{" + "folderId" + "\\}", apiClient.escapeString(folderId.toString()));
 
     // query params
@@ -139,5 +142,109 @@ public class InternalClientApi {
 
     GenericType<String> localVarReturnType = new GenericType<String>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * 
+   * 
+   * @param request  (required)
+   * @return List&lt;FileMetadata&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<FileMetadata> internalClientOutlookServerUpload(UploadAttachmentsFromServerRequest request) throws ApiException {
+    return internalClientOutlookServerUploadWithHttpInfo(request).getData();
+      }
+
+  /**
+   * 
+   * 
+   * @param request  (required)
+   * @return ApiResponse&lt;List&lt;FileMetadata&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<FileMetadata>> internalClientOutlookServerUploadWithHttpInfo(UploadAttachmentsFromServerRequest request) throws ApiException {
+    Object localVarPostBody = request;
+    
+    // verify the required parameter 'request' is set
+    if (request == null) {
+      throw new ApiException(400, "Missing the required parameter 'request' when calling internalClientOutlookServerUpload");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/client/outlook/uploadfromserver";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<List<FileMetadata>> localVarReturnType = new GenericType<List<FileMetadata>>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * 
+   * 
+   * @param request  (required)
+   * @return FileMetadata
+   * @throws ApiException if fails to make API call
+   */
+  public FileMetadata internalClientOutlookUpload(UploadAttachmentRequest request) throws ApiException {
+    return internalClientOutlookUploadWithHttpInfo(request).getData();
+      }
+
+  /**
+   * 
+   * 
+   * @param request  (required)
+   * @return ApiResponse&lt;FileMetadata&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<FileMetadata> internalClientOutlookUploadWithHttpInfo(UploadAttachmentRequest request) throws ApiException {
+    Object localVarPostBody = request;
+    
+    // verify the required parameter 'request' is set
+    if (request == null) {
+      throw new ApiException(400, "Missing the required parameter 'request' when calling internalClientOutlookUpload");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/client/outlook/upload";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<FileMetadata> localVarReturnType = new GenericType<FileMetadata>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
 }

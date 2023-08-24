@@ -59,7 +59,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
                 throw new NotfoundException(file.getAbsolute());
             }
             final FilesApi files = new FilesApi(session.getClient());
-            return this.toAttributes(files.filesGet_1(URIEncoder.encode(fileid.getPrefixedPath(file))));
+            return this.toAttributes(files.filesGet_0(URIEncoder.encode(fileid.getPrefixedPath(file))));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);

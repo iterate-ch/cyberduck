@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class DownloadApi {
   private ApiClient apiClient;
 
@@ -66,7 +66,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/files/{id}"
+    String localVarPath = "/v4.2/download/files/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -100,11 +100,12 @@ public class DownloadApi {
    * @param shareid The share id (required)
    * @param id The file id (required)
    * @param stream Stream the file data instead of download (optional)
+   * @param toPDF Try to convert the file to PDF (optional)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String downloadDownloadFileShare(String shareid, String id, Boolean stream) throws ApiException {
-    return downloadDownloadFileShareWithHttpInfo(shareid, id, stream).getData();
+  public String downloadDownloadFileShare(String shareid, String id, Boolean stream, Boolean toPDF) throws ApiException {
+    return downloadDownloadFileShareWithHttpInfo(shareid, id, stream, toPDF).getData();
       }
 
   /**
@@ -113,10 +114,11 @@ public class DownloadApi {
    * @param shareid The share id (required)
    * @param id The file id (required)
    * @param stream Stream the file data instead of download (optional)
+   * @param toPDF Try to convert the file to PDF (optional)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> downloadDownloadFileShareWithHttpInfo(String shareid, String id, Boolean stream) throws ApiException {
+  public ApiResponse<String> downloadDownloadFileShareWithHttpInfo(String shareid, String id, Boolean stream, Boolean toPDF) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'shareid' is set
@@ -130,7 +132,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}/files/{id}"
+    String localVarPath = "/v4.2/download/shares/{shareid}/files/{id}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
@@ -140,6 +142,7 @@ public class DownloadApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "stream", stream));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "toPDF", toPDF));
 
     
     
@@ -164,11 +167,12 @@ public class DownloadApi {
    * @param shareid The share id (required)
    * @param id The file id (required)
    * @param stream Stream the file data instead of download (optional)
+   * @param toPDF Try to convert the file to PDF (optional)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String downloadDownloadFileShare_0(String shareid, String id, Boolean stream) throws ApiException {
-    return downloadDownloadFileShare_0WithHttpInfo(shareid, id, stream).getData();
+  public String downloadDownloadFileShare_0(String shareid, String id, Boolean stream, Boolean toPDF) throws ApiException {
+    return downloadDownloadFileShare_0WithHttpInfo(shareid, id, stream, toPDF).getData();
       }
 
   /**
@@ -177,10 +181,11 @@ public class DownloadApi {
    * @param shareid The share id (required)
    * @param id The file id (required)
    * @param stream Stream the file data instead of download (optional)
+   * @param toPDF Try to convert the file to PDF (optional)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> downloadDownloadFileShare_0WithHttpInfo(String shareid, String id, Boolean stream) throws ApiException {
+  public ApiResponse<String> downloadDownloadFileShare_0WithHttpInfo(String shareid, String id, Boolean stream, Boolean toPDF) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'shareid' is set
@@ -194,7 +199,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}/files/{id}"
+    String localVarPath = "/v4.2/download/shares/{shareid}/files/{id}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
@@ -204,6 +209,7 @@ public class DownloadApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "stream", stream));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "toPDF", toPDF));
 
     
     
@@ -253,7 +259,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/files/{id}"
+    String localVarPath = "/v4.2/download/files/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -310,7 +316,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/media/{mediaid}"
+    String localVarPath = "/v4.2/download/media/{mediaid}"
       .replaceAll("\\{" + "mediaid" + "\\}", apiClient.escapeString(mediaid.toString()));
 
     // query params
@@ -373,7 +379,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}/media/{mediaid}"
+    String localVarPath = "/v4.2/download/shares/{shareid}/media/{mediaid}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
       .replaceAll("\\{" + "mediaid" + "\\}", apiClient.escapeString(mediaid.toString()));
 
@@ -437,7 +443,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}/media/{mediaid}"
+    String localVarPath = "/v4.2/download/shares/{shareid}/media/{mediaid}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
       .replaceAll("\\{" + "mediaid" + "\\}", apiClient.escapeString(mediaid.toString()));
 
@@ -494,7 +500,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/media/{mediaid}"
+    String localVarPath = "/v4.2/download/media/{mediaid}"
       .replaceAll("\\{" + "mediaid" + "\\}", apiClient.escapeString(mediaid.toString()));
 
     // query params
@@ -548,7 +554,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/{downloadid}"
+    String localVarPath = "/v4.2/download/{downloadid}"
       .replaceAll("\\{" + "downloadid" + "\\}", apiClient.escapeString(downloadid.toString()));
 
     // query params
@@ -601,7 +607,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}"
+    String localVarPath = "/v4.2/download/shares/{shareid}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()));
 
     // query params
@@ -654,7 +660,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/album";
+    String localVarPath = "/v4.2/download/album";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -710,7 +716,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/files/{id}"
+    String localVarPath = "/v4.2/download/files/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -744,11 +750,12 @@ public class DownloadApi {
    * @param shareid The file id (required)
    * @param id The file id (required)
    * @param stream Stream the file data instead of download (optional)
+   * @param toPDF Try to convert file to PDF (optional)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String downloadGetDownloadFileTokenShare(String shareid, String id, Boolean stream) throws ApiException {
-    return downloadGetDownloadFileTokenShareWithHttpInfo(shareid, id, stream).getData();
+  public String downloadGetDownloadFileTokenShare(String shareid, String id, Boolean stream, Boolean toPDF) throws ApiException {
+    return downloadGetDownloadFileTokenShareWithHttpInfo(shareid, id, stream, toPDF).getData();
       }
 
   /**
@@ -757,10 +764,11 @@ public class DownloadApi {
    * @param shareid The file id (required)
    * @param id The file id (required)
    * @param stream Stream the file data instead of download (optional)
+   * @param toPDF Try to convert file to PDF (optional)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> downloadGetDownloadFileTokenShareWithHttpInfo(String shareid, String id, Boolean stream) throws ApiException {
+  public ApiResponse<String> downloadGetDownloadFileTokenShareWithHttpInfo(String shareid, String id, Boolean stream, Boolean toPDF) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'shareid' is set
@@ -774,7 +782,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}/files/{id}"
+    String localVarPath = "/v4.2/download/shares/{shareid}/files/{id}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
@@ -784,6 +792,7 @@ public class DownloadApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "stream", stream));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "toPDF", toPDF));
 
     
     
@@ -829,7 +838,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/files";
+    String localVarPath = "/v4.2/download/files";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -888,7 +897,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}/files"
+    String localVarPath = "/v4.2/download/shares/{shareid}/files"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()));
 
     // query params
@@ -943,7 +952,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/media/{mediaid}"
+    String localVarPath = "/v4.2/download/media/{mediaid}"
       .replaceAll("\\{" + "mediaid" + "\\}", apiClient.escapeString(mediaid.toString()));
 
     // query params
@@ -1006,7 +1015,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}/media/{mediaid}"
+    String localVarPath = "/v4.2/download/shares/{shareid}/media/{mediaid}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
       .replaceAll("\\{" + "mediaid" + "\\}", apiClient.escapeString(mediaid.toString()));
 
@@ -1068,7 +1077,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}/media"
+    String localVarPath = "/v4.2/download/shares/{shareid}/media"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()));
 
     // query params
@@ -1121,7 +1130,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/media";
+    String localVarPath = "/v4.2/download/media";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1173,7 +1182,7 @@ public class DownloadApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/download/shares/{shareid}"
+    String localVarPath = "/v4.2/download/shares/{shareid}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()));
 
     // query params

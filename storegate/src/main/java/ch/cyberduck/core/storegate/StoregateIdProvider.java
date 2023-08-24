@@ -55,7 +55,7 @@ public class StoregateIdProvider extends CachingFileIdProvider implements FileId
                 }
                 return cached;
             }
-            final String id = new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file))).getId();
+            final String id = new FilesApi(session.getClient()).filesGet_0(URIEncoder.encode(this.getPrefixedPath(file))).getId();
             this.cache(file, id);
             return id;
         }
