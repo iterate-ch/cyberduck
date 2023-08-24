@@ -30,12 +30,11 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
-import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class StoregateAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileMetadata> {
+public class StoregateAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -66,7 +65,8 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
         }
     }
 
-    protected PathAttributes toAttributes(final File f) {
+    @Override
+    public PathAttributes toAttributes(final File f) {
         final PathAttributes attrs = new PathAttributes();
         if(0 != f.getModified().getMillis()) {
             attrs.setModificationDate(f.getModified().getMillis());
@@ -80,53 +80,37 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
         else {
             attrs.setCreationDate(f.getUploaded().getMillis());
         }
-        attrs.setSize(f.getSize());
-        if((f.getFlags() & 4) == 4) {
-            // This item is locked by some user
-            attrs.setLockId(Boolean.TRUE.toString());
+        if(f.getSize() != null) {
+            attrs.setSize(f.getSize());
         }
-        if((f.getFlags() & 512) == 512) {
-            // This item is hidden
-            attrs.setHidden(true);
+        if(f.getFlags() != null) {
+            if((f.getFlags() & 4) == 4) {
+                // This item is locked by some user
+                attrs.setLockId(Boolean.TRUE.toString());
+            }
+            if((f.getFlags() & 512) == 512) {
+                // This item is hidden
+                attrs.setHidden(true);
+            }
         }
-        // NoAccess	0
-        // ReadOnly	 1
-        // ReadWrite 2
-        // Synchronize	4	Read, write access and permission to syncronize using desktop client.
-        // FullControl 99
-        final Permission permission;
-        if((f.getPermission() & 2) == 2 || (f.getPermission() & 4) == 4) {
-            permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
-        }
-        else {
-            permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
-        }
-        if((f.getFlags() & 1) == 1) {
-            // This item is a folder
-            permission.setUser(permission.getUser().or(Permission.Action.execute));
-        }
-        attrs.setPermission(permission);
-        attrs.setFileId(f.getId());
-        return attrs;
-    }
-
-    @Override
-    public PathAttributes toAttributes(final FileMetadata f) {
-        final PathAttributes attrs = new PathAttributes();
-        if(0 != f.getModified().getMillis()) {
-            attrs.setModificationDate(f.getModified().getMillis());
-        }
-        if(0 != f.getCreated().getMillis()) {
-            attrs.setCreationDate(f.getCreated().getMillis());
-        }
-        attrs.setSize(f.getFileSize());
-        if((f.getFlags() & 4) == 4) {
-            // This item is locked by some user
-            attrs.setLockId(Boolean.TRUE.toString());
-        }
-        if((f.getFlags() & 512) == 512) {
-            // This item is hidden
-            attrs.setHidden(true);
+        if(f.getPermission() != null) {
+            // NoAccess	0
+            // ReadOnly	 1
+            // ReadWrite 2
+            // Synchronize	4	Read, write access and permission to syncronize using desktop client.
+            // FullControl 99
+            final Permission permission;
+            if((f.getPermission() & 2) == 2 || (f.getPermission() & 4) == 4) {
+                permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
+            }
+            else {
+                permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
+            }
+            if((f.getFlags() & 1) == 1) {
+                // This item is a folder
+                permission.setUser(permission.getUser().or(Permission.Action.execute));
+            }
+            attrs.setPermission(permission);
         }
         attrs.setFileId(f.getId());
         return attrs;

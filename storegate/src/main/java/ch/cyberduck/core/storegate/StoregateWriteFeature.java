@@ -27,6 +27,7 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -55,7 +56,7 @@ import java.util.Collections;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata> {
+public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
     private static final Logger log = LogManager.getLogger(StoregateWriteFeature.class);
 
     private final StoregateSession session;
@@ -78,10 +79,10 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
     }
 
     @Override
-    public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<FileMetadata> command = new DelayedHttpEntityCallable<FileMetadata>(file) {
+    public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>(file) {
             @Override
-            public FileMetadata call(final AbstractHttpEntity entity) throws BackgroundException {
+            public File call(final AbstractHttpEntity entity) throws BackgroundException {
                 // Initiate a resumable upload
                 String location;
                 try {
@@ -113,8 +114,9 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
                         switch(putResponse.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
                             case HttpStatus.SC_CREATED:
-                                final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
-                                        FileMetadata.class);
+                                final File result = new JSON().getContext(FileMetadata.class).readValue(
+                                        new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
+                                        File.class);
                                 fileid.cache(file, result.getId());
                                 return result;
                             default:
