@@ -75,6 +75,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         assertNull(versionId);
         final String nodeId = attributes.getFileId();
         assertNotNull(nodeId);
+        assertEquals(new StoregateAttributesFinderFeature(session, nodeid).toAttributes(version), attributes);
         final byte[] compare = new byte[content.length];
         final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

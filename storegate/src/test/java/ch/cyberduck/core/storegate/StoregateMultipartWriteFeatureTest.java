@@ -66,6 +66,8 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(version);
         assertEquals(content.length, out.getStatus().getFileSize(), 0L);
         assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(new StoregateAttributesFinderFeature(session, nodeid).toAttributes(out.getStatus()),
+                new StoregateAttributesFinderFeature(session, nodeid).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
