@@ -17,13 +17,30 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodePermissions;
+import ch.cyberduck.core.sds.io.swagger.client.model.VirusProtectionInfo;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 @Category(IntegrationTest.class)
 public class SDSAttributesAdapterTest extends AbstractSDSTest {
+
+    @Test
+    public void testVerdict() throws Exception {
+        final SDSAttributesAdapter f = new SDSAttributesAdapter(session);
+        final Node node = new Node();
+        node.setIsEncrypted(false);
+        node.setType(Node.TypeEnum.FILE);
+        node.setPermissions(new NodePermissions().change(true).delete(true).read(true)
+                .create(true).manage(false).manageDownloadShare(false).manageUploadShare(false));
+        node.setVirusProtectionInfo(new VirusProtectionInfo().verdict(VirusProtectionInfo.VerdictEnum.IN_PROGRESS));
+        assertFalse(f.toAttributes(node).getPermission().isReadable());
+        assertTrue(f.toAttributes(node).getPermission().isWritable());
+    }
 
     @Test
     public void testPermissionsFile() throws Exception {

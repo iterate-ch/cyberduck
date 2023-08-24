@@ -69,7 +69,8 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
         if(null != node.getQuota()) {
             attributes.setQuota(node.getQuota());
         }
-        attributes.setPermission(this.toPermission(node));
+        final Permission permission = this.toPermission(node);
+        attributes.setPermission(permission);
         if(null != node.getUpdatedBy()) {
             attributes.setOwner(node.getUpdatedBy().getDisplayName());
         }
@@ -94,8 +95,13 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
                     attributes.setVerdict(PathAttributes.Verdict.clean);
                     break;
                 case NOT_SCANNING:
-                case IN_PROGRESS:
                     attributes.setVerdict(PathAttributes.Verdict.unknown);
+                    break;
+                case IN_PROGRESS:
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Disable read access for %s with verdict %s", node, node.getVirusProtectionInfo()));
+                    }
+                    permission.setUser(permission.getUser().and(Permission.Action.read.not()));
                     break;
                 case MALICIOUS:
                     attributes.setVerdict(PathAttributes.Verdict.malicious);
