@@ -19,7 +19,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Scheme;
@@ -93,7 +92,6 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
      * @return Same tokens saved
      */
     public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
-        host.getCredentials().withOauth(tokens).withSaved(new LoginOptions().keychain);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Save new tokens %s for %s", tokens, host));
         }
