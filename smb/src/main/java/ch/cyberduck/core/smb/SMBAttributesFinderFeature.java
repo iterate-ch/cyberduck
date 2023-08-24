@@ -61,7 +61,9 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
                 attributes.setAccessedDate(fileInformation.getBasicInformation().getLastAccessTime().toEpochMillis());
                 attributes.setModificationDate(fileInformation.getBasicInformation().getLastWriteTime().toEpochMillis());
                 attributes.setCreationDate(fileInformation.getBasicInformation().getCreationTime().toEpochMillis());
-                attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
+                if(!fileInformation.getStandardInformation().isDirectory()) {
+                    attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
+                }
             }
             return attributes;
         }
