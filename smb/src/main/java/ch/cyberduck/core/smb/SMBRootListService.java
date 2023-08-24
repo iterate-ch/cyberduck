@@ -104,7 +104,9 @@ public class SMBRootListService implements ListService {
                     final Credentials name = prompt.prompt(session.getHost(),
                             LocaleFactory.localizedString("SMB Share"),
                             LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),
-                            new LoginOptions().icon(session.getHost().getProtocol().disk()).keychain(true).password(false));
+                            new LoginOptions().icon(session.getHost().getProtocol().disk()).keychain(true)
+                                    .passwordPlaceholder(LocaleFactory.localizedString("SMB Share"))
+                                    .password(false));
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Connect to share %s from user input", name.getPassword()));
                     }
