@@ -23,7 +23,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,13 +49,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.SMBClient;
@@ -68,17 +64,12 @@ import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.Share;
-import com.rapid7.client.dcerpc.mssrvs.ServerService;
-import com.rapid7.client.dcerpc.mssrvs.dto.NetShareInfo;
-import com.rapid7.client.dcerpc.mssrvs.dto.NetShareInfo0;
-import com.rapid7.client.dcerpc.transport.RPCTransport;
-import com.rapid7.client.dcerpc.transport.SMBTransportFactories;
 
 public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     private static final Logger log = LogManager.getLogger(SMBSession.class);
 
     private Session session;
-    private SMBListService shares;
+    private SMBRootListService shares;
 
     private final Map<String, ReentrantLock> locks = new HashMap<>();
 
@@ -128,41 +119,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             context = new AuthenticationContext(username, credentials.getPassword().toCharArray(), domain);
         }
         try {
-            session = client.authenticate(context);
-            if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Connect to share %s from profile context", host.getProtocol().getContext()));
-                }
-                // Use share name from context in profile
-                shares = new SMBListService(this, Collections.singleton(host.getProtocol().getContext()));
-            }
-            else {
-                if(log.isDebugEnabled()) {
-                    log.debug("Attempt to list available shares");
-                }
-                try {
-                    // An SRVSVC_HANDLE pointer that identifies the server.
-                    final RPCTransport transport = SMBTransportFactories.SRVSVC.getTransport(session);
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Obtained transport %s", transport));
-                    }
-                    final ServerService lookup = new ServerService(transport);
-                    final List<NetShareInfo0> info = lookup.getShares0();
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Retrieved share info %s", info));
-                    }
-                    shares = new SMBListService(this, info.stream().map(NetShareInfo::getNetName).collect(Collectors.toSet()));
-                }
-                catch(IOException e) {
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Failure %s getting share info from server", e));
-                    }
-                    shares = new SMBListService(this, Collections.singleton(prompt.prompt(host,
-                            LocaleFactory.localizedString("Share Name"),
-                            LocaleFactory.localizedString("Enter the share name to connect to."),
-                            new LoginOptions().icon(host.getProtocol().disk()).keychain(false)).getPassword()));
-                }
-            }
+            shares = new SMBRootListService(this, prompt, session = client.authenticate(context));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"), e);
