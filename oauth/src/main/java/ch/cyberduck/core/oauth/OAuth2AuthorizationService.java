@@ -152,7 +152,7 @@ public class OAuth2AuthorizationService {
         // Save access key and refresh key
         return credentials.withOauth(new OAuthTokens(
                 response.getAccessToken(), response.getRefreshToken(),
-                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                null == response.getExpiresInSeconds() ? Long.MAX_VALUE :
                         System.currentTimeMillis() + response.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
     }
 
@@ -249,7 +249,9 @@ public class OAuth2AuthorizationService {
 
     public OAuthTokens refresh(final OAuthTokens tokens) throws BackgroundException {
         if(StringUtils.isBlank(tokens.getRefreshToken())) {
-            log.warn("Missing refresh token");
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Missing refresh token in %s", tokens));
+            }
             return tokens;
         }
         if(log.isDebugEnabled()) {
