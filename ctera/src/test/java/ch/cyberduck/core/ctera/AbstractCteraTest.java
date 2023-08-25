@@ -44,7 +44,7 @@ public class AbstractCteraTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me", new Credentials(
+        final Host host = new Host(new CteraProtocol(), "mountainduck2.ctera.me", new Credentials(
                 PROPERTIES.get("ctera.user"), PROPERTIES.get("ctera.password"),
                 PROPERTIES.get("ctera.token")
         ));
