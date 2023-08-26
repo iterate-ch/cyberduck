@@ -92,6 +92,9 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
                     share.close();
                 }
             }
+            catch(SMBRuntimeException e) {
+                throw new IOException(e);
+            }
             finally {
                 session.releaseShare(file);
             }

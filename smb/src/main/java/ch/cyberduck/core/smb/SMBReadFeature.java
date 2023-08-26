@@ -88,16 +88,19 @@ public class SMBReadFeature implements Read {
         public void close() throws IOException {
             try {
                 try {
-                try {
-                    super.close();
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        handle.close();
+                    }
                 }
                 finally {
-                    handle.close();
+                    share.close();
                 }
             }
-            finally {
-                share.close();
-            }
+            catch(SMBRuntimeException e) {
+                throw new IOException(e);
             }
             finally {
                 session.releaseShare(file);
