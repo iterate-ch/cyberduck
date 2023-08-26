@@ -66,7 +66,6 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
         private final Path file;
         private final DiskShare share;
         private final File handle;
-        private long fileSize;
 
         public SMBOutputStream(final Path file, final OutputStream stream, final DiskShare share, final File handle) {
             super(stream);
@@ -84,7 +83,6 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
                     }
                     finally {
                         handle.flush();
-                        handle.setLength(fileSize);
                         handle.close();
                     }
                 }
@@ -98,12 +96,6 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             finally {
                 session.releaseShare(file);
             }
-        }
-
-        @Override
-        protected void afterWrite(final int n) throws IOException {
-            fileSize += n;
-            super.afterWrite(n);
         }
     }
 }
