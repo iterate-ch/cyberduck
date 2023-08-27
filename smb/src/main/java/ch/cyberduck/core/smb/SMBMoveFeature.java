@@ -70,12 +70,12 @@ public class SMBMoveFeature implements Move {
                     }
                 }
             }
-            catch(SMBRuntimeException e) {
-                throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
-            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+        }
+        catch(SMBRuntimeException e) {
+            throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
         }
         finally {
             session.releaseShare(source);
