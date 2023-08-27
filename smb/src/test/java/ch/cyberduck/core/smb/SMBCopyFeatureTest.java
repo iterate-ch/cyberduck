@@ -17,8 +17,10 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -27,6 +29,7 @@ import ch.cyberduck.test.TestcontainerTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
@@ -37,30 +40,33 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
     @Test
     public void testCopyFile() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path file = new Path(home, "userTest.txt", EnumSet.of(Path.Type.file));
-        final Path destinationFolder = new Path(home, "other_folder", EnumSet.of(Path.Type.directory));
-
+        final Path file = new SMBTouchFeature(session).touch(new Path(home,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path destinationFolder = new SMBDirectoryFeature(session).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-
         ListService list = new SMBListService(session);
         assertTrue(list.list(home, null).contains(file));
         assertTrue(list.list(destinationFolder, null).contains(copy));
+        new SMBDeleteFeature(session).delete(Arrays.asList(file, copy, destinationFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testCopyToExistingFile() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path sourceFolder = new Path(home, "folder", EnumSet.of(Path.Type.directory));
-        final Path destinationFolder = new Path(home, "other_folder", EnumSet.of(Path.Type.directory));
-        final Path file = new Path(home, "folder/L0-file.txt", EnumSet.of(Path.Type.file));
+        final Path sourceFolder = new SMBDirectoryFeature(session).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path destinationFolder = new SMBDirectoryFeature(session).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new SMBTouchFeature(session).touch(new Path(sourceFolder,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SMBTouchFeature(session).touch(copy, new TransferStatus());
-
         new SMBCopyFeature(session).copy(file, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
-
         ListService list = new SMBListService(session);
         assertTrue(list.list(sourceFolder, null).contains(file));
         assertTrue(list.list(destinationFolder, null).contains(copy));
+        new SMBDeleteFeature(session).delete(Arrays.asList(file, sourceFolder, copy, destinationFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

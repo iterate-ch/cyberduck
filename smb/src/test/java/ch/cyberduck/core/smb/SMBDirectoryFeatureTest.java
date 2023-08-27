@@ -16,8 +16,10 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
@@ -25,19 +27,21 @@ import ch.cyberduck.test.TestcontainerTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class SMBDirectoryFeatureTest extends AbstractSMBTest {
 
     @Test
     public void testMakeDirectory() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SMBDirectoryFeature(session).mkdir(test, new TransferStatus());
+        final Path test = new SMBDirectoryFeature(session).mkdir(
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SMBFindFeature(session).find(test));
+        assertEquals(test.attributes(), new SMBAttributesFinderFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new SMBDirectoryFeature(session).mkdir(test, new TransferStatus()));
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

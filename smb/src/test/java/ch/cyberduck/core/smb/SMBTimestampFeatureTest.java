@@ -16,8 +16,10 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
@@ -25,9 +27,11 @@ import ch.cyberduck.test.TestcontainerTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @Category(TestcontainerTest.class)
 public class SMBTimestampFeatureTest extends AbstractSMBTest {
@@ -36,35 +40,31 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
     public void testTimestampFile() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path home = new DefaultHomeFinderService(session).find();
-
-        final Path f = new Path(home, new AlphanumericRandomStringService(9).random(), EnumSet.of(Path.Type.file));
-        new SMBTouchFeature(session).touch(f, new TransferStatus())
-                .withAttributes(new SMBAttributesFinderFeature(session).find(f));
-
+        final Path f = new SMBTouchFeature(session).touch(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotEquals(-1L, f.attributes().getModificationDate());
         // make sure timestamps are different
-        long oldTime = new SMBAttributesFinderFeature(session).find(f).getAccessedDate();
+        long oldTime = new SMBAttributesFinderFeature(session).find(f).getModificationDate();
         status.setTimestamp(oldTime + 2000);
-
         new SMBTimestampFeature(session).setTimestamp(f, status);
         PathAttributes newAttributes = new SMBAttributesFinderFeature(session).find(f);
-        assertEquals(status.getTimestamp().longValue(), newAttributes.getAccessedDate());
+        assertEquals(status.getTimestamp().longValue(), newAttributes.getModificationDate());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testTimestampDirectory() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path home = new DefaultHomeFinderService(session).find();
-
-        final Path f = new Path(home, new AlphanumericRandomStringService(9).random(), EnumSet.of(Path.Type.directory));
-        new SMBDirectoryFeature(session).mkdir(f, new TransferStatus())
-                .withAttributes(new SMBAttributesFinderFeature(session).find(f));
-
+        final Path f = new SMBDirectoryFeature(session).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertNotEquals(-1L, f.attributes().getModificationDate());
         // make sure timestamps are different
-        long oldTime = new SMBAttributesFinderFeature(session).find(f).getAccessedDate();
+        long oldTime = new SMBAttributesFinderFeature(session).find(f).getModificationDate();
         status.setTimestamp(oldTime + 2000);
-
         new SMBTimestampFeature(session).setTimestamp(f, status);
         PathAttributes newAttributes = new SMBAttributesFinderFeature(session).find(f);
-        assertEquals(status.getTimestamp().longValue(), newAttributes.getAccessedDate());
+        assertEquals(status.getTimestamp().longValue(), newAttributes.getModificationDate());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

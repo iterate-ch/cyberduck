@@ -18,7 +18,9 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -33,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -42,22 +45,42 @@ public class SMBWriteFeatureTest extends AbstractSMBTest {
 
     @Test
     public void testWrite() throws Exception {
-        final TransferStatus status = new TransferStatus();
-        final int length = 1048576;
-        final byte[] content = RandomUtils.nextBytes(length);
-        status.setLength(content.length);
         final Path home = new DefaultHomeFinderService(session).find();
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Write writer = new SMBWriteFeature(session);
-        status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(new SMBFindFeature(session).find(test));
-        assertEquals(content.length, new SMBListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
-        new StreamCopier(status, status).transfer(in, buffer);
-        assertArrayEquals(content, buffer.toByteArray());
+        {
+            final TransferStatus status = new TransferStatus();
+            final int length = 1048576;
+            final byte[] content = RandomUtils.nextBytes(length);
+            status.setLength(content.length);
+            final Write writer = new SMBWriteFeature(session);
+            status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
+            final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
+            assertNotNull(out);
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+            assertTrue(new SMBFindFeature(session).find(test));
+            assertEquals(content.length, new SMBListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+            final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            new StreamCopier(status, status).transfer(in, buffer);
+            assertArrayEquals(content, buffer.toByteArray());
+        }
+        {
+            final TransferStatus status = new TransferStatus().exists(true);
+            final int length = 548576;
+            final byte[] content = RandomUtils.nextBytes(length);
+            status.setLength(content.length);
+            final Write writer = new SMBWriteFeature(session);
+            status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
+            final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
+            assertNotNull(out);
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+            assertTrue(new SMBFindFeature(session).find(test));
+            assertEquals(content.length, new SMBListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+            final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            new StreamCopier(status, status).transfer(in, buffer);
+            assertArrayEquals(content, buffer.toByteArray());
+        }
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

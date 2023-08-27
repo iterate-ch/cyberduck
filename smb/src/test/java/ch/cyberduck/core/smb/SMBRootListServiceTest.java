@@ -16,7 +16,6 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -48,14 +47,14 @@ public class SMBRootListServiceTest extends AbstractSMBTest {
 
     @Test
     public void testListAllShares() throws Exception {
-        final Host host = new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445));
-        host.setCredentials(new Credentials("smbj", "pass"));
+        final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), session.getHost().getPort())
+                .withCredentials(session.getHost().getCredentials());
         final SMBSession session = new SMBSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path root = Home.ROOT;
         final AttributedList<Path> result = session.getFeature(ListService.class).list(root, new DisabledListProgressListener());
-        assertEquals(4, result.size());
+        assertEquals(3, result.size());
         for(Path f : result) {
             assertTrue(f.isVolume());
             assertNotEquals(TransferStatus.UNKNOWN_LENGTH, f.attributes().getSize());

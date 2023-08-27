@@ -51,8 +51,8 @@ public class SMBSessionTest extends AbstractSMBTest {
             public String getContext() {
                 return "user";
             }
-        }, container.getHost(), container.getMappedPort(445));
-        host.setCredentials(new Credentials("smbj", "pass"));
+        }, session.getHost().getHostname(), session.getHost().getPort())
+                .withCredentials(session.getHost().getCredentials());
         final SMBSession session = new SMBSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -61,7 +61,7 @@ public class SMBSessionTest extends AbstractSMBTest {
 
     @Test
     public void testLoginSuccessWithListAllShares() throws Exception {
-        final Host host = new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445));
+        final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), session.getHost().getPort());
         host.setCredentials(new Credentials("smbj@WORKGROUP", "pass"));
         final SMBSession session = new SMBSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -71,7 +71,7 @@ public class SMBSessionTest extends AbstractSMBTest {
 
     @Test
     public void testConnectRefused() throws Exception {
-        final Host host = new Host(new SMBProtocol(), container.getHost(), 135);
+        final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), 135);
         host.setCredentials(new Credentials("smbj", "pass"));
         final SMBSession session = new SMBSession(host);
         assertThrows(ConnectionRefusedException.class, () -> session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));

@@ -8,7 +8,6 @@ ENV SMB_PASSWORD pass
 COPY smb.conf /etc/samba/smb.conf
 COPY supervisord.conf /etc/supervisord.conf
 ADD entrypoint.sh /entrypoint.sh
-ADD container-files/ /opt/samba/
 
 RUN mkdir -p /opt/samba/readonly /opt/samba/user /opt/samba/dfs && \
     mkdir -p /opt/samba/readonly/empty_folder /opt/samba/user/empty_folder /opt/samba/dfs/empty_folder && \

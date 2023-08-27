@@ -15,10 +15,13 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -33,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -54,11 +58,13 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
         final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path folder = new Path(home, "folder", EnumSet.of(Path.Type.file));
-        final Path test = new Path(folder, "L0-file.txt", EnumSet.of(Path.Type.file));
+        final Path folder = new SMBDirectoryFeature(session).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new SMBTouchFeature(session).touch(
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Write writer = new SMBWriteFeature(session);
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new SMBFindFeature(session).find(test));
@@ -100,5 +106,6 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
             System.arraycopy(content, 65537, reference, 0, reference.length);
             assertArrayEquals(reference, buffer.toByteArray());
         }
+        new SMBDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

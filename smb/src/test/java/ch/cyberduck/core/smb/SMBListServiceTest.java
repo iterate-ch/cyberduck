@@ -15,15 +15,21 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -35,20 +41,26 @@ public class SMBListServiceTest extends AbstractSMBTest {
     @Test
     public void testList() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path testFolder = new Path(home, "folder", EnumSet.of(Path.Type.directory));
-        final Path testFile = new Path(testFolder, "L0-file.txt", EnumSet.of(Path.Type.file));
-        final Path innerFolder = new Path(testFolder, "L1", EnumSet.of(Path.Type.directory));
+        final Path testFolder = new SMBDirectoryFeature(session).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path testFile = new SMBTouchFeature(session).touch(new Path(testFolder,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path innerFolder = new SMBDirectoryFeature(session).mkdir(
+                new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> result = new SMBListService(session).list(testFolder, new DisabledListProgressListener());
         assertEquals(2, result.size());
         assertTrue(result.contains(testFile));
         assertTrue(result.contains(innerFolder));
+        new SMBDeleteFeature(session).delete(Arrays.asList(innerFolder, testFile, testFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListEmptyFolder() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path emptyFolder = new Path(home, "empty_folder", EnumSet.of(Path.Type.directory));
+        final Path emptyFolder = new SMBDirectoryFeature(session).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> result = new SMBListService(session).list(emptyFolder, new DisabledListProgressListener());
         assertEquals(0, result.size());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(emptyFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

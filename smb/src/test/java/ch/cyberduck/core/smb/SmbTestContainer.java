@@ -31,8 +31,6 @@ public class SmbTestContainer extends GenericContainer<SmbTestContainer> {
     private static final String SUPERVISORD_CONF_CLASS_PATH = "smb/supervisord.conf";
     private static final String ENTRYPOINT_SH_PATH = "entrypoint.sh";
     private static final String ENTRYPOINT_SH_CLASS_PATH = "smb/entrypoint.sh";
-    private static final String DATA_DIR_PATH = "container-files";
-    private static final String DATA_DIR_CLASS_PATH = "smb/container-files";
 
     private SmbTestContainer() {
         super(new ImageFromDockerfile()
@@ -40,7 +38,6 @@ public class SmbTestContainer extends GenericContainer<SmbTestContainer> {
                 .withFileFromClasspath(DOCKERFILE_PATH, DOCKERFILE_CLASS_PATH)
                 .withFileFromClasspath(SUPERVISORD_CONF_PATH, SUPERVISORD_CONF_CLASS_PATH)
                 .withFileFromClasspath(ENTRYPOINT_SH_PATH, ENTRYPOINT_SH_CLASS_PATH)
-                .withFileFromClasspath(DATA_DIR_PATH, DATA_DIR_CLASS_PATH)
         );
 
         withEnv("LOCATION", "/smb");
