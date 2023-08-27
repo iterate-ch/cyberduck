@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -43,6 +44,22 @@ public class SMBRootListServiceTest extends AbstractSMBTest {
             assertNotEquals(TransferStatus.UNKNOWN_LENGTH, f.attributes().getSize());
             assertNotEquals(TransferStatus.UNKNOWN_LENGTH, f.attributes().getQuota());
         }
+    }
+
+    @Test
+    public void testListShareNotfound() throws Exception {
+        final Host host = new Host(new SMBProtocol() {
+            @Override
+            public String getContext() {
+                return "notfound";
+            }
+        }, session.getHost().getHostname(), session.getHost().getPort())
+                .withCredentials(session.getHost().getCredentials());
+        final SMBSession session = new SMBSession(host);
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertThrows(NotfoundException.class, () -> session.getFeature(ListService.class).list(Home.ROOT, new DisabledListProgressListener()));
+        session.close();
     }
 
     @Test

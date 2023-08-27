@@ -15,7 +15,6 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -45,34 +44,9 @@ import static org.junit.Assert.*;
 public class SMBSessionTest extends AbstractSMBTest {
 
     @Test
-    public void testLoginSuccessWithShareInContext() throws Exception {
-        final Host host = new Host(new SMBProtocol() {
-            @Override
-            public String getContext() {
-                return "user";
-            }
-        }, session.getHost().getHostname(), session.getHost().getPort())
+    public void testConnectRefused() {
+        final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), 135)
                 .withCredentials(session.getHost().getCredentials());
-        final SMBSession session = new SMBSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
-    }
-
-    @Test
-    public void testLoginSuccessWithListAllShares() throws Exception {
-        final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), session.getHost().getPort());
-        host.setCredentials(new Credentials("smbj@WORKGROUP", "pass"));
-        final SMBSession session = new SMBSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
-    }
-
-    @Test
-    public void testConnectRefused() throws Exception {
-        final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), 135);
-        host.setCredentials(new Credentials("smbj", "pass"));
         final SMBSession session = new SMBSession(host);
         assertThrows(ConnectionRefusedException.class, () -> session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
     }
@@ -87,6 +61,7 @@ public class SMBSessionTest extends AbstractSMBTest {
         assertNotNull(session.getFeature(Move.class));
         assertNotNull(session.getFeature(Delete.class));
         assertNotNull(session.getFeature(ListService.class));
+        assertSame(session.getFeature(ListService.class), session.getFeature(ListService.class));
         assertNotNull(session.getFeature(PathContainerService.class));
         assertNotNull(session.getFeature(Quota.class));
         assertNotNull(session.getFeature(Read.class));
