@@ -50,7 +50,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
         final DiskShare share = session.openShare(file);
         try {
             final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
-                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                    Collections.singleton(AccessMask.FILE_WRITE_DATA),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN_IF,

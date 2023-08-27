@@ -49,7 +49,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
         if(file.isDirectory()) {
             try (final DiskShare share = session.openShare(file)) {
                 try (final Directory entry = share.openDirectory(new SMBPathContainerService(session).getKey(file),
-                        Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                        Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                         SMB2CreateDisposition.FILE_OPEN,
@@ -74,7 +74,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
         else {
             try (final DiskShare share = session.openShare(file)) {
                 try (final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
-                        Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                        Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                         SMB2CreateDisposition.FILE_OPEN,

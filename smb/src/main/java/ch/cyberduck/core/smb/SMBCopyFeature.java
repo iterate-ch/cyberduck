@@ -23,7 +23,9 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
@@ -47,7 +49,7 @@ public class SMBCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status,
                      final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
         try (final File sourceFile = session.openShare(source).openFile(new SMBPathContainerService(session).getKey(source),
-                Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                new HashSet<>(Arrays.asList(AccessMask.FILE_READ_DATA, AccessMask.FILE_READ_ATTRIBUTES)),
                 Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                 Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                 SMB2CreateDisposition.FILE_OPEN,

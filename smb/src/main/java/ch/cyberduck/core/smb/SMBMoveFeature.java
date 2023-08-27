@@ -53,7 +53,7 @@ public class SMBMoveFeature implements Move {
     public Path move(final Path source, final Path target, final TransferStatus status, final Callback delete, final ConnectionCallback prompt) throws BackgroundException {
         try (final DiskShare sourceShare = session.openShare(source)) {
             try (DiskEntry file = sourceShare.open(new SMBPathContainerService(session).getKey(source),
-                    Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                    Collections.singleton(AccessMask.DELETE),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN,
