@@ -31,15 +31,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.UUID;
 
 @Category(TestcontainerTest.class)
 public abstract class AbstractSMBTest {
 
     @ClassRule
-    public static SmbTestContainer container = SmbTestContainer.getInstance();
+    public static TestContainer container = TestContainer.getInstance();
 
     SMBSession session;
 
@@ -61,5 +65,84 @@ public abstract class AbstractSMBTest {
     @After
     public void disconnect() throws Exception {
         session.close();
+    }
+
+    public static class TestContainer extends GenericContainer<TestContainer> {
+        private static TestContainer instance;
+        private static final int SMB_PORT = 445;
+        private static final String SMB_CONF_PATH = "smb.conf";
+        private static final String SMB_CONF_CLASS_PATH = "smb/smb.conf";
+        private static final String DOCKERFILE_PATH = "Dockerfile";
+        private static final String DOCKERFILE_CLASS_PATH = "smb/Dockerfile";
+        private static final String SUPERVISORD_CONF_PATH = "supervisord.conf";
+        private static final String SUPERVISORD_CONF_CLASS_PATH = "smb/supervisord.conf";
+        private static final String ENTRYPOINT_SH_PATH = "entrypoint.sh";
+        private static final String ENTRYPOINT_SH_CLASS_PATH = "smb/entrypoint.sh";
+
+        private TestContainer() {
+            super(new ImageFromDockerfile()
+                    .withFileFromClasspath(SMB_CONF_PATH, SMB_CONF_CLASS_PATH)
+                    .withFileFromClasspath(DOCKERFILE_PATH, DOCKERFILE_CLASS_PATH)
+                    .withFileFromClasspath(SUPERVISORD_CONF_PATH, SUPERVISORD_CONF_CLASS_PATH)
+                    .withFileFromClasspath(ENTRYPOINT_SH_PATH, ENTRYPOINT_SH_CLASS_PATH)
+            );
+
+            withEnv("LOCATION", "/smb");
+            addExposedPort(SMB_PORT);
+            waitingFor(Wait.forListeningPort());
+        }
+
+        static TestContainer getInstance() {
+            if(instance == null) {
+                instance = new TestContainer();
+            }
+            instance.start();
+            return instance;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+        }
+
+        @Override
+        public void stop() {
+            instance = null;
+            super.stop();
+        }
+
+        @Override
+        public void close() {
+            instance.close();
+            instance = null;
+        }
+
+        public String getBaseUrl() {
+            return "http://" + getHost() + ":" + getMappedPort(SMB_PORT) + "/webdav/";
+        }
+
+        public String getTestFolderUrl() {
+            return getBaseUrl() + "testFolder/";
+        }
+
+        public String getRandomTestFileUrl() {
+            return String.format("%s%s", getTestFolderUrl(), UUID.randomUUID());
+        }
+
+        public String getRandomTestDirectoryUrl() {
+            return String.format("%s%s/", getTestFolderUrl(), UUID.randomUUID());
+        }
+
+        public String getTestBasicAuthFolderUrl() {
+            return getBaseUrl() + "folderWithBasicAuth/";
+        }
+
+        public String getRandomTestBasicAuthFileUrl() {
+            return String.format("%s%s", getTestBasicAuthFolderUrl(), UUID.randomUUID());
+        }
+
+        public String getTestFolderWithLockNotImplementedUrl() {
+            return getBaseUrl() + "lockNotImplemented/";
+        }
     }
 }
