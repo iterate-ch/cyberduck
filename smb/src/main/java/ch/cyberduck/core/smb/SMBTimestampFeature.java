@@ -50,14 +50,14 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
             try (final DiskShare share = session.openShare(file)) {
                 try (final Directory entry = share.openDirectory(new SMBPathContainerService(session).getKey(file),
                         Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
-                        Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                        Collections.singleton(FileAttributes.FILE_ATTRIBUTE_DIRECTORY),
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                         SMB2CreateDisposition.FILE_OPEN,
                         Collections.singleton(SMB2CreateOptions.FILE_DIRECTORY_FILE))) {
                     final FileTime creationTime = entry.getFileInformation().getBasicInformation().getCreationTime();
                     final FileTime epochMillis = FileTime.ofEpochMillis(status.getTimestamp());
                     final FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, epochMillis, epochMillis, epochMillis,
-                            FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
+                            FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue());
                     entry.setFileInformation(fileBasicInformation);
                 }
                 catch(SMBRuntimeException e) {
@@ -78,7 +78,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                         SMB2CreateDisposition.FILE_OPEN,
-                        Collections.singleton(SMB2CreateOptions.FILE_DIRECTORY_FILE))) {
+                        Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
                     final FileTime creationTime = entry.getFileInformation().getBasicInformation().getCreationTime();
                     final FileTime epochMillis = FileTime.ofEpochMillis(status.getTimestamp());
                     final FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, epochMillis, epochMillis, epochMillis,
