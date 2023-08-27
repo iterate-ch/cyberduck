@@ -49,7 +49,7 @@ public class SMBDirectoryFeature implements Directory<Integer> {
         finally {
             session.releaseShare(folder);
         }
-        return folder;
+        return folder.withAttributes(new SMBAttributesFinderFeature(session).find(folder));
     }
 
     @Override
