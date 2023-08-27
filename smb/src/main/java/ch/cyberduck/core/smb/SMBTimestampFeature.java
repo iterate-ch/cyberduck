@@ -46,8 +46,8 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        if(file.isDirectory()) {
-            try (final DiskShare share = session.openShare(file)) {
+        try (final DiskShare share = session.openShare(file)) {
+            if(file.isDirectory()) {
                 try (final Directory entry = share.openDirectory(new SMBPathContainerService(session).getKey(file),
                         Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_DIRECTORY),
@@ -62,19 +62,8 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                             FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue());
                     entry.setFileInformation(updatedBasicInformation);
                 }
-                catch(SMBRuntimeException e) {
-                    throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
-                }
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
-            }
-            finally {
-                session.releaseShare(file);
-            }
-        }
-        else {
-            try (final DiskShare share = session.openShare(file)) {
+            else {
                 try (final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
                         Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
@@ -89,16 +78,16 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                             FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
                     entry.setFileInformation(updatedBasicInformation);
                 }
-                catch(SMBRuntimeException e) {
-                    throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
-                }
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
-            }
-            finally {
-                session.releaseShare(file);
-            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+        }
+        catch(SMBRuntimeException e) {
+            throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
+        }
+        finally {
+            session.releaseShare(file);
         }
     }
 }

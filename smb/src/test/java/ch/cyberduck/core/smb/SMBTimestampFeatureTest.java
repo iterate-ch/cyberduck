@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,11 +31,19 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class SMBTimestampFeatureTest extends AbstractSMBTest {
+
+    @Test
+    public void testTimestampFileNotfound() throws Exception {
+        final TransferStatus status = new TransferStatus();
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path f = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        status.setTimestamp(System.currentTimeMillis());
+        assertThrows(NotfoundException.class, () -> new SMBTimestampFeature(session).setTimestamp(f, status));
+    }
 
     @Test
     public void testTimestampFile() throws Exception {
