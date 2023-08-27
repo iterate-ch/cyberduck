@@ -73,7 +73,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         final Path target = new SMBTouchFeature(session).touch(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         // rename file
-        final Path fileRenamed = new SMBMoveFeature(session).move(file, target, new TransferStatus(),
+        final Path fileRenamed = new SMBMoveFeature(session).move(file, target, new TransferStatus().exists(true),
                 new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SMBFindFeature(session).find(file));
         assertTrue(new SMBFindFeature(session).find(fileRenamed));
