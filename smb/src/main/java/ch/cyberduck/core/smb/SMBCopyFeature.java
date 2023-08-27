@@ -58,7 +58,7 @@ public class SMBCopyFeature implements Copy {
                      Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                      Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                      Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                     SMB2CreateDisposition.FILE_OPEN_IF,
+                     status.isExists() ? SMB2CreateDisposition.FILE_OVERWRITE : SMB2CreateDisposition.FILE_CREATE,
                      Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
             sourceFile.remoteCopyTo(targetFile);
         }
