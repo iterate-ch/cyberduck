@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ import com.hierynomus.msfscc.fileinformation.ShareInfo;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.DiskShare;
 
-public class SMBAttributesFinderFeature implements AttributesFinder {
+public class SMBAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileAllInformation> {
 
     private final SMBSession session;
 
@@ -44,11 +45,12 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try (final DiskShare share = session.openShare(file)) {
-            final PathAttributes attributes = new PathAttributes();
             if(new SMBPathContainerService(session).isContainer(file)) {
                 final ShareInfo shareInformation = share.getShareInformation();
+                final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(shareInformation.getTotalSpace() - shareInformation.getFreeSpace());
                 attributes.setQuota(shareInformation.getTotalSpace());
+                return attributes;
             }
             else {
                 final FileAllInformation fileInformation = share.getFileInformation(new SMBPathContainerService(session).getKey(file));
@@ -58,14 +60,8 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
                 else if(file.isFile() && fileInformation.getStandardInformation().isDirectory()) {
                     throw new NotfoundException(String.format("File %s found but type is not file", file.getName()));
                 }
-                attributes.setAccessedDate(fileInformation.getBasicInformation().getLastAccessTime().toEpochMillis());
-                attributes.setModificationDate(fileInformation.getBasicInformation().getLastWriteTime().toEpochMillis());
-                attributes.setCreationDate(fileInformation.getBasicInformation().getCreationTime().toEpochMillis());
-                if(!fileInformation.getStandardInformation().isDirectory()) {
-                    attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
-                }
+                return this.toAttributes(fileInformation);
             }
-            return attributes;
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -76,5 +72,17 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
         finally {
             session.releaseShare(file);
         }
+    }
+
+    @Override
+    public PathAttributes toAttributes(final FileAllInformation model) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setAccessedDate(model.getBasicInformation().getLastAccessTime().toEpochMillis());
+        attributes.setModificationDate(model.getBasicInformation().getLastWriteTime().toEpochMillis());
+        attributes.setCreationDate(model.getBasicInformation().getCreationTime().toEpochMillis());
+        if(!model.getStandardInformation().isDirectory()) {
+            attributes.setSize(model.getStandardInformation().getEndOfFile());
+        }
+        return attributes;
     }
 }
