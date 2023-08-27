@@ -54,11 +54,13 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                         SMB2CreateDisposition.FILE_OPEN,
                         Collections.singleton(SMB2CreateOptions.FILE_DIRECTORY_FILE))) {
-                    final FileTime creationTime = entry.getFileInformation().getBasicInformation().getCreationTime();
-                    final FileTime epochMillis = FileTime.ofEpochMillis(status.getTimestamp());
-                    final FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, epochMillis, epochMillis, epochMillis,
+                    final FileBasicInformation updatedBasicInformation = new FileBasicInformation(
+                            FileBasicInformation.DONT_SET,
+                            FileBasicInformation.DONT_SET,
+                            FileTime.ofEpochMillis(status.getTimestamp()),
+                            FileBasicInformation.DONT_SET,
                             FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue());
-                    entry.setFileInformation(fileBasicInformation);
+                    entry.setFileInformation(updatedBasicInformation);
                 }
                 catch(SMBRuntimeException e) {
                     throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
@@ -77,13 +79,15 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                         Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                        SMB2CreateDisposition.FILE_OPEN,
+                        SMB2CreateDisposition.FILE_OVERWRITE,
                         Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
-                    final FileTime creationTime = entry.getFileInformation().getBasicInformation().getCreationTime();
-                    final FileTime epochMillis = FileTime.ofEpochMillis(status.getTimestamp());
-                    final FileBasicInformation fileBasicInformation = new FileBasicInformation(creationTime, epochMillis, epochMillis, epochMillis,
+                    final FileBasicInformation updatedBasicInformation = new FileBasicInformation(
+                            FileBasicInformation.DONT_SET,
+                            FileBasicInformation.DONT_SET,
+                            FileTime.ofEpochMillis(status.getTimestamp()),
+                            FileBasicInformation.DONT_SET,
                             FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
-                    entry.setFileInformation(fileBasicInformation);
+                    entry.setFileInformation(updatedBasicInformation);
                 }
                 catch(SMBRuntimeException e) {
                     throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
