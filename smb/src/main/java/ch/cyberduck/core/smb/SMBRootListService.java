@@ -24,7 +24,9 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -89,9 +91,9 @@ public class SMBRootListService implements ListService {
                         try {
                             result.add(share.withAttributes(new SMBAttributesFinderFeature(session).find(share)));
                         }
-                        catch(UnsupportedException e) {
+                        catch(NotfoundException | AccessDeniedException | UnsupportedException e) {
                             if(log.isWarnEnabled()) {
-                                log.warn(String.format("Skip unsupprted share %s", s));
+                                log.warn(String.format("Skip unsupported share %s with failure %s", s, e));
                             }
                         }
                     }
