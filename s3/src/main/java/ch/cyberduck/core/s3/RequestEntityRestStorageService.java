@@ -71,6 +71,9 @@ public class RequestEntityRestStorageService extends RestS3Service {
             log.debug(String.format("Configure for endpoint %s", bookmark));
         }
         if(InetAddressUtils.isIPv4Address(bookmark.getHostname()) || InetAddressUtils.isIPv6Address(bookmark.getHostname())) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Disable virtual host style requests for hostname %s", bookmark.getHostname()));
+            }
             properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
         else {
