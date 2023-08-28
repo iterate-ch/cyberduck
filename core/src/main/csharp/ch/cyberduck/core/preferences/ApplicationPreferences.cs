@@ -1,101 +1,61 @@
 ﻿//
-// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
-// http://cyberduck.io/
-//
+// Copyright (c) 2023 iterate GmbH. All rights reserved.
+// https://cyberduck.io/
+// 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
+// the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// Bug fixes, suggestions and comments should be sent to:
-// feedback@cyberduck.io
-//
 
+using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Properties;
 using java.security;
 using java.util;
+using org.apache.commons.lang3;
+using org.apache.logging.log4j;
+using org.apache.logging.log4j.core.config;
 using sun.security.mscapi;
 using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using Windows.Storage;
-using StringUtils = org.apache.commons.lang3.StringUtils;
-using ch.cyberduck.core.preferences;
-using java.nio.charset;
-using org.apache.logging.log4j;
-using org.apache.logging.log4j.core;
-using org.apache.logging.log4j.core.config;
-using Logger = org.apache.logging.log4j.Logger;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
-    public class SettingsDictionaryPreferences : AppConfigPreferences
+    using System = java.lang.System;
+
+    public class ApplicationPreferences : DefaultPreferences
     {
-        private static readonly Logger Log = LogManager.getLogger(typeof(SettingsDictionaryPreferences).FullName);
+        private static readonly char[] CultureSeparator = new[] { '_', '-' };
+        private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
+        private readonly Locales locales;
+        private SettingsDictionary store;
 
-        public SettingsDictionaryPreferences() : base(new DefaultLocales())
+        public ApplicationPreferences(Locales locales, IRuntime runtime)
         {
+            this.locales = locales;
+            Runtime.Current = runtime;
+
+            System.setProperty("jna.boot.library.path", runtime.Location);
         }
 
-        /// <summary>
-        /// Get platform specific home directory
-        /// </summary>
-        public static string HomeFolder
-        {
-            get
-            {
-                return (Environment.OSVersion.Platform == PlatformID.Unix ||
-                        Environment.OSVersion.Platform == PlatformID.MacOSX)
-                    ? Environment.GetEnvironmentVariable("HOME")
-                    : Environment.GetEnvironmentVariable("USERPROFILE");
-            }
-        }
+        public override List applicationLocales() => locales.applicationLocales();
 
-        private static string ApplicationRevision
+        public override void deleteProperty(string property)
         {
-            get { return Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString(); }
-        }
-
-        private static string ApplicationVersion
-        {
-            get
-            {
-                Match match = Regex.Match(Application.ProductVersion, @"((\d+)\.(\d+)(\.(\d+))?).*");
-                return match.Groups[1].Value;
-            }
-        }
-
-        /// <summary>
-        /// Try to get an OS version specific download path:
-        /// - XP : Desktop
-        /// - Vista or later : Downloads folder in the user home directory
-        /// </summary>
-        private string DefaultDownloadPath
-        {
-            get
-            {
-                string homePath = HomeFolder;
-                if (!string.IsNullOrEmpty(homePath))
-                {
-                    string downloads = Path.Combine(homePath, "Downloads");
-                    if (Directory.Exists(downloads))
-                    {
-                        return downloads;
-                    }
-                }
-                // fallback is Desktop
-                return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            }
+            store.Remove(property);
+            SharedSettings.Default.CdSettingsDirty = true;
         }
 
         public string GetDefaultLanguage()
@@ -105,15 +65,23 @@ namespace Ch.Cyberduck.Core.Preferences
             for (int i = 0; i < sysLocales.size(); i++)
             {
                 string s = (string)sysLocales.get(i);
-                string match = TryToMatchLocale(s.Replace('-', '_'), appLocales);
+                string match = TryToMatchLocale(s, appLocales);
                 if (null != match)
                 {
-                    Log.debug(String.Format("Default locale is '{0}' for system locale '{1}'", match, s));
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.debug($"Default locale is '{match}' for system locale '{s}'");
+                    }
+
                     return match;
                 }
             }
+
             //default to english
-            Log.debug("Fallback to locale 'en'");
+            if (Log.isDebugEnabled())
+            {
+                Log.debug("Fallback to locale 'en'");
+            }
             return "en";
         }
 
@@ -124,13 +92,37 @@ namespace Ch.Cyberduck.Core.Preferences
             {
                 return "Welsh";
             }
-            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(locale.Replace('_', '-'));
+
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(locale);
             return cultureInfo.TextInfo.ToTitleCase(cultureInfo.NativeName);
         }
 
-        public object GetSpecialObject(string property)
+        public override string getProperty(string property)
         {
-            return Settings.Default[property];
+            if (store[property] is not string value || string.IsNullOrWhiteSpace(value))
+            {
+                value = getDefault(property);
+            }
+            return value;
+        }
+
+        public override void load() => Load();
+
+        public void Load()
+        {
+            var settings = SharedSettings.Default;
+            store = (settings.CdSettings ??= new());
+            if (settings.Migrate)
+            {
+                settings.Migrate = false;
+                foreach (DictionaryEntry entry in LoadLocalUserConfig())
+                {
+                    store.Add((string)entry.Key, (string)entry.Value);
+                }
+
+                settings.CdSettingsDirty = true;
+                Save();
+            }
         }
 
         public override string locale()
@@ -138,7 +130,29 @@ namespace Ch.Cyberduck.Core.Preferences
             return getProperty("application.language");
         }
 
-        protected override void configureLogging(String level)
+        public override void save() => Save();
+
+        public void Save()
+        {
+            try
+            {
+                SharedSettings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                Log.error("Failure saving preferences", ex);
+            }
+        }
+
+        public override void setProperty(string property, string value)
+        {
+            store[property] = value;
+            SharedSettings.Default.CdSettingsDirty = true;
+        }
+
+        public override List systemLocales() => locales.systemLocales();
+
+        protected override void configureLogging(string level)
         {
             base.configureLogging(level);
             if (Debugger.IsAttached)
@@ -153,13 +167,13 @@ namespace Ch.Cyberduck.Core.Preferences
 
             this.setDefault("os.version", Environment.OSVersion.Version.ToString());
 
-            this.setDefault("application.name", Application.ProductName);
-            this.setDefault("application.datafolder.name", Application.ProductName);
+            this.setDefault("application.name", Runtime.ProductName);
+            this.setDefault("application.datafolder.name", Runtime.DataFolderName);
             this.setDefault("oauth.handler.scheme",
-                String.Format("x-{0}-action", StringUtils.deleteWhitespace(Application.ProductName.ToLower())));
+                String.Format("x-{0}-action", StringUtils.deleteWhitespace(Runtime.ProductName.ToLower())));
 
-            this.setDefault("application.version", ApplicationVersion);
-            this.setDefault("application.revision", ApplicationRevision);
+            this.setDefault("application.version", Runtime.VersionString);
+            this.setDefault("application.revision", Runtime.Revision);
             this.setDefault("application.language.custom", false.ToString());
             this.setDefault("application.localization.enable", true.ToString());
 
@@ -171,59 +185,59 @@ namespace Ch.Cyberduck.Core.Preferences
 
             // Importers
             this.setDefault("bookmark.import.winscp.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinSCP.ini"));
+                Path.Combine(EnvironmentInfo.AppDataPath, "WinSCP.ini"));
             this.setDefault("bookmark.import.filezilla.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FileZilla",
+                Path.Combine(EnvironmentInfo.AppDataPath, "FileZilla",
                     "sitemanager.xml"));
             this.setDefault("bookmark.import.smartftp.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SmartFTP",
+                Path.Combine(EnvironmentInfo.AppDataPath, "SmartFTP",
                     "Client 2.0", "Favorites"));
             this.setDefault("bookmark.import.totalcommander.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GHISLER",
+                Path.Combine(EnvironmentInfo.AppDataPath, "GHISLER",
                     "wcx_ftp.ini"));
             this.setDefault("bookmark.import.flashfxp3.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP", "3",
+                Path.Combine(EnvironmentInfo.AppDataPath, "FlashFXP", "3",
                     "Sites.dat"));
             this.setDefault("bookmark.import.flashfxp4.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP", "4",
+                Path.Combine(EnvironmentInfo.AppDataPath, "FlashFXP", "4",
                     "Sites.dat"));
             this.setDefault("bookmark.import.flashfxp4.common.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "FlashFXP",
+                Path.Combine(EnvironmentInfo.CommonAppDataPath, "FlashFXP",
                     "4",
                     "Sites.dat"));
             this.setDefault("bookmark.import.wsftp.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Ipswitch", "WS_FTP",
+                Path.Combine(EnvironmentInfo.AppDataPath, "Ipswitch", "WS_FTP",
                     "Sites"));
             this.setDefault("bookmark.import.fireftp.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mozilla", "Firefox",
+                Path.Combine(EnvironmentInfo.AppDataPath, "Mozilla", "Firefox",
                     "Profiles"));
             this.setDefault("bookmark.import.s3browser.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "S3Browser",
+                Path.Combine(EnvironmentInfo.AppDataPath, "S3Browser",
                     "settings.ini"));
-            this.setDefault("bookmark.import.crossftp.location", Path.Combine(HomeFolder, ".crossftp", "sites.xml"));
+            this.setDefault("bookmark.import.crossftp.location", Path.Combine(EnvironmentInfo.UserProfilePath, ".crossftp", "sites.xml"));
             this.setDefault("bookmark.import.cloudberry.s3.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.Combine(EnvironmentInfo.LocalAppDataPath,
                     "CloudBerry S3 Explorer for Amazon S3", "settings.list"));
             this.setDefault("bookmark.import.cloudberry.google.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.Combine(EnvironmentInfo.LocalAppDataPath,
                     "CloudBerry Explorer for Google Storage", "settings.list"));
             this.setDefault("bookmark.import.cloudberry.azure.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.Combine(EnvironmentInfo.LocalAppDataPath,
                     "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
             this.setDefault("bookmark.import.expandrive3.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.Combine(EnvironmentInfo.LocalAppDataPath,
                     "ExpanDrive", "favorites.js"));
             this.setDefault("bookmark.import.expandrive4.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.Combine(EnvironmentInfo.LocalAppDataPath,
                     "ExpanDrive", "expandrive4.favorites.js"));
             this.setDefault("bookmark.import.expandrive5.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.Combine(EnvironmentInfo.LocalAppDataPath,
                     "ExpanDrive", "expandrive5.favorites.js"));
             this.setDefault("bookmark.import.expandrive6.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.Combine(EnvironmentInfo.LocalAppDataPath,
                     "ExpanDrive", "expandrive6.favorites.js"));
             this.setDefault("bookmark.import.netdrive2.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Path.Combine(EnvironmentInfo.AppDataPath,
                     "NetDrive2", "drives.dat"));
 
             //disable reminder for protocol handler registration
@@ -231,17 +245,17 @@ namespace Ch.Cyberduck.Core.Preferences
 
             this.setDefault("update.check.privilege", true.ToString());
 
-            this.setDefault("queue.download.folder", DefaultDownloadPath);
+            this.setDefault("queue.download.folder", EnvironmentInfo.DownloadsPath);
             this.setDefault("queue.upload.permissions.default", true.ToString());
 
             this.setDefault("queue.dock.badge", true.ToString());
 
             this.setDefault("ssh.knownhosts",
-                Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(), "known_hosts"));
+                Path.Combine(EnvironmentInfo.UserProfilePath, ".ssh", "known_hosts"));
             this.setDefault("browser.enterkey.rename", false.ToString());
             this.setDefault("terminal.openssh.enable", true.ToString());
             this.setDefault("terminal.windowssubsystemlinux.enable", true.ToString());
-            this.setDefault("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
+            this.setDefault("terminal.command.ssh", Path.Combine(EnvironmentInfo.UserProfilePath, "putty.exe"));
             this.setDefault("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
             this.setDefault("terminal.command.openssh.args", "{1} {0}@{2} -t -p {3} \"cd '{4}'; $SHELL\"");
 
@@ -278,8 +292,8 @@ namespace Ch.Cyberduck.Core.Preferences
             // Resolve local links uploading target file instead. Currently not supporting shortcuts on Windows.
             this.setDefault("local.symboliclink.resolve", true.ToString());
 
-            this.setDefault("local.user.home", HomeFolder);
-            this.setDefault("local.delimiter", "\\");
+            this.setDefault("local.user.home", EnvironmentInfo.UserProfilePath);
+            this.setDefault("local.delimiter", $"{Path.DirectorySeparatorChar}");
             this.setDefault("local.normalize.tilde", false.ToString());
             this.setDefault("local.normalize.unicode", false.ToString());
 
@@ -307,37 +321,53 @@ namespace Ch.Cyberduck.Core.Preferences
                     // Gets the network domain name associated with the current user
                     this.setDefault("webdav.ntlm.domain", Environment.UserDomainName);
                 }
-                catch (PlatformNotSupportedException e)
+                catch (PlatformNotSupportedException)
                 {
                     // The operating system does not support retrieving the network domain name.
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
                     // The network domain name cannot be retrieved.
                 }
+
                 try
                 {
                     this.setDefault("webdav.ntlm.workstation", Environment.MachineName);
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
                     // The name of this computer cannot be obtained.
                 }
             }
-            if (Utils.IsRunningAsUWP)
+
+            if (Runtime.Packaged == true)
             {
                 SetUWPDefaults();
             }
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void SetUWPDefaults()
+        private static StringDictionary LoadLocalUserConfig()
         {
-            this.setDefault("update.check", $"{false}");
-            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
+            var settingsInstance = Settings.Default;
+            if (settingsInstance.UpgradeSettings)
+            {
+                settingsInstance.Upgrade();
+                settingsInstance.UpgradeSettings = false;
+
+                try
+                {
+                    settingsInstance.Save();
+                }
+                catch
+                {
+                    // Don't care about failures saving old user config.
+                }
+            }
+
+            return settingsInstance.CdSettings;
         }
 
-        private string TryToMatchLocale(string sysLocale, List appLocales)
+        private static string TryToMatchLocale(string sysLocale, List appLocales)
         {
             for (int i = 0; i < appLocales.size(); i++)
             {
@@ -348,7 +378,7 @@ namespace Ch.Cyberduck.Core.Preferences
                     return l;
                 }
                 //remove region
-                int m = sysLocale.IndexOf('_');
+                int m = sysLocale.IndexOfAny(CultureSeparator);
                 if (m > 0)
                 {
                     string country = sysLocale.Substring(0, m);
@@ -359,6 +389,18 @@ namespace Ch.Cyberduck.Core.Preferences
                 }
             }
             return null;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void SetUWPDefaults()
+        {
+            this.setDefault("update.check", $"{false}");
+            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
+        }
+
+        record struct Preference(string Default, string Runtime)
+        {
+            public static readonly Preference Empty = default;
         }
     }
 }

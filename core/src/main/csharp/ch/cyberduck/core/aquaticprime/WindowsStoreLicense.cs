@@ -19,12 +19,6 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.Services.Store;
 using Windows.System;
 
@@ -48,7 +42,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
                 }
                 else
                 {
-                    return (string)(storeContext.User?.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result) ?? LocaleFactory.localizedString("Unknown");
+                    return (string)(User.GetDefault().GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result) ?? LocaleFactory.localizedString("Unknown");
                 }
             }
             else
@@ -76,7 +70,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         {
             StoreContext storeContext = StoreContext.GetDefault();
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
-            return true || (license?.IsActive ?? true); // HACK Windows Store Submission Process
+            return license?.IsActive ?? false;
         }
     }
 }

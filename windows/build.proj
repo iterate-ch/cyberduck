@@ -18,6 +18,6 @@
     <ProjectReference Include="src\main\wix\WindowsVersionCustomAction\WindowsVersionCustomAction.vcxproj" SetPlatform="Platform=Win32" />
     <ProjectReference Include="src\main\wix\Bundle\Cyberduck.Bundle.wixproj" />
     <ProjectReference Include="src\main\wix\Bootstrapper\Cyberduck.Bootstrapper.wixproj" />
-    <ProjectReference Include="src\main\appx\Cyberduck.Package.proj" />
+    <ProjectReference Include="src\main\package\package.wapproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '15.0'">
+        <VisualStudioVersion>15.0</VisualStudioVersion>
+    </PropertyGroup>
+    <ItemGroup Label="ProjectConfigurations">
+        <ProjectConfiguration Include="Debug|x64">
+            <Configuration>Debug</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Release|x64">
+            <Configuration>Release</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+    </ItemGroup>
+    <PropertyGroup>
+        <WapProjPath Condition="'$(WapProjPath)'==''">$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\</WapProjPath>
+    </PropertyGroup>
+    <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
+    <PropertyGroup>
+        <ProjectName>Cyberduck</ProjectName>
+        <ProjectGuid>55cdd736-9a8a-4091-ac99-60e2f9c73269</ProjectGuid>
+        <TargetPlatformVersion>10.0.22621.0</TargetPlatformVersion>
+        <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
+        <NoWarn>$(NoWarn);NU1702</NoWarn>
+        <EntryPointProjectUniqueName>..\csharp\Cyberduck.csproj</EntryPointProjectUniqueName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <SignOutput Condition="'$(SignOutput)'!='true'">False</SignOutput>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <SignOutput Condition="'$(SignOutput)'==''">True</SignOutput>
+    </PropertyGroup>
+    <PropertyGroup>
+        <AppxPackageSigningEnabled>$(SignOutput)</AppxPackageSigningEnabled>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="Package.appxmanifest.template" />
+        <AppxManifest Include="$(TargetDir)generated/Package.appxmanifest">
+            <Link>Package.appxmanifest</Link>
+            <SubType>Designer</SubType>
+            <DependentUpon>Package.appxmanifest.template</DependentUpon>
+        </AppxManifest>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="$(ModulePath)\src\resources\CyberduckAppx.44x44.png">
+            <Link>Images\CyberduckAppx.44x44.png</Link>
+        </Content>
+        <Content Include="$(ModulePath)\src\resources\CyberduckAppx.50x50.png">
+            <Link>Images\CyberduckAppx.50x50.png</Link>
+        </Content>
+        <Content Include="$(ModulePath)\src\resources\CyberduckAppx.150x150.png">
+            <Link>Images\CyberduckAppx.150x150.png</Link>
+        </Content>
+        <Content Include="$(CyberduckDir)profiles\default\*.cyberduckprofile">
+            <Link>Profiles\%(Filename)%(Extension)</Link>
+        </Content>
+        <Content Include="$(CyberduckDir)Acknowledgments.rtf;$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
+            <Link>%(Filename)%(Extension)</Link>
+        </Content>
+        <Content Include="Directory.Build.props" />
+    </ItemGroup>
+    <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
+    <ItemGroup>
+        <ProjectReference Include="..\csharp\Cyberduck.csproj" />
+    </ItemGroup>
+</Project>

@@ -34,16 +34,20 @@ using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using org.apache.logging.log4j;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using Application = System.Windows.Forms.Application;
+using CoreApplicationPreferences = Ch.Cyberduck.Core.Preferences.ApplicationPreferences;
 using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
-    public class ApplicationPreferences : SettingsDictionaryPreferences
+    using Runtime = Cyberduck.Core.Preferences.Runtime;
+
+    public class ApplicationPreferences : CoreApplicationPreferences
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
+
+        public ApplicationPreferences(IRuntime runtime) : base(new DefaultLocales(), runtime)
+        {
+        }
 
         protected override void setDefaults()
         {
@@ -109,7 +113,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 this.setDefault("factory.notification.class", typeof(DesktopNotificationService).AssemblyQualifiedName);
             }
 
-            if (Cyberduck.Core.Utils.IsRunningAsUWP)
+            if (Runtime.Packaged.GetValueOrDefault())
             {
                 this.setDefault("factory.rendezvous.class", typeof(DisabledRendezvous).AssemblyQualifiedName);
                 this.setDefault("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);

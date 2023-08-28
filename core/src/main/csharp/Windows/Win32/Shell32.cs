@@ -78,6 +78,25 @@ namespace Windows.Win32
             }
         }
 
+        /// <inheritdoc cref="SHGetKnownFolderPath(Guid*, uint, winmdroot.Foundation.HANDLE, winmdroot.Foundation.PWSTR*)"/>
+        public static unsafe string SHGetKnownFolderPath(in Guid rfid, winmdroot.UI.Shell.KNOWN_FOLDER_FLAG dwFlags, winmdroot.Foundation.HANDLE hToken)
+        {
+            fixed (Guid* rfidLocal = &rfid)
+            {
+                winmdroot.Foundation.PWSTR pszPath = default;
+                try
+                {
+                    winmdroot.Foundation.HRESULT __result = SHGetKnownFolderPath(rfidLocal, (uint)dwFlags, hToken, &pszPath);
+                    __result.ThrowOnFailure();
+                    return pszPath.ToString();
+                }
+                finally
+                {
+                    CoTaskMemFree(pszPath);
+                }
+            }
+        }
+
         /// <inheritdoc cref="SHParseDisplayName(string, winmdroot.System.Com.IBindCtx, out winmdroot.UI.Shell.Common.ITEMIDLIST*, uint, uint*)"/>
         public static unsafe winmdroot.Foundation.HRESULT SHParseDisplayName(string pszName, winmdroot.System.Com.IBindCtx pbc, out winmdroot.UI.Shell.Common.ITEMIDLIST ppidl, uint sfgaoIn, out uint psfgaOut)
         {

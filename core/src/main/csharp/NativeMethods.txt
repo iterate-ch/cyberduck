@@ -12,6 +12,7 @@ CredRead
 CredWrite
 DefWindowProc
 ExtractIconEx
+FOLDERID_Downloads
 GetCurrentPackageFullName
 GetTokenInformation
 GetWindowLong
@@ -25,6 +26,7 @@ IExtractIconW
 ILCreateFromPath
 IQueryAssociations
 IShellItem
+KNOWN_FOLDER_FLAG
 LoadLibrary
 LoadString
 MESSAGEBOX_RESULT
@@ -47,6 +49,7 @@ SHCreateItemFromIDList
 Shell_GetCachedImageIndex
 ShellExecuteEx
 SHGetFileInfo
+SHGetKnownFolderPath
 SHGFI_FLAGS
 SHLoadIndirectString
 SHOpenFolderAndSelectItems

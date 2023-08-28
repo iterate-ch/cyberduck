@@ -46,6 +46,11 @@ namespace Ch.Cyberduck.Core.Local
         {
         }
 
+        public SystemLocal(SystemLocal copy)
+            : base(copy.getAbsolute())
+        {
+        }
+
         public override bool exists()
         {
             string path = getAbsolute();

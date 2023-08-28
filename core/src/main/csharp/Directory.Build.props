@@ -16,9 +16,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <BasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</BasePath>
+    <_CoreBasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</_CoreBasePath>
   </PropertyGroup>
-  <Import Project="$(BasePath)native/Directory.Build.props" />
+
+  <Import Project="$(_CoreBasePath)native/Directory.Build.props" />
 
   <PropertyGroup>
     <Platforms>x64</Platforms>

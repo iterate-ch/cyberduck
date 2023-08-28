@@ -82,9 +82,20 @@
         </condition>
         <property name="msbuild.sign" value="" />
 
+        <copy todir="${build}/generated" overwrite="True" encoding="UTF-8" outputencoding="UTF-8">
+            <fileset dir="${module}/src/main/package">
+                <include name="**/*.template"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+            <globmapper from="*.template" to="*"/>
+        </copy>
+
         <msbuild buildfile="build.proj">
             <target name="Build" />
 
+            <property name="Platform" value="x64" />
             <property name="BuildModule" value="Installer" />
             <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />

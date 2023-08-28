@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 //
@@ -16,19 +16,22 @@
 // yves@cyberduck.ch
 //
 
-using System;
-using System.Reflection;
-using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
-using Path = System.IO.Path;
+using Ch.Cyberduck.Core.Local;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
+    using Local = ch.cyberduck.core.Local;
+
     public class AssemblyApplicationResourcesFinder : ApplicationResourcesFinder
     {
-        public ch.cyberduck.core.Local find()
+        private static readonly SystemLocal local;
+
+        static AssemblyApplicationResourcesFinder()
         {
-            return LocalFactory.get(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            local = new(Runtime.ResourcesLocation);
         }
+
+        public Local find() => new SystemLocal(local);
     }
 }

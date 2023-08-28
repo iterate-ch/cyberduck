@@ -8,6 +8,12 @@
     <OutputName>Cyberduck-Installer-$(Version)</OutputName>
     <OutputType>Package</OutputType>
     <InstallerPlatform>x64</InstallerPlatform>
+    <DefineConstants>
+      CyberduckDir=$(CyberduckDir);
+      ProfilesDir=$(CyberduckDir)profiles\default\;
+      LicenseFile=$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt;
+      $(DefineConstants)
+    </DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
@@ -46,6 +52,15 @@
       <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
       <Name>WixUtilExtension</Name>
     </WixExtension>
+  </ItemGroup>
+
+  <ItemGroup>
+    <HarvestDirectory Include="$(CyberduckDir)profiles\default" SuppressRootDirectory="true" SuppressCom="true" SuppressRegistry="true">
+      <Link>Profiles</Link>
+      <DirectoryRefId>PROFILES</DirectoryRefId>
+      <ComponentGroupName>ProfileComponents</ComponentGroupName>
+      <PreprocessorVariable>var.ProfilesDir</PreprocessorVariable>
+    </HarvestDirectory>
   </ItemGroup>
 
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />

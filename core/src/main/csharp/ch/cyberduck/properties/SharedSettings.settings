@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Cyberduck.Core.Native.ch.cyberduck.properties" GeneratedClassName="SharedSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="CdSettings" GenerateDefaultValueInCode="false" Type="Ch.Cyberduck.Core.Preferences.SettingsDictionary" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Migrate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

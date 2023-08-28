@@ -16,9 +16,9 @@
 <Project>
 
   <PropertyGroup>
-    <BasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</BasePath>
+    <_BonjourBasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</_BonjourBasePath>
   </PropertyGroup>
-  <Import Project="$(BasePath)native/Directory.Build.props" />
+  <Import Project="$(_BonjourBasePath)native/Directory.Build.props" />
 
   <PropertyGroup>
     <Platforms>x64</Platforms>
