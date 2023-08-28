@@ -24,13 +24,13 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.STSTokens;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -214,7 +214,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Set credentials from %s", assumeRoleResult));
                         }
-                        credentials.setTokens(new STSTokens(
+                        credentials.setTokens(new TemporaryAccessTokens(
                                 assumeRoleResult.getCredentials().getAccessKeyId(),
                                 assumeRoleResult.getCredentials().getSecretAccessKey(),
                                 assumeRoleResult.getCredentials().getSessionToken(),
@@ -237,7 +237,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     if(null == cached) {
                         return credentials;
                     }
-                    return credentials.withTokens(new STSTokens(
+                    return credentials.withTokens(new TemporaryAccessTokens(
                             cached.accessKey, cached.secretKey, cached.sessionToken, Long.valueOf(cached.expiration)));
                 }
                 if(tokenCode != null) {
@@ -265,7 +265,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Set credentials from %s", sessionTokenResult));
                         }
-                        return credentials.withTokens(new STSTokens(
+                        return credentials.withTokens(new TemporaryAccessTokens(
                                 sessionTokenResult.getCredentials().getAccessKeyId(),
                                 sessionTokenResult.getCredentials().getSecretAccessKey(),
                                 sessionTokenResult.getCredentials().getSessionToken(),
@@ -279,7 +279,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Set credentials from profile %s", basicProfile.getProfileName()));
                 }
-                return credentials.withTokens(new STSTokens(
+                return credentials.withTokens(new TemporaryAccessTokens(
                         basicProfile.getAwsAccessIdKey(),
                         basicProfile.getAwsSecretAccessKey(),
                         basicProfile.getAwsSessionToken(),

@@ -22,7 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.STSTokens;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -71,7 +71,7 @@ public class STSAssumeRoleAuthorizationService {
         this.prompt = prompt;
     }
 
-    public STSTokens authorize(final String sAMLAssertion) throws BackgroundException {
+    public TemporaryAccessTokens authorize(final String sAMLAssertion) throws BackgroundException {
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
         final HostPreferences preferences = new HostPreferences(bookmark);
         if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
@@ -89,7 +89,7 @@ public class STSAssumeRoleAuthorizationService {
                 log.debug(String.format("Received assume role identity result %s", result));
             }
             final Credentials credentials = bookmark.getCredentials();
-            final STSTokens tokens = new STSTokens(result.getCredentials().getAccessKeyId(),
+            final TemporaryAccessTokens tokens = new TemporaryAccessTokens(result.getCredentials().getAccessKeyId(),
                     result.getCredentials().getSecretAccessKey(),
                     result.getCredentials().getSessionToken(),
                     result.getCredentials().getExpiration().getTime());
@@ -101,7 +101,7 @@ public class STSAssumeRoleAuthorizationService {
         }
     }
 
-    public STSTokens authorize(final OAuthTokens oauth) throws BackgroundException {
+    public TemporaryAccessTokens authorize(final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Assume role with OIDC Id token for %s", bookmark));
@@ -161,7 +161,7 @@ public class STSAssumeRoleAuthorizationService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Received assume role identity result %s", result));
             }
-            return new STSTokens(result.getCredentials().getAccessKeyId(),
+            return new TemporaryAccessTokens(result.getCredentials().getAccessKeyId(),
                     result.getCredentials().getSecretAccessKey(),
                     result.getCredentials().getSessionToken(),
                     result.getCredentials().getExpiration().getTime());

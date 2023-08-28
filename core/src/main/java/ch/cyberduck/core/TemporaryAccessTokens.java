@@ -22,21 +22,21 @@ import java.util.Objects;
 /**
  * Temporary access credentials
  */
-public final class STSTokens {
+public final class TemporaryAccessTokens {
 
-    public static final STSTokens EMPTY
-            = new STSTokens(null, null, null, Long.MAX_VALUE);
+    public static final TemporaryAccessTokens EMPTY
+            = new TemporaryAccessTokens(null, null, null, Long.MAX_VALUE);
 
     private final String accessKeyId;
     private final String secretAccessKey;
     private final String sessionToken;
     private final Long expiryInMilliseconds;
 
-    public STSTokens(final String sessionToken) {
+    public TemporaryAccessTokens(final String sessionToken) {
         this(null, null, sessionToken, -1L);
     }
 
-    public STSTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken, final Long expiryInMilliseconds) {
+    public TemporaryAccessTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken, final Long expiryInMilliseconds) {
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
         this.sessionToken = sessionToken;
@@ -75,14 +75,14 @@ public final class STSTokens {
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        final STSTokens stsTokens = (STSTokens) o;
-        if(!Objects.equals(accessKeyId, stsTokens.accessKeyId)) {
+        final TemporaryAccessTokens temporaryAccessTokens = (TemporaryAccessTokens) o;
+        if(!Objects.equals(accessKeyId, temporaryAccessTokens.accessKeyId)) {
             return false;
         }
-        if(!Objects.equals(secretAccessKey, stsTokens.secretAccessKey)) {
+        if(!Objects.equals(secretAccessKey, temporaryAccessTokens.secretAccessKey)) {
             return false;
         }
-        if(!Objects.equals(sessionToken, stsTokens.sessionToken)) {
+        if(!Objects.equals(sessionToken, temporaryAccessTokens.sessionToken)) {
             return false;
         }
         return true;

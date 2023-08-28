@@ -21,7 +21,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.STSTokens;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -53,7 +53,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     /**
      * Currently valid tokens
      */
-    private STSTokens tokens = STSTokens.EMPTY;
+    private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
     /**
@@ -74,7 +74,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         this.cancel = cancel;
     }
 
-    public STSTokens refresh(final OAuthTokens oidc) throws BackgroundException {
+    public TemporaryAccessTokens refresh(final OAuthTokens oidc) throws BackgroundException {
         try {
             return this.tokens = this.authorize(oidc);
         }
@@ -118,7 +118,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         catch(JWTDecodeException e) {
             throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
         }
-        final STSTokens tokens = this.refresh(identity);
+        final TemporaryAccessTokens tokens = this.refresh(identity);
         return credentials
                 .withUsername(sub)
                 .withTokens(tokens);

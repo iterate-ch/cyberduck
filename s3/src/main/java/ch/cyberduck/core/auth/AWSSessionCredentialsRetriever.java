@@ -27,7 +27,7 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.STSTokens;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
@@ -165,7 +165,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
                 }
             }
             reader.endObject();
-            return new Credentials().withTokens(new STSTokens(key, secret, token, expiration != null ? expiration.getTime() : -1L));
+            return new Credentials().withTokens(new TemporaryAccessTokens(key, secret, token, expiration != null ? expiration.getTime() : -1L));
         }
         catch(MalformedJsonException e) {
             throw new InteroperabilityException("Invalid JSON response", e);
