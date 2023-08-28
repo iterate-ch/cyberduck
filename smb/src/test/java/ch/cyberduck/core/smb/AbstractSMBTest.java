@@ -28,7 +28,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.GenericContainer;
@@ -43,12 +45,20 @@ public abstract class AbstractSMBTest {
     @ClassRule
     public static TestContainer container = TestContainer.getInstance();
 
+    @BeforeClass
+    public static void start() {
+        container.start();
+    }
+
+    @AfterClass
+    public static void stop() {
+        container.stop();
+    }
+
     SMBSession session;
 
     @Before
     public void setup() throws BackgroundException {
-        container.stop();
-        container.start();
         session = new SMBSession(new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445), "/user")
                 .withCredentials(new Credentials("smbj", "pass")));
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -96,25 +106,7 @@ public abstract class AbstractSMBTest {
             if(instance == null) {
                 instance = new TestContainer();
             }
-            instance.start();
             return instance;
-        }
-
-        @Override
-        public void start() {
-            super.start();
-        }
-
-        @Override
-        public void stop() {
-            instance = null;
-            super.stop();
-        }
-
-        @Override
-        public void close() {
-            instance.close();
-            instance = null;
         }
     }
 }
