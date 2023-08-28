@@ -116,33 +116,5 @@ public abstract class AbstractSMBTest {
             instance.close();
             instance = null;
         }
-
-        public String getBaseUrl() {
-            return "http://" + getHost() + ":" + getMappedPort(SMB_PORT) + "/webdav/";
-        }
-
-        public String getTestFolderUrl() {
-            return getBaseUrl() + "testFolder/";
-        }
-
-        public String getRandomTestFileUrl() {
-            return String.format("%s%s", getTestFolderUrl(), UUID.randomUUID());
-        }
-
-        public String getRandomTestDirectoryUrl() {
-            return String.format("%s%s/", getTestFolderUrl(), UUID.randomUUID());
-        }
-
-        public String getTestBasicAuthFolderUrl() {
-            return getBaseUrl() + "folderWithBasicAuth/";
-        }
-
-        public String getRandomTestBasicAuthFileUrl() {
-            return String.format("%s%s", getTestBasicAuthFolderUrl(), UUID.randomUUID());
-        }
-
-        public String getTestFolderWithLockNotImplementedUrl() {
-            return getBaseUrl() + "lockNotImplemented/";
-        }
     }
 }
