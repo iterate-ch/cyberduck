@@ -169,8 +169,15 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                             case HttpStatus.SC_FORBIDDEN:
                                 switch(errorCode) {
                                     case -40764: // Anti-virus scan still in progress
-                                    case -40765:  // Anti-virus scan determined malicious file
-                                        return new AntiVirusAccessDeniedException(buffer.toString(), failure);
+                                        return new AntiVirusAccessDeniedException(
+                                                LocaleFactory.localizedString("Please wait. The file is being checked for malicious content", "SDS"),
+                                                LocaleFactory.localizedString("The content is being scanned for viruses. Please wait a moment and try again in a few minutes.", "SDS"),
+                                                failure);
+                                    case -40765: // Anti-virus scan determined malicious file
+                                        return new AntiVirusAccessDeniedException(
+                                                LocaleFactory.localizedString("Threat detected", "SDS"),
+                                                LocaleFactory.localizedString("Malicious content has been detected in this file. We recommend that you do not perform any further actions with the file and inform your system administrator immediately.", "SDS"),
+                                                failure);
                                 }
                                 break;
                         }

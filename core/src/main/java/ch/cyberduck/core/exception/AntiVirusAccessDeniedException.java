@@ -31,4 +31,12 @@ public class AntiVirusAccessDeniedException extends LockedException {
     public AntiVirusAccessDeniedException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("Threat detected", "SDS"), detail, cause);
     }
+
+    public AntiVirusAccessDeniedException(final String message, final String detail) {
+        super(message, detail);
+    }
+
+    public AntiVirusAccessDeniedException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
+    }
 }
