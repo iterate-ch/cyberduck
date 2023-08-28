@@ -25,7 +25,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <jwt.version>4.2.1</jwt.version>
+        <jwt.version>4.4.0</jwt.version>
     </properties>
 
     <dependencies>
