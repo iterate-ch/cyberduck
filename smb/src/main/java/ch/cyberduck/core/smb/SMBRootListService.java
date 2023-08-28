@@ -29,7 +29,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,62 +61,52 @@ public class SMBRootListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            if(StringUtils.isNotBlank(session.getHost().getProtocol().getContext())) {
-                // Use share name from context in profile
-                final Path share = new Path(session.getHost().getProtocol().getContext(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            try {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Connect to share %s from profile context", share));
+                    log.debug("Attempt to list available shares");
                 }
-                return new AttributedList<>(Collections.singleton(share.withAttributes(new SMBAttributesFinderFeature(session).find(share))));
+                // An SRVSVC_HANDLE pointer that identifies the server.
+                final RPCTransport transport = SMBTransportFactories.SRVSVC.getTransport(context);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Obtained transport %s", transport));
+                }
+                final ServerService lookup = new ServerService(transport);
+                final List<NetShareInfo0> info = lookup.getShares0();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Retrieved share info %s", info));
+                }
+                final AttributedList<Path> result = new AttributedList<>();
+                for(final String s : info.stream().map(NetShareInfo::getNetName).collect(Collectors.toSet())) {
+                    final Path share = new Path(s, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+                    try {
+                        result.add(share.withAttributes(new SMBAttributesFinderFeature(session).find(share)));
+                    }
+                    catch(NotfoundException | AccessDeniedException | UnsupportedException e) {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Skip unsupported share %s with failure %s", s, e));
+                        }
+                    }
+                }
+                return result;
             }
-            else {
-                try {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Attempt to list available shares");
-                    }
-                    // An SRVSVC_HANDLE pointer that identifies the server.
-                    final RPCTransport transport = SMBTransportFactories.SRVSVC.getTransport(context);
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Obtained transport %s", transport));
-                    }
-                    final ServerService lookup = new ServerService(transport);
-                    final List<NetShareInfo0> info = lookup.getShares0();
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Retrieved share info %s", info));
-                    }
-                    final AttributedList<Path> result = new AttributedList<>();
-                    for(final String s : info.stream().map(NetShareInfo::getNetName).collect(Collectors.toSet())) {
-                        final Path share = new Path(s, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
-                        try {
-                            result.add(share.withAttributes(new SMBAttributesFinderFeature(session).find(share)));
-                        }
-                        catch(NotfoundException | AccessDeniedException | UnsupportedException e) {
-                            if(log.isWarnEnabled()) {
-                                log.warn(String.format("Skip unsupported share %s with failure %s", s, e));
-                            }
-                        }
-                    }
-                    return result;
+            catch(IOException e) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Failure %s getting share info from server", e));
                 }
-                catch(IOException e) {
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Failure %s getting share info from server", e));
-                    }
-                    final Credentials name = prompt.prompt(session.getHost(),
-                            LocaleFactory.localizedString("SMB Share"),
-                            LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),
-                            new LoginOptions().icon(session.getHost().getProtocol().disk()).keychain(true)
-                                    .passwordPlaceholder(LocaleFactory.localizedString("SMB Share"))
-                                    .password(false));
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Connect to share %s from user input", name.getPassword()));
-                    }
-                    if(name.isSaved()) {
-                        session.getHost().setDefaultPath(name.getPassword());
-                    }
-                    final Path share = new Path(name.getPassword(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                    return new AttributedList<>(Collections.singleton(share.withAttributes(new SMBAttributesFinderFeature(session).find(share))));
+                final Credentials name = prompt.prompt(session.getHost(),
+                        LocaleFactory.localizedString("SMB Share"),
+                        LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),
+                        new LoginOptions().icon(session.getHost().getProtocol().disk()).keychain(true)
+                                .passwordPlaceholder(LocaleFactory.localizedString("SMB Share"))
+                                .password(false));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Connect to share %s from user input", name.getPassword()));
                 }
+                if(name.isSaved()) {
+                    session.getHost().setDefaultPath(name.getPassword());
+                }
+                final Path share = new Path(name.getPassword(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+                return new AttributedList<>(Collections.singleton(share.withAttributes(new SMBAttributesFinderFeature(session).find(share))));
             }
         }
         return new SMBListService(session).list(directory, listener);

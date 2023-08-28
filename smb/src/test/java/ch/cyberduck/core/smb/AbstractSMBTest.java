@@ -19,12 +19,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
@@ -35,9 +35,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.UUID;
+import static org.junit.Assert.fail;
 
 @Category(TestcontainerTest.class)
 public abstract class AbstractSMBTest {
@@ -51,15 +49,17 @@ public abstract class AbstractSMBTest {
     public void setup() throws BackgroundException {
         container.stop();
         container.start();
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SMBProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/test.cyberduckprofile"));
-        final Host host = new Host(profile, container.getHost(), container.getMappedPort(445))
-                .withCredentials(new Credentials("smbj", "pass"));
-        host.setDefaultPath("/user");
-        session = new SMBSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session = new SMBSession(new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445), "/user")
+                .withCredentials(new Credentials("smbj", "pass")));
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                fail(reason);
+                return null;
+            }
+        }, new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener());
+        login.check(session, new DisabledCancelCallback());
     }
 
     @After

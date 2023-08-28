@@ -20,6 +20,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -32,11 +33,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class SMBListServiceTest extends AbstractSMBTest {
+
+    @Test
+    public void testListShareNotfound() throws Exception {
+        assertThrows(NotfoundException.class, () -> new SMBListService(session).list(
+                new Path("/notfound", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+    }
 
     @Test
     public void testList() throws Exception {
