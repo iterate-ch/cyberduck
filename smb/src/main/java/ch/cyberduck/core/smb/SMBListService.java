@@ -78,6 +78,10 @@ public class SMBListService implements ListService {
                 attr.setSize(f.getEndOfFile());
                 attr.setDisplayname(f.getFileName());
                 result.add(new Path(directory, filename, type, attr));
+                listener.chunk(directory, result);
+            }
+            if(result.isEmpty()) {
+                listener.chunk(directory, result);
             }
         }
         catch(SMBRuntimeException e) {

@@ -86,6 +86,7 @@ public class SMBRootListService implements ListService {
                             log.warn(String.format("Skip unsupported share %s with failure %s", s, e));
                         }
                     }
+                    listener.chunk(directory, result);
                 }
                 return result;
             }
@@ -106,7 +107,9 @@ public class SMBRootListService implements ListService {
                     session.getHost().setDefaultPath(name.getPassword());
                 }
                 final Path share = new Path(name.getPassword(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                return new AttributedList<>(Collections.singleton(share.withAttributes(new SMBAttributesFinderFeature(session).find(share))));
+                final AttributedList<Path> result = new AttributedList<>(Collections.singleton(share.withAttributes(new SMBAttributesFinderFeature(session).find(share))));
+                listener.chunk(directory, result);
+                return result;
             }
         }
         return new SMBListService(session).list(directory, listener);
