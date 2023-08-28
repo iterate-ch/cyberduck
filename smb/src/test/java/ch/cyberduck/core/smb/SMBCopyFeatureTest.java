@@ -17,6 +17,7 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -47,8 +48,8 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         ListService list = new SMBListService(session);
-        assertTrue(list.list(home, null).contains(file));
-        assertTrue(list.list(destinationFolder, null).contains(copy));
+        assertTrue(list.list(home, new DisabledListProgressListener()).contains(file));
+        assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));
         new SMBDeleteFeature(session).delete(Arrays.asList(file, copy, destinationFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -65,8 +66,8 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         new SMBTouchFeature(session).touch(copy, new TransferStatus());
         new SMBCopyFeature(session).copy(file, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         ListService list = new SMBListService(session);
-        assertTrue(list.list(sourceFolder, null).contains(file));
-        assertTrue(list.list(destinationFolder, null).contains(copy));
+        assertTrue(list.list(sourceFolder, new DisabledListProgressListener()).contains(file));
+        assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));
         new SMBDeleteFeature(session).delete(Arrays.asList(file, sourceFolder, copy, destinationFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
