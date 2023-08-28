@@ -212,6 +212,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getSTSEndpoint() {
+        return null;
+    }
+
+    @Override
     public String getDefaultHostname() {
         // Blank by default
         return PreferencesFactory.get().getProperty("connection.hostname.default");
@@ -315,6 +320,10 @@ public abstract class AbstractProtocol implements Protocol {
                 default:
                     return StringUtils.isNotBlank(credentials.getPassword());
             }
+        }
+        if(options.oauth) {
+            // Always refresh tokens in login
+            return true;
         }
         if(options.token) {
             return StringUtils.isNotBlank(credentials.getToken());

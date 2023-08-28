@@ -79,7 +79,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                 .withParameter("token_access_type", "offline");
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService));
         if(new HostPreferences(host).getBoolean("dropbox.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
                     new HostPreferences(host).getInteger("dropbox.limit.requests.second")
@@ -94,13 +94,12 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.authorize(host, prompt, cancel);
         try {
+            final Credentials credentials = authorizationService.validate();
             final FullAccount account = new DbxUserUsersRequests(client).getCurrentAccount();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
-            final Credentials credentials = host.getCredentials();
             credentials.setUsername(account.getEmail());
             switch(account.getAccountType()) {
                 // The features listed below are only available to customers on Dropbox Professional, Standard, Advanced, and Enterprise.

@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -29,8 +27,6 @@ import java.net.URI;
 
 public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     private static final Logger log = LogManager.getLogger(DefaultHostPasswordStore.class);
-
-    private final Preferences preferences = PreferencesFactory.get();
 
     /**
      * Find password for login
@@ -161,7 +157,9 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             String.format("%s OAuth2 Access Token", prefix)),
                     this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
                             String.format("%s OAuth2 Refresh Token", prefix)),
-                    expiry != null ? Long.parseLong(expiry) : -1L));
+                    expiry != null ? Long.parseLong(expiry) : -1L,
+                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
+                            String.format("%s OIDC Id Token", prefix))));
         }
         catch(LocalAccessDeniedException e) {
             log.warn(String.format("Failure %s searching in keychain", e));
@@ -232,6 +230,11 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 this.addPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix),
                         String.valueOf(credentials.getOauth().getExpiryInMilliseconds()));
             }
+            if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
+                this.addPassword(bookmark.getProtocol().getScheme(),
+                        bookmark.getPort(), this.getOAuthHostname(bookmark),
+                        String.format("%s OIDC Id Token", prefix), credentials.getOauth().getIdToken());
+            }
         }
     }
 
@@ -271,6 +274,10 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             // Save expiry
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
                 this.deletePassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
+            }
+            if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
+                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                        String.format("%s OIDC Id Token", prefix));
             }
         }
     }

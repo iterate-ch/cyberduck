@@ -31,6 +31,7 @@ public class UserAgentHttpRequestInitializer implements HttpRequestInitializer {
     @Override
     public void initialize(final HttpRequest request) {
         request.getHeaders().setUserAgent(provider.get());
+        request.getHeaders().setAccept("application/json");
         request.setSuppressUserAgentSuffix(true);
     }
 }

@@ -16,6 +16,7 @@ package ch.cyberduck.core.auth;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -26,28 +27,41 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.EnumSet;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.MalformedJsonException;
 
-public class AWSSessionCredentialsRetriever {
+public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
+    private static final Logger log = LogManager.getLogger(AWSSessionCredentialsRetriever.class);
 
     private final TranscriptListener transcript;
     private final ProtocolFactory factory;
@@ -67,7 +81,37 @@ public class AWSSessionCredentialsRetriever {
         this.url = url;
     }
 
+    public static class Configurator implements CredentialsConfigurator {
+        private final AWSSessionCredentialsRetriever retriever;
+        private final String url;
+
+        public Configurator(final X509TrustManager trust, final X509KeyManager key, final TranscriptListener transcript, final String url) {
+            this.url = url;
+            this.retriever = new AWSSessionCredentialsRetriever(trust, key, transcript, url);
+        }
+
+        @Override
+        public Configurator reload() throws LoginCanceledException {
+            return this;
+        }
+
+        @Override
+        public Credentials configure(final Host host) {
+            try {
+                return retriever.get();
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Ignore failure %s retrieving credentials from %s", e, url));
+                return host.getCredentials();
+            }
+        }
+    }
+
+    @Override
     public Credentials get() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Configure credentials from %s", url));
+        }
         final Host address = new HostParser(factory).get(url);
         final Path access = new Path(PathNormalizer.normalize(address.getDefaultPath()), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
@@ -78,6 +122,11 @@ public class AWSSessionCredentialsRetriever {
             final Credentials credentials = this.parse(in);
             connection.close();
             return credentials;
+        }
+        catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException |
+              InteroperabilityException e) {
+            log.warn(String.format("Failure %s to retrieve session credentials", e));
+            throw new LoginFailureException(e.getDetail(false), e);
         }
         finally {
             connection.removeListener(transcript);
@@ -91,6 +140,7 @@ public class AWSSessionCredentialsRetriever {
             String key = null;
             String secret = null;
             String token = null;
+            Date expiration = null;
             while(reader.hasNext()) {
                 final String name = reader.nextName();
                 final String value = reader.nextString();
@@ -104,14 +154,18 @@ public class AWSSessionCredentialsRetriever {
                     case "Token":
                         token = value;
                         break;
+                    case "Expiration":
+                        try {
+                            expiration = new ISO8601DateParser().parse(value);
+                        }
+                        catch(InvalidDateException e) {
+                            log.warn(String.format("Failure %s parsing %s", e, value));
+                        }
+                        break;
                 }
             }
             reader.endObject();
-            final Credentials credentials = new Credentials(key, secret);
-            if(StringUtils.isNotBlank(token)) {
-                credentials.setToken(token);
-            }
-            return credentials;
+            return new Credentials().withTokens(new TemporaryAccessTokens(key, secret, token, expiration != null ? expiration.getTime() : -1L));
         }
         catch(MalformedJsonException e) {
             throw new InteroperabilityException("Invalid JSON response", e);

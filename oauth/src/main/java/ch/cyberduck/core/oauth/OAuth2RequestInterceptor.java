@@ -25,7 +25,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -49,10 +49,10 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     /**
      * Currently valid tokens
      */
-    private OAuthTokens tokens = OAuthTokens.EMPTY;
+    protected OAuthTokens tokens = OAuthTokens.EMPTY;
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
-    private final Host host;
+    protected final Host host;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
         this(client, host,
@@ -73,17 +73,32 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     }
 
     @Override
-    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        return tokens = super.authorize(bookmark, prompt, cancel);
+    public OAuthTokens authorize() throws BackgroundException {
+        return tokens = super.authorize();
     }
 
+    /**
+     * Refresh with cached refresh token
+     */
     public OAuthTokens refresh() throws BackgroundException {
         return tokens = this.refresh(tokens);
     }
 
+    /**
+     *
+     * @param previous Refresh token
+     */
     @Override
     public OAuthTokens refresh(final OAuthTokens previous) throws BackgroundException {
-        return tokens = super.refresh(previous);
+        try {
+            return tokens = super.refresh(previous);
+        }
+        catch(LoginFailureException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Failure %s refreshing OAuth tokens", e));
+            }
+            return tokens = this.authorize();
+        }
     }
 
     /**
@@ -146,5 +161,9 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor withParameter(final String key, final String value) {
         super.withParameter(key, value);
         return this;
+    }
+
+    public OAuthTokens getTokens() {
+        return tokens;
     }
 }

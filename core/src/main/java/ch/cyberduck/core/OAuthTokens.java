@@ -17,17 +17,25 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 public final class OAuthTokens {
-    public static final OAuthTokens EMPTY = new OAuthTokens(null, null, Long.MAX_VALUE);
+    public static final OAuthTokens EMPTY = new OAuthTokens(null, null, Long.MAX_VALUE, null);
 
     private final String accessToken;
     private final String refreshToken;
     private final Long expiryInMilliseconds;
+    private final String idToken;
 
     public OAuthTokens(final String accessToken, final String refreshToken, final Long expiryInMilliseconds) {
+        this(accessToken, refreshToken, expiryInMilliseconds, null);
+    }
+
+    public OAuthTokens(final String accessToken, final String refreshToken, final Long expiryInMilliseconds, final String idToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiryInMilliseconds = expiryInMilliseconds;
+        this.idToken = idToken;
     }
 
     public boolean validate() {
@@ -46,8 +54,41 @@ public final class OAuthTokens {
         return expiryInMilliseconds;
     }
 
+    public String getIdToken() {
+        return idToken;
+    }
+
     public boolean isExpired() {
         return System.currentTimeMillis() >= expiryInMilliseconds;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final OAuthTokens that = (OAuthTokens) o;
+        if(!Objects.equals(accessToken, that.accessToken)) {
+            return false;
+        }
+        if(!Objects.equals(refreshToken, that.refreshToken)) {
+            return false;
+        }
+        if(!Objects.equals(idToken, that.idToken)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = accessToken != null ? accessToken.hashCode() : 0;
+        result = 31 * result + (refreshToken != null ? refreshToken.hashCode() : 0);
+        result = 31 * result + (idToken != null ? idToken.hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -55,6 +96,7 @@ public final class OAuthTokens {
         final StringBuilder sb = new StringBuilder("OAuthTokens{");
         sb.append("accessToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(accessToken)))).append('\'');
         sb.append(", refreshToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(refreshToken)))).append('\'');
+        sb.append(", idToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(idToken)))).append('\'');
         sb.append(", expiryInMilliseconds=").append(expiryInMilliseconds);
         sb.append('}');
         return sb.toString();

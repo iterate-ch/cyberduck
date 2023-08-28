@@ -21,6 +21,7 @@ import ch.cyberduck.core.JumphostConfigurator;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.HostParserException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
@@ -75,7 +76,7 @@ public class OpenSSHJumpHostConfigurator implements JumphostConfigurator {
     }
 
     @Override
-    public JumphostConfigurator reload() {
+    public JumphostConfigurator reload() throws LoginCanceledException {
         hostname.reload();
         credentials.reload();
         return this;

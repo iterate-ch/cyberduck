@@ -47,9 +47,10 @@ public class AWSSessionCredentialsRetrieverTest {
                 "  \"Token\" : \"token\",\n" +
                 "  \"Expiration\" : \"2012-04-27T22:39:16Z\"\n" +
                 "}", Charset.defaultCharset()));
-        assertEquals("AKIAIOSFODNN7EXAMPLE", c.getUsername());
-        assertEquals("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", c.getPassword());
-        assertEquals("token", c.getToken());
+        assertEquals("AKIAIOSFODNN7EXAMPLE", c.getTokens().getAccessKeyId());
+        assertEquals("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", c.getTokens().getSecretAccessKey());
+        assertEquals("token", c.getTokens().getSessionToken());
+        assertEquals(1335566356000L, c.getTokens().getExpiryInMilliseconds(), 0L);
     }
 
     @Test(expected = ConnectionTimeoutException.class)
