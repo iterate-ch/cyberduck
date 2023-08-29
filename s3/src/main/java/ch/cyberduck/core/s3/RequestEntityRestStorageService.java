@@ -157,7 +157,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
             else {
                 if(StringUtils.isNotBlank(bucketName)) {
                     // Only for AWS set endpoint to region specific
-                    if(preferences.getBoolean("s3.transferacceleration.enable")) {
+                    if(preferences.getBoolean(String.format("s3.transferacceleration.%s.enable", bucketName))) {
                         // Already set to accelerated endpoint
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Use accelerated endpoint %s", S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME));
