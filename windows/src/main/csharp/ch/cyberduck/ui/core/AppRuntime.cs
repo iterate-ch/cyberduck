@@ -3,7 +3,7 @@ using System;
 
 namespace Ch.Cyberduck.Ui.Core
 {
-    public record class Runtime(
+    public record class AppRuntime(
             string CompanyName,
             string DataFolderName,
             string Location,
@@ -30,7 +30,11 @@ namespace Ch.Cyberduck.Ui.Core
 
         public string VersionString { get; } = Version.ToString(3);
 
-        public Runtime(Cyberduck.Core.Preferences.Runtime.ValueRuntime copy)
+        public AppRuntime() : this(Runtime.CreateDefault<AppRuntime>())
+        {
+        }
+
+        public AppRuntime(in Runtime.ValueRuntime copy)
             : this(
                   copy.CompanyName,
                   copy.DataFolderName,

@@ -29,6 +29,7 @@ using Ch.Cyberduck.Core.Refresh.ViewModels.Dialogs;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using Ch.Cyberduck.Core.Refresh.Views;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ReactiveUI;
@@ -39,12 +40,10 @@ using StructureMap.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CoreRuntime = Ch.Cyberduck.Core.Preferences.Runtime;
 
 namespace Ch.Cyberduck.Ui
 {
     using ApplicationPreferences = Core.Preferences.ApplicationPreferences;
-    using Runtime = Core.Runtime;
 
     public static class StructureMapBootstrapper
     {
@@ -98,7 +97,8 @@ namespace Ch.Cyberduck.Ui
                 x.ForConcreteSingleton<ApplicationPreferences>();
 
                 x.Forward<ApplicationPreferences, Preferences>();
-                x.For<IRuntime>().Singleton().Use(() => new Runtime(CoreRuntime.CreateDefault()));
+                x.ForConcreteSingleton<AppRuntime>();
+                x.Forward<AppRuntime, IRuntime>();
             });
         }
 

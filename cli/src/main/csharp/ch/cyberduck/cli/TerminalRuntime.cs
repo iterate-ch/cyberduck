@@ -48,19 +48,19 @@ namespace Ch.Cyberduck.Cli
 
         public string VersionString { get; } = Version.ToString(3);
 
-        public static TerminalRuntime Create()
+        public TerminalRuntime() : this(Runtime.CreateDefault<TerminalRuntime>())
         {
-            var runtime = Runtime.CreateDefault();
+        }
 
-            return new TerminalRuntime(
-                runtime.CompanyName,
-                "Cyberduck",
-                runtime.Location,
-                runtime.Packaged,
-                runtime.ProductName,
-                runtime.ResourcesLocation,
-                runtime.Version);
+        public TerminalRuntime(in Runtime.ValueRuntime runtime) : this(
+            runtime.CompanyName,
+            "Cyberduck",
+            runtime.Location,
+            runtime.Packaged,
+            runtime.ProductName,
+            runtime.ResourcesLocation,
+            runtime.Version)
+        {
         }
     }
-
 }

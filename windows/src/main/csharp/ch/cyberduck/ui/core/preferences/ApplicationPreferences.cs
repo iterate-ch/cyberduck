@@ -39,8 +39,6 @@ using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
-    using Runtime = Cyberduck.Core.Preferences.Runtime;
-
     public class ApplicationPreferences : CoreApplicationPreferences
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);

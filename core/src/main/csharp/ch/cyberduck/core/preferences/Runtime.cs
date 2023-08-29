@@ -28,11 +28,14 @@ namespace Ch.Cyberduck.Core.Preferences
 
         public static string VersionString => Current?.VersionString;
 
-        public static ValueRuntime CreateDefault()
+        public static ValueRuntime CreateDefault<T>()
         {
-            var entryAssembly = Assembly.GetEntryAssembly();
-            var coreAssembly = typeof(Runtime).Assembly;
+            return CreateDefault(typeof(T).Assembly);
+        }
 
+        private static ValueRuntime CreateDefault(Assembly runtimeAssembly)
+        {
+            var coreAssembly = typeof(Runtime).Assembly;
             string location;
 
             if (Uri.TryCreate(coreAssembly.CodeBase, UriKind.Absolute, out var codeBaseUri))
@@ -45,15 +48,18 @@ namespace Ch.Cyberduck.Core.Preferences
             }
 
             string productName = default;
-            Version version = default;
-
-            if (entryAssembly?.GetName() is AssemblyName entryName)
+            Version version;
+            if (runtimeAssembly?.GetName() is AssemblyName entryName)
             {
                 productName = entryName.Name;
                 version = entryName.Version;
             }
+            else
+            {
+                version = new();
+            }
 
-            var companyName = entryAssembly?.GetCustomAttribute<AssemblyCompanyAttribute>() switch
+            var companyName = runtimeAssembly?.GetCustomAttribute<AssemblyCompanyAttribute>() switch
             {
                 AssemblyCompanyAttribute company => company.Company,
                 _ => productName,
