@@ -39,26 +39,6 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <!--
-                        Workaround for jackson-databind being included in Protocols & Cryptomator.
-                      -->
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>ch.iterate.s3</groupId>
@@ -162,4 +142,3 @@
         </dependency>
     </dependencies>
 </project>
-
