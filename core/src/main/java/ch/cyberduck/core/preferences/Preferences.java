@@ -337,22 +337,15 @@ public abstract class Preferences implements Locales, PreferencesReader {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
         // Apply default configuration
-        final URL configuration;
-        final String file = this.getDefault("logging.config");
-        if(null == file) {
-            configuration = Preferences.class.getClassLoader().getResource("log4j.xml");
-        }
-        else {
-            configuration = Preferences.class.getClassLoader().getResource(file);
-        }
         final LoggerContext context = Configurator.initialize(new DefaultConfiguration());
-        if(null != configuration) {
+        final InputStream config = this.getLogConfiguration();
+        if(null != config) {
             try {
                 context.initialize();
-                Configurator.initialize(null, new ConfigurationSource(configuration.openStream()));
+                Configurator.initialize(null, new ConfigurationSource(config));
             }
             catch(IOException e) {
-                log.error(String.format("Unable to load log4j configuration from %s", configuration.toExternalForm()));
+                log.error("Failure configuring log4j", e);
             }
         }
         // Allow to override default logging level
@@ -377,6 +370,48 @@ public abstract class Preferences implements Locales, PreferencesReader {
             }
         }
         this.configureAppenders(level);
+    }
+
+    private InputStream getLogConfiguration() {
+        final Local folder = SupportDirectoryFinderFactory.get().find();
+        if(folder.exists()) {
+            try {
+                for(Local log4jxml : folder.list().filter(new NullFilter<Local>() {
+                    @Override
+                    public boolean accept(final Local file) {
+                        return "log4j.xml".equals(file.getName());
+                    }
+                })) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Using log4j configuration from %s", log4jxml));
+                    }
+                    return log4jxml.getInputStream();
+                }
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Unable to list %s", folder), e);
+            }
+        }
+        final URL configuration;
+        final String file = this.getDefault("logging.config");
+        if(null == file) {
+            configuration = Preferences.class.getClassLoader().getResource("log4j.xml");
+        }
+        else {
+            configuration = Preferences.class.getClassLoader().getResource(file);
+        }
+        if(null != configuration) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Using log4j configuration from %s", configuration));
+            }
+            try {
+                return configuration.openStream();
+            }
+            catch(IOException e) {
+                log.error(String.format(String.format("Unable to load log4j configuration from %s", configuration)), e);
+            }
+        }
+        return null;
     }
 
     protected void configureAppenders(final String level) {
