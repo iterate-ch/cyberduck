@@ -93,6 +93,14 @@
             </build>
             <dependencies>
                 <dependency>
+                    <!--
+                        Workaround for jackson-databind being included in Protocols & Cryptomator.
+                      -->
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
                     <groupId>net.java.openjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
                     <classifier>x86_64</classifier>
