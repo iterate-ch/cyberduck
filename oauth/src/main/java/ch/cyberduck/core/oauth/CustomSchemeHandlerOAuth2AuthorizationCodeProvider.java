@@ -66,8 +66,18 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
         if(log.isInfoEnabled()) {
             log.info(String.format("Await callback from custom scheme %s and state %s", redirectUri, state));
         }
-        prompt.await(signal, bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
-                LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
+        if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
+            prompt.await(signal, bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
+                    LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
+        }
+        else {
+            try {
+                signal.await();
+            }
+            catch(InterruptedException e) {
+                throw new BackgroundException(e);
+            }
+        }
         return authenticationCode.get();
     }
 }
