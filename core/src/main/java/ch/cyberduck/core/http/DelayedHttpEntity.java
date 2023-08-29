@@ -77,7 +77,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     private final Thread parentThread;
 
     public boolean isRepeatable() {
-        return true;
+        return !entityWritten;
     }
 
     public abstract long getContentLength();
