@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Windows.ApplicationModel;
 
 namespace Ch.Cyberduck.Core.Preferences
@@ -62,10 +63,13 @@ namespace Ch.Cyberduck.Core.Preferences
             var packaged = Utils.IsRunningAsUWP;
 
             var resourcesLocation = packaged
-                ? Package.Current.InstalledPath
+                ? PackageInstalledPath()
                 : location;
 
             return new(companyName, dataFolderName, location, packaged, productName, resourcesLocation, version);
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static string PackageInstalledPath() => Package.Current.InstalledPath;
         }
 
         public readonly record struct ValueRuntime(
