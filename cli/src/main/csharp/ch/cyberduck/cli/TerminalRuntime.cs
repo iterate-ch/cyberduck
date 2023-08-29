@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Cli
 
         public string VersionString { get; } = Version.ToString(3);
 
-        public TerminalRuntime() : this(Runtime.ValueRuntime.CreateDefault<TerminalRuntime>())
+        public TerminalRuntime() : this(Runtime.CreateDefault<TerminalRuntime>())
         {
         }
 

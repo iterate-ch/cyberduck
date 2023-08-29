@@ -30,11 +30,11 @@ namespace Ch.Cyberduck.Ui.Core
 
         public string VersionString { get; } = Version.ToString(3);
 
-        public AppRuntime() : this(Runtime.ValueRuntime.CreateDefault<AppRuntime>())
+        public AppRuntime() : this(Runtime.CreateDefault<AppRuntime>())
         {
         }
 
-        public AppRuntime(Runtime.ValueRuntime copy)
+        public AppRuntime(in Runtime.ValueRuntime copy)
             : this(
                   copy.CompanyName,
                   copy.DataFolderName,
