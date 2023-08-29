@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminalPreferences : TerminalPreferences
     {
-        public WindowsTerminalPreferences() : base(new ApplicationPreferences(new WindowsTerminalLocales(), TerminalRuntime.Create()))
+        public WindowsTerminalPreferences() : base(new ApplicationPreferences(new WindowsTerminalLocales(), new TerminalRuntime()))
         {
         }
 
