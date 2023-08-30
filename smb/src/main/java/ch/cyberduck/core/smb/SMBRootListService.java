@@ -18,6 +18,7 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -44,6 +45,7 @@ import com.rapid7.client.dcerpc.mssrvs.dto.NetShareInfo;
 import com.rapid7.client.dcerpc.mssrvs.dto.NetShareInfo0;
 import com.rapid7.client.dcerpc.transport.RPCTransport;
 import com.rapid7.client.dcerpc.transport.SMBTransportFactories;
+import com.rapid7.helper.smbj.io.SMB2Exception;
 
 public class SMBRootListService implements ListService {
     private static final Logger log = LogManager.getLogger(SMBRootListService.class);
@@ -90,7 +92,7 @@ public class SMBRootListService implements ListService {
                 }
                 return result;
             }
-            catch(IOException e) {
+            catch(SMB2Exception e) {
                 if(log.isWarnEnabled()) {
                     log.warn(String.format("Failure %s getting share info from server", e));
                 }
@@ -110,6 +112,9 @@ public class SMBRootListService implements ListService {
                 final AttributedList<Path> result = new AttributedList<>(Collections.singleton(share.withAttributes(new SMBAttributesFinderFeature(session).find(share))));
                 listener.chunk(directory, result);
                 return result;
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
             }
         }
         return new SMBListService(session).list(directory, listener);
