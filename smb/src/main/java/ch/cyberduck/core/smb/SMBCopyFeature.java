@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,8 +34,8 @@ import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.protocol.commons.buffer.Buffer.BufferException;
-import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
+import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBCopyFeature implements Copy {
@@ -48,33 +49,41 @@ public class SMBCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status,
                      final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
-        try (final File sourceFile = session.openShare(source).openFile(new SMBPathContainerService(session).getKey(source),
-                new HashSet<>(Arrays.asList(AccessMask.FILE_READ_DATA, AccessMask.FILE_READ_ATTRIBUTES)),
-                Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                SMB2CreateDisposition.FILE_OPEN,
-                Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-             final File targetFile = session.openShare(target).openFile(new SMBPathContainerService(session).getKey(target),
-                     Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
-                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                     status.isExists() ? SMB2CreateDisposition.FILE_OVERWRITE : SMB2CreateDisposition.FILE_CREATE,
-                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
-            sourceFile.remoteCopyTo(targetFile);
+        try (final DiskShare share = session.openShare(source)) {
+            try (final File sourceFile = share.openFile(new SMBPathContainerService(session).getKey(source),
+                    new HashSet<>(Arrays.asList(AccessMask.FILE_READ_DATA, AccessMask.FILE_READ_ATTRIBUTES)),
+                    Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                    Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                    SMB2CreateDisposition.FILE_OPEN,
+                    Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
+                 final File targetFile = share.openFile(new SMBPathContainerService(session).getKey(target),
+                         Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
+                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
+                         status.isExists() ? SMB2CreateDisposition.FILE_OVERWRITE : SMB2CreateDisposition.FILE_CREATE,
+                         Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
+                sourceFile.remoteCopyTo(targetFile);
+            }
         }
-        catch(TransportException e) {
+        catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
-        }
-        catch(BufferException e) {
-            throw new BackgroundException(e);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot copy {0}", e, source);
         }
+        catch(BufferException e) {
+            throw new BackgroundException(e);
+        }
         finally {
             session.releaseShare(source);
-            session.releaseShare(target);
         }
         return target;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        final SMBPathContainerService containerService = new SMBPathContainerService(session);
+        // Remote copy is only possible between files on the same server
+        return containerService.getContainer(source).equals(containerService.getContainer(target));
     }
 }
