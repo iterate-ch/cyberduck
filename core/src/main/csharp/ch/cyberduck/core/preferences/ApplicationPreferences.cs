@@ -25,6 +25,7 @@ using sun.security.mscapi;
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -39,8 +40,11 @@ namespace Ch.Cyberduck.Core.Preferences
     {
         private static readonly char[] CultureSeparator = new[] { '_', '-' };
         private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
+        private static SettingsDictionary shared;
+        private static SharedSettings sharedSettings;
+        private static SettingsDictionary user;
+        private static Settings userSettings;
         private readonly Locales locales;
-        private SettingsDictionary store;
 
         public ApplicationPreferences(Locales locales, IRuntime runtime)
         {
@@ -50,11 +54,31 @@ namespace Ch.Cyberduck.Core.Preferences
             System.setProperty("jna.boot.library.path", runtime.Location);
         }
 
+        protected static SettingsDictionary Shared
+        {
+            get => shared ??= SharedSettings.CdSettings;
+            set => SharedSettings.CdSettings = shared = value;
+        }
+
+        protected static ApplicationSettingsBase SharedApplicationSettings => SharedSettings;
+
+        protected static SettingsDictionary User
+        {
+            get => user ??= UserSettings.CdSettings;
+            set => UserSettings.CdSettings = user = value;
+        }
+
+        protected static ApplicationSettingsBase UserApplicationSettings => UserSettings;
+
+        private static SharedSettings SharedSettings => sharedSettings ??= SharedSettings.Default;
+
+        private static Settings UserSettings => userSettings ??= Settings.Default;
+
         public override List applicationLocales() => locales.applicationLocales();
 
         public override void deleteProperty(string property)
         {
-            store.Remove(property);
+            Shared.Remove(property);
             SharedSettings.Default.CdSettingsDirty = true;
         }
 
@@ -99,18 +123,17 @@ namespace Ch.Cyberduck.Core.Preferences
 
         public override string getProperty(string property)
         {
-            if (store[property] is not string value || string.IsNullOrWhiteSpace(value))
+            if (Shared[property] is not string value || string.IsNullOrWhiteSpace(value))
             {
                 value = getDefault(property);
             }
             return value;
         }
 
-        public override void load() => Load();
-
-        public void Load()
+        public override void load()
         {
-            store = (SharedSettings.Default.CdSettings ??= new());
+            Shared ??= new();
+
             MigrateConfig();
         }
 
@@ -119,24 +142,12 @@ namespace Ch.Cyberduck.Core.Preferences
             return getProperty("application.language");
         }
 
-        public override void save() => Save();
-
-        public void Save()
-        {
-            try
-            {
-                SharedSettings.Default.Save();
-            }
-            catch (Exception ex)
-            {
-                Log.error("Failure saving preferences", ex);
-            }
-        }
+        public override void save() => Save(SharedSettings);
 
         public override void setProperty(string property, string value)
         {
-            store[property] = value;
-            SharedSettings.Default.CdSettingsDirty = true;
+            Shared[property] = value;
+            SharedSettings.CdSettingsDirty = true;
         }
 
         public override List systemLocales() => locales.systemLocales();
@@ -147,6 +158,31 @@ namespace Ch.Cyberduck.Core.Preferences
             if (Debugger.IsAttached)
             {
                 Configurator.setRootLevel(Level.DEBUG);
+            }
+        }
+
+        protected virtual void OnUpgradeUserSettings()
+        {
+            try
+            {
+                UserSettings.Upgrade();
+                Save(UserSettings);
+            }
+            catch
+            {
+                // Don't care about failures saving old user config.
+            }
+        }
+
+        protected virtual void Save(ApplicationSettingsBase settings)
+        {
+            try
+            {
+                settings.Save();
+            }
+            catch (Exception ex)
+            {
+                Log.error("Failure saving preferences", ex);
             }
         }
 
@@ -335,25 +371,15 @@ namespace Ch.Cyberduck.Core.Preferences
             }
         }
 
-        private static StringDictionary LoadUserConfig()
+        protected void UpgradeUserSettings()
         {
-            var settingsInstance = Settings.Default;
-            if (settingsInstance.UpgradeSettings)
+            if (!UserSettings.UpgradeSettings)
             {
-                settingsInstance.Upgrade();
-                settingsInstance.UpgradeSettings = false;
-
-                try
-                {
-                    settingsInstance.Save();
-                }
-                catch
-                {
-                    // Don't care about failures saving old user config.
-                }
+                return;
             }
+            UserSettings.UpgradeSettings = false;
 
-            return settingsInstance.CdSettings;
+            OnUpgradeUserSettings();
         }
 
         private static string TryToMatchLocale(string sysLocale, List appLocales)
@@ -380,15 +406,19 @@ namespace Ch.Cyberduck.Core.Preferences
             return null;
         }
 
+        private StringDictionary LoadUserConfig()
+        {
+            UpgradeUserSettings();
+            return User;
+        }
+
         private void MigrateConfig()
         {
-            var settings = SharedSettings.Default;
-
-            if (!settings.Migrate)
+            if (!SharedSettings.Migrate)
             {
                 return;
             }
-            settings.Migrate = false;
+            SharedSettings.Migrate = false;
 
             StringDictionary userConfig = default;
             try
@@ -405,14 +435,14 @@ namespace Ch.Cyberduck.Core.Preferences
                 return;
             }
 
-            settings.CdSettingsDirty = true;
+            SharedSettings.CdSettingsDirty = true;
 
             foreach (DictionaryEntry item in userConfig)
             {
                 setProperty((string)item.Key, (string)item.Value);
             }
 
-            Save();
+            save();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -420,11 +450,6 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             this.setDefault("update.check", $"{false}");
             this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
-        }
-
-        record struct Preference(string Default, string Runtime)
-        {
-            public static readonly Preference Empty = default;
         }
     }
 }
