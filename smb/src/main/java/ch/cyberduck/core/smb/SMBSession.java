@@ -108,9 +108,9 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
         else {
             final String domain, username;
-            if(credentials.getUsername().contains("@")) {
-                username = StringUtils.substringBefore(credentials.getUsername(), '@');
-                domain = StringUtils.substringAfter(credentials.getUsername(), '@');
+            if(credentials.getUsername().contains("\\")) {
+                domain = StringUtils.substringBefore(credentials.getUsername(), "\\");
+                username = StringUtils.substringAfter(credentials.getUsername(), "\\");
             }
             else {
                 username = credentials.getUsername();

@@ -56,7 +56,6 @@ public class SMBProtocol extends AbstractProtocol {
 
     @Override
     public String getUsernamePlaceholder() {
-        return String.format("%s@%s", LocaleFactory.localizedString("Username", "Credentials"),
-                PreferencesFactory.get().getProperty("smb.domain.default"));
+        return String.format("%s\\%s", PreferencesFactory.get().getProperty("smb.domain.default"), LocaleFactory.localizedString("Username", "Credentials"));
     }
 }

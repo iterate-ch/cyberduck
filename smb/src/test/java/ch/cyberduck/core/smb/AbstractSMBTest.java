@@ -60,7 +60,7 @@ public abstract class AbstractSMBTest {
     @Before
     public void setup() throws BackgroundException {
         session = new SMBSession(new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445), "/user")
-                .withCredentials(new Credentials("smbj", "pass")));
+                .withCredentials(new Credentials("WORKGROUP\\smbj", "pass")));
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
