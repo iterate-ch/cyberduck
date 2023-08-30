@@ -110,19 +110,8 @@ namespace Ch.Cyberduck.Core.Preferences
 
         public void Load()
         {
-            var settings = SharedSettings.Default;
-            store = (settings.CdSettings ??= new());
-            if (settings.Migrate)
-            {
-                settings.Migrate = false;
-                foreach (DictionaryEntry entry in LoadLocalUserConfig())
-                {
-                    store.Add((string)entry.Key, (string)entry.Value);
-                }
-
-                settings.CdSettingsDirty = true;
-                Save();
-            }
+            store = (SharedSettings.Default.CdSettings ??= new());
+            MigrateConfig();
         }
 
         public override string locale()
@@ -346,7 +335,7 @@ namespace Ch.Cyberduck.Core.Preferences
             }
         }
 
-        private static StringDictionary LoadLocalUserConfig()
+        private static StringDictionary LoadUserConfig()
         {
             var settingsInstance = Settings.Default;
             if (settingsInstance.UpgradeSettings)
@@ -389,6 +378,41 @@ namespace Ch.Cyberduck.Core.Preferences
                 }
             }
             return null;
+        }
+
+        private void MigrateConfig()
+        {
+            var settings = SharedSettings.Default;
+
+            if (!settings.Migrate)
+            {
+                return;
+            }
+            settings.Migrate = false;
+
+            StringDictionary userConfig = default;
+            try
+            {
+                userConfig = LoadUserConfig();
+            }
+            catch
+            {
+                // ignore
+            }
+
+            if (userConfig is null or { Count: 0 })
+            {
+                return;
+            }
+
+            settings.CdSettingsDirty = true;
+
+            foreach (DictionaryEntry item in userConfig)
+            {
+                setProperty((string)item.Key, (string)item.Value);
+            }
+
+            Save();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
