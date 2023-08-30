@@ -51,24 +51,14 @@ public class SMBMoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Callback delete, final ConnectionCallback prompt) throws BackgroundException {
-        try (final DiskShare sourceShare = session.openShare(source)) {
-            try (DiskEntry file = sourceShare.open(new SMBPathContainerService(session).getKey(source),
+        try (final DiskShare share = session.openShare(source)) {
+            try (DiskEntry file = share.open(new SMBPathContainerService(session).getKey(source),
                     Collections.singleton(AccessMask.DELETE),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(source.isDirectory() ? SMB2CreateOptions.FILE_DIRECTORY_FILE : SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
-                if(new SMBPathContainerService(session).getContainer(source).equals(new SMBPathContainerService(session).getContainer(target))) {
-                    file.rename(new SmbPath(sourceShare.getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
-                }
-                else {
-                    try (final DiskShare targetShare = session.openShare(target)) {
-                        file.rename(new SmbPath(targetShare.getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
-                    }
-                    finally {
-                        session.releaseShare(target);
-                    }
-                }
+                file.rename(new SmbPath(share.getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
             }
         }
         catch(IOException e) {
@@ -81,5 +71,12 @@ public class SMBMoveFeature implements Move {
             session.releaseShare(source);
         }
         return target;
+    }
+
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        final SMBPathContainerService containerService = new SMBPathContainerService(session);
+        return containerService.getContainer(source).equals(containerService.getContainer(target));
     }
 }
