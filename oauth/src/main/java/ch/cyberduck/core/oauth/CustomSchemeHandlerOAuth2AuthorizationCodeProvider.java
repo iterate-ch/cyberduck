@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserOAuth2AuthorizationCodeProvider {
@@ -72,7 +73,11 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
         }
         else {
             try {
-                signal.await();
+                final long timeout = PreferencesFactory.get().getLong("oauth.browser.open.warn.timeout");
+                final boolean successful = signal.await(timeout, TimeUnit.MILLISECONDS);
+                if(!successful) {
+                    throw new BackgroundException(String.format("Timed out callback from custom scheme %s and state %s", redirectUri, state), String.format("Timeout %sms", timeout));
+                }
             }
             catch(InterruptedException e) {
                 throw new BackgroundException(e);
