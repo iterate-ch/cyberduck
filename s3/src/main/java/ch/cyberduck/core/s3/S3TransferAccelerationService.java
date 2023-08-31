@@ -23,7 +23,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.TransferAcceleration;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -95,14 +94,5 @@ public class S3TransferAccelerationService implements TransferAcceleration {
         }
         // Set accelerated endpoint
         host.setProperty(String.format("s3.transferacceleration.%s.enable", bucket.getName()), String.valueOf(enable));
-        if(enable) {
-            host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(false));
-            host.setProperty("s3.upload.expect-continue", String.valueOf(false));
-        }
-        else {
-            // Revert default configuration
-            host.setProperty("s3.bucket.virtualhost.disable", PreferencesFactory.get().getProperty("s3.bucket.virtualhost.disable"));
-            host.setProperty("s3.upload.expect-continue", PreferencesFactory.get().getProperty("s3.upload.expect-continue"));
-        }
     }
 }
