@@ -155,20 +155,20 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 endpoint = createRegionSpecificEndpoint(host, host.getRegion());
             }
             else {
-                // Only for AWS set endpoint to region specific
-                if(preferences.getBoolean("s3.transferacceleration.enable")) {
-                    // Already set to accelerated endpoint
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Use accelerated endpoint %s", S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME));
+                if(StringUtils.isNotBlank(bucketName)) {
+                    // Only for AWS set endpoint to region specific
+                    if(preferences.getBoolean(String.format("s3.transferacceleration.%s.enable", bucketName))) {
+                        // Already set to accelerated endpoint
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Use accelerated endpoint %s", S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME));
+                        }
+                        endpoint = S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME;
                     }
-                    endpoint = S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME;
-                }
-                else {
-                    // Only attempt to determine region specific endpoint if virtual host style requests are enabled
-                    if(!this.getDisableDnsBuckets()) {
-                        // Check if not already request to query bucket location
-                        if(requestParameters == null || !requestParameters.containsKey("location")) {
-                            if(StringUtils.isNotBlank(bucketName)) {
+                    else {
+                        // Only attempt to determine region specific endpoint if virtual host style requests are enabled
+                        if(!this.getDisableDnsBuckets()) {
+                            // Check if not already request to query bucket location
+                            if(requestParameters == null || !requestParameters.containsKey("location")) {
                                 try {
                                     // Determine region for bucket using cache
                                     final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
