@@ -28,10 +28,10 @@ public class UnsupportedException extends InteroperabilityException {
     }
 
     public UnsupportedException(final String detail) {
-        super(detail);
+        super(LocaleFactory.localizedString("Unsupported", "Error"), detail);
     }
 
     public UnsupportedException(final String detail, final Throwable cause) {
-        super(detail, cause);
+        super(LocaleFactory.localizedString("Unsupported", "Error"), detail, cause);
     }
 }

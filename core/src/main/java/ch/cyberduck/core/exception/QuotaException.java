@@ -27,6 +27,10 @@ public class QuotaException extends BackgroundException {
         super(LocaleFactory.localizedString("Insufficient disk space", "Error"), detail, cause);
     }
 
+    public QuotaException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
+    }
+
     @Override
     public String getHelp() {
         return LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support");
