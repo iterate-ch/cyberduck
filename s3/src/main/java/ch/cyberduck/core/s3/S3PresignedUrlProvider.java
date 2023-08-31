@@ -52,11 +52,11 @@ public class S3PresignedUrlProvider {
             }
         }
         return new RestS3Service(new AWSCredentials(StringUtils.strip(
-            session.getHost().getCredentials().getUsername()
+                session.getHost().getCredentials().getUsername()
         ), StringUtils.strip(secret))) {
             @Override
             public String getEndpoint() {
-                return session.getHost().getHostname();
+                return session.getHost().getProtocol().getDefaultHostname();
             }
 
             @Override

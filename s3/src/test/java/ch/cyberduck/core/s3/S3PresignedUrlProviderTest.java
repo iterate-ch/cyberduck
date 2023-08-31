@@ -31,8 +31,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3PresignedUrlProviderTest extends AbstractS3Test {
@@ -44,6 +43,7 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final String url = new S3PresignedUrlProvider(session).create(PROPERTIES.get("s3.secret"),
                 "test-eu-west-1-cyberduck", "eu-west-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
+        assertEquals("test-eu-west-1-cyberduck.s3.amazonaws.com", URI.create(url).getHost());
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
     }
@@ -55,7 +55,18 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final String url = new S3PresignedUrlProvider(session).create(PROPERTIES.get("s3.secret"),
                 "test-eu-central-1-cyberduck", "eu-central-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
+        assertEquals("test-eu-central-1-cyberduck.s3.amazonaws.com", URI.create(url).getHost());
+    }
 
+    @Test
+    public void testCreateVirtualHost() throws Exception {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
+        final String url = new S3PresignedUrlProvider(virtualhost).create(System.getProperties().getProperty("s3.secret"),
+                "test-eu-west-3-cyberduck", "eu-west-3", "f", "GET", expiry.getTimeInMillis());
+        assertNotNull(url);
+        assertEquals("test-eu-west-3-cyberduck.s3.amazonaws.com", URI.create(url).getHost());
+        assertTrue(url, url.startsWith("https://test-eu-west-3-cyberduck.s3.amazonaws.com/f"));
     }
 
     @Test
@@ -65,6 +76,8 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final String url = new S3PresignedUrlProvider(session).create(PROPERTIES.get("s3.secret"),
                 "test-eu-central-1-cyberduck", "eu-central-1", "@f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
+        assertEquals("test-eu-central-1-cyberduck.s3.amazonaws.com", URI.create(url).getHost());
+        assertTrue(url, url.startsWith("https://test-eu-central-1-cyberduck.s3.amazonaws.com/%40f"));
     }
 
     @Test
@@ -74,6 +87,8 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final String url = new S3PresignedUrlProvider(session).create(PROPERTIES.get("s3.secret"),
                 "test-us-east-1-cyberduck", null, "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
+        assertEquals("test-us-east-1-cyberduck.s3.amazonaws.com", URI.create(url).getHost());
+        assertTrue(url.startsWith("https://test-us-east-1-cyberduck.s3.amazonaws.com/f"));
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
     }

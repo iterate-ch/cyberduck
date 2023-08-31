@@ -1,5 +1,6 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
@@ -167,6 +168,19 @@ public class S3UrlProviderTest extends AbstractS3Test {
         });
         assertTrue(provider.toSignedUrl(new Path("/test-eu-west-1-cyberduck/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
                 "https://test-eu-west-1-cyberduck.s3.amazonaws.com/test?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="));
+    }
+
+    @Test
+    public void testToSignedUrlVirtualHost() {
+        final S3UrlProvider provider = new S3UrlProvider(virtualhost, Collections.emptyMap(), new DisabledPasswordStore() {
+            @Override
+            public String findLoginPassword(final Host bookmark) {
+                return "k";
+            }
+        });
+        final String url = provider.toSignedUrl(new Path("/t", EnumSet.of(Path.Type.file)), 30).getUrl();
+        assertTrue(url, url.startsWith(
+            "https://test-eu-west-3-cyberduck.s3.amazonaws.com/t?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="));
     }
 
     @Test

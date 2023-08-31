@@ -209,15 +209,16 @@ public class S3UrlProvider implements UrlProvider {
                 return DescriptiveUrl.EMPTY.getUrl();
             }
             String region = session.getHost().getRegion();
+            final Path bucket = containerService.getContainer(file);
             if(session.isConnected()) {
-                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(containerService.getContainer(file).getName())) {
-                    region = session.getClient().getRegionEndpointCache()
-                            .getRegionForBucketName(containerService.getContainer(file).getName());
+                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(bucket.getName())) {
+                    region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucket.getName());
                 }
             }
             return new S3PresignedUrlProvider(session).create(
                     secret,
-                    containerService.getContainer(file).getName(), region, containerService.getKey(file),
+                    bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(),
+                    region, containerService.getKey(file),
                     "GET", expiry.getTimeInMillis());
         }
 
