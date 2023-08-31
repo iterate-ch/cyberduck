@@ -158,7 +158,7 @@ public class PathAttributes extends Attributes implements Serializable {
     private Verdict verdict;
 
     public enum Verdict {
-        unknown,
+        pending,
         clean,
         malicious
     }

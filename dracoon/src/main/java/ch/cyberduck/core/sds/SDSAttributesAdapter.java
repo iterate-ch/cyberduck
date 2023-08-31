@@ -93,9 +93,8 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
                 case CLEAN:
                     attributes.setVerdict(PathAttributes.Verdict.clean);
                     break;
-                case NOT_SCANNING:
                 case IN_PROGRESS:
-                    attributes.setVerdict(PathAttributes.Verdict.unknown);
+                    attributes.setVerdict(PathAttributes.Verdict.pending);
                     break;
                 case MALICIOUS:
                     attributes.setVerdict(PathAttributes.Verdict.malicious);
