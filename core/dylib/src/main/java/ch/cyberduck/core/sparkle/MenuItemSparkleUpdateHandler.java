@@ -21,8 +21,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.updater.UpdateChecker;
 import ch.cyberduck.core.updater.UpdateChecker.Handler;
 
-import org.rococoa.Foundation;
-
 import java.text.MessageFormat;
 
 public class MenuItemSparkleUpdateHandler extends ProxyController implements Handler {
@@ -32,7 +30,6 @@ public class MenuItemSparkleUpdateHandler extends ProxyController implements Han
     public MenuItemSparkleUpdateHandler(final NSMenuItem menu) {
         this.menu = menu;
         this.menu.setTarget(this.id());
-        this.menu.setAction(Foundation.selector("menuItemClicked:"));
     }
 
     @Override
