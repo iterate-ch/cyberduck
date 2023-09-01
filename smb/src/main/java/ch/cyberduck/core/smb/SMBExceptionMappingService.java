@@ -86,6 +86,6 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
             }
         }
         final Throwable root = ExceptionUtils.getRootCause(failure);
-        return new BackgroundException(root.getMessage(), root);
+        return new InteroperabilityException(root.getMessage(), root);
     }
 }
