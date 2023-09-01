@@ -92,37 +92,36 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                         log.debug(String.format("Reply to challenge name '%s' with instruction '%s' and prompt '%s'",
                                 name, instruction, prompt));
                     }
-                    if(DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                    if(DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()
+                            && StringUtils.isBlank(credentials.getPassword())) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Prompt '%s' matches %s", prompt, DEFAULT_PROMPT_PATTERN));
                         }
-                        if(StringUtils.isBlank(credentials.getPassword())) {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Prompt for password input with %s", callback));
-                            }
-                            try {
-                                final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
-                                        String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                                        MessageFormat.format(LocaleFactory.localizedString(
-                                                "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                                        // Change of username or service not allowed
-                                        new LoginOptions(bookmark.getProtocol()).user(false));
-                                if(input.isPublicKeyAuthentication()) {
-                                    credentials.setIdentity(input.getIdentity());
-                                    publickey.set(true);
-                                    // Return null to cancel if user wants to use public key auth
-                                    return StringUtils.EMPTY.toCharArray();
-                                }
-                                credentials.setSaved(input.isSaved());
-                                credentials.setPassword(input.getPassword());
-                            }
-                            catch(LoginCanceledException e) {
-                                canceled.set(true);
-                                // Return null if user cancels
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Prompt for password input with %s", callback));
+                        }
+                        try {
+                            final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
+                                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                                    MessageFormat.format(LocaleFactory.localizedString(
+                                            "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
+                                    // Change of username or service not allowed
+                                    new LoginOptions(bookmark.getProtocol()).user(false));
+                            if(input.isPublicKeyAuthentication()) {
+                                credentials.setIdentity(input.getIdentity());
+                                publickey.set(true);
+                                // Return null to cancel if user wants to use public key auth
                                 return StringUtils.EMPTY.toCharArray();
                             }
+                            return credentials
+                                    .withPassword(input.getPassword())
+                                    .withSaved(input.isSaved()).getPassword().toCharArray();
                         }
-                        return credentials.getPassword().toCharArray();
+                        catch(LoginCanceledException e) {
+                            canceled.set(true);
+                            // Return null if user cancels
+                            return StringUtils.EMPTY.toCharArray();
+                        }
                     }
                     else {
                         if(log.isDebugEnabled()) {
