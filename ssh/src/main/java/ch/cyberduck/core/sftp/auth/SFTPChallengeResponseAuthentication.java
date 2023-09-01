@@ -75,6 +75,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
 
                 @Override
                 public void init(final Resource resource, final String name, final String instruction) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Initialize with name '%s' and instruction '%s'", name, instruction));
+                    }
                     if(StringUtils.isNotBlank(instruction)) {
                         this.instruction = instruction;
                     }
@@ -86,17 +89,24 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                 @Override
                 public char[] getResponse(final String prompt, final boolean echo) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
+                        log.debug(String.format("Reply to challenge name '%s' with instruction '%s' and prompt '%s'",
+                                name, instruction, prompt));
                     }
                     if(DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Prompt '%s' matches %s", prompt, DEFAULT_PROMPT_PATTERN));
+                        }
                         if(StringUtils.isBlank(credentials.getPassword())) {
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Prompt for password input with %s", callback));
+                            }
                             try {
                                 final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
-                                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                                    MessageFormat.format(LocaleFactory.localizedString(
-                                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                                    // Change of username or service not allowed
-                                    new LoginOptions(bookmark.getProtocol()).user(false));
+                                        String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                                        MessageFormat.format(LocaleFactory.localizedString(
+                                                "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
+                                        // Change of username or service not allowed
+                                        new LoginOptions(bookmark.getProtocol()).user(false));
                                 if(input.isPublicKeyAuthentication()) {
                                     credentials.setIdentity(input.getIdentity());
                                     publickey.set(true);
@@ -115,6 +125,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                         return credentials.getPassword().toCharArray();
                     }
                     else {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Prompt for additional credentials with prompt %s", prompt));
+                        }
                         final StringAppender message = new StringAppender().append(instruction).append(prompt);
                         // Properly handle an instruction field with embedded newlines.  They should also
                         // be able to display at least 30 characters for the name and prompts.
@@ -124,11 +137,11 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             ).append(name);
                             additional = callback.prompt(bookmark, title.toString(),
-                                message.toString(), new LoginOptions()
-                                    .icon(bookmark.getProtocol().disk())
-                                    .password(true)
-                                    .user(false)
-                                    .keychain(false)
+                                    message.toString(), new LoginOptions()
+                                            .icon(bookmark.getProtocol().disk())
+                                            .password(true)
+                                            .user(false)
+                                            .keychain(false)
                             );
                         }
                         catch(LoginCanceledException e) {
