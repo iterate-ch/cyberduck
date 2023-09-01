@@ -98,7 +98,8 @@ namespace Ch.Cyberduck.Ui
 
                 x.Forward<ApplicationPreferences, Preferences>();
                 x.ForConcreteSingleton<AppRuntime>();
-                x.Forward<AppRuntime, IRuntime>();
+                // StructureMap doesn't like multiple constructors
+                x.ForSingletonOf<IRuntime>().Use(() => new AppRuntime()); 
             });
         }
 
