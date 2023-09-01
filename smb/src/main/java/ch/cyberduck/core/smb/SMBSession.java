@@ -83,7 +83,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             final SMBClient client = new SMBClient(SmbConfig.builder()
                     .withSocketFactory(new ProxySocketFactory(host))
                     .withTimeout(ConnectionTimeoutFactory.get(new HostPreferences(host)).getTimeout(), TimeUnit.SECONDS)
-                    .withSoTimeout(ConnectionTimeoutFactory.get(new HostPreferences(host)).getTimeout(), TimeUnit.SECONDS)
+                    .withSoTimeout(0L, TimeUnit.SECONDS)
                     .withAuthenticators(new NtlmAuthenticator.Factory())
                     .withDfsEnabled(true)
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
