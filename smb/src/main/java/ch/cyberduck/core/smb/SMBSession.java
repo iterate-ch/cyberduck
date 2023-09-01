@@ -86,6 +86,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withSoTimeout(0L, TimeUnit.SECONDS)
                     .withAuthenticators(new NtlmAuthenticator.Factory())
                     .withDfsEnabled(true)
+                    .withSigningRequired(false)
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
                     .build());
             final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
