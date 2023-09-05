@@ -15,11 +15,13 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.library.Native;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeFalse;
 
 public class SMAppServiceTest {
 
@@ -29,11 +31,13 @@ public class SMAppServiceTest {
 
     @Test
     public void testMainAppService() {
+        assumeFalse(Factory.Platform.osversion.matches("(10|11|12)\\..*"));
         assertNotNull(SMAppService.mainAppService());
     }
 
     @Test
     public void testSettings() {
+        assumeFalse(Factory.Platform.osversion.matches("(10|11|12)\\..*"));
         SMAppService.openSystemSettingsLoginItems();
     }
 }

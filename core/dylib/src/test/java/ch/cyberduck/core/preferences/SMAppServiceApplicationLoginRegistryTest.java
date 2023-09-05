@@ -15,22 +15,26 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.local.Application;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assume.assumeFalse;
 
 public class SMAppServiceApplicationLoginRegistryTest {
 
     @Test
     public void testRegister() {
+        assumeFalse(Factory.Platform.osversion.matches("(10|11|12)\\..*"));
         assertFalse(new SMAppServiceApplicationLoginRegistry().register(
                 new Application("bundle.helper")));
     }
 
     @Test
     public void testUnregister() {
+        assumeFalse(Factory.Platform.osversion.matches("(10|11|12)\\..*"));
         assertFalse(new SMAppServiceApplicationLoginRegistry().unregister(
                 new Application("bundle.helper")));
     }
