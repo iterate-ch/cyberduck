@@ -47,7 +47,7 @@ import org.apache.commons.text.RandomStringGenerator;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
+import org.apache.sshd.sftp.server.SftpSubsystemFactory;
 import org.cryptomator.cryptofs.CryptoFileSystem;
 import org.cryptomator.cryptofs.CryptoFileSystemProperties;
 import org.cryptomator.cryptofs.CryptoFileSystemProvider;
@@ -105,13 +105,13 @@ public class SFTPCryptomatorInteroperabilityTest {
         final java.nio.file.Path mkPath = Paths.get(vault.toString(), DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME);
         mkAccess.persist(mk, mkPath, passphrase);
         CryptoFileSystemProperties properties = cryptoFileSystemProperties().withKeyLoader(new MasterkeyLoader() {
-                @Override
-                public Masterkey loadKey(final URI keyId) throws MasterkeyLoadingFailedException {
-                    return mkAccess.load(mkPath, passphrase);
-                }
-            })
-            .withCipherCombo(CryptorProvider.Scheme.SIV_CTRMAC)
-            .build();
+                    @Override
+                    public Masterkey loadKey(final URI keyId) throws MasterkeyLoadingFailedException {
+                        return mkAccess.load(mkPath, passphrase);
+                    }
+                })
+                .withCipherCombo(CryptorProvider.Scheme.SIV_CTRMAC)
+                .build();
         CryptoFileSystemProvider.initialize(vault, properties, URI.create("test:key"));
         cryptoFileSystem = CryptoFileSystemProvider.newFileSystem(vault, properties);
         server.setFileSystemFactory(new VirtualFileSystemFactory(cryptoFileSystem.getPathToVault().getParent().toAbsolutePath()));
