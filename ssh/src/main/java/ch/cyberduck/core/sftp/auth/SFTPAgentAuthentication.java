@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +48,7 @@ import com.jcraft.jsch.agentproxy.CustomIdentity;
 import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.sshj.AuthAgent;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.Base64;
 import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
@@ -165,7 +165,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
             if(StringUtils.isNotBlank(keydata)) {
                 String[] parts = keydata.split("\\s+");
                 if(parts.length >= 2) {
-                    return Collections.singletonList(new CustomIdentity(Base64.getDecoder().decode(parts[1])));
+                    return Collections.singletonList(new CustomIdentity(Base64.decode(parts[1])));
                 }
             }
         }
