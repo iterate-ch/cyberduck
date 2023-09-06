@@ -59,10 +59,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
         final Map<String, Map<Path, String>> graphMetadata = new HashMap<>();
         for(Path next : files) {
             // Read online metadata
-            if(Collections.<String, String>emptyMap() == next.attributes().getMetadata()) {
-                final Map<String, String> metadata = feature.getMetadata(next);
-                next.attributes().setMetadata(metadata);
-            }
+            next.attributes().setMetadata(feature.getMetadata(next));
             // take every entry of current metadata and store it in metaGraph
             for(Map.Entry<String, String> entry : next.attributes().getMetadata().entrySet()) {
                 if(graphMetadata.containsKey(entry.getKey())) {
