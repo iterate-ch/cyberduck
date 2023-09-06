@@ -16,6 +16,7 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -23,9 +24,12 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.regex.Pattern;
 
 public class DecryptingListProgressListener extends IndexedListProgressListener {
     private static final Logger log = LogManager.getLogger(DecryptingListProgressListener.class);
@@ -33,15 +37,28 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     private final Session<?> session;
     private final Vault vault;
     private final ListProgressListener delegate;
+    private final Filter<Path> skip;
 
     public DecryptingListProgressListener(final Session<?> session, final Vault vault, final ListProgressListener delegate) {
+        this(session, vault, delegate, new SkipRegexFilter(Pattern.compile(PreferencesFactory.get().getProperty("cryptomator.vault.skip.regex"))));
+    }
+
+    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final ListProgressListener delegate, final Filter<Path> skip) {
         this.session = session;
         this.vault = vault;
         this.delegate = delegate;
+        this.skip = skip;
     }
 
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path f) {
+        if(skip.accept(f)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip decrypting %s", f));
+            }
+            list.remove(index);
+            return;
+        }
         try {
             f.getType().add(Path.Type.encrypted);
             list.set(index, vault.decrypt(session, f));
@@ -62,5 +79,24 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     @Override
     public void message(final String message) {
         delegate.message(message);
+    }
+
+    private static final class SkipRegexFilter implements Filter<Path> {
+
+        private final Pattern pattern;
+
+        public SkipRegexFilter(final Pattern pattern) {
+            this.pattern = pattern;
+        }
+
+        @Override
+        public boolean accept(final Path file) {
+            return pattern.matcher(file.getName()).matches();
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return pattern;
+        }
     }
 }
