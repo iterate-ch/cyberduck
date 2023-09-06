@@ -308,7 +308,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status,
                       final ProgressListener listener) throws BackgroundException {
-        if(status.isExists()) {
+        if(status.isExists() && !status.isAppend()) {
             if(options.versioning) {
                 final Versioning feature = session.getFeature(Versioning.class);
                 if(feature.save(file)) {
