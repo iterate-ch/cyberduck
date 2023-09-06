@@ -28,6 +28,7 @@
 		4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFF31C037AB5002466FA /* SystemConfigurationProxy.h */; };
 		4705E00E1C037AB5002466FA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */; };
 		470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.xib */; };
+		47138B942AA7103400637F27 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47138B932AA7103400637F27 /* ServiceManagement.framework */; };
 		4716C5F50872BA9900938886 /* Command.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.xib */; };
 		471D10E424B50BF4002ABA71 /* QuickLookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47FB0FDA24B3C84A00C6764E /* QuickLookUI.framework */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
@@ -493,6 +494,7 @@
 		470FDC7E099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = i18n/src/main/resources/he.lproj/Credentials.strings; sourceTree = "<group>"; };
 		470FDC80099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = i18n/src/main/resources/he.lproj/Status.strings; sourceTree = "<group>"; };
 		470FDC81099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = i18n/src/main/resources/he.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		47138B932AA7103400637F27 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		4716C5F00872BA9800938886 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Command.xib; sourceTree = "<group>"; };
 		47181E840E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = el; path = i18n/src/main/resources/el.lproj/Command.xib; sourceTree = "<group>"; };
 		47181E850E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = el; path = i18n/src/main/resources/el.lproj/Info.xib; sourceTree = "<group>"; };
@@ -1794,6 +1796,7 @@
 				4705DFDA1C037A5E002466FA /* IOKit.framework in Frameworks */,
 				4705DFD91C037A52002466FA /* ApplicationServices.framework in Frameworks */,
 				471D10E424B50BF4002ABA71 /* QuickLookUI.framework in Frameworks */,
+				47138B942AA7103400637F27 /* ServiceManagement.framework in Frameworks */,
 				475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */,
 				47FB0FD724B3C7FB00C6764E /* Security.framework in Frameworks */,
 				47022C231018663600488C19 /* CoreServices.framework in Frameworks */,
@@ -1850,6 +1853,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47138B932AA7103400637F27 /* ServiceManagement.framework */,
 				4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */,
 				47C9427C2175D451008871C8 /* AppKit.framework */,
 				47827C9824BFA800006942C3 /* Quartz.framework */,

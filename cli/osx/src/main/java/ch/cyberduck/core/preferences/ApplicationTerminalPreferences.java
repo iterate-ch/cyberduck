@@ -15,6 +15,7 @@
 package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.cli.TerminalPreferences;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.KeychainPasswordStore;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
@@ -46,7 +47,12 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
         this.setDefault("factory.supportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
         this.setDefault("factory.localsupportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
         this.setDefault("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
-        this.setDefault("factory.applicationloginregistry.class", SharedFileListApplicationLoginRegistry.class.getName());
+        if(Factory.Platform.osversion.matches("(10|11|12)\\..*")) {
+            this.setDefault("factory.applicationloginregistry.class", SharedFileListApplicationLoginRegistry.class.getName());
+        }
+        else {
+            this.setDefault("factory.applicationloginregistry.class", SMAppServiceApplicationLoginRegistry.class.getName());
+        }
         this.setDefault("factory.locale.class", BundleRegexLocale.class.getName());
         this.setDefault("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
         this.setDefault("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
