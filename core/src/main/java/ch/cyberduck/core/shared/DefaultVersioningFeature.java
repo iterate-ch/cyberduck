@@ -204,7 +204,7 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
         return false;
     }
 
-    private interface VersioningDirectoryProvider {
+    public interface VersioningDirectoryProvider {
         /**
          * @param file File to edit
          * @return Directory to save previous versions of file
