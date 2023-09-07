@@ -83,7 +83,7 @@
         <jackson-version>2.14.2</jackson-version>
         <slf4j-version>1.7.36</slf4j-version>
         <log4j-version>2.20.0</log4j-version>
-        <bouncycastle-version>1.70</bouncycastle-version>
+        <bouncycastle-version>1.75</bouncycastle-version>
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>1.42.3</google-http-client.version>
 
@@ -119,6 +119,16 @@
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
                 <version>0.9.35</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcpkix-jdk18on</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -142,12 +152,12 @@
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>${bouncycastle-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
+                <artifactId>bcpkix-jdk18on</artifactId>
                 <version>${bouncycastle-version}</version>
             </dependency>
             <dependency>
