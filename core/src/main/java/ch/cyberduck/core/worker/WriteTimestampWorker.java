@@ -36,11 +36,18 @@ public class WriteTimestampWorker extends Worker<Boolean> {
     private static final Logger log = LogManager.getLogger(WriteTimestampWorker.class);
 
     private final Path file;
-    private final Long timestamp;
+    private final Long created;
+    private final Long modified;
 
-    public WriteTimestampWorker(final Path file, final Long timestamp) {
+    public WriteTimestampWorker(final Path file, final Long modified) {
+        this(file, null, modified);
+    }
+
+
+    public WriteTimestampWorker(final Path file, final Long created, final Long modified) {
         this.file = file;
-        this.timestamp = timestamp;
+        this.created = created;
+        this.modified = modified;
     }
 
     @Override
@@ -49,7 +56,10 @@ public class WriteTimestampWorker extends Worker<Boolean> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));
         }
-        feature.setTimestamp(file, new TransferStatus().withModified(timestamp).withLockId(this.getLockId(file)));
+        feature.setTimestamp(file, new TransferStatus()
+                .withCreated(created)
+                .withModified(modified)
+                .withLockId(this.getLockId(file)));
         return true;
     }
 
@@ -60,7 +70,7 @@ public class WriteTimestampWorker extends Worker<Boolean> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-            file.getName(), UserDateFormatterFactory.get().getShortFormat(timestamp));
+            file.getName(), UserDateFormatterFactory.get().getShortFormat(modified));
     }
 
     @Override
@@ -78,19 +88,19 @@ public class WriteTimestampWorker extends Worker<Boolean> {
         }
         final WriteTimestampWorker that = (WriteTimestampWorker) o;
         return Objects.equals(file, that.file) &&
-            Objects.equals(timestamp, that.timestamp);
+            Objects.equals(modified, that.modified);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(file, timestamp);
+        return Objects.hash(file, modified);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WriteTimestampWorker{");
         sb.append("file=").append(file);
-        sb.append(", timestamp=").append(timestamp);
+        sb.append(", timestamp=").append(modified);
         sb.append('}');
         return sb.toString();
     }
