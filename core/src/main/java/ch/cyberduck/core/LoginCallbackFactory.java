@@ -29,17 +29,14 @@ import java.lang.reflect.InvocationTargetException;
 public class LoginCallbackFactory extends Factory<LoginCallback> {
     private static final Logger log = LogManager.getLogger(LoginCallbackFactory.class);
 
-    private Constructor<? extends LoginCallback> constructor;
-
     private LoginCallbackFactory() {
         super("factory.logincallback.class");
     }
 
     public LoginCallback create(final Controller controller) {
         try {
-            if(null == constructor) {
-                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
-            }
+            final Constructor<? extends LoginCallback> constructor
+                    = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations

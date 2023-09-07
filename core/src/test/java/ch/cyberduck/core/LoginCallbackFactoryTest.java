@@ -21,7 +21,6 @@ import ch.cyberduck.core.preferences.MemoryPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.MainAction;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -42,7 +41,6 @@ public class LoginCallbackFactoryTest {
     }
 
     @Test
-    @Ignore
     public void testCreateOrder() {
         final MemoryPreferences preferences = new MemoryPreferences();
         PreferencesFactory.set(preferences);

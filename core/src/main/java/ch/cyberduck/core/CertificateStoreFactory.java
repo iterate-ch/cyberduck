@@ -20,12 +20,8 @@ package ch.cyberduck.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Constructor;
-
 public class CertificateStoreFactory extends Factory<CertificateStore> {
     private static final Logger log = LogManager.getLogger(CertificateStoreFactory.class);
-
-    private Constructor<CertificateStore> constructor;
 
     private CertificateStoreFactory() {
         super("factory.certificatestore.class");
