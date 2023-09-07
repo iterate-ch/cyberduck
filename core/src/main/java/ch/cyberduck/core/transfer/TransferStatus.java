@@ -153,6 +153,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * Target timestamp to set when transfer is complete
      */
     private Long modified;
+    private Long created;
 
     private Map<String, String> parameters
             = Collections.emptyMap();
@@ -223,6 +224,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.encryption = copy.encryption;
         this.storageClass = copy.storageClass;
         this.modified = copy.modified;
+        this.created = copy.created;
         this.parameters = copy.parameters;
         this.metadata = copy.metadata;
         this.segment = copy.segment;
@@ -543,6 +545,19 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return this;
     }
 
+    public Long getCreated() {
+        return created;
+    }
+
+    public void setCreated(final Long created) {
+        this.created = created;
+    }
+
+    public TransferStatus withCreated(final Long created) {
+        this.created = created;
+        return this;
+    }
+
     public Map<String, String> getParameters() {
         return parameters;
     }
@@ -698,7 +713,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         sb.append(", acl=").append(acl);
         sb.append(", encryption=").append(encryption);
         sb.append(", storageClass='").append(storageClass).append('\'');
-        sb.append(", timestamp=").append(modified);
+        sb.append(", modified=").append(modified);
+        sb.append(", created=").append(created);
         sb.append(", parameters=").append(parameters);
         sb.append(", metadata=").append(metadata);
         sb.append(", lockId=").append(lockId);
