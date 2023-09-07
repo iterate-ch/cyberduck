@@ -40,7 +40,12 @@ public class StoregateTimestampFeature extends DefaultTimestampFeature {
         try {
             final FilesApi files = new FilesApi(session.getClient());
             status.setResponse(new StoregateAttributesFinderFeature(session, fileid).toAttributes(files.filesUpdateFile(fileid.getFileId(file),
-                    new UpdateFilePropertiesRequest().modified(new DateTime(status.getModified())))));
+                                    new UpdateFilePropertiesRequest()
+                                            .created(null != status.getCreated() ? new DateTime(status.getCreated()) : null)
+                                            .modified(null != status.getModified() ? new DateTime(status.getModified()) : null)
+                            )
+                    )
+            );
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);

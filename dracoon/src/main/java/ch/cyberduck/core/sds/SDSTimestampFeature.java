@@ -61,15 +61,21 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
             }
             final Node latest;
             if(containerService.isContainer(file)) {
-                latest = new NodesApi(session.getClient()).updateRoom(new UpdateRoomRequest().timestampModification(new DateTime(status.getModified())),
+                latest = new NodesApi(session.getClient()).updateRoom(new UpdateRoomRequest()
+                                .timestampCreation(null != status.getCreated() ? new DateTime(status.getCreated()) : null)
+                                .timestampModification(null != status.getModified() ? new DateTime(status.getModified()) : null),
                         Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
             else if(file.isDirectory()) {
-                latest = new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().timestampModification(new DateTime(status.getModified())),
+                latest = new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest()
+                                .timestampCreation(null != status.getCreated() ? new DateTime(status.getCreated()) : null)
+                                .timestampModification(null != status.getModified() ? new DateTime(status.getModified()) : null),
                         Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
             else {
-                latest = new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().timestampModification(new DateTime(status.getModified())),
+                latest = new NodesApi(session.getClient()).updateFile(new UpdateFileRequest()
+                                .timestampCreation(null != status.getCreated() ? new DateTime(status.getCreated()) : null)
+                                .timestampModification(null != status.getModified() ? new DateTime(status.getModified()) : null),
                         Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
             status.setResponse(new SDSAttributesAdapter(session).toAttributes(latest));

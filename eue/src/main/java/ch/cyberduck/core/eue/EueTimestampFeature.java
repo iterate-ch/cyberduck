@@ -25,8 +25,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.joda.time.DateTime;
-
 public class EueTimestampFeature extends DefaultTimestampFeature {
 
     private final EueSession session;
@@ -44,7 +42,8 @@ public class EueTimestampFeature extends DefaultTimestampFeature {
             final ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
             ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
             UiWin32 uiWin32 = new UiWin32();
-            uiWin32.setLastModificationMillis(new DateTime(status.getModified()).getMillis());
+            uiWin32.setCreationMillis(null != status.getCreated() ? status.getCreated() : null);
+            uiWin32.setLastModificationMillis(null != status.getModified() ? status.getModified() : null);
             resourceUpdateModelUpdate.setUiwin32(uiWin32);
             resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
             new UpdateResourceApi(new EueApiClient(session)).resourceResourceIdPatch(resourceId,
