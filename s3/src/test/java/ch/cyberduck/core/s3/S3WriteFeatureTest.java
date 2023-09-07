@@ -54,7 +54,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     public void testWriteCustomTimestamp() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().withTimestamp(1630305150672L);
+        final TransferStatus status = new TransferStatus().withModified(1630305150672L);
         final byte[] content = RandomUtils.nextBytes(1033);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);

@@ -62,7 +62,7 @@ public class MicrosoftIISDAVTimestampFeatureTest extends AbstractDAVTest {
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(file));
         assertNotSame(PathAttributes.EMPTY, new MicrosoftIISDAVAttributesFinderFeature(session).find(file));
         final TransferStatus status = new TransferStatus();
-        new MicrosoftIISDAVTimestampFeature(session).setTimestamp(file, status.withTimestamp(5000L));
+        new MicrosoftIISDAVTimestampFeature(session).setTimestamp(file, status.withModified(5000L));
         final PathAttributes attr = new MicrosoftIISDAVAttributesFinderFeature(session).find(file);
         assertEquals(5000L, attr.getModificationDate());
         assertEquals(status.getResponse(), attr);

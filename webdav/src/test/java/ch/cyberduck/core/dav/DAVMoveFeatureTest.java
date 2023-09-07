@@ -50,7 +50,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0L, test.attributes().getSize());
         final TransferStatus status = new TransferStatus();
-        new DAVTimestampFeature(session).setTimestamp(test, status.withTimestamp(5000L));
+        new DAVTimestampFeature(session).setTimestamp(test, status.withModified(5000L));
         final PathAttributes attr = new DAVAttributesFinderFeature(session).find(test);
         final Path target = new DAVMoveFeature(session).move(test.withAttributes(status.getResponse()),
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());

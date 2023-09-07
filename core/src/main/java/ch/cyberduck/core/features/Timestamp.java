@@ -33,7 +33,7 @@ public interface Timestamp {
     }
 
     default void setTimestamp(Path file, Long modified) throws BackgroundException {
-        this.setTimestamp(file, new TransferStatus().withTimestamp(modified));
+        this.setTimestamp(file, new TransferStatus().withModified(modified));
     }
 
     void setTimestamp(Path file, TransferStatus status) throws BackgroundException;

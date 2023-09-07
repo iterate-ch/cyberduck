@@ -49,7 +49,7 @@ public class WriteTimestampWorker extends Worker<Boolean> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));
         }
-        feature.setTimestamp(file, new TransferStatus().withTimestamp(timestamp).withLockId(this.getLockId(file)));
+        feature.setTimestamp(file, new TransferStatus().withModified(timestamp).withLockId(this.getLockId(file)));
         return true;
     }
 

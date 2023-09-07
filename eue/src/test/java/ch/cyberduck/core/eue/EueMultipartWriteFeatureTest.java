@@ -137,7 +137,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final long timestamp = System.currentTimeMillis();
         {
             final byte[] content = RandomUtils.nextBytes(8943045);
-            final TransferStatus status = new TransferStatus().withLength(-1L).withTimestamp(timestamp);
+            final TransferStatus status = new TransferStatus().withLength(-1L).withModified(timestamp);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -160,7 +160,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         // Override
         {
             final byte[] content = RandomUtils.nextBytes(4943045);
-            final TransferStatus status = new TransferStatus().withLength(-1L).exists(true).withTimestamp(timestamp + 1000L);
+            final TransferStatus status = new TransferStatus().withLength(-1L).exists(true).withModified(timestamp + 1000L);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);

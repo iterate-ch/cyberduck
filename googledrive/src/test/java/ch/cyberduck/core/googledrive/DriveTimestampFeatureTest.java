@@ -42,7 +42,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
         final long modified = System.currentTimeMillis();
-        final TransferStatus status = new TransferStatus().withTimestamp(modified);
+        final TransferStatus status = new TransferStatus().withModified(modified);
         new DriveTimestampFeature(session, fileid).setTimestamp(test, status);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         final PathAttributes attr = new DriveAttributesFinderFeature(session, fileid).find(test);

@@ -81,7 +81,7 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
         assertEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
         final byte[] content = RandomUtils.nextBytes(8235);
         final long ts = System.currentTimeMillis();
-        final TransferStatus status = new TransferStatus().withLength(content.length).withTimestamp(ts);
+        final TransferStatus status = new TransferStatus().withLength(content.length).withModified(ts);
         final Checksum checksum = new EueWriteFeature(session, fileid).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
         status.withChecksum(checksum);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = new EueWriteFeature(session, fileid).write(file, status.exists(true), new DisabledConnectionCallback());

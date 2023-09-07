@@ -44,7 +44,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket,
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withTimestamp(1530305150672L));
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withModified(1530305150672L));
         assertEquals(1530305150000L, status.getResponse().getModificationDate());
         assertEquals(1530305150000L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
         final S3TimestampFeature feature = new S3TimestampFeature(session);

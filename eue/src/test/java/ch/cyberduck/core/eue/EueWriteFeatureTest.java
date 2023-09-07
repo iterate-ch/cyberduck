@@ -121,7 +121,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         {
             final byte[] content = RandomUtils.nextBytes(8235);
             final long ts = System.currentTimeMillis();
-            final TransferStatus status = new TransferStatus().withLength(content.length).withTimestamp(ts);
+            final TransferStatus status = new TransferStatus().withLength(content.length).withModified(ts);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             status.withChecksum(checksum);
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
@@ -151,7 +151,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             final PathAttributes previous = new EueAttributesFinderFeature(session, fileid).find(file);
             final byte[] content = RandomUtils.nextBytes(6231);
             final long ts = System.currentTimeMillis();
-            final TransferStatus status = new TransferStatus().withLength(content.length).withTimestamp(ts);
+            final TransferStatus status = new TransferStatus().withLength(content.length).withModified(ts);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             status.withChecksum(checksum).exists(true);
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());

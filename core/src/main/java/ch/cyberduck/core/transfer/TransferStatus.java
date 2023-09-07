@@ -538,7 +538,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.modified = modified;
     }
 
-    public TransferStatus withTimestamp(Long timestamp) {
+    public TransferStatus withModified(Long timestamp) {
         this.modified = timestamp;
         return this;
     }

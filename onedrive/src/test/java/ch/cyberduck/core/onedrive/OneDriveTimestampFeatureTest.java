@@ -52,7 +52,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(PathAttributes.EMPTY, attr);
         final long modified = 1671187993791L;
         final TransferStatus status = new TransferStatus();
-        new GraphTimestampFeature(session, fileid).setTimestamp(file, status.withTimestamp(modified));
+        new GraphTimestampFeature(session, fileid).setTimestamp(file, status.withModified(modified));
         final PathAttributes updated = new GraphAttributesFinderFeature(session, fileid).find(file);
         assertEquals(status.getResponse(), updated);
         assertEquals(modified, updated.getModificationDate());
@@ -71,7 +71,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(PathAttributes.EMPTY, attr);
         final long modified = 1671187993791L;
         final TransferStatus status = new TransferStatus();
-        new GraphTimestampFeature(session, fileid).setTimestamp(test, status.withTimestamp(modified));
+        new GraphTimestampFeature(session, fileid).setTimestamp(test, status.withModified(modified));
         final PathAttributes updated = new GraphAttributesFinderFeature(session, fileid).find(test);
         assertEquals(status.getResponse(), updated);
         assertEquals(modified, updated.getModificationDate());
