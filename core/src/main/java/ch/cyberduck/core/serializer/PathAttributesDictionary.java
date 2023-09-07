@@ -96,6 +96,7 @@ public class PathAttributesDictionary<T> {
         }
         attributes.setVersionId(dict.stringForKey("Version"));
         attributes.setFileId(dict.stringForKey("File Id"));
+        attributes.setDisplayname(dict.stringForKey("Display Name"));
         attributes.setLockId(dict.stringForKey("Lock Id"));
         final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {

@@ -248,6 +248,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(StringUtils.isNotBlank(fileId)) {
             dict.setStringForKey(fileId, "File Id");
         }
+        if(StringUtils.isNotBlank(displayname)) {
+            dict.setStringForKey(displayname, "Display Name");
+        }
         if(StringUtils.isNotBlank(lockId)) {
             dict.setStringForKey(lockId, "Lock Id");
         }
@@ -482,6 +485,11 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public PathAttributes withFileId(final String fileId) {
         this.setFileId(fileId);
+        return this;
+    }
+
+    public PathAttributes withDisplayname(final String displayname) {
+        this.setDisplayname(displayname);
         return this;
     }
 

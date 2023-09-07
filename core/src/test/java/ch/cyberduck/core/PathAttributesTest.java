@@ -23,6 +23,7 @@ public class PathAttributesTest {
         attributes.setModificationDate(System.currentTimeMillis());
         attributes.setRevision(2L);
         attributes.setFileId(new AlphanumericRandomStringService().random());
+        attributes.setDisplayname(new AlphanumericRandomStringService().random());
         attributes.setVersionId(new AlphanumericRandomStringService().random());
         attributes.setDuplicate(true);
         attributes.setLockId(new AlphanumericRandomStringService().random());
@@ -74,6 +75,7 @@ public class PathAttributesTest {
         attributes.setChecksum(new Checksum(HashAlgorithm.crc32, "abcdefab"));
         attributes.setVersionId("v-1");
         attributes.setFileId("f-1");
+        attributes.setDisplayname("d-1");
         attributes.setDuplicate(true);
         attributes.setRegion("region");
         attributes.setStorageClass("storageClass");
