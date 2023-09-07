@@ -81,7 +81,7 @@ public class OverwriteFilterTest {
             }
         }, new TransferStatus(), new DisabledProgressListener());
         assertEquals(8L, status.getLength(), 0L);
-        assertEquals(1L, status.getTimestamp(), 0L);
+        assertEquals(1L, status.getModified(), 0L);
         assertEquals(new Permission(777), status.getPermission());
     }
 

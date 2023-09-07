@@ -98,9 +98,9 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                                 DriveAttributesFinderFeature.DEFAULT_FIELDS));
                         final StringBuilder metadata = new StringBuilder("{");
                         metadata.append(String.format("\"name\":\"%s\"", file.getName()));
-                        if(null != status.getTimestamp()) {
+                        if(null != status.getModified()) {
                             metadata.append(String.format(",\"modifiedTime\":\"%s\"",
-                                    new ISO8601DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
+                                    new ISO8601DateFormatter().format(status.getModified(), TimeZone.getTimeZone("UTC"))));
                         }
                         if(StringUtils.isNotBlank(status.getMime())) {
                             metadata.append(String.format(",\"mimeType\":\"%s\"", status.getMime()));
@@ -123,9 +123,9 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                                 if(status.isExists()) {
                                     final File f = session.getClient().getObjectParser().parseAndClose(
                                             new InputStreamReader(postResponse.getEntity().getContent(), StandardCharsets.UTF_8), File.class);
-                                    if(null != status.getTimestamp()) {
+                                    if(null != status.getModified()) {
                                         new DriveTimestampFeature(session, fileid).setTimestamp(file, status);
-                                        f.setModifiedTime(new DateTime(status.getTimestamp()));
+                                        f.setModifiedTime(new DateTime(status.getModified()));
                                     }
                                     return f;
                                 }

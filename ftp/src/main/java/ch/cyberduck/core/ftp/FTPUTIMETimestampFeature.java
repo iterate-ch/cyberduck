@@ -60,8 +60,8 @@ public class FTPUTIMETimestampFeature extends DefaultTimestampFeature implements
             if(!session.getClient().sendSiteCommand(String.format("UTIME %s %s %s %s UTC",
                 file.getAbsolute(),
                 formatter.format(new Date(System.currentTimeMillis()), TimeZone.getTimeZone("UTC")),
-                formatter.format(new Date(status.getTimestamp()), TimeZone.getTimeZone("UTC")),
-                formatter.format(new Date(status.getTimestamp()), TimeZone.getTimeZone("UTC"))))) {
+                    formatter.format(new Date(status.getModified()), TimeZone.getTimeZone("UTC")),
+                    formatter.format(new Date(status.getModified()), TimeZone.getTimeZone("UTC"))))) {
                 throw failure = new FTPException(session.getClient().getReplyCode(),
                     session.getClient().getReplyString());
             }

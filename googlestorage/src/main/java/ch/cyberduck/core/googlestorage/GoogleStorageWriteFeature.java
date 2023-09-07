@@ -123,9 +123,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                     if(StringUtils.isNotBlank(status.getStorageClass())) {
                         metadata.append(String.format(", \"storageClass\": \"%s\"", status.getStorageClass()));
                     }
-                    if(null != status.getTimestamp()) {
+                    if(null != status.getModified()) {
                         metadata.append(String.format(", \"customTime\": \"%s\"",
-                                new ISO8601DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
+                                new ISO8601DateFormatter().format(status.getModified(), TimeZone.getTimeZone("UTC"))));
                     }
                     metadata.append("}");
                     request.setEntity(new StringEntity(metadata.toString(),

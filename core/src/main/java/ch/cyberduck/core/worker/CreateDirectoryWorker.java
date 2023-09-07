@@ -58,7 +58,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(folder));
         }
-        status.setTimestamp(System.currentTimeMillis());
+        status.setModified(System.currentTimeMillis());
         if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
             final UnixPermission permission = session.getFeature(UnixPermission.class);
             if(permission != null) {

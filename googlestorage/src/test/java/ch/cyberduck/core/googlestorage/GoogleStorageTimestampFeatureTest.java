@@ -50,7 +50,7 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1033);
         status.setLength(content.length);
-        status.setTimestamp(1530305150673L);
+        status.setModified(1530305150673L);
         final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();

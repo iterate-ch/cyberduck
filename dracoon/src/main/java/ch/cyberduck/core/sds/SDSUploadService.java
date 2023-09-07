@@ -93,15 +93,15 @@ public class SDSUploadService {
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName())
                     .directS3Upload(null);
-            if(status.getTimestamp() != null) {
+            if(status.getModified() != null) {
                 final SoftwareVersionData version = session.softwareVersion();
                 final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                 if(matcher.matches()) {
                     if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Set modification timestamp to %d for %s", status.getTimestamp(), file));
+                            log.debug(String.format("Set modification timestamp to %d for %s", status.getModified(), file));
                         }
-                        body.timestampModification(new DateTime(status.getTimestamp()));
+                        body.timestampModification(new DateTime(status.getModified()));
                     }
                 }
             }

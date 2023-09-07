@@ -52,7 +52,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
-        status.setTimestamp(1503654614004L);
+        status.setModified(1503654614004L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StatusOutputStream<BaseB2Response> out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
@@ -78,7 +78,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
-        status.setTimestamp(1503654614004L);
+        status.setModified(1503654614004L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StatusOutputStream<BaseB2Response> out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = RandomUtils.nextBytes(2 * 1024 * 1024);
@@ -105,7 +105,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
-        status.setTimestamp(1503654614004L);
+        status.setModified(1503654614004L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final StatusOutputStream<BaseB2Response> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);

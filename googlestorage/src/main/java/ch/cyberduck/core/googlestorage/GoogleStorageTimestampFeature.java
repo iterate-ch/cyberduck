@@ -51,7 +51,7 @@ public class GoogleStorageTimestampFeature extends DefaultTimestampFeature {
             // The Custom-Time metadata is a user-specified date and time represented in the RFC 3339
             // format YYYY-MM-DD'T'HH:MM:SS.SS'Z' or YYYY-MM-DD'T'HH:MM:SS'Z' when milliseconds are zero.
             final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setCustomTime(new DateTime(status.getTimestamp())));
+                    new StorageObject().setCustomTime(new DateTime(status.getModified())));
             if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }

@@ -124,8 +124,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                         break;
                 }
             }
-            if(null != status.getTimestamp()) {
-                fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
+            if(null != status.getModified()) {
+                fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getModified()));
             }
             final String fileId;
             if(status.isAppend()) {

@@ -168,8 +168,8 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
             meta.setParentId(fileid.getFileId(file.getParent()));
             meta.setFileSize(status.getLength() > 0 ? status.getLength() : null);
             meta.setCreated(DateTime.now());
-            if(null != status.getTimestamp()) {
-                meta.setModified(new DateTime(status.getTimestamp()));
+            if(null != status.getModified()) {
+                meta.setModified(new DateTime(status.getModified()));
             }
             request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
                     ContentType.create("application/json", StandardCharsets.UTF_8.name())));

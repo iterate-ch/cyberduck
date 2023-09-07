@@ -119,8 +119,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     throw canceled.get();
                 }
                 final Map<String, String> fileinfo = new HashMap<>(overall.getMetadata());
-                if(null != overall.getTimestamp()) {
-                    fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getTimestamp()));
+                if(null != overall.getModified()) {
+                    fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getModified()));
                 }
                 if(0 == partNumber && len < new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload

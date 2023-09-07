@@ -119,8 +119,8 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
             private BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException {
                 final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
-                if(null != status.getTimestamp()) {
-                    fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
+                if(null != status.getModified()) {
+                    fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getModified()));
                 }
                 final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                         containerService.getKey(file),

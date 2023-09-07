@@ -70,9 +70,9 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final DavResource resource = this.getResource(file);
-            session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList(),
+            session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getModified()), Collections.emptyList(),
                     this.getCustomHeaders(file, status));
-            status.setResponse(new DAVAttributesFinderFeature(session).toAttributes(resource).withModificationDate(status.getTimestamp()));
+            status.setResponse(new DAVAttributesFinderFeature(session).toAttributes(resource).withModificationDate(status.getModified()));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);

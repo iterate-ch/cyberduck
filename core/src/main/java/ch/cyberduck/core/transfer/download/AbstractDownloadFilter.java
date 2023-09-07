@@ -171,7 +171,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         status.setRemote(attributes);
         if(options.timestamp) {
-            status.setTimestamp(attributes.getModificationDate());
+            status.setModified(attributes.getModificationDate());
         }
         if(options.permissions) {
             Permission permission = Permission.EMPTY;
@@ -354,12 +354,12 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     log.warn(e.getMessage());
                 }
             }
-            if(status.getTimestamp() != null) {
+            if(status.getModified() != null) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Updating timestamp of %s to %d", local, status.getTimestamp()));
+                    log.info(String.format("Updating timestamp of %s to %d", local, status.getModified()));
                 }
                 try {
-                    local.attributes().setModificationDate(status.getTimestamp());
+                    local.attributes().setModificationDate(status.getModified());
                 }
                 catch(AccessDeniedException e) {
                     // Ignore

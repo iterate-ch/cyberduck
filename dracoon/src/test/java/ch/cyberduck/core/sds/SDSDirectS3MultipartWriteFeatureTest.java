@@ -84,7 +84,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            status.setTimestamp(1632127025217L);
+            status.setModified(1632127025217L);
             final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -138,7 +138,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            status.setTimestamp(1632127025217L);
+            status.setModified(1632127025217L);
             final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

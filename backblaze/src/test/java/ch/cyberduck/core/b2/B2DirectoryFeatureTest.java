@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -99,7 +98,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         final long timestamp = 1509959502930L;
-        status.setTimestamp(timestamp);
+        status.setModified(timestamp);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(
                 new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);

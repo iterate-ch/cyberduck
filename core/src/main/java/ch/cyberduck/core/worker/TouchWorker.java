@@ -71,7 +71,7 @@ public class TouchWorker extends Worker<Path> {
         if(redundancy != null) {
             status.setStorageClass(redundancy.getDefault());
         }
-        status.setTimestamp(System.currentTimeMillis());
+        status.setModified(System.currentTimeMillis());
         if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
             final UnixPermission permission = session.getFeature(UnixPermission.class);
             if(permission != null) {

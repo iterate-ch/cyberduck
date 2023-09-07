@@ -156,7 +156,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
                 DropboxWriteFeature.this.close(uploader);
                 final UploadSessionFinishUploader finish = client.uploadSessionFinish(new UploadSessionCursor(sessionId, written),
                         CommitInfo.newBuilder(containerService.getKey(file))
-                                .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
+                                .withClientModified(status.getModified() != null ? new Date(status.getModified()) : null)
                                 .withMode(WriteMode.OVERWRITE)
                                 .build()
                 );

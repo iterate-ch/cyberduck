@@ -35,8 +35,8 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
     @Override
     protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
         final List<Header> headers = super.getHeaders(file, status);
-        if(null != status.getTimestamp()) {
-            headers.add(new BasicHeader("X-OC-Mtime", String.valueOf(status.getTimestamp() / 1000)));
+        if(null != status.getModified()) {
+            headers.add(new BasicHeader("X-OC-Mtime", String.valueOf(status.getModified() / 1000)));
         }
         return headers;
     }

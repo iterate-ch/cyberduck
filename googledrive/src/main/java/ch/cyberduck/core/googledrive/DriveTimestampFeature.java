@@ -41,7 +41,7 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
         try {
             final String fileid = this.fileid.getFileId(file);
             final File properties = new File();
-            properties.setModifiedTime(new DateTime(status.getTimestamp()));
+            properties.setModifiedTime(new DateTime(status.getModified()));
             final File latest = session.getClient().files().update(fileid, properties).setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS).
                     setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(latest));

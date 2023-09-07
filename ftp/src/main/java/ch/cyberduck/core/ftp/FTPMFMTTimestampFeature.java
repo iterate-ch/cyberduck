@@ -50,7 +50,7 @@ public class FTPMFMTTimestampFeature extends DefaultTimestampFeature implements 
         try {
             final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
             if(!session.getClient().setModificationTime(file.getAbsolute(),
-                formatter.format(status.getTimestamp(), TimeZone.getTimeZone("UTC")))) {
+                    formatter.format(status.getModified(), TimeZone.getTimeZone("UTC")))) {
                 throw failure = new FTPException(session.getClient().getReplyCode(),
                     session.getClient().getReplyString());
             }

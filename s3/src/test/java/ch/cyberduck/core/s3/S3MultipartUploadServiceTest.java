@@ -92,7 +92,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         status.setLength(random.length);
         status.setMime("text/plain");
-        status.setTimestamp(System.currentTimeMillis());
+        status.setModified(System.currentTimeMillis());
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -165,7 +165,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        status.setTimestamp(System.currentTimeMillis());
+        status.setModified(System.currentTimeMillis());
         final BytecountStreamListener count = new BytecountStreamListener();
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, null);
         assertEquals(content.length, count.getSent());
@@ -190,7 +190,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        status.setTimestamp(System.currentTimeMillis());
+        status.setModified(System.currentTimeMillis());
         final AtomicBoolean interrupt = new AtomicBoolean();
         final BytecountStreamListener count = new BytecountStreamListener();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

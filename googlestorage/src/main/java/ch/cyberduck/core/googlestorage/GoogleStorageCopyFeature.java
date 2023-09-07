@@ -53,8 +53,8 @@ public class GoogleStorageCopyFeature implements Copy {
                 request.setGeneration(Long.parseLong(source.attributes().getVersionId()));
             }
             final StorageObject storageObject = request.execute();
-            if(null != status.getTimestamp()) {
-                storageObject.setCustomTime(new DateTime(status.getTimestamp()));
+            if(null != status.getModified()) {
+                storageObject.setCustomTime(new DateTime(status.getModified()));
             }
             final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
                     containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);

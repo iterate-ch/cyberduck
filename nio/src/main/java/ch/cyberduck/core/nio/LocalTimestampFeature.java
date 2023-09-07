@@ -36,7 +36,7 @@ public class LocalTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            Files.setLastModifiedTime(session.toPath(file), FileTime.from(status.getTimestamp(), TimeUnit.MILLISECONDS));
+            Files.setLastModifiedTime(session.toPath(file), FileTime.from(status.getModified(), TimeUnit.MILLISECONDS));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", e, file);

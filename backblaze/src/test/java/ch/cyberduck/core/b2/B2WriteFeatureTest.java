@@ -80,7 +80,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         final byte[] content = RandomUtils.nextBytes(4);
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        status.setTimestamp(1503654614004L);
+        status.setModified(1503654614004L);
         final StatusOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);

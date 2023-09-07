@@ -93,7 +93,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             status.setLength(content.length);
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setMime("text/plain");
-            status.setTimestamp(1632127025217L);
+            status.setModified(1632127025217L);
             final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

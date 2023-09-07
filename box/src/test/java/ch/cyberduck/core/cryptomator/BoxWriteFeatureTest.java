@@ -110,7 +110,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setLength(-1L);
-        writeStatus.setTimestamp(Instant.now().getEpochSecond());
+        writeStatus.setModified(Instant.now().getEpochSecond());
         final StatusOutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();

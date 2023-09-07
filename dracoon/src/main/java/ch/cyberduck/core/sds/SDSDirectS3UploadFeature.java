@@ -115,7 +115,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
         try {
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                     .directS3Upload(true)
-                    .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
+                    .timestampModification(status.getModified() != null ? new DateTime(status.getModified()) : null)
                     .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName());

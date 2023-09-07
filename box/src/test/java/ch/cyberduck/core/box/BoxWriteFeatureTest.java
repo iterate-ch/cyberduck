@@ -59,7 +59,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(2047);
         final TransferStatus status = new TransferStatus();
-        status.setTimestamp(1503654614004L); //GMT: Friday, 25. August 2017 09:50:14.004
+        status.setModified(1503654614004L); //GMT: Friday, 25. August 2017 09:50:14.004
         status.setLength(content.length);
         status.setExists(true);
         status.setRemote(file.attributes());

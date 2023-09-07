@@ -20,7 +20,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
-import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateFilePropertiesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -41,7 +40,7 @@ public class StoregateTimestampFeature extends DefaultTimestampFeature {
         try {
             final FilesApi files = new FilesApi(session.getClient());
             status.setResponse(new StoregateAttributesFinderFeature(session, fileid).toAttributes(files.filesUpdateFile(fileid.getFileId(file),
-                    new UpdateFilePropertiesRequest().modified(new DateTime(status.getTimestamp())))));
+                    new UpdateFilePropertiesRequest().modified(new DateTime(status.getModified())))));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);

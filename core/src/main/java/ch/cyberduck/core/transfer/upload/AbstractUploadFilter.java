@@ -221,11 +221,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final Timestamp feature = session.getFeature(Timestamp.class);
             if(feature != null) {
                 // Read timestamps from local file
-                status.setTimestamp(feature.getDefault(local));
+                status.setModified(feature.getDefault(local));
             }
             else {
                 if(1L != local.attributes().getModificationDate()) {
-                    status.setTimestamp(local.attributes().getModificationDate());
+                    status.setModified(local.attributes().getModificationDate());
                 }
             }
         }
@@ -363,13 +363,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     }
                 }
             }
-            if(status.getTimestamp() != null) {
+            if(status.getModified() != null) {
                 if(!session.getFeature(Write.class).timestamp()) {
                     final Timestamp feature = session.getFeature(Timestamp.class);
                     if(feature != null) {
                         try {
                             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                                    file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
+                                    file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getModified())));
                             feature.setTimestamp(file, status);
                         }
                         catch(BackgroundException e) {

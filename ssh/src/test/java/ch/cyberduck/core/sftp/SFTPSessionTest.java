@@ -60,8 +60,8 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testAllHMAC() throws Exception {
         final DefaultConfig defaultConfig = new DefaultConfig();
         defaultConfig.setMACFactories(
-            new HMACSHA2256.Factory(),
-            new HMACSHA2512.Factory()
+                new HMACSHA2256.Factory(),
+                new HMACSHA2512.Factory()
         );
         for(net.schmizz.sshj.common.Factory.Named<MAC> mac : defaultConfig.getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
@@ -93,7 +93,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     @Test(expected = LoginCanceledException.class)
     public void testLoginFailureTooManyAuthenticationFailures() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            "jenkins", "p"
+                "jenkins", "p"
         )) {
             @Override
             public String getProperty(final String key) {
@@ -115,7 +115,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-            new DisabledProgressListener());
+                new DisabledProgressListener());
         try {
             login.connect(session, new DisabledCancelCallback());
         }
@@ -128,7 +128,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     @Test(expected = LoginCanceledException.class)
     public void testWorkdir() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
@@ -199,14 +199,14 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             @Override
             public Credentials prompt(final Host bookmark, String username,
                                       String title, String reason, LoginOptions options)
-                throws LoginCanceledException {
+                    throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
                 assertEquals("Login test.cyberduck.ch – SFTP with username and password. Select the private key in PEM or PuTTY format. No login credentials could be found in the Keychain.", reason);
                 change.set(true);
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-            new DisabledProgressListener());
+                new DisabledProgressListener());
         try {
             login.check(session, new DisabledCancelCallback());
         }
@@ -243,7 +243,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 }
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-            new DisabledProgressListener());
+                new DisabledProgressListener());
         login.connect(session, new DisabledCancelCallback());
         assertTrue(change.get());
     }

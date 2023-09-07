@@ -47,7 +47,7 @@ public class GraphTimestampFeature extends DefaultTimestampFeature {
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         final PatchOperation patchOperation = new PatchOperation();
         final FileSystemInfo info = new FileSystemInfo();
-        info.setLastModifiedDateTime(Instant.ofEpochMilli(status.getTimestamp()).atOffset(ZoneOffset.UTC));
+        info.setLastModifiedDateTime(Instant.ofEpochMilli(status.getModified()).atOffset(ZoneOffset.UTC));
         patchOperation.facet("fileSystemInfo", info);
         final DriveItem item = session.getItem(file);
         try {

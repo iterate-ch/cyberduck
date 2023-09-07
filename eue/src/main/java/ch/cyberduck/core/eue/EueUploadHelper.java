@@ -91,9 +91,9 @@ public final class EueUploadHelper {
                                                                   final TransferStatus status, final UploadType uploadType) throws BackgroundException {
         try {
             final ResourceResourceIdBody body = new ResourceResourceIdBody().uploadType(uploadType);
-            if(status.getTimestamp() != null) {
+            if(status.getModified() != null) {
                 final ResourceUpdateModelUpdate update = new ResourceUpdateModelUpdate();
-                update.setUiwin32(new UiWin32().lastModificationMillis(new DateTime(status.getTimestamp()).getMillis()));
+                update.setUiwin32(new UiWin32().lastModificationMillis(new DateTime(status.getModified()).getMillis()));
                 body.setPatch(new ResourceUpdateModel().update(update));
             }
             return new PostResourceApi(new EueApiClient(session)).resourceResourceIdPost(
@@ -114,9 +114,9 @@ public final class EueUploadHelper {
         }
         resourceCreationRepresentation.setUploadType(uploadType);
         resourceCreationRepresentation.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.FILE);
-        if(status.getTimestamp() != null) {
+        if(status.getModified() != null) {
             final ResourceCreationPropertiesModel property = new ResourceCreationPropertiesModel();
-            property.setUiwin32(new UiWin32().lastModificationMillis(new DateTime(status.getTimestamp()).getMillis()));
+            property.setUiwin32(new UiWin32().lastModificationMillis(new DateTime(status.getModified()).getMillis()));
             resourceCreationRepresentation.setProperties(property);
         }
         try {
