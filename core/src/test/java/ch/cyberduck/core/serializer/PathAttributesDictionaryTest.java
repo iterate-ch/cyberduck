@@ -64,6 +64,7 @@ public class PathAttributesDictionaryTest {
         attributes.setDuplicate(true);
         attributes.setVersionId("v-1");
         attributes.setFileId("myUniqueId");
+        attributes.setDisplayname("myShinyNameOnDisplay");
         attributes.setModificationDate(System.currentTimeMillis());
         assertEquals(attributes, new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get())));
         assertEquals(attributes.hashCode(), new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
