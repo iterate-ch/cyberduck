@@ -42,12 +42,10 @@ public class LoginCallbackFactoryTest {
 
     @Test
     public void testCreateOrder() {
-        final MemoryPreferences preferences = new MemoryPreferences();
-        PreferencesFactory.set(preferences);
-        preferences.setDefault("factory.logincallback.class", TestLoginCallback.class.getName());
-        assertEquals(DisabledLoginCallback.class, LoginCallbackFactory.get(new BaseController()).getClass());
-        assertEquals(TestLoginCallback.class, LoginCallbackFactory.get(new TestBrowserController()).getClass());
-        assertEquals(DisabledLoginCallback.class, LoginCallbackFactory.get(new BaseController()).getClass());
+        final LoginCallbackFactory factory = new LoginCallbackFactory(TestLoginCallback.class);
+        assertEquals(DisabledLoginCallback.class, factory.create(new BaseController()).getClass());
+        assertEquals(TestLoginCallback.class, factory.create(new TestBrowserController()).getClass());
+        assertEquals(DisabledLoginCallback.class, factory.create(new BaseController()).getClass());
     }
 
     final static class BaseController extends AbstractController {
@@ -67,15 +65,18 @@ public class LoginCallbackFactoryTest {
         }
 
         @Override
-        public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+        public void warn(final Host bookmark, final String title, final String message, final String defaultButton,
+                final String cancelButton, final String preference) throws ConnectionCanceledException {
         }
 
         @Override
-        public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message) throws ConnectionCanceledException {
+        public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message)
+                throws ConnectionCanceledException {
         }
 
         @Override
-        public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+        public Credentials prompt(final Host bookmark, final String username, final String title, final String reason,
+                final LoginOptions options) throws LoginCanceledException {
             return null;
         }
 
@@ -89,7 +90,8 @@ public class LoginCallbackFactoryTest {
         }
 
         @Override
-        public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+        public Credentials prompt(final Host bookmark, final String title, final String reason,
+                final LoginOptions options) throws LoginCanceledException {
             return null;
         }
     }
