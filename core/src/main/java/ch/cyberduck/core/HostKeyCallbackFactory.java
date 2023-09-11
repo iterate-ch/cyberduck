@@ -29,24 +29,21 @@ import java.lang.reflect.InvocationTargetException;
 public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     private static final Logger log = LogManager.getLogger(HostKeyCallbackFactory.class);
 
-    private Constructor<? extends HostKeyCallback> constructor;
-
     private HostKeyCallbackFactory() {
         super("factory.hostkeycallback.class");
     }
 
-    public HostKeyCallback create(final Controller c, final Protocol protocol) {
+    public HostKeyCallback create(final Controller controller, final Protocol protocol) {
         if(Scheme.sftp.equals(protocol.getScheme())) {
             try {
+                final Constructor<? extends HostKeyCallback> constructor
+                        = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
                 if(null == constructor) {
-                    constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
-                }
-                if(null == constructor) {
-                    log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
+                    log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                     // Call default constructor for disabled implementations
                     return clazz.getDeclaredConstructor().newInstance();
                 }
-                return constructor.newInstance(c);
+                return constructor.newInstance(controller);
             }
             catch(InstantiationException | InvocationTargetException | IllegalAccessException |
                   NoSuchMethodException e) {

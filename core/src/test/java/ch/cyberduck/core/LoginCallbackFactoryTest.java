@@ -15,10 +15,17 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.MemoryPreferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.MainAction;
 
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class LoginCallbackFactoryTest {
@@ -32,4 +39,61 @@ public class LoginCallbackFactoryTest {
             }
         }));
     }
+
+    @Test
+    public void testCreateOrder() {
+        final LoginCallbackFactory factory = new LoginCallbackFactory(TestLoginCallback.class);
+        assertEquals(DisabledLoginCallback.class, factory.create(new BaseController()).getClass());
+        assertEquals(TestLoginCallback.class, factory.create(new TestBrowserController()).getClass());
+        assertEquals(DisabledLoginCallback.class, factory.create(new BaseController()).getClass());
+    }
+
+    final static class BaseController extends AbstractController {
+        @Override
+        public void invoke(MainAction runnable, boolean wait) {
+        }
+    }
+
+    final static class TestBrowserController extends AbstractController {
+        @Override
+        public void invoke(MainAction runnable, boolean wait) {
+        }
+    }
+
+    final static class TestLoginCallback implements LoginCallback {
+        public TestLoginCallback(TestBrowserController controller) {
+        }
+
+        @Override
+        public void warn(final Host bookmark, final String title, final String message, final String defaultButton,
+                final String cancelButton, final String preference) throws ConnectionCanceledException {
+        }
+
+        @Override
+        public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message)
+                throws ConnectionCanceledException {
+        }
+
+        @Override
+        public Credentials prompt(final Host bookmark, final String username, final String title, final String reason,
+                final LoginOptions options) throws LoginCanceledException {
+            return null;
+        }
+
+        @Override
+        public Local select(final Local identity) throws LoginCanceledException {
+            return null;
+        }
+
+        @Override
+        public void close(final String input) {
+        }
+
+        @Override
+        public Credentials prompt(final Host bookmark, final String title, final String reason,
+                final LoginOptions options) throws LoginCanceledException {
+            return null;
+        }
+    }
+
 }
