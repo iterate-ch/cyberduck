@@ -29,6 +29,10 @@ import java.lang.reflect.InvocationTargetException;
 public class LoginCallbackFactory extends Factory<LoginCallback> {
     private static final Logger log = LogManager.getLogger(LoginCallbackFactory.class);
 
+    LoginCallbackFactory(final Class<? extends LoginCallback> clazz) {
+        super(clazz);
+    }
+
     private LoginCallbackFactory() {
         super("factory.logincallback.class");
     }
