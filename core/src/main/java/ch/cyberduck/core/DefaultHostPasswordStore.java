@@ -23,7 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 
 public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     private static final Logger log = LogManager.getLogger(DefaultHostPasswordStore.class);
@@ -175,10 +177,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     }
 
     private String getOAuthPrefix(final Host bookmark) {
-        if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-            return String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
-        }
-        return bookmark.getProtocol().getDescription();
+        return bookmark.getProtocol().getFeature(OAuthPrefixService.class).getOAuthPrefix(bookmark);
     }
 
     @Override
@@ -215,27 +214,49 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         if(credentials.isOAuthAuthentication()) {
             final String prefix = this.getOAuthPrefix(bookmark);
+            final String oAuthHostname = this.getOAuthHostname(bookmark);
+            int port = getPortFromTokenUrl(bookmark);
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
+                        port, oAuthHostname,
                         String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
+                        port, oAuthHostname,
                         String.format("%s OAuth2 Refresh Token", prefix), credentials.getOauth().getRefreshToken());
             }
             // Save expiry
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                this.addPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix),
+                this.addPassword(oAuthHostname, String.format("%s OAuth2 Token Expiry", prefix),
                         String.valueOf(credentials.getOauth().getExpiryInMilliseconds()));
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
+                        port, oAuthHostname,
                         String.format("%s OIDC Id Token", prefix), credentials.getOauth().getIdToken());
             }
         }
+    }
+
+    private static int getPortFromTokenUrl(final Host bookmark) {
+        String oAuthTokenUrl = bookmark.getProtocol().getOAuthTokenUrl();
+        int port = bookmark.getPort();
+        try {
+            URL url = new URL(oAuthTokenUrl);
+            if(url.getPort() != -1) {
+                port = url.getPort();
+            }
+            else {
+                port = url.getDefaultPort();
+            }
+        }
+        catch(MalformedURLException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Could not parse  %s, using protocol port instead.", oAuthTokenUrl));
+            }
+        }
+        return port;
     }
 
     @Override
