@@ -152,15 +152,17 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         final String prefix = this.getOAuthPrefix(bookmark);
         final String hostname = this.getOAuthHostname(bookmark);
+        final int port = getPortFromTokenUrl(bookmark);
+        final Scheme scheme = getSchemeFromTokenUrl(bookmark);
         try {
             final String expiry = this.getPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
             return (new OAuthTokens(
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
+                    this.getPassword(scheme, port, hostname,
                             String.format("%s OAuth2 Access Token", prefix)),
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
+                    this.getPassword(scheme, port, hostname,
                             String.format("%s OAuth2 Refresh Token", prefix)),
                     expiry != null ? Long.parseLong(expiry) : -1L,
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
+                    this.getPassword(scheme, port, hostname,
                             String.format("%s OIDC Id Token", prefix))));
         }
         catch(LocalAccessDeniedException e) {
@@ -214,33 +216,32 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         if(credentials.isOAuthAuthentication()) {
             final String prefix = this.getOAuthPrefix(bookmark);
-            final String oAuthHostname = this.getOAuthHostname(bookmark);
-            int port = getPortFromTokenUrl(bookmark);
+            final String hostname = this.getOAuthHostname(bookmark);
+            final int port = getPortFromTokenUrl(bookmark);
+            final Scheme scheme = getSchemeFromTokenUrl(bookmark);
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
-                this.addPassword(bookmark.getProtocol().getScheme(),
-                        port, oAuthHostname,
+                this.addPassword(scheme, port, hostname,
                         String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
-                this.addPassword(bookmark.getProtocol().getScheme(),
-                        port, oAuthHostname,
+                this.addPassword(scheme, port, hostname,
                         String.format("%s OAuth2 Refresh Token", prefix), credentials.getOauth().getRefreshToken());
             }
             // Save expiry
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                this.addPassword(oAuthHostname, String.format("%s OAuth2 Token Expiry", prefix),
+                this.addPassword(hostname, String.format("%s OAuth2 Token Expiry", prefix),
                         String.valueOf(credentials.getOauth().getExpiryInMilliseconds()));
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
-                this.addPassword(bookmark.getProtocol().getScheme(),
-                        port, oAuthHostname,
+                this.addPassword(scheme,
+                        port, hostname,
                         String.format("%s OIDC Id Token", prefix), credentials.getOauth().getIdToken());
             }
         }
     }
 
     private static int getPortFromTokenUrl(final Host bookmark) {
-        String oAuthTokenUrl = bookmark.getProtocol().getOAuthTokenUrl();
+        final String oAuthTokenUrl = bookmark.getProtocol().getOAuthTokenUrl();
         int port = bookmark.getPort();
         try {
             URL url = new URL(oAuthTokenUrl);
@@ -253,10 +254,25 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         catch(MalformedURLException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Could not parse  %s, using protocol port instead.", oAuthTokenUrl));
+                log.warn(String.format("Could not parse  %s, using protocol port instead.", oAuthTokenUrl), e);
             }
         }
         return port;
+    }
+
+    private static Scheme getSchemeFromTokenUrl(final Host bookmark) {
+        final String oAuthTokenUrl = bookmark.getProtocol().getOAuthTokenUrl();
+        Scheme scheme = bookmark.getProtocol().getScheme();
+        try {
+            URL url = new URL(oAuthTokenUrl);
+            return Scheme.valueOf(url.getProtocol());
+        }
+        catch(MalformedURLException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Could not parse  %s, using protocol port instead.", oAuthTokenUrl), e);
+            }
+        }
+        return scheme;
     }
 
     @Override
