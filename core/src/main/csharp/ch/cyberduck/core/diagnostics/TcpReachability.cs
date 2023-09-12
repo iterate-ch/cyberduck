@@ -39,73 +39,73 @@ namespace Ch.Cyberduck.Core.Diagnostics
 
         public bool isReachable(Host h)
         {
-            switch ((Scheme.__Enum)h.getProtocol().getScheme().ordinal())
+            try
             {
-                case Scheme.__Enum.file:
-                    return true;
-                case Scheme.__Enum.http:
-                case Scheme.__Enum.https:
-                    try
-                    {
-                        WebRequest.DefaultWebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
-                        WebRequest.DefaultCachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
-                        var url = new HostUrlProvider().withUsername(false).withPath(true).get(h);
-                        if (Log.isDebugEnabled())
-                        {
-                            Log.debug($"Reachability test with url {url}");
-                        }
+                switch ((Scheme.__Enum)h.getProtocol().getScheme().ordinal())
+                {
+                    case Scheme.__Enum.file:
+                        return true;
 
-                        HttpWebRequest request = WebRequest.CreateHttp(url);
-                        request.UserAgent = new PreferencesUseragentProvider().get();
-                        request.Timeout = 10000;
-                        using (request.GetResponse())
+                    case Scheme.__Enum.http:
+                    case Scheme.__Enum.https:
+                        try
                         {
-                            return true;
-                        }
-                    }
-                    catch (WebException e)
-                    {
-                        if (Log.isDebugEnabled())
-                        {
-                            Log.debug($"WebException thrown with status {e.Status} for {h}");
-                        }
+                            WebRequest.DefaultWebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
+                            WebRequest.DefaultCachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
+                            var url = new HostUrlProvider().withUsername(false).withPath(true).get(h);
+                            if (Log.isDebugEnabled())
+                            {
+                                Log.debug($"Reachability test with url {url}");
+                            }
 
-                        switch (e.Status)
-                        {
-                            // TLS version not supported on .NET Framework/Windows-Kernel
-                            case WebExceptionStatus.SecureChannelFailure:
-                            // HTTP returned error
-                            case WebExceptionStatus.ProtocolError:
-                            //Certificate not trusted
-                            case WebExceptionStatus.TrustFailure:
-                            // not an exception?
-                            case WebExceptionStatus.Success:
+                            HttpWebRequest request = WebRequest.CreateHttp(url);
+                            request.UserAgent = new PreferencesUseragentProvider().get();
+                            request.Timeout = 10000;
+                            using (request.GetResponse())
+                            {
                                 return true;
+                            }
+                        }
+                        catch (WebException e)
+                        {
+                            switch (e.Status)
+                            {
+                                // TLS version not supported on .NET Framework/Windows-Kernel
+                                case WebExceptionStatus.SecureChannelFailure:
+                                // HTTP returned error
+                                case WebExceptionStatus.ProtocolError:
+                                //Certificate not trusted
+                                case WebExceptionStatus.TrustFailure:
+                                // not an exception?
+                                case WebExceptionStatus.Success:
+                                    return true;
+
+                                default:
+                                    if (Log.isDebugEnabled())
+                                    {
+                                        Log.debug($"WebException thrown with status {e.Status} for {h}");
+                                    }
+
+                                    return false;
+                            }
                         }
 
-                        return false;
-                    }
-                    catch (Exception e)
-                    {
-                        Log.error($"Generic exception while checking for reachability for {h}", e);
-                        return false;
-                    }
-                default:
-                    try
-                    {
+                    default:
                         if (Log.isDebugEnabled())
                         {
                             Log.debug($"Try TCP connection to {h.getHostname()}:{h.getPort()}");
                         }
 
-                        TcpClient c = new TcpClient(h.getHostname(), h.getPort());
-                        c.Close();
-                        return true;
-                    }
-                    catch (SocketException e)
-                    {
-                        return false;
-                    }
+                        using (new TcpClient(h.getHostname(), h.getPort()))
+                        {
+                            return true;
+                        }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.warn($"Reachability check for {h} failed {e.Message}");
+                return false;
             }
         }
 
