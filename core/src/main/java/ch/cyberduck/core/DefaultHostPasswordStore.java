@@ -1,5 +1,3 @@
-package ch.cyberduck.core;
-
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
@@ -17,15 +15,18 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+package ch.cyberduck.core;
+
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.conn.UnsupportedSchemeException;
+import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 
 public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     private static final Logger log = LogManager.getLogger(DefaultHostPasswordStore.class);
@@ -244,15 +245,15 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         final String oAuthTokenUrl = bookmark.getProtocol().getOAuthTokenUrl();
         int port = bookmark.getPort();
         try {
-            URL url = new URL(oAuthTokenUrl);
+            URI url = URI.create(oAuthTokenUrl);
             if(url.getPort() != -1) {
                 port = url.getPort();
             }
             else {
-                port = url.getDefaultPort();
+                port = DefaultSchemePortResolver.INSTANCE.resolve(HttpHost.create(oAuthTokenUrl));
             }
         }
-        catch(MalformedURLException e) {
+        catch(UnsupportedSchemeException e) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Could not parse  %s, using protocol port instead.", oAuthTokenUrl), e);
             }
@@ -262,17 +263,8 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
 
     private static Scheme getSchemeFromTokenUrl(final Host bookmark) {
         final String oAuthTokenUrl = bookmark.getProtocol().getOAuthTokenUrl();
-        Scheme scheme = bookmark.getProtocol().getScheme();
-        try {
-            URL url = new URL(oAuthTokenUrl);
-            return Scheme.valueOf(url.getProtocol());
-        }
-        catch(MalformedURLException e) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Could not parse  %s, using protocol port instead.", oAuthTokenUrl), e);
-            }
-        }
-        return scheme;
+        URI url = URI.create(oAuthTokenUrl);
+        return Scheme.valueOf(url.getScheme());
     }
 
     @Override
