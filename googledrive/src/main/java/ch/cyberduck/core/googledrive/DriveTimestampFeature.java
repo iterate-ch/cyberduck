@@ -22,6 +22,7 @@ import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.util.Date;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
@@ -41,7 +42,7 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
         try {
             final String fileid = this.fileid.getFileId(file);
             final File properties = new File();
-            properties.setModifiedTime(new DateTime(status.getModified()));
+            properties.setModifiedTime(status.getModified() != null ? new DateTime(status.getModified()) : null);
             final File latest = session.getClient().files().update(fileid, properties).setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS).
                     setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(latest));

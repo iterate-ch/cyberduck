@@ -102,6 +102,10 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                             metadata.append(String.format(",\"modifiedTime\":\"%s\"",
                                     new ISO8601DateFormatter().format(status.getModified(), TimeZone.getTimeZone("UTC"))));
                         }
+                        if(null != status.getCreated()) {
+                            metadata.append(String.format(",\"createdTime\":\"%s\"",
+                                    new RFC3339DateFormatter().format(status.getCreated(), TimeZone.getTimeZone("UTC"))));
+                        }
                         if(StringUtils.isNotBlank(status.getMime())) {
                             metadata.append(String.format(",\"mimeType\":\"%s\"", status.getMime()));
                         }
