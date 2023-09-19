@@ -27,6 +27,7 @@ import java.util.Map;
 public class B2MetadataFeature implements Headers {
 
     public static final String X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS = "src_last_modified_millis";
+    public static final String X_BZ_INFO_SRC_CREATION_DATE_MILLIS = "src_creation_date_millis";
     public static final String X_BZ_INFO_LARGE_FILE_SHA1 = "large_file_sha1";
 
     private final B2Session session;

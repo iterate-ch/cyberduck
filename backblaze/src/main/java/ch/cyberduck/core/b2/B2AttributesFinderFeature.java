@@ -45,8 +45,7 @@ import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.B2FinishLargeFileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
-import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_LARGE_FILE_SHA1;
-import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
+import static ch.cyberduck.core.b2.B2MetadataFeature.*;
 
 public class B2AttributesFinderFeature implements AttributesFinder, AttributesAdapter<BaseB2Response> {
     private static final Logger log = LogManager.getLogger(B2AttributesFinderFeature.class);
@@ -169,6 +168,15 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         else {
             attributes.setModificationDate(timestamp);
         }
+        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_CREATION_DATE_MILLIS)) {
+            final String value = response.getFileInfo().get(X_BZ_INFO_SRC_CREATION_DATE_MILLIS);
+            try {
+                attributes.setCreationDate(Long.parseLong(value));
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Failure parsing src_creation_date_millis with value %s", value));
+            }
+        }
         if(response.getAction() != null) {
             switch(response.getAction()) {
                 case hide:
@@ -210,6 +218,15 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         }
         else {
             attributes.setModificationDate(timestamp);
+        }
+        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_CREATION_DATE_MILLIS)) {
+            final String value = response.getFileInfo().get(X_BZ_INFO_SRC_CREATION_DATE_MILLIS);
+            try {
+                attributes.setCreationDate(Long.parseLong(value));
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Failure parsing src_creation_date_millis with value %s", value));
+            }
         }
         if(response.getAction() != null) {
             switch(response.getAction()) {
@@ -253,6 +270,9 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         attributes.setVersionId(response.getFileId());
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
             attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+        }
+        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_CREATION_DATE_MILLIS)) {
+            attributes.setCreationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_CREATION_DATE_MILLIS)));
         }
         return attributes;
     }

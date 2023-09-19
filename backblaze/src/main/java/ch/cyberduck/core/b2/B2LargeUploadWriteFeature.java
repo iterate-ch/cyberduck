@@ -57,6 +57,7 @@ import synapticloop.b2.response.B2StartLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 import synapticloop.b2.response.BaseB2Response;
 
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response> {
@@ -121,6 +122,9 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                 final Map<String, String> fileinfo = new HashMap<>(overall.getMetadata());
                 if(null != overall.getModified()) {
                     fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getModified()));
+                }
+                if(null != overall.getCreated()) {
+                    fileinfo.put(X_BZ_INFO_SRC_CREATION_DATE_MILLIS, String.valueOf(overall.getCreated()));
                 }
                 if(0 == partNumber && len < new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload

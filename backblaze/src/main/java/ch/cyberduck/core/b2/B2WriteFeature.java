@@ -47,6 +47,7 @@ import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 import synapticloop.b2.response.BaseB2Response;
 
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> implements Write<BaseB2Response> {
@@ -121,6 +122,9 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
                 if(null != status.getModified()) {
                     fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getModified()));
+                }
+                if(null != status.getCreated()) {
+                    fileinfo.put(X_BZ_INFO_SRC_CREATION_DATE_MILLIS, String.valueOf(status.getCreated()));
                 }
                 final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                         containerService.getKey(file),
