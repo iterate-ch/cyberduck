@@ -91,11 +91,16 @@ public final class EueUploadHelper {
                                                                   final TransferStatus status, final UploadType uploadType) throws BackgroundException {
         try {
             final ResourceResourceIdBody body = new ResourceResourceIdBody().uploadType(uploadType);
+            final ResourceUpdateModelUpdate resourceUpdateModel = new ResourceUpdateModelUpdate();
+            final UiWin32 uiwin32 = new UiWin32();
             if(status.getModified() != null) {
-                final ResourceUpdateModelUpdate update = new ResourceUpdateModelUpdate();
-                update.setUiwin32(new UiWin32().lastModificationMillis(new DateTime(status.getModified()).getMillis()));
-                body.setPatch(new ResourceUpdateModel().update(update));
+                uiwin32.lastModificationMillis(new DateTime(status.getModified()).getMillis());
             }
+            if(status.getCreated() != null) {
+                uiwin32.creationMillis(new DateTime(status.getCreated()).getMillis());
+            }
+            resourceUpdateModel.setUiwin32(uiwin32);
+            body.setPatch(new ResourceUpdateModel().update(resourceUpdateModel));
             return new PostResourceApi(new EueApiClient(session)).resourceResourceIdPost(
                     resourceId, body, null, null, null, null);
         }
@@ -114,11 +119,16 @@ public final class EueUploadHelper {
         }
         resourceCreationRepresentation.setUploadType(uploadType);
         resourceCreationRepresentation.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.FILE);
+        final ResourceCreationPropertiesModel propertiesModel = new ResourceCreationPropertiesModel();
+        final UiWin32 uiwin32 = new UiWin32();
         if(status.getModified() != null) {
-            final ResourceCreationPropertiesModel property = new ResourceCreationPropertiesModel();
-            property.setUiwin32(new UiWin32().lastModificationMillis(new DateTime(status.getModified()).getMillis()));
-            resourceCreationRepresentation.setProperties(property);
+            uiwin32.lastModificationMillis(new DateTime(status.getModified()).getMillis());
         }
+        if(status.getCreated() != null) {
+            uiwin32.creationMillis(new DateTime(status.getCreated()).getMillis());
+        }
+        propertiesModel.setUiwin32(uiwin32);
+        resourceCreationRepresentation.setProperties(propertiesModel);
         try {
             final ResourceCreationResponseEntries resourceCreationResponseEntries;
             final EueApiClient client = new EueApiClient(session);
