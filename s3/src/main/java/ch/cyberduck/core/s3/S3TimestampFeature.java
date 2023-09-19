@@ -32,7 +32,8 @@ import com.google.common.collect.Maps;
 public class S3TimestampFeature extends DefaultTimestampFeature {
 
     // Interoperable with rclone
-    private static final String METADATA_MODIFICATION_DATE = "Mtime";
+    public static final String METADATA_MODIFICATION_DATE = "Mtime";
+    public static final String METADATA_CREATION_DATE = "Btime";
 
     private final S3Session session;
 
@@ -47,18 +48,18 @@ public class S3TimestampFeature extends DefaultTimestampFeature {
         feature.setMetadata(file, status.withMetadata(metadata));
     }
 
-    public static Header toHeader(final Long millis) {
-        return new Header(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(millis / 1000));
+    public static Header toHeader(final String header, final Long millis) {
+        return new Header(header, String.valueOf(millis / 1000));
     }
 
-    public static Long fromHeaders(final Map<String, String> response) {
+    public static Long fromHeaders(final String header, final Map<String, String> response) {
         final Map<String, String> headers = new HashMap<>(response.entrySet()
                 .stream()
                 .map(entry -> Maps.immutableEntry(StringUtils.lowerCase(entry.getKey()), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-        if(headers.containsKey(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))) {
+        if(headers.containsKey(StringUtils.lowerCase(header))) {
             try {
-                return normalizeToMilliseconds(Double.valueOf(headers.get(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))).longValue());
+                return normalizeToMilliseconds(Double.valueOf(headers.get(StringUtils.lowerCase(header))).longValue());
             }
             catch(NumberFormatException ignored) {
                 // ignore

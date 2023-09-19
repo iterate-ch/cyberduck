@@ -74,7 +74,11 @@ public class S3MetadataFeature implements Headers {
             final StorageObject target = new StorageObject(containerService.getKey(file));
             target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
             if(status.getModified() != null) {
-                final Header header = S3TimestampFeature.toHeader(status.getModified());
+                final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_MODIFICATION_DATE, status.getModified());
+                target.addMetadata(header.getName(), header.getValue());
+            }
+            if(status.getCreated() != null) {
+                final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_CREATION_DATE, status.getCreated());
                 target.addMetadata(header.getName(), header.getValue());
             }
             try {

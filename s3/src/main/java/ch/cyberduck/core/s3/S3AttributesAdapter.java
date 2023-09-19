@@ -79,9 +79,15 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
         if(!metadata.isEmpty()) {
             attributes.setMetadata(metadata);
         }
-        final Long mtime = S3TimestampFeature.fromHeaders(Maps.transformValues(object.getMetadataMap(), Object::toString));
+        final Long mtime = S3TimestampFeature.fromHeaders(S3TimestampFeature.METADATA_MODIFICATION_DATE,
+                Maps.transformValues(object.getMetadataMap(), Object::toString));
         if(-1L != mtime) {
             attributes.setModificationDate(mtime);
+        }
+        final Long ctime = S3TimestampFeature.fromHeaders(S3TimestampFeature.METADATA_CREATION_DATE,
+                Maps.transformValues(object.getMetadataMap(), Object::toString));
+        if(-1L != ctime) {
+            attributes.setCreationDate(ctime);
         }
         return attributes;
     }

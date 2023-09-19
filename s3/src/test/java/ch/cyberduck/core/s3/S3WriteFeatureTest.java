@@ -54,7 +54,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     public void testWriteCustomTimestamp() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().withModified(1630305150672L);
+        final TransferStatus status = new TransferStatus().withModified(1630305150672L).withCreated(1695159781972L);
         final byte[] content = RandomUtils.nextBytes(1033);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
@@ -64,7 +64,9 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         out.close();
         test.withAttributes(new S3AttributesAdapter().toAttributes(out.getStatus()));
         assertTrue(new S3FindFeature(session, acl).find(test));
-        assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
+        final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
+        assertEquals(1630305150000L, attributes.getModificationDate());
+        assertEquals(1695159781000L, attributes.getCreationDate());
         assertEquals(1630305150000L, new S3ObjectListService(session, acl, true).list(container,
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
         assertEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 1, true).list(container,

@@ -137,7 +137,12 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         if(status.getModified() != null) {
             // Interoperable with rsync
-            final Header header = S3TimestampFeature.toHeader(status.getModified());
+            final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_MODIFICATION_DATE, status.getModified());
+            object.addMetadata(String.format("%s%s", session.getRestMetadataPrefix(), header.getName()), header.getValue());
+        }
+        if(status.getCreated() != null) {
+            // Interoperable with rsync
+            final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_CREATION_DATE, status.getCreated());
             object.addMetadata(String.format("%s%s", session.getRestMetadataPrefix(), header.getName()), header.getValue());
         }
         if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
