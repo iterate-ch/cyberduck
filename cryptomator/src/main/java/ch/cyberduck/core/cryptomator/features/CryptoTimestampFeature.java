@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
@@ -39,11 +38,6 @@ public class CryptoTimestampFeature implements Timestamp {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         proxy.setTimestamp(vault.encrypt(session, file), new CryptoTransferStatus(vault, status));
-    }
-
-    @Override
-    public Long getDefault(final Local file) {
-        return proxy.getDefault(file);
     }
 
     @Override

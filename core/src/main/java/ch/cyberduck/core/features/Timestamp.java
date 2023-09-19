@@ -37,6 +37,4 @@ public interface Timestamp {
     }
 
     void setTimestamp(Path file, TransferStatus status) throws BackgroundException;
-
-    Long getDefault(Local file);
 }

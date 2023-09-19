@@ -141,6 +141,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
         }
         if(options.timestamp) {
             status.setModified(attributes.getModificationDate());
+            status.setCreated(attributes.getCreationDate());
         }
         if(options.metadata) {
             final Headers sourceFeature = sourceSession.getFeature(Headers.class);

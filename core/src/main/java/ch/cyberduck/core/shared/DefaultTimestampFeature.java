@@ -20,8 +20,4 @@ import ch.cyberduck.core.features.Timestamp;
 
 public abstract class DefaultTimestampFeature implements Timestamp {
 
-    @Override
-    public Long getDefault(final Local file) {
-        return file.attributes().getModificationDate();
-    }
 }
