@@ -105,6 +105,18 @@ public class SDSUploadService {
                     }
                 }
             }
+            if(status.getCreated() != null) {
+                final SoftwareVersionData version = session.softwareVersion();
+                final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
+                if(matcher.matches()) {
+                    if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set creation timestamp to %d for %s", status.getCreated(), file));
+                        }
+                        body.timestampCreation(new DateTime(status.getCreated()));
+                    }
+                }
+            }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Start file upload for %s with %s", file, body));
             }
