@@ -87,20 +87,20 @@ public class WriteTimestampWorker extends Worker<Boolean> {
             return false;
         }
         final WriteTimestampWorker that = (WriteTimestampWorker) o;
-        return Objects.equals(file, that.file) &&
-            Objects.equals(modified, that.modified);
+        return Objects.equals(file, that.file) && Objects.equals(created, that.created) && Objects.equals(modified, that.modified);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(file, modified);
+        return Objects.hash(file, created, modified);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WriteTimestampWorker{");
         sb.append("file=").append(file);
-        sb.append(", timestamp=").append(modified);
+        sb.append(", created=").append(created);
+        sb.append(", modified=").append(modified);
         sb.append('}');
         return sb.toString();
     }
