@@ -221,9 +221,6 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
         if(StringUtils.isNotBlank(resource.getDisplayName())) {
             attributes.setDisplayname(resource.getDisplayName());
         }
-        if(StringUtils.isNotBlank(resource.getDisplayName())) {
-            attributes.setDisplayname(resource.getDisplayName());
-        }
         attributes.setLockId(resource.getLockToken());
         return attributes;
     }
