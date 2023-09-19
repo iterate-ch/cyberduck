@@ -38,6 +38,9 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
         if(null != status.getModified()) {
             headers.add(new BasicHeader("X-OC-Mtime", String.valueOf(status.getModified() / 1000)));
         }
+        if(null != status.getCreated()) {
+            headers.add(new BasicHeader("X-OC-CTime", String.valueOf(status.getCreated() / 1000)));
+        }
         return headers;
     }
 
