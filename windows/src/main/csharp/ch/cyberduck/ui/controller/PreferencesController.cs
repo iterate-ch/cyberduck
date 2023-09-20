@@ -1204,7 +1204,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultS3BucketLocations()
         {
             IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
-            Set locations = ProtocolFactory.get().forType(Protocol.Type.s3).getRegions();
+            ProtocolFactory factory = ProtocolFactory.get();
+            Set locations = factory.forType(factory.find(ProtocolFactory.BUNDLED_PROFILE_PREDICATE), Protocol.Type.s3).getRegions();
             Iterator iter = locations.iterator();
             while (iter.hasNext())
             {
@@ -1218,7 +1219,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultGoogleBucketLocations()
         {
             IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
-            Set locations = ProtocolFactory.get().forType(Protocol.Type.googlestorage).getRegions();
+            ProtocolFactory factory = ProtocolFactory.get();
+            Set locations = factory.forType(factory.find(ProtocolFactory.BUNDLED_PROFILE_PREDICATE), Protocol.Type.googlestorage).getRegions();
             Iterator iter = locations.iterator();
             while (iter.hasNext())
             {
@@ -1232,7 +1234,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultS3StorageClasses()
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
-            Iterator iter = PreferencesReader.toList(ProtocolFactory.get().forType(Protocol.Type.s3).getProperties().get("s3.storage.class.options") as string).iterator();
+            ProtocolFactory factory = ProtocolFactory.get();
+            Iterator iter = PreferencesReader.toList(factory.forType(factory.find(ProtocolFactory.BUNDLED_PROFILE_PREDICATE), Protocol.Type.s3).getProperties().get("s3.storage.class.options") as string).iterator();
             while (iter.hasNext())
             {
                 string s = (string) iter.next();

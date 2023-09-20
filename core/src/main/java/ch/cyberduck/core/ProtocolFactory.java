@@ -252,7 +252,7 @@ public final class ProtocolFactory {
         return this.forType(enabled, type);
     }
 
-    private Protocol forType(final List<Protocol> enabled, final Protocol.Type type) {
+    public Protocol forType(final List<Protocol> enabled, final Protocol.Type type) {
         return enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
     }
 
