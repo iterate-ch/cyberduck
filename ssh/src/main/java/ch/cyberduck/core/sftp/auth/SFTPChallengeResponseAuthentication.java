@@ -68,6 +68,11 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                 private String name = StringUtils.EMPTY;
                 private String instruction = StringUtils.EMPTY;
 
+                /**
+                 * Reply for default password prompt challenge sent
+                 */
+                private final AtomicBoolean flag = new AtomicBoolean(false);
+
                 @Override
                 public List<String> getSubmethods() {
                     return Collections.emptyList();
@@ -92,10 +97,13 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                         log.debug(String.format("Reply to challenge name '%s' with instruction '%s' and prompt '%s'",
                                 name, instruction, prompt));
                     }
-                    if(DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()
-                            && StringUtils.isBlank(credentials.getPassword())) {
+                    if(!flag.get() && DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Prompt '%s' matches %s", prompt, DEFAULT_PROMPT_PATTERN));
+                        }
+                        if(StringUtils.isNotBlank(credentials.getPassword())) {
+                            flag.set(true);
+                            return credentials.getPassword().toCharArray();
                         }
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Prompt for password input with %s", callback));
@@ -113,6 +121,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                 // Return null to cancel if user wants to use public key auth
                                 return StringUtils.EMPTY.toCharArray();
                             }
+                            flag.set(true);
                             return credentials
                                     .withPassword(input.getPassword())
                                     .withSaved(input.isSaved()).getPassword().toCharArray();
