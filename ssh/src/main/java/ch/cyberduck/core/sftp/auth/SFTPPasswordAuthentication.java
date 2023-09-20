@@ -52,15 +52,15 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
 
     @Override
     public Boolean authenticate(final Host bookmark, final LoginCallback callback, final CancelCallback cancel)
-        throws BackgroundException {
+            throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isBlank(credentials.getPassword())) {
             final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
-                String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                MessageFormat.format(LocaleFactory.localizedString(
-                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                // Change of username or service not allowed
-                new LoginOptions(bookmark.getProtocol()).user(false));
+                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                    MessageFormat.format(LocaleFactory.localizedString(
+                            "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
+                    // Change of username or service not allowed
+                    new LoginOptions(bookmark.getProtocol()).user(false));
             if(input.isPublicKeyAuthentication()) {
                 credentials.setIdentity(input.getIdentity());
                 return new SFTPPublicKeyAuthentication(client).authenticate(bookmark, callback, cancel);
@@ -77,7 +77,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
     }
 
     private boolean authenticate(final Host host, final Credentials credentials, final LoginCallback callback, final CancelCallback cancel)
-        throws BackgroundException {
+            throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using password authentication with credentials %s", credentials));
         }
@@ -99,7 +99,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                     try {
                         final StringAppender message = new StringAppender().append(prompt);
                         final Credentials changed = callback.prompt(host, credentials.getUsername(), LocaleFactory.localizedString("Change Password", "Credentials"), message.toString(),
-                            new LoginOptions(host.getProtocol()).anonymous(false).user(false).publickey(false));
+                                new LoginOptions(host.getProtocol()).anonymous(false).user(false).publickey(false));
                         return changed.getPassword().toCharArray();
                     }
                     catch(LoginCanceledException e) {

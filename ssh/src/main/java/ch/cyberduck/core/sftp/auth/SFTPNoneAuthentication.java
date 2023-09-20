@@ -41,7 +41,7 @@ public class SFTPNoneAuthentication implements AuthenticationProvider<Boolean> {
 
     @Override
     public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
-        throws BackgroundException {
+            throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using none authentication with credentials %s", bookmark.getCredentials()));
         }
