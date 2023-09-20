@@ -91,19 +91,26 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     }
 
     @Test(expected = LoginCanceledException.class)
-    public void testLoginFailureToomanyauthenticationfailures() throws Exception {
+    public void testLoginFailureTooManyAuthenticationFailures() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
             "jenkins", "p"
-        ));
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("ssh.authentication.agent.enable".equals(key)) {
+                    return String.valueOf(false);
+                }
+                return null;
+            }
+        };
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final AtomicBoolean fail = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, String username,
-                                      String title, String reason, LoginOptions options)
-                throws LoginCanceledException {
+                                      String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
-                assertEquals("Login failed. Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
+                assertEquals("Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
                 fail.set(true);
                 throw new LoginCanceledException();
             }
@@ -163,7 +170,15 @@ public class SFTPSessionTest extends AbstractSFTPTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectNoValidCredentials() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("user"));
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("user", "p")) {
+            @Override
+            public String getProperty(final String key) {
+                if("ssh.authentication.agent.enable".equals(key)) {
+                    return String.valueOf(false);
+                }
+                return null;
+            }
+        };
         final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
