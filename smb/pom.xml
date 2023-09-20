@@ -24,7 +24,7 @@
     <packaging>jar</packaging>
     <properties>
         <smbj.version>0.12.2</smbj.version>
-        <testcontainers.version>1.18.3</testcontainers.version>
+        <testcontainers.version>1.19.0</testcontainers.version>
     </properties>
     <dependencies>
         <dependency>
