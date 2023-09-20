@@ -313,6 +313,7 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
         googledrive,
         swift,
         dav,
+        smb,
         azure,
         onedrive,
         irods,

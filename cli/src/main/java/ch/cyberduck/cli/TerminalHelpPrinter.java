@@ -57,7 +57,7 @@ public final class TerminalHelpPrinter {
             .append(StringUtils.LF);
 
         final ProtocolFactory protocols = ProtocolFactory.get();
-        for(Protocol p : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
+        for(Protocol p : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav, Protocol.Type.smb)))) {
             append(p, builder);
         }
         builder.append(StringUtils.LF);

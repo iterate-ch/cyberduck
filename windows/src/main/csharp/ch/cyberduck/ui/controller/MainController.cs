@@ -46,6 +46,7 @@ using ch.cyberduck.core.owncloud;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
+using ch.cyberduck.core.smb;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.sds;
 using ch.cyberduck.core.serializer;
@@ -150,7 +151,7 @@ namespace Ch.Cyberduck.Ui.Controller
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
             mainThreadSync = SynchronizationContext.Current;
 
-            protocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
+            protocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new SMBProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(), new SharepointSiteProtocol(),

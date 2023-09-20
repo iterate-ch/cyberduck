@@ -24,6 +24,7 @@ import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSSecureTextField;
+import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -48,7 +49,7 @@ public class PasswordController extends AlertController {
     @Outlet
     private NSView view;
     @Outlet
-    private NSSecureTextField inputField;
+    private NSTextField inputField;
     @Outlet
     private NSButton keychainCheckbox;
 
@@ -116,7 +117,12 @@ public class PasswordController extends AlertController {
             keychainCheckbox.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue()));
             view.addSubview(keychainCheckbox);
         }
-        inputField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        if(options.password) {
+            inputField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        }
+        else {
+            inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        }
         inputField.cell().setPlaceholderString(options.getPasswordPlaceholder());
         inputField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(inputField);

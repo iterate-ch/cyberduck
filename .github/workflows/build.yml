@@ -22,7 +22,7 @@ jobs:
       - name: Disable Testcontainers for Windows and MacOS
         run: echo "args=-P=no-testcontainers" >> "$GITHUB_ENV"
         shell: bash
-        if: runner.os == 'windows' || runner.os == 'macos'
+        if: runner.os == 'windows' || runner.os == 'macos' || runner.os == 'macos'
       - run: choco install bonjour
         if: runner.os == 'windows'
       - uses: ilammy/msvc-dev-cmd@v1
