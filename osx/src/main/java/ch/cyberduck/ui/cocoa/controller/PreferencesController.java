@@ -2188,7 +2188,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = b;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        final Protocol protocol = ProtocolFactory.get().forType(Protocol.Type.s3);
+        final ProtocolFactory factory = ProtocolFactory.get();
+        final Protocol protocol = factory.forType(factory.find(ProtocolFactory.BUNDLED_PROFILE_PREDICATE), Protocol.Type.s3);
         final Set<Location.Name> regions = null == protocol ? Collections.emptySet() : protocol.getRegions();
         regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
             this.defaultBucketLocation.addItemWithTitle(location.toString());
@@ -2212,7 +2213,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup = b;
         this.defaultStorageClassPopup.setAutoenablesItems(false);
         this.defaultStorageClassPopup.removeAllItems();
-        final Protocol protocol = ProtocolFactory.get().forType(Protocol.Type.s3);
+        final ProtocolFactory factory = ProtocolFactory.get();
+        final Protocol protocol = factory.forType(factory.find(ProtocolFactory.BUNDLED_PROFILE_PREDICATE), Protocol.Type.s3);
         final Map<String, String> properties = null == protocol ? Collections.emptyMap() : protocol.getProperties();
         for(String s : PreferencesReader.toList(properties.get("s3.storage.class.options"))) {
             this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
@@ -2290,7 +2292,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocationGoogleStorage = b;
         this.defaultBucketLocationGoogleStorage.setAutoenablesItems(false);
         this.defaultBucketLocationGoogleStorage.removeAllItems();
-        final Protocol protocol = ProtocolFactory.get().forType(Protocol.Type.googlestorage);
+        final ProtocolFactory factory = ProtocolFactory.get();
+        final Protocol protocol = factory.forType(factory.find(ProtocolFactory.BUNDLED_PROFILE_PREDICATE), Protocol.Type.googlestorage);
         final Set<Location.Name> regions = null == protocol ? Collections.emptySet() : protocol.getRegions();
         regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
             this.defaultBucketLocationGoogleStorage.addItemWithTitle(location.toString());
