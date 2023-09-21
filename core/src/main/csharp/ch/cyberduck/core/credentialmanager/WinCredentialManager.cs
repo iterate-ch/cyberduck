@@ -56,8 +56,21 @@ namespace Ch.Cyberduck.Core.CredentialManager
         /// </summary>
         /// <param name="target">Name of the application/Url where the credential is used for</param>
         /// <returns>empty credentials if target not found, else stored credentials</returns>
-        public unsafe static WindowsCredentialManagerCredential GetCredentials(string target)
+        public static WindowsCredentialManagerCredential GetCredentials(string target)
         {
+            TryGetCredentials(target, out var result);
+            return result;
+        }
+
+        /// <summary>
+        /// Extract the stored credential from Windows Credential store
+        /// </summary>
+        /// <param name="target">Name of the application/Url where the credential is used for</param>
+        /// <param name="credentials">empty credentials if target not found, else stored credentials</param>
+        /// <returns>Success state of CredRead (target found)</returns>
+        public unsafe static bool TryGetCredentials(string target, out WindowsCredentialManagerCredential credentials)
+        {
+            credentials = default;
             using CredHandle handle = CredRead(target, CRED_TYPE_GENERIC, 0);
             if (!handle)
             {
@@ -66,7 +79,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     var message = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
                     log.debug($"Cannot get credential for \"{target}\": {message.Message}");
                 }
-                return default;
+                return false;
             }
 
             ref readonly CREDENTIALW cred = ref handle.Value;
@@ -81,7 +94,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
             }
             var attributes = new Dictionary<string, string>();
 
-            var result = new WindowsCredentialManagerCredential(username, password, type, flags, persist);
+            credentials = new WindowsCredentialManagerCredential(username, password, type, flags, persist);
             if (cred.AttributeCount > 0)
             {
                 uint count = cred.AttributeCount;
@@ -118,10 +131,10 @@ namespace Ch.Cyberduck.Core.CredentialManager
                         Span<byte> blob = new((void*)item.Item2, item.Item3);
                         blob.CopyTo(buffer.Slice(source));
                     }
-                    result.Attributes[group.Key] = new((sbyte*)AsPointer(ref GetReference(buffer)), 0, buffer.Length, Encoding.Unicode);
+                    credentials.Attributes[group.Key] = new((sbyte*)AsPointer(ref GetReference(buffer)), 0, buffer.Length, Encoding.Unicode);
                 }
             }
-            return result;
+            return true;
         }
 
         public static bool RemoveCredentials(string target)
