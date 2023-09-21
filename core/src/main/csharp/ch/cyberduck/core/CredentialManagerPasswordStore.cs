@@ -86,12 +86,12 @@ namespace Ch.Cyberduck.Core
 
         public override string findLoginPassword(Host bookmark)
         {
-            var target = ToUri(bookmark);
-            var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
+            var cred = FindCredentials(bookmark);
             if (!string.IsNullOrWhiteSpace(cred.Password))
             {
                 return cred.Password;
             }
+
             return base.findLoginPassword(bookmark);
         }
 
@@ -101,14 +101,14 @@ namespace Ch.Cyberduck.Core
             {
                 logger.info(string.Format("Fetching login token from keychain for {0}", bookmark));
             }
-            var target = ToUri(bookmark);
-            var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
+            var cred = FindCredentials(bookmark);
             if (cred.Attributes is Dictionary<string, string> attrs
                 && attrs.TryGetValue("Token", out var token)
                 && !string.IsNullOrWhiteSpace(token))
             {
                 return token;
             }
+
             return base.findLoginToken(bookmark);
         }
 
@@ -118,19 +118,22 @@ namespace Ch.Cyberduck.Core
             {
                 logger.info(string.Format("Fetching OAuth tokens from keychain for {0}", bookmark));
             }
-            var target = ToUri(bookmark);
-            var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
+
+            var cred = FindCredentials(bookmark);
             if (cred.Attributes is Dictionary<string, string> attrs
-                && attrs.TryGetValue("OAuth Access Token", out var accessToken))
+                && attrs.TryGetValue("OAuth Access Token", out var accessToken)
+                && !string.IsNullOrWhiteSpace(accessToken))
             {
                 attrs.TryGetValue("OAuth Refresh Token", out var refreshToken);
                 attrs.TryGetValue("OIDC Id Token", out var idToken);
-                long expiry = default;
-                if (attrs.TryGetValue("OAuth Expiry", out var expiryValue))
+
+                long? expiry = default;
+                if (attrs.TryGetValue("OAuth Expiry", out var expiryAttribute) && long.TryParse(expiryAttribute, out var expiryValue))
                 {
-                    long.TryParse(expiryValue, out expiry);
+                    expiry = expiryValue;
                 }
-                return new(accessToken, refreshToken, new(expiry), idToken);
+
+                return new(accessToken, refreshToken, expiry.HasValue ? new(expiry.Value) : null, idToken);
             }
 
             return base.findOAuthTokens(bookmark);
@@ -142,14 +145,15 @@ namespace Ch.Cyberduck.Core
             {
                 logger.info(string.Format("Fetching private key passphrase from keychain for {0}", bookmark));
             }
-            var target = ToUri(bookmark);
-            var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
+
+            var cred = FindCredentials(bookmark);
             if (cred.Attributes is Dictionary<string, string> attrs
                 && attrs.TryGetValue("Private Key Passphrase", out var passphrase)
                 && !string.IsNullOrWhiteSpace(passphrase))
             {
                 return passphrase;
             }
+
             return base.findPrivateKeyPassphrase(bookmark);
         }
 
@@ -168,12 +172,14 @@ namespace Ch.Cyberduck.Core
                 logger.warn("No hostname given.");
                 return;
             }
+
             if (logger.isInfoEnabled())
             {
                 logger.info(string.Format("Add password for bookmark {0}", bookmark));
             }
-            var target = ToUri(bookmark);
+
             var credential = bookmark.getCredentials();
+            var target = ToUri(bookmark, credential.isOAuthAuthentication(), out var isOAuth);
 
             var winCred = new WindowsCredentialManagerCredential(
                 credential.getUsername(), credential.getPassword(),
@@ -184,20 +190,27 @@ namespace Ch.Cyberduck.Core
             {
                 logger.warn(string.Format("No password in credentials for bookmark {0}", bookmark.getHostname()));
             }
+
             if (credential.isTokenAuthentication())
             {
                 winCred.Attributes["Token"] = credential.getToken();
             }
+
+            bool migrateOAuth = false;
             if (credential.isOAuthAuthentication())
             {
-                winCred.Attributes["OAuth Access Token"] = credential.getOauth().getAccessToken();
-                winCred.Attributes["OAuth Refresh Token"] = credential.getOauth().getRefreshToken();
-                winCred.Attributes["OIDC Id Token"] = credential.getOauth().getIdToken();
-                if (credential.getOauth().getExpiryInMilliseconds() != null)
+                migrateOAuth = isOAuth;
+
+                var oauth = credential.getOauth();
+                winCred.Attributes["OAuth Access Token"] = oauth.getAccessToken();
+                winCred.Attributes["OAuth Refresh Token"] = oauth.getRefreshToken();
+                winCred.Attributes["OIDC Id Token"] = oauth.getIdToken();
+                if (oauth.getExpiryInMilliseconds()?.longValue() is long oAuthExpiry)
                 {
-                    winCred.Attributes["OAuth Expiry"] = credential.getOauth().getExpiryInMilliseconds().longValue().ToString();
+                    winCred.Attributes["OAuth Expiry"] = oAuthExpiry.ToString();
                 }
             }
+
             if (credential.isPublicKeyAuthentication())
             {
                 winCred.Attributes["Private Key Passphrase"] = credential.getIdentityPassphrase();
@@ -207,24 +220,57 @@ namespace Ch.Cyberduck.Core
             {
                 base.save(bookmark);
             }
+            else if (migrateOAuth)
+            {
+                // remove previous entry, if saved successfully
+                WinCredentialManager.RemoveCredentials(ToUri(bookmark, false, out _).AbsoluteUri);
+            }
         }
 
-        private static Uri ToUri(Host bookmark)
+        private static Uri ToUri(Host bookmark) => ToUri(bookmark, true, out _);
+
+        private static Uri ToUri(Host bookmark, bool withOAuth, out bool isOAuth)
         {
             var protocol = bookmark.getProtocol();
             var credentials = bookmark.getCredentials();
-
             var targetBuilder = new UriBuilder(PreferencesFactory.get().getProperty("application.container.name"), string.Empty);
             var pathBuilder = new StringBuilder();
-            pathBuilder.Append(protocol.getIdentifier());
-            if (protocol.isHostnameConfigurable() || !(protocol.isTokenConfigurable() || protocol.isOAuthConfigurable()))
+
+            string hostname = default;
+            int? port = bookmark.getPort();
+            if (withOAuth && protocol.isOAuthConfigurable() && GetOAuthUri(protocol, out var oAuthUri))
             {
-                pathBuilder.Append(":" + bookmark.getHostname());
-                if (protocol.isPortConfigurable() && !Equals(protocol.getDefaultPort(), bookmark.getPort()))
+                isOAuth = true;
+                pathBuilder.Append("oauth");
+                hostname = oAuthUri.Host;
+                if (oAuthUri.Port != -1)
                 {
-                    pathBuilder.Append(":" + bookmark.getPort());
+                    port = oAuthUri.IsDefaultPort
+                        ? null
+                        : oAuthUri.Port;
                 }
             }
+            else
+            {
+                isOAuth = false;
+                pathBuilder.Append(protocol.getIdentifier());
+
+                if (protocol.isHostnameConfigurable() || !(protocol.isTokenConfigurable() || protocol.isOAuthConfigurable()))
+                {
+                    hostname = bookmark.getHostname();
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(hostname))
+            {
+                pathBuilder.AppendFormat(":{0}", hostname);
+
+                if (port is int portValue && !Equals(protocol.getDefaultPort(), portValue))
+                {
+                    pathBuilder.AppendFormat(":{0}", portValue);
+                }
+            }
+
             targetBuilder.Path = pathBuilder.ToString();
             if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
             {
@@ -232,6 +278,37 @@ namespace Ch.Cyberduck.Core
             }
 
             return targetBuilder.Uri;
+
+            static bool GetOAuthUri(Protocol protocol, out Uri uri)
+            {
+                var tokenUrl = protocol.getOAuthTokenUrl();
+                bool result = Uri.TryCreate(tokenUrl, UriKind.Absolute, out uri);
+                if (!result && logger.isDebugEnabled())
+                {
+                    logger.debug($"Failure creating absolute Uri from \"{tokenUrl}\"");
+                }
+
+                return result;
+            }
         }
+
+        private WindowsCredentialManagerCredential FindCredentials(Host host)
+        {
+            // Try find new oauth format, or default format
+            if (WinCredentialManager.TryGetCredentials(ToUri(host, true, out var isOAuth).AbsoluteUri, out var result))
+            {
+                return result;
+            }
+
+            // new OAuth format not found and not a OAuth protocol, return default
+            if (!isOAuth)
+            {
+                return default;
+            }
+
+            // is OAuth protocol, but wasn't migrated to new format yet
+            return WinCredentialManager.GetCredentials(ToUri(host, false, out _).AbsoluteUri);
+        }
+
     }
 }
