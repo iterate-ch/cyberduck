@@ -101,7 +101,7 @@ public class KeychainLoginService implements LoginService {
                         log.info(String.format("Fetched OAuth token from keychain for %s", bookmark));
                     }
                     // No need to reinsert found token to the keychain.
-                    credentials.setSaved(false);
+                    credentials.setSaved(tokens.isExpired());
                     credentials.setOauth(tokens);
                 }
             }
