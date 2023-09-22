@@ -179,7 +179,7 @@ namespace Ch.Cyberduck.Core
             }
 
             var credential = bookmark.getCredentials();
-            var target = ToUri(bookmark, credential.isOAuthAuthentication(), out var isOAuth);
+            var target = ToUri(bookmark);
 
             var winCred = new WindowsCredentialManagerCredential(
                 credential.getUsername(), credential.getPassword(),
@@ -196,11 +196,8 @@ namespace Ch.Cyberduck.Core
                 winCred.Attributes["Token"] = credential.getToken();
             }
 
-            bool migrateOAuth = false;
             if (credential.isOAuthAuthentication())
             {
-                migrateOAuth = isOAuth;
-
                 var oauth = credential.getOauth();
                 winCred.Attributes["OAuth Access Token"] = oauth.getAccessToken();
                 winCred.Attributes["OAuth Refresh Token"] = oauth.getRefreshToken();
@@ -220,11 +217,6 @@ namespace Ch.Cyberduck.Core
             {
                 base.save(bookmark);
             }
-            else if (migrateOAuth)
-            {
-                // remove previous entry, if saved successfully
-                WinCredentialManager.RemoveCredentials(ToUri(bookmark, false, out _).AbsoluteUri);
-            }
         }
 
         private static Uri ToUri(Host bookmark) => ToUri(bookmark, true, out _);
@@ -236,19 +228,17 @@ namespace Ch.Cyberduck.Core
             var targetBuilder = new UriBuilder(PreferencesFactory.get().getProperty("application.container.name"), string.Empty);
             var pathBuilder = new StringBuilder();
 
+            int? port;
             string hostname = default;
-            int? port = bookmark.getPort();
-            if (withOAuth && protocol.isOAuthConfigurable() && GetOAuthUri(protocol, out var oAuthUri))
+            string username = credentials.getUsername();
+
+            if (withOAuth && protocol.isOAuthConfigurable())
             {
                 isOAuth = true;
-                pathBuilder.Append("oauth");
-                hostname = oAuthUri.Host;
-                if (oAuthUri.Port != -1)
-                {
-                    port = oAuthUri.IsDefaultPort
-                        ? null
-                        : oAuthUri.Port;
-                }
+                OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
+                hostname = oAuthPrefix.getIdentifier();
+                port = oAuthPrefix.getNonDefaultPort()?.intValue();
+                username = oAuthPrefix.getUsername();
             }
             else
             {
@@ -259,54 +249,46 @@ namespace Ch.Cyberduck.Core
                 {
                     hostname = bookmark.getHostname();
                 }
+
+                int portValue = bookmark.getPort();
+                port = protocol.isPortConfigurable() && !Equals(protocol.getDefaultPort(), portValue)
+                    ? portValue
+                    : null;
             }
 
             if (!string.IsNullOrWhiteSpace(hostname))
             {
-                pathBuilder.AppendFormat(":{0}", hostname);
+                pathBuilder.Append(hostname);
 
-                if (port is int portValue && !Equals(protocol.getDefaultPort(), portValue))
+                if (port is int portValue)
                 {
                     pathBuilder.AppendFormat(":{0}", portValue);
                 }
             }
 
             targetBuilder.Path = pathBuilder.ToString();
-            if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
+            if (!string.IsNullOrWhiteSpace(username))
             {
-                targetBuilder.Query = "user=" + credentials.getUsername();
+                targetBuilder.Query = "user=" + username;
             }
 
             return targetBuilder.Uri;
-
-            static bool GetOAuthUri(Protocol protocol, out Uri uri)
-            {
-                var tokenUrl = protocol.getOAuthTokenUrl();
-                bool result = Uri.TryCreate(tokenUrl, UriKind.Absolute, out uri);
-                if (!result && logger.isDebugEnabled())
-                {
-                    logger.debug($"Failure creating absolute Uri from \"{tokenUrl}\"");
-                }
-
-                return result;
-            }
         }
 
         private WindowsCredentialManagerCredential FindCredentials(Host host)
         {
-            // Try find new oauth format, or default format
+            // Try find with OAuthPrefixService
             if (WinCredentialManager.TryGetCredentials(ToUri(host, true, out var isOAuth).AbsoluteUri, out var result))
             {
                 return result;
             }
 
-            // new OAuth format not found and not a OAuth protocol, return default
             if (!isOAuth)
             {
                 return default;
             }
 
-            // is OAuth protocol, but wasn't migrated to new format yet
+            // 
             return WinCredentialManager.GetCredentials(ToUri(host, false, out _).AbsoluteUri);
         }
 

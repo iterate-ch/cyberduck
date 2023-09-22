@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.conn.UnsupportedSchemeException;
-import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -151,12 +148,14 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching OAuth tokens from keychain for %s", bookmark));
         }
-        final String prefix = this.getOAuthPrefix(bookmark);
-        final String hostname = this.getOAuthHostname(bookmark);
-        final int port = getPortFromTokenUrl(bookmark);
-        final Scheme scheme = getSchemeFromTokenUrl(bookmark);
+        final OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
+
+        final String prefix = oAuthPrefix.getDescription();
+        final String hostname = oAuthPrefix.getHostname();
+        final int port = oAuthPrefix.getPort();
+        final Scheme scheme = oAuthPrefix.getScheme();
         try {
-            final String expiry = this.getPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
+            final String expiry = this.getPassword(hostname, String.format("%s OAuth2 Token Expiry", prefix));
             return (new OAuthTokens(
                     this.getPassword(scheme, port, hostname,
                             String.format("%s OAuth2 Access Token", prefix)),
@@ -170,17 +169,6 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             log.warn(String.format("Failure %s searching in keychain", e));
             return OAuthTokens.EMPTY;
         }
-    }
-
-    protected String getOAuthHostname(final Host bookmark) {
-        if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
-            return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost();
-        }
-        return bookmark.getHostname();
-    }
-
-    private String getOAuthPrefix(final Host bookmark) {
-        return bookmark.getProtocol().getFeature(OAuthPrefixService.class).getOAuthPrefix(bookmark);
     }
 
     @Override
@@ -216,10 +204,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                     credentials.getToken());
         }
         if(credentials.isOAuthAuthentication()) {
-            final String prefix = this.getOAuthPrefix(bookmark);
-            final String hostname = this.getOAuthHostname(bookmark);
-            final int port = getPortFromTokenUrl(bookmark);
-            final Scheme scheme = getSchemeFromTokenUrl(bookmark);
+            final OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
+
+            final String prefix = oAuthPrefix.getDescription();
+            final String hostname = oAuthPrefix.getHostname();
+            final int port = oAuthPrefix.getPort();
+            final Scheme scheme = oAuthPrefix.getScheme();
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
                 this.addPassword(scheme, port, hostname,
                         String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
@@ -234,37 +224,10 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                         String.valueOf(credentials.getOauth().getExpiryInMilliseconds()));
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
-                this.addPassword(scheme,
-                        port, hostname,
+                this.addPassword(scheme, port, hostname,
                         String.format("%s OIDC Id Token", prefix), credentials.getOauth().getIdToken());
             }
         }
-    }
-
-    private static int getPortFromTokenUrl(final Host bookmark) {
-        final String oAuthTokenUrl = bookmark.getProtocol().getOAuthTokenUrl();
-        int port = bookmark.getPort();
-        try {
-            URI url = URI.create(oAuthTokenUrl);
-            if(url.getPort() != -1) {
-                port = url.getPort();
-            }
-            else {
-                port = DefaultSchemePortResolver.INSTANCE.resolve(HttpHost.create(oAuthTokenUrl));
-            }
-        }
-        catch(UnsupportedSchemeException e) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Could not parse  %s, using protocol port instead.", oAuthTokenUrl), e);
-            }
-        }
-        return port;
-    }
-
-    private static Scheme getSchemeFromTokenUrl(final Host bookmark) {
-        final String oAuthTokenUrl = bookmark.getProtocol().getOAuthTokenUrl();
-        URI url = URI.create(oAuthTokenUrl);
-        return Scheme.valueOf(url.getScheme());
     }
 
     @Override
@@ -291,21 +254,26 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             protocol.getTokenPlaceholder() : String.format("%s (%s)", protocol.getTokenPlaceholder(), credentials.getUsername()));
         }
         if(protocol.isOAuthConfigurable()) {
-            final String prefix = this.getOAuthPrefix(bookmark);
+            final OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
+
+            final String prefix = oAuthPrefix.getDescription();
+            final String hostname = oAuthPrefix.getHostname();
+            final int port = oAuthPrefix.getPort();
+            final Scheme scheme = oAuthPrefix.getScheme();
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                this.deletePassword(scheme, port, hostname,
                         String.format("%s OAuth2 Access Token", prefix));
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                this.deletePassword(scheme, port, hostname,
                         String.format("%s OAuth2 Refresh Token", prefix));
             }
             // Save expiry
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                this.deletePassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
+                this.deletePassword(hostname, String.format("%s OAuth2 Token Expiry", prefix));
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                this.deletePassword(scheme, port, hostname,
                         String.format("%s OIDC Id Token", prefix));
             }
         }
