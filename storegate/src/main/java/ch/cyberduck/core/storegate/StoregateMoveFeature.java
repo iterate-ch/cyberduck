@@ -60,7 +60,7 @@ public class StoregateMoveFeature implements Move {
                 .parentID(fileid.getFileId(renamed.getParent()))
                 .mode(1); // Overwrite
             final HttpEntityEnclosingRequestBase request;
-            request = new HttpPost(String.format("%s/v4/files/%s/move", client.getBasePath(), fileid.getFileId(file)));
+            request = new HttpPost(String.format("%s/v4.2/files/%s/move", client.getBasePath(), fileid.getFileId(file)));
             if(status.getLockId() != null) {
                 request.addHeader("X-Lock-Id", status.getLockId().toString());
             }

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class RegistrationApi {
   private ApiClient apiClient;
 
@@ -68,7 +68,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/isusernameavailable";
+    String localVarPath = "/v4.2/registration/isusernameavailable";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -96,73 +96,72 @@ public class RegistrationApi {
   /**
    * Get information
    * 
-   * @param partnerId  (required)
-   * @param salepackageId  (required)
-   * @param retailerId  (optional)
-   * @param trialId  (optional)
-   * @param campaignId  (optional)
-   * @param storageId  (optional)
-   * @param multiId  (optional)
-   * @param backupId  (optional)
-   * @param syncId  (optional)
-   * @param bankIDId  (optional)
-   * @param direct  (optional)
+   * @param direct Optional (optional)
+   * @param createAccountSalepackagePartnerId PartnerId (optional)
+   * @param createAccountSalepackageRetailerId Optional RetailerId (optional)
+   * @param createAccountSalepackageSalepackageId SalepackageId (optional)
+   * @param createAccountSalepackageTrialId Optional TrialId (optional)
+   * @param createAccountSalepackageCampaignId Optional CampaignId (optional)
+   * @param createAccountSalepackageStorageId Optional StorageId (optional)
+   * @param createAccountSalepackageMultiId Optional MultiId (optional)
+   * @param createAccountSalepackageBackupId Optional BackupId (optional)
+   * @param createAccountSalepackageSyncId Optional SyncId (optional)
+   * @param createAccountSalepackageBankIDId Optional BankIDId (optional)
+   * @param createAccountSalepackageBrandingId Optional BrandingId (optional)
+   * @param createAccountSalepackageSigningId Optional SigningId (optional)
+   * @param createAccountSalepackageAccessId Optional AccessId (optional)
    * @return RegistrationInformation
    * @throws ApiException if fails to make API call
    */
-  public RegistrationInformation registrationRegisterAccount(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId, String bankIDId, Boolean direct) throws ApiException {
-    return registrationRegisterAccountWithHttpInfo(partnerId, salepackageId, retailerId, trialId, campaignId, storageId, multiId, backupId, syncId, bankIDId, direct).getData();
+  public RegistrationInformation registrationRegisterAccount(Boolean direct, String createAccountSalepackagePartnerId, String createAccountSalepackageRetailerId, String createAccountSalepackageSalepackageId, String createAccountSalepackageTrialId, String createAccountSalepackageCampaignId, String createAccountSalepackageStorageId, String createAccountSalepackageMultiId, String createAccountSalepackageBackupId, String createAccountSalepackageSyncId, String createAccountSalepackageBankIDId, String createAccountSalepackageBrandingId, String createAccountSalepackageSigningId, String createAccountSalepackageAccessId) throws ApiException {
+    return registrationRegisterAccountWithHttpInfo(direct, createAccountSalepackagePartnerId, createAccountSalepackageRetailerId, createAccountSalepackageSalepackageId, createAccountSalepackageTrialId, createAccountSalepackageCampaignId, createAccountSalepackageStorageId, createAccountSalepackageMultiId, createAccountSalepackageBackupId, createAccountSalepackageSyncId, createAccountSalepackageBankIDId, createAccountSalepackageBrandingId, createAccountSalepackageSigningId, createAccountSalepackageAccessId).getData();
       }
 
   /**
    * Get information
    * 
-   * @param partnerId  (required)
-   * @param salepackageId  (required)
-   * @param retailerId  (optional)
-   * @param trialId  (optional)
-   * @param campaignId  (optional)
-   * @param storageId  (optional)
-   * @param multiId  (optional)
-   * @param backupId  (optional)
-   * @param syncId  (optional)
-   * @param bankIDId  (optional)
-   * @param direct  (optional)
+   * @param direct Optional (optional)
+   * @param createAccountSalepackagePartnerId PartnerId (optional)
+   * @param createAccountSalepackageRetailerId Optional RetailerId (optional)
+   * @param createAccountSalepackageSalepackageId SalepackageId (optional)
+   * @param createAccountSalepackageTrialId Optional TrialId (optional)
+   * @param createAccountSalepackageCampaignId Optional CampaignId (optional)
+   * @param createAccountSalepackageStorageId Optional StorageId (optional)
+   * @param createAccountSalepackageMultiId Optional MultiId (optional)
+   * @param createAccountSalepackageBackupId Optional BackupId (optional)
+   * @param createAccountSalepackageSyncId Optional SyncId (optional)
+   * @param createAccountSalepackageBankIDId Optional BankIDId (optional)
+   * @param createAccountSalepackageBrandingId Optional BrandingId (optional)
+   * @param createAccountSalepackageSigningId Optional SigningId (optional)
+   * @param createAccountSalepackageAccessId Optional AccessId (optional)
    * @return ApiResponse&lt;RegistrationInformation&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<RegistrationInformation> registrationRegisterAccountWithHttpInfo(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId, String bankIDId, Boolean direct) throws ApiException {
+  public ApiResponse<RegistrationInformation> registrationRegisterAccountWithHttpInfo(Boolean direct, String createAccountSalepackagePartnerId, String createAccountSalepackageRetailerId, String createAccountSalepackageSalepackageId, String createAccountSalepackageTrialId, String createAccountSalepackageCampaignId, String createAccountSalepackageStorageId, String createAccountSalepackageMultiId, String createAccountSalepackageBackupId, String createAccountSalepackageSyncId, String createAccountSalepackageBankIDId, String createAccountSalepackageBrandingId, String createAccountSalepackageSigningId, String createAccountSalepackageAccessId) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'partnerId' is set
-    if (partnerId == null) {
-      throw new ApiException(400, "Missing the required parameter 'partnerId' when calling registrationRegisterAccount");
-    }
-    
-    // verify the required parameter 'salepackageId' is set
-    if (salepackageId == null) {
-      throw new ApiException(400, "Missing the required parameter 'salepackageId' when calling registrationRegisterAccount");
-    }
-    
     // create path and map variables
-    String localVarPath = "/v4/registration";
+    String localVarPath = "/v4.2/registration";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "PartnerId", partnerId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "SalepackageId", salepackageId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "RetailerId", retailerId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "TrialId", trialId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "CampaignId", campaignId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "StorageId", storageId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "MultiId", multiId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "BackupId", backupId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "SyncId", syncId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "BankIDId", bankIDId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "Direct", direct));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "direct", direct));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.partnerId", createAccountSalepackagePartnerId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.retailerId", createAccountSalepackageRetailerId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.salepackageId", createAccountSalepackageSalepackageId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.trialId", createAccountSalepackageTrialId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.campaignId", createAccountSalepackageCampaignId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.storageId", createAccountSalepackageStorageId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.multiId", createAccountSalepackageMultiId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.backupId", createAccountSalepackageBackupId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.syncId", createAccountSalepackageSyncId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.bankIDId", createAccountSalepackageBankIDId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.brandingId", createAccountSalepackageBrandingId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.signingId", createAccountSalepackageSigningId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "createAccountSalepackage.accessId", createAccountSalepackageAccessId));
 
     
     
@@ -208,7 +207,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/campaign/{code}"
+    String localVarPath = "/v4.2/registration/campaign/{code}"
       .replaceAll("\\{" + "code" + "\\}", apiClient.escapeString(code.toString()));
 
     // query params
@@ -268,7 +267,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/campaign/{code}"
+    String localVarPath = "/v4.2/registration/campaign/{code}"
       .replaceAll("\\{" + "code" + "\\}", apiClient.escapeString(code.toString()));
 
     // query params
@@ -321,7 +320,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/signup/{signupId}"
+    String localVarPath = "/v4.2/registration/signup/{signupId}"
       .replaceAll("\\{" + "signupId" + "\\}", apiClient.escapeString(signupId.toString()));
 
     // query params
@@ -381,7 +380,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/signup/{signupId}"
+    String localVarPath = "/v4.2/registration/signup/{signupId}"
       .replaceAll("\\{" + "signupId" + "\\}", apiClient.escapeString(signupId.toString()));
 
     // query params
@@ -434,7 +433,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/user/{userid}"
+    String localVarPath = "/v4.2/registration/user/{userid}"
       .replaceAll("\\{" + "userid" + "\\}", apiClient.escapeString(userid.toString()));
 
     // query params
@@ -494,7 +493,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/user/{userid}"
+    String localVarPath = "/v4.2/registration/user/{userid}"
       .replaceAll("\\{" + "userid" + "\\}", apiClient.escapeString(userid.toString()));
 
     // query params
@@ -524,21 +523,23 @@ public class RegistrationApi {
    * Register a new account.
    * 
    * @param createAccountRequest RegisterAccountRequest (required)
+   * @param direct  (optional)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String registrationRegisterAccount_0(CreateAccountRequest createAccountRequest) throws ApiException {
-    return registrationRegisterAccount_0WithHttpInfo(createAccountRequest).getData();
+  public String registrationRegisterAccount_0(CreateAccountRequest createAccountRequest, Boolean direct) throws ApiException {
+    return registrationRegisterAccount_0WithHttpInfo(createAccountRequest, direct).getData();
       }
 
   /**
    * Register a new account.
    * 
    * @param createAccountRequest RegisterAccountRequest (required)
+   * @param direct  (optional)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> registrationRegisterAccount_0WithHttpInfo(CreateAccountRequest createAccountRequest) throws ApiException {
+  public ApiResponse<String> registrationRegisterAccount_0WithHttpInfo(CreateAccountRequest createAccountRequest, Boolean direct) throws ApiException {
     Object localVarPostBody = createAccountRequest;
     
     // verify the required parameter 'createAccountRequest' is set
@@ -547,13 +548,14 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration";
+    String localVarPath = "/v4.2/registration";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "direct", direct));
 
     
     
@@ -599,7 +601,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/paymentstatus";
+    String localVarPath = "/v4.2/registration/paymentstatus";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -650,7 +652,7 @@ public class RegistrationApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/registration/campaign/{code}"
+    String localVarPath = "/v4.2/registration/campaign/{code}"
       .replaceAll("\\{" + "code" + "\\}", apiClient.escapeString(code.toString()));
 
     // query params
@@ -676,4 +678,56 @@ public class RegistrationApi {
 
     return apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
+  /**
+   * Verify email
+   * 
+   * @param email The transaction id (required)
+   * @return Boolean
+   * @throws ApiException if fails to make API call
+   */
+  public Boolean registrationVerifyEmail(String email) throws ApiException {
+    return registrationVerifyEmailWithHttpInfo(email).getData();
+      }
+
+  /**
+   * Verify email
+   * 
+   * @param email The transaction id (required)
+   * @return ApiResponse&lt;Boolean&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Boolean> registrationVerifyEmailWithHttpInfo(String email) throws ApiException {
+    Object localVarPostBody = email;
+    
+    // verify the required parameter 'email' is set
+    if (email == null) {
+      throw new ApiException(400, "Missing the required parameter 'email' when calling registrationVerifyEmail");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/registration/verify/email";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<Boolean> localVarReturnType = new GenericType<Boolean>() {};
+    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
 }

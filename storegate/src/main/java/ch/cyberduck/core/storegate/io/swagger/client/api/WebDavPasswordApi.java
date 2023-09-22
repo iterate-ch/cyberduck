@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class WebDavPasswordApi {
   private ApiClient apiClient;
 
@@ -64,7 +64,7 @@ public class WebDavPasswordApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/webdavpassword";
+    String localVarPath = "/v4.2/webdavpassword";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -116,7 +116,7 @@ public class WebDavPasswordApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/webdavpassword/alias";
+    String localVarPath = "/v4.2/webdavpassword/alias";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -167,7 +167,7 @@ public class WebDavPasswordApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/webdavpassword/{id}"
+    String localVarPath = "/v4.2/webdavpassword/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -213,7 +213,7 @@ public class WebDavPasswordApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/webdavpassword";
+    String localVarPath = "/v4.2/webdavpassword";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();

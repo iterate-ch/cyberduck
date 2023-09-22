@@ -52,7 +52,7 @@ public class StoregateDeleteFeature implements Delete {
                 callback.delete(file.getKey());
                 final StoregateApiClient client = session.getClient();
                 final HttpRequestBase request;
-                request = new HttpDelete(String.format("%s/v4/files/%s", client.getBasePath(), fileid.getFileId(file.getKey())));
+                request = new HttpDelete(String.format("%s/v4.2/files/%s", client.getBasePath(), fileid.getFileId(file.getKey())));
                 if(file.getValue().getLockId() != null) {
                     request.addHeader("X-Lock-Id", file.getValue().getLockId().toString());
                 }

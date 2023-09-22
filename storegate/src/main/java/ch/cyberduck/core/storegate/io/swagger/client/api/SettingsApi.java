@@ -8,6 +8,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
+import ch.cyberduck.core.storegate.io.swagger.client.model.Branding;
 import ch.cyberduck.core.storegate.io.swagger.client.model.ModelConfiguration;
 import ch.cyberduck.core.storegate.io.swagger.client.model.PublicConfiguration;
 import ch.cyberduck.core.storegate.io.swagger.client.model.PublicWebUrls;
@@ -22,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class SettingsApi {
   private ApiClient apiClient;
 
@@ -43,6 +44,51 @@ public class SettingsApi {
   }
 
   /**
+   * Get branding if user has it.
+   * 
+   * @return Branding
+   * @throws ApiException if fails to make API call
+   */
+  public Branding settingsGetBranding() throws ApiException {
+    return settingsGetBrandingWithHttpInfo().getData();
+      }
+
+  /**
+   * Get branding if user has it.
+   * 
+   * @return ApiResponse&lt;Branding&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Branding> settingsGetBrandingWithHttpInfo() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/settings/branding";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<Branding> localVarReturnType = new GenericType<Branding>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
    * Get settings for turning features on or off in the client.
    * 
    * @return ModelConfiguration
@@ -62,7 +108,7 @@ public class SettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/settings/configuration";
+    String localVarPath = "/v4.2/settings/configuration";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -111,7 +157,7 @@ public class SettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/settings/public/configuration";
+    String localVarPath = "/v4.2/settings/public/configuration";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -162,7 +208,7 @@ public class SettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/settings/public/weburls";
+    String localVarPath = "/v4.2/settings/public/weburls";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -209,7 +255,7 @@ public class SettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/settings/rootfolders";
+    String localVarPath = "/v4.2/settings/rootfolders";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -254,7 +300,7 @@ public class SettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/settings/storage";
+    String localVarPath = "/v4.2/settings/storage";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -299,7 +345,7 @@ public class SettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/settings/subscription";
+    String localVarPath = "/v4.2/settings/subscription";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -344,7 +390,7 @@ public class SettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/settings/weburls";
+    String localVarPath = "/v4.2/settings/weburls";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -395,7 +441,7 @@ public class SettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/settings/configuration";
+    String localVarPath = "/v4.2/settings/configuration";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();

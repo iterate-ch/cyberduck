@@ -60,7 +60,7 @@ public class StoregateShareFeature implements Share<Void, Void> {
                     MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                     new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
             return new DescriptiveUrl(URI.create(
-                    new FileSharesApi(session.getClient()).fileSharesPost(request).getUrl()), DescriptiveUrl.Type.signed);
+                    new FileSharesApi(session.getClient()).fileSharesPost_0(request).getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map(e);
@@ -79,7 +79,7 @@ public class StoregateShareFeature implements Share<Void, Void> {
                     MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                     new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
             return new DescriptiveUrl(URI.create(
-                    new FileSharesApi(session.getClient()).fileSharesPost(request).getUrl()), DescriptiveUrl.Type.signed);
+                    new FileSharesApi(session.getClient()).fileSharesPost_0(request).getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map(e);

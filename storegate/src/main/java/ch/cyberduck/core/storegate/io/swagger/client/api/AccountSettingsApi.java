@@ -11,6 +11,7 @@ import javax.ws.rs.core.GenericType;
 import ch.cyberduck.core.storegate.io.swagger.client.model.AccountInfo;
 import ch.cyberduck.core.storegate.io.swagger.client.model.AccountSettings;
 import ch.cyberduck.core.storegate.io.swagger.client.model.AccountStorage;
+import ch.cyberduck.core.storegate.io.swagger.client.model.Branding;
 import ch.cyberduck.core.storegate.io.swagger.client.model.ChangePasswordRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.EmailSubscriptions;
 import ch.cyberduck.core.storegate.io.swagger.client.model.EmailSubscriptionsRequest;
@@ -20,14 +21,13 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.PartnerRetailer;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateAccountInfoRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateAccountSettings;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateMultiSettings;
-import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateRegNumberRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class AccountSettingsApi {
   private ApiClient apiClient;
 
@@ -73,7 +73,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/password";
+    String localVarPath = "/v4.2/account/password";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -118,7 +118,7 @@ public class AccountSettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/account/info";
+    String localVarPath = "/v4.2/account/info";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -163,7 +163,7 @@ public class AccountSettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/account/settings";
+    String localVarPath = "/v4.2/account/settings";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -208,7 +208,7 @@ public class AccountSettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/account/storage";
+    String localVarPath = "/v4.2/account/storage";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -231,6 +231,51 @@ public class AccountSettingsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<AccountStorage> localVarReturnType = new GenericType<AccountStorage>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Get branding config
+   * 
+   * @return Branding
+   * @throws ApiException if fails to make API call
+   */
+  public Branding accountSettingsGetBranding() throws ApiException {
+    return accountSettingsGetBrandingWithHttpInfo().getData();
+      }
+
+  /**
+   * Get branding config
+   * 
+   * @return ApiResponse&lt;Branding&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Branding> accountSettingsGetBrandingWithHttpInfo() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/account/branding";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<Branding> localVarReturnType = new GenericType<Branding>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -267,7 +312,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/public/unsubscribe/{id}/{md5}"
+    String localVarPath = "/v4.2/account/public/unsubscribe/{id}/{md5}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()))
       .replaceAll("\\{" + "md5" + "\\}", apiClient.escapeString(md5.toString()));
 
@@ -314,7 +359,7 @@ public class AccountSettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/account/multisettings";
+    String localVarPath = "/v4.2/account/multisettings";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -359,7 +404,7 @@ public class AccountSettingsApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/account/multistorage";
+    String localVarPath = "/v4.2/account/multistorage";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -383,6 +428,96 @@ public class AccountSettingsApi {
 
     GenericType<MultiAccountStorage> localVarReturnType = new GenericType<MultiAccountStorage>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Update branding
+   * 
+   * @return Branding
+   * @throws ApiException if fails to make API call
+   */
+  public Branding accountSettingsPostBranding() throws ApiException {
+    return accountSettingsPostBrandingWithHttpInfo().getData();
+      }
+
+  /**
+   * Update branding
+   * 
+   * @return ApiResponse&lt;Branding&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Branding> accountSettingsPostBrandingWithHttpInfo() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/account/branding";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<Branding> localVarReturnType = new GenericType<Branding>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Update branding
+   * 
+   * @return Branding
+   * @throws ApiException if fails to make API call
+   */
+  public Branding accountSettingsPutBranding() throws ApiException {
+    return accountSettingsPutBrandingWithHttpInfo().getData();
+      }
+
+  /**
+   * Update branding
+   * 
+   * @return ApiResponse&lt;Branding&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Branding> accountSettingsPutBrandingWithHttpInfo() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/account/branding";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<Branding> localVarReturnType = new GenericType<Branding>() {};
+    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Reset the password
@@ -417,7 +552,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/public/resetpassword/{id}"
+    String localVarPath = "/v4.2/account/public/resetpassword/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -483,7 +618,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/public/unsubscribe/{id}/{md5}"
+    String localVarPath = "/v4.2/account/public/unsubscribe/{id}/{md5}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()))
       .replaceAll("\\{" + "md5" + "\\}", apiClient.escapeString(md5.toString()));
 
@@ -536,7 +671,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/info";
+    String localVarPath = "/v4.2/account/info";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -565,20 +700,21 @@ public class AccountSettingsApi {
    * Update multi settings, only included parameters will be updated.
    * 
    * @param updateMultiSettings  (required)
+   * @return MultiSettings
    * @throws ApiException if fails to make API call
    */
-  public void accountSettingsUpdateMultiSettings(UpdateMultiSettings updateMultiSettings) throws ApiException {
-
-    accountSettingsUpdateMultiSettingsWithHttpInfo(updateMultiSettings);
-  }
+  public MultiSettings accountSettingsUpdateMultiSettings(UpdateMultiSettings updateMultiSettings) throws ApiException {
+    return accountSettingsUpdateMultiSettingsWithHttpInfo(updateMultiSettings).getData();
+      }
 
   /**
    * Update multi settings, only included parameters will be updated.
    * 
    * @param updateMultiSettings  (required)
+   * @return ApiResponse&lt;MultiSettings&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<Void> accountSettingsUpdateMultiSettingsWithHttpInfo(UpdateMultiSettings updateMultiSettings) throws ApiException {
+  public ApiResponse<MultiSettings> accountSettingsUpdateMultiSettingsWithHttpInfo(UpdateMultiSettings updateMultiSettings) throws ApiException {
     Object localVarPostBody = updateMultiSettings;
     
     // verify the required parameter 'updateMultiSettings' is set
@@ -587,7 +723,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/multisettings";
+    String localVarPath = "/v4.2/account/multisettings";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -598,7 +734,7 @@ public class AccountSettingsApi {
     
     
     final String[] localVarAccepts = {
-      
+      "application/json", "text/json"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -609,60 +745,9 @@ public class AccountSettingsApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-
-    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Update account info reg number, only included parameters will be updated.
-   * 
-   * @param updateRegNumber  (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void accountSettingsUpdateRegNumber(UpdateRegNumberRequest updateRegNumber) throws ApiException {
-
-    accountSettingsUpdateRegNumberWithHttpInfo(updateRegNumber);
-  }
-
-  /**
-   * Update account info reg number, only included parameters will be updated.
-   * 
-   * @param updateRegNumber  (required)
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> accountSettingsUpdateRegNumberWithHttpInfo(UpdateRegNumberRequest updateRegNumber) throws ApiException {
-    Object localVarPostBody = updateRegNumber;
-    
-    // verify the required parameter 'updateRegNumber' is set
-    if (updateRegNumber == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateRegNumber' when calling accountSettingsUpdateRegNumber");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/account/info/regnumber";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    
-    
-    final String[] localVarAccepts = {
-      
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      "application/json", "text/json"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "oauth2" };
-
-
-    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
+    GenericType<MultiSettings> localVarReturnType = new GenericType<MultiSettings>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
   /**
    * Update account settings, only included parameters will be updated.
    * 
@@ -689,7 +774,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/settings";
+    String localVarPath = "/v4.2/account/settings";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -741,7 +826,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/public/resetpassword/{id}"
+    String localVarPath = "/v4.2/account/public/resetpassword/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -794,7 +879,7 @@ public class AccountSettingsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/account/verifypassword";
+    String localVarPath = "/v4.2/account/verifypassword";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class FavoritesApi {
   private ApiClient apiClient;
 
@@ -38,24 +38,24 @@ public class FavoritesApi {
   }
 
   /**
-   * Creates a new Favorite.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
+   * Creates a new Favorite.
    * 
    * @param createFavoriteRequest createFolderRequest (required)
-   * @return File
+   * @return Object
    * @throws ApiException if fails to make API call
    */
-  public File favoritesCreate(CreateFavoriteRequest createFavoriteRequest) throws ApiException {
+  public Object favoritesCreate(CreateFavoriteRequest createFavoriteRequest) throws ApiException {
     return favoritesCreateWithHttpInfo(createFavoriteRequest).getData();
       }
 
   /**
-   * Creates a new Favorite.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
+   * Creates a new Favorite.
    * 
    * @param createFavoriteRequest createFolderRequest (required)
-   * @return ApiResponse&lt;File&gt;
+   * @return ApiResponse&lt;Object&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<File> favoritesCreateWithHttpInfo(CreateFavoriteRequest createFavoriteRequest) throws ApiException {
+  public ApiResponse<Object> favoritesCreateWithHttpInfo(CreateFavoriteRequest createFavoriteRequest) throws ApiException {
     Object localVarPostBody = createFavoriteRequest;
     
     // verify the required parameter 'createFavoriteRequest' is set
@@ -64,7 +64,7 @@ public class FavoritesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/favorites";
+    String localVarPath = "/v4.2/favorites";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -86,11 +86,11 @@ public class FavoritesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<File> localVarReturnType = new GenericType<File>() {};
+    GenericType<Object> localVarReturnType = new GenericType<Object>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Deletes a directory or file.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
+   * Deletes a directory or file.
    * 
    * @param id The FileId of the favorite to delete. (required)
    * @throws ApiException if fails to make API call
@@ -101,7 +101,7 @@ public class FavoritesApi {
   }
 
   /**
-   * Deletes a directory or file.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
+   * Deletes a directory or file.
    * 
    * @param id The FileId of the favorite to delete. (required)
    * @throws ApiException if fails to make API call
@@ -115,7 +115,7 @@ public class FavoritesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/favorites/{id}"
+    String localVarPath = "/v4.2/favorites/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -161,7 +161,7 @@ public class FavoritesApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/favorites";
+    String localVarPath = "/v4.2/favorites";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -187,26 +187,26 @@ public class FavoritesApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Update Favorite Order              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
+   * Update Favorite Order
    * 
    * @param id  (required)
    * @param updateFavoriteRequest  (required)
-   * @return File
+   * @return Object
    * @throws ApiException if fails to make API call
    */
-  public File favoritesUpdate(String id, UpdateFavoriteRequest updateFavoriteRequest) throws ApiException {
+  public Object favoritesUpdate(String id, UpdateFavoriteRequest updateFavoriteRequest) throws ApiException {
     return favoritesUpdateWithHttpInfo(id, updateFavoriteRequest).getData();
       }
 
   /**
-   * Update Favorite Order              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
+   * Update Favorite Order
    * 
    * @param id  (required)
    * @param updateFavoriteRequest  (required)
-   * @return ApiResponse&lt;File&gt;
+   * @return ApiResponse&lt;Object&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<File> favoritesUpdateWithHttpInfo(String id, UpdateFavoriteRequest updateFavoriteRequest) throws ApiException {
+  public ApiResponse<Object> favoritesUpdateWithHttpInfo(String id, UpdateFavoriteRequest updateFavoriteRequest) throws ApiException {
     Object localVarPostBody = updateFavoriteRequest;
     
     // verify the required parameter 'id' is set
@@ -220,7 +220,7 @@ public class FavoritesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/favorites/{id}"
+    String localVarPath = "/v4.2/favorites/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -243,7 +243,7 @@ public class FavoritesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<File> localVarReturnType = new GenericType<File>() {};
+    GenericType<Object> localVarReturnType = new GenericType<Object>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
 }

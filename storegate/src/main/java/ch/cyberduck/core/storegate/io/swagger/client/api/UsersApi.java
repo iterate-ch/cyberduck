@@ -14,13 +14,14 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.ExtendedUserContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.InviteUserRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateUserRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.User;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UserExportRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class UsersApi {
   private ApiClient apiClient;
 
@@ -40,6 +41,104 @@ public class UsersApi {
     this.apiClient = apiClient;
   }
 
+  /**
+   * Activate inactive users              &lt;param name&#x3D;\&quot;id\&quot;&gt;The id of the user to activate&lt;/param&gt;
+   * 
+   * @param id  (required)
+   * @return ExtendedUser
+   * @throws ApiException if fails to make API call
+   */
+  public ExtendedUser usersActivateDormantUser(String id) throws ApiException {
+    return usersActivateDormantUserWithHttpInfo(id).getData();
+      }
+
+  /**
+   * Activate inactive users              &lt;param name&#x3D;\&quot;id\&quot;&gt;The id of the user to activate&lt;/param&gt;
+   * 
+   * @param id  (required)
+   * @return ApiResponse&lt;ExtendedUser&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ExtendedUser> usersActivateDormantUserWithHttpInfo(String id) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling usersActivateDormantUser");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/{id}/activateDormantUser"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<ExtendedUser> localVarReturnType = new GenericType<ExtendedUser>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Activate all inactive users
+   * 
+   * @return List&lt;ExtendedUser&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<ExtendedUser> usersActivateDormantUsers() throws ApiException {
+    return usersActivateDormantUsersWithHttpInfo().getData();
+      }
+
+  /**
+   * Activate all inactive users
+   * 
+   * @return ApiResponse&lt;List&lt;ExtendedUser&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<ExtendedUser>> usersActivateDormantUsersWithHttpInfo() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/activateDormantUsers";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<List<ExtendedUser>> localVarReturnType = new GenericType<List<ExtendedUser>>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
   /**
    * Set a new password on sub user.
    * 
@@ -73,7 +172,7 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/{id}/password"
+    String localVarPath = "/v4.2/users/{id}/password"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -98,58 +197,6 @@ public class UsersApi {
 
 
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Send a password mail to a sub user.
-   * 
-   * @param id The id to the specific user (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void usersChangeSubUserPassword_0(String id) throws ApiException {
-
-    usersChangeSubUserPassword_0WithHttpInfo(id);
-  }
-
-  /**
-   * Send a password mail to a sub user.
-   * 
-   * @param id The id to the specific user (required)
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> usersChangeSubUserPassword_0WithHttpInfo(String id) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling usersChangeSubUserPassword_0");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/users/{id}/passwordrequest"
-      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    
-    
-    final String[] localVarAccepts = {
-      
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "oauth2" };
-
-
-    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Enable/disable a user
@@ -184,7 +231,7 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/{id}/status"
+    String localVarPath = "/v4.2/users/{id}/status"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -236,7 +283,7 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/{id}"
+    String localVarPath = "/v4.2/users/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -263,64 +310,144 @@ public class UsersApi {
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Get users
+   * Delete all the users tokens
    * 
-   * @param pageIndex  (required)
-   * @param pageSize  (required)
-   * @param sortExpression  (required)
-   * @param searchCriteria  (required)
-   * @return ExtendedUserContents
+   * @param id The id to the specific user (required)
    * @throws ApiException if fails to make API call
    */
-  public ExtendedUserContents usersGet(Integer pageIndex, Integer pageSize, String sortExpression, String searchCriteria) throws ApiException {
-    return usersGetWithHttpInfo(pageIndex, pageSize, sortExpression, searchCriteria).getData();
-      }
+  public void usersDeleteUserAllTokens(String id) throws ApiException {
+
+    usersDeleteUserAllTokensWithHttpInfo(id);
+  }
 
   /**
-   * Get users
+   * Delete all the users tokens
    * 
-   * @param pageIndex  (required)
-   * @param pageSize  (required)
-   * @param sortExpression  (required)
-   * @param searchCriteria  (required)
-   * @return ApiResponse&lt;ExtendedUserContents&gt;
+   * @param id The id to the specific user (required)
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ExtendedUserContents> usersGetWithHttpInfo(Integer pageIndex, Integer pageSize, String sortExpression, String searchCriteria) throws ApiException {
+  public ApiResponse<Void> usersDeleteUserAllTokensWithHttpInfo(String id) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'pageIndex' is set
-    if (pageIndex == null) {
-      throw new ApiException(400, "Missing the required parameter 'pageIndex' when calling usersGet");
-    }
-    
-    // verify the required parameter 'pageSize' is set
-    if (pageSize == null) {
-      throw new ApiException(400, "Missing the required parameter 'pageSize' when calling usersGet");
-    }
-    
-    // verify the required parameter 'sortExpression' is set
-    if (sortExpression == null) {
-      throw new ApiException(400, "Missing the required parameter 'sortExpression' when calling usersGet");
-    }
-    
-    // verify the required parameter 'searchCriteria' is set
-    if (searchCriteria == null) {
-      throw new ApiException(400, "Missing the required parameter 'searchCriteria' when calling usersGet");
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling usersDeleteUserAllTokens");
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users";
+    String localVarPath = "/v4.2/users/{id}/tokens"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchCriteria", searchCriteria));
+
+    
+    
+    final String[] localVarAccepts = {
+      
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+
+    return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Resets TwoFactor login for specified userId
+   * 
+   * @param id The id to the specific user (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void usersDisableTwoFactorAuthentication(String id) throws ApiException {
+
+    usersDisableTwoFactorAuthenticationWithHttpInfo(id);
+  }
+
+  /**
+   * Resets TwoFactor login for specified userId
+   * 
+   * @param id The id to the specific user (required)
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> usersDisableTwoFactorAuthenticationWithHttpInfo(String id) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling usersDisableTwoFactorAuthentication");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/{id}/disableTwoFactorAuthentication"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Download userlist via token
+   * 
+   * @param downloadid  (required)
+   * @return String
+   * @throws ApiException if fails to make API call
+   */
+  public String usersGet(String downloadid) throws ApiException {
+    return usersGetWithHttpInfo(downloadid).getData();
+      }
+
+  /**
+   * Download userlist via token
+   * 
+   * @param downloadid  (required)
+   * @return ApiResponse&lt;String&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<String> usersGetWithHttpInfo(String downloadid) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'downloadid' is set
+    if (downloadid == null) {
+      throw new ApiException(400, "Missing the required parameter 'downloadid' when calling usersGet");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/export/{downloadid}"
+      .replaceAll("\\{" + "downloadid" + "\\}", apiClient.escapeString(downloadid.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
 
     
     
@@ -336,7 +463,7 @@ public class UsersApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ExtendedUserContents> localVarReturnType = new GenericType<ExtendedUserContents>() {};
+    GenericType<String> localVarReturnType = new GenericType<String>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -359,7 +486,7 @@ public class UsersApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/users/all";
+    String localVarPath = "/v4.2/users/all";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -385,6 +512,104 @@ public class UsersApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
+   * Download userlist
+   * 
+   * @return String
+   * @throws ApiException if fails to make API call
+   */
+  public String usersGetExportPermissions() throws ApiException {
+    return usersGetExportPermissionsWithHttpInfo().getData();
+      }
+
+  /**
+   * Download userlist
+   * 
+   * @return ApiResponse&lt;String&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<String> usersGetExportPermissionsWithHttpInfo() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/exportPermissions";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<String> localVarReturnType = new GenericType<String>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Download userlist via token
+   * 
+   * @param downloadid  (required)
+   * @return String
+   * @throws ApiException if fails to make API call
+   */
+  public String usersGetExportPermissions_0(String downloadid) throws ApiException {
+    return usersGetExportPermissions_0WithHttpInfo(downloadid).getData();
+      }
+
+  /**
+   * Download userlist via token
+   * 
+   * @param downloadid  (required)
+   * @return ApiResponse&lt;String&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<String> usersGetExportPermissions_0WithHttpInfo(String downloadid) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'downloadid' is set
+    if (downloadid == null) {
+      throw new ApiException(400, "Missing the required parameter 'downloadid' when calling usersGetExportPermissions_0");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/exportPermissions/{downloadid}"
+      .replaceAll("\\{" + "downloadid" + "\\}", apiClient.escapeString(downloadid.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<String> localVarReturnType = new GenericType<String>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
    * Get the current user
    * 
    * @return ExtendedUser
@@ -404,7 +629,60 @@ public class UsersApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/v4/users/me";
+    String localVarPath = "/v4.2/users/me";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<ExtendedUser> localVarReturnType = new GenericType<ExtendedUser>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Get a user
+   * 
+   * @param id The id for the user (required)
+   * @return ExtendedUser
+   * @throws ApiException if fails to make API call
+   */
+  public ExtendedUser usersGetUser(String id) throws ApiException {
+    return usersGetUserWithHttpInfo(id).getData();
+      }
+
+  /**
+   * Get a user
+   * 
+   * @param id The id for the user (required)
+   * @return ApiResponse&lt;ExtendedUser&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ExtendedUser> usersGetUserWithHttpInfo(String id) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling usersGetUser");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/{id}"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -456,7 +734,7 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/{id}/groups"
+    String localVarPath = "/v4.2/users/{id}/groups"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -483,34 +761,224 @@ public class UsersApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get a user
+   * Download userlist
    * 
-   * @param id The id for the user (required)
-   * @return ExtendedUser
+   * @param searchCriteria  (required)
+   * @param sortExpression  (required)
+   * @param timeZone  (required)
+   * @return String
    * @throws ApiException if fails to make API call
    */
-  public ExtendedUser usersGet_0(String id) throws ApiException {
-    return usersGet_0WithHttpInfo(id).getData();
+  public String usersGet_0(String searchCriteria, String sortExpression, String timeZone) throws ApiException {
+    return usersGet_0WithHttpInfo(searchCriteria, sortExpression, timeZone).getData();
       }
 
   /**
-   * Get a user
+   * Download userlist
    * 
-   * @param id The id for the user (required)
-   * @return ApiResponse&lt;ExtendedUser&gt;
+   * @param searchCriteria  (required)
+   * @param sortExpression  (required)
+   * @param timeZone  (required)
+   * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ExtendedUser> usersGet_0WithHttpInfo(String id) throws ApiException {
+  public ApiResponse<String> usersGet_0WithHttpInfo(String searchCriteria, String sortExpression, String timeZone) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling usersGet_0");
+    // verify the required parameter 'searchCriteria' is set
+    if (searchCriteria == null) {
+      throw new ApiException(400, "Missing the required parameter 'searchCriteria' when calling usersGet_0");
+    }
+    
+    // verify the required parameter 'sortExpression' is set
+    if (sortExpression == null) {
+      throw new ApiException(400, "Missing the required parameter 'sortExpression' when calling usersGet_0");
+    }
+    
+    // verify the required parameter 'timeZone' is set
+    if (timeZone == null) {
+      throw new ApiException(400, "Missing the required parameter 'timeZone' when calling usersGet_0");
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/{id}"
-      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+    String localVarPath = "/v4.2/users/export";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchCriteria", searchCriteria));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "timeZone", timeZone));
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<String> localVarReturnType = new GenericType<String>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Get user list
+   * 
+   * @param pageIndex  (required)
+   * @param pageSize  (required)
+   * @param searchCriteria  (required)
+   * @param sortExpression  (required)
+   * @return ExtendedUserContents
+   * @throws ApiException if fails to make API call
+   */
+  public ExtendedUserContents usersGet_1(Integer pageIndex, Integer pageSize, String searchCriteria, String sortExpression) throws ApiException {
+    return usersGet_1WithHttpInfo(pageIndex, pageSize, searchCriteria, sortExpression).getData();
+      }
+
+  /**
+   * Get user list
+   * 
+   * @param pageIndex  (required)
+   * @param pageSize  (required)
+   * @param searchCriteria  (required)
+   * @param sortExpression  (required)
+   * @return ApiResponse&lt;ExtendedUserContents&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ExtendedUserContents> usersGet_1WithHttpInfo(Integer pageIndex, Integer pageSize, String searchCriteria, String sortExpression) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'pageIndex' is set
+    if (pageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'pageIndex' when calling usersGet_1");
+    }
+    
+    // verify the required parameter 'pageSize' is set
+    if (pageSize == null) {
+      throw new ApiException(400, "Missing the required parameter 'pageSize' when calling usersGet_1");
+    }
+    
+    // verify the required parameter 'searchCriteria' is set
+    if (searchCriteria == null) {
+      throw new ApiException(400, "Missing the required parameter 'searchCriteria' when calling usersGet_1");
+    }
+    
+    // verify the required parameter 'sortExpression' is set
+    if (sortExpression == null) {
+      throw new ApiException(400, "Missing the required parameter 'sortExpression' when calling usersGet_1");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchCriteria", searchCriteria));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<ExtendedUserContents> localVarReturnType = new GenericType<ExtendedUserContents>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Get download user list token
+   * 
+   * @param request  (required)
+   * @return String
+   * @throws ApiException if fails to make API call
+   */
+  public String usersPost(UserExportRequest request) throws ApiException {
+    return usersPostWithHttpInfo(request).getData();
+      }
+
+  /**
+   * Get download user list token
+   * 
+   * @param request  (required)
+   * @return ApiResponse&lt;String&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<String> usersPostWithHttpInfo(UserExportRequest request) throws ApiException {
+    Object localVarPostBody = request;
+    
+    // verify the required parameter 'request' is set
+    if (request == null) {
+      throw new ApiException(400, "Missing the required parameter 'request' when calling usersPost");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/export";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<String> localVarReturnType = new GenericType<String>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Get download user list token
+   * 
+   * @return String
+   * @throws ApiException if fails to make API call
+   */
+  public String usersPostExportPermissions() throws ApiException {
+    return usersPostExportPermissionsWithHttpInfo().getData();
+      }
+
+  /**
+   * Get download user list token
+   * 
+   * @return ApiResponse&lt;String&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<String> usersPostExportPermissionsWithHttpInfo() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/exportPermissions";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -532,59 +1000,7 @@ public class UsersApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ExtendedUser> localVarReturnType = new GenericType<ExtendedUser>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Create a new user with username and password
-   * 
-   * @param createUserRequest The CreateUserRequest (required)
-   * @return ExtendedUser
-   * @throws ApiException if fails to make API call
-   */
-  public ExtendedUser usersPost(CreateUserRequest createUserRequest) throws ApiException {
-    return usersPostWithHttpInfo(createUserRequest).getData();
-      }
-
-  /**
-   * Create a new user with username and password
-   * 
-   * @param createUserRequest The CreateUserRequest (required)
-   * @return ApiResponse&lt;ExtendedUser&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ExtendedUser> usersPostWithHttpInfo(CreateUserRequest createUserRequest) throws ApiException {
-    Object localVarPostBody = createUserRequest;
-    
-    // verify the required parameter 'createUserRequest' is set
-    if (createUserRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'createUserRequest' when calling usersPost");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/users";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    
-    
-    final String[] localVarAccepts = {
-      "application/json", "text/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      "application/json", "text/json"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "oauth2" };
-
-    GenericType<ExtendedUser> localVarReturnType = new GenericType<ExtendedUser>() {};
+    GenericType<String> localVarReturnType = new GenericType<String>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -614,7 +1030,59 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/invite";
+    String localVarPath = "/v4.2/users/invite";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<ExtendedUser> localVarReturnType = new GenericType<ExtendedUser>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Create a new user with username and password
+   * 
+   * @param createUserRequest The CreateUserRequest (required)
+   * @return ExtendedUser
+   * @throws ApiException if fails to make API call
+   */
+  public ExtendedUser usersPost_0(CreateUserRequest createUserRequest) throws ApiException {
+    return usersPost_0WithHttpInfo(createUserRequest).getData();
+      }
+
+  /**
+   * Create a new user with username and password
+   * 
+   * @param createUserRequest The CreateUserRequest (required)
+   * @return ApiResponse&lt;ExtendedUser&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ExtendedUser> usersPost_0WithHttpInfo(CreateUserRequest createUserRequest) throws ApiException {
+    Object localVarPostBody = createUserRequest;
+    
+    // verify the required parameter 'createUserRequest' is set
+    if (createUserRequest == null) {
+      throw new ApiException(400, "Missing the required parameter 'createUserRequest' when calling usersPost_0");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -673,7 +1141,7 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/{id}"
+    String localVarPath = "/v4.2/users/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -700,6 +1168,58 @@ public class UsersApi {
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
+   * Send a password mail to a sub user.
+   * 
+   * @param id The id to the specific user (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void usersSendPasswordRequest(String id) throws ApiException {
+
+    usersSendPasswordRequestWithHttpInfo(id);
+  }
+
+  /**
+   * Send a password mail to a sub user.
+   * 
+   * @param id The id to the specific user (required)
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> usersSendPasswordRequestWithHttpInfo(String id) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling usersSendPasswordRequest");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/{id}/passwordrequest"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
    * Sends a copy of the invite mail
    * 
    * @param id The id to the specific user (required)
@@ -725,7 +1245,7 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/{id}/reminder"
+    String localVarPath = "/v4.2/users/{id}/reminder"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -784,7 +1304,7 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/users/{id}/subadmin"
+    String localVarPath = "/v4.2/users/{id}/subadmin"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -810,4 +1330,57 @@ public class UsersApi {
 
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
+  /**
+   * 
+   * 
+   * @param id  (required)
+   * @return Long
+   * @throws ApiException if fails to make API call
+   */
+  public Long usersTakeOverPublicLinks(String id) throws ApiException {
+    return usersTakeOverPublicLinksWithHttpInfo(id).getData();
+      }
+
+  /**
+   * 
+   * 
+   * @param id  (required)
+   * @return ApiResponse&lt;Long&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Long> usersTakeOverPublicLinksWithHttpInfo(String id) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling usersTakeOverPublicLinks");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4.2/users/{id}/takeOverPublicLinks"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<Long> localVarReturnType = new GenericType<Long>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
 }

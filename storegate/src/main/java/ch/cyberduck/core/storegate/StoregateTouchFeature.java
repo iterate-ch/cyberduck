@@ -17,9 +17,9 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 
-public class StoregateTouchFeature extends DefaultTouchFeature<FileMetadata> {
+public class StoregateTouchFeature extends DefaultTouchFeature<File> {
 
     public StoregateTouchFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         super(new StoregateWriteFeature(session, fileid));

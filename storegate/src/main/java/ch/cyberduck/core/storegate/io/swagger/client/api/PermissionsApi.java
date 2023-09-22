@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-08-24T11:36:23.792+02:00")
 public class PermissionsApi {
   private ApiClient apiClient;
 
@@ -63,7 +63,7 @@ public class PermissionsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/permissions/{id}/evaluate"
+    String localVarPath = "/v4.2/permissions/{id}/evaluate"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -116,7 +116,7 @@ public class PermissionsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/permissions/{id}"
+    String localVarPath = "/v4.2/permissions/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
@@ -142,58 +142,6 @@ public class PermissionsApi {
     GenericType<List<FilePermission>> localVarReturnType = new GenericType<List<FilePermission>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
-  /**
-   * Admin can take ownership of sub folder in the Common folder.
-   * 
-   * @param id The folder id. This must be a sub folder in the Common folder (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void permissionsPost(String id) throws ApiException {
-
-    permissionsPostWithHttpInfo(id);
-  }
-
-  /**
-   * Admin can take ownership of sub folder in the Common folder.
-   * 
-   * @param id The folder id. This must be a sub folder in the Common folder (required)
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> permissionsPostWithHttpInfo(String id) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling permissionsPost");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/permissions/{id}/takeownership"
-      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    
-    
-    final String[] localVarAccepts = {
-      
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "oauth2" };
-
-
-    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
   /**
    * Sets permission for users and groups on the Common folder or sub folder in the Common folder.
    * 
@@ -227,7 +175,7 @@ public class PermissionsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/v4/permissions/{id}"
+    String localVarPath = "/v4.2/permissions/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
