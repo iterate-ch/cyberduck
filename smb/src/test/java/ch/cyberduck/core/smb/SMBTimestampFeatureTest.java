@@ -41,7 +41,7 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         final TransferStatus status = new TransferStatus();
         final Path home = new DefaultHomeFinderService(session).find();
         final Path f = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        status.setTimestamp(System.currentTimeMillis());
+        status.setModified(System.currentTimeMillis());
         assertThrows(NotfoundException.class, () -> new SMBTimestampFeature(session).setTimestamp(f, status));
     }
 
@@ -54,10 +54,10 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         assertNotEquals(-1L, f.attributes().getModificationDate());
         // make sure timestamps are different
         long oldTime = new SMBAttributesFinderFeature(session).find(f).getModificationDate();
-        status.setTimestamp(oldTime + 2000);
+        status.setModified(oldTime + 2000);
         new SMBTimestampFeature(session).setTimestamp(f, status);
         PathAttributes newAttributes = new SMBAttributesFinderFeature(session).find(f);
-        assertEquals(status.getTimestamp().longValue(), newAttributes.getModificationDate());
+        assertEquals(status.getModified().longValue(), newAttributes.getModificationDate());
         new SMBDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -70,10 +70,10 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         assertNotEquals(-1L, f.attributes().getModificationDate());
         // make sure timestamps are different
         long oldTime = new SMBAttributesFinderFeature(session).find(f).getModificationDate();
-        status.setTimestamp(oldTime + 2000);
+        status.setModified(oldTime + 2000);
         new SMBTimestampFeature(session).setTimestamp(f, status);
         PathAttributes newAttributes = new SMBAttributesFinderFeature(session).find(f);
-        assertEquals(status.getTimestamp().longValue(), newAttributes.getModificationDate());
+        assertEquals(status.getModified().longValue(), newAttributes.getModificationDate());
         new SMBDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

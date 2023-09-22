@@ -55,9 +55,9 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                         SMB2CreateDisposition.FILE_OPEN,
                         Collections.singleton(SMB2CreateOptions.FILE_DIRECTORY_FILE))) {
                     final FileBasicInformation updatedBasicInformation = new FileBasicInformation(
+                            status.getCreated() != null ? FileTime.ofEpochMillis(status.getCreated()) : FileBasicInformation.DONT_SET,
                             FileBasicInformation.DONT_SET,
-                            FileBasicInformation.DONT_SET,
-                            FileTime.ofEpochMillis(status.getTimestamp()),
+                            status.getModified() != null ? FileTime.ofEpochMillis(status.getModified()) : FileBasicInformation.DONT_SET,
                             FileBasicInformation.DONT_SET,
                             FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue());
                     entry.setFileInformation(updatedBasicInformation);
@@ -71,9 +71,9 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                         SMB2CreateDisposition.FILE_OVERWRITE,
                         Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
                     final FileBasicInformation updatedBasicInformation = new FileBasicInformation(
+                            status.getCreated() != null ? FileTime.ofEpochMillis(status.getCreated()) : FileBasicInformation.DONT_SET,
                             FileBasicInformation.DONT_SET,
-                            FileBasicInformation.DONT_SET,
-                            FileTime.ofEpochMillis(status.getTimestamp()),
+                            status.getModified() != null ? FileTime.ofEpochMillis(status.getModified()) : FileBasicInformation.DONT_SET,
                             FileBasicInformation.DONT_SET,
                             FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue());
                     entry.setFileInformation(updatedBasicInformation);
