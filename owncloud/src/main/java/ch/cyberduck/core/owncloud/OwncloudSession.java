@@ -65,8 +65,10 @@ public class OwncloudSession extends DAVSession {
         final HttpClientBuilder configuration = super.getConfiguration(proxy, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
             authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()))
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+            if(host.getProtocol().getAuthorization() != null) {
+                authorizationService.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+            }
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService));
         }
