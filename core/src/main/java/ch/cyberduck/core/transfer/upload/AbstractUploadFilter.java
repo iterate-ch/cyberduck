@@ -65,8 +65,7 @@ import java.util.EnumSet;
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = LogManager.getLogger(AbstractUploadFilter.class);
 
-    private final PreferencesReader preferences
-            ;
+    private final PreferencesReader preferences;
     private final Session<?> session;
     private final SymlinkResolver<Local> symlinkResolver;
     private final Filter<Path> hidden = SearchFilterFactory.HIDDEN_FILTER;
@@ -311,11 +310,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         if(status.isExists() && !status.isAppend()) {
             if(options.versioning) {
                 final Versioning feature = session.getFeature(Versioning.class);
-                if(feature.save(file)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Clear exist flag for file %s", file));
+                if(feature != null && feature.getConfiguration(file).isEnabled()) {
+                    if(feature.save(file)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Clear exist flag for file %s", file));
+                        }
+                        status.exists(false).getDisplayname().exists(false);
                     }
-                    status.exists(false).getDisplayname().exists(false);
                 }
             }
         }

@@ -56,7 +56,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class DefaultVersioningFeature extends DisabledBulkFeature implements Versioning {
+public class DefaultVersioningFeature implements Versioning, Bulk<Map<TransferItem, TransferStatus>> {
     private static final Logger log = LogManager.getLogger(DefaultVersioningFeature.class);
 
     private final Session<?> session;
@@ -94,37 +94,29 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
 
     @Override
     public boolean save(final Path file) throws BackgroundException {
-        if(this.isSupported(file)) {
-            final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
-            final Move feature = session.getFeature(Move.class);
-            if(!feature.isSupported(file, version)) {
-                return false;
-            }
-            final Path directory = version.getParent();
-            if(!session.getFeature(Find.class).find(directory)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Create directory %s for versions", directory));
-                }
-                session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
-            }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Rename existing file %s to %s", file, version));
-            }
-            if(file.isDirectory()) {
-                if(!feature.isRecursive(file, version)) {
-                    throw new UnsupportedException();
-                }
-            }
-            feature.move(file, version,
-                    new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-            return true;
-        }
-        else {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("No match for %s in %s", file.getName(), include));
-            }
+        final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
+        final Move feature = session.getFeature(Move.class);
+        if(!feature.isSupported(file, version)) {
             return false;
         }
+        final Path directory = version.getParent();
+        if(!session.getFeature(Find.class).find(directory)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create directory %s for versions", directory));
+            }
+            session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Rename existing file %s to %s", file, version));
+        }
+        if(file.isDirectory()) {
+            if(!feature.isRecursive(file, version)) {
+                throw new UnsupportedException();
+            }
+        }
+        feature.move(file, version,
+                new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        return true;
     }
 
     @Override
@@ -147,17 +139,20 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
-        if(this.isSupported(file)) {
-            final Path directory = provider.provide(file);
-            if(session.getFeature(Find.class).find(directory)) {
-                for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
-                        .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
-                    version.attributes().setDuplicate(true);
-                    versions.add(version);
-                }
+        final Path directory = provider.provide(file);
+        if(session.getFeature(Find.class).find(directory)) {
+            for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
+                    .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
+                version.attributes().setDuplicate(true);
+                versions.add(version);
             }
         }
         return versions.filter(new FilenameComparator(false));
+    }
+
+    @Override
+    public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        return null;
     }
 
     @Override
@@ -165,12 +160,12 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
         switch(type) {
             case upload:
                 for(TransferItem item : files.keySet()) {
-                    if(item.remote.isDirectory()) {
-                        if(!delete.isRecursive()) {
-                            continue;
+                    if(this.getConfiguration(item.remote).isEnabled()) {
+                        if(item.remote.isDirectory()) {
+                            if(!delete.isRecursive()) {
+                                continue;
+                            }
                         }
-                    }
-                    if(this.isSupported(item.remote)) {
                         final List<Path> versions = new DefaultVersioningFeature(session).list(item.remote, new DisabledListProgressListener()).toStream()
                                 .sorted(new FilenameComparator(false)).skip(new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
                         if(log.isWarnEnabled()) {
@@ -198,8 +193,14 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
             // No versioning for previous versions
             return false;
         }
-        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
-            return file.isDirectory() || include.matcher(file.getName()).matches();
+        if(file.isDirectory()) {
+            return true;
+        }
+        if(include.matcher(file.getName()).matches()) {
+            return true;
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("No match for %s in %s", file.getName(), include));
         }
         return false;
     }
