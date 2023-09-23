@@ -76,6 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.AlwaysUseDefaultEditorChangedEvent += View_AlwaysUseDefaultEditorChangedEvent;
             View.ShowHiddenFilesChangedEvent += View_ShowHiddenFilesChangedEvent;
             View.DoubleClickEditorChangedEvent += View_DoubleClickEditorChangedEvent;
+            View.EnableVersioningChangedEvent += View_EnableVersioningChangedEvent;
             View.ReturnKeyRenamesChangedEvent += View_ReturnKeyRenamesChangedEvent;
             View.InfoWindowShowsCurrentSelectionChangedEvent += View_InfoWindowShowsCurrentSelectionChangedEvent;
             View.AlternatingRowBackgroundChangedEvent += View_AlternatingRowBackgroundChangedEvent;
@@ -823,6 +824,11 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.get().setProperty("browser.doubleclick.edit", View.DoubleClickEditor);
         }
 
+        private void View_EnableVersioningChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("editor.upload.file.versioning", View.EnableVersioning);
+        }
+
         private void View_ReturnKeyRenamesChangedEvent()
         {
             PreferencesFactory.get().setProperty("browser.enterkey.rename", View.ReturnKeyRenames);
@@ -978,6 +984,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             PopulateAndSelectEditor();
             View.AlwaysUseDefaultEditor = PreferencesFactory.get().getBoolean("editor.alwaysUseDefault");
+            View.EnableVersioning = PreferencesFactory.get().getBoolean("editor.upload.file.versioning");
 
             #endregion
 
