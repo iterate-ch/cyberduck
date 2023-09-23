@@ -67,6 +67,11 @@ public class NextcloudProtocol extends AbstractProtocol {
     }
 
     @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.storage;
+    }
+
+    @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == ComparisonService.class) {
             return (T) new DefaultComparisonService(new ETagComparisonService(), new ETagComparisonService());

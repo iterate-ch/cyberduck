@@ -45,6 +45,16 @@ public interface Versioning {
     void setConfiguration(Path container, PasswordCallback prompt, VersioningConfiguration configuration) throws BackgroundException;
 
     /**
+     * Save new version
+     *
+     * @param file File or folder
+     * @return True if version is saved
+     */
+    default boolean save(Path file) throws BackgroundException {
+        return false;
+    }
+
+    /**
      * Restore this version
      *
      * @param file File
@@ -58,7 +68,7 @@ public interface Versioning {
      * @param file File
      * @return True if this file version can be reverted
      */
-    default boolean isRevertable(Path file) {
+    default boolean isRevertable(final Path file) {
         return file.attributes().isDuplicate();
     }
 

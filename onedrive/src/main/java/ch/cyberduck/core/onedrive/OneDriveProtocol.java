@@ -40,4 +40,9 @@ public class OneDriveProtocol extends GraphProtocol {
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
     }
+
+    @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.storage;
+    }
 }

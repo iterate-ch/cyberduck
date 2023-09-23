@@ -69,6 +69,9 @@ public class B2VersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(file.isDirectory()) {
+            return AttributedList.emptyList();
+        }
         return new B2ObjectListService(session, fileid).list(file, listener).filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path f) {

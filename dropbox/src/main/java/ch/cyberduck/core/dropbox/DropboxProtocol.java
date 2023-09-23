@@ -73,6 +73,11 @@ public class DropboxProtocol extends AbstractProtocol {
     }
 
     @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.storage;
+    }
+
+    @Override
     public Scheme getScheme() {
         return Scheme.https;
     }

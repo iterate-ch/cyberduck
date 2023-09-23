@@ -21,7 +21,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
@@ -55,8 +55,8 @@ public class SwiftSegmentService {
     private final PathContainerService containerService
         = new DefaultPathContainerService();
 
-    private final ISO8601DateParser dateParser
-            = new ISO8601DateParser();
+    private final ISO8601DateFormatter dateParser
+            = new ISO8601DateFormatter();
 
     /**
      * Segement files prefix

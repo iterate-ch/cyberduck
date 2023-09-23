@@ -81,6 +81,11 @@ public class CteraProtocol extends AbstractProtocol {
     }
 
     @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.storage;
+    }
+
+    @Override
     public String getTokenPlaceholder() {
         return "CTERA Token";
     }

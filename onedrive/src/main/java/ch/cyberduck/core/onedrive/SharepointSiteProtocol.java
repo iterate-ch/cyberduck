@@ -40,4 +40,9 @@ public class SharepointSiteProtocol extends GraphProtocol {
     public String getPrefix() {
         return String.format("%s.%s", SharepointProtocol.class.getPackage().getName(), "SharepointSite");
     }
+
+    @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.storage;
+    }
 }

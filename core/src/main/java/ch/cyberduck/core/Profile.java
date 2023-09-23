@@ -128,6 +128,11 @@ public class Profile implements Protocol {
     }
 
     @Override
+    public VersioningMode getVersioningMode() {
+        return parent.getVersioningMode();
+    }
+
+    @Override
     public String getIdentifier() {
         return parent.getIdentifier();
     }

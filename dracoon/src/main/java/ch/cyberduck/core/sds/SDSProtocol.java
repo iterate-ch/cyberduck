@@ -103,6 +103,11 @@ public class SDSProtocol extends AbstractProtocol {
         return DirectoryTimestamp.explicit;
     }
 
+    @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.storage;
+    }
+
     public enum Authorization {
         sql,
         radius,

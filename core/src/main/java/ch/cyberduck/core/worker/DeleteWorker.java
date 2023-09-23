@@ -19,7 +19,6 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -32,6 +31,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Trash;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -41,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,28 +113,42 @@ public class DeleteWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            recursive.putAll(this.compile(session.getHost(), delete, list, new WorkerListProgressListener(this, listener), file));
+            recursive.putAll(this.compile(delete, list, new WorkerListProgressListener(this, listener), file));
         }
         // Iterate again to delete any files that can be omitted when recursive operation is supported
         if(delete.isRecursive()) {
             recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
         }
-        delete.delete(recursive, prompt, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
-                callback.delete(file);
-                if(file.isDirectory()) {
-                    if(delete.isRecursive()) {
-                        files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
+        final Versioning versioning = session.getFeature(Versioning.class);
+        for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
+            final Path f = iter.next();
+            if(versioning.getConfiguration(f).isEnabled()) {
+                if(versioning.save(f)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Skip deleting %s", f));
                     }
+                    iter.remove();
                 }
             }
-        });
+        }
+        if(!recursive.isEmpty()) {
+            delete.delete(recursive, prompt, new Delete.Callback() {
+                @Override
+                public void delete(final Path file) {
+                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
+                    callback.delete(file);
+                    if(file.isDirectory()) {
+                        if(delete.isRecursive()) {
+                            files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
+                        }
+                    }
+                }
+            });
+        }
         return new ArrayList<>(recursive.keySet());
     }
 
-    protected Map<Path, TransferStatus> compile(final Host host, final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
+    protected Map<Path, TransferStatus> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
         final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         if(file.isFile() || file.isSymbolicLink()) {
@@ -161,7 +176,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
-                    recursive.putAll(this.compile(host, delete, list, listener, child));
+                    recursive.putAll(this.compile(delete, list, listener, child));
                 }
             }
             // Add parent after children

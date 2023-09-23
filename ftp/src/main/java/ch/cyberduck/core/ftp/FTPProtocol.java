@@ -70,4 +70,10 @@ public class FTPProtocol extends AbstractProtocol {
     public boolean isAnonymousConfigurable() {
         return true;
     }
+
+    @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.custom;
+    }
+
 }

@@ -24,7 +24,7 @@ import java.util.TimeZone;
 
 import com.google.gson.internal.bind.util.ISO8601Utils;
 
-public class RFC3339DateFormatter implements DateFormatter {
+public class ISO8601DateFormatter implements DateFormatter {
 
     @Override
     public String format(final Date input, final TimeZone zone) {

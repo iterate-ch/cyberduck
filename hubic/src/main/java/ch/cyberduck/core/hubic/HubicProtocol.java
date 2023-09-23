@@ -97,4 +97,9 @@ public class HubicProtocol extends AbstractProtocol {
     public String icon() {
         return new SwiftProtocol().icon();
     }
+
+    @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.none;
+    }
 }

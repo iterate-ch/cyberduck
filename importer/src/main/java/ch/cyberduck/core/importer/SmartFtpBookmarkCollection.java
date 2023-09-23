@@ -24,7 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
@@ -146,7 +146,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                     break;
                 case "LastConnect":
                     try {
-                        current.setTimestamp(new ISO8601DateParser().parse(elementText));
+                        current.setTimestamp(new ISO8601DateFormatter().parse(elementText));
                     }
                     catch(InvalidDateException e) {
                         log.warn(String.format("Failed to parse timestamp from %s %s", elementText, e.getMessage()));

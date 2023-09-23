@@ -44,9 +44,6 @@ public class VersionsWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
-        if(file.isDirectory()) {
-            return AttributedList.emptyList();
-        }
         final Versioning feature = session.getFeature(Versioning.class);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));

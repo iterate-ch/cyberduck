@@ -116,4 +116,9 @@ public class LocalProtocol extends AbstractProtocol {
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
     }
+
+    @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.none;
+    }
 }

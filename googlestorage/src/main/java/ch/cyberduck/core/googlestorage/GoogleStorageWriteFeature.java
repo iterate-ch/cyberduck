@@ -19,7 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.date.RFC3339DateFormatter;
+import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -125,7 +125,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                     }
                     if(null != status.getTimestamp()) {
                         metadata.append(String.format(", \"customTime\": \"%s\"",
-                                new RFC3339DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
+                                new ISO8601DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
                     }
                     metadata.append("}");
                     request.setEntity(new StringEntity(metadata.toString(),
