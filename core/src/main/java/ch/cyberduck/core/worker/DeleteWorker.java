@@ -121,19 +121,22 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
         }
         if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
-            final Versioning versioning = session.getFeature(Versioning.class);
-            if(versioning != null) {
-                for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
-                    final Path f = iter.next();
-                    if(versioning.getConfiguration(f).isEnabled()) {
-                        if(versioning.save(f)) {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Skip deleting %s", f));
+            switch(session.getHost().getProtocol().getVersioningMode()) {
+                case custom:
+                    final Versioning versioning = session.getFeature(Versioning.class);
+                    if(versioning != null) {
+                        for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
+                            final Path f = iter.next();
+                            if(versioning.getConfiguration(f).isEnabled()) {
+                                if(versioning.save(f)) {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Skip deleting %s", f));
+                                    }
+                                    iter.remove();
+                                }
                             }
-                            iter.remove();
                         }
                     }
-                }
             }
         }
         if(!recursive.isEmpty()) {

@@ -138,38 +138,41 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         }
                         result.put(r.getKey(), moved);
                         if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
-                            // Move previous versions of file
-                            final Versioning versioning = session.getFeature(Versioning.class);
-                            if(versioning != null) {
-                                if(versioning.getConfiguration(r.getKey()).isEnabled()) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug(String.format("List previous versions of %s", r.getKey()));
-                                    }
-                                    for(Path version : versioning.list(r.getKey(), new DisabledListProgressListener())) {
-                                        final Path target = new Path(new DefaultVersioningFeature.DefaultVersioningDirectoryProvider().provide(r.getValue()),
-                                                version.getName(), version.getType());
-                                        final Path directory = target.getParent();
-                                        if(!new CachingFindFeature(cache, new DefaultFindFeature(session)).find(directory)) {
+                            switch(session.getHost().getProtocol().getVersioningMode()) {
+                                case custom:
+                                    // Move previous versions of file
+                                    final Versioning versioning = session.getFeature(Versioning.class);
+                                    if(versioning != null) {
+                                        if(versioning.getConfiguration(r.getKey()).isEnabled()) {
                                             if(log.isDebugEnabled()) {
-                                                log.debug(String.format("Create directory %s for versions", directory));
+                                                log.debug(String.format("List previous versions of %s", r.getKey()));
                                             }
-                                            session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
-                                        }
-                                        if(log.isDebugEnabled()) {
-                                            log.debug(String.format("Move previous version %s to %s", version, target));
-                                        }
-                                        if(version.isDirectory()) {
-                                            if(!session.getFeature(Move.class).isRecursive(version, target)) {
-                                                continue;
+                                            for(Path version : versioning.list(r.getKey(), new DisabledListProgressListener())) {
+                                                final Path target = new Path(new DefaultVersioningFeature.DefaultVersioningDirectoryProvider().provide(r.getValue()),
+                                                        version.getName(), version.getType());
+                                                final Path directory = target.getParent();
+                                                if(!new CachingFindFeature(cache, new DefaultFindFeature(session)).find(directory)) {
+                                                    if(log.isDebugEnabled()) {
+                                                        log.debug(String.format("Create directory %s for versions", directory));
+                                                    }
+                                                    session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+                                                }
+                                                if(log.isDebugEnabled()) {
+                                                    log.debug(String.format("Move previous version %s to %s", version, target));
+                                                }
+                                                if(version.isDirectory()) {
+                                                    if(!session.getFeature(Move.class).isRecursive(version, target)) {
+                                                        continue;
+                                                    }
+                                                }
+                                                feature.move(version, target, new TransferStatus()
+                                                        .withLockId(this.getLockId(version))
+                                                        .withMime(new MappingMimeTypeService().getMime(version.getName()))
+                                                        .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(target))
+                                                        .withLength(version.attributes().getSize()), delete, callback);
                                             }
                                         }
-                                        feature.move(version, target, new TransferStatus()
-                                                .withLockId(this.getLockId(version))
-                                                .withMime(new MappingMimeTypeService().getMime(version.getName()))
-                                                .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(target))
-                                                .withLength(version.attributes().getSize()), delete, callback);
                                     }
-                                }
                             }
                         }
                     }
