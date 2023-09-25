@@ -54,10 +54,6 @@
         <true/>
         <key>Username Configurable</key>
         <true/>
-        <key>Token Configurable</key>
-        <true/>
-        <key>Token Placeholder</key>
-        <string>AWS Session Token</string>
         <key>Properties</key>
         <array>
             <string>s3.bucket.virtualhost.disable=true</string>
