@@ -333,10 +333,6 @@ public abstract class Session<C> implements TranscriptListener {
             return null;
         }
         if(type == Bulk.class) {
-            switch(host.getProtocol().getVersioningMode()) {
-                case custom:
-                    return (T) new DefaultVersioningFeature(this);
-            }
             return (T) new DisabledBulkFeature();
         }
         return host.getProtocol().getFeature(type);

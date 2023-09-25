@@ -16,6 +16,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -81,4 +82,8 @@ public interface Versioning {
      * @throws BackgroundException Failure reading versions from server
      */
     AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
+
+    default void cleanup(Path file, ConnectionCallback callback) throws BackgroundException {
+        //
+    }
 }
