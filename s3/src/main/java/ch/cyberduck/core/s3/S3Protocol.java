@@ -90,7 +90,7 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getSTSEndpoint() {
-        return "sts.amazonaws.com";
+        return "https://sts.amazonaws.com/";
     }
 
     @Override
