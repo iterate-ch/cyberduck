@@ -25,23 +25,23 @@ public class ISO8601FilenameVersionIdentifierTest {
     public void testToVersioned() {
         {
             final String filename = "f";
-            final String versioned = new DefaultVersioningFeature.ISO8601FilenameVersionIdentifier().toVersion(filename);
-            assertEquals(filename, new DefaultVersioningFeature.ISO8601FilenameVersionIdentifier().fromVersion(versioned));
+            final String versioned = new DefaultVersioningFeature.DefaultFilenameVersionIdentifier().toVersion(filename);
+            assertEquals(filename, new DefaultVersioningFeature.DefaultFilenameVersionIdentifier().fromVersion(versioned));
         }
         {
             final String filename = "f.ext";
-            final String versioned = new DefaultVersioningFeature.ISO8601FilenameVersionIdentifier().toVersion(filename);
-            assertEquals(filename, new DefaultVersioningFeature.ISO8601FilenameVersionIdentifier().fromVersion(versioned));
+            final String versioned = new DefaultVersioningFeature.DefaultFilenameVersionIdentifier().toVersion(filename);
+            assertEquals(filename, new DefaultVersioningFeature.DefaultFilenameVersionIdentifier().fromVersion(versioned));
         }
         {
             final String filename = "w-f";
-            final String versioned = new DefaultVersioningFeature.ISO8601FilenameVersionIdentifier().toVersion(filename);
-            assertEquals(filename, new DefaultVersioningFeature.ISO8601FilenameVersionIdentifier().fromVersion(versioned));
+            final String versioned = new DefaultVersioningFeature.DefaultFilenameVersionIdentifier().toVersion(filename);
+            assertEquals(filename, new DefaultVersioningFeature.DefaultFilenameVersionIdentifier().fromVersion(versioned));
         }
         {
             final String filename = "w-f.ext";
-            final String versioned = new DefaultVersioningFeature.ISO8601FilenameVersionIdentifier().toVersion(filename);
-            assertEquals(filename, new DefaultVersioningFeature.ISO8601FilenameVersionIdentifier().fromVersion(versioned));
+            final String versioned = new DefaultVersioningFeature.DefaultFilenameVersionIdentifier().toVersion(filename);
+            assertEquals(filename, new DefaultVersioningFeature.DefaultFilenameVersionIdentifier().fromVersion(versioned));
         }
     }
 }

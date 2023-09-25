@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -290,9 +291,9 @@ public class UploadTransfer extends Transfer {
     @Override
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
                      final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
-        final Bulk<?> feature = source.getFeature(Bulk.class);
+        final Bulk<?> bulk = source.getFeature(Bulk.class);
         try {
-            feature.post(Type.upload, files, callback);
+            bulk.post(Type.upload, files, callback);
             super.post(source, destination, files, error, listener, callback);
         }
         catch(BackgroundException e) {
@@ -308,6 +309,16 @@ public class UploadTransfer extends Transfer {
                 }
                 else {
                     throw new TransferCanceledException(e);
+                }
+            }
+        }
+        if(options.versioning) {
+            final Versioning versioning = source.getFeature(Versioning.class);
+            if(versioning != null) {
+                for(TransferItem item : files.keySet()) {
+                    if(versioning.getConfiguration(item.remote).isEnabled()) {
+                        versioning.cleanup(item.remote, callback);
+                    }
                 }
             }
         }

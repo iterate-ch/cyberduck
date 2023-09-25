@@ -26,19 +26,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.date.DateFormatter;
-import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
+import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.FilenameComparator;
 
@@ -50,13 +47,12 @@ import org.apache.logging.log4j.Logger;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class DefaultVersioningFeature extends DisabledBulkFeature implements Versioning {
+public class DefaultVersioningFeature implements Versioning {
     private static final Logger log = LogManager.getLogger(DefaultVersioningFeature.class);
 
     private final Session<?> session;
@@ -64,10 +60,8 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     private final VersioningDirectoryProvider provider;
     private final Pattern include;
 
-    private Delete delete;
-
     public DefaultVersioningFeature(final Session<?> session) {
-        this(session, new DefaultVersioningDirectoryProvider(), new ISO8601FilenameVersionIdentifier());
+        this(session, new DefaultVersioningDirectoryProvider(), new DefaultFilenameVersionIdentifier());
     }
 
     public DefaultVersioningFeature(final Session<?> session, final VersioningDirectoryProvider provider, final FilenameVersionIdentifier formatter) {
@@ -75,14 +69,22 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
         this.provider = provider;
         this.formatter = formatter;
         this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex"));
-        this.delete = session.getFeature(Delete.class);
     }
 
     @Override
     public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
-        switch(session.getHost().getProtocol().getVersioningMode()) {
-            case custom:
-                return new VersioningConfiguration(this.isSupported(file));
+        if(this.isRevertable(file)) {
+            // No versioning for previous versions
+            return VersioningConfiguration.empty();
+        }
+        if(file.isDirectory()) {
+            return new VersioningConfiguration(true);
+        }
+        if(include.matcher(file.getName()).matches()) {
+            return new VersioningConfiguration(true);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("No match for %s in %s", file.getName(), include));
         }
         return VersioningConfiguration.empty();
     }
@@ -94,37 +96,29 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
 
     @Override
     public boolean save(final Path file) throws BackgroundException {
-        if(this.isSupported(file)) {
-            final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
-            final Move feature = session.getFeature(Move.class);
-            if(!feature.isSupported(file, version)) {
-                return false;
-            }
-            final Path directory = version.getParent();
-            if(!session.getFeature(Find.class).find(directory)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Create directory %s for versions", directory));
-                }
-                session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
-            }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Rename existing file %s to %s", file, version));
-            }
-            if(file.isDirectory()) {
-                if(!feature.isRecursive(file, version)) {
-                    throw new UnsupportedException();
-                }
-            }
-            feature.move(file, version,
-                    new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-            return true;
-        }
-        else {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("No match for %s in %s", file.getName(), include));
-            }
+        final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
+        final Move feature = session.getFeature(Move.class);
+        if(!feature.isSupported(file, version)) {
             return false;
         }
+        final Path directory = version.getParent();
+        if(!session.getFeature(Find.class).find(directory)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create directory %s for versions", directory));
+            }
+            session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Rename existing file %s to %s", file, version));
+        }
+        if(file.isDirectory()) {
+            if(!feature.isRecursive(file, version)) {
+                throw new UnsupportedException();
+            }
+        }
+        feature.move(file, version,
+                new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        return true;
     }
 
     @Override
@@ -147,61 +141,37 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
-        if(this.isSupported(file)) {
-            final Path directory = provider.provide(file);
-            if(session.getFeature(Find.class).find(directory)) {
-                for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
-                        .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
-                    version.attributes().setDuplicate(true);
-                    versions.add(version);
-                }
+        final Path directory = provider.provide(file);
+        if(session.getFeature(Find.class).find(directory)) {
+            for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
+                    .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
+                version.attributes().setDuplicate(true);
+                versions.add(version);
             }
         }
         return versions.filter(new FilenameComparator(false));
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        switch(type) {
-            case upload:
-                for(TransferItem item : files.keySet()) {
-                    if(item.remote.isDirectory()) {
-                        if(!delete.isRecursive()) {
-                            continue;
-                        }
-                    }
-                    if(this.isSupported(item.remote)) {
-                        final List<Path> versions = new DefaultVersioningFeature(session).list(item.remote, new DisabledListProgressListener()).toStream()
-                                .sorted(new FilenameComparator(false)).skip(new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
-                        if(log.isWarnEnabled()) {
-                            log.warn(String.format("Delete %d previous versions of %s", versions.size(), item.remote));
-                        }
-                        delete.delete(versions, callback, new Delete.DisabledCallback());
-                    }
-                }
+    public void cleanup(final Path file, final ConnectionCallback callback) throws BackgroundException {
+        final Delete delete = session.getFeature(Delete.class);
+        if(file.isDirectory()) {
+            if(!delete.isRecursive()) {
+                return;
+            }
         }
-    }
-
-    @Override
-    public Bulk withDelete(final Delete delete) {
-        this.delete = delete;
-        return this;
+        final List<Path> versions = this.list(file, new DisabledListProgressListener()).toStream()
+                .sorted(new FilenameComparator(false)).skip(
+                        new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
+        if(log.isWarnEnabled()) {
+            log.warn(String.format("Delete %d previous versions of %s", versions.size(), file));
+        }
+        delete.delete(versions, callback, new Delete.DisabledCallback());
     }
 
     @Override
     public boolean isRevertable(final Path version) {
         return StringUtils.equals(DefaultVersioningDirectoryProvider.NAME, version.getParent().getName());
-    }
-
-    private boolean isSupported(final Path file) {
-        if(this.isRevertable(file)) {
-            // No versioning for previous versions
-            return false;
-        }
-        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
-            return file.isDirectory() || include.matcher(file.getName()).matches();
-        }
-        return false;
     }
 
     public interface VersioningDirectoryProvider {
@@ -233,11 +203,18 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
         String toVersion(String filename);
     }
 
-    public static final class ISO8601FilenameVersionIdentifier implements FilenameVersionIdentifier {
-        private static final char FILENAME_VERSION_SEPARATOR = '-';
+    public static final class DefaultFilenameVersionIdentifier implements FilenameVersionIdentifier {
+        private final Pattern format;
+        private final DateFormatter formatter;
 
-        private static final ISO8601DateFormatter formatter = new ISO8601DateFormatter();
-        private static final Pattern format = Pattern.compile("(.*)" + FILENAME_VERSION_SEPARATOR + "[0-9]{8}T[0-9]{6}\\.[0-9]{3}Z(\\..*)?");
+        public DefaultFilenameVersionIdentifier() {
+            this(Pattern.compile("(.*)-[0-9]{8}[0-9]{6}\\.[0-9]{3}(\\..*)?"), new MDTMMillisecondsDateFormatter());
+        }
+
+        public DefaultFilenameVersionIdentifier(final Pattern format, final DateFormatter formatter) {
+            this.format = format;
+            this.formatter = formatter;
+        }
 
         @Override
         public String format(final Date input, final TimeZone zone) {
@@ -268,17 +245,15 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
 
         @Override
         public String toVersion(final String filename) {
-            final String basename = String.format("%s%s%s", FilenameUtils.getBaseName(filename),
-                    FILENAME_VERSION_SEPARATOR, toTimestamp());
+            final String basename = String.format("%s-%s", FilenameUtils.getBaseName(filename), this.toTimestamp());
             if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                 return String.format("%s.%s", basename, FilenameUtils.getExtension(filename));
             }
             return basename;
         }
 
-        private static String toTimestamp() {
-            return formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC"))
-                    .replaceAll("[-:]", StringUtils.EMPTY);
+        private String toTimestamp() {
+            return formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC"));
         }
     }
 }
