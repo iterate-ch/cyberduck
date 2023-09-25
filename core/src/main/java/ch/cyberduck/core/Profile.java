@@ -445,6 +445,9 @@ public class Profile implements Protocol {
 
     @Override
     public boolean isOAuthConfigurable() {
+        if(StringUtils.isNotBlank(this.value("OAuth Configurable"))) {
+            return this.bool("OAuth Configurable");
+        }
         return StringUtils.isNotBlank(this.getOAuthClientId());
     }
 

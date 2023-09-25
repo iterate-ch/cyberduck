@@ -24,10 +24,6 @@
     <artifactId>s3</artifactId>
     <packaging>jar</packaging>
 
-    <properties>
-        <jwt.version>4.4.0</jwt.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -73,7 +69,6 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>${jwt.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
