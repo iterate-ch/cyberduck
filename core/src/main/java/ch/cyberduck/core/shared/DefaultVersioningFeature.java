@@ -80,9 +80,18 @@ public class DefaultVersioningFeature implements Versioning, Bulk<Map<TransferIt
 
     @Override
     public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
-        switch(session.getHost().getProtocol().getVersioningMode()) {
-            case custom:
-                return new VersioningConfiguration(this.isSupported(file));
+        if(this.isRevertable(file)) {
+            // No versioning for previous versions
+            return VersioningConfiguration.empty();
+        }
+        if(file.isDirectory()) {
+            return new VersioningConfiguration(true);
+        }
+        if(include.matcher(file.getName()).matches()) {
+            return new VersioningConfiguration(true);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("No match for %s in %s", file.getName(), include));
         }
         return VersioningConfiguration.empty();
     }
@@ -186,23 +195,6 @@ public class DefaultVersioningFeature implements Versioning, Bulk<Map<TransferIt
     @Override
     public boolean isRevertable(final Path version) {
         return StringUtils.equals(DefaultVersioningDirectoryProvider.NAME, version.getParent().getName());
-    }
-
-    private boolean isSupported(final Path file) {
-        if(this.isRevertable(file)) {
-            // No versioning for previous versions
-            return false;
-        }
-        if(file.isDirectory()) {
-            return true;
-        }
-        if(include.matcher(file.getName()).matches()) {
-            return true;
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("No match for %s in %s", file.getName(), include));
-        }
-        return false;
     }
 
     public interface VersioningDirectoryProvider {
