@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -119,16 +120,18 @@ public class DeleteWorker extends Worker<List<Path>> {
         if(delete.isRecursive()) {
             recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
         }
-        final Versioning versioning = session.getFeature(Versioning.class);
-        if(versioning != null) {
-            for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
-                final Path f = iter.next();
-                if(versioning.getConfiguration(f).isEnabled()) {
-                    if(versioning.save(f)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip deleting %s", f));
+        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
+            final Versioning versioning = session.getFeature(Versioning.class);
+            if(versioning != null) {
+                for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
+                    final Path f = iter.next();
+                    if(versioning.getConfiguration(f).isEnabled()) {
+                        if(versioning.save(f)) {
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Skip deleting %s", f));
+                            }
+                            iter.remove();
                         }
-                        iter.remove();
                     }
                 }
             }
