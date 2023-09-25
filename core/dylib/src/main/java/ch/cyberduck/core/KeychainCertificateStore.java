@@ -145,7 +145,7 @@ public final class KeychainCertificateStore implements CertificateStore {
                 final SecCertificateRef certificateRef = SecurityFunctions.library.SecCertificateCreateWithData(null,
                     NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded())));
                 if(null == certificateRef) {
-                    log.error(String.format("Error creating converting from ASN.1 DER encoded certificate %s", certificate));
+                    log.error(String.format("Error converting from ASN.1 DER encoded certificate %s", certificate));
                     continue;
                 }
                 certs.addObject(certificateRef);
