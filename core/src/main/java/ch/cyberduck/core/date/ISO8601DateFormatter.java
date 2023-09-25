@@ -17,8 +17,10 @@ package ch.cyberduck.core.date;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import java.text.ParseException;
-import java.text.ParsePosition;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -39,9 +41,9 @@ public class ISO8601DateFormatter implements DateFormatter {
     @Override
     public Date parse(final String input) throws InvalidDateException {
         try {
-            return ISO8601Utils.parse(input, new ParsePosition(0));
+            return Date.from(LocalDateTime.parse(input, DateTimeFormatter.ISO_DATE_TIME).toInstant(ZoneOffset.UTC));
         }
-        catch(ParseException e) {
+        catch(DateTimeParseException e) {
             throw new InvalidDateException(e.getMessage(), e);
         }
     }

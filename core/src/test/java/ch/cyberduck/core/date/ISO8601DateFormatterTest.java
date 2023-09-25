@@ -19,10 +19,16 @@ import org.junit.Test;
 
 import java.util.TimeZone;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class ISO8601DateFormatterTest {
+
+    @Test
+    public void testParseLocalDate() throws Exception {
+        // No time zone indicator
+        final ISO8601DateFormatter formatter = new ISO8601DateFormatter();
+        assertEquals(2527156760000L, formatter.parse("2050-01-30T12:00:00.000000").getTime(), 0L);
+    }
 
     @Test
     public void testParseWithoutMilliseconds() throws Exception {
