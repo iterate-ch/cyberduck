@@ -26,8 +26,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.date.DateFormatter;
-import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
+import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Bulk;
@@ -67,7 +67,7 @@ public class DefaultVersioningFeature implements Versioning, Bulk<Map<TransferIt
     private Delete delete;
 
     public DefaultVersioningFeature(final Session<?> session) {
-        this(session, new DefaultVersioningDirectoryProvider(), new ISO8601FilenameVersionIdentifier());
+        this(session, new DefaultVersioningDirectoryProvider(), new DefaultFilenameVersionIdentifier());
     }
 
     public DefaultVersioningFeature(final Session<?> session, final VersioningDirectoryProvider provider, final FilenameVersionIdentifier formatter) {
@@ -234,11 +234,18 @@ public class DefaultVersioningFeature implements Versioning, Bulk<Map<TransferIt
         String toVersion(String filename);
     }
 
-    public static final class ISO8601FilenameVersionIdentifier implements FilenameVersionIdentifier {
-        private static final char FILENAME_VERSION_SEPARATOR = '-';
+    public static final class DefaultFilenameVersionIdentifier implements FilenameVersionIdentifier {
+        private final Pattern format;
+        private final DateFormatter formatter;
 
-        private static final ISO8601DateFormatter formatter = new ISO8601DateFormatter();
-        private static final Pattern format = Pattern.compile("(.*)" + FILENAME_VERSION_SEPARATOR + "[0-9]{8}T[0-9]{6}\\.[0-9]{3}Z(\\..*)?");
+        public DefaultFilenameVersionIdentifier() {
+            this(Pattern.compile("(.*)-[0-9]{8}[0-9]{6}\\.[0-9]{3}(\\..*)?"), new MDTMMillisecondsDateFormatter());
+        }
+
+        public DefaultFilenameVersionIdentifier(final Pattern format, final DateFormatter formatter) {
+            this.format = format;
+            this.formatter = formatter;
+        }
 
         @Override
         public String format(final Date input, final TimeZone zone) {
@@ -269,17 +276,15 @@ public class DefaultVersioningFeature implements Versioning, Bulk<Map<TransferIt
 
         @Override
         public String toVersion(final String filename) {
-            final String basename = String.format("%s%s%s", FilenameUtils.getBaseName(filename),
-                    FILENAME_VERSION_SEPARATOR, toTimestamp());
+            final String basename = String.format("%s-%s", FilenameUtils.getBaseName(filename), this.toTimestamp());
             if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                 return String.format("%s.%s", basename, FilenameUtils.getExtension(filename));
             }
             return basename;
         }
 
-        private static String toTimestamp() {
-            return formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC"))
-                    .replaceAll("[-:]", StringUtils.EMPTY);
+        private String toTimestamp() {
+            return formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC"));
         }
     }
 }
