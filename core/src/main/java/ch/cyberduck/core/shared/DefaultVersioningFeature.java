@@ -166,7 +166,7 @@ public class DefaultVersioningFeature implements Versioning, Bulk<Map<TransferIt
                                 continue;
                             }
                         }
-                        final List<Path> versions = new DefaultVersioningFeature(session).list(item.remote, new DisabledListProgressListener()).toStream()
+                        final List<Path> versions = this.list(item.remote, new DisabledListProgressListener()).toStream()
                                 .sorted(new FilenameComparator(false)).skip(new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
                         if(log.isWarnEnabled()) {
                             log.warn(String.format("Delete %d previous versions of %s", versions.size(), item.remote));
