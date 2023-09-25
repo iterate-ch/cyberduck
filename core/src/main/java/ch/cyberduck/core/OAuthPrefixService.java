@@ -17,6 +17,14 @@ package ch.cyberduck.core;
 
 /**
  * Opaque service to configure OAuth password store entries
+ * 
+ * <p>On Windows (Windows Credential Manager) the format is
+ * <pre>${application.container.name}${:getIdentifier()}${:getOptionalPort()${?user=getUsername()}</pre>
+ * For DefaultHostPasswordStore the format is
+ * <pre>${getScheme()}://${getDescription()} $EntryName@${getHostname()}:${getPort()}</pre>
+ * <p>GetDescription can return "Protocol Description", or "Protocol Description (${getUsername()})".</p>
+ * <p>EntryName can be "OAuth2 Access Token", "OAuth2 Refresh Token", "OIDC Id Token", "OAuth2 Token Expiry"</p>
+ * </p>
  */
 public interface OAuthPrefixService {
     /**
