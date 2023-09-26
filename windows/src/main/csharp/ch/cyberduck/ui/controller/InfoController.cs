@@ -951,7 +951,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 acceleration = session.getFeature(typeof(TransferAcceleration)) != null;
             }
             View.BucketVersioningEnabled = stop && enable && versioning;
-            View.BucketMfaEnabled = stop && enable && versioning && View.BucketVersioning;
+            View.BucketMfaEnabled = stop && enable && session.getHost().getProtocol().getType() == Protocol.Type.s3 && versioning && View.BucketVersioning;
             View.BucketLoggingCheckboxEnabled = stop && enable && logging;
             View.TransferAccelerationCheckboxEnabled = stop && enable && acceleration;
             View.BucketLoggingPopupEnabled = stop && enable && logging;
