@@ -1879,8 +1879,8 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.setEnabled(stop && enable && storageclass);
         encryptionPopup.setEnabled(stop && enable && encryption);
         bucketVersioningButton.setEnabled(stop && enable && versioning);
-        bucketMfaButton.setEnabled(stop && enable && versioning
-                && bucketVersioningButton.state() == NSCell.NSOnState);
+        bucketMfaButton.setEnabled(stop && enable && session.getHost().getProtocol().getType() == Protocol.Type.s3
+                && versioning && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketTransferAccelerationButton.setEnabled(stop && enable && acceleration);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
