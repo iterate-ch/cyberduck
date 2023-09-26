@@ -84,6 +84,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+            status.setCreated(1L);
             status.setModified(1632127025217L);
             final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -95,6 +96,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attr = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(test.attributes().getVersionId(), attr.getVersionId());
+        assertEquals(1L, attr.getCreationDate());
         assertEquals(1632127025217L, attr.getModificationDate());
         assertEquals(1632127025217L, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         final byte[] compare = new byte[content.length];

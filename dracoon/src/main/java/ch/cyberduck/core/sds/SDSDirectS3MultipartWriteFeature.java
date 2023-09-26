@@ -99,6 +99,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                     .directS3Upload(true)
                     .timestampModification(status.getModified() != null ? new DateTime(status.getModified()) : null)
+                    .timestampCreation(status.getCreated() != null ? new DateTime(status.getCreated()) : null)
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
