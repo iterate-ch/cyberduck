@@ -39,11 +39,6 @@ public class WriteTimestampWorker extends Worker<Boolean> {
     private final Long created;
     private final Long modified;
 
-    public WriteTimestampWorker(final Path file, final Long modified) {
-        this(file, null, modified);
-    }
-
-
     public WriteTimestampWorker(final Path file, final Long created, final Long modified) {
         this.file = file;
         this.created = created;
@@ -70,7 +65,7 @@ public class WriteTimestampWorker extends Worker<Boolean> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-            file.getName(), UserDateFormatterFactory.get().getShortFormat(modified));
+                file.getName(), UserDateFormatterFactory.get().getShortFormat(modified));
     }
 
     @Override
