@@ -40,7 +40,7 @@ public class BrickTimestampFeature extends DefaultTimestampFeature {
         try {
             final FileEntity response = new FilesApi(new BrickApiClient(session))
                     .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
-                            new FilesPathBody().providedMtime(new DateTime(status.getModified())));
+                            new FilesPathBody().providedMtime(status.getModified() != null ? new DateTime(status.getModified()) : null));
             status.setResponse(new BrickAttributesFinderFeature(session).toAttributes(response));
         }
         catch(ApiException e) {

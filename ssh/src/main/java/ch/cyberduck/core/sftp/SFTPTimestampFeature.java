@@ -41,13 +41,12 @@ public class SFTPTimestampFeature extends DefaultTimestampFeature implements Tim
             // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
             // All times are represented as seconds from Jan 1, 1970 in UTC.
             final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(
-                    System.currentTimeMillis() / 1000, status.getModified() / 1000
+                    System.currentTimeMillis() / 1000, status.getModified() != null ? status.getModified() / 1000 : System.currentTimeMillis() / 1000
             ).build();
             session.sftp().setAttributes(file.getAbsolute(), attrs);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
         }
-
     }
 }

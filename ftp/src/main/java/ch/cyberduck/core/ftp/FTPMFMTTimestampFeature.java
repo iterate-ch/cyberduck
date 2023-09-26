@@ -48,11 +48,13 @@ public class FTPMFMTTimestampFeature extends DefaultTimestampFeature implements 
             throw new FTPExceptionMappingService().map("Cannot change timestamp of {0}", failure, file);
         }
         try {
-            final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
-            if(!session.getClient().setModificationTime(file.getAbsolute(),
-                    formatter.format(status.getModified(), TimeZone.getTimeZone("UTC")))) {
-                throw failure = new FTPException(session.getClient().getReplyCode(),
-                    session.getClient().getReplyString());
+            if(null != status.getModified()) {
+                final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
+                if(!session.getClient().setModificationTime(file.getAbsolute(),
+                        formatter.format(status.getModified(), TimeZone.getTimeZone("UTC")))) {
+                    throw failure = new FTPException(session.getClient().getReplyCode(),
+                            session.getClient().getReplyString());
+                }
             }
         }
         catch(IOException e) {
