@@ -51,7 +51,7 @@ public class VaultRegistryVersioningFeature implements Versioning {
     @Override
     public boolean isRevertable(final Path file) {
         try {
-            return registry.find(session, file).getFeature(session, Versioning.class, proxy).isRevertable(file);
+            return registry.find(session, file, false).getFeature(session, Versioning.class, proxy).isRevertable(file);
         }
         catch(VaultUnlockCancelException e) {
             return false;

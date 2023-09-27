@@ -64,7 +64,7 @@ public class VaultRegistryCopyFeature implements Copy {
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
                 return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(destination).isRecursive(source, copy);
             }
-            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).isRecursive(source, copy);
+            return registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).isRecursive(source, copy);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.isRecursive(source, copy);
@@ -80,7 +80,7 @@ public class VaultRegistryCopyFeature implements Copy {
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
                 return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(destination).isSupported(source, copy);
             }
-            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).isSupported(source, copy);
+            return registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).isSupported(source, copy);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.isSupported(source, copy);

@@ -45,7 +45,7 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         try {
-            return registry.find(session, workdir).getFeature(session, Directory.class, proxy).isSupported(workdir, name);
+            return registry.find(session, workdir, false).getFeature(session, Directory.class, proxy).isSupported(workdir, name);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.isSupported(workdir, name);
