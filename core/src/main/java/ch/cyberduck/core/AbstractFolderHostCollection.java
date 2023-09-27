@@ -20,9 +20,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
@@ -149,9 +149,9 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         if(!this.isLocked()) {
             final Local file = this.getFile(bookmark);
             try {
-                file.delete();
+                LocalTrashFactory.get().trash(file);
             }
-            catch(AccessDeniedException | NotfoundException e) {
+            catch(AccessDeniedException e) {
                 log.warn(String.format("Failure removing bookmark %s", e.getMessage()));
             }
             this.sort();
