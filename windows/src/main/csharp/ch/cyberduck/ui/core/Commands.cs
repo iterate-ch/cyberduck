@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Ui.Core
 {
@@ -95,11 +96,13 @@ namespace Ch.Cyberduck.Ui.Core
         /// </summary>
         private class Command
         {
+            private static readonly Logger Log = LogManager.getLogger(typeof(Command).FullName);
+
             private readonly EventHandler _clickCommandDelegate;
             private readonly Control[] _controls;
             private readonly MenuItem[] _menuItems;
             private readonly ToolStripItem[] _toolStripItems;
-            private readonly ValidateCommand _validateCommandDelegate;
+            private readonly ValidateCommand2 _validateCommandDelegate;
             private bool clicked = false;
 
             public Command(ToolStripItem[] toolStripItems, MenuItem[] menuItems, Control[] controls,
@@ -108,7 +111,7 @@ namespace Ch.Cyberduck.Ui.Core
                 _toolStripItems = toolStripItems;
                 _menuItems = menuItems;
                 _controls = controls;
-                _validateCommandDelegate = () => validateDelegate(clicked);
+                _validateCommandDelegate = validateDelegate;
                 _clickCommandDelegate = (s, e) =>
                 {
                     clicked = true;
@@ -154,7 +157,7 @@ namespace Ch.Cyberduck.Ui.Core
             /// </summary>
             public void Validate()
             {
-                bool enabled = _validateCommandDelegate();
+                bool enabled = TryValidate();
                 if (_toolStripItems != null)
                     foreach (ToolStripItem item in _toolStripItems)
                     {
@@ -188,6 +191,23 @@ namespace Ch.Cyberduck.Ui.Core
                     }
                 //apparently we do not need to remove the click handler from any MenuItem. Seems
                 //already removed at this point.
+            }
+
+            private bool TryValidate()
+            {
+                try
+                {
+                    return _validateCommandDelegate(clicked);
+                }
+                catch (Exception ex)
+                {
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.info("Failure validating", ex);
+                    }
+                }
+
+                return false;
             }
         }
     }
