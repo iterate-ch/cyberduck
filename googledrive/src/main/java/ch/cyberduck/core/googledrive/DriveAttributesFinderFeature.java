@@ -77,6 +77,9 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
         if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(file.getParent())) {
             list = new DriveTeamDrivesListService(session, fileid).list(file.getParent(), listener);
         }
+        else if(new SimplePathPredicate(DriveHomeFinderService.TRASH_FOLDER).test(file.getParent())) {
+            list = new DriveTrashedListService(session, fileid).list(file.getParent(), listener);
+        }
         else {
             list = new FileidDriveListService(session, fileid, query).list(file.getParent(), listener);
         }
