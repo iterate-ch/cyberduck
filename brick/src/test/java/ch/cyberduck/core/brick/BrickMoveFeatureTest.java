@@ -33,6 +33,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -57,6 +58,31 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         assertEquals(test.attributes().getModificationDate(), targetAttr.getModificationDate());
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), targetAttr));
+        new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testRename() throws Exception {
+        final Path test = new BrickTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path target = new BrickMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new BrickFindFeature(session).find(test));
+        assertTrue(new BrickFindFeature(session).find(target));
+        assertEquals(test.attributes(), target.attributes());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testRenameCaseOnly() throws Exception {
+        final String name = new AlphanumericRandomStringService().random();
+        final Path test = new BrickTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+                StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path target = new BrickMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(),
+                StringUtils.lowerCase(name), EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertTrue(new BrickFindFeature(session).find(test));
+        assertTrue(new BrickFindFeature(session).find(target));
+        assertEquals(test.attributes(), target.attributes());
         new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
