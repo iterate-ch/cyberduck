@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -101,6 +102,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
         private final AtomicReference<B2StartLargeFileResponse> startLargeFileResponse = new AtomicReference<>();
         private final AtomicReference<BaseB2Response> finishLargeFileResponse = new AtomicReference<>();
 
+        private final ChecksumCompute sha1 = ChecksumComputeFactory.get(HashAlgorithm.sha1);
+
         private int partNumber;
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
@@ -159,8 +162,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                         public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().withLength(len);
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
-                            final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1)
-                                    .compute(new ByteArrayInputStream(content, off, len), status);
+                            final Checksum checksum = sha1.compute(new ByteArrayInputStream(content, off, len), status);
                             try {
                                 return session.getClient().uploadLargeFilePart(startLargeFileResponse.get().getFileId(), segment, entity, checksum.hash);
                             }
