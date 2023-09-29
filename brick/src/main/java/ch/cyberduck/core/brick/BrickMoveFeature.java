@@ -15,6 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
@@ -49,10 +50,12 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
         try {
             final BrickApiClient client = new BrickApiClient(session);
             if(status.isExists()) {
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                if(!new CaseInsensitivePathPredicate(file).test(target)) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                    }
+                    new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, delete);
                 }
-                new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, delete);
             }
             final FileActionEntity entity = new FileActionsApi(client)
                     .move(new MovePathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
