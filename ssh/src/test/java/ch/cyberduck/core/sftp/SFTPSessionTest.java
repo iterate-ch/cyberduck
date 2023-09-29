@@ -23,8 +23,10 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
+import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -139,6 +141,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testFeatures() {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertEquals(DefaultVersioningFeature.class, session.getFeature(Versioning.class).getClass());
         assertNotNull(session.getFeature(Compress.class));
         assertNotNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));

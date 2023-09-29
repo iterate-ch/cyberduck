@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
 
     @Test
     public void testFeatures() {
-        assertNull(session.getFeature(Versioning.class));
+        assertEquals(DefaultVersioningFeature.class, session.getFeature(Versioning.class).getClass());
         assertNull(session.getFeature(Lifecycle.class));
         assertNotNull(session.getFeature(Copy.class));
         assertNotNull(session.getFeature(Location.class));

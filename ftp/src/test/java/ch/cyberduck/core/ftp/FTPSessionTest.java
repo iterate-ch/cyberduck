@@ -9,10 +9,12 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -100,6 +102,7 @@ public class FTPSessionTest extends AbstractFTPTest {
     public void testFeatures() {
         assertNotNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));
+        assertEquals(DefaultVersioningFeature.class, session.getFeature(Versioning.class).getClass());
     }
 
     @Test

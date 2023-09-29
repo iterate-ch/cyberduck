@@ -16,9 +16,11 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -110,6 +112,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     @Test
     public void testFeatures() {
         final Session session = new DAVSession(new Host(new DAVProtocol(), "h"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertEquals(DefaultVersioningFeature.class, session.getFeature(Versioning.class).getClass());
         assertNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));
         assertNotNull(session.getFeature(Copy.class));
