@@ -61,6 +61,8 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
+            status.setModified(1620113107725L);
+            status.setCreated(1695160857860L);
             final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
             final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -71,6 +73,8 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(folderTimestamp, new StoregateAttributesFinderFeature(session, nodeid).find(room).getModificationDate());
         PathAttributes attributes = new StoregateAttributesFinderFeature(session, nodeid).find(test);
+        assertEquals(1695160857860L, attributes.getCreationDate());
+        assertEquals(1620113107725L, attributes.getModificationDate());
         final String versionId = attributes.getVersionId();
         assertNull(versionId);
         final String nodeId = attributes.getFileId();
