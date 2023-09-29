@@ -170,7 +170,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
-        new EueMoveFeature(session, fileid).move(file, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new EueMoveFeature(session, fileid).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
