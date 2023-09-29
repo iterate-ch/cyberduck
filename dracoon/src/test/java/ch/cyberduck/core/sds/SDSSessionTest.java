@@ -81,7 +81,10 @@ public class SDSSessionTest extends AbstractSDSTest {
 
     @Test(expected = ConnectionRefusedException.class)
     public void testProxyNoConnect() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/DRACOON (CLI).cyberduckprofile"));
+        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
                 System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -103,7 +106,10 @@ public class SDSSessionTest extends AbstractSDSTest {
     @Ignore
     @Test(expected = ProxyLoginFailureException.class)
     public void testConnectProxyInvalidCredentials() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/DRACOON (CLI).cyberduckprofile"));
+        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
                 System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
         ));
         final SDSSession session = new SDSSession(host, new DefaultX509TrustManager(),
