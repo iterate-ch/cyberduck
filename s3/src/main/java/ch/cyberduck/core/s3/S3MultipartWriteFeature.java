@@ -9,6 +9,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -110,6 +111,8 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         private final AtomicReference<ServiceException> canceled = new AtomicReference<>();
         private final AtomicReference<MultipartCompleted> response = new AtomicReference<>();
 
+        private final ChecksumCompute sha256 = ChecksumComputeFactory.get(HashAlgorithm.sha256);
+
         private Long offset = 0L;
         private int partNumber;
 
@@ -136,8 +139,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                         final TransferStatus status = new TransferStatus().withParameters(parameters).withLength(len);
                         switch(session.getSignatureVersion()) {
                             case AWS4HMACSHA256:
-                                status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256)
-                                        .compute(new ByteArrayInputStream(content, off, len), status)
+                                status.setChecksum(sha256.compute(new ByteArrayInputStream(content, off, len), status)
                                 );
                                 break;
                         }
