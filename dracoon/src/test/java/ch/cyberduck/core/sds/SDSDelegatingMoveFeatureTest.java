@@ -88,7 +88,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionId = test.attributes().getVersionId();
         final Path target = new Path(room, test.getName().toUpperCase(), EnumSet.of(Path.Type.file));
-        final Path result = new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path result = new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target,
+                new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(versionId, result.attributes().getVersionId());
         assertEquals(0, session.getMetrics().get(Copy.class));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
