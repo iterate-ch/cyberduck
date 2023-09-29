@@ -24,6 +24,10 @@
     <artifactId>cryptomator</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <cryptolib.version>2.1.2.1</cryptolib.version>
+    </properties>
+
     <profiles>
         <profile>
             <id>windows</id>
@@ -63,7 +67,7 @@
         <dependency>
             <groupId>ch.iterate.cryptomator</groupId>
             <artifactId>cryptolib</artifactId>
-            <version>2.1.0</version>
+            <version>${cryptolib.version}</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
