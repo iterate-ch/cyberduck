@@ -69,7 +69,11 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
             final byte[] contentLatest = RandomUtils.nextBytes(13247);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentLatest), writer.write(test, status.withLength(contentLatest.length).exists(true), new DisabledConnectionCallback()));
         }
-        final AttributedList<Path> versions = feature.list(test.withAttributes(new OwncloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener());
+        final AttributedList<Path> versions = new AttributedList<>();
+        do {
+            versions.addAll(feature.list(test.withAttributes(new OwncloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener()));
+        }
+        while(versions.size() != 2);
         assertEquals(2, versions.size());
         final Path initialVersion = versions.get(1);
         {
