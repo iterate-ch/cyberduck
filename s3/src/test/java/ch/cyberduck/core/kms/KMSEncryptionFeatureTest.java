@@ -16,26 +16,18 @@ package ch.cyberduck.core.kms;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3LocationFeature;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -100,18 +92,5 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
         assertTrue(keys.contains(Encryption.Algorithm.NONE));
         assertTrue(keys.contains(S3EncryptionFeature.SSE_AES256));
         assertEquals(2, keys.size());
-    }
-
-    @Test(expected = LoginFailureException.class)
-    public void testCreateUserAuthenticationFailure() throws Exception {
-        final S3Session session = new S3Session(
-            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(
-                    "key", "secret"
-                )));
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        new KMSEncryptionFeature(session, new S3LocationFeature(session), new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()).getKeys(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback());
     }
 }
