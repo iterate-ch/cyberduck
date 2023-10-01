@@ -139,8 +139,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                         final TransferStatus status = new TransferStatus().withParameters(parameters).withLength(len);
                         switch(session.getSignatureVersion()) {
                             case AWS4HMACSHA256:
-                                status.setChecksum(sha256.compute(new ByteArrayInputStream(content, off, len), status)
-                                );
+                                status.setChecksum(sha256.compute(new ByteArrayInputStream(content, off, len), status));
                                 break;
                         }
                         status.setSegment(true);
