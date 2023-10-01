@@ -52,6 +52,11 @@ public class LocalTest {
         }).isEmpty());
     }
 
+    @Test
+    public void testListNotfound() {
+        assertThrows(LocalAccessDeniedException.class, () -> new Local(new AlphanumericRandomStringService().random()).list());
+    }
+
     @Test(expected = AccessDeniedException.class)
     public void testReadNoFile() throws Exception {
         final String name = UUID.randomUUID().toString();
@@ -262,7 +267,7 @@ public class LocalTest {
     @Test
     public void testNormalize() {
         assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"),
-            PreferencesFactory.get().getProperty("local.delimiter")), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
+                PreferencesFactory.get().getProperty("local.delimiter")), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
     }
 
     private static class WindowsLocal extends Local {
