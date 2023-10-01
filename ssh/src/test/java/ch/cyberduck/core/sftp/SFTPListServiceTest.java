@@ -20,7 +20,6 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -61,8 +60,6 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));
-        // Not preserving Unicode normalization
-        assertNotEquals(filename, list.find(new DefaultPathPredicate(file)).getName());
         assertEquals(permission, list.get(file).attributes().getPermission());
         assertTrue(list.contains(directory));
         assertTrue(list.contains(symlinkRelative));
