@@ -159,7 +159,7 @@ public class S3SessionTest extends AbstractS3Test {
                 switch(request) {
                     case request:
                         if(message.contains("Host:")) {
-                            assertEquals("Host: cyberduck.io:443", message);
+                            assertEquals("Host: cyberduck.io", message);
                             set.set(true);
                         }
                 }
