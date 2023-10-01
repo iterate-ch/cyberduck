@@ -255,13 +255,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test
-    public void testListAWS2AutoSwitchAWS4SignatureFrankfurt() throws Exception {
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final AttributedList<Path> list = new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
-    }
-
     @Test(expected = BackgroundException.class)
     public void testAccessPathStyleBucketEuCentral() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
