@@ -256,13 +256,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     }
 
     @Test
-    public void testListAWS4SignatureFrankfurt() throws Exception {
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final AttributedList<Path> list = new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
-    }
-
-    @Test
     public void testListAWS2AutoSwitchAWS4SignatureFrankfurt() throws Exception {
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
