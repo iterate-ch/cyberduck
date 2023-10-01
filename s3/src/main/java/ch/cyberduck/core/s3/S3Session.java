@@ -131,7 +131,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     private S3CredentialsStrategy authentication;
-    private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
+
+    private final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
             = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
@@ -165,10 +166,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
         return authenticationHeaderSignatureVersion;
-    }
-
-    public void setSignatureVersion(final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion) {
-        this.authenticationHeaderSignatureVersion = authenticationHeaderSignatureVersion;
     }
 
     /**

@@ -105,17 +105,6 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     }
 
     @Test(expected = InteroperabilityException.class)
-    public void testWriteChunkedTransferAWS2SignatureFailure() throws Exception {
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final TransferStatus status = new TransferStatus();
-        status.setLength(-1L);
-        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        feature.write(file, status, new DisabledConnectionCallback());
-    }
-
-    @Test(expected = InteroperabilityException.class)
     public void testWriteChunkedTransferAWS4Signature() throws Exception {
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));

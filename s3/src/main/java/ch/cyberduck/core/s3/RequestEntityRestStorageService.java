@@ -404,13 +404,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     @Override
     public void authorizeHttpRequest(final String bucketName, final HttpUriRequest httpMethod, final HttpContext context,
-                                     final String forceRequestSignatureVersion) throws ServiceException {
-        if(forceRequestSignatureVersion != null) {
-            final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-                    = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(StringUtils.remove(forceRequestSignatureVersion, "-"));
-            log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
-            session.setSignatureVersion(authenticationHeaderSignatureVersion);
-        }
+                                     final String forceRequestSignatureVersion) {
+        // No-op
     }
 
     @Override
