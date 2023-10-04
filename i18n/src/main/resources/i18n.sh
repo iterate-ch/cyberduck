@@ -21,7 +21,7 @@ nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
 arch="$(/usr/bin/arch)"
-tx="$workdir/tx"
+tx="$workdir/tx --config $workdir/.transifexrc"
 extension=".xib"
 
 usage() {
