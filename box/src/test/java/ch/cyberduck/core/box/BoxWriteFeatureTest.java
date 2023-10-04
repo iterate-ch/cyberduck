@@ -56,7 +56,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         assertEquals(folderModification, folder.attributes().getModificationDate());
         // Makes sure to test overwrite
         final Path file = new BoxTouchFeature(session, fileid).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withCreated(1503654615002L));
         final byte[] content = RandomUtils.nextBytes(2047);
         final TransferStatus status = new TransferStatus();
         status.setModified(1503654614004L); //GMT: Friday, 25. August 2017 09:50:14.004
@@ -89,6 +89,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         assertNotEquals(file.attributes(), fileAttr);
         assertEquals(file.attributes().getCreationDate(), fileAttr.getCreationDate());
         assertNotEquals(file.attributes().getModificationDate(), fileAttr.getModificationDate());
+        assertEquals(1503654615000L, fileAttr.getCreationDate()); //milliseconds are ignored by the Box - GMT: Friday, 25. August 2017 09:50:14
         assertEquals(1503654614000L, fileAttr.getModificationDate()); //milliseconds are ignored by the Box - GMT: Friday, 25. August 2017 09:50:14
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

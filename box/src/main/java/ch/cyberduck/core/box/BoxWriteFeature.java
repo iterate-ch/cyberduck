@@ -92,7 +92,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                     new JSON().getContext(null).writeValue(content, new FilescontentAttributes()
                             .name(file.getName())
                             .parent(new FilescontentAttributesParent().id(fileid.getFileId(file.getParent())))
-                            .contentCreatedAt(status.getCreated() != null ? new DateTime(status.getModified()) : null)
+                            .contentCreatedAt(status.getCreated() != null ? new DateTime(status.getCreated()) : null)
                             .contentModifiedAt(status.getModified() != null ? new DateTime(status.getModified()) : null)
                     );
                     final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
