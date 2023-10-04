@@ -8,7 +8,9 @@ https://cyberduck.io/
 - [Feature] Support login using OAuth 2.0 in (ownCloud) (#14876)
 - [Feature] Allow to create internal share (ownCloud, Nextcloud) (#14197)
 - [Feature] Option to automatically download and install updates (macOS)
+- [Feature] Set creation date for uploaded files (Backblaze B2, Box, Google Drive)
 - [Bugfix] Refresh temporary access credentials obtained from CLI configuration (S3) (#10917)
+- [Bugfix] Cannot reuse nonce for GCM encryption uploading small files (Cryptomator)
 
 8.6.3
 - [Bugfix] Failure configuring credentials from AWS CLI setup (S3) (#14970)
