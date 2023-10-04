@@ -380,13 +380,13 @@ CA
                         <action selector="deleteFileButtonClicked:" target="-1" id="165"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Revert" id="86">
+                <menuItem title="Отменить" id="86">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Restore" id="7eU-SG-dx0">
+                <menuItem title="Восстановить" id="7eU-SG-dx0">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
@@ -395,7 +395,7 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Lock Vault" keyEquivalent="l" id="oiv-b0-EWZ">
+                <menuItem title="Запереть сейф" keyEquivalent="l" id="oiv-b0-EWZ">
                     <connections>
                         <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="0Jf-FX-vuw"/>
                     </connections>
@@ -406,7 +406,7 @@ CA
                 <menuItem title="Создать архив" id="88">
                     <menu key="submenu" title="Создать архив" id="89"/>
                 </menuItem>
-                <menuItem title="Expand Archive" id="90">
+                <menuItem title="Распаковать Архив" id="90">
                     <connections>
                         <action selector="unarchiveButtonClicked:" target="-1" id="181"/>
                     </connections>

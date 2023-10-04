@@ -1547,7 +1547,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bhz-d7-jSQ">
                                 <rect key="frame" x="10" y="50" width="435" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Automatically download and install updates" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="NvW-EF-5oW">
+                                <buttonCell key="cell" type="check" title="Descargar e instalar las actualizaciones automáticamente" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="NvW-EF-5oW">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
