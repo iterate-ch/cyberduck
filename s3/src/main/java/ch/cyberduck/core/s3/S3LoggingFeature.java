@@ -99,11 +99,11 @@ public class S3LoggingFeature implements Logging {
         try {
             final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
                     StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() :
-                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), null);
+                            bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(), null);
             if(configuration.isEnabled()) {
                 status.setLogfilePrefix(new HostPreferences(session.getHost()).getProperty("s3.logging.prefix"));
             }
-            session.getClient().setBucketLoggingStatus(bucket.getName(), status, true);
+            session.getClient().setBucketLoggingStatus(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), status, true);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);
