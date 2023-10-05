@@ -723,6 +723,24 @@
                             </rules>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>enforce-banned-dependencies</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.bouncycastle:bcprov-jdk15on</exclude>
+                                    </excludes>
+                                    <excludes>
+                                        <exclude>org.bouncycastle:bcpkix-jdk15on</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>

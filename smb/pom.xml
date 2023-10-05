@@ -48,6 +48,12 @@
             <groupId>com.rapid7.client</groupId>
             <artifactId>dcerpc</artifactId>
             <version>0.12.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
