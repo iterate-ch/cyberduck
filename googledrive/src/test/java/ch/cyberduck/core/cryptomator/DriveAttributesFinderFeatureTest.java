@@ -130,7 +130,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final AttributedList<Path> list = new AttributedList<>();
         list.add(found);
         cache.put(vault, list);
-        final PathAttributes attributes = new CachingAttributesFinderFeature(cache, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator)).find(test);
+        final PathAttributes attributes = new CachingAttributesFinderFeature(session, cache, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator)).find(test);
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         assertEquals(0L, cache.get(vault).get(0).attributes().getSize());
@@ -158,7 +158,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final AttributedList<Path> list = new AttributedList<>();
         list.add(test);
         cache.put(vault, list);
-        final PathAttributes attributes = new CachingAttributesFinderFeature(cache, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator)).find(test);
+        final PathAttributes attributes = new CachingAttributesFinderFeature(session, cache, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator)).find(test);
         assertEquals(fileId, attributes.getFileId());
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, idProvider)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -47,11 +47,11 @@ public class CachingAttributesFinderFeatureTest extends AbstractB2Test {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final PathCache cache = new PathCache(1);
-        final CachingAttributesFinderFeature f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
+        final CachingAttributesFinderFeature f = new CachingAttributesFinderFeature(session, cache, new DefaultAttributesFinderFeature(session));
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         f.find(test);
         // Test cache
-        new CachingAttributesFinderFeature(cache, new AttributesFinder() {
+        new CachingAttributesFinderFeature(session, cache, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 fail("Expected cache hit");
@@ -64,7 +64,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractB2Test {
     public void testAttributes() throws Exception {
         final PathCache cache = new PathCache(1);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final AttributesFinder f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
+        final AttributesFinder f = new CachingAttributesFinderFeature(session, cache, new DefaultAttributesFinderFeature(session));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(bucket, name, EnumSet.of(Path.Type.file));
@@ -72,7 +72,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractB2Test {
         final Attributes lookup = f.find(file);
         assertEquals(0L, lookup.getSize());
         // Test cache
-        assertSame(lookup, new CachingAttributesFinderFeature(cache, new AttributesFinder() {
+        assertSame(lookup, new CachingAttributesFinderFeature(session, cache, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 fail("Expected cache hit");

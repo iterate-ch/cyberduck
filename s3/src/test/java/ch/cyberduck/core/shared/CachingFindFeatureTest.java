@@ -47,7 +47,7 @@ public class CachingFindFeatureTest extends AbstractS3Test {
         final PathCache cache = new PathCache(1);
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
-        final CachingFindFeature f = new CachingFindFeature(cache, new DefaultFindFeature(session));
+        final CachingFindFeature f = new CachingFindFeature(session, cache, new DefaultFindFeature(session));
         assertFalse(f.find(new Path(bucket, name, EnumSet.of(Path.Type.file))));
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertFalse(f.find(test));
@@ -55,7 +55,7 @@ public class CachingFindFeatureTest extends AbstractS3Test {
         assertTrue(f.find(test));
         // Find without version id set in attributes
         assertTrue(f.find(new Path(test).withAttributes(PathAttributes.EMPTY)));
-        assertTrue(new CachingFindFeature(cache, new Find() {
+        assertTrue(new CachingFindFeature(session, cache, new Find() {
             @Override
             public boolean find(final Path file, final ListProgressListener listener) {
                 fail("Expected cache hit");

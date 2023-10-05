@@ -69,7 +69,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         final PathCache cache = new PathCache(1);
         final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        assertFalse(new CachingFindFeature(cache, new S3FindFeature(session, new S3AccessControlListFeature(session))).find(directory));
+        assertFalse(new CachingFindFeature(session, cache, new S3FindFeature(session, new S3AccessControlListFeature(session))).find(directory));
         assertFalse(cache.isCached(directory));
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }

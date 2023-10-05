@@ -175,9 +175,9 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        final Find find = new CachingFindFeature(cache,
+        final Find find = new CachingFindFeature(destination, cache,
             destination.getFeature(Find.class, new DefaultFindFeature(destination)));
-        final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(destination, cache,
             destination.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(destination)));
         if(action.equals(TransferAction.comparison)) {
             return new ChecksumFilter(source, destination, mapping).withFinder(find).withAttributes(attributes);

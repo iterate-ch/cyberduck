@@ -150,9 +150,9 @@ public class SyncTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        final Find find = new CachingFindFeature(cache,
+        final Find find = new CachingFindFeature(source, cache,
             source.getFeature(Find.class, new DefaultFindFeature(source)));
-        final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(source, cache,
             source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         // Set chosen action (upload, download, mirror) from prompt
         comparison = new CachingComparePathFilter(new DefaultComparePathFilter(source))
@@ -195,7 +195,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<>();
-        final Find finder = new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session)));
+        final Find finder = new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session)));
         if(finder.find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }

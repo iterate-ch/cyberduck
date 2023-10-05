@@ -141,7 +141,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
             assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         }
         {
-            final PathAttributes attributes = new CachingAttributesFinderFeature(cache, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator)).find(test);
+            final PathAttributes attributes = new CachingAttributesFinderFeature(session, cache, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator)).find(test);
             assertEquals(content.length, attributes.getSize());
             assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         }
