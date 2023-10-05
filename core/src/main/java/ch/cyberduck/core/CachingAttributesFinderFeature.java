@@ -26,12 +26,18 @@ import org.apache.logging.log4j.Logger;
 public class CachingAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = LogManager.getLogger(CachingAttributesFinderFeature.class);
 
+    private final Protocol.Case sensitivity;
     private final Cache<Path> cache;
     private final AttributesFinder delegate;
 
-    public CachingAttributesFinderFeature(final Cache<Path> cache, final AttributesFinder delegate) {
+    public CachingAttributesFinderFeature(final Session<?> session, final Cache<Path> cache, final AttributesFinder delegate) {
+        this(session.getCaseSensitivity(), cache, delegate);
+    }
+
+    public CachingAttributesFinderFeature(final Protocol.Case sensitivity, final Cache<Path> cache, final AttributesFinder delegate) {
         this.cache = cache;
         this.delegate = delegate;
+        this.sensitivity = sensitivity;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
         }
         if(cache.isValid(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
+            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
             if(null != found) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Return cached attributes %s for %s", found.attributes(), file));

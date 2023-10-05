@@ -120,10 +120,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         final TransferStatus status = new TransferStatus()
                                 .withLockId(this.getLockId(r.getKey()))
                                 .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                                .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+                                .exists(new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
                                 .withLength(r.getKey().attributes().getSize());
                         if(status.isExists()) {
-                            status.withRemote(new CachingAttributesFinderFeature(cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
+                            status.withRemote(new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
                         }
                         final Delete.Callback delete = new Delete.Callback() {
                             @Override
@@ -151,7 +151,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                 final Path target = new Path(new DefaultVersioningFeature.DefaultVersioningDirectoryProvider().provide(r.getValue()),
                                                         version.getName(), version.getType());
                                                 final Path directory = target.getParent();
-                                                if(!new CachingFindFeature(cache, new DefaultFindFeature(session)).find(directory)) {
+                                                if(!new CachingFindFeature(session, cache, new DefaultFindFeature(session)).find(directory)) {
                                                     if(log.isDebugEnabled()) {
                                                         log.debug(String.format("Create directory %s for versions", directory));
                                                     }
@@ -168,7 +168,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                 feature.move(version, target, new TransferStatus()
                                                         .withLockId(this.getLockId(version))
                                                         .withMime(new MappingMimeTypeService().getMime(version.getName()))
-                                                        .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(target))
+                                                        .exists(new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(target))
                                                         .withLength(version.attributes().getSize()), delete, callback);
                                             }
                                         }

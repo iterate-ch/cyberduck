@@ -50,7 +50,7 @@ public class CachingFindFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final String name = new AlphanumericRandomStringService().random();
-        final CachingFindFeature f = new CachingFindFeature(cache, new DefaultFindFeature(session));
+        final CachingFindFeature f = new CachingFindFeature(session, cache, new DefaultFindFeature(session));
         assertFalse(f.find(new Path(bucket, name, EnumSet.of(Path.Type.file))));
         final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertFalse(f.find(test));
@@ -70,19 +70,19 @@ public class CachingFindFeatureTest extends AbstractB2Test {
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new B2TouchFeature(session, fileid).touch(
                 new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final CachingFindFeature f = new CachingFindFeature(cache, new DefaultFindFeature(session));
+        final CachingFindFeature f = new CachingFindFeature(session, cache, new DefaultFindFeature(session));
         // Find without version id set in attributes
         assertTrue(f.find(test));
         assertTrue(f.find(new Path(test).withAttributes(PathAttributes.EMPTY)));
-        assertEquals(test.attributes(), new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session)).find(test));
-        assertTrue(new CachingFindFeature(cache, new Find() {
+        assertEquals(test.attributes(), new CachingAttributesFinderFeature(session, cache, new DefaultAttributesFinderFeature(session)).find(test));
+        assertTrue(new CachingFindFeature(session, cache, new Find() {
             @Override
             public boolean find(final Path file, final ListProgressListener listener) {
                 fail("Expected cache hit");
                 return false;
             }
         }).find(test));
-        assertTrue(new CachingFindFeature(cache, new Find() {
+        assertTrue(new CachingFindFeature(session, cache, new Find() {
             @Override
             public boolean find(final Path file, final ListProgressListener listener) {
                 fail("Expected cache hit");

@@ -25,12 +25,18 @@ import org.apache.logging.log4j.Logger;
 public class CachingFindFeature implements Find {
     private static final Logger log = LogManager.getLogger(CachingFindFeature.class);
 
+    private final Protocol.Case sensitivity;
     private final Cache<Path> cache;
     private final Find delegate;
 
-    public CachingFindFeature(final Cache<Path> cache, final Find delegate) {
+    public CachingFindFeature(final Session<?> session, final Cache<Path> cache, final Find delegate) {
+        this(session.getCaseSensitivity(), cache, delegate);
+    }
+
+    public CachingFindFeature(final Protocol.Case sensitivity, final Cache<Path> cache, final Find delegate) {
         this.cache = cache;
         this.delegate = delegate;
+        this.sensitivity = sensitivity;
     }
 
     @Override
@@ -40,7 +46,7 @@ public class CachingFindFeature implements Find {
         }
         if(cache.isValid(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
+            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
             if(found != null) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found %s in cache", file));

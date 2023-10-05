@@ -153,12 +153,12 @@ public class DownloadTransfer extends Transfer {
         final Find find;
         final AttributesFinder attributes;
         if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
-            find = new CachingFindFeature(cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
-            attributes = new CachingAttributesFinderFeature(cache, source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+            find = new CachingFindFeature(source, cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
+            attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         }
         else {
-            find = new CachingFindFeature(cache, source.getFeature(Find.class));
-            attributes = new CachingAttributesFinderFeature(cache, source.getFeature(AttributesFinder.class));
+            find = new CachingFindFeature(source, cache, source.getFeature(Find.class));
+            attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Determined features %s and %s", find, attributes));

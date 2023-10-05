@@ -56,11 +56,11 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final PathCache cache = new PathCache(1);
-        final CachingAttributesFinderFeature f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
+        final CachingAttributesFinderFeature f = new CachingAttributesFinderFeature(session, cache, new DefaultAttributesFinderFeature(session));
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         f.find(test);
         // Test cache
-        new CachingAttributesFinderFeature(cache, new AttributesFinder() {
+        new CachingAttributesFinderFeature(session, cache, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 fail("Expected cache hit");
@@ -72,7 +72,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
     @Test
     public void testDefaultAttributes() throws Exception {
         final PathCache cache = new PathCache(1);
-        final AttributesFinder f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
+        final AttributesFinder f = new CachingAttributesFinderFeature(session, cache, new DefaultAttributesFinderFeature(session));
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -84,7 +84,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
         // Test with no specific version id
         assertSame(lookup, f.find(new Path(file).withAttributes(PathAttributes.EMPTY)));
         // Test cache
-        assertEquals(0L, new CachingAttributesFinderFeature(cache, new AttributesFinder() {
+        assertEquals(0L, new CachingAttributesFinderFeature(session, cache, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 fail("Expected cache hit");

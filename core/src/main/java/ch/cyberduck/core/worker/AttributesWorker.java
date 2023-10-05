@@ -46,7 +46,7 @@ public class AttributesWorker extends Worker<PathAttributes> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Read latest attributes for file %s", file));
         }
-        final AttributesFinder find = new CachingAttributesFinderFeature(cache, session.getFeature(AttributesFinder.class));
+        final AttributesFinder find = new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class));
         final PathAttributes attr = find.find(file);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Return %s for file %s", attr, file));
