@@ -150,6 +150,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                             .password(true)
                                             .user(false)
                                             .keychain(false)
+                                            .anonymous(true)
                             );
                         }
                         catch(LoginCanceledException e) {
