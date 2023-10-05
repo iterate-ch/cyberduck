@@ -254,7 +254,7 @@ CA
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Request files…" id="GnH-xE-vqc">
+                            <menuItem title="파일 요청..." id="GnH-xE-vqc">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="requestFilesButtonClicked:" target="-1" id="Tw9-ZC-2SW"/>

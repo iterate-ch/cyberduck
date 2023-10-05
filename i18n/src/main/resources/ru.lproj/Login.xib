@@ -143,7 +143,7 @@ Gw
                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="23">
                         <rect key="frame" x="19" y="22" width="173" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="Запомнить в Keychain" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="24">
+                        <buttonCell key="cell" type="check" title="Добавить в связку ключей" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="24">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>

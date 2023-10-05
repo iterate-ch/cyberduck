@@ -427,7 +427,7 @@ CA
                         <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Request files…" id="MMd-ej-pkb">
+                <menuItem title="파일 요청..." id="MMd-ej-pkb">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="requestFilesButtonClicked:" target="-1" id="z9T-Od-FNa"/>

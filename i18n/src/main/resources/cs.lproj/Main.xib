@@ -94,7 +94,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="Soubor" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
