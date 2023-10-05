@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -63,14 +64,19 @@ public class S3LoggingFeature implements Logging {
             }
             final LoggingConfiguration configuration = new LoggingConfiguration(status.isLoggingEnabled(),
                     status.getTargetBucketName());
-            try {
-                configuration.setContainers(new S3BucketListService(session).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        new DisabledListProgressListener()).toList());
+            if(bucket.isRoot()) {
+                configuration.setContainers(Collections.singletonList(
+                        new Path(RequestEntityRestStorageService.findBucketInHostname(session.getHost()), EnumSet.of(Path.Type.volume, Path.Type.directory)))
+                );
             }
-            catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
-                configuration.setContainers(Collections.singletonList(bucket));
+            else {
+                try {
+                    configuration.setContainers(new S3BucketListService(session).list(Home.ROOT, new DisabledListProgressListener()).toList());
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+                    configuration.setContainers(Collections.singletonList(bucket));
+                }
             }
             return configuration;
         }
