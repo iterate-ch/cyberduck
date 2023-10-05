@@ -124,7 +124,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                     final HttpRange range = HttpRange.byLength(offset, length);
                     final Path bucket = containerService.getContainer(source);
                     final MultipartPart part = session.getClient().multipartUploadPartCopy(multipart, partNumber,
-                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(source),
+                            bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(), containerService.getKey(source),
                             null, null, null, null, range.getStart(), range.getEnd(), source.attributes().getVersionId());
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Received response %s for part number %d", part, partNumber));
