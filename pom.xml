@@ -733,8 +733,6 @@
                                 <bannedDependencies>
                                     <excludes>
                                         <exclude>org.bouncycastle:bcprov-jdk15on</exclude>
-                                    </excludes>
-                                    <excludes>
                                         <exclude>org.bouncycastle:bcpkix-jdk15on</exclude>
                                     </excludes>
                                 </bannedDependencies>
