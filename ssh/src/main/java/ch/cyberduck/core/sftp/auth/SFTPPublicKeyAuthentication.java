@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -90,7 +91,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                     default:
                         throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
                 }
-                provider.init(new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), new PasswordFinder() {
+                provider.init(new File(identity.getAbsolute()), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
                         if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
