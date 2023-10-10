@@ -28,6 +28,7 @@ public class PathAttributesTest {
         attributes.setDuplicate(true);
         attributes.setLockId(new AlphanumericRandomStringService().random());
         attributes.setPermission(new Permission(644));
+        attributes.setVerdict(PathAttributes.Verdict.pending);
         final PathAttributes clone = new PathAttributes(attributes);
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
@@ -79,6 +80,7 @@ public class PathAttributesTest {
         attributes.setDuplicate(true);
         attributes.setRegion("region");
         attributes.setStorageClass("storageClass");
+        attributes.setVerdict(PathAttributes.Verdict.pending);
         final Map<String, String> custom = new HashMap<>(attributes.getCustom());
         custom.put("key", "value");
         attributes.setCustom(custom);
@@ -93,6 +95,7 @@ public class PathAttributesTest {
         assertEquals(attributes.isDuplicate(), deserialized.isDuplicate());
         assertEquals(attributes.getRegion(), deserialized.getRegion());
         assertEquals(attributes.getStorageClass(), deserialized.getStorageClass());
+        assertEquals(attributes.getVerdict(), deserialized.getVerdict());
         assertEquals(attributes.getCustom(), deserialized.getCustom());
         assertEquals(attributes, deserialized);
     }
