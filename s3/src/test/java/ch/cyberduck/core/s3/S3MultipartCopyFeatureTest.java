@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -64,6 +65,28 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(copy));
         assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(copy).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyBucketNameInHostname() throws Exception {
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(1023);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final OutputStream out = new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        test.attributes().setSize(content.length);
+        final Path copy = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(virtualhost, new S3AccessControlListFeature(virtualhost));
+        feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertTrue(new S3FindFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(test));
+        assertEquals(content.length, new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(test).getSize());
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(copy));
+        assertEquals(content.length, new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(copy).getSize());
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
