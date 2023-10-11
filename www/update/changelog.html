@@ -55,12 +55,18 @@
             vertical-align: baseline;
             border-radius: .25em;
         }
+
         ul li {
             list-style-type: none;
             line-height: 1.5em;
         }
+
         ul li ul li {
             list-style-type: disc;
+        }
+
+        ul.sparkle-installed-version {
+            opacity: 0.5;
         }
     </style>
 </head>
@@ -80,7 +86,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.7.0"><strong>Version 8.7.0</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.7.0">
     <li><span class="label label-success">Feature</span> Support to login using temporary credentials from Security Token
         Service (STS API) using OpenID Connect (OIDC) web identity (S3) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13804">#13804</a>)
@@ -114,7 +120,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.6.3"><strong>Version 8.6.3</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.6.3">
     <li><span class="label label-warning">Bugfix</span> Failure configuring credentials from AWS CLI setup (S3) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/14970">#14970</a>)
     </li>
@@ -126,7 +132,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.6.2"><strong>Version 8.6.2</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.6.2">
     <li><span class="label label-success">Feature</span> Allow to open connections without copying authentication code
         after login (Microsoft OneDrive, Sharepoint)
     </li>
@@ -168,14 +174,14 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.6.1"><strong>Version 8.6.1</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.6.1">
     <li><span class="label label-warning">Bugfix</span> Parse seconds or milliseconds from Mtime in metadata (S3)</li>
 </ul>
 
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.6.0"><strong>Version 8.6.0</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.6.0">
     <li><span class="label label-success">Feature</span> Add preference "Use Keychain" when unlocking vaults
         (Cryptomator) (<a target="_blank" href="https://trac.cyberduck.io/ticket/14662">#14662</a>)
     </li>
@@ -223,7 +229,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.9"><strong>Version 8.5.9</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.9">
     <li><span class="label label-warning">Bugfix</span> Requires force quit after opening file multiple times in
         external editor (macOS) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/14412">#14412</a>)
@@ -233,7 +239,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.8"><strong>Version 8.5.8</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.8">
     <li><span class="label label-warning">Bugfix</span> Presigned URL does not consider the server port number (S3) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/13981">#13981</a>)
     </li>
@@ -257,7 +263,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.7"><strong>Version 8.5.7</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.7">
     <li><span class="label label-warning">Bugfix</span> Cannot create or duplicate files with any suffix (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/14263">#14263</a>)
     </li>
@@ -303,7 +309,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.6"><strong>Version 8.5.6</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.6">
     <li><span class="label label-warning">Bugfix</span> Support for vaults using GCM encryption (Cryptomator) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/14207">#14207</a>)
     </li>
@@ -322,7 +328,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.5"><strong>Version 8.5.5</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.5">
     <li><span class="label label-warning">Bugfix</span> Save OAuth tokens with username to allow connecting to different
         accounts (Google Drive,
         Google Storage, OneDrive, Dropbox, Box)
@@ -332,7 +338,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.4"><strong>Version 8.5.4</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.4">
     <li><span class="label label-warning">Bugfix</span> Failure authorizing using OAuth with no desktop browser
         installed (Linux) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/14028">#14028</a>)
@@ -350,7 +356,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.3"><strong>Version 8.5.3</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.3">
     <li><span class="label label-warning">Bugfix</span> Failure uploading file with diacritic in filename (Windows) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/13723">#13723</a>)
     </li>
@@ -372,7 +378,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.2"><strong>Version 8.5.2</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.2">
     <li><span class="label label-warning">Bugfix</span> Invalid syntax in Open in Terminal command (SFTP, macOS)</li>
     <li><span class="label label-warning">Bugfix</span> Passwords for ProxyJump hosts in .ssh/config are not saved
         (SFTP) (<a
@@ -387,7 +393,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.1"><strong>Version 8.5.1</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.1">
     <li><span class="label label-success">Feature</span> Skip button to allow creating share with no passphrase
         (Dropbox, Box, ownCloud, Nextcloud) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13846">#13846</a>)
@@ -408,7 +414,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.5.0"><strong>Version 8.5.0</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.5.0">
     <li><span class="label label-success">Feature</span> Allow to view and revert previous versions of files (ownCloud,
         Nextcloud) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/10560">#10560</a>)
@@ -429,7 +435,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.4.5"><strong>Version 8.4.5</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.4.5">
     <li><span class="label label-warning">Bugfix</span> Failure enabling connection profile from Preferences (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/13739">#13739</a>)
     </li>
@@ -445,7 +451,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.4.4"><strong>Version 8.4.4</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.4.4">
     <li><span class="label label-warning">Bugfix</span> Prioritise password authentication if password is available
         (SFTP) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13442">#13442</a>)
@@ -466,7 +472,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.4.3"><strong>Version 8.4.3</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.4.3">
     <li><span class="label label-warning">Bugfix</span> Repeated prompt to verify server fingerprint (SFTP, Windows) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/13638">#13638</a>)
     </li>
@@ -485,7 +491,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.4.2"><strong>Version 8.4.2</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.4.2">
     <li><span class="label label-warning">Bugfix</span> Setting to always open default editor application set in
         Preferences (Windows) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13546">#13546</a>)
@@ -498,7 +504,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.4.1"><strong>Version 8.4.1</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.4.1">
     <li><span class="label label-warning">Bugfix</span> Crash running on versions prior macOS 11 (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/13521">#13521</a>)
     </li>
@@ -507,7 +513,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.4.0"><strong>Version 8.4.0</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.4.0">
     <li><span class="label label-success">Feature</span> Revert previous file versions in Info panel (S3, Backblaze B2,
         Dropbox, Google Storage, OneDrive, Microsoft Sharepoint)
     </li>
@@ -581,7 +587,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.3.3"><strong>Version 8.3.3</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.3.3">
     <li><span class="label label-warning">Bugfix</span> Failing transfers with multipe files (FTP) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/13322">#13322</a>)
     </li>
@@ -590,7 +596,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.3.2"><strong>Version 8.3.2</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.3.2">
     <li><span class="label label-warning">Bugfix</span> Connection not released causing freeze in browser or transfer
         (FTP) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13273">#13273</a>)
@@ -600,7 +606,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.3.1"><strong>Version 8.3.1</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.3.1">
     <li><span class="label label-warning">Bugfix</span> Failure reconnecting when control connection is closed on server
         (FTP) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13037">#13037</a>)
@@ -616,7 +622,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.3.0"><strong>Version 8.3.0</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.3.0">
     <li><span class="label label-success">Feature</span> Enable authentication using OpenSSH agent on Windows (SFTP,
         Windows) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/12880">#12880</a>)
@@ -660,7 +666,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.2.3"><strong>Version 8.2.3</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.2.3">
     <li><span class="label label-warning">Bugfix</span> When creating new vault save vault.cryptomator to make vaults
         readable by Cryptomator apps (Cryptomator)
     </li>
@@ -675,7 +681,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.2.2"><strong>Version 8.2.2</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.2.2">
     <li><span class="label label-warning">Bugfix</span> Add support reading IdentityAgent from OpenSSH configuration
         (SFTP)
     </li>
@@ -685,7 +691,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.2.1"><strong>Version 8.2.1</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.2.1">
     <li><span class="label label-warning">Bugfix</span> Try all public key algorithms available for a specific key type
         (SFTP) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/12733">#12733</a>)
@@ -705,7 +711,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.2.0"><strong>Version 8.2.0</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.2.0">
     <li><span class="label label-success">Feature</span> Support for Box API (Box) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/10235">#10235</a>)
     </li>
@@ -724,7 +730,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.1.2"><strong>Version 8.1.2</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.1.2">
     <li><span class="label label-warning">Bugfix</span> Crash with unsatisifed link error using random functions
         (Windows) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/12628">#12628</a>)
@@ -734,7 +740,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.1.1"><strong>Version 8.1.1</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.1.1">
     <li><span class="label label-success">Feature</span> Interoperability with vault format 8 (Cryptomator) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/11888">#11888</a>)
     </li>
@@ -752,7 +758,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.1.0"><strong>Version 8.1.0</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.1.0">
     <li><span class="label label-success">Feature</span> Native support for Apple silicon (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/11101">#11101</a>)
     </li>
@@ -761,7 +767,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.0.2"><strong>Version 8.0.2</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.0.2">
     <li><span class="label label-warning">Bugfix</span> Replacing file may cause empty permission set in ACL (S3)</li>
     <li><span class="label label-warning">Bugfix</span> Failure authentication with PuTTY private key (SFTP) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/11887">#11887</a>)
@@ -779,7 +785,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.0.1"><strong>Version 8.0.1</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.0.1">
     <li><span class="label label-warning">Bugfix</span> Interoperability with servers not supporting Range header in
         requests (WebDAV)
     </li>
@@ -788,7 +794,7 @@
 <p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.0.0"><strong>Version 8.0.0</strong></a>
 </p>
-<ul>
+<ul data-sparkle-version="8.0.0">
     <li><span class="label label-success">Feature</span> Allow to manage additional connection profiles in Preferences
         (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/10823">#10823</a>)
