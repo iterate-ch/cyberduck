@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -79,7 +80,9 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
 
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
-        assertEquals(checksum, new B2AttributesFinderFeature(session, fileid).find(test).getChecksum());
+        final PathAttributes attr = new B2AttributesFinderFeature(session, fileid).find(test);
+        assertNotEquals(Checksum.NONE, attr.getChecksum());
+        assertEquals(checksum, attr.getChecksum());
         status.validate();
         assertTrue(status.isComplete());
         assertEquals(content.length, status.getResponse().getSize());
