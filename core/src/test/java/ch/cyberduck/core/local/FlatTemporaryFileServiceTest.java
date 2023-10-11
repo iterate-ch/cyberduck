@@ -53,11 +53,11 @@ public class FlatTemporaryFileServiceTest {
     public void testCreateFile() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
         final String s = System.getProperty("file.separator");
-        assertEquals(String.format("%s%su%s887503681-f", temp, s, s),
+        assertEquals(String.format("%s%su%s1742810335-f", temp, s, s),
                 new FlatTemporaryFileService().create("u", new Path("/p/f", EnumSet.of(Path.Type.file))).getAbsolute());
         final Path file = new Path("/p/f", EnumSet.of(Path.Type.file));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%s887503681-f", temp, s, s),
+        assertEquals(String.format("%s%su%s1742810335-f", temp, s, s),
                 new FlatTemporaryFileService().create("u", file).getAbsolute());
     }
 
@@ -67,7 +67,7 @@ public class FlatTemporaryFileServiceTest {
         final String s = System.getProperty("file.separator");
         final Path file = new Path("/container", EnumSet.of(Path.Type.directory));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%s887503681-container", temp, s, s),
+        assertEquals(String.format("%s%su%s1742810335-container", temp, s, s),
                 new FlatTemporaryFileService().create("u", file).getAbsolute());
     }
 
@@ -99,8 +99,8 @@ public class FlatTemporaryFileServiceTest {
         final Local local = new FlatTemporaryFileService().create("UID", file);
         assertTrue(local.getParent().exists());
         final String localFile = local.getAbsolute();
-        assertEquals(String.format("%s/%s/887551731-%s", temp, "UID", testPathFile).replace('/', File.separatorChar), localFile);
-        assertNotEquals(String.format("%s/%s%s/2/887551731-%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
+        assertEquals(String.format("%s/%s/1744299885-%s", temp, "UID", testPathFile).replace('/', File.separatorChar), localFile);
+        assertNotEquals(String.format("%s/%s%s/2/1744299885-%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
     }
 
     @Test
