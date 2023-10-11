@@ -19,6 +19,7 @@ import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -68,6 +69,7 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
         }
         prompt.await(signal, bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
                 LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
+        bookmark.getCredentials().setSaved(new LoginOptions().save);
         return authenticationCode.get();
     }
 }
