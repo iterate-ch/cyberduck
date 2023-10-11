@@ -2,6 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 8.7.0
+- [Feature] SMB (Server Message Block) protocol support (#5368)
 - [Feature] Support to login using temporary credentials from Security Token Service (STS API) using OpenID Connect (OIDC) web identity (S3) (#13804)
 - [Feature] Login using connection profile for AWS S3/STS + Google (OIDC) (S3)
 - [Feature] Login using connection profile for AWS S3/STS + Azure AD (OIDC) (S3)
