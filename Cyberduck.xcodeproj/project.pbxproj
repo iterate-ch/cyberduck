@@ -166,6 +166,8 @@
 		47827C9724BFA67C006942C3 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C9427C2175D451008871C8 /* AppKit.framework */; };
 		47827C9924BFA800006942C3 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47827C9824BFA800006942C3 /* Quartz.framework */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
+		4785285E2AD6B10A0008184B /* AutofillDisabledSecureTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 4785285C2AD6B10A0008184B /* AutofillDisabledSecureTextField.h */; };
+		4785285F2AD6B10A0008184B /* AutofillDisabledSecureTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 4785285D2AD6B10A0008184B /* AutofillDisabledSecureTextField.m */; };
 		478DB2681DF3418D00BEAA45 /* unlockedbadge.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478DB2671DF3418D00BEAA45 /* unlockedbadge.tiff */; };
 		478F0DF412FB03DC000FE33C /* update.pem in Resources */ = {isa = PBXBuildFile; fileRef = 478F0DF312FB03DC000FE33C /* update.pem */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
@@ -1134,6 +1136,8 @@
 		4784271F0F9F76230068BA2E /* sk */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = i18n/src/main/resources/sk.lproj/License.strings; sourceTree = "<group>"; };
 		478427210F9F76280068BA2E /* tr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/License.strings; sourceTree = "<group>"; };
 		478427220F9F762A0068BA2E /* de */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = i18n/src/main/resources/de.lproj/License.strings; sourceTree = "<group>"; };
+		4785285C2AD6B10A0008184B /* AutofillDisabledSecureTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AutofillDisabledSecureTextField.h; path = core/src/main/objc/AutofillDisabledSecureTextField.h; sourceTree = SOURCE_ROOT; };
+		4785285D2AD6B10A0008184B /* AutofillDisabledSecureTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AutofillDisabledSecureTextField.m; path = core/src/main/objc/AutofillDisabledSecureTextField.m; sourceTree = SOURCE_ROOT; };
 		478DB2671DF3418D00BEAA45 /* unlockedbadge.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = unlockedbadge.tiff; sourceTree = "<group>"; };
 		478F0DF312FB03DC000FE33C /* update.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = update.pem; path = www/update/update.pem; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = i18n/src/main/resources/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1873,6 +1877,8 @@
 		474152D706C4F08A00AC0BD2 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				4785285C2AD6B10A0008184B /* AutofillDisabledSecureTextField.h */,
+				4785285D2AD6B10A0008184B /* AutofillDisabledSecureTextField.m */,
 				47EEFDC52386ECD100A3CAB0 /* UnifiedSystemLogAppender.h */,
 				47EEFDC62386ECD100A3CAB0 /* UnifiedSystemLogAppender.m */,
 				474B843F1C15DB51004D562C /* Sandbox.h */,
@@ -2150,6 +2156,7 @@
 				4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */,
 				474B84411C15DB51004D562C /* Sandbox.h in Headers */,
 				47F85C191C0F101F00FDA856 /* UKCrashReporter.h in Headers */,
+				4785285E2AD6B10A0008184B /* AutofillDisabledSecureTextField.h in Headers */,
 				47F85C1B1C0F101F00FDA856 /* UKSystemInfo.h in Headers */,
 				4705E0091C037AB5002466FA /* LaunchServicesQuarantineService.h in Headers */,
 				47820E3A20B58426006D0501 /* SystemConfigurationReachability.h in Headers */,
@@ -2579,6 +2586,7 @@
 				4705DFF91C037AB5002466FA /* LaunchServicesApplicationFinder.m in Sources */,
 				4705E00E1C037AB5002466FA /* SystemConfigurationProxy.m in Sources */,
 				47820E3920B58426006D0501 /* SystemConfigurationReachability.m in Sources */,
+				4785285F2AD6B10A0008184B /* AutofillDisabledSecureTextField.m in Sources */,
 				4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */,
 				4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */,
 				473A8DD7287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m in Sources */,
