@@ -51,7 +51,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 public class STSAssumeRoleAuthorizationService {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleAuthorizationService.class);
 
-    private final AWSSecurityTokenService service;
+    protected final AWSSecurityTokenService service;
     private final LoginCallback prompt;
     private final Host bookmark;
 

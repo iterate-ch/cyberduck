@@ -61,6 +61,7 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
+import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptorFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -193,8 +194,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             }
             configuration.addInterceptorLast(oauth);
-            final STSAssumeRoleCredentialsRequestInterceptor interceptor
-                    = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt);
+            final STSAssumeRoleCredentialsRequestInterceptor interceptor =
+                    STSAssumeRoleCredentialsRequestInterceptorFactory.get(oauth, this, trust, key, prompt);
             configuration.addInterceptorLast(interceptor);
             configuration.setServiceUnavailableRetryStrategy(new S3AuthenticationResponseInterceptor(this, interceptor));
             authentication = interceptor;
