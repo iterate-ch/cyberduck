@@ -1,6 +1,6 @@
 <Project Sdk="IKVM.Net.Sdk">
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <EnableDefaultItems>false</EnableDefaultItems>
         <LangVersion>1.8</LangVersion>
         <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
@@ -14,9 +14,9 @@
     <ItemGroup>
         <Convert Include="$(TargetDir)activation.jar" />
         <Convert Include="$(TargetDir)base64.jar" />
-        <Convert Include="$(TargetDir)bcpkix-jdk15on.jar" />
-        <Convert Include="$(TargetDir)bcprov-jdk15on.jar" />
-        <Convert Include="$(TargetDir)bcutil-jdk15on.jar" />
+        <Convert Include="$(TargetDir)bcpkix-jdk18on.jar" />
+        <Convert Include="$(TargetDir)bcprov-jdk18on.jar" />
+        <Convert Include="$(TargetDir)bcutil-jdk18on.jar" />
         <Convert Include="$(TargetDir)checker-qual.jar" />
         <Convert Include="$(TargetDir)commons-codec.jar" />
         <Convert Include="$(TargetDir)commons-collections4.jar" />

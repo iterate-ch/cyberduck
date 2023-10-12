@@ -1,7 +1,7 @@
 <Project Sdk="IKVM.Net.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <EnableDefaultItems>false</EnableDefaultItems>
         <LangVersion>1.8</LangVersion>
         <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>

@@ -18,9 +18,9 @@
   <ItemGroup>
     <PackageReference Update="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
     <PackageReference Update="ExceptionReporter " Version="2.4.2" />
-    <PackageReference Update="IKVM" Version="8.6.92" />
-    <PackageReference Update="IKVM.Image.JRE" Version="8.6.92" />
-    <PackageReference Update="IKVM.MSBuild" Version="8.6.92" />
+    <PackageReference Update="IKVM" Version="8.7.0-pre.2" />
+    <PackageReference Update="IKVM.Image.JRE" Version="8.7.0-pre.2" />
+    <PackageReference Update="IKVM.MSBuild" Version="8.7.0-pre.2" />
     <PackageReference Update="Microsoft.Build.Utilities.Core" Version="17.1.0" />
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
