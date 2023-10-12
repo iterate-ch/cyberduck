@@ -55,7 +55,7 @@ public class SSHFingerprintGenerator {
         final String undelimited = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(in, new TransferStatus()).hash;
         final StringBuilder fp = new StringBuilder(undelimited.substring(0, 2));
         for(int i = 2; i <= undelimited.length() - 2; i += 2) {
-            fp.append(":").append(undelimited.substring(i, i + 2));
+            fp.append(":").append(undelimited, i, i + 2);
         }
         return fp.toString();
     }
