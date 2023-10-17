@@ -38,10 +38,12 @@ public class BrickTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final FileEntity response = new FilesApi(new BrickApiClient(session))
-                    .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
-                            new FilesPathBody().providedMtime(status.getModified() != null ? new DateTime(status.getModified()) : null));
-            status.setResponse(new BrickAttributesFinderFeature(session).toAttributes(response));
+            if(null != status.getModified()) {
+                final FileEntity response = new FilesApi(new BrickApiClient(session))
+                        .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                                new FilesPathBody().providedMtime(status.getModified() != null ? new DateTime(status.getModified()) : null));
+                status.setResponse(new BrickAttributesFinderFeature(session).toAttributes(response));
+            }
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);

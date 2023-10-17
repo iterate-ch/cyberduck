@@ -22,7 +22,6 @@ import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
-import java.util.Date;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
@@ -40,12 +39,14 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final String fileid = this.fileid.getFileId(file);
-            final File properties = new File();
-            properties.setModifiedTime(status.getModified() != null ? new DateTime(status.getModified()) : null);
-            final File latest = session.getClient().files().update(fileid, properties).setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS).
-                    setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
-            status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(latest));
+            if(null != status.getModified()) {
+                final String fileid = this.fileid.getFileId(file);
+                final File properties = new File();
+                properties.setModifiedTime(status.getModified() != null ? new DateTime(status.getModified()) : null);
+                final File latest = session.getClient().files().update(fileid, properties).setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS).
+                        setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(latest));
+            }
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
