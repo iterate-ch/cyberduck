@@ -65,7 +65,8 @@ public class WriteTimestampWorker extends Worker<Boolean> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                file.getName(), UserDateFormatterFactory.get().getShortFormat(modified));
+                file.getName(), modified != null ? UserDateFormatterFactory.get().getShortFormat(modified) :
+                        created != null ? UserDateFormatterFactory.get().getShortFormat(created) : LocaleFactory.localizedString("Unknown"));
     }
 
     @Override
