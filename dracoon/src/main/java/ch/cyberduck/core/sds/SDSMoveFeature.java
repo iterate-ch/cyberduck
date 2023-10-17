@@ -127,7 +127,7 @@ public class SDSMoveFeature implements Move {
             log.warn(String.format("Deny moving file %s to root", source));
             return false;
         }
-        if(!new SDSTouchFeature(session, nodeid).validate(target.getName())) {
+        if(!SDSTouchFeature.validate(target.getName())) {
             log.warn(String.format("Validation failed for target name %s", target));
             return false;
         }

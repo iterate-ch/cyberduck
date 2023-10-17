@@ -58,7 +58,7 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
         if(workdir.isRoot()) {
             return false;
         }
-        if(!this.validate(filename)) {
+        if(!validate(filename)) {
             log.warn(String.format("Validation failed for target name %s", filename));
             return false;
         }
@@ -77,7 +77,7 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
     /**
      * Validate node name convention
      */
-    public boolean validate(final String filename) {
+    public static boolean validate(final String filename) {
         // Empty argument if not known in validation
         if(StringUtils.isNotBlank(filename)) {
             if(StringUtils.length(filename) > 150) {

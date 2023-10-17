@@ -108,7 +108,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
                 return false;
             }
         }
-        if(!new SDSTouchFeature(session, nodeid).validate(name)) {
+        if(!SDSTouchFeature.validate(name)) {
             log.warn(String.format("Validation failed for target name %s", name));
             return false;
         }
