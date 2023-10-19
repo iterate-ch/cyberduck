@@ -186,47 +186,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        if(host.getProtocol().isOAuthConfigurable()) {
-            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, prompt)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-            if(host.getProtocol().getAuthorization() != null) {
-                oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
-            }
-            configuration.addInterceptorLast(oauth);
-            final STSAssumeRoleCredentialsRequestInterceptor interceptor
-                    = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt);
-            configuration.addInterceptorLast(interceptor);
-            configuration.setServiceUnavailableRetryStrategy(new S3AuthenticationResponseInterceptor(this, interceptor));
-            authentication = interceptor;
-        }
-        else {
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                final S3AuthenticationResponseInterceptor interceptor;
-                // Try auto-configure
-                if(Scheme.isURL(host.getProtocol().getContext())) {
-                    // Fetch temporary session token from instance metadata
-                    interceptor = new S3AuthenticationResponseInterceptor(this,
-                            new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext())
-                    );
-                }
-                else {
-                    // Fetch temporary session token from AWS CLI configuration
-                    interceptor = new S3AuthenticationResponseInterceptor(this, new S3CredentialsStrategy() {
-                        @Override
-                        public Credentials get() throws LoginCanceledException {
-                            return new S3CredentialsConfigurator(
-                                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
-                        }
-                    });
-                }
-                configuration.setServiceUnavailableRetryStrategy(interceptor);
-                authentication = interceptor;
-            }
-            else {
-                authentication = host::getCredentials;
-            }
-        }
+        authentication = this.configureCredentialsStrategy(configuration, prompt);
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             final String header = HTTP.EXPECT_DIRECTIVE;
             if(log.isDebugEnabled()) {
@@ -304,6 +264,51 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, configuration);
         client.setRegionEndpointCache(regions);
         return client;
+    }
+
+    protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
+                                                                 final LoginCallback prompt) throws LoginCanceledException {
+        if(host.getProtocol().isOAuthConfigurable()) {
+            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
+                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, prompt)
+                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+            if(host.getProtocol().getAuthorization() != null) {
+                oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+            }
+            configuration.addInterceptorLast(oauth);
+            final STSAssumeRoleCredentialsRequestInterceptor interceptor
+                    = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt);
+            configuration.addInterceptorLast(interceptor);
+            configuration.setServiceUnavailableRetryStrategy(new S3AuthenticationResponseInterceptor(this, interceptor));
+            return interceptor;
+        }
+        else {
+            if(S3Session.isAwsHostname(host.getHostname())) {
+                final S3AuthenticationResponseInterceptor interceptor;
+                // Try auto-configure
+                if(Scheme.isURL(host.getProtocol().getContext())) {
+                    // Fetch temporary session token from instance metadata
+                    interceptor = new S3AuthenticationResponseInterceptor(this,
+                            new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext())
+                    );
+                }
+                else {
+                    // Fetch temporary session token from AWS CLI configuration
+                    interceptor = new S3AuthenticationResponseInterceptor(this, new S3CredentialsStrategy() {
+                        @Override
+                        public Credentials get() throws LoginCanceledException {
+                            return new S3CredentialsConfigurator(
+                                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
+                        }
+                    });
+                }
+                configuration.setServiceUnavailableRetryStrategy(interceptor);
+                return interceptor;
+            }
+            else {
+                return host::getCredentials;
+            }
+        }
     }
 
     @Override
@@ -421,11 +426,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                             return proxy.mkdir(folder, status);
                         }
                     }).call();
-                }
-
-                @Override
-                public boolean isSupported(final Path workdir, final String name) {
-                    return proxy.isSupported(workdir, name);
                 }
 
                 @Override
