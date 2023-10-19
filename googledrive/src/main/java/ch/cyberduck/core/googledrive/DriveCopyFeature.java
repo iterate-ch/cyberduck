@@ -16,14 +16,17 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 
 import com.google.api.services.drive.model.File;
@@ -60,14 +63,13 @@ public class DriveCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        if(target.isRoot()) {
-            return false;
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(target.getParent().isRoot()) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(target);
         }
         if(source.isPlaceholder()) {
             // Disable for application/vnd.google-apps
-            return false;
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
         }
-        return true;
     }
 }

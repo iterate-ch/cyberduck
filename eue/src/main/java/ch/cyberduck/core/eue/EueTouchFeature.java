@@ -17,6 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -39,7 +40,13 @@ public class EueTouchFeature extends DefaultTouchFeature<EueWriteFeature.Chunk> 
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!validate(filename)) {
+            throw new InvalidFilenameException();
+        }
+    }
+
+    public static boolean validate(final String filename) {
         // The path may contain all characters except the following: /, ", >, <, ?, *, :, \, |.
         // Also prohibited is a trailing space or a trailing dot (" ", ".").
         if(StringUtils.containsAny(filename, '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {

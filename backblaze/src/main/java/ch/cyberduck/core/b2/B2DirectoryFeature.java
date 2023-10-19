@@ -20,6 +20,7 @@ import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -82,26 +83,27 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
             // Empty argument if not known in validation
-            if(StringUtils.isNotBlank(name)) {
+            if(StringUtils.isNotBlank(filename)) {
                 // Bucket names must be a minimum of 6 and a maximum of 50 characters long, and must be globally unique;
                 // two different B2 accounts cannot have buckets with the name name. Bucket names can consist of: letters,
                 // digits, and "-". Bucket names cannot start with "b2-"; these are reserved for internal Backblaze use.
-                if(StringUtils.startsWith(name, "b2-")) {
-                    return false;
+                if(StringUtils.startsWith(filename, "b2-")) {
+                    throw new InvalidFilenameException();
                 }
-                if(StringUtils.length(name) > 50) {
-                    return false;
+                if(StringUtils.length(filename) > 50) {
+                    throw new InvalidFilenameException();
                 }
-                if(StringUtils.length(name) < 6) {
-                    return false;
+                if(StringUtils.length(filename) < 6) {
+                    throw new InvalidFilenameException();
                 }
-                return StringUtils.isAlphanumeric(RegExUtils.removeAll(name, "-"));
+                if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename, "-"))) {
+                    throw new InvalidFilenameException();
+                }
             }
         }
-        return true;
     }
 
     @Override

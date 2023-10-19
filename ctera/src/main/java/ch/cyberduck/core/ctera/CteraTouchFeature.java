@@ -17,6 +17,8 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVTouchFeature;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -30,11 +32,10 @@ public class CteraTouchFeature extends DAVTouchFeature {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!validate(filename)) {
-            return false;
+            throw new InvalidFilenameException();
         }
-        return super.isSupported(workdir, filename);
     }
 
     public static boolean validate(final String filename) {

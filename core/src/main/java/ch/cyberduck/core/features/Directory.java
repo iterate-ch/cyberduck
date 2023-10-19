@@ -15,9 +15,13 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.text.MessageFormat;
 
 /**
  * Create new folder on server
@@ -37,15 +41,30 @@ public interface Directory<Reply> {
 
     /**
      * @param workdir Working directory in browser
-     * @param name    Folder name or null if unknown
+     * @param filename    Folder name or null if unknown
      * @return True if creating directory is supported in the working directory
      */
-    default boolean isSupported(final Path workdir, final String name) {
-        return workdir.attributes().getPermission().isWritable();
+    default boolean isSupported(final Path workdir, final String filename) {
+        try {
+            this.preflight(workdir, filename);
+            return true;
+        }
+        catch(BackgroundException e) {
+            return false;
+        }
     }
 
     /**
      * Retrieve write implementation for implementations using placeholder files for folders
      */
     Directory<Reply> withWriter(Write<Reply> writer);
+
+    /**
+     * @throws AccessDeniedException Permission failure for target directory
+     */
+    default void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!workdir.attributes().getPermission().isWritable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), filename));
+        }
+    }
 }

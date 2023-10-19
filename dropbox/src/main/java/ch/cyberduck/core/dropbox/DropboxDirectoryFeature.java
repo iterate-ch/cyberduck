@@ -18,6 +18,7 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -49,8 +50,10 @@ public class DropboxDirectoryFeature implements Directory<String> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return new DropboxTouchFeature(session).isSupported(workdir, name);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!DropboxTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException();
+        }
     }
 
     @Override

@@ -21,11 +21,11 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 public class CryptoTouchFeature<Reply> implements Touch<Reply> {
@@ -60,8 +60,11 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        return proxy.isSupported(workdir, StringUtils.EMPTY) && vault.getFilenameProvider().isValid(filename);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!vault.getFilenameProvider().isValid(filename)) {
+            throw new InvalidFilenameException();
+        }
+        proxy.preflight(workdir, filename);
     }
 
     @Override

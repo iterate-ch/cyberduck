@@ -83,4 +83,9 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
         }
         return proxy.checksum(file, status);
     }
+
+    @Override
+    public void preflight(final Path file) throws BackgroundException {
+        new SDSTouchFeature(session, nodeid).preflight(file.getParent(), file.getName());
+    }
 }

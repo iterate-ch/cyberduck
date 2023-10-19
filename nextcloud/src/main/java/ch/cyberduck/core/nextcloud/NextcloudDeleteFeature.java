@@ -15,11 +15,16 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.StringUtils;
+
+import java.text.MessageFormat;
 
 public class NextcloudDeleteFeature extends DAVDeleteFeature {
 
@@ -28,10 +33,9 @@ public class NextcloudDeleteFeature extends DAVDeleteFeature {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
+    public void preflight(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            return false;
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
         }
-        return super.isSupported(file);
     }
 }

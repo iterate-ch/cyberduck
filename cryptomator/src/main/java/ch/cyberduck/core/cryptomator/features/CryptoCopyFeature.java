@@ -88,11 +88,13 @@ public class CryptoCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path copy) {
+    public void preflight(final Path source, final Path copy) throws BackgroundException {
         if(vault.contains(source) && vault.contains(copy)) {
-            return proxy.withTarget(target).isSupported(source, copy);
+            proxy.withTarget(target).preflight(source, copy);
         }
-        return new DefaultCopyFeature(session).withTarget(target).isSupported(source, copy);
+        else {
+            new DefaultCopyFeature(session).withTarget(target).preflight(source, copy);
+        }
     }
 
     @Override

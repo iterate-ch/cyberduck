@@ -378,15 +378,14 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public boolean isRecursive(final Path source, final Path target) {
-                            return true;
+                        public void preflight(final Path source, final Path target) throws BackgroundException {
+                            //
                         }
 
                         @Override
-                        public boolean isSupported(final Path source, final Path target) {
+                        public boolean isRecursive(final Path source, final Path target) {
                             return true;
                         }
-
                     };
                 }
                 if(type.equals(AttributesFinder.class)) {

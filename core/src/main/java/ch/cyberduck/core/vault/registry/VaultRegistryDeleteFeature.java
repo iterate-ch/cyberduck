@@ -64,12 +64,12 @@ public class VaultRegistryDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
+    public void preflight(final Path file) throws BackgroundException {
         try {
-            return registry.find(session, file, false).getFeature(session, Delete.class, proxy).isSupported(file);
+            registry.find(session, file, false).getFeature(session, Delete.class, proxy).preflight(file);
         }
         catch(VaultUnlockCancelException e) {
-            return proxy.isSupported(file);
+            proxy.preflight(file);
         }
     }
 

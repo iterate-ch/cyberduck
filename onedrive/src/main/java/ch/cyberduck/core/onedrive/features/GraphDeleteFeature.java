@@ -16,8 +16,10 @@ package ch.cyberduck.core.onedrive.features;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
@@ -29,6 +31,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Map;
 
 public class GraphDeleteFeature implements Delete {
@@ -60,8 +63,10 @@ public class GraphDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return session.isAccessible(file, false);
+    public void preflight(final Path file) throws BackgroundException {
+        if(!session.isAccessible(file, false)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+        }
     }
 
     @Override

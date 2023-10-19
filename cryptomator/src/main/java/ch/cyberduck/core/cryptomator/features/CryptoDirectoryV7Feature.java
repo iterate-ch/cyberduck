@@ -94,6 +94,11 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     }
 
     @Override
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        delegate.preflight(workdir, filename);
+    }
+
+    @Override
     public CryptoDirectoryV7Feature<Reply> withWriter(final Write<Reply> writer) {
         return this;
     }

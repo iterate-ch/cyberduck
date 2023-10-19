@@ -21,6 +21,7 @@ import ch.cyberduck.core.box.io.swagger.client.api.FoldersApi;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersBody;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersParent;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -56,7 +57,9 @@ public class BoxDirectoryFeature implements Directory {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return new BoxTouchFeature(session, fileid).isSupported(workdir, name);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!BoxTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException();
+        }
     }
 }

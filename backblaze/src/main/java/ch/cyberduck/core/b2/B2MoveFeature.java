@@ -16,14 +16,17 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 
 public class B2MoveFeature implements Move {
@@ -49,11 +52,11 @@ public class B2MoveFeature implements Move {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        if(!containerService.isContainer(source)) {
-            return proxy.isSupported(source, target);
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(containerService.isContainer(source)) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
         }
-        return false;
+        proxy.preflight(source, target);
     }
 
     @Override

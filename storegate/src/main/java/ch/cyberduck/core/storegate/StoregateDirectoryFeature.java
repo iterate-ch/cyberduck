@@ -15,8 +15,10 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -58,7 +60,9 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return !workdir.isRoot();
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(workdir.isRoot()) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+        }
     }
 }

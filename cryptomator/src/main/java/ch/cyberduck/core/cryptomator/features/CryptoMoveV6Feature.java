@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,8 +59,16 @@ public class CryptoMoveV6Feature implements Move {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return proxy.isSupported(source, target) && vault.getFilenameProvider().isValid(target.getName());
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(!vault.getFilenameProvider().isValid(target.getName())) {
+            throw new InvalidFilenameException();
+        }
+        proxy.preflight(source, target);
+    }
+
+    @Override
+    public Move withTarget(final Session<?> session) {
+        return proxy.withTarget(session);
     }
 
     @Override

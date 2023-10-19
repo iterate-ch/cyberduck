@@ -147,8 +147,8 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return proxy.isSupported(file);
+    public void preflight(final Path file) throws BackgroundException {
+        proxy.preflight(file);
     }
 
     @Override

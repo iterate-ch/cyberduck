@@ -16,7 +16,9 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -57,8 +59,10 @@ public class MantaTouchFeature implements Touch {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        return session.isUserWritable(workdir);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!session.isUserWritable(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+        }
     }
 
     @Override

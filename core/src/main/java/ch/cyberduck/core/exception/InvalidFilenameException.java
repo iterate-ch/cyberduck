@@ -1,7 +1,7 @@
-package ch.cyberduck.core.ftp;
+package ch.cyberduck.core.exception;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,17 +15,21 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
+public class InvalidFilenameException extends UnsupportedException {
 
-public class FTPTouchFeature extends DefaultTouchFeature<Void> {
-
-    public FTPTouchFeature(final FTPSession session) {
-        super(new FTPWriteFeature(session));
+    public InvalidFilenameException() {
+        super();
     }
 
-    @Override
-    public void preflight(final Path workdir, final String filename) {
-        // Skip checking permission mask
+    public InvalidFilenameException(final Throwable cause) {
+        super(cause);
+    }
+
+    public InvalidFilenameException(final String detail) {
+        super(detail);
+    }
+
+    public InvalidFilenameException(final String detail, final Throwable cause) {
+        super(detail, cause);
     }
 }

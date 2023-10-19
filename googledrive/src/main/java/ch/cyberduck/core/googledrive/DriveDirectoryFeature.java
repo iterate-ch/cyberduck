@@ -85,8 +85,9 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
         return this;
     }
 
+
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return new DriveTouchFeature(session, fileid).isSupported(workdir, name);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        new DriveTouchFeature(session, fileid).preflight(workdir, filename);
     }
 }

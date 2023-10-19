@@ -62,7 +62,7 @@ public class FTPDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return true;
+    public void preflight(final Path file) {
+        // Skip checking permission mask
     }
 }

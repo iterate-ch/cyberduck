@@ -54,8 +54,8 @@ public class B2ThresholdCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return new B2CopyFeature(session, fileid).isSupported(source, target);
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        new B2CopyFeature(session, fileid).preflight(source, target);
     }
 
     @Override

@@ -16,13 +16,16 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Map;
 
 import com.joyent.manta.exception.MantaClientHttpResponseException;
@@ -61,8 +64,10 @@ public class MantaDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return session.isUserWritable(file);
+    public void preflight(final Path file) throws BackgroundException {
+        if(!session.isUserWritable(file)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+        }
     }
 
     @Override

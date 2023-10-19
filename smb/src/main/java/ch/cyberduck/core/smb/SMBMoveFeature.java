@@ -16,13 +16,17 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete.Callback;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 
 import com.hierynomus.msdtyp.AccessMask;
@@ -72,10 +76,11 @@ public class SMBMoveFeature implements Move {
         return target;
     }
 
-
     @Override
-    public boolean isSupported(final Path source, final Path target) {
+    public void preflight(final Path source, final Path target) throws BackgroundException {
         final SMBPathContainerService containerService = new SMBPathContainerService(session);
-        return containerService.getContainer(source).equals(containerService.getContainer(target));
+        if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
+        }
     }
 }

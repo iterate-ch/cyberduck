@@ -15,11 +15,13 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 
 public class NullMoveFeature extends DisabledMoveFeature {
+
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return true;
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        //
     }
 }

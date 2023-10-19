@@ -88,11 +88,6 @@ public class SDSBatchDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return new SDSDeleteFeature(session, nodeid).isSupported(file);
-    }
-
-    @Override
     public boolean isRecursive() {
         return true;
     }

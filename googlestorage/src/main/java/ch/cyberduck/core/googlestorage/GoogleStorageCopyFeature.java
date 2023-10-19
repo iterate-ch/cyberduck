@@ -16,9 +16,11 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -26,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.storage.Storage;
@@ -78,7 +81,12 @@ public class GoogleStorageCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source) && !containerService.isContainer(target);
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(containerService.isContainer(source)) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
+        }
+        if(!containerService.isContainer(target)) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(target);
+        }
     }
 }

@@ -15,11 +15,17 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +35,8 @@ import java.util.Map;
  */
 @Required
 public interface Delete {
+    Logger log = LogManager.getLogger(Delete.class);
+
     default void delete(List<Path> files, PasswordCallback prompt, Callback callback) throws BackgroundException {
         final Map<Path, TransferStatus> set = new LinkedHashMap<>();
         for(Path file : files) {
@@ -51,7 +59,13 @@ public interface Delete {
      * @return True if the file can be deleted on the server
      */
     default boolean isSupported(final Path file) {
-        return file.attributes().getPermission().isWritable();
+        try {
+            this.preflight(file);
+            return true;
+        }
+        catch(BackgroundException e) {
+            return false;
+        }
     }
 
     /**
@@ -72,6 +86,13 @@ public interface Delete {
         @Override
         public void delete(Path file) {
             //
+        }
+    }
+
+    default void preflight(final Path file) throws BackgroundException {
+        if(!file.attributes().getPermission().isWritable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"),
+                    file.getName())).withFile(file);
         }
     }
 }

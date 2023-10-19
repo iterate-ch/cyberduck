@@ -18,7 +18,9 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,8 +41,10 @@ public class AzureTouchFeature extends DefaultTouchFeature<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        return !workdir.isRoot();
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(workdir.isRoot()) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+        }
     }
 
     @Override

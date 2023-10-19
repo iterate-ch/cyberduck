@@ -15,7 +15,10 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 
@@ -26,7 +29,9 @@ public class StoregateTouchFeature extends DefaultTouchFeature<File> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        return !workdir.isRoot();
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(workdir.isRoot()) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+        }
     }
 }

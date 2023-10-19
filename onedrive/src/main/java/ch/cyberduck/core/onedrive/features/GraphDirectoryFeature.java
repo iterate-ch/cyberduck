@@ -16,8 +16,10 @@ package ch.cyberduck.core.onedrive.features;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -61,8 +63,10 @@ public class GraphDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return session.isAccessible(workdir);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!session.isAccessible(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+        }
     }
 
     @Override

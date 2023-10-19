@@ -30,6 +30,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModelUpdate;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamListener;
@@ -132,8 +133,10 @@ public class EueCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return new EueTouchFeature(session, fileid).isSupported(target.getParent(), target.getName());
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(!EueTouchFeature.validate(target.getName())) {
+            throw new InvalidFilenameException();
+        }
     }
 
     @Override

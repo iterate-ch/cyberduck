@@ -15,14 +15,17 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 public class SDSThresholdDeleteFeature implements Delete {
@@ -53,16 +56,19 @@ public class SDSThresholdDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
+    public void preflight(final Path file) throws BackgroundException {
+        final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
         if(containerService.isContainer(file)) {
             if(new HostPreferences(session.getHost()).getBoolean("sds.delete.dataroom.enable")) {
                 // Need the query permission on the parent data room if file itself is subroom
-                return new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()),
-                        SDSPermissionsFeature.MANAGE_ROLE);
+                if(!new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()), SDSPermissionsFeature.MANAGE_ROLE)) {
+                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+                }
             }
-            return false;
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
         }
-        return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.DELETE_ROLE);
+        if(!permissions.containsRole(file, SDSPermissionsFeature.DELETE_ROLE)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+        }
     }
-
 }

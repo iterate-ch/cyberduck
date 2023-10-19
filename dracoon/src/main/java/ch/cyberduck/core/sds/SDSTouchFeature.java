@@ -15,9 +15,13 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
+import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -54,24 +58,25 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            return false;
+            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
         }
         if(!validate(filename)) {
-            log.warn(String.format("Validation failed for target name %s", filename));
-            return false;
+            throw new InvalidFilenameException();
+        }
+        final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
+        if(!permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)
+                // For existing files the delete role is also required to overwrite
+                || !permissions.containsRole(workdir, SDSPermissionsFeature.DELETE_ROLE)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
         }
         if(workdir.attributes().getQuota() != -1) {
             if(workdir.attributes().getQuota() <= workdir.attributes().getSize() + new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize")) {
                 log.warn(String.format("Quota %d exceeded with %d in %s", workdir.attributes().getQuota(), workdir.attributes().getSize(), workdir));
-                return false;
+                throw new QuotaException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
             }
         }
-        final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
-        return permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)
-                // For existing files the delete role is also required to overwrite
-                && permissions.containsRole(workdir, SDSPermissionsFeature.DELETE_ROLE);
     }
 
     /**

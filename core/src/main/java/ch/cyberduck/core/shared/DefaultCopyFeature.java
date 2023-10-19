@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
@@ -69,14 +70,15 @@ public class DefaultCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
+    public void preflight(final Path source, final Path target) throws BackgroundException {
         switch(from.getHost().getProtocol().getType()) {
             case ftp:
             case irods:
                 // Stateful
-                return !Objects.equals(from, to);
+                if(Objects.equals(from, to)) {
+                    throw new UnsupportedException();
+                }
         }
-        return true;
     }
 
     @Override

@@ -17,12 +17,15 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.Version;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -31,7 +34,6 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
@@ -41,9 +43,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SDSMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(SDSMoveFeature.class);
@@ -114,22 +115,22 @@ public class SDSMoveFeature implements Move {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
+    public void preflight(final Path source, final Path target) throws BackgroundException {
         if(containerService.isContainer(source)) {
             if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {
                 // Cannot move data room but only rename
                 log.warn(String.format("Deny moving data room %s", source));
-                return false;
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
             }
         }
         if(target.getParent().isRoot() && !source.getParent().isRoot()) {
             // Cannot move file or directory to root but only rename data rooms
             log.warn(String.format("Deny moving file %s to root", source));
-            return false;
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
         }
         if(!SDSTouchFeature.validate(target.getName())) {
             log.warn(String.format("Validation failed for target name %s", target));
-            return false;
+            throw new InvalidFilenameException().withFile(target);
         }
         final SDSPermissionsFeature acl = new SDSPermissionsFeature(session, nodeid);
         if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {
@@ -137,41 +138,23 @@ public class SDSMoveFeature implements Move {
             if(!acl.containsRole(containerService.getContainer(source), SDSPermissionsFeature.CHANGE_ROLE)) {
                 log.warn(String.format("Deny move of %s to %s changing parent node with missing role %s on data room %s",
                     source, target, SDSPermissionsFeature.CHANGE_ROLE, containerService.getContainer(source)));
-                return false;
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
             }
             if(!acl.containsRole(containerService.getContainer(source), SDSPermissionsFeature.DELETE_ROLE)) {
                 log.warn(String.format("Deny move of %s to %s changing parent node with missing role %s on data room %s",
                     source, target, SDSPermissionsFeature.DELETE_ROLE, containerService.getContainer(source)));
-                return false;
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
             }
             if(!acl.containsRole(containerService.getContainer(target), SDSPermissionsFeature.CREATE_ROLE)) {
                 log.warn(String.format("Deny move of %s to %s changing parent node with missing role %s on data room %s",
                     source, target, SDSPermissionsFeature.CREATE_ROLE, containerService.getContainer(target)));
-                return false;
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
             }
         }
         if(!acl.containsRole(containerService.getContainer(source), SDSPermissionsFeature.CHANGE_ROLE)) {
             log.warn(String.format("Deny move of %s to %s with missing permissions for user with missing role %s on data room %s",
                 source, target, SDSPermissionsFeature.CHANGE_ROLE, containerService.getContainer(source)));
-            return false;
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
         }
-        if(!StringUtils.equals(source.getName(), target.getName())) {
-            if(new CaseInsensitivePathPredicate(source).test(target)) {
-                try {
-                    final SoftwareVersionData version = session.softwareVersion();
-                    final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
-                    if(matcher.matches()) {
-                        if(new Version(matcher.group(1)).compareTo(new Version("4.14")) < 0) {
-                            // SDS-1055
-                            return false;
-                        }
-                    }
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Ignore failure %s determining version", e));
-                }
-            }
-        }
-        return true;
     }
 }

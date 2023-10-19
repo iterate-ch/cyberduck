@@ -15,7 +15,9 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,8 +38,10 @@ public class B2TouchFeature extends DefaultTouchFeature<BaseB2Response> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         // Creating files is only possible inside a bucket.
-        return !workdir.isRoot();
+        if(workdir.isRoot()) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+        }
     }
 }

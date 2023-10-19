@@ -16,7 +16,9 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -24,6 +26,7 @@ import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 
 @Required
@@ -120,4 +123,12 @@ public interface Write<Reply> {
      * Existing remote file found
      */
     Append override = new Append(false);
+
+    default void preflight(final Path file) throws BackgroundException {
+        final Path workdir = file.getParent();
+        if(!workdir.attributes().getPermission().isWritable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"),
+                    file.getName())).withFile(file);
+        }
+    }
 }

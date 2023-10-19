@@ -22,6 +22,7 @@ import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -81,22 +82,23 @@ public class AzureDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
             // Empty argument if not known in validation
-            if(StringUtils.isNotBlank(name)) {
+            if(StringUtils.isNotBlank(filename)) {
                 // Container names must be lowercase, between 3-63 characters long and must start with a letter or
                 // number. Container names may contain only letters, numbers, and the dash (-) character.
-                if(StringUtils.length(name) > 63) {
-                    return false;
+                if(StringUtils.length(filename) > 63) {
+                    throw new InvalidFilenameException();
                 }
-                if(StringUtils.length(name) < 3) {
-                    return false;
+                if(StringUtils.length(filename) < 3) {
+                    throw new InvalidFilenameException();
                 }
-                return StringUtils.isAlphanumeric(RegExUtils.removeAll(name, "-"));
+                if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename, "-"))) {
+                    throw new InvalidFilenameException();
+                }
             }
         }
-        return true;
     }
 
     @Override
