@@ -40,6 +40,7 @@ import ch.cyberduck.core.date.RFC822DateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
@@ -213,9 +214,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     // Fetch temporary session token from AWS CLI configuration
                     interceptor = new S3AuthenticationResponseInterceptor(this, new S3CredentialsStrategy() {
                         @Override
-                        public Credentials get() {
+                        public Credentials get() throws LoginCanceledException {
                             return new S3CredentialsConfigurator(
-                                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
+                                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
                         }
                     });
                 }
