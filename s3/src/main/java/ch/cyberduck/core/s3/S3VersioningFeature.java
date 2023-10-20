@@ -46,6 +46,8 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
 import org.jets3t.service.model.S3Object;
 
+import java.util.EnumSet;
+
 public class S3VersioningFeature implements Versioning {
     private static final Logger log = LogManager.getLogger(S3VersioningFeature.class);
 
@@ -247,5 +249,10 @@ public class S3VersioningFeature implements Versioning {
                 return f.attributes().isDuplicate();
             }
         });
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.configuration, Flags.list, Flags.revert);
     }
 }

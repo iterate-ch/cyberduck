@@ -172,8 +172,11 @@ public class DefaultVersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(final Path version) {
-        return StringUtils.equals(DefaultVersioningDirectoryProvider.NAME, version.getParent().getName());
+    public EnumSet<Flags> features(final Path file) {
+        if(StringUtils.equals(DefaultVersioningDirectoryProvider.NAME, file.getParent().getName())) {
+            return EnumSet.of(Flags.revert);
+        }
+        return EnumSet.of(Flags.save, Flags.list);
     }
 
     public interface VersioningDirectoryProvider {

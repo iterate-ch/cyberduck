@@ -26,6 +26,8 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import java.util.EnumSet;
+
 public class VaultRegistryVersioningFeature implements Versioning {
 
     private final Session<?> session;
@@ -49,12 +51,12 @@ public class VaultRegistryVersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(final Path file) {
+    public EnumSet<Flags> features(final Path file) {
         try {
-            return registry.find(session, file, false).getFeature(session, Versioning.class, proxy).isRevertable(file);
+            return registry.find(session, file, false).getFeature(session, Versioning.class, proxy).features(file);
         }
         catch(VaultUnlockCancelException e) {
-            return false;
+            return EnumSet.noneOf(Flags.class);
         }
     }
 

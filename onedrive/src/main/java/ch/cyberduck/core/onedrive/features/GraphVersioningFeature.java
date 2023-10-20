@@ -33,6 +33,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,5 +96,10 @@ public class GraphVersioningFeature implements Versioning {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         return versions;
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.list, Flags.revert);
     }
 }

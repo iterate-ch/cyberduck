@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import com.dropbox.core.DbxException;
@@ -97,5 +98,10 @@ public class DropboxVersioningFeature implements Versioning {
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.revert, Flags.list);
     }
 }
