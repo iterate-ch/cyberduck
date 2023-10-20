@@ -68,7 +68,7 @@ public class DefaultVersioningFeature implements Versioning {
         this.session = session;
         this.provider = provider;
         this.formatter = formatter;
-        this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex"));
+        this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("versioning.include.regex"));
     }
 
     @Override
@@ -162,7 +162,7 @@ public class DefaultVersioningFeature implements Versioning {
         }
         final List<Path> versions = this.list(file, new DisabledListProgressListener()).toStream()
                 .sorted(new FilenameComparator(false)).skip(
-                        new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
+                        new HostPreferences(session.getHost()).getInteger("versioning.limit")).collect(Collectors.toList());
         if(log.isWarnEnabled()) {
             log.warn(String.format("Delete %d previous versions of %s", versions.size(), file));
         }

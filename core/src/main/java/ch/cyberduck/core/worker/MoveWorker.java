@@ -137,7 +137,9 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                             moved.withAttributes(session.getFeature(AttributesFinder.class).find(moved));
                         }
                         result.put(r.getKey(), moved);
-                        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
+                        final HostPreferences preferences = new HostPreferences(session.getHost());
+                        if(preferences.getBoolean("versioning.enable")
+                                && preferences.getBoolean("versioning.move.enable")) {
                             switch(session.getHost().getProtocol().getVersioningMode()) {
                                 case custom:
                                     // Move previous versions of file

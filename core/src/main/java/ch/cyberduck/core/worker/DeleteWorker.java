@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DeleteWorker extends Worker<List<Path>> {
-
     private static final Logger log = LogManager.getLogger(DeleteWorker.class);
 
     /**
@@ -120,7 +119,8 @@ public class DeleteWorker extends Worker<List<Path>> {
         if(delete.isRecursive()) {
             recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
         }
-        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
+        final HostPreferences preferences = new HostPreferences(session.getHost());
+        if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.delete.enable")) {
             switch(session.getHost().getProtocol().getVersioningMode()) {
                 case custom:
                     final Versioning versioning = session.getFeature(Versioning.class);
