@@ -32,6 +32,7 @@ import org.apache.http.HttpHeaders;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import com.github.sardine.impl.SardineException;
 
@@ -67,7 +68,7 @@ public class DAVCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 }

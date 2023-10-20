@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Vault;
 
+import java.util.EnumSet;
+
 public class CryptoSearchFeature implements Search {
 
     private final Session<?> session;
@@ -42,8 +44,8 @@ public class CryptoSearchFeature implements Search {
     }
 
     @Override
-    public boolean isRecursive() {
-        return delegate.isRecursive();
+    public EnumSet<Flags> features() {
+        return delegate.features();
     }
 
     @Override

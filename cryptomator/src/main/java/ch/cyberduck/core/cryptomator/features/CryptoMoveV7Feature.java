@@ -61,9 +61,9 @@ public class CryptoMoveV7Feature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
+    public EnumSet<Flags> features(final Path source, final Path target) {
         // No need to handle recursion with encrypted filenames
-        return true;
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override

@@ -27,6 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
@@ -59,8 +60,8 @@ public class MantaMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override

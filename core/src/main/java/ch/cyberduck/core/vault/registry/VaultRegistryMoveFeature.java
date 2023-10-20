@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class VaultRegistryMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(VaultRegistryMoveFeature.class);
@@ -68,15 +69,18 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
+    public EnumSet<Flags> features(final Path source, final Path target) {
         try {
             if(registry.find(session, source, false).equals(registry.find(session, target, false))) {
-                return registry.find(session, source, false).getFeature(session, Move.class, proxy).isRecursive(source, target);
+                return registry.find(session, source, false).getFeature(session, Move.class, proxy).features(source, target);
             }
-            return session.getFeature(Copy.class).isRecursive(source, target);
+            if(session.getFeature(Copy.class).features(source, target).contains(Copy.Flags.recursive)) {
+                return EnumSet.of(Flags.recursive);
+            }
+            return EnumSet.noneOf(Flags.class);
         }
         catch(VaultUnlockCancelException e) {
-            return proxy.isRecursive(source, target);
+            return proxy.features(source, target);
         }
     }
 

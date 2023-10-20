@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Map;
 
 public class DropboxThresholdDeleteFeature implements Delete {
@@ -45,8 +46,8 @@ public class DropboxThresholdDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override

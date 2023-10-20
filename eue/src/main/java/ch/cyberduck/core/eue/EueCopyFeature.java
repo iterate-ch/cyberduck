@@ -42,6 +42,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class EueCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(EueCopyFeature.class);
@@ -140,7 +141,7 @@ public class EueCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 }

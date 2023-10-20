@@ -40,6 +40,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class GraphCopyFeature implements Copy {
     private static final Logger logger = LogManager.getLogger(GraphCopyFeature.class);
@@ -89,8 +90,8 @@ public class GraphCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override

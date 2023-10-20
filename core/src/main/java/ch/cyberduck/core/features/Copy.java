@@ -27,6 +27,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 /**
  * Server side copying of files
@@ -49,7 +50,7 @@ public interface Copy {
      * @return True if the implementation can copy directories recursively
      */
     default boolean isRecursive(final Path source, final Path target) {
-        return false;
+        return this.features(source, target).contains(Flags.recursive);
     }
 
     /**
@@ -85,5 +86,22 @@ public interface Copy {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
                     source.getName())).withFile(source);
         }
+    }
+
+    /**
+     * @return Supported features
+     */
+    default EnumSet<Flags> features(Path source, Path target) {
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * Support copying directories recursively
+         */
+        recursive
     }
 }

@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
 import java.util.Map;
 
 public class BrickDeleteFeature implements Delete {
@@ -50,7 +51,7 @@ public class BrickDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 }

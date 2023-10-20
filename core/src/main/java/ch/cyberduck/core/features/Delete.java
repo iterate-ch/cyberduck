@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public interface Delete {
      * @return True if the implementation supports deleting folders recursively
      */
     default boolean isRecursive() {
-        return false;
+        return this.features().contains(Flags.recursive);
     }
 
     /**
@@ -94,5 +95,22 @@ public interface Delete {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"),
                     file.getName())).withFile(file);
         }
+    }
+
+    /**
+     * @return Supported features
+     */
+    default EnumSet<Flags> features() {
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * Support deleting directories recursively
+         */
+        recursive
     }
 }

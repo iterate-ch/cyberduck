@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.nio.file.NoSuchFileException;
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class LocalMoveFeature implements Move {
 
@@ -51,8 +52,8 @@ public class LocalMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 
 }

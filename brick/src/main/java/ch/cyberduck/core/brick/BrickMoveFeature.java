@@ -34,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class BrickMoveFeature extends BrickFileMigrationFeature implements Move {
     private static final Logger log = LogManager.getLogger(BrickMoveFeature.class);
@@ -71,7 +72,7 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 }

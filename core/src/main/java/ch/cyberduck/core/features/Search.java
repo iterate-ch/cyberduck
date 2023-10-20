@@ -21,6 +21,8 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.EnumSet;
+
 @Optional
 public interface Search {
 
@@ -36,6 +38,23 @@ public interface Search {
      * @return True if search is capable of recursively searching in folders
      */
     default boolean isRecursive() {
-        return false;
+        return this.features().contains(Flags.recursive);
+    }
+
+    /**
+     * @return Supported features
+     */
+    default EnumSet<Flags> features() {
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * Support deleting directories recursively
+         */
+        recursive
     }
 }

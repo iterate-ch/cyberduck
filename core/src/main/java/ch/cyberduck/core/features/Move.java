@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 /**
  * Move or rename file or folder on server
@@ -48,7 +49,7 @@ public interface Move {
      * @return True if the implementation can move directories recursively
      */
     default boolean isRecursive(final Path source, final Path target) {
-        return false;
+        return this.features(source, target).contains(Flags.recursive);
     }
 
     /**
@@ -84,5 +85,23 @@ public interface Move {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"),
                     source.getName())).withFile(source);
         }
+    }
+
+
+    /**
+     * @return Supported features
+     */
+   default EnumSet<Flags> features(Path source, Path target) {
+       return EnumSet.noneOf(Flags.class);
+   }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * Support moving directories recursively
+         */
+        recursive
     }
 }

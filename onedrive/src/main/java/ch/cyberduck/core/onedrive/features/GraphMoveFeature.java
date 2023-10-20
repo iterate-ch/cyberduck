@@ -44,6 +44,7 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class GraphMoveFeature implements Move {
     private static final Logger logger = LogManager.getLogger(GraphMoveFeature.class);
@@ -95,8 +96,8 @@ public class GraphMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override

@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 
 import com.google.api.services.drive.model.File;
@@ -90,7 +91,7 @@ public class DriveTrashFeature implements Delete {
     }
 
     @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 }

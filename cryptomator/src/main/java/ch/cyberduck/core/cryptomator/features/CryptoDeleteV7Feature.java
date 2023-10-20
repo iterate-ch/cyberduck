@@ -152,8 +152,8 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
     }
 
     @Override
-    public boolean isRecursive() {
-        return proxy.isRecursive();
+    public EnumSet<Flags> features() {
+        return proxy.features();
     }
 
     @Override

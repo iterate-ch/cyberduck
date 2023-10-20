@@ -32,6 +32,7 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,8 +144,8 @@ public class DropboxBatchDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override

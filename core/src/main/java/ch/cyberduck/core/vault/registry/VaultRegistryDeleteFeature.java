@@ -25,6 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,8 +75,8 @@ public class VaultRegistryDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isRecursive() {
-        return proxy.isRecursive();
+    public EnumSet<Flags> features() {
+        return proxy.features();
     }
 
     @Override

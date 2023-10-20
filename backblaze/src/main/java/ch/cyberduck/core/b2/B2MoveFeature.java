@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class B2MoveFeature implements Move {
 
@@ -60,8 +62,10 @@ public class B2MoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return proxy.isRecursive(source, target);
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        if(proxy.features(source, target).contains(Copy.Flags.recursive)) {
+            return EnumSet.of(Flags.recursive);
+        }
+        return EnumSet.noneOf(Flags.class);
     }
-
 }

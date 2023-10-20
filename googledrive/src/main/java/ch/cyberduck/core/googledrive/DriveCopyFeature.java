@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import com.google.api.services.drive.model.File;
 
@@ -58,8 +59,8 @@ public class DriveCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override

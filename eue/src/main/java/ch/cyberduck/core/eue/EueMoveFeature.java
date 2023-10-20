@@ -44,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class EueMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(EueMoveFeature.class);
@@ -156,7 +157,7 @@ public class EueMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 }

@@ -30,6 +30,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.FileHeader;
 
+import java.util.EnumSet;
+
 public class CryptoCopyFeature implements Copy {
 
     private final Session<?> session;
@@ -82,9 +84,9 @@ public class CryptoCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path copy) {
+    public EnumSet<Flags> features(final Path source, final Path target) {
         // Due to the encrypted folder layout copying is never recursive even when supported by the native implementation
-        return false;
+        return EnumSet.noneOf(Flags.class);
     }
 
     @Override

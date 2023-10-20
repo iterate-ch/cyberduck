@@ -32,6 +32,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Map;
 
 public class GraphDeleteFeature implements Delete {
@@ -70,7 +71,7 @@ public class GraphDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 }
