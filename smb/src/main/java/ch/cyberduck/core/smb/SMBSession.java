@@ -88,6 +88,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withDfsEnabled(new HostPreferences(host).getBoolean("smb.dfs.enable"))
                     .withSigningRequired(new HostPreferences(host).getBoolean("smb.signing.required"))
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
+                    .withMultiProtocolNegotiate(new HostPreferences(host).getBoolean("smb.protocol.negotiate.enable"))
                     .build());
             final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
             if(log.isDebugEnabled()) {
