@@ -138,8 +138,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         }
                         result.put(r.getKey(), moved);
                         final HostPreferences preferences = new HostPreferences(session.getHost());
-                        if(preferences.getBoolean("versioning.enable")
-                                && preferences.getBoolean("versioning.move.enable")) {
+                        if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.move.enable")) {
                             switch(session.getHost().getProtocol().getVersioningMode()) {
                                 case custom:
                                     // Move previous versions of file
