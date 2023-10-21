@@ -15,7 +15,6 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
@@ -81,7 +80,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);

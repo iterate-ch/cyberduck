@@ -15,7 +15,6 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -52,7 +51,7 @@ public class SMBDeleteFeature implements Delete {
                 throw new SMBExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+                throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
             }
             finally {
                 session.releaseShare(file);

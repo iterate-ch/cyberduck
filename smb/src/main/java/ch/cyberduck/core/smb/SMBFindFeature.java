@@ -15,7 +15,6 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -51,7 +50,7 @@ public class SMBFindFeature implements Find {
                 return share.fileExists(new SMBPathContainerService(session).getKey(file));
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+                throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
             }
             catch(SMBRuntimeException e) {
                 throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);

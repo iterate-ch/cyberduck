@@ -15,7 +15,6 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -67,7 +66,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder, AttributesA
             throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
         }
         finally {
             session.releaseShare(file);
