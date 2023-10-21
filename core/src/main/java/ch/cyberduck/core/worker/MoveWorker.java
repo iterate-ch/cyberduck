@@ -163,6 +163,9 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                 }
                                                 if(version.isDirectory()) {
                                                     if(!session.getFeature(Move.class).isRecursive(version, target)) {
+                                                        if(log.isWarnEnabled()) {
+                                                            log.warn(String.format("Skip directory %s", version));
+                                                        }
                                                         continue;
                                                     }
                                                 }
