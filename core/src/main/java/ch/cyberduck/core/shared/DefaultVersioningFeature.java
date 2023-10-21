@@ -113,7 +113,7 @@ public class DefaultVersioningFeature implements Versioning {
         }
         if(file.isDirectory()) {
             if(!feature.isRecursive(file, version)) {
-                throw new UnsupportedException();
+                return false;
             }
         }
         feature.move(file, version,
