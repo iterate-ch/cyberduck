@@ -286,6 +286,9 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         -1L));
             }
         }
+        else {
+            log.warn(String.format("No matching configuration for profile %s in %s", profile, profiles));
+        }
         return credentials;
     }
 
