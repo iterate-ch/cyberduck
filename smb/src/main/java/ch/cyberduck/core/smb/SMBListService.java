@@ -17,7 +17,6 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -88,7 +87,7 @@ public class SMBListService implements ListService {
             throw new SMBExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
         }
         finally {
             session.releaseShare(directory);

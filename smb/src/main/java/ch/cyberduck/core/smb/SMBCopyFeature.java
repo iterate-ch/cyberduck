@@ -16,7 +16,6 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -66,7 +65,7 @@ public class SMBCopyFeature implements Copy {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new SMBTransportExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot copy {0}", e, source);

@@ -30,12 +30,15 @@ import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.util.concurrent.TimeoutException;
+
 import com.hierynomus.mserref.NtStatus;
 import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
 public class SMBExceptionMappingService extends AbstractExceptionMappingService<SMBRuntimeException> {
+
     @Override
     public BackgroundException map(final SMBRuntimeException failure) {
         if(failure instanceof SMBApiException) {
@@ -81,11 +84,13 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof TransportException) {
-                final Throwable root = ExceptionUtils.getRootCause(failure);
-                return new ConnectionRefusedException(root.getMessage(), cause);
+                return new SMBTransportExceptionMappingService().map((TransportException) cause);
+            }
+            if(cause instanceof TimeoutException) {
+                return new ConnectionTimeoutException(cause.getMessage(), cause);
             }
         }
         final Throwable root = ExceptionUtils.getRootCause(failure);
-        return new InteroperabilityException(root.getMessage(), root);
+        return new InteroperabilityException(root.getMessage(), failure);
     }
 }

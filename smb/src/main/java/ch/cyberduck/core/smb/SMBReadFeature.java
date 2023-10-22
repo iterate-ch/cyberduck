@@ -16,7 +16,6 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -68,7 +67,7 @@ public class SMBReadFeature implements Read {
             throw new SMBExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
+            throw new SMBTransportExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

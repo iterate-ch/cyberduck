@@ -16,7 +16,6 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete.Callback;
@@ -62,7 +61,7 @@ public class SMBMoveFeature implements Move {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
