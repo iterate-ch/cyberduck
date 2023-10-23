@@ -53,8 +53,6 @@ import com.sun.jna.platform.mac.SystemB;
 public class UserDefaultsPreferences extends DefaultPreferences {
     private static final Logger log = LogManager.getLogger(UserDefaultsPreferences.class);
 
-    private final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
-
     private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty, 1000);
 
     private static final String MISSING_PROPERTY = String.valueOf(StringUtils.INDEX_NOT_FOUND);
@@ -72,6 +70,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         // Lookup in the default map
         final String value = super.getDefault(property);
         if(null == value) {
+            final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
             // Missing in default. Lookup in Info.plist
             NSObject plist = bundle.infoDictionary().objectForKey(property);
             if(null == plist) {
@@ -170,6 +169,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             this.setDefault("local.user.home", SystemB.INSTANCE.getpwuid(LibC.INSTANCE.getuid()).pw_dir);
         }
 
+        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
         if(null != bundle) {
             if(bundle.objectForInfoDictionaryKey("CFBundleName") != null) {
                 this.setDefault("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
@@ -272,6 +272,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
     @Override
     public List<String> applicationLocales() {
+        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
         return this.toList(bundle.localizations());
     }
 
