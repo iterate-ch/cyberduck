@@ -28,6 +28,6 @@ public class ReachabilityFactory extends Factory<Reachability> {
     }
 
     public static Reachability get() {
-        return new ReachabilityFactory().create();
+        return new ChainedReachability(new ReachabilityFactory().create(), new ResolverReachability(), new TcpReachability());
     }
 }
