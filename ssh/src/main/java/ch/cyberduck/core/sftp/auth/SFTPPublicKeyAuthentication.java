@@ -83,14 +83,28 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                         provider = new PKCS8KeyFile.Factory().create();
                         pubKey = null;
                         break;
-                    case OpenSSH:
+                    case OpenSSH: {
                         provider = new OpenSSHKeyFile.Factory().create();
-                        pubKey = LocalFactory.get(OpenSSHKeyFileUtil.getPublicKeyFile(new File(privKey.getAbsolute())).getAbsolutePath());
+                        final File f = OpenSSHKeyFileUtil.getPublicKeyFile(new File(privKey.getAbsolute()));
+                        if(f != null) {
+                            pubKey = LocalFactory.get(f.getAbsolutePath());
+                        }
+                        else {
+                            pubKey = null;
+                        }
                         break;
-                    case OpenSSHv1:
+                    }
+                    case OpenSSHv1: {
                         provider = new OpenSSHKeyV1KeyFile.Factory().create();
-                        pubKey = LocalFactory.get(OpenSSHKeyFileUtil.getPublicKeyFile(new File(privKey.getAbsolute())).getAbsolutePath());
+                        final File f = OpenSSHKeyFileUtil.getPublicKeyFile(new File(privKey.getAbsolute()));
+                        if(f != null) {
+                            pubKey = LocalFactory.get(f.getAbsolutePath());
+                        }
+                        else {
+                            pubKey = null;
+                        }
                         break;
+                    }
                     case PuTTY:
                         provider = new PuTTYKeyFile.Factory().create();
                         pubKey = null;
