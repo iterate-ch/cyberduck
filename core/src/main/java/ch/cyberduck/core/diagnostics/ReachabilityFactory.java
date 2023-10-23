@@ -34,11 +34,19 @@ public class ReachabilityFactory extends Factory<Reachability> {
         return new Reachability() {
             @Override
             public boolean isReachable(final Host bookmark) {
+                switch(bookmark.getProtocol().getScheme()) {
+                    case file:
+                        return new DiskReachability().isReachable(bookmark);
+                }
                 return chain.isReachable(bookmark);
             }
 
             @Override
             public Monitor monitor(final Host bookmark, final Callback callback) {
+                switch(bookmark.getProtocol().getScheme()) {
+                    case file:
+                        return Monitor.disabled;
+                }
                 return monitor.monitor(bookmark, callback);
             }
         };
