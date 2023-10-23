@@ -39,6 +39,7 @@ import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.sun.jna.platform.linux.LibC;
