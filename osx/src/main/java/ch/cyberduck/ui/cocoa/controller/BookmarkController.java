@@ -580,7 +580,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             privateKeyOpenPanel.setAllowsMultipleSelection(false);
             privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
             privateKeyOpenPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-            privateKeyOpenPanel.beginSheetForDirectory(LocalFactory.get(LocalFactory.get(), ".ssh").getAbsolute(), null, this.window(), this.id(),
+            privateKeyOpenPanel.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(), null, this.window(), this.id(),
                     Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
