@@ -97,9 +97,6 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
         this.setDefault("factory.watchservice.class", FSEventWatchService.class.getName());
         this.setDefault("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
-        if(null == this.getDefault("SUExpectsDSASignature")) {
-            this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
-        }
         this.setDefault("factory.notification.class", NotificationCenter.class.getName());
         this.setDefault("factory.iconservice.class", WorkspaceIconService.class.getName());
         this.setDefault("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
@@ -121,5 +118,13 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         }
         this.setDefault("factory.urlfilewriter.class", WeblocFileWriter.class.getName());
         this.setDefault("factory.quicklook.class", QuartzQuickLook.class.getName());
+    }
+
+    @Override
+    protected void setDefaults() {
+        super.setDefaults();
+        if(null == this.getDefault("SUExpectsDSASignature")) {
+            this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
+        }
     }
 }
