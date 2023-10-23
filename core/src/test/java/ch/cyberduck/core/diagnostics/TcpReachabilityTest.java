@@ -64,7 +64,10 @@ public class TcpReachabilityTest {
     public void testNotReachableWrongHostname() {
         final Reachability r = new TcpReachability();
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(), "cyberduck.ch.f")
+                new Host(new TestProtocol(Scheme.http), "cyberduck.ch.f")
+        ));
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(Scheme.sftp), "cyberduck.ch.f")
         ));
     }
 }
