@@ -80,13 +80,20 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
             final Credentials configuration = new OpenSSHCredentialsConfigurator().configure(bookmark);
             if(configuration.isPublicKeyAuthentication()) {
                 try {
-                    final Local identity = configuration.getIdentity();
+                    final Local setting = configuration.getIdentity();
                     if(log.isWarnEnabled()) {
-                        log.warn(String.format("Only read specific key %s from SSH agent with IdentitiesOnly configuration", identity));
+                        log.warn(String.format("Only read specific key %s from SSH agent with IdentitiesOnly configuration", setting));
                     }
-                    identities = Collections.singleton(isPrivateKey(identity) ?
-                            identityFromPrivateKey(identity) :
-                            identityFromPublicKey(identity));
+                    final Identity identity = isPrivateKey(setting) ?
+                            identityFromPrivateKey(setting) :
+                            identityFromPublicKey(setting);
+                    if(identity != null) {
+                        identities = Collections.singleton(identity);
+                    }
+                    else {
+                        log.warn(String.format("Missing public key for %s", setting));
+                        identities = Collections.emptyList();
+                    }
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
@@ -143,13 +150,13 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         return identities;
     }
 
-    private static boolean isPrivateKey(final Local identity) throws AccessDeniedException, IOException {
+    static boolean isPrivateKey(final Local identity) throws AccessDeniedException, IOException {
         final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
                 new InputStreamReader(identity.getInputStream()), true);
         return format != KeyFormat.Unknown;
     }
 
-    private static Identity identityFromPrivateKey(final Local identity) throws IOException, AccessDeniedException {
+    static Identity identityFromPrivateKey(final Local identity) throws IOException, AccessDeniedException {
         final File pubKey = OpenSSHKeyFileUtil.getPublicKeyFile(new File(identity.getAbsolute()));
         if(pubKey != null) {
             return identityFromPublicKey(LocalFactory.get(pubKey.getAbsolutePath()));
@@ -158,7 +165,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         return null;
     }
 
-    private static Identity identityFromPublicKey(final Local identity) throws IOException, AccessDeniedException {
+    static Identity identityFromPublicKey(final Local identity) throws IOException, AccessDeniedException {
         final List<String> lines = IOUtils.readLines(identity.getInputStream(), Charset.defaultCharset());
         for(String line : lines) {
             final String keydata = line.trim();
@@ -169,6 +176,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                 }
             }
         }
-        throw new IOException(String.format("Failure reading public key %s", identity));
+        log.warn(String.format("Failure reading public key %s", identity));
+        return null;
     }
 }
