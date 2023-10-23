@@ -39,7 +39,7 @@ public class TcpReachability implements Reachability {
         }
         catch(IOException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Failure  opening socket for %s", bookmark));
+                log.warn(String.format("Failure opening socket for %s", bookmark));
             }
             return false;
         }
