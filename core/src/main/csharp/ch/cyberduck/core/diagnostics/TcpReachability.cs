@@ -31,82 +31,9 @@ namespace Ch.Cyberduck.Core.Diagnostics
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(TcpReachability).FullName);
 
-        static TcpReachability()
-        {
-            ServicePointManager.SecurityProtocol =
-                SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-        }
-
         public bool isReachable(Host h)
         {
-            try
-            {
-                switch ((Scheme.__Enum)h.getProtocol().getScheme().ordinal())
-                {
-                    case Scheme.__Enum.file:
-                        return true;
-
-                    case Scheme.__Enum.http:
-                    case Scheme.__Enum.https:
-                        try
-                        {
-                            WebRequest.DefaultWebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
-                            WebRequest.DefaultCachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
-                            var url = new HostUrlProvider().withUsername(false).withPath(true).get(h);
-                            if (Log.isDebugEnabled())
-                            {
-                                Log.debug($"Reachability test with url {url}");
-                            }
-
-                            HttpWebRequest request = WebRequest.CreateHttp(url);
-                            request.UserAgent = new PreferencesUseragentProvider().get();
-                            request.Timeout = 10000;
-                            using (request.GetResponse())
-                            {
-                                return true;
-                            }
-                        }
-                        catch (WebException e)
-                        {
-                            switch (e.Status)
-                            {
-                                // TLS version not supported on .NET Framework/Windows-Kernel
-                                case WebExceptionStatus.SecureChannelFailure:
-                                // HTTP returned error
-                                case WebExceptionStatus.ProtocolError:
-                                //Certificate not trusted
-                                case WebExceptionStatus.TrustFailure:
-                                // not an exception?
-                                case WebExceptionStatus.Success:
-                                    return true;
-
-                                default:
-                                    if (Log.isDebugEnabled())
-                                    {
-                                        Log.debug($"WebException thrown with status {e.Status} for {h}");
-                                    }
-
-                                    return false;
-                            }
-                        }
-
-                    default:
-                        if (Log.isDebugEnabled())
-                        {
-                            Log.debug($"Try TCP connection to {h.getHostname()}:{h.getPort()}");
-                        }
-
-                        using (new TcpClient(h.getHostname(), h.getPort()))
-                        {
-                            return true;
-                        }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.warn($"Reachability check for {h} failed {e.Message}");
-                return false;
-            }
+            return true;
         }
 
         public void diagnose(Host h)
