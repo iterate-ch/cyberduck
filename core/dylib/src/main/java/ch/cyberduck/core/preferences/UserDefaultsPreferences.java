@@ -55,8 +55,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
     private final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
 
-    private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty,
-        PreferencesFactory.get().getLong("preferences.cache.size"));
+    private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty, 1000);
 
     private static final String MISSING_PROPERTY = String.valueOf(StringUtils.INDEX_NOT_FOUND);
 
