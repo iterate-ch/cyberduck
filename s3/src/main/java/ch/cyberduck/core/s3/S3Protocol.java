@@ -158,11 +158,6 @@ public class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public CredentialsConfigurator getCredentialsFinder() {
-        return credentials;
-    }
-
-    @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
     }
@@ -180,6 +175,9 @@ public class S3Protocol extends AbstractProtocol {
         }
         if(type == ComparisonService.class) {
             return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
+        }
+        if(type == CredentialsConfigurator.class) {
+            return (T) credentials;
         }
         return super.getFeature(type);
     }

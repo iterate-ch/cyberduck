@@ -326,21 +326,6 @@ public class Profile implements Protocol {
     }
 
     @Override
-    public CredentialsConfigurator getCredentialsFinder() {
-        return parent.getCredentialsFinder();
-    }
-
-    @Override
-    public HostnameConfigurator getHostnameFinder() {
-        return parent.getHostnameFinder();
-    }
-
-    @Override
-    public JumphostConfigurator getJumpHostFinder() {
-        return parent.getJumpHostFinder();
-    }
-
-    @Override
     public Case getCaseSensitivity() {
         return parent.getCaseSensitivity();
     }

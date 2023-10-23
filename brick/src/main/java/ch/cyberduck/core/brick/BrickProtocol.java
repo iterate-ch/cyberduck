@@ -45,11 +45,6 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
-    public CredentialsConfigurator getCredentialsFinder() {
-        return new BrickCredentialsConfigurator();
-    }
-
-    @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
     }
@@ -75,6 +70,9 @@ public class BrickProtocol extends AbstractProtocol {
     public <T> T getFeature(final Class<T> type) {
         if(type == Pairing.class) {
             return (T) new BrickPairingFeature();
+        }
+        if(type == CredentialsConfigurator.class) {
+            return (T) new BrickCredentialsConfigurator();
         }
         return super.getFeature(type);
     }

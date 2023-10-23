@@ -366,21 +366,6 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public CredentialsConfigurator getCredentialsFinder() {
-        return CredentialsConfigurator.DISABLED;
-    }
-
-    @Override
-    public HostnameConfigurator getHostnameFinder() {
-        return HostnameConfigurator.DISABLED;
-    }
-
-    @Override
-    public JumphostConfigurator getJumpHostFinder() {
-        return JumphostConfigurator.DISABLED;
-    }
-
-    @Override
     public Case getCaseSensitivity() {
         return Protocol.Case.sensitive;
     }
@@ -421,6 +406,15 @@ public abstract class AbstractProtocol implements Protocol {
         }
         if(type == ComparisonService.class) {
             return (T) new DefaultComparisonService(this);
+        }
+        if(type == HostnameConfigurator.class) {
+            return (T) HostnameConfigurator.DISABLED;
+        }
+        if(type == CredentialsConfigurator.class) {
+            return (T) CredentialsConfigurator.DISABLED;
+        }
+        if(type == JumphostConfigurator.class) {
+            return (T) JumphostConfigurator.DISABLED;
         }
         return null;
     }
