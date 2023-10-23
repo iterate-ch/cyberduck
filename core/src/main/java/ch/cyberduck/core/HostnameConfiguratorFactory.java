@@ -29,6 +29,6 @@ public final class HostnameConfiguratorFactory {
      * @return Configurator for default settings
      */
     public static HostnameConfigurator get(final Protocol protocol) {
-        return protocol.getHostnameFinder().reload();
+        return protocol.getFeature(HostnameConfigurator.class).reload();
     }
 }

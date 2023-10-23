@@ -35,7 +35,7 @@ public final class CredentialsConfiguratorFactory {
      * @return Configurator for default settings
      */
     public static CredentialsConfigurator get(final Protocol protocol) {
-        final CredentialsConfigurator finder = protocol.getCredentialsFinder();
+        final CredentialsConfigurator finder = protocol.getFeature(CredentialsConfigurator.class);
         try {
             return finder.reload();
         }

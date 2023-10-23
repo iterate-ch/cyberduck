@@ -20,6 +20,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LoginCanceledException;
 
+/**
+ * Configurator for resolving jump host configuration for bookmark
+ */
 public interface JumphostConfigurator {
 
     Host getJumphost(String alias);
