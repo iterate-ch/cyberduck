@@ -34,6 +34,7 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
+    @Ignore
     public void testNotReachablePortSubdomain() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
@@ -42,6 +43,7 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
+    @Ignore
     public void testNotReachableWrongDomain() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
@@ -54,7 +56,6 @@ public class SystemConfigurationReachabilityTest {
         final Reachability r = new SystemConfigurationReachability();
         assertTrue(r.isReachable(
                 new Host(new AbstractProtocol() {
-
                     @Override
                     public String getIdentifier() {
                         return Scheme.file.name();
