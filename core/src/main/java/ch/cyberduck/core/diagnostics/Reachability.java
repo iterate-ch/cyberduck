@@ -44,6 +44,18 @@ public interface Reachability {
         Monitor start();
 
         Monitor stop();
+
+        Monitor disabled = new Monitor() {
+            @Override
+            public Monitor start() {
+                return this;
+            }
+
+            @Override
+            public Monitor stop() {
+                return this;
+            }
+        };
     }
 
     interface Diagnostics {

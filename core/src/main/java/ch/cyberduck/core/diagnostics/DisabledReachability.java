@@ -26,19 +26,6 @@ public class DisabledReachability implements Reachability {
 
     @Override
     public Monitor monitor(final Host host, final Callback callback) {
-        return new DisabledMonitor();
-    }
-
-    private static class DisabledMonitor implements Monitor {
-        @Override
-        public Monitor start() {
-            return this;
-        }
-
-        @Override
-        public Monitor stop() {
-            return this;
-
-        }
+        return Monitor.disabled;
     }
 }
