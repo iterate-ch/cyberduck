@@ -19,6 +19,7 @@ import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -32,11 +33,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyFileUtil;
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
@@ -65,32 +68,39 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login using public key authentication with credentials %s", credentials));
             }
-            final Local identity = credentials.getIdentity();
+            final Local privKey = credentials.getIdentity();
+            final Local pubKey;
             final FileKeyProvider provider;
             final AtomicBoolean canceled = new AtomicBoolean();
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
-                        new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), true);
+                        new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8), true);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Reading private key %s with key format %s", identity, format));
+                    log.info(String.format("Reading private key %s with key format %s", privKey, format));
                 }
                 switch(format) {
                     case PKCS8:
                         provider = new PKCS8KeyFile.Factory().create();
+                        pubKey = null;
                         break;
                     case OpenSSH:
                         provider = new OpenSSHKeyFile.Factory().create();
+                        pubKey = LocalFactory.get(OpenSSHKeyFileUtil.getPublicKeyFile(new File(privKey.getAbsolute())).getAbsolutePath());
                         break;
                     case OpenSSHv1:
                         provider = new OpenSSHKeyV1KeyFile.Factory().create();
+                        pubKey = LocalFactory.get(OpenSSHKeyFileUtil.getPublicKeyFile(new File(privKey.getAbsolute())).getAbsolutePath());
                         break;
                     case PuTTY:
                         provider = new PuTTYKeyFile.Factory().create();
+                        pubKey = null;
                         break;
                     default:
-                        throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
+                        throw new InteroperabilityException(String.format("Unknown key format for file %s", privKey.getName()));
                 }
-                provider.init(new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), new PasswordFinder() {
+                provider.init(new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8),
+                        pubKey != null ? new InputStreamReader(pubKey.getInputStream(), StandardCharsets.UTF_8) : null,
+                        new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
                         if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
@@ -100,7 +110,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                                         LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                         String.format("%s (%s)",
                                                 LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                                identity.getAbbreviatedPath()),
+                                                privKey.getAbbreviatedPath()),
                                         new LoginOptions()
                                                 .icon(bookmark.getProtocol().disk())
                                                 .user(false).password(true)
