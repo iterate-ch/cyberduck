@@ -84,9 +84,9 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                     if(log.isWarnEnabled()) {
                         log.warn(String.format("Only read specific key %s from SSH agent with IdentitiesOnly configuration", identity));
                     }
-                    identities = this.isPrivateKey(identity) ?
-                            this.identityFromPrivateKey(identity) :
-                            this.identityFromPublicKey(identity);
+                    identities = Collections.singleton(isPrivateKey(identity) ?
+                            identityFromPrivateKey(identity) :
+                            identityFromPublicKey(identity));
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
@@ -143,29 +143,29 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         return identities;
     }
 
-    private boolean isPrivateKey(final Local identity) throws AccessDeniedException, IOException {
+    private static boolean isPrivateKey(final Local identity) throws AccessDeniedException, IOException {
         final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
                 new InputStreamReader(identity.getInputStream()), true);
         return format != KeyFormat.Unknown;
     }
 
-    private Collection<Identity> identityFromPrivateKey(final Local identity) throws IOException, AccessDeniedException {
+    private static Identity identityFromPrivateKey(final Local identity) throws IOException, AccessDeniedException {
         final File pubKey = OpenSSHKeyFileUtil.getPublicKeyFile(new File(identity.getAbsolute()));
         if(pubKey != null) {
-            return this.identityFromPublicKey(LocalFactory.get(pubKey.getAbsolutePath()));
+            return identityFromPublicKey(LocalFactory.get(pubKey.getAbsolutePath()));
         }
         log.warn(String.format("Unable to find public key file for identity %s", identity));
-        return Collections.emptyList();
+        return null;
     }
 
-    private Collection<Identity> identityFromPublicKey(final Local identity) throws IOException, AccessDeniedException {
+    private static Identity identityFromPublicKey(final Local identity) throws IOException, AccessDeniedException {
         final List<String> lines = IOUtils.readLines(identity.getInputStream(), Charset.defaultCharset());
         for(String line : lines) {
             final String keydata = line.trim();
             if(StringUtils.isNotBlank(keydata)) {
                 String[] parts = keydata.split("\\s+");
                 if(parts.length >= 2) {
-                    return Collections.singletonList(new CustomIdentity(Base64.decodeBase64(parts[1])));
+                    return new CustomIdentity(Base64.decodeBase64(parts[1]));
                 }
             }
         }
