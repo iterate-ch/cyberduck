@@ -39,6 +39,7 @@ import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
@@ -64,6 +65,13 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
                                                       final X509TrustManager trust, final X509KeyManager key,
                                                       final LoginCallback prompt) {
         super(session.getHost(), trust, key, prompt);
+        this.oauth = oauth;
+        this.session = session;
+    }
+
+    public STSAssumeRoleCredentialsRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
+                                                      final AWSSecurityTokenService service, final LoginCallback prompt) {
+        super(session.getHost(), service, prompt);
         this.oauth = oauth;
         this.session = session;
     }
