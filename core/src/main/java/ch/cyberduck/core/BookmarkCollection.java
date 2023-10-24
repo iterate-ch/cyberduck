@@ -15,6 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
@@ -33,6 +35,18 @@ public class BookmarkCollection extends MonitorFolderHostCollection {
     private static final BookmarkCollection FAVORITES_COLLECTION = new BookmarkCollection(
         LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Bookmarks")
     ) {
+        @Override
+        public void collectionItemRemoved(final Host bookmark) {
+            final Local file = this.getFile(bookmark);
+            try {
+                LocalTrashFactory.get().trash(file);
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure removing bookmark %s", e.getMessage()));
+            }
+            super.collectionItemRemoved(bookmark);
+        }
+
         @Override
         public void collectionItemAdded(final Host bookmark) {
             bookmark.setWorkdir(null);
