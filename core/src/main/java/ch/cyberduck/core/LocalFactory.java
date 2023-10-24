@@ -77,6 +77,10 @@ public final class LocalFactory extends Factory<Local> {
     public static synchronized Local get(final Local parent, final String name) {
         if(null == singleton) {
             singleton = new LocalFactory();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Using implementation %s", singleton.getClass()));
+            }
+
         }
         return singleton.create(parent, name);
     }
@@ -84,6 +88,9 @@ public final class LocalFactory extends Factory<Local> {
     public static synchronized Local get(final String parent, final String name) {
         if(null == singleton) {
             singleton = new LocalFactory();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Using implementation %s", singleton.getClass()));
+            }
         }
         return singleton.create(singleton.create(parent), name);
     }
@@ -91,6 +98,9 @@ public final class LocalFactory extends Factory<Local> {
     public static synchronized Local get(final String path) {
         if(null == singleton) {
             singleton = new LocalFactory();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Using implementation %s", singleton.getClass()));
+            }
         }
         return singleton.create(path);
     }
@@ -98,6 +108,9 @@ public final class LocalFactory extends Factory<Local> {
     public static synchronized Local get() {
         if(null == singleton) {
             singleton = new LocalFactory();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Using implementation %s", singleton.getClass()));
+            }
         }
         return singleton.create();
     }
