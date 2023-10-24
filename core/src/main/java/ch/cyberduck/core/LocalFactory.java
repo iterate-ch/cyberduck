@@ -21,11 +21,14 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public final class LocalFactory extends Factory<Local> {
+    private static final Logger log = LogManager.getLogger(LocalFactory.class);
 
     private Constructor<? extends Local> constructorCreateFromString;
     private Constructor<? extends Local> constructorCreateFromParentString;
@@ -43,6 +46,9 @@ public final class LocalFactory extends Factory<Local> {
         try {
             if(null == constructorCreateFromString) {
                 constructorCreateFromString = ConstructorUtils.getMatchingAccessibleConstructor(clazz, String.class);
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Caching constructor %s for class %s", constructorCreateFromString, clazz));
+                }
             }
             return constructorCreateFromString.newInstance(path);
         }
@@ -55,6 +61,9 @@ public final class LocalFactory extends Factory<Local> {
         try {
             if(null == constructorCreateFromParentString) {
                 constructorCreateFromParentString = ConstructorUtils.getMatchingAccessibleConstructor(clazz, parent.getClass(), path.getClass());
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Caching constructor %s for class %s", constructorCreateFromParentString, clazz));
+                }
             }
             return constructorCreateFromParentString.newInstance(parent, path);
         }
