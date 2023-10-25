@@ -238,7 +238,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         return credentials;
                     }
                     return credentials.withTokens(new TemporaryAccessTokens(
-                            cached.accessKey, cached.secretKey, cached.sessionToken, Long.valueOf(cached.expiration)));
+                            cached.accessKey, cached.secretKey, cached.sessionToken,
+                            Instant.parse(cached.expiration).toEpochMilli()));
                 }
                 if(tokenCode != null) {
                     // Obtain session token
