@@ -499,7 +499,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.writer.host.class", PlistWriter.class.getName());
 
         this.setDefault("factory.locale.class", DisabledLocale.class.getName());
-        this.setDefault("factory.local.class", Local.class.getName());
         this.setDefault("factory.certificatestore.class", DisabledCertificateStore.class.getName());
         this.setDefault("factory.logincallback.class", DisabledLoginCallback.class.getName());
         this.setDefault("factory.passwordcallback.class", DisabledPasswordCallback.class.getName());
