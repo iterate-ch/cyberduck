@@ -679,7 +679,7 @@
                 <plugin>
                     <groupId>io.swagger.codegen.v3</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>3.0.49</version>
+                    <version>3.0.50</version>
                     <configuration>
                         <configOptions>
                             <sourceFolder>src/main/java</sourceFolder>
