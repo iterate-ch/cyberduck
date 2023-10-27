@@ -17,13 +17,16 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.URI;
+
 /**
  * Default OAuth Prefix Service. Will just return fields from passed bookmark.
  */
 public class DefaultPasswordStorePrefixService implements PasswordStorePrefixService {
+
     private final Host bookmark;
 
-    public DefaultPasswordStorePrefixService(Host bookmark) {
+    public DefaultPasswordStorePrefixService(final Host bookmark) {
         this.bookmark = bookmark;
     }
 
@@ -38,6 +41,11 @@ public class DefaultPasswordStorePrefixService implements PasswordStorePrefixSer
 
     @Override
     public String getHostname() {
+        if(bookmark.getCredentials().isOAuthAuthentication()) {
+            if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
+                return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost();
+            }
+        }
         return bookmark.getHostname();
     }
 
@@ -47,7 +55,12 @@ public class DefaultPasswordStorePrefixService implements PasswordStorePrefixSer
     }
 
     @Override
-    public int getPort() {
+    public Integer getPort() {
+        if(bookmark.getCredentials().isOAuthAuthentication()) {
+            if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
+                return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getPort();
+            }
+        }
         return bookmark.getPort();
     }
 

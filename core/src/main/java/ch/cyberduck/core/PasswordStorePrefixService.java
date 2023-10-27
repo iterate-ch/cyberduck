@@ -46,7 +46,7 @@ public interface PasswordStorePrefixService {
     /**
      * Retrieves a port configured with this OAuth bookmark.
      */
-    int getPort();
+    Integer getPort();
 
     /**
      * Returns Scheme for PasswordStore to save entry with
