@@ -124,12 +124,13 @@ namespace Ch.Cyberduck.Core
                 && attrs.TryGetValue("OAuth Access Token", out var accessToken))
             {
                 attrs.TryGetValue("OAuth Refresh Token", out var refreshToken);
+                attrs.TryGetValue("OIDC Id Token", out var idToken);
                 long expiry = default;
                 if (attrs.TryGetValue("OAuth Expiry", out var expiryValue))
                 {
                     long.TryParse(expiryValue, out expiry);
                 }
-                return new(accessToken, refreshToken, new(expiry));
+                return new(accessToken, refreshToken, new(expiry), idToken);
             }
 
             return base.findOAuthTokens(bookmark);
@@ -172,7 +173,6 @@ namespace Ch.Cyberduck.Core
                 logger.info(string.Format("Add password for bookmark {0}", bookmark));
             }
             var target = ToUri(bookmark);
-            var protocol = bookmark.getProtocol();
             var credential = bookmark.getCredentials();
 
             var winCred = new WindowsCredentialManagerCredential(
@@ -184,20 +184,21 @@ namespace Ch.Cyberduck.Core
             {
                 logger.warn(string.Format("No password in credentials for bookmark {0}", bookmark.getHostname()));
             }
-            if (protocol.isTokenConfigurable())
+            if (credential.isTokenAuthentication())
             {
                 winCred.Attributes["Token"] = credential.getToken();
             }
-            if (protocol.isOAuthConfigurable())
+            if (credential.isOAuthAuthentication())
             {
                 winCred.Attributes["OAuth Access Token"] = credential.getOauth().getAccessToken();
                 winCred.Attributes["OAuth Refresh Token"] = credential.getOauth().getRefreshToken();
+                winCred.Attributes["OIDC Id Token"] = credential.getOauth().getIdToken();
                 if (credential.getOauth().getExpiryInMilliseconds() != null)
                 {
                     winCred.Attributes["OAuth Expiry"] = credential.getOauth().getExpiryInMilliseconds().longValue().ToString();
                 }
             }
-            if (protocol.isPrivateKeyConfigurable())
+            if (credential.isPublicKeyAuthentication())
             {
                 winCred.Attributes["Private Key Passphrase"] = credential.getIdentityPassphrase();
             }
@@ -225,7 +226,10 @@ namespace Ch.Cyberduck.Core
                 }
             }
             targetBuilder.Path = pathBuilder.ToString();
-            targetBuilder.Query = "user=" + credentials.getUsername();
+            if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
+            {
+                targetBuilder.Query = "user=" + credentials.getUsername();
+            }
 
             return targetBuilder.Uri;
         }
