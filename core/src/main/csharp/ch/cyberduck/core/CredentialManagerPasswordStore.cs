@@ -124,12 +124,13 @@ namespace Ch.Cyberduck.Core
                 && attrs.TryGetValue("OAuth Access Token", out var accessToken))
             {
                 attrs.TryGetValue("OAuth Refresh Token", out var refreshToken);
+                attrs.TryGetValue("OIDC Id Token", out var idToken);
                 long expiry = default;
                 if (attrs.TryGetValue("OAuth Expiry", out var expiryValue))
                 {
                     long.TryParse(expiryValue, out expiry);
                 }
-                return new(accessToken, refreshToken, new(expiry));
+                return new(accessToken, refreshToken, new(expiry), idToken);
             }
 
             return base.findOAuthTokens(bookmark);
@@ -192,6 +193,7 @@ namespace Ch.Cyberduck.Core
             {
                 winCred.Attributes["OAuth Access Token"] = credential.getOauth().getAccessToken();
                 winCred.Attributes["OAuth Refresh Token"] = credential.getOauth().getRefreshToken();
+                winCred.Attributes["OIDC Id Token"] = credential.getOauth().getIdToken();
                 if (credential.getOauth().getExpiryInMilliseconds() != null)
                 {
                     winCred.Attributes["OAuth Expiry"] = credential.getOauth().getExpiryInMilliseconds().longValue().ToString();
