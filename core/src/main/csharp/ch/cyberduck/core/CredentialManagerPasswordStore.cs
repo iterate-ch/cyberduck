@@ -227,7 +227,10 @@ namespace Ch.Cyberduck.Core
                 }
             }
             targetBuilder.Path = pathBuilder.ToString();
-            targetBuilder.Query = "user=" + credentials.getUsername();
+            if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
+            {
+                targetBuilder.Query = "user=" + credentials.getUsername();
+            }
 
             return targetBuilder.Uri;
         }
