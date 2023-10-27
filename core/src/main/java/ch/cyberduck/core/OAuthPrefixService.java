@@ -44,15 +44,6 @@ public interface OAuthPrefixService {
     String getIdentifier();
 
     /**
-     * Some PasswordStores don't need to store all ports, thus allow for nullable
-     * return value.
-     * 
-     * @return If default port, returns {@code null}, otherwise returns
-     *         {@link #getPort()}.
-     */
-    Integer getNonDefaultPort();
-
-    /**
      * Retrieves a port configured with this OAuth bookmark.
      */
     int getPort();

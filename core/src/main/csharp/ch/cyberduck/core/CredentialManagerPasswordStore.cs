@@ -237,7 +237,7 @@ namespace Ch.Cyberduck.Core
                 isOAuth = true;
                 OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
                 hostname = oAuthPrefix.getIdentifier();
-                port = oAuthPrefix.getNonDefaultPort()?.intValue();
+                port = oAuthPrefix.getPort().intValue();
                 username = oAuthPrefix.getUsername();
             }
             else

@@ -47,18 +47,6 @@ public class DefaultOAuthPrefixService implements OAuthPrefixService {
     }
 
     @Override
-    public Integer getNonDefaultPort() {
-        if(!protocol.isPortConfigurable()) {
-            return null;
-        }
-        final int port = this.getPort();
-        if(port == protocol.getDefaultPort()) {
-            return null;
-        }
-        return port;
-    }
-
-    @Override
     public int getPort() {
         return bookmark.getPort();
     }
