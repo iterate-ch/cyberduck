@@ -173,7 +173,6 @@ namespace Ch.Cyberduck.Core
                 logger.info(string.Format("Add password for bookmark {0}", bookmark));
             }
             var target = ToUri(bookmark);
-            var protocol = bookmark.getProtocol();
             var credential = bookmark.getCredentials();
 
             var winCred = new WindowsCredentialManagerCredential(
@@ -185,11 +184,11 @@ namespace Ch.Cyberduck.Core
             {
                 logger.warn(string.Format("No password in credentials for bookmark {0}", bookmark.getHostname()));
             }
-            if (protocol.isTokenConfigurable())
+            if (credential.isTokenAuthentication())
             {
                 winCred.Attributes["Token"] = credential.getToken();
             }
-            if (protocol.isOAuthConfigurable())
+            if (credential.isOAuthAuthentication())
             {
                 winCred.Attributes["OAuth Access Token"] = credential.getOauth().getAccessToken();
                 winCred.Attributes["OAuth Refresh Token"] = credential.getOauth().getRefreshToken();
@@ -199,7 +198,7 @@ namespace Ch.Cyberduck.Core
                     winCred.Attributes["OAuth Expiry"] = credential.getOauth().getExpiryInMilliseconds().longValue().ToString();
                 }
             }
-            if (protocol.isPrivateKeyConfigurable())
+            if (credential.isPublicKeyAuthentication())
             {
                 winCred.Attributes["Private Key Passphrase"] = credential.getIdentityPassphrase();
             }
