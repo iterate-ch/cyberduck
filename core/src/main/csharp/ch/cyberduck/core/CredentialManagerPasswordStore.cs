@@ -235,10 +235,10 @@ namespace Ch.Cyberduck.Core
             if (withOAuth && protocol.isOAuthConfigurable())
             {
                 isOAuth = true;
-                OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
-                hostname = oAuthPrefix.getIdentifier();
-                port = oAuthPrefix.getPort().intValue();
-                username = oAuthPrefix.getUsername();
+                PasswordStorePrefixService service = new PasswordStorePrefixServiceFactory().create(bookmark);
+                hostname = service.getIdentifier();
+                port = service.getPort().intValue();
+                username = service.getUsername();
             }
             else
             {

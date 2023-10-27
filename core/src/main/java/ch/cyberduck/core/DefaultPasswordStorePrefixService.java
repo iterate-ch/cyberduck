@@ -20,10 +20,10 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Default OAuth Prefix Service. Will just return fields from passed bookmark.
  */
-public class DefaultOAuthPrefixService implements OAuthPrefixService {
+public class DefaultPasswordStorePrefixService implements PasswordStorePrefixService {
     private final Host bookmark;
 
-    public DefaultOAuthPrefixService(Host bookmark) {
+    public DefaultPasswordStorePrefixService(Host bookmark) {
         this.bookmark = bookmark;
     }
 

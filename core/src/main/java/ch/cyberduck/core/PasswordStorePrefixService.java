@@ -26,7 +26,7 @@ package ch.cyberduck.core;
  * <p>EntryName can be "OAuth2 Access Token", "OAuth2 Refresh Token", "OIDC Id Token", "OAuth2 Token Expiry"</p>
  * </p>
  */
-public interface OAuthPrefixService {
+public interface PasswordStorePrefixService {
     /**
      * Gets a description to insert as User-component into PasswordStore
      */

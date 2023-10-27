@@ -146,12 +146,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching OAuth tokens from keychain for %s", bookmark));
         }
-        final OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
+        final PasswordStorePrefixService service = new PasswordStorePrefixServiceFactory().create(bookmark);
 
-        final String prefix = oAuthPrefix.getPrefix();
-        final String hostname = oAuthPrefix.getHostname();
-        final int port = oAuthPrefix.getPort();
-        final Scheme scheme = oAuthPrefix.getScheme();
+        final String prefix = service.getPrefix();
+        final String hostname = service.getHostname();
+        final int port = service.getPort();
+        final Scheme scheme = service.getScheme();
         try {
             final String expiry = this.getPassword(hostname, String.format("%s OAuth2 Token Expiry", prefix));
             return (new OAuthTokens(
@@ -202,7 +202,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                     credentials.getToken());
         }
         if(credentials.isOAuthAuthentication()) {
-            final OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
+            final PasswordStorePrefixService oAuthPrefix = new PasswordStorePrefixServiceFactory().create(bookmark);
 
             final String prefix = oAuthPrefix.getPrefix();
             final String hostname = oAuthPrefix.getHostname();
@@ -252,7 +252,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             protocol.getTokenPlaceholder() : String.format("%s (%s)", protocol.getTokenPlaceholder(), credentials.getUsername()));
         }
         if(protocol.isOAuthConfigurable()) {
-            final OAuthPrefixService oAuthPrefix = new OAuthPrefixServiceFactory().create(bookmark);
+            final PasswordStorePrefixService oAuthPrefix = new PasswordStorePrefixServiceFactory().create(bookmark);
 
             final String prefix = oAuthPrefix.getPrefix();
             final String hostname = oAuthPrefix.getHostname();
