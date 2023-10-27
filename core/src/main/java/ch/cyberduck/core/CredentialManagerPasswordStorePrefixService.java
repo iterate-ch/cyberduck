@@ -19,28 +19,28 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 
-/**
- * Default OAuth Prefix Service. Will just return fields from passed bookmark.
- */
-public class DefaultPasswordStorePrefixService implements PasswordStorePrefixService {
+public class CredentialManagerPasswordStorePrefixService extends DefaultPasswordStorePrefixService {
 
     @Override
     public String getPrefix(final Host bookmark) {
-        if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-            return String.format("%s (%s)", bookmark.getProtocol().getDescription(),
-                    bookmark.getCredentials().getUsername());
-        }
-        return bookmark.getProtocol().getDescription();
+        return bookmark.getProtocol().getIdentifier();
     }
 
     @Override
     public String getHostname(final Host bookmark) {
         if(bookmark.getCredentials().isOAuthAuthentication()) {
-            if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
-                return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost();
-            }
+            // duck:identifier?user=
+            return null;
         }
-        return bookmark.getHostname();
+        if(bookmark.getProtocol().isHostnameConfigurable()) {
+            if(bookmark.getProtocol().getDefaultHostname().equals(bookmark.getHostname())) {
+                return null;
+            }
+            // duck:identifier:fqdn?user=
+            return bookmark.getHostname();
+        }
+        // duck:identifier?user=
+        return null;
     }
 
     @Override
@@ -50,16 +50,13 @@ public class DefaultPasswordStorePrefixService implements PasswordStorePrefixSer
                 return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getPort();
             }
         }
-        return bookmark.getPort();
-    }
-
-    @Override
-    public Scheme getScheme(final Host bookmark) {
-        return bookmark.getProtocol().getScheme();
-    }
-
-    @Override
-    public String getUsername(final Host bookmark) {
-        return bookmark.getCredentials().getUsername();
+        if(bookmark.getProtocol().isPortConfigurable()) {
+            if(bookmark.getProtocol().getDefaultPort() == bookmark.getPort()) {
+                return null;
+            }
+            // duck:identifier:fqdn:port?user=
+            return bookmark.getPort();
+        }
+        return null;
     }
 }

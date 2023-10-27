@@ -30,31 +30,25 @@ public interface PasswordStorePrefixService {
     /**
      * Gets a description to insert as User-component into PasswordStore
      */
-    String getPrefix();
+    String getPrefix(Host bookmark);
 
     /**
      * Returns the OAuth configured hostname of this bookmark.
      */
-    String getHostname();
-
-    /**
-     * Retrieves an identifier, used to identify Credential Manager entries on
-     * Windows (i.e. onedrive, sharepoint, dropbox, etc.)
-     */
-    String getIdentifier();
+    String getHostname(Host bookmark);
 
     /**
      * Retrieves a port configured with this OAuth bookmark.
      */
-    Integer getPort();
+    Integer getPort(Host bookmark);
 
     /**
      * Returns Scheme for PasswordStore to save entry with
      */
-    Scheme getScheme();
+    Scheme getScheme(Host bookmark);
 
     /**
      * Retrieves username information for this OAuth bookmark
      */
-    String getUsername();
+    String getUsername(Host bookmarkd);
 }

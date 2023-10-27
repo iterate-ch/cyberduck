@@ -17,6 +17,7 @@
 //
 
 using ch.cyberduck.cli;
+using ch.cyberduck.core;
 using ch.cyberduck.core.cryptomator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Diagnostics;

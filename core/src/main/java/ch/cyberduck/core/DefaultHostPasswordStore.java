@@ -146,12 +146,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching OAuth tokens from keychain for %s", bookmark));
         }
-        final PasswordStorePrefixService service = new PasswordStorePrefixServiceFactory().create(bookmark);
+        final PasswordStorePrefixService service = bookmark.getProtocol().getFeature(PasswordStorePrefixService.class);
 
-        final String prefix = service.getPrefix();
-        final String hostname = service.getHostname();
-        final int port = service.getPort();
-        final Scheme scheme = service.getScheme();
+        final String prefix = service.getPrefix(bookmark);
+        final String hostname = service.getHostname(bookmark);
+        final Integer port = service.getPort(bookmark);
+        final Scheme scheme = service.getScheme(bookmark);
         try {
             final String expiry = this.getPassword(hostname, String.format("%s OAuth2 Token Expiry", prefix));
             return (new OAuthTokens(
@@ -202,12 +202,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                     credentials.getToken());
         }
         if(credentials.isOAuthAuthentication()) {
-            final PasswordStorePrefixService oAuthPrefix = new PasswordStorePrefixServiceFactory().create(bookmark);
+            final PasswordStorePrefixService service = bookmark.getProtocol().getFeature(PasswordStorePrefixService.class);
 
-            final String prefix = oAuthPrefix.getPrefix();
-            final String hostname = oAuthPrefix.getHostname();
-            final int port = oAuthPrefix.getPort();
-            final Scheme scheme = oAuthPrefix.getScheme();
+            final String prefix = service.getPrefix(bookmark);
+            final String hostname = service.getHostname(bookmark);
+            final Integer port = service.getPort(bookmark);
+            final Scheme scheme = service.getScheme(bookmark);
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
                 this.addPassword(scheme, port, hostname,
                         String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
@@ -252,12 +252,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             protocol.getTokenPlaceholder() : String.format("%s (%s)", protocol.getTokenPlaceholder(), credentials.getUsername()));
         }
         if(protocol.isOAuthConfigurable()) {
-            final PasswordStorePrefixService oAuthPrefix = new PasswordStorePrefixServiceFactory().create(bookmark);
+            final PasswordStorePrefixService service = bookmark.getProtocol().getFeature(PasswordStorePrefixService.class);
 
-            final String prefix = oAuthPrefix.getPrefix();
-            final String hostname = oAuthPrefix.getHostname();
-            final int port = oAuthPrefix.getPort();
-            final Scheme scheme = oAuthPrefix.getScheme();
+            final String prefix = service.getPrefix(bookmark);
+            final String hostname = service.getHostname(bookmark);
+            final Integer port = service.getPort(bookmark);
+            final Scheme scheme = service.getScheme(bookmark);
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
                 this.deletePassword(scheme, port, hostname,
                         String.format("%s OAuth2 Access Token", prefix));

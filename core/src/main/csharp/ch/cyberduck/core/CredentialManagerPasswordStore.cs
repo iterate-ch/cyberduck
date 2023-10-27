@@ -219,54 +219,28 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        private static Uri ToUri(Host bookmark) => ToUri(bookmark, true, out _);
-
-        private static Uri ToUri(Host bookmark, bool withOAuth, out bool isOAuth)
+        private static Uri ToUri(Host bookmark)
         {
-            var protocol = bookmark.getProtocol();
-            var credentials = bookmark.getCredentials();
-            var targetBuilder = new UriBuilder(PreferencesFactory.get().getProperty("application.container.name"), string.Empty);
+            PasswordStorePrefixService service = (PasswordStorePrefixService)bookmark.getProtocol().getFeature(typeof(PasswordStorePrefixService));
+            var targetBuilder = new UriBuilder(new HostPreferences(bookmark).getProperty("application.container.name"), string.Empty);
             var pathBuilder = new StringBuilder();
-
-            int? port;
-            string hostname = default;
-            string username = credentials.getUsername();
-
-            if (withOAuth && protocol.isOAuthConfigurable())
+            string prefix = service.getPrefix(bookmark);
+            if (!string.IsNullOrWhiteSpace(prefix))
             {
-                isOAuth = true;
-                PasswordStorePrefixService service = new PasswordStorePrefixServiceFactory().create(bookmark);
-                hostname = service.getIdentifier();
-                port = service.getPort().intValue();
-                username = service.getUsername();
+                pathBuilder.Append(prefix);
             }
-            else
-            {
-                isOAuth = false;
-                pathBuilder.Append(protocol.getIdentifier());
-
-                if (protocol.isHostnameConfigurable() || !(protocol.isTokenConfigurable() || protocol.isOAuthConfigurable()))
-                {
-                    hostname = bookmark.getHostname();
-                }
-
-                int portValue = bookmark.getPort();
-                port = protocol.isPortConfigurable() && !Equals(protocol.getDefaultPort(), portValue)
-                    ? portValue
-                    : null;
-            }
-
+            string hostname = service.getHostname(bookmark);
             if (!string.IsNullOrWhiteSpace(hostname))
             {
                 pathBuilder.Append(hostname);
-
-                if (port is int portValue)
-                {
-                    pathBuilder.AppendFormat(":{0}", portValue);
-                }
             }
-
+            java.lang.Integer port = service.getPort(bookmark);
+            if (port != null)
+            {
+                pathBuilder.AppendFormat(":{0}", port);
+            }
             targetBuilder.Path = pathBuilder.ToString();
+            string username = service.getUsername(bookmark);
             if (!string.IsNullOrWhiteSpace(username))
             {
                 targetBuilder.Query = "user=" + username;
@@ -277,20 +251,7 @@ namespace Ch.Cyberduck.Core
 
         private WindowsCredentialManagerCredential FindCredentials(Host host)
         {
-            // Try find with OAuthPrefixService
-            if (WinCredentialManager.TryGetCredentials(ToUri(host, true, out var isOAuth).AbsoluteUri, out var result))
-            {
-                return result;
-            }
-
-            if (!isOAuth)
-            {
-                return default;
-            }
-
-            // 
-            return WinCredentialManager.GetCredentials(ToUri(host, false, out _).AbsoluteUri);
+            return WinCredentialManager.GetCredentials(ToUri(host).AbsoluteUri);
         }
-
     }
 }
