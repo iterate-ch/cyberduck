@@ -28,7 +28,7 @@ public class DefaultOAuthPrefixService implements OAuthPrefixService {
     }
 
     @Override
-    public String getDescription() {
+    public String getPrefix() {
         if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
             return String.format("%s (%s)", bookmark.getProtocol().getDescription(),
                     bookmark.getCredentials().getUsername());

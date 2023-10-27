@@ -30,7 +30,7 @@ public interface OAuthPrefixService {
     /**
      * Gets a description to insert as User-component into PasswordStore
      */
-    String getDescription();
+    String getPrefix();
 
     /**
      * Returns the OAuth configured hostname of this bookmark.
