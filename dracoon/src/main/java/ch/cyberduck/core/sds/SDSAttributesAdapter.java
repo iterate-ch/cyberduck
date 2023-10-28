@@ -134,44 +134,46 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
 
     protected Permission toPermission(final Node node) {
         final Permission permission = new Permission();
-        switch(node.getType()) {
-            case FOLDER:
-            case ROOM:
-                if(node.getPermissions().isCreate()
-                        // For existing files the delete role is also required to overwrite
-                        && node.getPermissions().isDelete()) {
-                    permission.setUser(Permission.Action.all);
-                }
-                else {
-                    permission.setUser(Permission.Action.read.or(Permission.Action.execute));
-                }
-                break;
-            case FILE:
-                if(node.isIsEncrypted() != null && node.isIsEncrypted()) {
-                    try {
-                        if(null != session.keyPair()) {
-                            permission.setUser(Permission.Action.none.or(Permission.Action.read));
+        if(node.getPermissions() != null) {
+            switch(node.getType()) {
+                case FOLDER:
+                case ROOM:
+                    if(node.getPermissions().isCreate()
+                            // For existing files the delete role is also required to overwrite
+                            && node.getPermissions().isDelete()) {
+                        permission.setUser(Permission.Action.all);
+                    }
+                    else {
+                        permission.setUser(Permission.Action.read.or(Permission.Action.execute));
+                    }
+                    break;
+                case FILE:
+                    if(node.isIsEncrypted() != null && node.isIsEncrypted()) {
+                        try {
+                            if(null != session.keyPair()) {
+                                permission.setUser(Permission.Action.none.or(Permission.Action.read));
+                            }
+                            else {
+                                log.warn(String.format("Missing read permission for node %s with missing key pair", node));
+                            }
                         }
-                        else {
-                            log.warn(String.format("Missing read permission for node %s with missing key pair", node));
+                        catch(BackgroundException e) {
+                            log.warn(String.format("Ignore failure %s retrieving key pair", e));
                         }
                     }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Ignore failure %s retrieving key pair", e));
+                    else {
+                        if(node.getPermissions().isRead()) {
+                            permission.setUser(Permission.Action.read);
+                        }
                     }
-                }
-                else {
-                    if(node.getPermissions().isRead()) {
-                        permission.setUser(Permission.Action.read);
+                    if(node.getPermissions().isChange() && node.getPermissions().isDelete()) {
+                        permission.setUser(permission.getUser().or(Permission.Action.write));
                     }
-                }
-                if(node.getPermissions().isChange() && node.getPermissions().isDelete()) {
-                    permission.setUser(permission.getUser().or(Permission.Action.write));
-                }
-                break;
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Map node permissions %s to %s", node.getPermissions(), permission));
+                    break;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Map node permissions %s to %s", node.getPermissions(), permission));
+            }
         }
         return permission;
     }
