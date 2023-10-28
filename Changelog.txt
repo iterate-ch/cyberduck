@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+8.7.1
+- [Bugfix] Crash when selecting private key outside of ~/.ssh (macOS, Mac App Store)
+- [Bugfix] Application scoped bookmark to access file outside of sandbox not saved (macOS, Mac App Store) (#15250)
+- [Bugfix] Failure parsing expiration from cached temporary credentials in AWS CLI configuration from AWS SSO (S3) (#15257)
+- [Bugfix] Unable to authenticate with S3 (Credentials from AWS Command Line Interface) connection profile (S3) (#15222)
+
 8.7.0
 - [Feature] SMB (Server Message Block) protocol support (#5368)
 - [Feature] Support to login using temporary credentials from Security Token Service (STS API) using OpenID Connect (OIDC) web identity (S3) (#13804)
