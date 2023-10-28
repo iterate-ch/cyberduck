@@ -68,7 +68,7 @@ public class DefaultVersioningFeature implements Versioning {
         this.session = session;
         this.provider = provider;
         this.formatter = formatter;
-        this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex"));
+        this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("versioning.include.regex"));
     }
 
     @Override
@@ -99,7 +99,14 @@ public class DefaultVersioningFeature implements Versioning {
         final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
         final Move feature = session.getFeature(Move.class);
         if(!feature.isSupported(file, version)) {
+            log.warn(String.format("Skip saving version for %s", file));
             return false;
+        }
+        if(file.isDirectory()) {
+            if(!feature.isRecursive(file, version)) {
+                log.warn(String.format("Skip saving version for directory %s", file));
+                return false;
+            }
         }
         final Path directory = version.getParent();
         if(!session.getFeature(Find.class).find(directory)) {
@@ -110,11 +117,6 @@ public class DefaultVersioningFeature implements Versioning {
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Rename existing file %s to %s", file, version));
-        }
-        if(file.isDirectory()) {
-            if(!feature.isRecursive(file, version)) {
-                throw new UnsupportedException();
-            }
         }
         feature.move(file, version,
                 new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -162,7 +164,7 @@ public class DefaultVersioningFeature implements Versioning {
         }
         final List<Path> versions = this.list(file, new DisabledListProgressListener()).toStream()
                 .sorted(new FilenameComparator(false)).skip(
-                        new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
+                        new HostPreferences(session.getHost()).getInteger("versioning.limit")).collect(Collectors.toList());
         if(log.isWarnEnabled()) {
             log.warn(String.format("Delete %d previous versions of %s", versions.size(), file));
         }

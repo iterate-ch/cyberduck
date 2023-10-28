@@ -137,7 +137,8 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                             moved.withAttributes(session.getFeature(AttributesFinder.class).find(moved));
                         }
                         result.put(r.getKey(), moved);
-                        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
+                        final HostPreferences preferences = new HostPreferences(session.getHost());
+                        if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.move.enable")) {
                             switch(session.getHost().getProtocol().getVersioningMode()) {
                                 case custom:
                                     // Move previous versions of file
@@ -157,13 +158,16 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                     }
                                                     session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
                                                 }
-                                                if(log.isDebugEnabled()) {
-                                                    log.debug(String.format("Move previous version %s to %s", version, target));
-                                                }
                                                 if(version.isDirectory()) {
                                                     if(!session.getFeature(Move.class).isRecursive(version, target)) {
+                                                        if(log.isWarnEnabled()) {
+                                                            log.warn(String.format("Skip directory %s", version));
+                                                        }
                                                         continue;
                                                     }
+                                                }
+                                                if(log.isDebugEnabled()) {
+                                                    log.debug(String.format("Move previous version %s to %s", version, target));
                                                 }
                                                 feature.move(version, target, new TransferStatus()
                                                         .withLockId(this.getLockId(version))
