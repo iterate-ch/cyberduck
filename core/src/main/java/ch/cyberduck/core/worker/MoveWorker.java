@@ -158,9 +158,6 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                     }
                                                     session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
                                                 }
-                                                if(log.isDebugEnabled()) {
-                                                    log.debug(String.format("Move previous version %s to %s", version, target));
-                                                }
                                                 if(version.isDirectory()) {
                                                     if(!session.getFeature(Move.class).isRecursive(version, target)) {
                                                         if(log.isWarnEnabled()) {
@@ -168,6 +165,9 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                         }
                                                         continue;
                                                     }
+                                                }
+                                                if(log.isDebugEnabled()) {
+                                                    log.debug(String.format("Move previous version %s to %s", version, target));
                                                 }
                                                 feature.move(version, target, new TransferStatus()
                                                         .withLockId(this.getLockId(version))
