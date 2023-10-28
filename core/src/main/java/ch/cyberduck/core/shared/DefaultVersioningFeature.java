@@ -99,7 +99,14 @@ public class DefaultVersioningFeature implements Versioning {
         final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
         final Move feature = session.getFeature(Move.class);
         if(!feature.isSupported(file, version)) {
+            log.warn(String.format("Skip saving version for %s", file));
             return false;
+        }
+        if(file.isDirectory()) {
+            if(!feature.isRecursive(file, version)) {
+                log.warn(String.format("Skip saving version for directory %s", file));
+                return false;
+            }
         }
         final Path directory = version.getParent();
         if(!session.getFeature(Find.class).find(directory)) {
@@ -110,11 +117,6 @@ public class DefaultVersioningFeature implements Versioning {
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Rename existing file %s to %s", file, version));
-        }
-        if(file.isDirectory()) {
-            if(!feature.isRecursive(file, version)) {
-                return false;
-            }
         }
         feature.move(file, version,
                 new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
