@@ -16,10 +16,12 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -33,6 +35,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Objects;
 
 public class SDSCopyFeature implements Copy {
@@ -72,32 +76,31 @@ public class SDSCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
+    public void preflight(final Path source, final Path target) throws BackgroundException {
         if(containerService.isContainer(source)) {
             // Rooms cannot be copied
-            return false;
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
         }
         if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
             // If source xor target is encrypted data room we cannot use server side copy
             log.warn(String.format("Cannot use server side copy with source container %s and target container %s",
                     containerService.getContainer(source), containerService.getContainer(target)));
-            return false;
+            throw new UnsupportedException();
         }
         if(!StringUtils.equals(source.getName(), target.getName())) {
             // Cannot rename node to be copied at the same time
             log.warn(String.format("Deny copy of %s for changed name %s", source, target.getName()));
-            return false;
+            throw new UnsupportedException();
         }
         if(Objects.equals(source.getParent(), target.getParent())) {
             // Nodes must not have the same parent
             log.warn(String.format("Deny copy of %s to %s", source, target));
-            return false;
+            throw new UnsupportedException();
         }
-        return true;
     }
 }

@@ -48,6 +48,11 @@ public class VaultRegistryReadFeature implements Read {
     }
 
     @Override
+    public void preflight(final Path file) throws BackgroundException {
+        registry.find(session, file).getFeature(session, Read.class, proxy).preflight(file);
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("VaultRegistryReadFeature{");
         sb.append("proxy=").append(proxy);

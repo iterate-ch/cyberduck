@@ -17,6 +17,8 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,25 +30,31 @@ public class BoxTouchFeature extends DefaultTouchFeature<File> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!validate(filename)) {
+            throw new InvalidFilenameException();
+        }
+    }
+
+    public static boolean validate(final String filename) {
         // Max Length 255
-        if(StringUtils.length(name) > 255) {
+        if(StringUtils.length(filename) > 255) {
             return false;
         }
-        if(StringUtils.contains(name, "/")) {
+        if(StringUtils.contains(filename, "/")) {
             return false;
         }
-        if(StringUtils.contains(name, "\\")) {
+        if(StringUtils.contains(filename, "\\")) {
             return false;
         }
-        if(StringUtils.endsWith(name, StringUtils.SPACE)) {
+        if(StringUtils.endsWith(filename, StringUtils.SPACE)) {
             return false;
         }
         // Additionally, the names . and .. are not allowed either.
-        if(StringUtils.equals(name, ".")) {
+        if(StringUtils.equals(filename, ".")) {
             return false;
         }
-        if(StringUtils.equals(name, "..")) {
+        if(StringUtils.equals(filename, "..")) {
             return false;
         }
         return true;

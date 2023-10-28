@@ -68,7 +68,8 @@ public class SwiftMoveFeature implements Move {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return proxy.isSupported(source, target) && delete.isSupported(source);
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        proxy.preflight(source, target);
+        delete.preflight(source);
     }
 }

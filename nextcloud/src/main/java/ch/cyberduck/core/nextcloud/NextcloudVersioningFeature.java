@@ -38,6 +38,7 @@ import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,8 +86,11 @@ public class NextcloudVersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(final Path file) {
-        return StringUtils.isNotBlank(file.attributes().getVersionId());
+    public EnumSet<Flags> features(final Path file) {
+        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            return EnumSet.of(Flags.revert);
+        }
+        return EnumSet.of(Flags.list);
     }
 
     @Override

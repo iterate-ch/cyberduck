@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -75,7 +76,10 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
-            new SDSTouchFeature(session, nodeid).touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
+            final SDSTouchFeature feature = new SDSTouchFeature(session, nodeid);
+            assertFalse(feature.isSupported(room, "?"));
+            assertThrows(InvalidFilenameException.class, () -> feature.preflight(room, "?"));
+            feature.touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Error -40755. Illegal file name='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -92,7 +96,10 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
-            new SDSTouchFeature(session, nodeid).touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
+            final SDSTouchFeature feature = new SDSTouchFeature(session, nodeid);
+            assertFalse(feature.isSupported(room, "?"));
+            assertThrows(InvalidFilenameException.class, () -> feature.preflight(room, "?"));
+            feature.touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Error -40755. Illegal file name='?'. Please contact your web hosting service provider for assistance.", e.getDetail());

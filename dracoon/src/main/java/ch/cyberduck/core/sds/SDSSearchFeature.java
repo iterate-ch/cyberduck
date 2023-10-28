@@ -88,8 +88,8 @@ public class SDSSearchFeature implements Search {
     }
 
     @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 
 }

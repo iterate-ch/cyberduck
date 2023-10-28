@@ -22,6 +22,9 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 @Category(IntegrationTest.class)
 public class SDSAttributesAdapterTest extends AbstractSDSTest {
 
@@ -31,16 +34,22 @@ public class SDSAttributesAdapterTest extends AbstractSDSTest {
         final Node node = new Node();
         node.setIsEncrypted(false);
         node.setType(Node.TypeEnum.FILE);
-        final NodePermissions permissions = new NodePermissions().delete(false).change(false).create(false);
+        final NodePermissions permissions = new NodePermissions().read(false).delete(false).change(false).create(false);
         node.setPermissions(permissions);
-        f.toPermission(node);
+        assertFalse(f.toPermission(node).isReadable());
+        assertFalse(f.toPermission(node).isWritable());
+        assertFalse(f.toPermission(node).isExecutable());
         permissions.setRead(true);
-        f.toPermission(node);
+        assertTrue(f.toPermission(node).isReadable());
         permissions.setChange(true);
-        f.toPermission(node);
+        assertTrue(f.toPermission(node).isReadable());
+        assertFalse(f.toPermission(node).isWritable());
         permissions.setDelete(true);
-        f.toPermission(node);
+        assertTrue(f.toPermission(node).isReadable());
+        assertTrue(f.toPermission(node).isWritable());
         permissions.setCreate(true);
+        assertTrue(f.toPermission(node).isReadable());
+        assertTrue(f.toPermission(node).isWritable());
         f.toPermission(node);
     }
 
@@ -50,16 +59,26 @@ public class SDSAttributesAdapterTest extends AbstractSDSTest {
         final Node node = new Node();
         node.setIsEncrypted(false);
         node.setType(Node.TypeEnum.FOLDER);
-        final NodePermissions permissions = new NodePermissions().delete(false).change(false).create(false);
+        final NodePermissions permissions = new NodePermissions().read(false).delete(false).change(false).create(false);
         node.setPermissions(permissions);
-        f.toPermission(node);
+        assertTrue(f.toPermission(node).isReadable());
+        assertFalse(f.toPermission(node).isWritable());
+        assertTrue(f.toPermission(node).isExecutable());
         permissions.setRead(true);
-        f.toPermission(node);
+        assertTrue(f.toPermission(node).isReadable());
+        assertFalse(f.toPermission(node).isWritable());
+        assertTrue(f.toPermission(node).isExecutable());
         permissions.setChange(true);
-        f.toPermission(node);
+        assertTrue(f.toPermission(node).isReadable());
+        assertFalse(f.toPermission(node).isWritable());
+        assertTrue(f.toPermission(node).isExecutable());
         permissions.setDelete(true);
-        f.toPermission(node);
+        assertTrue(f.toPermission(node).isReadable());
+        assertFalse(f.toPermission(node).isWritable());
+        assertTrue(f.toPermission(node).isExecutable());
         permissions.setCreate(true);
-        f.toPermission(node);
+        assertTrue(f.toPermission(node).isReadable());
+        assertTrue(f.toPermission(node).isWritable());
+        assertTrue(f.toPermission(node).isExecutable());
     }
 }

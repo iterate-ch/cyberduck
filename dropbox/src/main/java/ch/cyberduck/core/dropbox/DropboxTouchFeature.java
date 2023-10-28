@@ -16,6 +16,8 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,10 +36,16 @@ public class DropboxTouchFeature extends DefaultTouchFeature<Metadata> {
      *
      * @param workdir  Working directory
      * @param filename Filename
-     * @return False if restricted filename
+     * @throws InvalidFilenameException If restricted filename
      */
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!validate(filename)) {
+            throw new InvalidFilenameException();
+        }
+    }
+
+    public static boolean validate(final String filename) {
         if(StringUtils.startsWith(filename, "~$")) {
             return false;
         }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -76,21 +77,21 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
         }
     }
 
-
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            if(StringUtils.isNotBlank(name)) {
-                if(StringUtils.startsWith(name, "goog")) {
-                    return false;
+            if(StringUtils.isNotBlank(filename)) {
+                if(StringUtils.startsWith(filename, "goog")) {
+                    throw new InvalidFilenameException();
                 }
-                if(StringUtils.contains(name, "google")) {
-                    return false;
+                if(StringUtils.contains(filename, "google")) {
+                    throw new InvalidFilenameException();
                 }
-                return ServiceUtils.isBucketNameValidDNSName(name);
+                if(!ServiceUtils.isBucketNameValidDNSName(filename)) {
+                    throw new InvalidFilenameException();
+                }
             }
         }
-        return true;
     }
 
     @Override

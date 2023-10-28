@@ -30,6 +30,7 @@ import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class IRODSMoveFeature implements Move {
 
@@ -62,8 +63,8 @@ public class IRODSMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 
 }

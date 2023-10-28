@@ -16,11 +16,14 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
+import java.text.MessageFormat;
 
 /**
  * Read file from server
@@ -42,5 +45,12 @@ public interface Read {
     default boolean offset(Path file) throws BackgroundException {
         return true;
 
+    }
+
+    default void preflight(final Path file) throws BackgroundException {
+        if(!file.attributes().getPermission().isReadable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),
+                    file.getName())).withFile(file);
+        }
     }
 }

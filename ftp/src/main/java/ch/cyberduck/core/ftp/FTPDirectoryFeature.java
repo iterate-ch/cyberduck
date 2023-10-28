@@ -57,8 +57,8 @@ public class FTPDirectoryFeature implements Directory<Integer> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return true;
+    public void preflight(final Path workdir, final String filename) {
+        // Skip checking permission mask
     }
 
     @Override

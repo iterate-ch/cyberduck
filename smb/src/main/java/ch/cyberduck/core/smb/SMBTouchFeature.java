@@ -33,9 +33,4 @@ public class SMBTouchFeature extends DefaultTouchFeature<Void> {
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         return super.touch(file, status).withAttributes(new SMBAttributesFinderFeature(session).find(file));
     }
-
-    @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        return true;
-    }
 }

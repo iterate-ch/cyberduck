@@ -32,6 +32,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.RestoreDeletedNodesRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
+
 public class SDSVersioningFeature implements Versioning {
 
     private final SDSSession session;
@@ -96,5 +98,10 @@ public class SDSVersioningFeature implements Versioning {
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.revert, Flags.list);
     }
 }

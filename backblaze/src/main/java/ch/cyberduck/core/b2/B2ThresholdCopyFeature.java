@@ -26,6 +26,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.EnumSet;
+
 public class B2ThresholdCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(B2ThresholdCopyFeature.class);
 
@@ -54,12 +56,12 @@ public class B2ThresholdCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return new B2CopyFeature(session, fileid).isSupported(source, target);
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        new B2CopyFeature(session, fileid).preflight(source, target);
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return new B2CopyFeature(session, fileid).isRecursive(source, target);
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return new B2CopyFeature(session, fileid).features(source, target);
     }
 }

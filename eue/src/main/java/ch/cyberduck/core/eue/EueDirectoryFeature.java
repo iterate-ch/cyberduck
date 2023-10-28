@@ -24,6 +24,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEnt
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntryEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -86,8 +87,10 @@ public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return new EueTouchFeature(session, fileid).isSupported(workdir, name);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!EueTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException();
+        }
     }
 
     @Override

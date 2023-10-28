@@ -17,6 +17,8 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 
 public class CteraDirectoryFeature extends DAVDirectoryFeature {
 
@@ -25,10 +27,9 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        if(!CteraTouchFeature.validate(name)) {
-            return false;
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!CteraTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException();
         }
-        return super.isSupported(workdir, name);
     }
 }

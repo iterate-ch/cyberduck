@@ -69,6 +69,11 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     }
 
     @Override
+    public void preflight(final Path file) throws BackgroundException {
+        registry.find(session, file).getFeature(session, Write.class, proxy).preflight(file);
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("VaultRegistryWriteFeature{");
         sb.append("proxy=").append(proxy);

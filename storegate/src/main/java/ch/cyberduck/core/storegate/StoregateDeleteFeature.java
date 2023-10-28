@@ -31,6 +31,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.Map;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
@@ -78,7 +79,7 @@ public class StoregateDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 }

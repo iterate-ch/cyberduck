@@ -27,6 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class FTPMoveFeature implements Move {
 
@@ -56,12 +57,12 @@ public class FTPMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return true;
+    public void preflight(final Path source, final Path target) {
+        // Skip checking permission mask
     }
 }

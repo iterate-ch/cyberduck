@@ -26,6 +26,8 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.CopyFileRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.EnumSet;
+
 public class StoregateCopyFeature implements Copy {
 
     private final StoregateSession session;
@@ -55,12 +57,7 @@ public class StoregateCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return true;
-    }
-
-    @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 }

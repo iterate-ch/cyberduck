@@ -20,9 +20,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.util.EnumSet;
 
 public class CryptoMoveV6Feature implements Move {
 
@@ -52,14 +55,22 @@ public class CryptoMoveV6Feature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
+    public EnumSet<Flags> features(final Path source, final Path target) {
         // No need to handle recursion with encrypted filenames
-        return true;
+        return EnumSet.of(Flags.recursive);
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return proxy.isSupported(source, target) && vault.getFilenameProvider().isValid(target.getName());
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(!vault.getFilenameProvider().isValid(target.getName())) {
+            throw new InvalidFilenameException();
+        }
+        proxy.preflight(source, target);
+    }
+
+    @Override
+    public Move withTarget(final Session<?> session) {
+        return proxy.withTarget(session);
     }
 
     @Override
