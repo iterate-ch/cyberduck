@@ -20,6 +20,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LoginCanceledException;
 
+/**
+ * Configurator for resolving credentials for bookmark
+ */
 public interface CredentialsConfigurator {
 
     /**

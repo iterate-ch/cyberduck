@@ -76,21 +76,6 @@ public class SFTPProtocol extends AbstractProtocol {
     }
 
     @Override
-    public CredentialsConfigurator getCredentialsFinder() {
-        return credentials;
-    }
-
-    @Override
-    public HostnameConfigurator getHostnameFinder() {
-        return hostnmame;
-    }
-
-    @Override
-    public JumphostConfigurator getJumpHostFinder() {
-        return jumphost;
-    }
-
-    @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
     }
@@ -98,5 +83,19 @@ public class SFTPProtocol extends AbstractProtocol {
     @Override
     public VersioningMode getVersioningMode() {
         return VersioningMode.custom;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == HostnameConfigurator.class) {
+            return (T) hostnmame;
+        }
+        if(type == CredentialsConfigurator.class) {
+            return (T) credentials;
+        }
+        if(type == JumphostConfigurator.class) {
+            return (T) jumphost;
+        }
+        return super.getFeature(type);
     }
 }

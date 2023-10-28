@@ -18,6 +18,10 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+
+/**
+ * Configurator for resolving hostname from alias
+ */
 public interface HostnameConfigurator {
 
     /**

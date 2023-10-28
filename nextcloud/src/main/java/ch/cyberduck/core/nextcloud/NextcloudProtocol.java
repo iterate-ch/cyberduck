@@ -57,11 +57,6 @@ public class NextcloudProtocol extends AbstractProtocol {
     }
 
     @Override
-    public CredentialsConfigurator getCredentialsFinder() {
-        return new WindowsIntegratedCredentialsConfigurator();
-    }
-
-    @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
     }
@@ -75,6 +70,9 @@ public class NextcloudProtocol extends AbstractProtocol {
     public <T> T getFeature(final Class<T> type) {
         if(type == ComparisonService.class) {
             return (T) new DefaultComparisonService(new ETagComparisonService(), new ETagComparisonService());
+        }
+        if(type == CredentialsConfigurator.class) {
+            return (T) new WindowsIntegratedCredentialsConfigurator();
         }
         return super.getFeature(type);
     }
