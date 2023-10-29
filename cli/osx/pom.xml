@@ -117,7 +117,7 @@
                                             <groupId>net.temurin</groupId>
                                             <artifactId>jdk</artifactId>
                                             <type>zip</type>
-                                            <version>17.0.9</version>
+                                            <version>21.0.1</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
