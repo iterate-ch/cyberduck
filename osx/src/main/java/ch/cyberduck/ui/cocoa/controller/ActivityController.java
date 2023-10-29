@@ -82,7 +82,7 @@ public final class ActivityController extends WindowController {
     }
 
     private final AbstractCollectionListener<BackgroundAction> backgroundActionListener
-        = new AbstractCollectionListener<BackgroundAction>() {
+            = new AbstractCollectionListener<BackgroundAction>() {
 
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
@@ -166,7 +166,7 @@ public final class ActivityController extends WindowController {
             }
         }).id());
         this.table.setDelegate((delegate = new AbstractTableDelegate<TaskController, ActivityColumn>(
-            table.tableColumnWithIdentifier("Default")
+                table.tableColumnWithIdentifier("Default")
         ) {
             @Override
             public void enterKeyPressed(final ID sender) {
@@ -205,14 +205,21 @@ public final class ActivityController extends WindowController {
 
             public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
                 final TaskController controller = getController(row);
+                if(null == controller) {
+                    return null;
+                }
                 return controller.view();
             }
         }).id());
         this.table.sizeToFit();
     }
 
-    protected TaskController getController(final NSInteger row) {
-        return tasks.values().toArray(new TaskController[tasks.size()])[row.intValue()];
+    private TaskController getController(final NSInteger row) {
+        final TaskController[] controllers = tasks.values().toArray(new TaskController[tasks.size()]);
+        if(row.intValue() >= controllers.length) {
+            return null;
+        }
+        return controllers[row.intValue()];
     }
 
     @Override
