@@ -294,35 +294,35 @@
       </Component>
       <Component Id="FTP.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="ftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="ftp" Value="URL:File Transfer Protocol" Type="string" />
+        <RegistryValue Root="HKCR" Key="ftp" Value="URL:FTP (File Transfer Protocol)" Type="string" />
       </Component>
       <Component Id="FTPS.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="ftps" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="ftps" Value="URL:File Transfer Protocol over TLS" Type="string" />
+        <RegistryValue Root="HKCR" Key="ftps" Value="URL:FTP-SSL (Explicit AUTH TLS)" Type="string" />
       </Component>
       <Component Id="SFTP.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="sftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="sftp" Value="URL:Secure Shell File Transfer Protocol" Type="string" />
+        <RegistryValue Root="HKCR" Key="sftp" Value="URL:SFTP (SSH File Transfer Protocol)" Type="string" />
       </Component>
       <Component Id="DAV.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="dav" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="dav" Value="URL:Distributed Authoring and Versioning Protocol" Type="string" />
+        <RegistryValue Root="HKCR" Key="dav" Value="URL:WebDAV (HTTP)" Type="string" />
       </Component>
       <Component Id="DAVS.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="davs" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="davs" Value="URL:Distributed Authoring and Versioning Protocol over TLS" Type="string" />
+        <RegistryValue Root="HKCR" Key="davs" Value="URL:WebDAV (HTTPS)" Type="string" />
       </Component>
       <Component Id="SMB.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="smb" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="smb" Value="URL:Server Message Block" Type="string" />
+        <RegistryValue Root="HKCR" Key="smb" Value="URL:SMB (Server Message Block)" Type="string" />
       </Component>
       <Component Id="S3.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="s3" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="s3" Value="URL:Simple Storage Services Protocol" Type="string" />
+        <RegistryValue Root="HKCR" Key="s3" Value="URL:Amazon S3" Type="string" />
       </Component>
       <Component Id="IRODS.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="irods" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="irods" Value="URL:Integrated Rule-Oriented Data System Protocol" Type="string" />
+        <RegistryValue Root="HKCR" Key="irods" Value="URL:iRODS (Integrated Rule-Oriented Data System)" Type="string" />
       </Component>
     </ComponentGroup>
 

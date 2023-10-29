@@ -79,27 +79,32 @@
                 </uap:Extension>
                 <uap:Extension Category="windows.protocol">
                     <uap:Protocol Name="ftp">
-                        <uap:DisplayName>ftp</uap:DisplayName>
+                        <uap:DisplayName>FTP (File Transfer Protocol)</uap:DisplayName>
                     </uap:Protocol>
                 </uap:Extension>
                 <uap:Extension Category="windows.protocol">
                     <uap:Protocol Name="ftps">
-                        <uap:DisplayName>ftps</uap:DisplayName>
+                        <uap:DisplayName>FTP-SSL (Explicit AUTH TLS)</uap:DisplayName>
                     </uap:Protocol>
                 </uap:Extension>
                 <uap:Extension Category="windows.protocol">
                     <uap:Protocol Name="irods">
-                        <uap:DisplayName>irods</uap:DisplayName>
+                        <uap:DisplayName>iRODS (Integrated Rule-Oriented Data System)</uap:DisplayName>
                     </uap:Protocol>
                 </uap:Extension>
                 <uap:Extension Category="windows.protocol">
                     <uap:Protocol Name="s3">
-                        <uap:DisplayName>s3</uap:DisplayName>
+                        <uap:DisplayName>Amazon S3</uap:DisplayName>
                     </uap:Protocol>
                 </uap:Extension>
                 <uap:Extension Category="windows.protocol">
                     <uap:Protocol Name="sftp">
-                        <uap:DisplayName>sftp</uap:DisplayName>
+                        <uap:DisplayName>SFTP (SSH File Transfer Protocol)</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="smb">
+                        <uap:DisplayName>SMB (Server Message Block)</uap:DisplayName>
                     </uap:Protocol>
                 </uap:Extension>
                 <uap:Extension Category="windows.protocol">
