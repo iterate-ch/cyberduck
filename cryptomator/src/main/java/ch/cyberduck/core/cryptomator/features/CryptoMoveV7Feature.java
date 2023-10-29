@@ -76,7 +76,8 @@ public class CryptoMoveV7Feature implements Move {
 
     @Override
     public Move withTarget(final Session<?> session) {
-        return proxy.withTarget(session);
+        proxy.withTarget(session);
+        return this;
     }
 
     @Override
