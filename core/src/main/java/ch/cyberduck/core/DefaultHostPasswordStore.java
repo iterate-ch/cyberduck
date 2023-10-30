@@ -155,13 +155,10 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         try {
             final String expiry = this.getPassword(hostname, String.format("%s OAuth2 Token Expiry", prefix));
             return (new OAuthTokens(
-                    this.getPassword(scheme, port, hostname,
-                            String.format("%s OAuth2 Access Token", prefix)),
-                    this.getPassword(scheme, port, hostname,
-                            String.format("%s OAuth2 Refresh Token", prefix)),
+                    this.getPassword(scheme, port, hostname, String.format("%s OAuth2 Access Token", prefix)),
+                    this.getPassword(scheme, port, hostname, String.format("%s OAuth2 Refresh Token", prefix)),
                     expiry != null ? Long.parseLong(expiry) : -1L,
-                    this.getPassword(scheme, port, hostname,
-                            String.format("%s OIDC Id Token", prefix))));
+                    this.getPassword(scheme, port, hostname, String.format("%s OIDC Id Token", prefix))));
         }
         catch(LocalAccessDeniedException e) {
             log.warn(String.format("Failure %s searching in keychain", e));
@@ -203,7 +200,6 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         if(credentials.isOAuthAuthentication()) {
             final PasswordStorePrefixService service = bookmark.getProtocol().getFeature(PasswordStorePrefixService.class);
-
             final String prefix = service.getPrefix(bookmark);
             final String hostname = service.getHostname(bookmark);
             final Integer port = service.getPort(bookmark);
@@ -216,7 +212,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 this.addPassword(scheme, port, hostname,
                         String.format("%s OAuth2 Refresh Token", prefix), credentials.getOauth().getRefreshToken());
             }
-            // Save expiry
+            // Save expiry as application password
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
                 this.addPassword(hostname, String.format("%s OAuth2 Token Expiry", prefix),
                         String.valueOf(credentials.getOauth().getExpiryInMilliseconds()));
