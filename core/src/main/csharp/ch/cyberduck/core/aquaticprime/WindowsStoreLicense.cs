@@ -19,6 +19,8 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using System;
+using System.Runtime.CompilerServices;
+using Windows.Foundation.Metadata;
 using Windows.Services.Store;
 using Windows.System;
 
@@ -30,25 +32,44 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         {
             StoreContext storeContext = StoreContext.GetDefault();
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
-            if (license == null)
-            {
-                return LocaleFactory.localizedString("Unknown");
-            }
-            if (license.IsActive)
+
+            if (license is { IsActive: true })
             {
                 if (license.IsTrial)
                 {
                     return LocaleFactory.localizedString("Trial Version", "License");
                 }
-                else
+
+                User user = null;
+
+                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 12))
                 {
-                    return (string)(User.GetDefault().GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result) ?? LocaleFactory.localizedString("Unknown");
+                    try
+                    {
+                        user = GetUser();
+                    }
+                    catch { }
                 }
+
+                if (user is { })
+                {
+                    try
+                    {
+                        var displayNameValue = user.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result;
+                        if (displayNameValue is string displayName && !string.IsNullOrWhiteSpace(displayName))
+                        {
+                            return displayName;
+                        }
+                    }
+                    catch { }
+                }
+
             }
-            else
-            {
-                return LocaleFactory.localizedString("Unknown");
-            }
+
+            return LocaleFactory.localizedString("Unknown");
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static User GetUser() => User.GetDefault();
         }
 
         public string getValue(string str)
