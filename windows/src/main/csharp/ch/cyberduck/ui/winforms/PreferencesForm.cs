@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             s3Button.Image = Images.S3.Size(32);
             googleCloudButton.Image = Images.GoogleStorage.Size(32);
             bandwidthButton.Image = Images.Bandwidth.Size(32);
-            connectionButton.Image = Images.Connect.Size(32);
+            connectionButton.Image = Images.Connection.Size(32);
             cryptomatorButton.Image = Images.Cryptomator.Size(32);
             updateButton.Image = Images.Update.Size(32);
             languageButton.Image = Images.Language.Size(32);
