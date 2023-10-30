@@ -28,7 +28,7 @@ package ch.cyberduck.core;
  */
 public interface PasswordStorePrefixService {
     /**
-     * Gets a description to insert as User-component into password store
+     * Gets a description to insert in password store
      */
     String getPrefix(Host bookmark);
 
