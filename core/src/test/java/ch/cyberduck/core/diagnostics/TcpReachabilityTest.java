@@ -30,16 +30,16 @@ public class TcpReachabilityTest {
     public void testIsReachable() {
         final Reachability r = new TcpReachability();
         assertTrue(r.isReachable(
-                new Host(new TestProtocol(Scheme.http), "cloud.iterate.ch")
+                new Host(new TestProtocol(Scheme.http), "cyberduck.io")
         ));
         assertTrue(r.isReachable(
-                new Host(new TestProtocol(Scheme.https), "cloud.iterate.ch")
+                new Host(new TestProtocol(Scheme.https), "cyberduck.io")
         ));
         assertTrue(r.isReachable(
-                new Host(new TestProtocol(Scheme.sftp), "cloud.iterate.ch")
+                new Host(new TestProtocol(Scheme.sftp), "cyberduck.io")
         ));
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(Scheme.ftp), "cloud.iterate.ch")
+                new Host(new TestProtocol(Scheme.ftp), "cyberduck.io")
         ));
     }
 
@@ -47,16 +47,16 @@ public class TcpReachabilityTest {
     public void testNotReachableSubdomain() {
         final Reachability r = new TcpReachability();
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(Scheme.http), "a.cyberduck.ch")
+                new Host(new TestProtocol(Scheme.http), "a.cyberduck.io")
         ));
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(Scheme.https), "a.cyberduck.ch")
+                new Host(new TestProtocol(Scheme.https), "a.cyberduck.io")
         ));
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(Scheme.ftp), "a.cyberduck.ch")
+                new Host(new TestProtocol(Scheme.ftp), "a.cyberduck.io")
         ));
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(Scheme.sftp), "a.cyberduck.ch")
+                new Host(new TestProtocol(Scheme.sftp), "a.cyberduck.io")
         ));
     }
 
@@ -64,10 +64,10 @@ public class TcpReachabilityTest {
     public void testNotReachableWrongHostname() {
         final Reachability r = new TcpReachability();
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(Scheme.http), "cyberduck.ch.f")
+                new Host(new TestProtocol(Scheme.http), "cyberduck.io.f")
         ));
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(Scheme.sftp), "cyberduck.ch.f")
+                new Host(new TestProtocol(Scheme.sftp), "cyberduck.io.f")
         ));
     }
 }
