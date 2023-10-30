@@ -28,27 +28,27 @@ package ch.cyberduck.core;
  */
 public interface PasswordStorePrefixService {
     /**
-     * Gets a description to insert as User-component into PasswordStore
+     * Gets a description to insert as User-component into password store
      */
     String getPrefix(Host bookmark);
 
     /**
-     * Returns the OAuth configured hostname of this bookmark.
+     * Returns the configured hostname used for authentication of this bookmark.
      */
     String getHostname(Host bookmark);
 
     /**
-     * Retrieves a port configured with this OAuth bookmark.
+     * Retrieves a port configured with this bookmark.
      */
     Integer getPort(Host bookmark);
 
     /**
-     * Returns Scheme for PasswordStore to save entry with
+     * Returns Scheme for password store to save entry with
      */
     Scheme getScheme(Host bookmark);
 
     /**
-     * Retrieves username information for this OAuth bookmark
+     * Retrieves username information for this bookmark
      */
-    String getUsername(Host bookmarkd);
+    String getUsername(Host bookmark);
 }
