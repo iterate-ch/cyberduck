@@ -17,36 +17,35 @@ package ch.cyberduck.core.auth;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
-import ch.cyberduck.core.dav.DAVReadFeature;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,29 +54,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.EnumSet;
 
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.MalformedJsonException;
 
 public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
     private static final Logger log = LogManager.getLogger(AWSSessionCredentialsRetriever.class);
 
-    private final TranscriptListener transcript;
-    private final ProtocolFactory factory;
     private final String url;
     private final X509TrustManager trust;
     private final X509KeyManager key;
 
-    public AWSSessionCredentialsRetriever(final X509TrustManager trust, final X509KeyManager key, final TranscriptListener transcript, final String url) {
-        this(trust, key, ProtocolFactory.get(), transcript, url);
-    }
-
-    public AWSSessionCredentialsRetriever(final X509TrustManager trust, final X509KeyManager key, final ProtocolFactory factory, final TranscriptListener transcript, final String url) {
+    public AWSSessionCredentialsRetriever(final X509TrustManager trust, final X509KeyManager key, final String url) {
         this.trust = trust;
         this.key = key;
-        this.factory = factory;
-        this.transcript = transcript;
         this.url = url;
     }
 
@@ -85,9 +74,9 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
         private final AWSSessionCredentialsRetriever retriever;
         private final String url;
 
-        public Configurator(final X509TrustManager trust, final X509KeyManager key, final TranscriptListener transcript, final String url) {
+        public Configurator(final X509TrustManager trust, final X509KeyManager key, final String url) {
             this.url = url;
-            this.retriever = new AWSSessionCredentialsRetriever(trust, key, transcript, url);
+            this.retriever = new AWSSessionCredentialsRetriever(trust, key, url);
         }
 
         @Override
@@ -112,70 +101,68 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure credentials from %s", url));
         }
-        final Host address = new HostParser(factory).get(url);
-        final Path access = new Path(PathNormalizer.normalize(address.getDefaultPath()), EnumSet.of(Path.Type.file));
-        address.setDefaultPath(String.valueOf(Path.DELIMITER));
-        final DAVSession connection = new DAVSession(address, trust, key);
-        connection.withListener(transcript).open(ProxyFactory.get().find(url), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final InputStream in = new DAVReadFeature(connection).read(access, new TransferStatus(), new DisabledConnectionCallback());
-        try {
-            final Credentials credentials = this.parse(in);
-            connection.close();
-            return credentials;
-        }
-        catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException |
-              InteroperabilityException e) {
-            log.warn(String.format("Failure %s to retrieve session credentials", e));
-            throw new LoginFailureException(e.getDetail(false), e);
-        }
-        finally {
-            connection.removeListener(transcript);
-        }
-    }
-
-    protected Credentials parse(final InputStream in) throws BackgroundException {
-        try {
-            final JsonReader reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-            reader.beginObject();
-            String key = null;
-            String secret = null;
-            String token = null;
-            Date expiration = null;
-            while(reader.hasNext()) {
-                final String name = reader.nextName();
-                final String value = reader.nextString();
-                switch(name) {
-                    case "AccessKeyId":
-                        key = value;
-                        break;
-                    case "SecretAccessKey":
-                        secret = value;
-                        break;
-                    case "Token":
-                        token = value;
-                        break;
-                    case "Expiration":
-                        try {
-                            expiration = new ISO8601DateFormatter().parse(value);
-                        }
-                        catch(InvalidDateException e) {
-                            log.warn(String.format("Failure %s parsing %s", e, value));
-                        }
-                        break;
+        final Host address = new HostParser(ProtocolFactory.get()).get(url);
+        final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(address,
+                new ThreadLocalHostnameDelegatingTrustManager(trust, address.getHostname()), key, ProxyFactory.get());
+        final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(new HostUrlProvider().get(address)),
+                new DisabledTranscriptListener(), new DisabledLoginCallback());
+        try (CloseableHttpClient client = configuration.build()) {
+            final HttpRequestBase resource = new HttpGet(new HostUrlProvider().withUsername(false).withPath(true).get(address));
+            return client.execute(resource, new ResponseHandler<Credentials>() {
+                @Override
+                public Credentials handleResponse(final HttpResponse response) throws IOException {
+                    switch(response.getStatusLine().getStatusCode()) {
+                        case HttpStatus.SC_OK:
+                            final HttpEntity entity = response.getEntity();
+                            if(entity == null) {
+                                log.warn(String.format("Missing response entity in %s", response));
+                                throw new ClientProtocolException("Empty response");
+                            }
+                            else {
+                                return parse(entity.getContent());
+                            }
+                    }
+                    throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
                 }
-            }
-            reader.endObject();
-            return new Credentials().withTokens(new TemporaryAccessTokens(key, secret, token, expiration != null ? expiration.getTime() : -1L));
-        }
-        catch(MalformedJsonException e) {
-            throw new InteroperabilityException("Invalid JSON response", e);
+            });
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            log.warn(String.format("Failure %s to retrieve session credentials", e));
+            throw new LoginFailureException(e.getMessage(), e);
         }
     }
 
-    public String getUrl() {
-        return url;
+    protected Credentials parse(final InputStream in) throws IOException {
+        final JsonReader reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+        reader.beginObject();
+        String key = null;
+        String secret = null;
+        String token = null;
+        Date expiration = null;
+        while(reader.hasNext()) {
+            final String name = reader.nextName();
+            final String value = reader.nextString();
+            switch(name) {
+                case "AccessKeyId":
+                    key = value;
+                    break;
+                case "SecretAccessKey":
+                    secret = value;
+                    break;
+                case "Token":
+                    token = value;
+                    break;
+                case "Expiration":
+                    try {
+                        expiration = new ISO8601DateFormatter().parse(value);
+                    }
+                    catch(InvalidDateException e) {
+                        log.warn(String.format("Failure %s parsing %s", e, value));
+                    }
+                    break;
+            }
+        }
+        reader.endObject();
+        return new Credentials().withTokens(new TemporaryAccessTokens(key, secret, token, expiration != null ? expiration.getTime() : -1L));
     }
 }

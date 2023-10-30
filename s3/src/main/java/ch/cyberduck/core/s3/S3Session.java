@@ -289,7 +289,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 if(Scheme.isURL(host.getProtocol().getContext())) {
                     // Fetch temporary session token from instance metadata
                     interceptor = new S3AuthenticationResponseInterceptor(this,
-                            new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext())
+                            new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext())
                     );
                 }
                 else {
