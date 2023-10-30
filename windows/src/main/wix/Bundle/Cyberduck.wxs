@@ -312,10 +312,6 @@
         <RegistryValue Root="HKCR" Key="davs" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
         <RegistryValue Root="HKCR" Key="davs" Value="URL:WebDAV (HTTPS)" Type="string" />
       </Component>
-      <Component Id="SMB.Handler" Permanent="yes" NeverOverwrite="yes">
-        <RegistryValue Root="HKCR" Key="smb" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="smb" Value="URL:SMB (Server Message Block)" Type="string" />
-      </Component>
       <Component Id="S3.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="s3" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
         <RegistryValue Root="HKCR" Key="s3" Value="URL:Amazon S3" Type="string" />

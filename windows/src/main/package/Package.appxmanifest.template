@@ -103,11 +103,6 @@
                     </uap:Protocol>
                 </uap:Extension>
                 <uap:Extension Category="windows.protocol">
-                    <uap:Protocol Name="smb">
-                        <uap:DisplayName>SMB (Server Message Block)</uap:DisplayName>
-                    </uap:Protocol>
-                </uap:Extension>
-                <uap:Extension Category="windows.protocol">
                     <uap:Protocol Name="io.cyberduck">
                         <uap:DisplayName>Cyberduck OAuth</uap:DisplayName>
                     </uap:Protocol>
