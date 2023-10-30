@@ -20,19 +20,21 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URI;
 
 /**
- * Default OAuth Prefix Service. Will just return fields from passed bookmark.
+ * Default implementation. Will just return fields from passed bookmark.
  */
 public class DefaultPasswordStorePrefixService implements PasswordStorePrefixService {
 
     @Override
     public String getPrefix(final Host bookmark) {
         if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-            return String.format("%s (%s)", bookmark.getProtocol().getDescription(),
-                    bookmark.getCredentials().getUsername());
+            return String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
         }
         return bookmark.getProtocol().getDescription();
     }
 
+    /**
+     * @return Hostname from OAuth token URL when available instead of target hostname
+     */
     @Override
     public String getHostname(final Host bookmark) {
         if(bookmark.getCredentials().isOAuthAuthentication()) {
@@ -43,6 +45,9 @@ public class DefaultPasswordStorePrefixService implements PasswordStorePrefixSer
         return bookmark.getHostname();
     }
 
+    /**
+     * @return Port from OAuth token URL when available instead of target hostname
+     */
     @Override
     public Integer getPort(final Host bookmark) {
         if(bookmark.getCredentials().isOAuthAuthentication()) {
