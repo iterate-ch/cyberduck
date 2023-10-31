@@ -18,6 +18,7 @@ package ch.cyberduck.core.diagnostics;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +32,8 @@ public class TcpReachability implements Reachability {
     @Override
     public boolean isReachable(final Host bookmark) {
         final HostnameConfigurator configurator = bookmark.getProtocol().getFeature(HostnameConfigurator.class);
-        try (Socket socket = new ProxySocketFactory(bookmark).createSocket(configurator.getHostname(bookmark.getHostname()), bookmark.getPort())) {
+        try (Socket socket = new ProxySocketFactory(bookmark, new DefaultSocketConfigurator(Reachability.timeout))
+                .createSocket(configurator.getHostname(bookmark.getHostname()), bookmark.getPort())) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Opened socket %s for %s", socket, bookmark));
             }

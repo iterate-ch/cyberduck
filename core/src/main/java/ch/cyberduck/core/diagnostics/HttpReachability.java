@@ -67,7 +67,7 @@ public class HttpReachability implements Reachability {
         final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
                 store);
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(bookmark,
-                new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, proxy);
+                new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, Reachability.timeout, proxy);
         final HttpClientBuilder configuration = builder.build(proxy.find(new HostUrlProvider().get(bookmark)),
                 new DisabledTranscriptListener(), new DisabledLoginCallback());
         try (CloseableHttpClient client = configuration.build()) {
