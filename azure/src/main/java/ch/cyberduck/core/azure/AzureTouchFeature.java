@@ -27,6 +27,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
+import java.text.MessageFormat;
+
 import com.microsoft.azure.storage.OperationContext;
 
 public class AzureTouchFeature extends DefaultTouchFeature<Void> {
@@ -43,7 +45,7 @@ public class AzureTouchFeature extends DefaultTouchFeature<Void> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 

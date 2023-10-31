@@ -22,6 +22,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 
+import java.text.MessageFormat;
+
 public class StoregateTouchFeature extends DefaultTouchFeature<File> {
 
     public StoregateTouchFeature(final StoregateSession session, final StoregateIdProvider fileid) {
@@ -31,7 +33,7 @@ public class StoregateTouchFeature extends DefaultTouchFeature<File> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

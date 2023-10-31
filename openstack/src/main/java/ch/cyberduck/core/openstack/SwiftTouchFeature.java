@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
+import java.text.MessageFormat;
+
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftTouchFeature extends DefaultTouchFeature<StorageObject> {
@@ -36,7 +38,7 @@ public class SwiftTouchFeature extends DefaultTouchFeature<StorageObject> {
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         // Creating files is only possible inside a container.
         if(workdir.isRoot()) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

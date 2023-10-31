@@ -29,6 +29,8 @@ import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
 
+import java.text.MessageFormat;
+
 public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
 
     private final S3Session session;
@@ -48,7 +50,7 @@ public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
         if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
             // Creating files is only possible inside a bucket.
             if(workdir.isRoot()) {
-                throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
             }
         }
     }

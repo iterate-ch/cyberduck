@@ -16,6 +16,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -34,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.Objects;
 
 public class DefaultCopyFeature implements Copy {
@@ -76,7 +78,7 @@ public class DefaultCopyFeature implements Copy {
             case irods:
                 // Stateful
                 if(Objects.equals(from, to)) {
-                    throw new UnsupportedException();
+                    throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
                 }
         }
     }

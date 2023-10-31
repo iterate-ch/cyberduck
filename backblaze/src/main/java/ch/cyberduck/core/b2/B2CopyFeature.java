@@ -67,16 +67,16 @@ public class B2CopyFeature implements Copy {
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
         if(source.getType().contains(Path.Type.upload)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(containerService.isContainer(source)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(containerService.isContainer(target)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(!new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target))) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
     }
 }

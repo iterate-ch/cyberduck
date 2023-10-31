@@ -87,7 +87,7 @@ public class SMBCopyFeature implements Copy {
         final SMBPathContainerService containerService = new SMBPathContainerService(session);
         // Remote copy is only possible between files on the same server
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
     }
 }
