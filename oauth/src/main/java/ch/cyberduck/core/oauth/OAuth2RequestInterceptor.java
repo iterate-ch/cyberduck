@@ -17,14 +17,11 @@ package ch.cyberduck.core.oauth;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
@@ -50,10 +47,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     /**
      * Currently valid tokens
      */
-    protected OAuthTokens tokens = OAuthTokens.EMPTY;
-
-    private final HostPasswordStore store = PasswordStoreFactory.get();
-    protected final Host host;
+    private OAuthTokens tokens = OAuthTokens.EMPTY;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
         this(client, host,
@@ -70,7 +64,6 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
         super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
-        this.host = host;
     }
 
     @Override
@@ -107,19 +100,6 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
             }
             return tokens = this.authorize();
         }
-    }
-
-    /**
-     * Save updated tokens in keychain
-     *
-     * @return Same tokens saved
-     */
-    public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Save new tokens %s for %s", tokens, host));
-        }
-        store.save(host);
-        return tokens;
     }
 
     @Override
