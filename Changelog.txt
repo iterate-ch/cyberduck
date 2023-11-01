@@ -24,7 +24,7 @@ https://cyberduck.io/
 - [Bugfix] Frequent broken pipe errors (FTP) (#14969)
 
 8.6.2
-- [Feature] Allow to open connections without copying authentication code after login (Microsoft OneDrive, Sharepoint)
+- [Feature] Allow to open connections without copying authentication code after login (Microsoft OneDrive, SharePoint)
 - [Bugfix] Segmented downloads with multiple connections per file causes transfers to fail (#13374)
 - [Bugfix] Use recommended part size from authorization response for large file uploads (Backblaze B2) (#14856)
 - [Bugfix] Skip determining if directory only contains hidden files (Backblaze B2) (#14775)
@@ -142,9 +142,9 @@ https://cyberduck.io/
 - [Bugfix] Crash running on versions prior macOS 11 (#13521)
 
 8.4.0
-- [Feature] Revert previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Storage, OneDrive, Microsoft Sharepoint)
+- [Feature] Revert previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Storage, OneDrive, Microsoft SharePoint)
 - [Feature] Delete previous file versions in Info panel (S3, Backblaze B2, Google Drive, Google Storage)
-- [Feature] View previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Drive, Google Storage, OneDrive, Microsoft Sharepoint)
+- [Feature] View previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Drive, Google Storage, OneDrive, Microsoft SharePoint)
 - [Feature] View previous versions in browser by choosing View → Show Hidden (Google Drive)
 - [Feature] Support applications installed from Windows Store for editing files (#12802) (Windows)
 - [Feature] No length limitation when storing passwords in Windows Credential manager (#12803) (Windows)
@@ -208,7 +208,7 @@ https://cyberduck.io/
 8.2.0
 - [Feature] Support for Box API (Box) (#10235)
 - [Bugfix] Failure opening connection (FTP-SSL, Windows)
-- [Bugfix] Interoperability with Sharepoint Site (Microsoft Sharepoint)
+- [Bugfix] Interoperability with SharePoint Site (Microsoft SharePoint)
 - [Bugfix] Compare option for existing files in transfer fails to verify checksums (#12688)
 - [Bugfix] Failure uploading to folders in vault (Cryptomator, CLI) (#11881)
 
@@ -308,7 +308,7 @@ https://cyberduck.io/
 - [Feature] Tremendously faster uploading folders with many files to vault (Cryptomator, OneDrive, Google Drive, Backblaze B2) (#10849)
 - [Feature] Substantially faster uploading folders with many files (OneDrive, Google Drive, Backblaze B2)
 - [Bugfix] Maximum number of simultaneous transfers not handled properly (#11001)
-- [Bugfix] Interoperability with China region operated by 21Vianet (OneDrive, Sharepoint) (#11415)
+- [Bugfix] Interoperability with China region operated by 21Vianet (OneDrive, SharePoint) (#11415)
 - [Bugfix] Support Elliptic Curve (EC) based client certificates for authentication (WebDAV, Windows)
 - [Bugfix] Interoperability with OpenSSH for Windows (SFTP)
 - [Bugfix] Segmented download fail with longer filenames (Windows)
@@ -324,7 +324,7 @@ https://cyberduck.io/
 - [Bugfix] Missing log file configuration (Windows)
 
 7.8.3
-- [Bugfix] Failure renaming files (OneDrive, Sharepoint)
+- [Bugfix] Failure renaming files (OneDrive, SharePoint)
 - [Bugfix] Optimize segmented downloads
 - [Bugfix] Allow resume of segmented downloads
 - [Bugfix] Ignore unavailable regions when listing containers (OpenStack Swift)
@@ -348,13 +348,13 @@ https://cyberduck.io/
 
 7.8.1
 - [Feature] Provide armhf/aarch64 RPM and DEB packages (CLI, Rasperry Pi, Linux) (#10447)
-- [Bugfix] Missing folers in directory listing (OneDrive, Sharepoint)
+- [Bugfix] Missing folers in directory listing (OneDrive, SharePoint)
 - [Bugfix] Interoperability with Tencent Cloud Object Storage (S3)
 - [Bugfix] No file size displayed for files (Google Drive)
 
 7.8.0
 - [Feature] Connecting to different libraries (SharePoint) (#11043)
-- [Feature] Default connection profile (Microsoft SharePoint Site) to connect so specific site (Sharepoint)  (#10115, #11375)
+- [Feature] Default connection profile (Microsoft SharePoint Site) to connect so specific site (SharePoint)  (#10115, #11375)
 - [Feature] Create shared link for file (OneDrive, SharePoint) (#11373)
 - [Feature] Updated toolbar icons in Preferences window (macOS)
 - [Bugfix] No attempt to authenticate using SSH agent (SFTP)
@@ -579,7 +579,7 @@ https://cyberduck.io/
 
 6.9.0
 - [Localize] Estonian Localization
-- [Feature] Default connection profile for Microsoft Sharepoint Online (#10115)
+- [Feature] Default connection profile for Microsoft SharePoint Online (#10115)
 - [Feature] Support for eu-west-3 (Stockholm) region (S3)
 - [Feature] Improve listing performance for versioned buckets (S3) (#10426)
 - [Feature] Add --profile option to select connection profile (CLI)
@@ -863,7 +863,7 @@ https://cyberduck.io/
 - [Bugfix] Failure dragging files to browser for upload (Mac) (#9860)
 
 5.3.8 [https://trac.cyberduck.io/milestone/5.3.8]
-- [Bugfix] NTLM authentication failure for uploads (Sharepoint) (#9855)
+- [Bugfix] NTLM authentication failure for uploads (SharePoint) (#9855)
 - [Bugfix] Selected client certificate cleared from bookmark after opening connection (#9842)
 
 5.3.7 [https://trac.cyberduck.io/milestone/5.3.7]
