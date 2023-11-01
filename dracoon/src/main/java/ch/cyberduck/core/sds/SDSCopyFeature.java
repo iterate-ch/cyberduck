@@ -84,23 +84,23 @@ public class SDSCopyFeature implements Copy {
     public void preflight(final Path source, final Path target) throws BackgroundException {
         if(containerService.isContainer(source)) {
             // Rooms cannot be copied
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source)).withFile(source);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
             // If source xor target is encrypted data room we cannot use server side copy
             log.warn(String.format("Cannot use server side copy with source container %s and target container %s",
                     containerService.getContainer(source), containerService.getContainer(target)));
-            throw new UnsupportedException();
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(!StringUtils.equals(source.getName(), target.getName())) {
             // Cannot rename node to be copied at the same time
             log.warn(String.format("Deny copy of %s for changed name %s", source, target.getName()));
-            throw new UnsupportedException();
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(Objects.equals(source.getParent(), target.getParent())) {
             // Nodes must not have the same parent
             log.warn(String.format("Deny copy of %s to %s", source, target));
-            throw new UnsupportedException();
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
     }
 }

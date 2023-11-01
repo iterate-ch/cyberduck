@@ -24,6 +24,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
+import java.text.MessageFormat;
+
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2TouchFeature extends DefaultTouchFeature<BaseB2Response> {
@@ -41,7 +43,7 @@ public class B2TouchFeature extends DefaultTouchFeature<BaseB2Response> {
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         // Creating files is only possible inside a bucket.
         if(workdir.isRoot()) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

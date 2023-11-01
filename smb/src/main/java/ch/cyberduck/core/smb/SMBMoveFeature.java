@@ -16,7 +16,6 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -81,7 +80,7 @@ public class SMBMoveFeature implements Move {
     public void preflight(final Path source, final Path target) throws BackgroundException {
         final SMBPathContainerService containerService = new SMBPathContainerService(session);
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source)).withFile(source);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
     }
 }

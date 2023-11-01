@@ -28,6 +28,8 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFolderRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
+
 public class StoregateDirectoryFeature implements Directory<VersionId> {
 
     private final StoregateSession session;
@@ -62,7 +64,7 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error")).withFile(workdir);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }
