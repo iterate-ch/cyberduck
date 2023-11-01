@@ -6,6 +6,7 @@ https://cyberduck.io/
 - [Bugfix] Application scoped bookmark to access file outside of sandbox not saved (macOS, Mac App Store) (#15250)
 - [Bugfix] Failure parsing expiration from cached temporary credentials in AWS CLI configuration from AWS SSO (S3) (#15257)
 - [Bugfix] Unable to authenticate with S3 (Credentials from AWS Command Line Interface) connection profile (S3) (#15222)
+- [Bugfix] Refreshed OAuth tokens not saved in credentials manager (Dropbox, Google Drive, Google Storage, Microsoft OneDrive, SharePoint) (#15309)
 
 8.7.0
 - [Feature] SMB (Server Message Block) protocol support (#5368)
