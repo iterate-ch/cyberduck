@@ -21,6 +21,8 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -36,8 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DropboxCopyFeatureTest extends AbstractDropboxTest {
@@ -84,5 +85,16 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         assertTrue(new DropboxFindFeature(session).find(copy));
         assertTrue(new DropboxFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
         new DropboxDeleteFeature(session).delete(Arrays.asList(directory, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveInvalidFilename() throws Exception {
+        final DropboxCopyFeature feature = new DropboxCopyFeature(session);
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path file = new DropboxTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path target = new Path(home, "~$f", EnumSet.of(Path.Type.file));
+        assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, target));
+        assertThrows(AccessDeniedException.class, () -> feature.copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

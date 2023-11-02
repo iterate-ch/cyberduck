@@ -23,7 +23,9 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -107,5 +109,16 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertFalse(new DropboxFindFeature(session).find(temp));
         assertTrue(new DropboxFindFeature(session).find(test));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveInvalidFilename() throws Exception {
+        final DropboxMoveFeature feature = new DropboxMoveFeature(session);
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path file = new DropboxTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path target = new Path(home, "~$f", EnumSet.of(Path.Type.file));
+        assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, target));
+        assertThrows(AccessDeniedException.class, () -> feature.move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
