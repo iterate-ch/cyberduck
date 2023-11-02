@@ -15,6 +15,7 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
@@ -22,6 +23,8 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+
+import java.text.MessageFormat;
 
 public class EueTouchFeature extends DefaultTouchFeature<EueWriteFeature.Chunk> {
 
@@ -42,7 +45,7 @@ public class EueTouchFeature extends DefaultTouchFeature<EueWriteFeature.Chunk> 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!validate(filename)) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
     }
 

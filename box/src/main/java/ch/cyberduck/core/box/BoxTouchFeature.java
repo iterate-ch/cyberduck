@@ -15,6 +15,7 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -22,6 +23,8 @@ import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.commons.lang3.StringUtils;
+
+import java.text.MessageFormat;
 
 public class BoxTouchFeature extends DefaultTouchFeature<File> {
 
@@ -32,7 +35,7 @@ public class BoxTouchFeature extends DefaultTouchFeature<File> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!validate(filename)) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
     }
 

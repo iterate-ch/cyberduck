@@ -15,6 +15,7 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -23,6 +24,8 @@ import ch.cyberduck.core.exception.InvalidFilenameException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.text.MessageFormat;
 
 public class CteraTouchFeature extends DAVTouchFeature {
     private static final Logger log = LogManager.getLogger(CteraTouchFeature.class);
@@ -34,7 +37,7 @@ public class CteraTouchFeature extends DAVTouchFeature {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!validate(filename)) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
     }
 
