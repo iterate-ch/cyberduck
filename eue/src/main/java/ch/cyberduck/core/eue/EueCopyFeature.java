@@ -17,6 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.CopyChildrenApi;
@@ -41,6 +42,7 @@ import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -136,7 +138,7 @@ public class EueCopyFeature implements Copy {
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
         if(!EueTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
         }
     }
 
