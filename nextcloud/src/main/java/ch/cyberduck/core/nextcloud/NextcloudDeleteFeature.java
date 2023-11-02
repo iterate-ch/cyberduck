@@ -35,7 +35,7 @@ public class NextcloudDeleteFeature extends DAVDeleteFeature {
     @Override
     public void preflight(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
     }
 }

@@ -66,7 +66,7 @@ public class GraphDeleteFeature implements Delete {
     @Override
     public void preflight(final Path file) throws BackgroundException {
         if(!session.isAccessible(file, false)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
     }
 

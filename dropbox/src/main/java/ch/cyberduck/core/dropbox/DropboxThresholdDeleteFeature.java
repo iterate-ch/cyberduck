@@ -53,7 +53,7 @@ public class DropboxThresholdDeleteFeature implements Delete {
     @Override
     public void preflight(final Path file) throws BackgroundException {
         if(file.attributes().isDuplicate()) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
     }
 }

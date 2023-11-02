@@ -67,7 +67,7 @@ public class MantaDeleteFeature implements Delete {
     @Override
     public void preflight(final Path file) throws BackgroundException {
         if(!session.isUserWritable(file)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
     }
 

@@ -63,13 +63,13 @@ public class SDSThresholdDeleteFeature implements Delete {
             if(new HostPreferences(session.getHost()).getBoolean("sds.delete.dataroom.enable")) {
                 // Need the query permission on the parent data room if file itself is subroom
                 if(!new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()), SDSPermissionsFeature.MANAGE_ROLE)) {
-                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
                 }
             }
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
         if(!permissions.containsRole(file, SDSPermissionsFeature.DELETE_ROLE)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
     }
 }

@@ -57,10 +57,10 @@ public class DriveThresholdDeleteFeature implements Delete {
     public void preflight(final Path file) throws BackgroundException {
         if(file.isPlaceholder()) {
             // Disable for application/vnd.google-apps
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
         if(file.getType().contains(Path.Type.shared)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file)).withFile(file);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
     }
 }
