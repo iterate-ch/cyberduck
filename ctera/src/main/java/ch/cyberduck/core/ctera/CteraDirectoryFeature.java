@@ -15,10 +15,13 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
+
+import java.text.MessageFormat;
 
 public class CteraDirectoryFeature extends DAVDirectoryFeature {
 
@@ -29,7 +32,7 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!CteraTouchFeature.validate(filename)) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
     }
 }

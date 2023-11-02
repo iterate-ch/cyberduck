@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,6 +34,7 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import com.microsoft.azure.storage.OperationContext;
@@ -89,13 +91,13 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 // Container names must be lowercase, between 3-63 characters long and must start with a letter or
                 // number. Container names may contain only letters, numbers, and the dash (-) character.
                 if(StringUtils.length(filename) > 63) {
-                    throw new InvalidFilenameException();
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
                 if(StringUtils.length(filename) < 3) {
-                    throw new InvalidFilenameException();
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
                 if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename, "-"))) {
-                    throw new InvalidFilenameException();
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
             }
         }

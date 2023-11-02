@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import synapticloop.b2.BucketType;
@@ -91,16 +93,16 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 // two different B2 accounts cannot have buckets with the name name. Bucket names can consist of: letters,
                 // digits, and "-". Bucket names cannot start with "b2-"; these are reserved for internal Backblaze use.
                 if(StringUtils.startsWith(filename, "b2-")) {
-                    throw new InvalidFilenameException();
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
                 if(StringUtils.length(filename) > 50) {
-                    throw new InvalidFilenameException();
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
                 if(StringUtils.length(filename) < 6) {
-                    throw new InvalidFilenameException();
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
                 if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename, "-"))) {
-                    throw new InvalidFilenameException();
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
             }
         }

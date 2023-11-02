@@ -15,6 +15,7 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.PostChildrenForAliasApi;
@@ -35,6 +36,7 @@ import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 
 public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
@@ -89,7 +91,7 @@ public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!EueTouchFeature.validate(filename)) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
     }
 

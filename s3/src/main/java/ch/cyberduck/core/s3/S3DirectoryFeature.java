@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
@@ -75,7 +77,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             if(workdir.isRoot()) {
                 if(StringUtils.isNotBlank(filename)) {
                     if(!ServiceUtils.isBucketNameValidDNSName(filename)) {
-                        throw new InvalidFilenameException();
+                        throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                     }
                 }
             }

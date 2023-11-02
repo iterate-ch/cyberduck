@@ -113,7 +113,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
             }
         }
         if(!SDSTouchFeature.validate(filename)) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
         final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
         if(!permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)) {
