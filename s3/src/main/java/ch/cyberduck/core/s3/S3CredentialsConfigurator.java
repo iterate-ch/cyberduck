@@ -280,11 +280,14 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Set credentials from profile %s", basicProfile.getProfileName()));
                 }
-                return credentials.withTokens(new TemporaryAccessTokens(
-                        basicProfile.getAwsAccessIdKey(),
-                        basicProfile.getAwsSecretAccessKey(),
-                        basicProfile.getAwsSessionToken(),
-                        -1L));
+                return credentials
+                        .withTokens(new TemporaryAccessTokens(
+                                basicProfile.getAwsAccessIdKey(),
+                                basicProfile.getAwsSecretAccessKey(),
+                                basicProfile.getAwsSessionToken(),
+                                -1L))
+                        .withUsername(basicProfile.getAwsAccessIdKey())
+                        .withPassword(basicProfile.getAwsSecretAccessKey());
             }
         }
         else {
