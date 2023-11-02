@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 public class CryptoMoveV6Feature implements Move {
@@ -63,7 +65,7 @@ public class CryptoMoveV6Feature implements Move {
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
         if(!vault.getFilenameProvider().isValid(target.getName())) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
         }
         proxy.preflight(source, target);
     }

@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -27,6 +28,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.FileHeader;
+
+import java.text.MessageFormat;
 
 public class CryptoTouchFeature<Reply> implements Touch<Reply> {
 
@@ -62,7 +65,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!vault.getFilenameProvider().isValid(filename)) {
-            throw new InvalidFilenameException();
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
         proxy.preflight(workdir, filename);
     }
