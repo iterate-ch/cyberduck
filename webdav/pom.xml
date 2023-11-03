@@ -25,7 +25,7 @@
 
     <properties>
         <sardine-version>5.14</sardine-version>
-        <milton-api.version>3.1.1.488</milton-api.version>
+        <milton-api.version>4.0.1.1855</milton-api.version>
     </properties>
 
     <dependencies>
