@@ -2577,7 +2577,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                     final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
                                             MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
                                             LocaleFactory.localizedString("Continue", "Credentials"),
-                                            null != url.getUrl() ? LocaleFactory.localizedString("Copy", "Main") : null,
+                                            DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
                                             null)) {
                                         @Override
                                         public void callback(final int returncode) {
@@ -2623,7 +2623,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                     final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
                                             MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
                                             LocaleFactory.localizedString("Continue", "Credentials"),
-                                            null != url.getUrl() ? LocaleFactory.localizedString("Copy", "Main") : null,
+                                            DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
                                             null)) {
                                         @Override
                                         public void callback(final int returncode) {
