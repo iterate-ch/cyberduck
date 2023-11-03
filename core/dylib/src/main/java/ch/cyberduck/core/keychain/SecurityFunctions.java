@@ -19,7 +19,6 @@ import ch.cyberduck.binding.foundation.CFAllocatorRef;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSDictionary;
-import ch.cyberduck.binding.foundation.NSString;
 
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.internal.RococoaTypeMapper;
@@ -162,7 +161,7 @@ public interface SecurityFunctions extends Library {
      * @return A human-readable string describing the result, or NULL if no string is available for the specified result
      * code. Call the CFRelease function to release this object when you are finished using it.
      */
-    NSString SecCopyErrorMessageString(int status, Pointer reserved);
+    String SecCopyErrorMessageString(int status, Pointer reserved);
 
     /**
      * Returns a dictionary containing information about an evaluated trust.
@@ -512,6 +511,10 @@ public interface SecurityFunctions extends Library {
      * The item cannot be found.
      */
     int errSecItemNotFound = -25300;
+    /**
+     * No error.
+     */
+    int errSecSuccess = 0;
 
     /**
      * The system considers an item to be a duplicate for a given keychain when that keychain already has an item of the

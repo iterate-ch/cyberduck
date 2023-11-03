@@ -1,11 +1,10 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-
 import org.junit.Test;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -99,6 +98,6 @@ public class KeychainCertificateStoreTest {
         InputStream inStream = new FileInputStream("src/test/resources/15135.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-        assertThrows(ConnectionCanceledException.class, () -> k.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(cert)));
+        assertThrows(CertificateException.class, () -> k.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(cert)));
     }
 }
