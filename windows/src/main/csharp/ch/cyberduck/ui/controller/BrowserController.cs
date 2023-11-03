@@ -3686,7 +3686,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         string title = LocaleFactory.localizedString("Share…", "Main");
                         string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
-                            null != url.getUrl() ? LocaleFactory.localizedString("Copy", "Main") : null);
+                            DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null);
                         _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()),
                             commandButtons,
                             false, null, TaskDialogIcon.Information,
@@ -3731,7 +3731,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         string title = LocaleFactory.localizedString("Share…", "Main");
                         string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
-                            null != url.getUrl() ? LocaleFactory.localizedString("Copy", "Main") : null);
+                            DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null);
                         _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()),
                             commandButtons,
                             false, null, TaskDialogIcon.Information,
