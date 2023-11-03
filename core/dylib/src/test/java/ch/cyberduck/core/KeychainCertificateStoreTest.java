@@ -4,11 +4,13 @@ import org.junit.Test;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 
 public class KeychainCertificateStoreTest {
 
@@ -88,5 +90,14 @@ public class KeychainCertificateStoreTest {
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
         assertFalse(k.verify(new DisabledCertificateTrustCallback(), "wrong.host.badssl.com", Collections.singletonList(cert)));
+    }
+
+    @Test
+    public void test15135() throws Exception {
+        final KeychainCertificateStore k = new KeychainCertificateStore();
+        InputStream inStream = new FileInputStream("src/test/resources/15135.cer");
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
+        assertThrows(CertificateException.class, () -> k.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(cert)));
     }
 }
