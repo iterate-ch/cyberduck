@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -79,6 +80,9 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
+            if(status.getChecksum().algorithm != HashAlgorithm.base64sha1) {
+                status.setChecksum(new BoxBase64SHA1ChecksumCompute().compute(local.getInputStream(), status));
+            }
             final List<Future<File>> parts = new ArrayList<>();
             long offset = 0;
             long remaining = status.getLength();
