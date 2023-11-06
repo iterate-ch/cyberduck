@@ -41,7 +41,7 @@ public class BoxThresholdUploadService implements Upload<File> {
         this.session = session;
         this.fileid = fileid;
         this.registry = registry;
-        this.writer = new BoxThresholdWriteFeature(session, fileid);
+        this.writer = new BoxWriteFeature(session, fileid);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class BoxThresholdUploadService implements Upload<File> {
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status.getLength())) {
             if(Vault.DISABLED == registry.find(session, file)) {
-                return new BoxLargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, callback);
+                return new BoxLargeUploadService(session, fileid, new BoxChunkedWriteFeature(session, fileid)).upload(file, local, throttle, listener, status, callback);
             }
             // Cannot comply with chunk size requirement from server
         }
