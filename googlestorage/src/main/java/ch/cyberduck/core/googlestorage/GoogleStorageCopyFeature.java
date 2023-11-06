@@ -85,7 +85,7 @@ public class GoogleStorageCopyFeature implements Copy {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(!containerService.isContainer(target)) {
+        if(containerService.isContainer(target)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
         }
     }

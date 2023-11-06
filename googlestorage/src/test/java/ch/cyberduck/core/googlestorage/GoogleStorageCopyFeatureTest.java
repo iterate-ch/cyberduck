@@ -44,7 +44,9 @@ public class GoogleStorageCopyFeatureTest extends AbstractGoogleStorageTest {
         test.attributes().setSize(0L);
         new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMime("application/cyberduck").withMetadata(Collections.singletonMap("cyberduck", "set")));
         final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        final GoogleStorageCopyFeature feature = new GoogleStorageCopyFeature(session);
+        assertTrue(feature.isSupported(test, copy));
+        feature.copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new GoogleStorageFindFeature(session).find(copy));
