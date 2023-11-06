@@ -32,7 +32,7 @@ public class BoxBase64SHA1ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-        return new Checksum(HashAlgorithm.sha1, Base64.encodeBase64String(this.digest("SHA-1",
+        return new Checksum(HashAlgorithm.base64sha1, Base64.encodeBase64String(this.digest("SHA-1",
                 this.normalize(in, status), status)));
     }
 }
