@@ -39,11 +39,14 @@ public class HttpReachabilityTest {
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(Scheme.http), "test.cyberduck.io")
         ));
-        assertTrue(r.isReachable(
-                new Host(new TestProtocol(Scheme.http), "test.cyberduck.io")
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(Scheme.http), "test.cyberduck.io", 8008)
         ));
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(Scheme.https), "test.cyberduck.io")
+        ));
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(Scheme.https), "test.cyberduck.io", 4434)
         ));
     }
 
