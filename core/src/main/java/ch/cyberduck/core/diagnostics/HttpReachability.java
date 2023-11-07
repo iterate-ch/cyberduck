@@ -34,10 +34,12 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,7 +74,11 @@ public class HttpReachability implements Reachability {
                 new DisabledTranscriptListener(), new DisabledLoginCallback());
         try (CloseableHttpClient client = configuration.build()) {
             final HttpRequestBase resource = new HttpHead(new HostUrlProvider().withUsername(false).withPath(true).get(bookmark));
-            client.execute(resource);
+            final CloseableHttpResponse response = client.execute(resource);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received response %s", response));
+            }
+            EntityUtils.consume(response.getEntity());
         }
         catch(ClientProtocolException e) {
             if(log.isWarnEnabled()) {
