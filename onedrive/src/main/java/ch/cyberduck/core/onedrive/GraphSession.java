@@ -172,7 +172,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public String getBaseURL() {
-                return String.format("%s://%s/%s", host.getProtocol().getScheme(), host.getProtocol().getDefaultHostname(), API_VERSION);
+                return String.format("%s://%s/%s", host.getProtocol().getScheme(), host.getHostname(), API_VERSION);
             }
 
             @Override
