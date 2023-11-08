@@ -17,6 +17,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -35,7 +36,7 @@ public class DefaultRetryCallableTest {
     @Test
     public void testCall() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        final DefaultRetryCallable<Void> c = new DefaultRetryCallable<>(new Host(new TestProtocol()), 1, 0, new BackgroundExceptionCallable<Void>() {
+        final DefaultRetryCallable<Void> c = new DefaultRetryCallable<>(new Host(new TestProtocol(Scheme.file)), 1, 0, new BackgroundExceptionCallable<Void>() {
             @Override
             public Void call() throws BackgroundException {
                 count.incrementAndGet();

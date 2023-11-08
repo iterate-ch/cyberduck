@@ -1,7 +1,7 @@
 package ch.cyberduck.core.diagnostics;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,16 +16,26 @@ package ch.cyberduck.core.diagnostics;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 
-public class DisabledReachability implements Reachability {
+public class DiskReachability implements Reachability {
 
     @Override
     public boolean isReachable(final Host bookmark) {
-        return true;
+        try {
+            return LocalFactory.get(new DelegatingHomeFeature(new WorkdirHomeFeature(bookmark), new DefaultPathHomeFeature(bookmark)).find().getAbsolute()).exists();
+        }
+        catch(BackgroundException e) {
+            return false;
+        }
     }
 
     @Override
-    public Monitor monitor(final Host host, final Callback callback) {
+    public Monitor monitor(final Host bookmark, final Callback callback) {
         return Monitor.disabled;
     }
 }

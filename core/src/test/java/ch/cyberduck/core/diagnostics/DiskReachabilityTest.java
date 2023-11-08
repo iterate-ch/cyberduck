@@ -1,7 +1,7 @@
 package ch.cyberduck.core.diagnostics;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,16 +16,21 @@ package ch.cyberduck.core.diagnostics;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TestProtocol;
 
-public class DisabledReachability implements Reachability {
+import org.junit.Test;
 
-    @Override
-    public boolean isReachable(final Host bookmark) {
-        return true;
-    }
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-    @Override
-    public Monitor monitor(final Host host, final Callback callback) {
-        return Monitor.disabled;
+public class DiskReachabilityTest {
+
+    @Test
+    public void isReachable() {
+        final Host bookmark = new Host(new TestProtocol(Scheme.file));
+        assertTrue(new DiskReachability().isReachable(bookmark));
+        bookmark.setDefaultPath("/notfound");
+        assertFalse(new DiskReachability().isReachable(bookmark));
     }
 }

@@ -17,7 +17,8 @@ package ch.cyberduck.core.http;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.ConnectionTimeout;
+import ch.cyberduck.core.DefaultConnectionTimeout;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -69,16 +71,25 @@ public class HttpConnectionPoolBuilder {
     private final ConnectionSocketFactory socketFactory;
     private final ConnectionSocketFactory sslSocketFactory;
     private final Host host;
+    private final ConnectionTimeout connectionTimeout;
 
     public HttpConnectionPoolBuilder(final Host host,
                                      final ThreadLocalHostnameDelegatingTrustManager trust,
                                      final X509KeyManager key,
                                      final ProxyFinder proxy) {
+        this(host, trust, key, new DefaultConnectionTimeout(new HostPreferences(host)), proxy);
+    }
+
+    public HttpConnectionPoolBuilder(final Host host,
+                                     final ThreadLocalHostnameDelegatingTrustManager trust,
+                                     final X509KeyManager key,
+                                     final ConnectionTimeout connectionTimeout,
+                                     final ProxyFinder proxy) {
         this(host, new PlainConnectionSocketFactory() {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
                 // Return socket factory with disabled support for HTTP tunneling as provided internally
-                return new ProxySocketFactory(host, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                return new ProxySocketFactory(host, new DefaultSocketConfigurator(connectionTimeout), proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
 
             @Override
@@ -94,7 +105,7 @@ public class HttpConnectionPoolBuilder {
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
-                return new ProxySocketFactory(host, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                return new ProxySocketFactory(host, new DefaultSocketConfigurator(connectionTimeout), proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
 
             @Override
@@ -110,15 +121,17 @@ public class HttpConnectionPoolBuilder {
                 trust.setTarget(host.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
-        });
+        }, connectionTimeout);
     }
 
     public HttpConnectionPoolBuilder(final Host host,
                                      final ConnectionSocketFactory socketFactory,
-                                     final ConnectionSocketFactory sslSocketFactory) {
+                                     final ConnectionSocketFactory sslSocketFactory,
+                                     final ConnectionTimeout connectionTimeout) {
         this.host = host;
         this.socketFactory = socketFactory;
         this.sslSocketFactory = sslSocketFactory;
+        this.connectionTimeout = connectionTimeout;
     }
 
     /**
@@ -142,8 +155,8 @@ public class HttpConnectionPoolBuilder {
                 configuration.setProxyAuthenticationStrategy(new CallbackProxyAuthenticationStrategy(ProxyCredentialsStoreFactory.get(), host, prompt));
                 break;
         }
-        configuration.setUserAgent(new PreferencesUseragentProvider().get());
-        final int timeout = ConnectionTimeoutFactory.get(host).getTimeout() * 1000;
+        configuration.setUserAgent(new PreferencesUseragentProvider().get());;
+        final int timeout = connectionTimeout.getTimeout() * 1000;
         configuration.setDefaultSocketConfig(SocketConfig.custom()
             .setTcpNoDelay(true)
             .setSoTimeout(timeout)
