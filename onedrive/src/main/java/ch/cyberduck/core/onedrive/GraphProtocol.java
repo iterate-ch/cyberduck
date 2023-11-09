@@ -38,6 +38,11 @@ public abstract class GraphProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getDefaultHostname() {
+        return "graph.microsoft.com";
+    }
+
+    @Override
     public String getPasswordPlaceholder() {
         return LocaleFactory.localizedString("Authorization code", "Credentials");
     }
