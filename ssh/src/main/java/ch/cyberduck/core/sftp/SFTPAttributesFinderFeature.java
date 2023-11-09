@@ -25,22 +25,25 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
 public class SFTPAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileAttributes> {
 
     private final SFTPSession session;
-    private final boolean permissionsAvailable;
+    /**
+     * Server is missing support for permission bitmask
+     */
+    private final AtomicReference<Boolean> blacklisted = new AtomicReference<>();
 
     public SFTPAttributesFinderFeature(final SFTPSession session) {
         this.session = session;
-        permissionsAvailable = !isServerBlacklisted();
     }
 
     @Override
@@ -90,14 +93,13 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
             case UNKNOWN:
                 attributes.setSize(stat.getSize());
         }
-        if(permissionsAvailable) {
-            if(0 != stat.getMode().getPermissionsMask()) {
+        if(0 != stat.getMode().getPermissionsMask()) {
+            if(!this.isServerBlacklisted()) {
                 attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
+                attributes.setOwner(String.valueOf(stat.getUID()));
+                attributes.setGroup(String.valueOf(stat.getGID()));
             }
-            attributes.setOwner(String.valueOf(stat.getUID()));
-            attributes.setGroup(String.valueOf(stat.getGID()));
         }
-
         if(0 != stat.getMtime()) {
             attributes.setModificationDate(stat.getMtime() * 1000L);
         }
@@ -108,15 +110,19 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
     }
 
     private boolean isServerBlacklisted() {
-        final String serverVersion = session.getClient().getTransport().getServerVersion();
-        for(String server : PreferencesFactory.get().getList("sftp.permissions.server.blacklist")) {
-            if(StringUtils.contains(
-                    /* seq */ serverVersion,
-                    /* search seq */ server)) {
-                // Known erroneous bitmask
-                return true;
+        if(null == blacklisted.get()) {
+            final String serverVersion = session.getClient().getTransport().getServerVersion();
+            for(String server : new HostPreferences(session.getHost()).getList("sftp.permissions.server.blacklist")) {
+                if(StringUtils.contains(
+                        /* seq */ serverVersion,
+                        /* search seq */ server)) {
+                    // Known erroneous bitmask
+                    blacklisted.set(true);
+                    return true;
+                }
             }
+            blacklisted.set(false);
         }
-        return false;
+        return blacklisted.get();
     }
 }
