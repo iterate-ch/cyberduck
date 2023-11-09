@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using java.util;
+using NUnit.Framework;
 using System.Configuration;
 
 namespace Ch.Cyberduck.Core.Preferences;
@@ -20,6 +21,18 @@ public class ApplicationPreferencesTests
         TestPreferences preferences = new();
         preferences.SetUserSettings(null);
         preferences.load();
+    }
+
+    [TestCase]
+    public void LocaleDisplayNames()
+    {
+        TestPreferences preferences = new();
+        preferences.load();
+
+        foreach (string locale in preferences.applicationLocales())
+        {
+            Assert.IsNotEmpty(preferences.getDisplayName(locale));
+        }
     }
 
     public class TestPreferences : ApplicationPreferences
