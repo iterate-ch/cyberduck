@@ -81,7 +81,7 @@ namespace Ch.Cyberduck.Ui
                 x.ForSingletonOf<IIconProviderImageSource>().Use<CyberduckImageSource>();
 
                 x.ForConcreteSingleton<IconCache>();
-                x.ForConcreteSingleton<IconIconProvider>();
+                x.ForConcreteSingleton<Win32IconProvider>();
                 x.ForConcreteSingleton<Images>();
                 x.ForConcreteSingleton<MetadataTemplateProvider>();
                 x.ForConcreteSingleton<ProfileListObserver>();

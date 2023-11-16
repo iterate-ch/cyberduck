@@ -4,9 +4,9 @@ using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
-    public class IconIconProvider : IconProvider<Icon>
+    public class Win32IconProvider : IconProvider<Icon>
     {
-        public IconIconProvider(IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
+        public Win32IconProvider(IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
         {
         }
 
