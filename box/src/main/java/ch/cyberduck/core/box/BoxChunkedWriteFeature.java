@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.JSON;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
+import ch.cyberduck.core.box.io.swagger.client.model.UploadPart;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -74,16 +75,16 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
                             Long.valueOf(overall_length))));
                     request.addHeader(new BasicHeader("Digest", String.format("sha=%s", status.getChecksum())));
                     request.setEntity(entity);
-                    final UploadedPart uploadedPart = session.getClient().execute(request, new BoxClientErrorResponseHandler<UploadedPart>() {
+                    final UploadPart response = session.getClient().execute(request, new BoxClientErrorResponseHandler<UploadedPart>() {
                         @Override
                         public UploadedPart handleEntity(final HttpEntity entity1) throws IOException {
                             return new JSON().getContext(null).readValue(entity1.getContent(), UploadedPart.class);
                         }
-                    });
+                    }).getPart();
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Received response %s for upload of %s", uploadedPart, file));
+                        log.debug(String.format("Received response %s for upload of %s", response, file));
                     }
-                    return new File().size(status.getLength()).sha1(uploadedPart.getPart().getSha1());
+                    return new File().size(response.getSize()).sha1(response.getSha1()).id(response.getPartId());
                 }
                 catch(HttpResponseException e) {
                     throw new DefaultHttpResponseExceptionMappingService().map(e);

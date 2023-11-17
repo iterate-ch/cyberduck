@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -83,7 +84,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             if(status.getChecksum().algorithm != HashAlgorithm.base64sha1) {
                 status.setChecksum(new BoxBase64SHA1ChecksumCompute().compute(local.getInputStream(), status));
             }
-            final List<Future<File>> parts = new ArrayList<>();
+            final List<Future<Part>> parts = new ArrayList<>();
             long offset = 0;
             long remaining = status.getLength();
             final BoxUploadHelper helper = new BoxUploadHelper(session, fileid);
@@ -96,11 +97,16 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 offset += length;
             }
             // Checksums for uploaded segments
-            final List<File> chunks = Interruptibles.awaitAll(parts);
+            final List<Part> chunks = Interruptibles.awaitAll(parts);
             final Files files = helper.commitUploadSession(file, uploadSession.getId(), status,
-                    chunks.stream().map(f -> new UploadPart().sha1(f.getSha1())).collect(Collectors.toList()));
-            if(files.getEntries().stream().findFirst().isPresent()) {
-                return files.getEntries().stream().findFirst().get();
+                    chunks.stream().map(f -> new UploadPart().sha1(f.part.getSha1())
+                            .size(f.status.getLength()).offset(f.status.getOffset()).partId(f.part.getId())).collect(Collectors.toList()));
+            final Optional<File> optional = files.getEntries().stream().findFirst();
+            if(optional.isPresent()) {
+                final File commited = optional.get();
+                // Mark parent status as complete
+                status.withResponse(new BoxAttributesFinderFeature(session, fileid).toAttributes(commited)).setComplete();
+                return commited;
             }
             throw new NotfoundException(file.getAbsolute());
         }
@@ -110,16 +116,16 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
         }
     }
 
-    private Future<File> submit(final ThreadPool pool, final Path file, final Local local,
+    private Future<Part> submit(final ThreadPool pool, final Path file, final Local local,
                                 final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus overall, final String uploadSessionId, final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s to queue with offset %d and length %d", file, offset, length));
         }
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
-        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<File>() {
+        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Part>() {
             @Override
-            public File call() throws BackgroundException {
+            public Part call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
                         .segment(true)
@@ -137,9 +143,19 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response %s for part %d", response, partNumber));
                 }
-                return response;
+                return new Part(response, status);
             }
         }, overall, counter));
+    }
+
+    private static final class Part {
+        public final File part;
+        public final TransferStatus status;
+
+        public Part(final File part, final TransferStatus status) {
+            this.part = part;
+            this.status = status;
+        }
     }
 
     @Override
