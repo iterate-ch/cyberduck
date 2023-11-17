@@ -14,77 +14,151 @@ package ch.cyberduck.core.box.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.box.io.swagger.client.model.UploadPartMini;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * The representation of an upload session chunk.
  */
 @Schema(description = "The representation of an upload session chunk.")
 
-public class UploadPart extends UploadPartMini {
-  @JsonProperty("sha1")
-  private String sha1 = null;
 
-  public UploadPart sha1(String sha1) {
-    this.sha1 = sha1;
-    return this;
-  }
+public class UploadPart {
+    @JsonProperty("part_id")
+    private String partId = null;
 
-   /**
-   * The SHA1 hash of the chunk.
-   * @return sha1
-  **/
-  @Schema(example = "134b65991ed521fcfe4724b7d814ab8ded5185dc", description = "The SHA1 hash of the chunk.")
-  public String getSha1() {
-    return sha1;
-  }
+    @JsonProperty("offset")
+    private Long offset = null;
 
-  public void setSha1(String sha1) {
-    this.sha1 = sha1;
-  }
+    @JsonProperty("size")
+    private Long size = null;
 
+    @JsonProperty("sha1")
+    private String sha1 = null;
 
-  @Override
-  public boolean equals(java.lang.Object o) {
-    if (this == o) {
-      return true;
+    public UploadPart partId(String partId) {
+        this.partId = partId;
+        return this;
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+
+    /**
+     * The unique ID of the chunk.
+     *
+     * @return partId
+     **/
+    @Schema(example = "6F2D3486", description = "The unique ID of the chunk.")
+    public String getPartId() {
+        return partId;
     }
-    UploadPart uploadPart = (UploadPart) o;
-    return Objects.equals(this.sha1, uploadPart.sha1) &&
-        super.equals(o);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(sha1, super.hashCode());
-  }
-
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class UploadPart {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
-    sb.append("    sha1: ").append(toIndentedString(sha1)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(java.lang.Object o) {
-    if (o == null) {
-      return "null";
+    public void setPartId(String partId) {
+        this.partId = partId;
     }
-    return o.toString().replace("\n", "\n    ");
-  }
+
+    public UploadPart offset(Long offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    /**
+     * The offset of the chunk within the file in bytes. The lower bound of the position of the chunk within the file.
+     *
+     * @return offset
+     **/
+    @Schema(example = "16777216", description = "The offset of the chunk within the file in bytes. The lower bound of the position of the chunk within the file.")
+    public Long getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Long offset) {
+        this.offset = offset;
+    }
+
+    public UploadPart size(Long size) {
+        this.size = size;
+        return this;
+    }
+
+    /**
+     * The size of the chunk in bytes.
+     *
+     * @return size
+     **/
+    @Schema(example = "3222784", description = "The size of the chunk in bytes.")
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public UploadPart sha1(String sha1) {
+        this.sha1 = sha1;
+        return this;
+    }
+
+    /**
+     * The SHA1 hash of the chunk.
+     *
+     * @return sha1
+     **/
+    @Schema(example = "134b65991ed521fcfe4724b7d814ab8ded5185dc", description = "The SHA1 hash of the chunk.")
+    public String getSha1() {
+        return sha1;
+    }
+
+    public void setSha1(String sha1) {
+        this.sha1 = sha1;
+    }
+
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UploadPart uploadPart = (UploadPart) o;
+        return Objects.equals(this.partId, uploadPart.partId) &&
+                Objects.equals(this.offset, uploadPart.offset) &&
+                Objects.equals(this.size, uploadPart.size) &&
+                Objects.equals(this.sha1, uploadPart.sha1);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(partId, offset, size, sha1);
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class UploadPart {\n");
+
+        sb.append("    partId: ").append(toIndentedString(partId)).append("\n");
+        sb.append("    offset: ").append(toIndentedString(offset)).append("\n");
+        sb.append("    size: ").append(toIndentedString(size)).append("\n");
+        sb.append("    sha1: ").append(toIndentedString(sha1)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(java.lang.Object o) {
+        if(o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
 }
