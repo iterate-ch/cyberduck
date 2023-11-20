@@ -32,7 +32,7 @@ import ch.cyberduck.core.box.BoxFileidProvider;
 import ch.cyberduck.core.box.BoxFindFeature;
 import ch.cyberduck.core.box.BoxReadFeature;
 import ch.cyberduck.core.box.BoxThresholdUploadService;
-import ch.cyberduck.core.box.BoxThresholdWriteFeature;
+import ch.cyberduck.core.box.BoxWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -93,7 +93,7 @@ public class BoxThresholdUploadServiceTest extends AbstractBoxTest {
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new BoxThresholdUploadService(session, fileid, registry),
-                new BoxThresholdWriteFeature(session, fileid), cryptomator);
+                new BoxWriteFeature(session, fileid), cryptomator);
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());

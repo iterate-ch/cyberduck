@@ -25,15 +25,14 @@ import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -106,7 +105,7 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
             return (T) new BoxThresholdUploadService(this, fileid, registry);
         }
         if(type == Write.class) {
-            return (T) new BoxThresholdWriteFeature(this, fileid);
+            return (T) new BoxWriteFeature(this, fileid);
         }
         if(type == Touch.class) {
             return (T) new BoxTouchFeature(this, fileid);
