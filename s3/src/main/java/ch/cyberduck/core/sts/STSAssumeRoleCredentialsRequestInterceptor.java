@@ -112,7 +112,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         // Get temporary credentials from STS using Web Identity (OIDC) token
         final Credentials credentials = oauth.validate();
         final OAuthTokens identity = credentials.getOauth();
-        final String token = identity.getIdToken();
+        final String token = this.getWebIdentityToken(identity);
         final String sub;
         try {
             sub = JWT.decode(token).getSubject();
