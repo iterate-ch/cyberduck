@@ -1,0 +1,145 @@
+<Project Sdk="IKVM.Net.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <EnableDefaultItems>false</EnableDefaultItems>
+        <LangVersion>1.8</LangVersion>
+        <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <CyberduckReference Include="Core" />
+        <PackageReference Include="IKVM" />
+        <PackageReference Include="IKVM.MSBuild" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Convert Include="$(TargetDir)annotations.jar" />
+        <Convert Include="$(TargetDir)aopalliance-repackaged.jar" />
+        <Convert Include="$(TargetDir)apache-http-client-signature.jar" />
+        <Convert Include="$(TargetDir)apiguardian-api.jar" />
+        <Convert Include="$(TargetDir)asn-one.jar" />
+        <Convert Include="$(TargetDir)aws-java-sdk-cloudfront.jar" />
+        <Convert Include="$(TargetDir)aws-java-sdk-core.jar" />
+        <Convert Include="$(TargetDir)aws-java-sdk-iam.jar" />
+        <Convert Include="$(TargetDir)aws-java-sdk-kms.jar" />
+        <Convert Include="$(TargetDir)aws-java-sdk-s3.jar" />
+        <Convert Include="$(TargetDir)aws-java-sdk-sts.jar" />
+        <Convert Include="$(TargetDir)azure-keyvault-core.jar" />
+        <Convert Include="$(TargetDir)azure-storage.jar" />
+        <Convert Include="$(TargetDir)azure.jar" />
+        <Convert Include="$(TargetDir)b2.jar" />
+        <Convert Include="$(TargetDir)backblaze.jar" />
+        <Convert Include="$(TargetDir)box.jar" />
+        <Convert Include="$(TargetDir)brick.jar" />
+        <Convert Include="$(TargetDir)cloning.jar" />
+        <Convert Include="$(TargetDir)commons-lang.jar" />
+        <Convert Include="$(TargetDir)ctera.jar" />
+        <Convert Include="$(TargetDir)dracoon-crypto-sdk.jar" />
+        <Convert Include="$(TargetDir)dracoon.jar" />
+        <Convert Include="$(TargetDir)dropbox-core-sdk.jar" />
+        <Convert Include="$(TargetDir)dropbox.jar" />
+        <Convert Include="$(TargetDir)ds3-interfaces.jar" />
+        <Convert Include="$(TargetDir)ds3-sdk.jar" />
+        <Convert Include="$(TargetDir)ds3-utils.jar" />
+        <Convert Include="$(TargetDir)eddsa.jar" />
+        <Convert Include="$(TargetDir)eue.jar" />
+        <Convert Include="$(TargetDir)freenet.jar" />
+        <Convert Include="$(TargetDir)ftp.jar" />
+        <Convert Include="$(TargetDir)google-api-client.jar" />
+        <Convert Include="$(TargetDir)google-api-services-drive.jar" />
+        <Convert Include="$(TargetDir)google-api-services-storage.jar" />
+        <Convert Include="$(TargetDir)google-http-client-apache-v2.jar" />
+        <Convert Include="$(TargetDir)google-http-client-gson.jar" />
+        <Convert Include="$(TargetDir)google-http-client.jar" />
+        <Convert Include="$(TargetDir)google-oauth-client.jar" />
+        <Convert Include="$(TargetDir)googledrive.jar" />
+        <Convert Include="$(TargetDir)googlestorage.jar" />
+        <Convert Include="$(TargetDir)grpc-context.jar" />
+        <Convert Include="$(TargetDir)hk2-api.jar" />
+        <Convert Include="$(TargetDir)hk2-locator.jar" />
+        <Convert Include="$(TargetDir)hk2-utils.jar" />
+        <Convert Include="$(TargetDir)http-signature-common.jar" />
+        <Convert Include="$(TargetDir)hubic.jar" />
+        <Convert Include="$(TargetDir)ion-java.jar" />
+        <Convert Include="$(TargetDir)irods.jar" />
+        <Convert Include="$(TargetDir)istack-commons-runtime.jar" />
+        <Convert Include="$(TargetDir)jackson-annotations.jar" />
+        <Convert Include="$(TargetDir)jackson-core.jar" />
+        <Convert Include="$(TargetDir)jackson-databind.jar" />
+        <Convert Include="$(TargetDir)jackson-dataformat-cbor.jar" />
+        <Convert Include="$(TargetDir)jackson-dataformat-xml.jar" />
+        <Convert Include="$(TargetDir)jackson-datatype-joda.jar" />
+        <Convert Include="$(TargetDir)jackson-datatype-jsr310.jar" />
+        <Convert Include="$(TargetDir)jackson-jaxrs-base.jar" />
+        <Convert Include="$(TargetDir)jackson-jaxrs-json-provider.jar" />
+        <Convert Include="$(TargetDir)jackson-module-jaxb-annotations.jar" />
+        <Convert Include="$(TargetDir)jakarta.activation-api.jar" />
+        <Convert Include="$(TargetDir)jakarta.activation.jar" />
+        <Convert Include="$(TargetDir)jakarta.annotation-api.jar" />
+        <Convert Include="$(TargetDir)jakarta.inject.jar" />
+        <Convert Include="$(TargetDir)jakarta.ws.rs-api.jar" />
+        <Convert Include="$(TargetDir)jakarta.xml.bind-api.jar" />
+        <Convert Include="$(TargetDir)jargon-core.jar" />
+        <Convert Include="$(TargetDir)java-manta-client-unshaded.jar" />
+        <Convert Include="$(TargetDir)java-uuid-generator.jar" />
+        <Convert Include="$(TargetDir)javassist.jar" />
+        <Convert Include="$(TargetDir)jaxb-runtime.jar" />
+        <Convert Include="$(TargetDir)jcl-over-slf4j.jar" />
+        <Convert Include="$(TargetDir)jersey-apache-connector.jar" />
+        <Convert Include="$(TargetDir)jersey-client.jar" />
+        <Convert Include="$(TargetDir)jersey-common.jar" />
+        <Convert Include="$(TargetDir)jersey-entity-filtering.jar" />
+        <Convert Include="$(TargetDir)jersey-hk2.jar" />
+        <Convert Include="$(TargetDir)jersey-media-json-jackson.jar" />
+        <Convert Include="$(TargetDir)jersey-media-multipart.jar" />
+        <Convert Include="$(TargetDir)jersey.jar" />
+        <Convert Include="$(TargetDir)jmespath-java.jar" />
+        <Convert Include="$(TargetDir)joda-time.jar" />
+        <Convert Include="$(TargetDir)jsch.agentproxy.core.jar" />
+        <Convert Include="$(TargetDir)jsch.agentproxy.pageant.jar" />
+        <Convert Include="$(TargetDir)jsch.agentproxy.sshagent.jar" />
+        <Convert Include="$(TargetDir)jsch.agentproxy.sshj.jar" />
+        <Convert Include="$(TargetDir)jsch.agentproxy.usocket-jna.jar" />
+        <Convert Include="$(TargetDir)json.jar" />
+        <Convert Include="$(TargetDir)junit-jupiter-api.jar" />
+        <Convert Include="$(TargetDir)junit-jupiter-engine.jar" />
+        <Convert Include="$(TargetDir)junit-jupiter-params.jar" />
+        <Convert Include="$(TargetDir)junit-jupiter.jar" />
+        <Convert Include="$(TargetDir)junit-platform-commons.jar" />
+        <Convert Include="$(TargetDir)junit-platform-engine.jar" />
+        <Convert Include="$(TargetDir)jzlib.jar" />
+        <Convert Include="$(TargetDir)kotlin-stdlib-common.jar" />
+        <Convert Include="$(TargetDir)kotlin-stdlib.jar" />
+        <Convert Include="$(TargetDir)manta.jar" />
+        <Convert Include="$(TargetDir)metrics-core.jar" />
+        <Convert Include="$(TargetDir)metrics-jmx.jar" />
+        <Convert Include="$(TargetDir)migbase64.jar" />
+        <Convert Include="$(TargetDir)mimepull.jar" />
+        <Convert Include="$(TargetDir)minimal-json.jar" />
+        <Convert Include="$(TargetDir)nextcloud.jar" />
+        <Convert Include="$(TargetDir)nio.jar" />
+        <Convert Include="$(TargetDir)oauth.jar" />
+        <Convert Include="$(TargetDir)objenesis.jar" />
+        <Convert Include="$(TargetDir)onedrive-java-client.jar" />
+        <Convert Include="$(TargetDir)onedrive.jar" />
+        <Convert Include="$(TargetDir)opencensus-api.jar" />
+        <Convert Include="$(TargetDir)opencensus-contrib-http-util.jar" />
+        <Convert Include="$(TargetDir)openstack.jar" />
+        <Convert Include="$(TargetDir)opentest4j.jar" />
+        <Convert Include="$(TargetDir)osgi-resource-locator.jar" />
+        <Convert Include="$(TargetDir)owncloud.jar" />
+        <Convert Include="$(TargetDir)s3.jar" />
+        <Convert Include="$(TargetDir)sardine.jar" />
+        <Convert Include="$(TargetDir)spectra.jar" />
+        <Convert Include="$(TargetDir)ssh.jar" />
+        <Convert Include="$(TargetDir)sshj.jar" />
+        <Convert Include="$(TargetDir)stax2-api.jar" />
+        <Convert Include="$(TargetDir)storegate.jar" />
+        <Convert Include="$(TargetDir)swagger-annotations.jar" />
+        <Convert Include="$(TargetDir)swift.jar" />
+        <Convert Include="$(TargetDir)txw2.jar" />
+        <Convert Include="$(TargetDir)urlbuilder.jar" />
+        <Convert Include="$(TargetDir)webdav.jar" />
+        <Convert Include="$(TargetDir)woodstox-core.jar" />
+    </ItemGroup>
+</Project>

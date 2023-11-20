@@ -1,0 +1,59 @@
+<Project Sdk="IKVM.Net.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <EnableDefaultItems>false</EnableDefaultItems>
+        <LangVersion>1.8</LangVersion>
+        <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="IKVM" />
+        <PackageReference Include="IKVM.MSBuild" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Convert Include="$(TargetDir)activation.jar" />
+        <Convert Include="$(TargetDir)base64.jar" />
+        <Convert Include="$(TargetDir)bcpkix-jdk18on.jar" />
+        <Convert Include="$(TargetDir)bcprov-jdk18on.jar" />
+        <Convert Include="$(TargetDir)bcutil-jdk18on.jar" />
+        <Convert Include="$(TargetDir)checker-qual.jar" />
+        <Convert Include="$(TargetDir)commons-codec.jar" />
+        <Convert Include="$(TargetDir)commons-collections4.jar" />
+        <Convert Include="$(TargetDir)commons-io.jar" />
+        <Convert Include="$(TargetDir)commons-lang3.jar" />
+        <Convert Include="$(TargetDir)commons-logging.jar" />
+        <Convert Include="$(TargetDir)commons-net.jar" />
+        <Convert Include="$(TargetDir)commons-pool2.jar" />
+        <Convert Include="$(TargetDir)commons-text.jar" />
+        <Convert Include="$(TargetDir)core.jar" />
+        <Convert Include="$(TargetDir)dd-plist.jar" />
+        <Convert Include="$(TargetDir)defaults.jar" />
+        <Convert Include="$(TargetDir)error_prone_annotations.jar" />
+        <Convert Include="$(TargetDir)failureaccess.jar" />
+        <Convert Include="$(TargetDir)fast-md5.jar" />
+        <Convert Include="$(TargetDir)gson.jar" />
+        <Convert Include="$(TargetDir)guava.jar" />
+        <Convert Include="$(TargetDir)httpclient-win.jar" />
+        <Convert Include="$(TargetDir)httpclient.jar" />
+        <Convert Include="$(TargetDir)httpcore.jar" />
+        <Convert Include="$(TargetDir)httpmime.jar" />
+        <Convert Include="$(TargetDir)j2objc-annotations.jar" />
+        <Convert Include="$(TargetDir)jackson-core-asl.jar" />
+        <Convert Include="$(TargetDir)jackson-mapper-asl.jar" />
+        <Convert Include="$(TargetDir)java-xmlbuilder.jar" />
+        <Convert Include="$(TargetDir)jets3t.jar" />
+        <Convert Include="$(TargetDir)jna-min.jar" />
+        <Convert Include="$(TargetDir)jna-platform.jar" />
+        <Convert Include="$(TargetDir)jsr305.jar" />
+        <Convert Include="$(TargetDir)jul-to-slf4j.jar" />
+        <Convert Include="$(TargetDir)listenablefuture.jar" />
+        <Convert Include="$(TargetDir)log4j-api.jar" />
+        <Convert Include="$(TargetDir)log4j-core.jar" />
+        <Convert Include="$(TargetDir)log4j-slf4j-impl.jar" />
+        <Convert Include="$(TargetDir)slf4j-api.jar" />
+        <Convert Include="$(TargetDir)sunec.jar" />
+        <Convert Include="$(TargetDir)sunmscapi.jar" />
+        <Convert Include="$(TargetDir)zxcvbn.jar" />
+    </ItemGroup>
+</Project>

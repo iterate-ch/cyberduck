@@ -34,6 +34,12 @@
         <LangVersion>10</LangVersion>
     </PropertyGroup>
 
+    <PropertyGroup>
+      <DisableImplicitIkvmPackageReference>true</DisableImplicitIkvmPackageReference>
+      <DisableImplicitIkvmMSBuildPackageReference>true</DisableImplicitIkvmMSBuildPackageReference>
+      <UseIkvmTasks>true</UseIkvmTasks>
+    </PropertyGroup>
+
     <ItemDefinitionGroup>
         <CyberduckReference>
             <ProjectPath />

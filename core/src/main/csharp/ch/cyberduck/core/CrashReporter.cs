@@ -1,4 +1,5 @@
-﻿// 
+﻿#if false
+// 
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
@@ -182,3 +183,5 @@ namespace Ch.Cyberduck.Core
         }
     }
 }
+
+#endif

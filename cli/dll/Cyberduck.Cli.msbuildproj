@@ -1,0 +1,20 @@
+<Project Sdk="IKVM.Net.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <EnableDefaultItems>false</EnableDefaultItems>
+        <LangVersion>1.8</LangVersion>
+        <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <CyberduckReference Include="Core;Protocols;Cryptomator" />
+        <PackageReference Include="IKVM" />
+        <PackageReference Include="IKVM.MSBuild" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Convert Include="$(TargetDir)cli.jar" />
+        <Convert Include="$(TargetDir)commons-cli.jar" />
+        <Convert Include="$(TargetDir)jansi.jar" />
+    </ItemGroup>
+</Project>

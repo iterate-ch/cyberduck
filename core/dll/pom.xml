@@ -44,26 +44,6 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-runtime</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>ch.iterate</groupId>
-                                            <artifactId>ikvm</artifactId>
-                                            <type>zip</type>
-                                            <version>${ikvm-version}</version>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
@@ -112,7 +92,7 @@
                     <groupId>net.java.openjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
                     <version>${java-native-dll}</version>
-                    <scope>runtime</scope>
+                    <scope>compile</scope>
                 </dependency>
                 <dependency>
                     <groupId>net.java.openjdk</groupId>
@@ -126,7 +106,7 @@
                     <groupId>net.java.openjdk</groupId>
                     <artifactId>sunec</artifactId>
                     <version>${java-native-dll}</version>
-                    <scope>runtime</scope>
+                    <scope>compile</scope>
                 </dependency>
                 <dependency>
                     <groupId>net.java.dev.jna</groupId>

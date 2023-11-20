@@ -1,14 +1,19 @@
 ﻿<Project Sdk="Microsoft.Net.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <CyberduckReference Include="Core;Core.Native;Protocols;Cli;Cryptomator" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="IKVM" />
+    <PackageReference Include="System.Memory" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Content Include="$(CyberduckDir)Acknowledgments.rtf">
       <Link>$(Filename)$(Extension)</Link>
@@ -35,14 +40,6 @@
 
   <ItemGroup>
     <None Include="$(CyberduckDir)App.config" Link="App.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="@(IKVMReferences)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Memory" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,9 @@
+<Project>
+
+  <PropertyGroup>
+    <ModulePath>$(MSBuildThisFileDirectory)</ModulePath>
+  </PropertyGroup>
+
+  <Import Project="../Directory.Build.props" />
+
+</Project>

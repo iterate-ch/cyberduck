@@ -39,8 +39,8 @@
 
     <target name="build" depends="init-msbuild, version">
         <!-- Create DLL Cyberduck.Bonjour.Native -->
-        <msbuild buildfile="../src/main/csharp/Cyberduck.Bonjour.Native.csproj">
-            <target name="Build"/>
+        <msbuild buildfile="${home}\Cyberduc.sln">
+            <target name="src\libs\Cyberduck_Bonjour_Native"/>
 
             <property name="Version"
                       value="${version}.${revision}"/>
@@ -48,6 +48,8 @@
                       value="${version} (${revision})"/>
             <property name="Configuration"
                       value="${msbuild.configuration}"/>
+            <property name="BuildProjectReferences"
+                      value="false"/>
         </msbuild>
     </target>
 </project>
