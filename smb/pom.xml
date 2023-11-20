@@ -23,7 +23,7 @@
     <artifactId>smb</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <smbj.version>0.12.2</smbj.version>
+        <smbj.version>0.13.0</smbj.version>
         <testcontainers.version>1.19.2</testcontainers.version>
     </properties>
     <dependencies>
