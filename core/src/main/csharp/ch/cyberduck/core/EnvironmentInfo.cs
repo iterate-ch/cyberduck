@@ -14,6 +14,8 @@
 // 
 
 using System;
+using System.IO;
+using Windows.Win32.UI.Shell;
 using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Core
@@ -34,9 +36,16 @@ namespace Ch.Cyberduck.Core
         {
             AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             CommonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-            DownloadsPath = SHGetKnownFolderPath(FOLDERID_Downloads, default, default);
             LocalAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             UserProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            try
+            {
+                DownloadsPath = SHGetKnownFolderPath(FOLDERID_Downloads, KNOWN_FOLDER_FLAG.KF_FLAG_DONT_VERIFY, default);
+            }
+            catch
+            {
+                DownloadsPath = Path.Combine(UserProfilePath, "Downloads");
+            }
         }
     }
 }
