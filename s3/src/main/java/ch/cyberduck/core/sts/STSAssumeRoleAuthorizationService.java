@@ -106,7 +106,8 @@ public class STSAssumeRoleAuthorizationService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Assume role with OIDC Id token for %s", bookmark));
         }
-        request.setWebIdentityToken(oauth.getIdToken());
+        final String webIdentityToken = this.getWebIdentityToken(oauth);
+        request.setWebIdentityToken(webIdentityToken);
         final HostPreferences preferences = new HostPreferences(bookmark);
         if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
             request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
@@ -135,10 +136,10 @@ public class STSAssumeRoleAuthorizationService {
         }
         final String sub;
         try {
-            sub = JWT.decode(oauth.getIdToken()).getSubject();
+            sub = JWT.decode(webIdentityToken).getSubject();
         }
         catch(JWTDecodeException e) {
-            log.warn(String.format("Failure %s decoding JWT %s", e, oauth.getIdToken()));
+            log.warn(String.format("Failure %s decoding JWT %s", e, webIdentityToken));
             throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname"))) {
@@ -149,7 +150,7 @@ public class STSAssumeRoleAuthorizationService {
                 request.setRoleSessionName(sub);
             }
             else {
-                log.warn(String.format("Missing subject in decoding JWT %s", oauth.getIdToken()));
+                log.warn(String.format("Missing subject in decoding JWT %s", webIdentityToken));
                 request.setRoleSessionName(new AsciiRandomStringService().random());
             }
         }
@@ -169,5 +170,9 @@ public class STSAssumeRoleAuthorizationService {
         catch(AWSSecurityTokenServiceException e) {
             throw new STSExceptionMappingService().map(e);
         }
+    }
+
+    protected String getWebIdentityToken(final OAuthTokens oauth) {
+        return oauth.getIdToken();
     }
 }
