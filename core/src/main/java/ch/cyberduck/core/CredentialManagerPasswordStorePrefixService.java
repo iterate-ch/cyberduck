@@ -19,6 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 
+/**
+ * Implementation for Windows Credentials Manager
+ */
 public class CredentialManagerPasswordStorePrefixService extends DefaultPasswordStorePrefixService {
 
     @Override
