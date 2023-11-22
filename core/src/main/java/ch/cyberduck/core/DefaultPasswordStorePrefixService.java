@@ -51,15 +51,21 @@ public class DefaultPasswordStorePrefixService implements PasswordStorePrefixSer
     @Override
     public Integer getPort(final Host bookmark) {
         if(bookmark.getCredentials().isOAuthAuthentication()) {
-            if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
+            if(-1 != URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getPort()) {
                 return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getPort();
             }
+            return Scheme.valueOf(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getScheme()).getPort();
         }
         return bookmark.getPort();
     }
 
     @Override
     public Scheme getScheme(final Host bookmark) {
+        if(bookmark.getCredentials().isOAuthAuthentication()) {
+            if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
+                return Scheme.valueOf(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getScheme());
+            }
+        }
         return bookmark.getProtocol().getScheme();
     }
 
