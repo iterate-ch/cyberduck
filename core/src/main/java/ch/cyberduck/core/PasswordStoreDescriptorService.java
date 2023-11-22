@@ -26,11 +26,11 @@ package ch.cyberduck.core;
  * <p>EntryName can be "OAuth2 Access Token", "OAuth2 Refresh Token", "OIDC Id Token", "OAuth2 Token Expiry"</p>
  * </p>
  */
-public interface PasswordStorePrefixService {
+public interface PasswordStoreDescriptorService {
     /**
      * Gets a description to insert in password store
      */
-    String getPrefix(Host bookmark);
+    String getDescriptor(Host bookmark);
 
     /**
      * Returns the configured hostname used for authentication of this bookmark.

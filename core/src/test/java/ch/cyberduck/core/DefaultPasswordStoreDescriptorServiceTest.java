@@ -18,53 +18,46 @@ package ch.cyberduck.core;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-public class CredentialManagerPasswordStorePrefixServiceTest {
+public class DefaultPasswordStoreDescriptorServiceTest {
 
     @Test
     public void testDefaultPrefix() {
-        final CredentialManagerPasswordStorePrefixService s = new CredentialManagerPasswordStorePrefixService();
-        assertEquals("test", s.getPrefix(new Host(new TestProtocol(), "h", new Credentials().withUsername("u"))));
+        final DefaultPasswordStoreDescriptorService s = new DefaultPasswordStoreDescriptorService();
+        assertEquals("Test (u)", s.getDescriptor(new Host(new TestProtocol(), "h", new Credentials().withUsername("u"))));
         assertEquals("h", s.getHostname(new Host(new TestProtocol(), "h", new Credentials().withUsername("u"))));
         assertEquals(Scheme.s3, s.getScheme(new Host(new TestProtocol(Scheme.s3), "h", new Credentials().withUsername("u"))));
-        assertNull(s.getPort(new Host(new TestProtocol(Scheme.s3), "h", new Credentials().withUsername("u"))));
-        assertEquals(999, s.getPort(new Host(new TestProtocol(Scheme.s3), "h", 999, new Credentials().withUsername("u"))), 0);
-        assertEquals("test", s.getPrefix(new Host(new TestProtocol(Scheme.s3), "h", new Credentials())));
+        assertEquals(443, s.getPort(new Host(new TestProtocol(Scheme.s3), "h", new Credentials().withUsername("u"))), 0);
+        assertEquals(222, s.getPort(new Host(new TestProtocol(Scheme.s3), "h", 222, new Credentials().withUsername("u"))), 0);
+        assertEquals("Test", s.getDescriptor(new Host(new TestProtocol(Scheme.s3), "h", new Credentials())));
     }
 
     @Test
     public void testOAuth() {
-        final CredentialManagerPasswordStorePrefixService s = new CredentialManagerPasswordStorePrefixService();
-        assertEquals("test", s.getPrefix(new Host(new TestProtocol(Scheme.s3), "h", new Credentials().withOauth(OAuthTokens.EMPTY))));
-        assertEquals("test", s.getPrefix(new Host(new TestProtocol(Scheme.s3) {
+        final DefaultPasswordStoreDescriptorService s = new DefaultPasswordStoreDescriptorService();
+        assertEquals("Test", s.getDescriptor(new Host(new TestProtocol(Scheme.s3), "h", new Credentials().withOauth(OAuthTokens.EMPTY))));
+        assertEquals("Test", s.getDescriptor(new Host(new TestProtocol(Scheme.s3) {
             @Override
             public String getOAuthTokenUrl() {
                 return "https://login/token";
             }
         }, "h", new Credentials().withOauth(OAuthTokens.EMPTY))));
-        assertEquals("test", s.getPrefix(new Host(new TestProtocol(Scheme.s3) {
+        assertEquals("Test", s.getDescriptor(new Host(new TestProtocol(Scheme.s3) {
             @Override
             public String getOAuthTokenUrl() {
                 return "https://login/token";
             }
         }, "h", new Credentials().withOauth(OAuthTokens.EMPTY))));
-        assertEquals("test", s.getPrefix(new Host(new TestProtocol(Scheme.s3) {
+        assertEquals("Test", s.getDescriptor(new Host(new TestProtocol(Scheme.s3) {
             @Override
             public String getOAuthTokenUrl() {
                 return "https://login/token";
             }
         }, "h", new Credentials().withOauth(new OAuthTokens("a", "r", -1L)))));
-        assertNull(s.getHostname(new Host(new TestProtocol(Scheme.s3) {
+        assertEquals("login", s.getHostname(new Host(new TestProtocol(Scheme.s3) {
             @Override
             public String getOAuthTokenUrl() {
                 return "https://login/token";
-            }
-        }, "h", new Credentials().withOauth(new OAuthTokens("a", "r", -1L)))));
-        assertNull(s.getHostname(new Host(new TestProtocol(Scheme.s3) {
-            @Override
-            public String getOAuthTokenUrl() {
-                return "https://login:9000/token";
             }
         }, "h", new Credentials().withOauth(new OAuthTokens("a", "r", -1L)))));
         assertEquals(9000, s.getPort(new Host(new TestProtocol(Scheme.s3) {

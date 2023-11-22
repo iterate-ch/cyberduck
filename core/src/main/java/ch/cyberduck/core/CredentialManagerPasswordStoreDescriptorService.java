@@ -22,10 +22,10 @@ import java.net.URI;
 /**
  * Implementation for Windows Credentials Manager
  */
-public class CredentialManagerPasswordStorePrefixService extends DefaultPasswordStorePrefixService {
+public class CredentialManagerPasswordStoreDescriptorService extends DefaultPasswordStoreDescriptorService {
 
     @Override
-    public String getPrefix(final Host bookmark) {
+    public String getDescriptor(final Host bookmark) {
         return bookmark.getProtocol().getIdentifier();
     }
 

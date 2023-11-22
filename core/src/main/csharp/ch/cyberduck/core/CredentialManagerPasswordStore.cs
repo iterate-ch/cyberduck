@@ -221,10 +221,10 @@ namespace Ch.Cyberduck.Core
 
         private static Uri ToUri(Host bookmark)
         {
-            PasswordStorePrefixService service = (PasswordStorePrefixService)bookmark.getProtocol().getFeature(typeof(PasswordStorePrefixService));
+            PasswordStoreDescriptorService service = (PasswordStoreDescriptorService)bookmark.getProtocol().getFeature(typeof(PasswordStorePrefixService));
             var targetBuilder = new UriBuilder(new HostPreferences(bookmark).getProperty("application.container.name"), string.Empty);
             var pathBuilder = new StringBuilder();
-            string prefix = service.getPrefix(bookmark);
+            string prefix = service.getDescriptor(bookmark);
             if (!string.IsNullOrWhiteSpace(prefix))
             {
                 pathBuilder.Append(prefix);

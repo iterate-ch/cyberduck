@@ -22,10 +22,10 @@ import java.net.URI;
 /**
  * Default implementation. Will just return fields from passed bookmark.
  */
-public class DefaultPasswordStorePrefixService implements PasswordStorePrefixService {
+public class DefaultPasswordStoreDescriptorService implements PasswordStoreDescriptorService {
 
     @Override
-    public String getPrefix(final Host bookmark) {
+    public String getDescriptor(final Host bookmark) {
         if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
             return String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
         }
