@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Security.Cryptography.X509Certificates;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
@@ -186,23 +187,20 @@ namespace Ch.Cyberduck.Core
             return true;
         }
 
-        public static IList<string> ListAliases()
+        public static IReadOnlyCollection<string> ListAliases()
         {
-            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-            IList<string> certs = new List<string>();
-            try
+            using X509Store store = new(StoreName.My, StoreLocation.CurrentUser);
+            HashSet<string> certs = new();
+            store.Open(OpenFlags.ReadOnly);
+            foreach(X509Certificate2 certificate in store.Certificates)
             {
-                store.Open(OpenFlags.ReadOnly);
-                foreach (X509Certificate2 certificate in store.Certificates)
+                var alias = string.IsNullOrWhiteSpace(certificate.FriendlyName)
+                    ? certificate.GetNameInfo(X509NameType.SimpleName, false)
+                    : certificate.FriendlyName;
+                if(!certs.Add(alias) && Log.isDebugEnabled())
                 {
-                    certs.Add(String.IsNullOrEmpty(certificate.FriendlyName)
-                        ? certificate.GetNameInfo(X509NameType.SimpleName, false)
-                        : certificate.FriendlyName);
+                    Log.debug($"Skipping duplicate alias \"{alias}\"");
                 }
-            }
-            finally
-            {
-                store.Close();
             }
 
             return certs;
