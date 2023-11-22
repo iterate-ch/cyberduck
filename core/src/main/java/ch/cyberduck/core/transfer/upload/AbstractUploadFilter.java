@@ -217,8 +217,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.timestamp) {
-            final Timestamp feature = session.getFeature(Timestamp.class);
-            if(feature != null) {
+            if(session.getFeature(Write.class).timestamp()) {
                 if(1L != local.attributes().getModificationDate()) {
                     status.setModified(local.attributes().getModificationDate());
                 }
