@@ -21,8 +21,11 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.CredentialManager;
 using org.apache.logging.log4j;
+using org.apache.logging.log4j.core.net;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net;
 using System.Text;
 using static Windows.Win32.Security.Credentials.CRED_PERSIST;
@@ -61,9 +64,12 @@ namespace Ch.Cyberduck.Core
                 logger.info(string.Format("Delete password for bookmark {0}", bookmark));
             }
             var target = ToUri(bookmark);
-            if (!WinCredentialManager.RemoveCredentials(target.AbsoluteUri))
+            foreach (Uri descriptor in target)
             {
-                base.delete(bookmark);
+                if (!WinCredentialManager.RemoveCredentials(descriptor.AbsoluteUri))
+                {
+                    base.delete(bookmark);
+                }
             }
         }
 
@@ -86,7 +92,7 @@ namespace Ch.Cyberduck.Core
 
         public override string findLoginPassword(Host bookmark)
         {
-            var target = ToUri(bookmark);
+            var target = ToUri(bookmark)[0];
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
             if (!string.IsNullOrWhiteSpace(cred.Password))
             {
@@ -101,7 +107,7 @@ namespace Ch.Cyberduck.Core
             {
                 logger.info(string.Format("Fetching login token from keychain for {0}", bookmark));
             }
-            var target = ToUri(bookmark);
+            var target = ToUri(bookmark)[0];
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
             if (cred.Attributes is Dictionary<string, string> attrs
                 && attrs.TryGetValue("Token", out var token)
@@ -119,21 +125,30 @@ namespace Ch.Cyberduck.Core
                 logger.info(string.Format("Fetching OAuth tokens from keychain for {0}", bookmark));
             }
             var target = ToUri(bookmark);
-            var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
-            if (cred.Attributes is Dictionary<string, string> attrs
-                && attrs.TryGetValue("OAuth Access Token", out var accessToken))
+            foreach(Uri descriptor in target)
             {
-                attrs.TryGetValue("OAuth Refresh Token", out var refreshToken);
-                attrs.TryGetValue("OIDC Id Token", out var idToken);
-                long expiry = default;
-                if (attrs.TryGetValue("OAuth Expiry", out var expiryValue))
+                var cred = WinCredentialManager.GetCredentials(descriptor.AbsoluteUri);
+                if (cred.Attributes is Dictionary<string, string> attrs)
                 {
-                    long.TryParse(expiryValue, out expiry);
+                    attrs.TryGetValue("OAuth Access Token", out var accessToken);
+                    attrs.TryGetValue("OAuth Refresh Token", out var refreshToken);
+                    attrs.TryGetValue("OIDC Id Token", out var idToken);
+                    long expiry = default;
+                    if (attrs.TryGetValue("OAuth Expiry", out var expiryValue))
+                    {
+                        long.TryParse(expiryValue, out expiry);
+                    }
+                    OAuthTokens tokens = new(accessToken, refreshToken, new(expiry), idToken);
+                    if(tokens.validate())
+                    {
+                        return tokens;
+                    }
+                    // Continue
                 }
-                return new(accessToken, refreshToken, new(expiry), idToken);
-            }
 
-            return base.findOAuthTokens(bookmark);
+                return base.findOAuthTokens(bookmark);
+            }
+            return OAuthTokens.EMPTY;
         }
 
         public override string findPrivateKeyPassphrase(Host bookmark)
@@ -142,7 +157,7 @@ namespace Ch.Cyberduck.Core
             {
                 logger.info(string.Format("Fetching private key passphrase from keychain for {0}", bookmark));
             }
-            var target = ToUri(bookmark);
+            var target = ToUri(bookmark)[0];
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
             if (cred.Attributes is Dictionary<string, string> attrs
                 && attrs.TryGetValue("Private Key Passphrase", out var passphrase)
@@ -172,7 +187,7 @@ namespace Ch.Cyberduck.Core
             {
                 logger.info(string.Format("Add password for bookmark {0}", bookmark));
             }
-            var target = ToUri(bookmark);
+            var target = ToUri(bookmark)[0];
             var credential = bookmark.getCredentials();
 
             var winCred = new WindowsCredentialManagerCredential(
@@ -209,29 +224,42 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        private static Uri ToUri(Host bookmark)
+        private static Uri[] ToUri(Host bookmark)
         {
-            var protocol = bookmark.getProtocol();
-            var credentials = bookmark.getCredentials();
-
-            var targetBuilder = new UriBuilder(PreferencesFactory.get().getProperty("application.container.name"), string.Empty);
-            var pathBuilder = new StringBuilder();
-            pathBuilder.Append(protocol.getIdentifier());
-            if (protocol.isHostnameConfigurable() || !(protocol.isTokenConfigurable() || protocol.isOAuthConfigurable()))
+            Collection<Uri> descriptors = new();
+            foreach(string descriptor in ToDescriptor(bookmark))
             {
-                pathBuilder.Append(":" + bookmark.getHostname());
-                if (protocol.isPortConfigurable() && !Equals(protocol.getDefaultPort(), bookmark.getPort()))
+                var protocol = bookmark.getProtocol();
+                var credentials = bookmark.getCredentials();
+
+                var targetBuilder = new UriBuilder(PreferencesFactory.get().getProperty("application.container.name"), string.Empty);
+                var pathBuilder = new StringBuilder();
+                pathBuilder.Append(descriptor);
+                if (protocol.isHostnameConfigurable() || !(protocol.isTokenConfigurable() || protocol.isOAuthConfigurable()))
                 {
-                    pathBuilder.Append(":" + bookmark.getPort());
+                    pathBuilder.Append(":" + bookmark.getHostname());
+                    if (protocol.isPortConfigurable() && !Equals(protocol.getDefaultPort(), bookmark.getPort()))
+                    {
+                        pathBuilder.Append(":" + bookmark.getPort());
+                    }
                 }
+                targetBuilder.Path = pathBuilder.ToString();
+                if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
+                {
+                    targetBuilder.Query = "user=" + credentials.getUsername();
+                }
+                descriptors.Add(targetBuilder.Uri);
             }
-            targetBuilder.Path = pathBuilder.ToString();
-            if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
-            {
-                targetBuilder.Query = "user=" + credentials.getUsername();
-            }
+            return descriptors.ToArray();
+        }
 
-            return targetBuilder.Uri;
+        private static string[] ToDescriptor(Host bookmark)
+        {
+            if(bookmark.getProtocol().isOAuthConfigurable())
+            {
+                return new string[] { bookmark.getProtocol().getOAuthClientId(), bookmark.getProtocol().getIdentifier() };
+            }
+            return new string[] { bookmark.getProtocol().getIdentifier() };
         }
     }
 }
