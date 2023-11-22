@@ -153,12 +153,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         try {
             final String expiry = this.getPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
             return (new OAuthTokens(
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
+                    this.getPassword(bookmark.getProtocol().getScheme(), this.getOAuthPort(bookmark), hostname,
                             String.format("%s OAuth2 Access Token", prefix)),
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
+                    this.getPassword(bookmark.getProtocol().getScheme(), this.getOAuthPort(bookmark), hostname,
                             String.format("%s OAuth2 Refresh Token", prefix)),
                     expiry != null ? Long.parseLong(expiry) : -1L,
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
+                    this.getPassword(bookmark.getProtocol().getScheme(), this.getOAuthPort(bookmark), hostname,
                             String.format("%s OIDC Id Token", prefix))));
         }
         catch(LocalAccessDeniedException e) {
@@ -172,6 +172,16 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost();
         }
         return bookmark.getHostname();
+    }
+
+    protected int getOAuthPort(final Host bookmark) {
+        if(-1 != URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getPort()) {
+            return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getPort();
+        }
+        if(null == URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getScheme()) {
+            return bookmark.getPort();
+        }
+        return Scheme.valueOf(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getScheme()).getPort();
     }
 
     private String getOAuthPrefix(final Host bookmark) {
@@ -217,12 +227,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             final String prefix = this.getOAuthPrefix(bookmark);
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
+                        this.getOAuthPort(bookmark), this.getOAuthHostname(bookmark),
                         String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
+                        this.getOAuthPort(bookmark), this.getOAuthHostname(bookmark),
                         String.format("%s OAuth2 Refresh Token", prefix), credentials.getOauth().getRefreshToken());
             }
             // Save expiry
@@ -232,7 +242,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
+                        this.getOAuthPort(bookmark), this.getOAuthHostname(bookmark),
                         String.format("%s OIDC Id Token", prefix), credentials.getOauth().getIdToken());
             }
         }
@@ -264,11 +274,11 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(protocol.isOAuthConfigurable()) {
             final String prefix = this.getOAuthPrefix(bookmark);
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                this.deletePassword(protocol.getScheme(), this.getOAuthPort(bookmark), this.getOAuthHostname(bookmark),
                         String.format("%s OAuth2 Access Token", prefix));
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                this.deletePassword(protocol.getScheme(), this.getOAuthPort(bookmark), this.getOAuthHostname(bookmark),
                         String.format("%s OAuth2 Refresh Token", prefix));
             }
             // Save expiry
@@ -276,7 +286,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 this.deletePassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                this.deletePassword(protocol.getScheme(), this.getOAuthPort(bookmark), this.getOAuthHostname(bookmark),
                         String.format("%s OIDC Id Token", prefix));
             }
         }
