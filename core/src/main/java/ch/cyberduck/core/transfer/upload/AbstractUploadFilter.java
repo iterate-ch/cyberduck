@@ -217,13 +217,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.timestamp) {
-            if(session.getFeature(Write.class).timestamp()) {
-                if(1L != local.attributes().getModificationDate()) {
-                    status.setModified(local.attributes().getModificationDate());
-                }
-                if(1L != local.attributes().getCreationDate()) {
-                    status.setCreated(local.attributes().getCreationDate());
-                }
+            if(1L != local.attributes().getModificationDate()) {
+                status.setModified(local.attributes().getModificationDate());
+            }
+            if(1L != local.attributes().getCreationDate()) {
+                status.setCreated(local.attributes().getCreationDate());
             }
         }
         if(options.metadata) {
@@ -365,7 +363,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
             if(status.getModified() != null) {
-                if(!session.getFeature(Write.class).timestamp()) {
+                if(!session.getFeature(Write.class).timestamp(file)) {
                     final Timestamp feature = session.getFeature(Timestamp.class);
                     if(feature != null) {
                         try {
