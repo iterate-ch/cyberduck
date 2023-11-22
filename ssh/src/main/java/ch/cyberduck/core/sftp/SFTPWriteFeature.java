@@ -121,7 +121,7 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public boolean random() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.random);
     }
 }

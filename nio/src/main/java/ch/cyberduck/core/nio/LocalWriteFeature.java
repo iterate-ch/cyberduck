@@ -29,6 +29,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -75,7 +76,7 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public boolean random() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.random);
     }
 }

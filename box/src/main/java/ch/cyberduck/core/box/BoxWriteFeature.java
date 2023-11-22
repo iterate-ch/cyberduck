@@ -49,6 +49,7 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.EnumSet;
 
 public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
     private static final Logger log = LogManager.getLogger(BoxWriteFeature.class);
@@ -151,7 +152,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
     }
 
     @Override
-    public boolean timestamp() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 }

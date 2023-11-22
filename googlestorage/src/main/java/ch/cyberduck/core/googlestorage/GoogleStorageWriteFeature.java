@@ -49,6 +49,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
@@ -197,8 +198,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
     }
 
     @Override
-    public boolean timestamp() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 
     @Override
