@@ -218,6 +218,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             return;
         }
         final Credentials credentials = bookmark.getCredentials();
+        final Protocol protocol = bookmark.getProtocol();
         if(log.isInfoEnabled()) {
             log.info(String.format("Save credentials %s for bookmark %s", credentials, bookmark));
         }
@@ -234,13 +235,13 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 log.warn(String.format("No password in credentials for bookmark %s", bookmark.getHostname()));
                 return;
             }
-            this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+            this.addPassword(protocol.getScheme(), bookmark.getPort(),
                     bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
         }
         if(credentials.isTokenAuthentication()) {
-            this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+            this.addPassword(protocol.getScheme(), bookmark.getPort(),
                     bookmark.getHostname(), StringUtils.isEmpty(credentials.getUsername()) ?
-                            bookmark.getProtocol().getTokenPlaceholder() : String.format("%s (%s)", bookmark.getProtocol().getTokenPlaceholder(), credentials.getUsername()),
+                            protocol.getTokenPlaceholder() : String.format("%s (%s)", protocol.getTokenPlaceholder(), credentials.getUsername()),
                     credentials.getToken());
         }
         if(credentials.isOAuthAuthentication()) {
