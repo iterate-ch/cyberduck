@@ -66,11 +66,9 @@ namespace Ch.Cyberduck.Core
             var target = ToUri(bookmark);
             foreach (Uri descriptor in target)
             {
-                if (!WinCredentialManager.RemoveCredentials(descriptor.AbsoluteUri))
-                {
-                    base.delete(bookmark);
-                }
+                WinCredentialManager.RemoveCredentials(descriptor.AbsoluteUri);
             }
+            base.delete(bookmark);
         }
 
         public override void deletePassword(string serviceName, string user)
@@ -145,7 +143,6 @@ namespace Ch.Cyberduck.Core
                     }
                     // Continue
                 }
-
                 return base.findOAuthTokens(bookmark);
             }
             return OAuthTokens.EMPTY;
