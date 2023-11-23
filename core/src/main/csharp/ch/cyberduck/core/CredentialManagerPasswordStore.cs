@@ -21,11 +21,8 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.CredentialManager;
 using org.apache.logging.log4j;
-using org.apache.logging.log4j.core.net;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net;
 using System.Text;
 using static Windows.Win32.Security.Credentials.CRED_PERSIST;
@@ -221,9 +218,9 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        private static Uri[] ToUri(Host bookmark)
+        private static List<Uri> ToUri(Host bookmark)
         {
-            Collection<Uri> descriptors = new();
+            List<Uri> descriptors = new();
             foreach(string descriptor in ToDescriptor(bookmark))
             {
                 var protocol = bookmark.getProtocol();
@@ -247,7 +244,7 @@ namespace Ch.Cyberduck.Core
                 }
                 descriptors.Add(targetBuilder.Uri);
             }
-            return descriptors.ToArray();
+            return descriptors;
         }
 
         private static string[] ToDescriptor(Host bookmark)
