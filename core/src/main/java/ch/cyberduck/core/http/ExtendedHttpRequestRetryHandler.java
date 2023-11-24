@@ -36,7 +36,7 @@ import java.util.List;
 public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
     private static final Logger log = LogManager.getLogger(ExtendedHttpRequestRetryHandler.class);
 
-    private static final List<Class<? extends IOException>> exceptions = Arrays.asList(
+    private static final List<Class<? extends IOException>> excludes = Arrays.asList(
         UnrecoverableIOException.class,
         InterruptedIOException.class,
         UnknownHostException.class,
@@ -46,7 +46,7 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
         SSLHandshakeException.class);
 
     public ExtendedHttpRequestRetryHandler(final int retryCount) {
-        super(retryCount, true, exceptions);
+        super(retryCount, true, excludes);
     }
 
     @Override
