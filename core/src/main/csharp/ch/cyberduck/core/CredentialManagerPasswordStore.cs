@@ -60,8 +60,8 @@ namespace Ch.Cyberduck.Core
             {
                 logger.info(string.Format("Delete password for bookmark {0}", bookmark));
             }
-            var target = ToUri(bookmark);
-            foreach (Uri descriptor in target)
+            var targets = ToUri(bookmark);
+            foreach (Uri descriptor in targets)
             {
                 WinCredentialManager.RemoveCredentials(descriptor.AbsoluteUri);
             }
@@ -119,8 +119,8 @@ namespace Ch.Cyberduck.Core
             {
                 logger.info(string.Format("Fetching OAuth tokens from keychain for {0}", bookmark));
             }
-            var target = ToUri(bookmark);
-            foreach(Uri descriptor in target)
+            var targets = ToUri(bookmark);
+            foreach(Uri descriptor in targets)
             {
                 var cred = WinCredentialManager.GetCredentials(descriptor.AbsoluteUri);
                 if (cred.Attributes is Dictionary<string, string> attrs)
