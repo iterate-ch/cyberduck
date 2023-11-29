@@ -174,7 +174,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         return OAuthTokens.EMPTY;
     }
 
-    private static Scheme getOAuthScheme(final Host bookmark) {
+    protected static Scheme getOAuthScheme(final Host bookmark) {
         final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
         if(null == uri.getScheme()) {
             return bookmark.getProtocol().getScheme();
@@ -182,7 +182,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         return Scheme.valueOf(uri.getScheme());
     }
 
-    private static String getOAuthHostname(final Host bookmark) {
+    protected static String getOAuthHostname(final Host bookmark) {
         final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
         if(StringUtils.isNotBlank(uri.getHost())) {
             return uri.getHost();
@@ -190,7 +190,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         return bookmark.getHostname();
     }
 
-    private static int getOAuthPort(final Host bookmark) {
+    protected static int getOAuthPort(final Host bookmark) {
         final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
         if(-1 != uri.getPort()) {
             return uri.getPort();
@@ -198,7 +198,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         return getOAuthScheme(bookmark).getPort();
     }
 
-    private static String[] getOAuthPrefix(final Host bookmark) {
+    protected static String[] getOAuthPrefix(final Host bookmark) {
         if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
             return new String[]{
                     String.format("%s (%s)", bookmark.getProtocol().getOAuthClientId(), bookmark.getCredentials().getUsername()),
