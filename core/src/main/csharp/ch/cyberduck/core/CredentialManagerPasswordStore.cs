@@ -140,9 +140,8 @@ namespace Ch.Cyberduck.Core
                     }
                     // Continue with deprecated descriptors
                 }
-                return base.findOAuthTokens(bookmark);
             }
-            return OAuthTokens.EMPTY;
+            return base.findOAuthTokens(bookmark);
         }
 
         public override string findPrivateKeyPassphrase(Host bookmark)
