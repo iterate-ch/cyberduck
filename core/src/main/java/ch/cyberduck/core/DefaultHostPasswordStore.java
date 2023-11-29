@@ -150,7 +150,13 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         final String[] descriptors = getOAuthPrefix(bookmark);
         for(String prefix : descriptors) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Search with prefix %s", prefix));
+            }
             final String hostname = getOAuthHostname(bookmark);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Search with hostname %s", hostname));
+            }
             try {
                 final String expiry = this.getPassword(getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
                 final OAuthTokens tokens = new OAuthTokens(
@@ -164,7 +170,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 if(tokens.validate()) {
                     return tokens;
                 }
-                // Continue
+                // Continue with deprecated descriptors
             }
             catch(LocalAccessDeniedException e) {
                 log.warn(String.format("Failure %s searching in keychain", e));

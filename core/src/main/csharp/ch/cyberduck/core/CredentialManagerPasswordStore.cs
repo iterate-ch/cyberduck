@@ -138,7 +138,7 @@ namespace Ch.Cyberduck.Core
                     {
                         return tokens;
                     }
-                    // Continue
+                    // Continue with deprecated descriptors
                 }
                 return base.findOAuthTokens(bookmark);
             }
