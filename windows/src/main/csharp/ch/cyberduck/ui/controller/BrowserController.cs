@@ -2281,12 +2281,52 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ShowTransfers()
         {
-            Guid currentDesktop = View.GetDesktopId();
             ITransferView view = TransferController.Instance.View;
-            if (!view.IsOnCurrentDesktop())
+
+            bool isOnCurrentDesktop = true;
+            try
             {
-                view.MoveToDesktop(currentDesktop);
+                isOnCurrentDesktop = view.IsOnCurrentDesktop();
             }
+            catch (Exception e)
+            {
+                if (Log.isDebugEnabled())
+                {
+                    Log.debug("Failure determining whether window is on current desktop", e);
+                }
+            }
+
+            if (!isOnCurrentDesktop)
+            {
+                Guid? currentDesktop = null;
+                try
+                {
+                    currentDesktop = View.GetDesktopId();
+                }
+                catch (Exception e)
+                {
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.debug("Cannot get browser window desktop id", e);
+                    }
+                }
+
+                if (currentDesktop is { } id)
+                {
+                    try
+                    {
+                        view.MoveToDesktop(id);
+                    }
+                    catch (Exception e)
+                    {
+                        if (Log.isDebugEnabled())
+                        {
+                            Log.debug("cannot move window to desktop.", e);
+                        }
+                    }
+                }
+            }
+            
             view.Show();
         }
 
