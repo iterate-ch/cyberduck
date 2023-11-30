@@ -407,6 +407,13 @@ public abstract class AbstractProtocol implements Protocol {
         if(type == ComparisonService.class) {
             return (T) new DefaultComparisonService(this);
         }
+        if(type == PasswordStoreDescriptorService.class) {
+            switch(Factory.Platform.getDefault()) {
+                case windows:
+                    return (T) new CredentialManagerPasswordStoreDescriptorService();
+            }
+            return (T) new DefaultPasswordStoreDescriptorService();
+        }
         if(type == HostnameConfigurator.class) {
             return (T) HostnameConfigurator.DISABLED;
         }

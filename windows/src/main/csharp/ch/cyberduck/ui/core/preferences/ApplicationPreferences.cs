@@ -16,6 +16,7 @@
 // feedback@cyberduck.io
 //
 
+using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.cryptomator.random;
