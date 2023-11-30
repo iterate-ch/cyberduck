@@ -119,7 +119,7 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.35</version>
+                <version>0.9.36</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.bouncycastle</groupId>
