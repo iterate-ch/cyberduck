@@ -76,7 +76,7 @@ public class S3ProtocolTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
-        assertTrue(profile.isPortConfigurable());
+        assertFalse(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());
         assertTrue(profile.isPasswordConfigurable());
     }
