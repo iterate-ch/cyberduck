@@ -148,37 +148,73 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching OAuth tokens from keychain for %s", bookmark));
         }
-        final String prefix = this.getOAuthPrefix(bookmark);
-        final String hostname = this.getOAuthHostname(bookmark);
-        try {
-            final String expiry = this.getPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
-            return (new OAuthTokens(
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
-                            String.format("%s OAuth2 Access Token", prefix)),
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
-                            String.format("%s OAuth2 Refresh Token", prefix)),
-                    expiry != null ? Long.parseLong(expiry) : -1L,
-                    this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
-                            String.format("%s OIDC Id Token", prefix))));
+        final String[] descriptors = getOAuthPrefix(bookmark);
+        for(String prefix : descriptors) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Search with prefix %s", prefix));
+            }
+            final String hostname = getOAuthHostname(bookmark);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Search with hostname %s", hostname));
+            }
+            try {
+                final String expiry = this.getPassword(getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
+                final OAuthTokens tokens = new OAuthTokens(
+                        this.getPassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), hostname,
+                                String.format("%s OAuth2 Access Token", prefix)),
+                        this.getPassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), hostname,
+                                String.format("%s OAuth2 Refresh Token", prefix)),
+                        expiry != null ? Long.parseLong(expiry) : -1L,
+                        this.getPassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), hostname,
+                                String.format("%s OIDC Id Token", prefix)));
+                if(tokens.validate()) {
+                    return tokens;
+                }
+                // Continue with deprecated descriptors
+            }
+            catch(LocalAccessDeniedException e) {
+                log.warn(String.format("Failure %s searching in keychain", e));
+                return OAuthTokens.EMPTY;
+            }
         }
-        catch(LocalAccessDeniedException e) {
-            log.warn(String.format("Failure %s searching in keychain", e));
-            return OAuthTokens.EMPTY;
-        }
+        return OAuthTokens.EMPTY;
     }
 
-    protected String getOAuthHostname(final Host bookmark) {
-        if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
-            return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost();
+    protected static Scheme getOAuthScheme(final Host bookmark) {
+        final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
+        if(null == uri.getScheme()) {
+            return bookmark.getProtocol().getScheme();
+        }
+        return Scheme.valueOf(uri.getScheme());
+    }
+
+    protected static String getOAuthHostname(final Host bookmark) {
+        final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
+        if(StringUtils.isNotBlank(uri.getHost())) {
+            return uri.getHost();
         }
         return bookmark.getHostname();
     }
 
-    private String getOAuthPrefix(final Host bookmark) {
-        if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-            return String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
+    protected static int getOAuthPort(final Host bookmark) {
+        final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
+        if(-1 != uri.getPort()) {
+            return uri.getPort();
         }
-        return bookmark.getProtocol().getDescription();
+        return getOAuthScheme(bookmark).getPort();
+    }
+
+    protected static String[] getOAuthPrefix(final Host bookmark) {
+        if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+            return new String[]{
+                    String.format("%s (%s)", bookmark.getProtocol().getOAuthClientId(), bookmark.getCredentials().getUsername()),
+                    String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername())
+            };
+        }
+        return new String[]{
+                bookmark.getProtocol().getOAuthClientId(),
+                bookmark.getProtocol().getDescription()
+        };
     }
 
     @Override
@@ -188,6 +224,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             return;
         }
         final Credentials credentials = bookmark.getCredentials();
+        final Protocol protocol = bookmark.getProtocol();
         if(log.isInfoEnabled()) {
             log.info(String.format("Save credentials %s for bookmark %s", credentials, bookmark));
         }
@@ -204,36 +241,39 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 log.warn(String.format("No password in credentials for bookmark %s", bookmark.getHostname()));
                 return;
             }
-            this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+            this.addPassword(protocol.getScheme(), bookmark.getPort(),
                     bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
         }
         if(credentials.isTokenAuthentication()) {
-            this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+            this.addPassword(protocol.getScheme(), bookmark.getPort(),
                     bookmark.getHostname(), StringUtils.isEmpty(credentials.getUsername()) ?
-                            bookmark.getProtocol().getTokenPlaceholder() : String.format("%s (%s)", bookmark.getProtocol().getTokenPlaceholder(), credentials.getUsername()),
+                            protocol.getTokenPlaceholder() : String.format("%s (%s)", protocol.getTokenPlaceholder(), credentials.getUsername()),
                     credentials.getToken());
         }
         if(credentials.isOAuthAuthentication()) {
-            final String prefix = this.getOAuthPrefix(bookmark);
-            if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
-                this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
-                        String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
-            }
-            if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
-                this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
-                        String.format("%s OAuth2 Refresh Token", prefix), credentials.getOauth().getRefreshToken());
-            }
-            // Save expiry
-            if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                this.addPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix),
-                        String.valueOf(credentials.getOauth().getExpiryInMilliseconds()));
-            }
-            if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
-                this.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), this.getOAuthHostname(bookmark),
-                        String.format("%s OIDC Id Token", prefix), credentials.getOauth().getIdToken());
+            final String[] descriptors = getOAuthPrefix(bookmark);
+            for(String prefix : descriptors) {
+                if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
+                    this.addPassword(getOAuthScheme(bookmark),
+                            getOAuthPort(bookmark), getOAuthHostname(bookmark),
+                            String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
+                }
+                if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
+                    this.addPassword(getOAuthScheme(bookmark),
+                            getOAuthPort(bookmark), getOAuthHostname(bookmark),
+                            String.format("%s OAuth2 Refresh Token", prefix), credentials.getOauth().getRefreshToken());
+                }
+                // Save expiry
+                if(credentials.getOauth().getExpiryInMilliseconds() != null) {
+                    this.addPassword(getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix),
+                            String.valueOf(credentials.getOauth().getExpiryInMilliseconds()));
+                }
+                if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
+                    this.addPassword(getOAuthScheme(bookmark),
+                            getOAuthPort(bookmark), getOAuthHostname(bookmark),
+                            String.format("%s OIDC Id Token", prefix), credentials.getOauth().getIdToken());
+                }
+                break;
             }
         }
     }
@@ -262,22 +302,24 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             protocol.getTokenPlaceholder() : String.format("%s (%s)", protocol.getTokenPlaceholder(), credentials.getUsername()));
         }
         if(protocol.isOAuthConfigurable()) {
-            final String prefix = this.getOAuthPrefix(bookmark);
-            if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
-                        String.format("%s OAuth2 Access Token", prefix));
-            }
-            if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
-                        String.format("%s OAuth2 Refresh Token", prefix));
-            }
-            // Save expiry
-            if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                this.deletePassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
-            }
-            if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
-                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
-                        String.format("%s OIDC Id Token", prefix));
+            final String[] descriptors = getOAuthPrefix(bookmark);
+            for(String prefix : descriptors) {
+                if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
+                    this.deletePassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), getOAuthHostname(bookmark),
+                            String.format("%s OAuth2 Access Token", prefix));
+                }
+                if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
+                    this.deletePassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), getOAuthHostname(bookmark),
+                            String.format("%s OAuth2 Refresh Token", prefix));
+                }
+                // Save expiry
+                if(credentials.getOauth().getExpiryInMilliseconds() != null) {
+                    this.deletePassword(getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
+                }
+                if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
+                    this.deletePassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), getOAuthHostname(bookmark),
+                            String.format("%s OIDC Id Token", prefix));
+                }
             }
         }
     }
