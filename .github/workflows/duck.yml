@@ -27,7 +27,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}},value=${{env.VERSION}}
             type=semver,pattern={{major}},value=${{env.VERSION}}
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 17
