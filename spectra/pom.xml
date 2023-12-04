@@ -23,7 +23,7 @@
     <artifactId>spectra</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <ds3-sdk-version>5.2.1</ds3-sdk-version>
+        <ds3-sdk-version>5.2.2</ds3-sdk-version>
     </properties>
     <dependencies>
         <dependency>
