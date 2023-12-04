@@ -25,6 +25,8 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.EnumSet;
+
 public class EueThresholdWriteFeature implements Write<EueWriteFeature.Chunk> {
 
     private final EueSession session;
@@ -60,7 +62,7 @@ public class EueThresholdWriteFeature implements Write<EueWriteFeature.Chunk> {
     }
 
     @Override
-    public boolean timestamp() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 }

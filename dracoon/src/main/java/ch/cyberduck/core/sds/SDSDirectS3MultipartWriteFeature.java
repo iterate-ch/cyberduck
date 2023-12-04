@@ -62,6 +62,7 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -289,7 +290,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
     }
 
     @Override
-    public boolean timestamp() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 }

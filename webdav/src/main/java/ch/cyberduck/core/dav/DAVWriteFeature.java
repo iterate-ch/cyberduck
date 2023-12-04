@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import com.github.sardine.impl.SardineException;
@@ -144,8 +145,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     }
 
     @Override
-    public boolean random() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.random);
     }
 
     @Override

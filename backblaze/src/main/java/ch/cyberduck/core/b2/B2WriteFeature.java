@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,11 +144,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public boolean timestamp() {
-        return true;
-    }
-
-    @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }
@@ -164,5 +160,10 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             return new Append(true).withStatus(status).withSize(size);
         }
         return new Append(false).withStatus(status);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 }

@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoSystemException;
@@ -80,7 +81,7 @@ public class TripleCryptWriteFeature implements Write<Node> {
     }
 
     @Override
-    public boolean random() {
-        return proxy.random();
+    public EnumSet<Flags> features(final Path file) {
+        return proxy.features(file);
     }
 }
