@@ -1,5 +1,5 @@
 [codespell]
 skip = .git,*.pdf,*.svg,.codespellrc,*.cs,*.cyberduckprofile,*.ini,*.xib,*.rtf,*.lproj,*.types,TIMEZONES,*.sdef,*.csproj
 check-hidden = true
-ignore-regex = \b(absolute[XY]|CLASSs|characterClasses|connection\.unsecure)\b
-ignore-words-list = doubleclick,ser,fro,ist
+ignore-regex = \b(absolute[XY]|CLASSs|characterClasses|connection\.unsecure|perm=fle)\b
+ignore-words-list = doubleclick,ser,fro,ist,fle
