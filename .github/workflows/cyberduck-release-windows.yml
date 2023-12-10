@@ -50,22 +50,22 @@ jobs:
           [{
             "id": "maven.iterate.ch-release",
             "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
+            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
           },
           {
             "id": "maven.iterate.ch-snapshot",
             "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
+            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
           },
           {
             "id": "maven.cyberduck.io-release",
             "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
+            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
           },
           {
             "id": "maven.cyberduck.io-snapshot",
             "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
+            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
           }]
     - name: Run maven
       run: mvn clean deploy --settings $GITHUB_WORKSPACE/settings.xml -DskipTests -D"sparkle.feed="
