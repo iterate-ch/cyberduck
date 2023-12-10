@@ -68,7 +68,7 @@ jobs:
             "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
           }]
     - name: Run maven
-      run: mvn clean deploy --settings $GITHUB_WORKSPACE/settings.xml -DskipTests -D"sparkle.feed="
+      run: mvn clean deploy --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
     - name: run batch command
       shell: cmd
       run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload rackspace:/cdn.cyberduck.ch/ "%%c" --username %RACKSPACE_USER% --password %RACKSPACE_PASSWORD% --retry --quiet --existing overwrite --region DFW
