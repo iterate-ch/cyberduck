@@ -33,7 +33,7 @@ jobs:
     - name: Copy Sparkle Updater Private Key (DSA)
       shell: powershell
       env:
-        SPARKLE_UPDATER_PK: ${{ secrets.win_sparkle_updater_private_key }}
+        SPARKLE_UPDATER_PK: ${{ secrets.WIN_SPARKLE_UPDATER_PRIVATE_KEY }}
       run: ${env:SPARKLE_UPDATER_PK} > $GITHUB_WORKSPACE\www\update\private.pem
     
     - name: Set up JDK 17
@@ -49,22 +49,22 @@ jobs:
           [{
             "id": "maven.iterate.ch-release",
             "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.maven_server_password }}",
+            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
           },
           {
             "id": "maven.iterate.ch-snapshot",
             "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.maven_server_password }}",
+            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
           },
           {
             "id": "maven.cyberduck.io-release",
             "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.maven_server_password }}",
+            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
           },
           {
             "id": "maven.cyberduck.io-snapshot",
             "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.maven_server_password }}",
+            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
           }]
     - name: Run maven
       run: mvn clean deploy --settings $GITHUB_WORKSPACE/settings.xml -DskipTests -D"sparkle.feed="
