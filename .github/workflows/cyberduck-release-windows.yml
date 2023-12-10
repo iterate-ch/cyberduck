@@ -5,7 +5,8 @@ on:
       GIT_TAG:
         required: false
 env:
-  GITHUB_REPOSITORY: "${{ github.workspace }}\\${{ github.event.repository.name }}"
+  GITHUB_REPOSITORY: "${{ github.workspace }}"
+#  GITHUB_REPOSITORY: "${{ github.workspace }}\\${{ github.event.repository.name }}"
   AWS_ACCESS_KEY_DEPLOYMENT: "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}"
   AWS_SECRET_KEY_DEPLOYMENT: "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
   RACKSPACE_USER: "${{ secrets.RACKSPACE_USER }}"
