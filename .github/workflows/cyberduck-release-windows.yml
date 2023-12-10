@@ -5,6 +5,7 @@ on:
       GIT_TAG:
         required: false
 env:
+  GITHUB_REPOSITORY: "${{ github.workspace }}\\${{ github.event.repository.name }}"
   AWS_ACCESS_KEY_DEPLOYMENT: "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}"
   AWS_SECRET_KEY_DEPLOYMENT: "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
   RACKSPACE_USER: "${{ secrets.RACKSPACE_USER }}"
@@ -68,13 +69,13 @@ jobs:
             "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}",
           }]
     - name: Run maven
-      run: mvn clean deploy --settings $GITHUB_WORKSPACE/settings.xml -DskipTests -D"sparkle.feed="
+      run: mvn clean deploy --settings $GITHUB_REPOSITORY/settings.xml -DskipTests -D"sparkle.feed="
     - name: run batch command
       shell: cmd
-      run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload rackspace:/cdn.cyberduck.ch/ "%%c" --username %RACKSPACE_USER% --password %RACKSPACE_PASSWORD% --retry --quiet --existing overwrite --region DFW
+      run: FOR %%c in ("%GITHUB_REPOSITORY%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload rackspace:/cdn.cyberduck.ch/ "%%c" --username %RACKSPACE_USER% --password %RACKSPACE_PASSWORD% --retry --quiet --existing overwrite --region DFW
     - name: run batch command
       shell: cmd
-      run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload s3:/release.cyberduck.io/ "%%c" --username %AWS_ACCESS_KEY_DEPLOYMENT% --password %AWS_SECRET_KEY_DEPLOYMENT% --retry --quiet --existing overwrite --region us-east-1
+      run: FOR %%c in ("%GITHUB_REPOSITORY%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload s3:/release.cyberduck.io/ "%%c" --username %AWS_ACCESS_KEY_DEPLOYMENT% --password %AWS_SECRET_KEY_DEPLOYMENT% --retry --quiet --existing overwrite --region us-east-1
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3.1.3
       if: always()
