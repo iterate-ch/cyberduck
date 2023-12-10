@@ -29,6 +29,8 @@ jobs:
         end
     - name: checkout
       uses: actions/checkout@v4.1.0
+      with:
+        ref: ${{ inputs.GIT_TAG }}
     - name: Copy Sparkle Updater Private Key (DSA)
       shell: powershell
       env:
