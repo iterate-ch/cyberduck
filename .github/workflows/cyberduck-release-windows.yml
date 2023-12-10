@@ -36,7 +36,7 @@ jobs:
       shell: powershell
       env:
         SPARKLE_UPDATER_PK: ${{ secrets.WIN_SPARKLE_UPDATER_PRIVATE_KEY }}
-      run: ${env:SPARKLE_UPDATER_PK} > $GITHUB_REPOSITORY\www\update\private.pem
+      run: ${env:SPARKLE_UPDATER_PK} > "${GITHUB_REPOSITORY}\www\update\private.pem"
     
     - name: Set up JDK 17
       uses: actions/setup-java@v4.0.0
