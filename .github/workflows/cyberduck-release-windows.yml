@@ -13,8 +13,7 @@ env:
 jobs:
   build:
     runs-on:
-      - self-hosted
-      - windows
+      - windows-latest
     steps:
     - name: clean workspace
       shell: ruby {0}
