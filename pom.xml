@@ -869,12 +869,14 @@
     <distributionManagement>
         <repository>
             <id>maven.cyberduck.io-release</id>
-            <url>s3://repo.maven.cyberduck.io/releases/</url>
+<!--            <url>s3://repo.maven.cyberduck.io/releases/</url>
+-->
+            <url>file://${user.home}</url>
             <layout>default</layout>
         </repository>
         <snapshotRepository>
             <id>maven.cyberduck.io-snapshot</id>
-            <url>s3://repo.maven.cyberduck.io/snapshots/</url>
+            <url>file://${user.home}</url>
         </snapshotRepository>
         <site>
             <id>github-pages-site</id>
