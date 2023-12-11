@@ -41,5 +41,10 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             return new SystemLocal(Local);
         }
+
+        public SupportDirectoryFinder setup()
+        {
+            return this;
+        }
     }
 }
