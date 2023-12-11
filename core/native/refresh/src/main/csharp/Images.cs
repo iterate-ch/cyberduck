@@ -15,7 +15,7 @@ namespace Ch.Cyberduck.Core.Refresh
         {
             this.winFormsIconProvider = winFormsIconProvider;
             this.wpfIconProvider = wpfIconProvider;
-            this.Win32IconProvider = win32IconProvider;
+            this.win32IconProvider = win32IconProvider;
         }
 
         public ResourceRef Add => new(this);
