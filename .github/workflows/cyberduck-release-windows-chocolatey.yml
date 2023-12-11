@@ -1,7 +1,7 @@
 name: cyberduck-release-windows-chocolatey
 on:
   workflow_dispatch:
-env:
+#env:
 #   # TimestamperBuildWrapper was not converted because the behavior is available by default in GitHub Actions and/or it is not configurable
 jobs:
   build:
