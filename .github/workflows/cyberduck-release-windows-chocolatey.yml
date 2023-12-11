@@ -1,0 +1,17 @@
+name: cyberduck-release-windows-chocolatey
+on:
+  workflow_dispatch:
+env:
+#   # TimestamperBuildWrapper was not converted because the behavior is available by default in GitHub Actions and/or it is not configurable
+jobs:
+  build:
+    runs-on:
+      - self-hosted
+      - windows
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: run batch command
+      shell: cmd
+      run: FOR %%c in ("%WORKSPACE%\..\cyberduck-release-windows\windows\target\release\cyberduck.*.nupkg") DO C:\ProgramData\chocolatey\bin\cpush --verbose --api-key 195755fd-123d-4325-a497-036ee455c54e %%c
+#     # Mailer plugin was not converted because GitHub Actions will email the actor after failed build and does not support emailing a list of recipients
