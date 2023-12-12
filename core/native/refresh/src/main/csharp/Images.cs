@@ -7,15 +7,15 @@ namespace Ch.Cyberduck.Core.Refresh
 {
     public class Images
     {
-        private readonly IconIconProvider iconIconProvider;
+        private readonly Win32IconProvider win32IconProvider;
         private readonly WinFormsIconProvider winFormsIconProvider;
         private readonly WpfIconProvider wpfIconProvider;
 
-        public Images(WinFormsIconProvider winFormsIconProvider, WpfIconProvider wpfIconProvider, IconIconProvider iconIconProvider)
+        public Images(WinFormsIconProvider winFormsIconProvider, WpfIconProvider wpfIconProvider, Win32IconProvider win32IconProvider)
         {
             this.winFormsIconProvider = winFormsIconProvider;
             this.wpfIconProvider = wpfIconProvider;
-            this.iconIconProvider = iconIconProvider;
+            this.win32IconProvider = win32IconProvider;
         }
 
         public ResourceRef Add => new(this);
@@ -99,7 +99,7 @@ namespace Ch.Cyberduck.Core.Refresh
 
             public static implicit operator BitmapSource(in ResourceRef @this) => @this.images?.wpfIconProvider.GetResource(@this.name) ?? default;
 
-            public static implicit operator Icon(in ResourceRef @this) => @this.images?.iconIconProvider.GetResource(@this.name) ?? default;
+            public static implicit operator Icon(in ResourceRef @this) => @this.images?.win32IconProvider.GetResource(@this.name) ?? default;
 
             public SizedResourceRef Size(int size) => new(name, size, images);
         }
