@@ -79,6 +79,45 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     }
 
     @Test
+    public void testUploadBucketInHostname() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
+        final S3MultipartUploadService service = new S3MultipartUploadService(virtualhost, new S3WriteFeature(virtualhost, acl), acl, 5 * 1024L * 1024L, 2);
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = String.format(" %s.txt", UUID.randomUUID());
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final byte[] random = RandomUtils.nextBytes(1021);
+        IOUtils.write(random, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.length);
+        status.setMime("text/plain");
+        status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        final BytecountStreamListener count = new BytecountStreamListener();
+        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                count, status, new DisabledLoginCallback());
+        assertEquals(random.length, count.getSent());
+        assertSame(Checksum.NONE, status.getResponse().getChecksum());
+        assertTrue(status.isComplete());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        assertEquals(random.length, status.getResponse().getSize());
+        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        final PathAttributes attr = new S3AttributesFinderFeature(virtualhost, acl).find(test);
+        assertEquals(status.getResponse().getETag(), attr.getETag());
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
+        assertEquals(random.length, attr.getSize());
+        assertEquals(Checksum.NONE, attr.getChecksum());
+        assertNotNull(attr.getETag());
+        // d2b77e21aa68ebdcbfb589124b9f9192-1
+        assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(virtualhost, acl).getClass(test));
+        final Map<String, String> metadata = new S3MetadataFeature(virtualhost, acl).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
     public void testUploadSinglePartEncrypted() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 2);
