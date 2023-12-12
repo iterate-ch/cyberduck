@@ -109,6 +109,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
             }
+            final Path bucket = containerService.getContainer(file);
             final List<MultipartPart> completed = new ArrayList<>();
             // Not found or new upload
             if(null == multipart) {
@@ -117,7 +118,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
                 final S3Object object = new S3WriteFeature(session, acl).getDetails(file, status);
                 // ID for the initiated multipart upload.
-                final Path bucket = containerService.getContainer(file);
                 multipart = session.getClient().multipartStartUpload(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Multipart upload started for %s with ID %s", multipart.getObjectKey(), multipart.getUploadId()));
@@ -164,6 +164,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
             // could take several minutes to complete. Because a request could fail after the initial 200 OK response
             // has been sent, it is important that you check the response body to determine whether the request succeeded.
+            multipart.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Completed multipart upload for %s with %d parts and checksum %s",
