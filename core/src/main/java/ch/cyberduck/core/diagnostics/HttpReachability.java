@@ -33,6 +33,7 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpHead;
@@ -79,6 +80,16 @@ public class HttpReachability implements Reachability {
                 log.debug(String.format("Received response %s", response));
             }
             EntityUtils.consume(response.getEntity());
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_BAD_GATEWAY:
+                case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                case HttpStatus.SC_GATEWAY_TIMEOUT:
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("HTTP error %s determined offline status", response));
+                    }
+                    return false;
+            }
         }
         catch(ClientProtocolException e) {
             if(log.isWarnEnabled()) {
