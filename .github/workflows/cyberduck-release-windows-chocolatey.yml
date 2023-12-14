@@ -13,7 +13,7 @@ jobs:
       uses: actions/checkout@v4.1.0
     - name: run batch command
       shell: powershell
-      run: New-Item -Path "C:\" -Name "testfolder" -ItemType Directory; echo "test" > ${Env:GITHUB_WORKSPACE}\test.nupkg; Get-ChildItem "${Env:GITHUB_WORKSPACE}\" -Filter *.nupkg | Foreach-Object -process { choco push $_ --verbose --debug --api-key ${CHOCOLATEY_API} --source="'C:\testfolder\'" } 
+      run: choco config set --name="'defaultPushSource'" --value="'C:\testfolder\'"; New-Item -Path "C:\" -Name "testfolder" -ItemType Directory; echo "test" > ${Env:GITHUB_WORKSPACE}\test.nupkg; Get-ChildItem "${Env:GITHUB_WORKSPACE}\" -Filter *.nupkg | Foreach-Object -process { choco push $_ --verbose --debug --api-key ${CHOCOLATEY_API} } 
 
         #Get-ChildItem "${Env:GITHUB_WORKSPACE}\..\cyberduck-release-windows\windows\target\release\" -Filter cyberduck.*.nupkg | Foreach-Object -process { choco push $_ --verbose --api-key ${CHOCOLATEY_API} }
         
