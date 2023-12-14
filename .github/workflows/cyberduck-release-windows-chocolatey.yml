@@ -16,8 +16,6 @@ jobs:
       run: choco config set --name="'defaultPushSource'" --value="${Env:GITHUB_WORKSPACE}\..\"; choco apikey add -k ${Env:CHOCOLATEY_API} -s "${Env:GITHUB_WORKSPACE}\..\"; Get-ChildItem "${Env:GITHUB_WORKSPACE}\0-TEMP-CHOCO\" -Filter *.nupkg | Foreach-Object -process { choco push $_.FullName --debug  } 
         # choco config set --name="'defaultPushSource'" --value="'https://push.chocolatey.org/'"; choco apikey add -k ${Env:CHOCOLATEY_API} -s https://push.chocolatey.org/; Get-ChildItem "${Env:GITHUB_WORKSPACE}\..\cyberduck-release-windows\windows\target\release\" -Filter cyberduck.*.nupkg | Foreach-Object -process { choco push $_.FullName --debug }
         
-        #CMD COMMAND Original
-        #FOR %%c in ("%GITHUB_REPOSITORY%\..\cyberduck-release-windows\windows\target\release\cyberduck.*.nupkg") DO C:\ProgramData\chocolatey\bin\cpush --verbose --api-key %CHOCOLATEY_API% %%c
 #     # Mailer plugin was not converted because GitHub Actions will email the actor after failed build and does not support emailing a list of recipients
 
 
