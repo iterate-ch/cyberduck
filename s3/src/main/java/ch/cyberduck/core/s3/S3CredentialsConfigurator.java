@@ -238,7 +238,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         return credentials;
                     }
                     return credentials.withTokens(new TemporaryAccessTokens(
-                            cached.accessKey, cached.secretKey, cached.sessionToken, Long.valueOf(cached.expiration)));
+                            cached.accessKey, cached.secretKey, cached.sessionToken,
+                            Instant.parse(cached.expiration).toEpochMilli()));
                 }
                 if(tokenCode != null) {
                     // Obtain session token
@@ -279,12 +280,18 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Set credentials from profile %s", basicProfile.getProfileName()));
                 }
-                return credentials.withTokens(new TemporaryAccessTokens(
-                        basicProfile.getAwsAccessIdKey(),
-                        basicProfile.getAwsSecretAccessKey(),
-                        basicProfile.getAwsSessionToken(),
-                        -1L));
+                return credentials
+                        .withTokens(new TemporaryAccessTokens(
+                                basicProfile.getAwsAccessIdKey(),
+                                basicProfile.getAwsSecretAccessKey(),
+                                basicProfile.getAwsSessionToken(),
+                                -1L))
+                        .withUsername(basicProfile.getAwsAccessIdKey())
+                        .withPassword(basicProfile.getAwsSecretAccessKey());
             }
+        }
+        else {
+            log.warn(String.format("No matching configuration for profile %s in %s", profile, profiles));
         }
         return credentials;
     }

@@ -24,6 +24,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class PreferencesFactory {
+    private static final Logger log = LogManager.getLogger(PreferencesFactory.class);
+
     private PreferencesFactory() {
         //
     }
@@ -46,6 +48,7 @@ public final class PreferencesFactory {
 
     public static synchronized Preferences get() {
         if(null == preferences) {
+            log.error("No application preferences registered");
             set(new MemoryPreferences());
         }
         return preferences;

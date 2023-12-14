@@ -40,7 +40,7 @@
         <key>OAuth Client Secret</key>
         <string>9VXXdKpXFn7wVNlbVylGR9sfB7L73nVM</string>
         <key>OAuth Redirect Url</key>
-        <string>https://cyberduck.io/oauth/</string>
+        <string>${oauth.handler.scheme}://oauth</string>
         <key>Password Configurable</key>
         <false/>
         <key>Username Configurable</key>

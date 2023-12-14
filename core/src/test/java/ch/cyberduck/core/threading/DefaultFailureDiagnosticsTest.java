@@ -20,6 +20,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveCanceledException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.exception.TransferCanceledException;
+import ch.cyberduck.core.exception.TransferStatusCanceledException;
 
 import org.junit.Test;
 
@@ -34,6 +36,10 @@ public class DefaultFailureDiagnosticsTest {
         assertEquals(FailureDiagnostics.Type.cancel, new DefaultFailureDiagnostics().determine(new ResolveCanceledException()));
         assertEquals(FailureDiagnostics.Type.login, new DefaultFailureDiagnostics().determine(new LoginFailureException("d")));
         assertEquals(FailureDiagnostics.Type.cancel, new DefaultFailureDiagnostics().determine(new ConnectionCanceledException()));
+        // By user
+        assertEquals(FailureDiagnostics.Type.skip, new DefaultFailureDiagnostics().determine(new TransferCanceledException()));
         assertEquals(FailureDiagnostics.Type.application, new DefaultFailureDiagnostics().determine(new BackgroundException(new ConnectionCanceledException())));
+        // By transfer status
+        assertEquals(FailureDiagnostics.Type.cancel, new DefaultFailureDiagnostics().determine(new TransferStatusCanceledException()));
     }
 }

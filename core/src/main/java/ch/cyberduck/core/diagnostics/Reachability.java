@@ -19,7 +19,10 @@ package ch.cyberduck.core.diagnostics;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionTimeout;
+import ch.cyberduck.core.DisabledConnectionTimeout;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public interface Reachability {
 
@@ -44,6 +47,18 @@ public interface Reachability {
         Monitor start();
 
         Monitor stop();
+
+        Monitor disabled = new Monitor() {
+            @Override
+            public Monitor start() {
+                return this;
+            }
+
+            @Override
+            public Monitor stop() {
+                return this;
+            }
+        };
     }
 
     interface Diagnostics {
@@ -55,4 +70,11 @@ public interface Reachability {
          */
         void diagnose(Host bookmark);
     }
+
+    ConnectionTimeout timeout = new DisabledConnectionTimeout() {
+        @Override
+        public int getTimeout() {
+            return PreferencesFactory.get().getInteger("reachability.timeout.seconds");
+        }
+    };
 }

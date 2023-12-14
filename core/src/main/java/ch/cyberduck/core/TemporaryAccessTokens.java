@@ -98,7 +98,7 @@ public final class TemporaryAccessTokens {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("STSTokens{");
+        final StringBuilder sb = new StringBuilder("TemporaryAccessTokens{");
         sb.append("accessKeyId='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(accessKeyId)))).append('\'');
         sb.append(", secretAccessKey='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(secretAccessKey)))).append('\'');
         sb.append(", sessionToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(sessionToken)))).append('\'');

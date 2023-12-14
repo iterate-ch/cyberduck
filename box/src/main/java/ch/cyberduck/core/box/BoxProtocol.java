@@ -64,6 +64,11 @@ public class BoxProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
+
+    @Override
     public VersioningMode getVersioningMode() {
         return VersioningMode.storage;
     }

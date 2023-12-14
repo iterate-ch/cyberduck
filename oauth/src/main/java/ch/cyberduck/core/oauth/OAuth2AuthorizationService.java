@@ -19,15 +19,18 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -93,6 +96,8 @@ public class OAuth2AuthorizationService {
 
     private final HttpTransport transport;
 
+    private final HostPasswordStore store = PasswordStoreFactory.get();
+
     public OAuth2AuthorizationService(final HttpClient client, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
@@ -149,6 +154,21 @@ public class OAuth2AuthorizationService {
         }
         return credentials.withOauth(this.authorize());
     }
+
+    /**
+     * Save updated tokens in keychain
+     *
+     * @return Same tokens saved
+     */
+    public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Save new tokens %s for %s", tokens, host));
+        }
+        credentials.withOauth(tokens).withSaved(new LoginOptions().save);
+        store.save(host);
+        return tokens;
+    }
+
 
     /**
      * @return Tokens retrieved

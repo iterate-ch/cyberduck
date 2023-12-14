@@ -455,11 +455,6 @@ public class CryptoVaultTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path workdir, final String name) {
-                            throw new UnsupportedOperationException();
-                        }
-
-                        @Override
                         public Directory withWriter(final Write writer) {
                             return this;
                         }
@@ -507,11 +502,6 @@ public class CryptoVaultTest {
                         public Path mkdir(final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
-                        }
-
-                        @Override
-                        public boolean isSupported(final Path workdir, final String name) {
-                            throw new UnsupportedOperationException();
                         }
 
                         @Override

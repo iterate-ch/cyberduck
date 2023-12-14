@@ -25,7 +25,7 @@ public class FTPTouchFeature extends DefaultTouchFeature<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        return true;
+    public void preflight(final Path workdir, final String filename) {
+        // Skip checking permission mask
     }
 }

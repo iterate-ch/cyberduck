@@ -5383,32 +5383,6 @@
         "x-box-resource-id": "upload_part",
         "x-box-variant": "standard",
         "description": "The representation of an upload\nsession chunk.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/UploadPart--Mini"
-          },
-          {
-            "properties": {
-              "sha1": {
-                "description": "The SHA1 hash of the chunk.",
-                "type": "string",
-                "example": "134b65991ed521fcfe4724b7d814ab8ded5185dc"
-              }
-            }
-          }
-        ]
-      },
-      "UploadPart--Mini": {
-        "title": "Upload part (Mini)",
-        "type": "object",
-        "x-box-resource-id": "upload_part--mini",
-        "x-box-tag": "chunked_uploads",
-        "x-box-variants": [
-          "mini",
-          "standard"
-        ],
-        "x-box-variant": "mini",
-        "description": "The basic representation of an upload\nsession chunk.",
         "properties": {
           "part_id": {
             "description": "The unique ID of the chunk.",
@@ -5426,6 +5400,11 @@
             "type": "integer",
             "format": "int64",
             "example": 3222784
+          },
+          "sha1": {
+            "description": "The SHA1 hash of the chunk.",
+            "type": "string",
+            "example": "134b65991ed521fcfe4724b7d814ab8ded5185dc"
           }
         }
       },

@@ -19,11 +19,14 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,13 +66,18 @@ public class VaultRegistryTrashFeature implements Trash {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return proxy.isSupported(file);
+    public void preflight(final Path file) throws BackgroundException {
+        try {
+            registry.find(session, file, false).getFeature(session, Delete.class, proxy).preflight(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            proxy.preflight(file);
+        }
     }
 
     @Override
-    public boolean isRecursive() {
-        return proxy.isRecursive();
+    public EnumSet<Flags> features() {
+        return proxy.features();
     }
 
     @Override

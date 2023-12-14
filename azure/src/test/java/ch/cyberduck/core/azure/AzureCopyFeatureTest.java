@@ -11,6 +11,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -40,7 +41,16 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         final Path test = new AzureTouchFeature(session, null).touch(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         Thread.sleep(1000L);
-        final Path copy = new AzureCopyFeature(session, null).copy(test,
+        final AzureCopyFeature feature = new AzureCopyFeature(session, null);
+        assertThrows(UnsupportedException.class, () -> feature.preflight(container, test));
+        try {
+            feature.preflight(container, test);
+        }
+        catch(UnsupportedException e) {
+            assertEquals("Unsupported", e.getMessage());
+            assertEquals("Cannot copy cyberduck.", e.getDetail(false));
+        }
+        final Path copy = feature.copy(test,
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertEquals(test.attributes().getChecksum(), copy.attributes().getChecksum());
         assertNotEquals(test.attributes().getModificationDate(), copy.attributes().getModificationDate());

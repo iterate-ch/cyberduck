@@ -15,8 +15,13 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVMoveFeature;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
+
+import java.text.MessageFormat;
 
 public class CteraMoveFeature extends DAVMoveFeature {
 
@@ -25,10 +30,9 @@ public class CteraMoveFeature extends DAVMoveFeature {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
+    public void preflight(final Path source, final Path target) throws BackgroundException {
         if(!CteraTouchFeature.validate(target.getName())) {
-            return false;
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        return super.isSupported(source, target);
     }
 }

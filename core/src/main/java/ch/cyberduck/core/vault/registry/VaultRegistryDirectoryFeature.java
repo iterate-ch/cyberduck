@@ -43,12 +43,12 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         try {
-            return registry.find(session, workdir, false).getFeature(session, Directory.class, proxy).isSupported(workdir, name);
+            registry.find(session, workdir, false).getFeature(session, Directory.class, proxy).preflight(workdir, filename);
         }
         catch(VaultUnlockCancelException e) {
-            return proxy.isSupported(workdir, name);
+            proxy.preflight(workdir, filename);
         }
     }
 

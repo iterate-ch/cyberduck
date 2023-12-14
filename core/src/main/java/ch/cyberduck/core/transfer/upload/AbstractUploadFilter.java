@@ -217,14 +217,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.timestamp) {
-            final Timestamp feature = session.getFeature(Timestamp.class);
-            if(feature != null) {
-                if(1L != local.attributes().getModificationDate()) {
-                    status.setModified(local.attributes().getModificationDate());
-                }
-                if(1L != local.attributes().getCreationDate()) {
-                    status.setCreated(local.attributes().getCreationDate());
-                }
+            if(1L != local.attributes().getModificationDate()) {
+                status.setModified(local.attributes().getModificationDate());
+            }
+            if(1L != local.attributes().getCreationDate()) {
+                status.setCreated(local.attributes().getCreationDate());
             }
         }
         if(options.metadata) {
@@ -306,15 +303,17 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status,
                       final ProgressListener listener) throws BackgroundException {
-        if(status.isExists() && !status.isAppend()) {
-            if(options.versioning) {
-                final Versioning feature = session.getFeature(Versioning.class);
-                if(feature != null && feature.getConfiguration(file).isEnabled()) {
-                    if(feature.save(file)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Clear exist flag for file %s", file));
+        if(file.isFile()) {
+            if(status.isExists() && !status.isAppend()) {
+                if(options.versioning) {
+                    final Versioning feature = session.getFeature(Versioning.class);
+                    if(feature != null && feature.getConfiguration(file).isEnabled()) {
+                        if(feature.save(file)) {
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Clear exist flag for file %s", file));
+                            }
+                            status.exists(false).getDisplayname().exists(false);
                         }
-                        status.exists(false).getDisplayname().exists(false);
                     }
                 }
             }
@@ -364,7 +363,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
             if(status.getModified() != null) {
-                if(!session.getFeature(Write.class).timestamp()) {
+                if(!session.getFeature(Write.class).timestamp(file)) {
                     final Timestamp feature = session.getFeature(Timestamp.class);
                     if(feature != null) {
                         try {

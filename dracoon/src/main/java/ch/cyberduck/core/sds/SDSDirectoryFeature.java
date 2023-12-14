@@ -15,10 +15,13 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -34,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 public class SDSDirectoryFeature implements Directory<VersionId> {
@@ -101,18 +105,20 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
             if(!new HostPreferences(session.getHost()).getBoolean("sds.create.dataroom.enable")) {
-                log.warn(String.format("Disallow creating new top level data room %s", name));
-                return false;
+                log.warn(String.format("Disallow creating new top level data room %s", filename));
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
             }
         }
-        if(!new SDSTouchFeature(session, nodeid).validate(name)) {
-            log.warn(String.format("Validation failed for target name %s", name));
-            return false;
+        if(!SDSTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
-        return new SDSPermissionsFeature(session, nodeid).containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE);
+        final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
+        if(!permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
+        }
     }
 
     @Override

@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
@@ -102,5 +103,10 @@ public class GoogleStorageVersioningFeature implements Versioning {
                 return file.attributes().isDuplicate();
             }
         });
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.configuration, Flags.revert, Flags.list);
     }
 }

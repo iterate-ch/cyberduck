@@ -16,10 +16,17 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.text.MessageFormat;
+import java.util.EnumSet;
 
 /**
  * Move or rename file or folder on server
@@ -41,8 +48,8 @@ public interface Move {
      * @param target Target file or folder
      * @return True if the implementation can move directories recursively
      */
-    default boolean isRecursive(Path source, Path target) {
-        return false;
+    default boolean isRecursive(final Path source, final Path target) {
+        return this.features(source, target).contains(Flags.recursive);
     }
 
     /**
@@ -50,8 +57,14 @@ public interface Move {
      * @param target Target file or folder
      * @return False if not supported for given files
      */
-    default boolean isSupported(Path source, Path target) {
-        return target.getParent().attributes().getPermission().isWritable();
+    default boolean isSupported(final Path source, final Path target) {
+        try {
+            this.preflight(source, target);
+            return true;
+        }
+        catch(BackgroundException e) {
+            return false;
+        }
     }
 
     /**
@@ -60,5 +73,35 @@ public interface Move {
      */
     default Move withTarget(Session<?> session) {
         return this;
+    }
+
+    /**
+     * @throws AccessDeniedException    Permission failure for target parent directory
+     * @throws UnsupportedException     Move operation not supported for source
+     * @throws InvalidFilenameException Target filename not supported
+     */
+    default void preflight(final Path source, final Path target) throws BackgroundException {
+        if(!target.getParent().attributes().getPermission().isWritable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"),
+                    source.getName())).withFile(source);
+        }
+    }
+
+
+    /**
+     * @return Supported features
+     */
+   default EnumSet<Flags> features(Path source, Path target) {
+       return EnumSet.noneOf(Flags.class);
+   }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * Support moving directories recursively
+         */
+        recursive
     }
 }

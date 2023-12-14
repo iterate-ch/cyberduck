@@ -57,18 +57,10 @@ public class SDSDelegatingCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
+    public void preflight(final Path source, final Path target) throws BackgroundException {
         if(proxy.isSupported(source, target)) {
-            return proxy.isRecursive(source, target);
+            proxy.preflight(source, target);
         }
-        return copy.isRecursive(source, target);
-    }
-
-    @Override
-    public boolean isSupported(final Path source, final Path target) {
-        if(proxy.isSupported(source, target)) {
-            return true;
-        }
-        return copy.isSupported(source, target);
+        copy.preflight(source, target);
     }
 }

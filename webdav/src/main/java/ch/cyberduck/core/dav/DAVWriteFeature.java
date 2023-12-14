@@ -21,6 +21,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
@@ -34,7 +35,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpStatus;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import com.github.sardine.impl.SardineException;
@@ -70,8 +71,19 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final List<Header> headers = this.getHeaders(file, status);
-        return this.write(file, headers, status);
+        try {
+            return this.write(file, this.getHeaders(file, status), status);
+        }
+        catch(ConflictException e) {
+            if(expect) {
+                if(null != status.getLockId()) {
+                    // Handle 412 Precondition Failed with expired token
+                    log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
+                    return this.write(file, this.getHeaders(file, status.withLockId(null)), status);
+                }
+            }
+            throw e;
+        }
     }
 
     protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
@@ -102,7 +114,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
         return headers;
     }
 
-    private HttpResponseOutputStream<Void> write(final Path file, final List<Header> headers, final TransferStatus status) throws BackgroundException {
+    private HttpResponseOutputStream<Void> write(final Path file, final List<Header> headers, final TransferStatus status)
+            throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>(file) {
             /**
@@ -111,25 +124,9 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
             @Override
             public Void call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    try {
-                        session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
-                        return null;
-                    }
-                    catch(SardineException e) {
-                        if(null != status.getLockId()) {
-                            switch(e.getStatusCode()) {
-                                case HttpStatus.SC_PRECONDITION_FAILED:
-                                    // Handle 412 Precondition Failed with expired token
-                                    log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
-                                    headers.removeIf(header -> HttpHeaders.IF.equals(header.getName()));
-                                    session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
-                                    // No remote attributes from server returned after upload
-                                    return null;
-
-                            }
-                        }
-                        throw e;
-                    }
+                    session.getClient().put(new DAVPathEncoder().encode(file), entity,
+                            headers, new ETagResponseHandler());
+                    return null;
                 }
                 catch(SardineException e) {
                     throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);
@@ -148,8 +145,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     }
 
     @Override
-    public boolean random() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.random);
     }
 
     @Override

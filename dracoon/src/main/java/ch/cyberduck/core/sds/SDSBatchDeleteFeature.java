@@ -30,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,12 +89,7 @@ public class SDSBatchDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return new SDSDeleteFeature(session, nodeid).isSupported(file);
-    }
-
-    @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 }

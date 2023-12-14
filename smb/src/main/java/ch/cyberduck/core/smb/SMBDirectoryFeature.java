@@ -15,7 +15,6 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -41,7 +40,7 @@ public class SMBDirectoryFeature implements Directory<Integer> {
             share.mkdir(new SMBPathContainerService(session).getKey(folder));
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
+            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot create folder {0}", e, folder);

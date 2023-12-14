@@ -23,6 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.EnumSet;
+
 @Optional
 public interface Versioning {
 
@@ -70,7 +72,7 @@ public interface Versioning {
      * @return True if this file version can be reverted
      */
     default boolean isRevertable(final Path file) {
-        return file.attributes().isDuplicate();
+        return this.features(file).contains(Flags.revert);
     }
 
     /**
@@ -85,5 +87,37 @@ public interface Versioning {
 
     default void cleanup(Path file, ConnectionCallback callback) throws BackgroundException {
         //
+    }
+
+    /**
+     * @return Supported features
+     */
+    default EnumSet<Flags> features(Path file) {
+        if(file.attributes().isDuplicate()) {
+            return EnumSet.of(Flags.revert);
+        }
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * Support reverting to previous version of file
+         */
+        revert,
+        /**
+         * Archive file version
+         */
+        save,
+        /**
+         * Toggle configuration
+         */
+        configuration,
+        /**
+         *
+         */
+        list
     }
 }

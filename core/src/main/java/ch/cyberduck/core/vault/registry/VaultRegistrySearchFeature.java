@@ -25,6 +25,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.vault.VaultRegistry;
 
+import java.util.EnumSet;
+
 public class VaultRegistrySearchFeature implements Search {
 
     private final Session<?> session;
@@ -47,8 +49,8 @@ public class VaultRegistrySearchFeature implements Search {
     }
 
     @Override
-    public boolean isRecursive() {
-        return proxy.isRecursive();
+    public EnumSet<Flags> features() {
+        return proxy.features();
     }
 
     @Override

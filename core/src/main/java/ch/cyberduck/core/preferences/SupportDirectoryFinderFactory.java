@@ -27,6 +27,6 @@ public class SupportDirectoryFinderFactory extends Factory<SupportDirectoryFinde
     }
 
     public static SupportDirectoryFinder get() {
-        return new SupportDirectoryFinderFactory().create();
+        return new SupportDirectoryFinderFactory().create().setup();
     }
 }

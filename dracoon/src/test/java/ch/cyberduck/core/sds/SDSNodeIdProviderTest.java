@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -51,6 +52,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         nodeid.clear();
         final String nodeId = nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1);
         assertNotNull(nodeId);
+        assertEquals(nodeId, nodeid.getNodeId(new Path(room.withAttributes(PathAttributes.EMPTY), name, EnumSet.of(Path.Type.file)), 1));
         assertEquals(nodeId, nodeid.getNodeId(new Path(room, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), 1));
         assertEquals(nodeId, nodeid.getNodeId(new Path(room, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file)), 1));
         try {

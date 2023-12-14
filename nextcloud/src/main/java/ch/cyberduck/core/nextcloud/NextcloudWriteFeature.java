@@ -24,6 +24,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public class NextcloudWriteFeature extends DAVWriteFeature {
@@ -45,7 +46,7 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
     }
 
     @Override
-    public boolean timestamp() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 }

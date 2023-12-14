@@ -30,6 +30,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.EnumSet;
+
 public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
     private static final Logger log = LogManager.getLogger(SDSDelegatingWriteFeature.class);
 
@@ -67,20 +69,20 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
     }
 
     @Override
-    public boolean random() {
-        return proxy.random();
-    }
-
-    @Override
-    public boolean timestamp() {
-        return proxy.timestamp();
-    }
-
-    @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         if(SDSAttributesAdapter.isEncrypted(containerService.getContainer(file).attributes())) {
             return new TripleCryptWriteFeature(session, nodeid, proxy).checksum(file, status);
         }
         return proxy.checksum(file, status);
+    }
+
+    @Override
+    public void preflight(final Path file) throws BackgroundException {
+        new SDSTouchFeature(session, nodeid).preflight(file.getParent(), file.getName());
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return proxy.features(file);
     }
 }

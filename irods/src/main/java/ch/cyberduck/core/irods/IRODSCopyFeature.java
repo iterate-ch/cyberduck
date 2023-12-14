@@ -32,6 +32,8 @@ import org.irods.jargon.core.transfer.DefaultTransferControlBlock;
 import org.irods.jargon.core.transfer.TransferStatus;
 import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
 
+import java.util.EnumSet;
+
 public class IRODSCopyFeature implements Copy {
 
     private final IRODSSession session;
@@ -75,12 +77,7 @@ public class IRODSCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
-    }
-
-    @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
     }
 }

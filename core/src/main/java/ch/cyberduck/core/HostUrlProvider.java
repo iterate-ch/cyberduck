@@ -69,7 +69,7 @@ public class HostUrlProvider {
             port != scheme.getPort() ? String.format(":%d", port) : "");
         if(includePath) {
             if(StringUtils.isNotBlank(path)) {
-                return String.format("%s%s", base, PathNormalizer.normalize(path));
+                return String.format("%s%s", base, URIEncoder.encode(PathNormalizer.normalize(path)));
             }
         }
         return base;

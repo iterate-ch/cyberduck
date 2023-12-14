@@ -16,14 +16,16 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -66,7 +68,7 @@ public class SMBCopyFeature implements Copy {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new SMBTransportExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -81,9 +83,11 @@ public class SMBCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
+    public void preflight(final Path source, final Path target) throws BackgroundException {
         final SMBPathContainerService containerService = new SMBPathContainerService(session);
         // Remote copy is only possible between files on the same server
-        return containerService.getContainer(source).equals(containerService.getContainer(target));
+        if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+        }
     }
 }

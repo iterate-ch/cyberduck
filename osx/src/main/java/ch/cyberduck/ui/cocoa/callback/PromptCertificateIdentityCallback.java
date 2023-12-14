@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.List;
@@ -80,7 +81,12 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
                     log.warn(String.format("No identity selected for %s", hostname));
                     throw new ConnectionCanceledException();
                 }
-                return KeychainCertificateStore.toX509Certificate(identityRef);
+                try {
+                    return KeychainCertificateStore.toX509Certificate(identityRef);
+                }
+                catch(CertificateException e) {
+                    throw new ConnectionCanceledException(e);
+                }
             default:
                 throw new ConnectionCanceledException();
         }

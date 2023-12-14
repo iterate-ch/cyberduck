@@ -17,9 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
@@ -67,16 +70,18 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
         }
     }
 
+
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
             if(workdir.isRoot()) {
-                if(StringUtils.isNotBlank(name)) {
-                    return ServiceUtils.isBucketNameValidDNSName(name);
+                if(StringUtils.isNotBlank(filename)) {
+                    if(!ServiceUtils.isBucketNameValidDNSName(filename)) {
+                        throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+                    }
                 }
             }
         }
-        return true;
     }
 
     @Override

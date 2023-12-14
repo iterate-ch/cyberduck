@@ -21,5 +21,9 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.core.Local;
 
 public interface SupportDirectoryFinder {
+    default SupportDirectoryFinder setup() {
+        return this;
+    }
+
     Local find();
 }

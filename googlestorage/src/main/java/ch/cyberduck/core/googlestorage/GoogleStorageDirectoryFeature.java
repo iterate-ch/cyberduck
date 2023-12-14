@@ -17,9 +17,11 @@ package ch.cyberduck.core.googlestorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -28,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import com.google.api.services.storage.Storage;
@@ -76,21 +79,21 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
         }
     }
 
-
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            if(StringUtils.isNotBlank(name)) {
-                if(StringUtils.startsWith(name, "goog")) {
-                    return false;
+            if(StringUtils.isNotBlank(filename)) {
+                if(StringUtils.startsWith(filename, "goog")) {
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
-                if(StringUtils.contains(name, "google")) {
-                    return false;
+                if(StringUtils.contains(filename, "google")) {
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
-                return ServiceUtils.isBucketNameValidDNSName(name);
+                if(!ServiceUtils.isBucketNameValidDNSName(filename)) {
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+                }
             }
         }
-        return true;
     }
 
     @Override

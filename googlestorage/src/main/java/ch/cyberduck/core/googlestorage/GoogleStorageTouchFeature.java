@@ -15,8 +15,13 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+
+import java.text.MessageFormat;
 
 import com.google.api.services.storage.model.StorageObject;
 
@@ -27,8 +32,10 @@ public class GoogleStorageTouchFeature extends DefaultTouchFeature<StorageObject
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         // Creating files is only possible inside a bucket.
-        return !workdir.isRoot();
+        if(workdir.isRoot()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
+        }
     }
 }

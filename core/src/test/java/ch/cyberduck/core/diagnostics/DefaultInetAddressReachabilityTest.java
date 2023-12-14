@@ -33,7 +33,7 @@ public class DefaultInetAddressReachabilityTest {
     public void testIsReachable() {
         final Reachability r = new DefaultInetAddressReachability();
         assertTrue(r.isReachable(
-                new Host(new TestProtocol(), "cloud.iterate.ch")
+                new Host(new TestProtocol(), "cyberduck.io")
         ));
     }
 

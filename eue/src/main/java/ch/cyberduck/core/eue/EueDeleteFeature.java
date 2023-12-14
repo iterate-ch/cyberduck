@@ -15,11 +15,13 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.DeleteResourceApi;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -27,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -66,16 +69,12 @@ public class EueDeleteFeature extends EueTrashFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        if(StringUtils.equals(EueResourceIdProvider.TRASH, file.attributes().getFileId())
-                || StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), file.getName())) {
-            return false;
+    public void preflight(final Path file) throws BackgroundException {
+        if(StringUtils.equals(EueResourceIdProvider.TRASH, file.attributes().getFileId())) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
-        return true;
-    }
-
-    @Override
-    public boolean isRecursive() {
-        return true;
+        else if(StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), file.getName())) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
+        }
     }
 }

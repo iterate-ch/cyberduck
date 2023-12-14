@@ -16,9 +16,6 @@ package ch.cyberduck.core.auth;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -28,7 +25,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
-import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,17 +32,17 @@ public class AWSSessionCredentialsRetrieverTest {
 
     @Test
     public void testParse() throws Exception {
-        final Credentials c = new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener(),
-            "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
-            .parse(IOUtils.toInputStream("{\n" +
-                "  \"Code\" : \"Success\",\n" +
-                "  \"LastUpdated\" : \"2012-04-26T16:39:16Z\",\n" +
-                "  \"Type\" : \"AWS-HMAC\",\n" +
-                "  \"AccessKeyId\" : \"AKIAIOSFODNN7EXAMPLE\",\n" +
-                "  \"SecretAccessKey\" : \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\",\n" +
-                "  \"Token\" : \"token\",\n" +
-                "  \"Expiration\" : \"2012-04-27T22:39:16Z\"\n" +
-                "}", Charset.defaultCharset()));
+        final Credentials c = new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
+                .parse(IOUtils.toInputStream("{\n" +
+                        "  \"Code\" : \"Success\",\n" +
+                        "  \"LastUpdated\" : \"2012-04-26T16:39:16Z\",\n" +
+                        "  \"Type\" : \"AWS-HMAC\",\n" +
+                        "  \"AccessKeyId\" : \"AKIAIOSFODNN7EXAMPLE\",\n" +
+                        "  \"SecretAccessKey\" : \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\",\n" +
+                        "  \"Token\" : \"token\",\n" +
+                        "  \"Expiration\" : \"2012-04-27T22:39:16Z\"\n" +
+                        "}", Charset.defaultCharset()));
         assertEquals("AKIAIOSFODNN7EXAMPLE", c.getTokens().getAccessKeyId());
         assertEquals("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", c.getTokens().getSecretAccessKey());
         assertEquals("token", c.getTokens().getSessionToken());
@@ -56,8 +52,8 @@ public class AWSSessionCredentialsRetrieverTest {
     @Test(expected = ConnectionTimeoutException.class)
     @Ignore
     public void testGet() throws Exception {
-        new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new ProtocolFactory(Collections.singleton(new DAVProtocol())), new DisabledTranscriptListener(),
-            "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
-            .get();
+        new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
+                .get();
     }
 }

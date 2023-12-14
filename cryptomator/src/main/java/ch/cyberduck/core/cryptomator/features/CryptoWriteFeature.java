@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 public class CryptoWriteFeature<Reply> implements Write<Reply> {
     private static final Logger log = LogManager.getLogger(CryptoWriteFeature.class);
@@ -86,13 +87,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public boolean random() {
-        return proxy.random();
-    }
-
-    @Override
-    public boolean timestamp() {
-        return proxy.timestamp();
+    public EnumSet<Flags> features(final Path file) {
+        return proxy.features(file);
     }
 
     @Override

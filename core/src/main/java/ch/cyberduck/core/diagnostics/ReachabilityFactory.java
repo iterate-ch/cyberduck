@@ -20,6 +20,7 @@ package ch.cyberduck.core.diagnostics;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Host;
 
 public class ReachabilityFactory extends Factory<Reachability> {
 
@@ -28,6 +29,35 @@ public class ReachabilityFactory extends Factory<Reachability> {
     }
 
     public static Reachability get() {
-        return new ReachabilityFactory().create();
+        return new ProtocolAwareReachability(new ReachabilityFactory().create());
+    }
+
+    private static final class ProtocolAwareReachability implements Reachability {
+        private final Reachability monitor;
+
+        public ProtocolAwareReachability(final Reachability monitor) {
+            this.monitor = monitor;
+        }
+
+        @Override
+        public boolean isReachable(final Host bookmark) {
+            switch(bookmark.getProtocol().getScheme()) {
+                case file:
+                    return new DiskReachability().isReachable(bookmark);
+                case https:
+                case http:
+                    return new ChainedReachability(monitor, new ResolverReachability(), new HttpReachability()).isReachable(bookmark);
+            }
+            return new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).isReachable(bookmark);
+        }
+
+        @Override
+        public Monitor monitor(final Host bookmark, final Callback callback) {
+            switch(bookmark.getProtocol().getScheme()) {
+                case file:
+                    return Monitor.disabled;
+            }
+            return monitor.monitor(bookmark, callback);
+        }
     }
 }

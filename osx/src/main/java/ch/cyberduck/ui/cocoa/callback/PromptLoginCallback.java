@@ -110,7 +110,17 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     public Local select(final Local identity) throws LoginCanceledException {
-        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), parent, select) {
+        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), parent, new WindowController() {
+            @Override
+            protected String getBundleName() {
+                return null;
+            }
+
+            @Override
+            public NSWindow window() {
+                return select;
+            }
+        }) {
             @Override
             public void beginSheet(final NSWindow window) {
                 select = NSOpenPanel.openPanel();

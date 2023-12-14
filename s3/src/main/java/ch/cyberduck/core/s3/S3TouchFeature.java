@@ -18,7 +18,9 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -26,6 +28,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
+
+import java.text.MessageFormat;
 
 public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
 
@@ -42,11 +46,12 @@ public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
             // Creating files is only possible inside a bucket.
-            return !workdir.isRoot();
+            if(workdir.isRoot()) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
+            }
         }
-        return true;
     }
 }

@@ -16,10 +16,12 @@ package ch.cyberduck.core.onedrive.features;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -33,6 +35,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 public class GraphTouchFeature implements Touch<DriveItem.Metadata> {
 
@@ -63,8 +66,10 @@ public class GraphTouchFeature implements Touch<DriveItem.Metadata> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        return session.isAccessible(workdir);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!session.isAccessible(workdir)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
+        }
     }
 
     @Override

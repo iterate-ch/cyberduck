@@ -15,16 +15,19 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.api.FoldersApi;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersBody;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersParent;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 
 public class BoxDirectoryFeature implements Directory {
@@ -56,7 +59,9 @@ public class BoxDirectoryFeature implements Directory {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return new BoxTouchFeature(session, fileid).isSupported(workdir, name);
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(!BoxTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+        }
     }
 }

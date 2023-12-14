@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
@@ -74,8 +75,8 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
     }
 
     @Override
-    public boolean timestamp() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 
     @Override

@@ -117,7 +117,7 @@ namespace Ch.Cyberduck.Core.Preferences
                 return "Welsh";
             }
 
-            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(locale);
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(locale.Replace('_', '-'));
             return cultureInfo.TextInfo.ToTitleCase(cultureInfo.NativeName);
         }
 

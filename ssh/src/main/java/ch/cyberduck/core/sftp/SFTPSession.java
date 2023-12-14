@@ -212,7 +212,11 @@ public class SFTPSession extends Session<SSHClient> {
                 return true;
             }
         });
-        connection.setRemoteCharset(Charset.forName(host.getEncoding()));
+        final Charset charset = Charset.forName(host.getEncoding());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Use character encoding %s", charset));
+        }
+        connection.setRemoteCharset(charset);
         disconnectListener = new StateDisconnectListener();
         final Transport transport = connection.getTransport();
         transport.setDisconnectListener(disconnectListener);

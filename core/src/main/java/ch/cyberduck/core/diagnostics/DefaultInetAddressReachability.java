@@ -21,6 +21,9 @@ import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostnameConfiguratorFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -29,6 +32,7 @@ import java.net.InetAddress;
  * establish a TCP connection on port 7 (Echo) of the destination host.
  */
 public class DefaultInetAddressReachability extends DisabledReachability {
+    private static final Logger log = LogManager.getLogger(DefaultInetAddressReachability.class);
 
     @Override
     public boolean isReachable(final Host bookmark) {
@@ -38,6 +42,9 @@ public class DefaultInetAddressReachability extends DisabledReachability {
             );
         }
         catch(IOException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Failure opening ICMP socket for %s", bookmark));
+            }
             return false;
         }
     }

@@ -42,13 +42,12 @@ public class VaultRegistryTouchFeature<R> implements Touch<R> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        // Run through registry without looking for vaults to circumvent deadlock due to synchronized load of vault
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         try {
-            return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir, filename);
+            registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).preflight(workdir, filename);
         }
         catch(VaultUnlockCancelException e) {
-            return proxy.isSupported(workdir, filename);
+            proxy.preflight(workdir, filename);
         }
     }
 

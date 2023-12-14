@@ -16,7 +16,9 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -24,6 +26,8 @@ import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Objects;
 
 @Required
@@ -49,14 +53,20 @@ public interface Write<Reply> {
     /**
      * @return True if supporting random writes with arbitrary offset and length
      */
-    default boolean random() {
+    default boolean random(Path file) {
+        if(this.features(file).contains(Flags.random)) {
+            return true;
+        }
         return false;
     }
 
     /**
      * @return True if supporting to set timestamp on upload
      */
-    default boolean timestamp() {
+    default boolean timestamp(Path file) {
+        if(this.features(file).contains(Flags.timestamp)) {
+            return true;
+        }
         return false;
     }
 
@@ -120,4 +130,33 @@ public interface Write<Reply> {
      * Existing remote file found
      */
     Append override = new Append(false);
+
+    default void preflight(final Path file) throws BackgroundException {
+        final Path workdir = file.getParent();
+        if(!workdir.attributes().getPermission().isWritable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"),
+                    file.getName())).withFile(file);
+        }
+    }
+
+    /**
+     * @return Supported features
+     */
+    default EnumSet<Flags> features(Path file) {
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * Support setting modification date on upload
+         */
+        timestamp,
+        /**
+         * Random writes with arbitrary offset and length
+         */
+        random
+    }
 }

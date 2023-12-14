@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
@@ -126,13 +127,13 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return proxy.isSupported(file);
+    public void preflight(final Path file) throws BackgroundException {
+        proxy.preflight(file);
     }
 
     @Override
-    public boolean isRecursive() {
-        return proxy.isRecursive();
+    public EnumSet<Flags> features() {
+        return proxy.features();
     }
 
     @Override

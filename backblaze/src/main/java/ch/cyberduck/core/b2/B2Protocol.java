@@ -18,9 +18,9 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.synchronization.ChecksumComparisonService;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.VersionIdComparisonService;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import java.util.Comparator;
@@ -94,7 +94,7 @@ public class B2Protocol extends AbstractProtocol {
             return (T) new B2PathContainerService();
         }
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new ChecksumComparisonService(), ComparisonService.disabled);
+            return (T) new DefaultComparisonService(new VersionIdComparisonService(), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

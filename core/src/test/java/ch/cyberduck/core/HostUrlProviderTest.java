@@ -17,8 +17,8 @@ public class HostUrlProviderTest {
     @Test
     public void testPath() {
         final Host h = new Host(new TestProtocol(Scheme.sftp), "localhost", new Credentials("user", "p"));
-        h.setDefaultPath("p");
-        assertEquals("sftp://user@localhost/p", new HostUrlProvider().withUsername(true).withPath(true).get(h));
+        h.setDefaultPath("p/p p");
+        assertEquals("sftp://user@localhost/p/p%20p", new HostUrlProvider().withUsername(true).withPath(true).get(h));
     }
 
     @Test

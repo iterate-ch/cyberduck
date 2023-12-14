@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2LargeUploadService;
@@ -35,6 +36,7 @@ import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -65,8 +67,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class B2SingleTransferWorkerTest extends VaultTest {
@@ -94,6 +95,9 @@ public class B2SingleTransferWorkerTest extends VaultTest {
                 }
                 if("b2.upload.largeobject.concurrency".equals(key)) {
                     return String.valueOf(5);
+                }
+                if("queue.upload.checksum.calculate".equals(key)) {
+                    return String.valueOf(true);
                 }
                 return super.getProperty(key);
             }
@@ -151,7 +155,9 @@ public class B2SingleTransferWorkerTest extends VaultTest {
         local.delete();
         assertTrue(t.isComplete());
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        assertEquals(content.length, new B2AttributesFinderFeature(session, fileid).find(test).getSize());
+        final PathAttributes attr = new B2AttributesFinderFeature(session, fileid).find(test);
+        assertNotEquals(Checksum.NONE, attr.getChecksum());
+        assertEquals(content.length, attr.getSize());
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());

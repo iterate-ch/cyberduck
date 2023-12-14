@@ -17,7 +17,6 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -88,6 +87,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withDfsEnabled(new HostPreferences(host).getBoolean("smb.dfs.enable"))
                     .withSigningRequired(new HostPreferences(host).getBoolean("smb.signing.required"))
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
+                    .withMultiProtocolNegotiate(new HostPreferences(host).getBoolean("smb.protocol.negotiate.enable"))
                     .build());
             final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
             if(log.isDebugEnabled()) {
@@ -96,7 +96,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             return connection;
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new SMBTransportExceptionMappingService().map(e);
         }
     }
 

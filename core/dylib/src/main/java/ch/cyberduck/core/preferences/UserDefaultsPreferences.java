@@ -39,6 +39,7 @@ import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.sun.jna.platform.linux.LibC;
@@ -52,10 +53,7 @@ import com.sun.jna.platform.mac.SystemB;
 public class UserDefaultsPreferences extends DefaultPreferences {
     private static final Logger log = LogManager.getLogger(UserDefaultsPreferences.class);
 
-    private final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
-
-    private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty,
-        PreferencesFactory.get().getLong("preferences.cache.size"));
+    private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty, 1000);
 
     private static final String MISSING_PROPERTY = String.valueOf(StringUtils.INDEX_NOT_FOUND);
 
@@ -72,6 +70,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         // Lookup in the default map
         final String value = super.getDefault(property);
         if(null == value) {
+            final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
             // Missing in default. Lookup in Info.plist
             NSObject plist = bundle.infoDictionary().objectForKey(property);
             if(null == plist) {
@@ -170,6 +169,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             this.setDefault("local.user.home", SystemB.INSTANCE.getpwuid(LibC.INSTANCE.getuid()).pw_dir);
         }
 
+        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
         if(null != bundle) {
             if(bundle.objectForInfoDictionaryKey("CFBundleName") != null) {
                 this.setDefault("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
@@ -262,9 +262,9 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             return super.locale();
         }
         if(value.isKindOfClass(NSArray.CLASS)) {
-            final List<String> languages = this.toList(Rococoa.cast(value, NSArray.class));
-            if(null != languages) {
-                return languages.iterator().next();
+            final Iterator<String> languages = this.toList(Rococoa.cast(value, NSArray.class)).iterator();
+            if(languages.hasNext()) {
+                return languages.next();
             }
         }
         return super.locale();
@@ -272,6 +272,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
     @Override
     public List<String> applicationLocales() {
+        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
         return this.toList(bundle.localizations());
     }
 

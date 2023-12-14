@@ -18,9 +18,11 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,11 +32,11 @@ public class DisabledMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback,
                      final ConnectionCallback connectionCallback) throws BackgroundException {
-        throw new InteroperabilityException("Not supported");
+        throw new UnsupportedException();
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return false;
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error"));
     }
 }

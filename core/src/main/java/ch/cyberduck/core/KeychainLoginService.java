@@ -107,7 +107,7 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            final CredentialsConfigurator configurator = bookmark.getProtocol().getCredentialsFinder();
+            final CredentialsConfigurator configurator = bookmark.getProtocol().getFeature(CredentialsConfigurator.class);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Auto configure credentials with %s", configurator));
             }
@@ -173,22 +173,8 @@ public class KeychainLoginService implements LoginService {
                                 final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         final Credentials credentials = bookmark.getCredentials();
-        if(credentials.isPasswordAuthentication()) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
-                    credentials.getUsername()));
-        }
-        else if(credentials.isOAuthAuthentication()) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
-                    credentials.getOauth().getAccessToken()));
-        }
-        else if(credentials.isPublicKeyAuthentication()) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
-                    credentials.getIdentity().getName()));
-        }
-        else if(credentials.isCertificateAuthentication()) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
-                    credentials.getCertificate()));
-        }
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
+                StringUtils.isNotBlank(credentials.getUsername()) ? credentials.getUsername() : LocaleFactory.localizedString("Unknown")));
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", session));

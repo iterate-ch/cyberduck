@@ -27,8 +27,8 @@ public class HostWebUrlProviderTest {
     public void testToUrl() {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         assertEquals("http://test.cyberduck.ch/", new DefaultWebUrlProvider().toUrl(host).getUrl());
-        assertEquals("http://test.cyberduck.ch/my/documentroot/f",
-            new HostWebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+        assertEquals("http://test.cyberduck.ch/my/documentroot/f%20f",
+                new HostWebUrlProvider(host).toUrl(new Path("/my/documentroot/f f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test

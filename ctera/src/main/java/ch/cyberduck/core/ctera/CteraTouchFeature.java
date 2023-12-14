@@ -15,12 +15,17 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVTouchFeature;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.text.MessageFormat;
 
 public class CteraTouchFeature extends DAVTouchFeature {
     private static final Logger log = LogManager.getLogger(CteraTouchFeature.class);
@@ -30,11 +35,10 @@ public class CteraTouchFeature extends DAVTouchFeature {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!validate(filename)) {
-            return false;
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
-        return super.isSupported(workdir, filename);
     }
 
     public static boolean validate(final String filename) {

@@ -30,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class SDSDelegatingMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(SDSDelegatingMoveFeature.class);
@@ -39,7 +40,7 @@ public class SDSDelegatingMoveFeature implements Move {
     private final SDSMoveFeature proxy;
 
     private final PathContainerService containerService
-        = new SDSPathContainerService();
+            = new SDSPathContainerService();
 
     public SDSDelegatingMoveFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSMoveFeature proxy) {
         this.session = session;
@@ -77,19 +78,23 @@ public class SDSDelegatingMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
+    public EnumSet<Flags> features(final Path source, final Path target) {
         if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
-            return session.getFeature(Copy.class).isRecursive(source, target);
+            if(session.getFeature(Copy.class).features(source, target).contains(Copy.Flags.recursive)) {
+                return EnumSet.of(Flags.recursive);
+            }
         }
-        return proxy.isRecursive(source, target);
+        return proxy.features(source, target);
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
+    public void preflight(final Path source, final Path target) throws BackgroundException {
         if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
-            return session.getFeature(Copy.class).isSupported(source, target);
+            session.getFeature(Copy.class).preflight(source, target);
         }
-        return proxy.isSupported(source, target);
+        else {
+            proxy.preflight(source, target);
+        }
     }
 
     @Override

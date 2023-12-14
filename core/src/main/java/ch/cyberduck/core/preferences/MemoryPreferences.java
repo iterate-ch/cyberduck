@@ -14,6 +14,8 @@
 
 package ch.cyberduck.core.preferences;
 
+import ch.cyberduck.core.Local;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,5 +61,12 @@ public class MemoryPreferences extends DefaultPreferences {
     @Override
     public List<String> systemLocales() {
         return Collections.singletonList("en");
+    }
+
+    @Override
+    protected void setFactories() {
+        super.setFactories();
+
+        this.setDefault("factory.local.class", Local.class.getName());
     }
 }

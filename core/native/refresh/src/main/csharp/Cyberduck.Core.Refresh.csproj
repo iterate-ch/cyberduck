@@ -17,7 +17,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <LangVersion>11</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>Ch.Cyberduck.Core.Refresh</RootNamespace>
@@ -34,6 +34,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="ReactiveUI.WPF" />
+    <PackageReference Include="System.Memory" />
   </ItemGroup>
 
   <ItemGroup>

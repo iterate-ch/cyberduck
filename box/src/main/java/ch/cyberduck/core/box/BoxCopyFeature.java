@@ -16,6 +16,7 @@ package ch.cyberduck.core.box;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.api.FilesApi;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.box.io.swagger.client.model.FilesfileIdcopyParent;
 import ch.cyberduck.core.box.io.swagger.client.model.FolderIdCopyBody;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersfolderIdcopyParent;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamListener;
@@ -33,7 +35,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class BoxCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(BoxCopyFeature.class);
@@ -78,7 +82,14 @@ public class BoxCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return EnumSet.of(Flags.recursive);
+    }
+
+    @Override
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(!BoxTouchFeature.validate(target.getName())) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+        }
     }
 }

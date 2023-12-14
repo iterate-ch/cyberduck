@@ -83,9 +83,4 @@ public class GoogleStorageDeleteFeature implements Delete {
             }
         }
     }
-
-    @Override
-    public boolean isSupported(final Path file) {
-        return true;
-    }
 }

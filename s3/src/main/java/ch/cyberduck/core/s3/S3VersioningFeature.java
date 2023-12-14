@@ -46,6 +46,8 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
 import org.jets3t.service.model.S3Object;
 
+import java.util.EnumSet;
+
 public class S3VersioningFeature implements Versioning {
     private static final Logger log = LogManager.getLogger(S3VersioningFeature.class);
 
@@ -182,13 +184,15 @@ public class S3VersioningFeature implements Versioning {
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));
                 }
+                final Path bucket = containerService.getContainer(file);
+                final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
+                        bucketname, containerService.getKey(file), bucketname, destination, false);
                 if(file.getParent().attributes().getCustom().containsKey(S3VersionedObjectListService.KEY_DELETE_MARKER)) {
                     // revert placeholder
                     session.getClient().deleteVersionedObject(
                             file.getParent().attributes().getVersionId(),
-                            containerService.getContainer(file).getName(), containerService.getKey(file.getParent()));
+                            bucketname, containerService.getKey(file.getParent()));
                 }
             }
             catch(ServiceException e) {
@@ -245,5 +249,10 @@ public class S3VersioningFeature implements Versioning {
                 return f.attributes().isDuplicate();
             }
         });
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.configuration, Flags.list, Flags.revert);
     }
 }

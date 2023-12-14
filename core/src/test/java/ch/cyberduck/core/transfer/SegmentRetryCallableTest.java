@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -37,7 +38,7 @@ public class SegmentRetryCallableTest {
     @Test
     public void testRetry() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        final SegmentRetryCallable<Void> c = new SegmentRetryCallable<Void>(new Host(new TestProtocol()),
+        final SegmentRetryCallable<Void> c = new SegmentRetryCallable<Void>(new Host(new TestProtocol(Scheme.file)),
             2, 0,
             new BackgroundExceptionCallable<Void>() {
                 @Override

@@ -42,6 +42,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectS3WriteFeature.class);
@@ -111,7 +112,7 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
     }
 
     @Override
-    public boolean timestamp() {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 }

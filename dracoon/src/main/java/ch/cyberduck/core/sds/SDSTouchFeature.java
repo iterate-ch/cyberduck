@@ -15,9 +15,13 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
+import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -26,6 +30,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.text.MessageFormat;
 
 public class SDSTouchFeature extends DefaultTouchFeature<Node> {
     private static final Logger log = LogManager.getLogger(SDSTouchFeature.class);
@@ -54,30 +60,31 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            return false;
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
-        if(!this.validate(filename)) {
-            log.warn(String.format("Validation failed for target name %s", filename));
-            return false;
+        if(!validate(filename)) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
+        }
+        final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
+        if(!permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)
+                // For existing files the delete role is also required to overwrite
+                || !permissions.containsRole(workdir, SDSPermissionsFeature.DELETE_ROLE)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
         if(workdir.attributes().getQuota() != -1) {
             if(workdir.attributes().getQuota() <= workdir.attributes().getSize() + new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize")) {
                 log.warn(String.format("Quota %d exceeded with %d in %s", workdir.attributes().getQuota(), workdir.attributes().getSize(), workdir));
-                return false;
+                throw new QuotaException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
             }
         }
-        final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
-        return permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)
-                // For existing files the delete role is also required to overwrite
-                && permissions.containsRole(workdir, SDSPermissionsFeature.DELETE_ROLE);
     }
 
     /**
      * Validate node name convention
      */
-    public boolean validate(final String filename) {
+    public static boolean validate(final String filename) {
         // Empty argument if not known in validation
         if(StringUtils.isNotBlank(filename)) {
             if(StringUtils.length(filename) > 150) {

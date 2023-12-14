@@ -16,9 +16,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.preferences.MemoryPreferences;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
@@ -249,8 +246,6 @@ public class ProtocolFactoryTest {
 
     @Test
     public void testRegisterUnregisterIsEnabled() throws Exception {
-        Preferences preferences = new MemoryPreferences();
-        PreferencesFactory.set(preferences);
         final ProtocolFactory factory = new ProtocolFactory(Stream.of(new TestProtocol() {
             @Override
             public Type getType() {

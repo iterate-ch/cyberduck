@@ -478,6 +478,9 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public Object lock(final boolean interactive) throws AccessDeniedException {
+        if(log.isWarnEnabled()) {
+            log.warn(String.format("No lock support in %s", this));
+        }
         return null;
     }
 

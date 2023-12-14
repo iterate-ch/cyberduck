@@ -5,7 +5,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>Cyberduck.Core.Native</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>8.7.0-SNAPSHOT</version>
+        <version>8.7.2-SNAPSHOT</version>
     </parent>
     <artifactId>Cyberduck.Core.Refresh</artifactId>
     <packaging>pom</packaging>

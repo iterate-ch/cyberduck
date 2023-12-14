@@ -32,7 +32,7 @@ public final class JumpHostConfiguratorFactory {
      */
     public static JumphostConfigurator get(final Protocol protocol) {
         try {
-            return protocol.getJumpHostFinder().reload();
+            return protocol.getFeature(JumphostConfigurator.class).reload();
         }
         catch(LoginCanceledException e) {
             return JumphostConfigurator.DISABLED;

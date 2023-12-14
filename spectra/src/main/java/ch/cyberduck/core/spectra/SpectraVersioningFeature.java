@@ -30,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
@@ -116,8 +117,11 @@ public class SpectraVersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(final Path file) {
-        return file.attributes().getCustom().containsKey(KEY_REVERTABLE);
+    public EnumSet<Flags> features(final Path file) {
+        if(file.attributes().getCustom().containsKey(KEY_REVERTABLE)) {
+            return EnumSet.of(Flags.revert, Flags.configuration);
+        }
+        return EnumSet.of(Flags.configuration);
     }
 
     @Override

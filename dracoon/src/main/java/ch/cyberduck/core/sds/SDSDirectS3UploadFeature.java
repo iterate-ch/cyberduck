@@ -113,6 +113,13 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
+            final InputStream in;
+            if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
+                in = new SDSTripleCryptEncryptorFeature(session, nodeid).encrypt(file, local.getInputStream(), status);
+            }
+            else {
+                in = local.getInputStream();
+            }
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                     .directS3Upload(true)
                     .timestampModification(status.getModified() != null ? new DateTime(status.getModified()) : null)
@@ -128,15 +135,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             final Map<Integer, TransferStatus> etags = new HashMap<>();
             final List<PresignedUrl> presignedUrls = this.retrievePresignedUrls(createFileUploadResponse, status);
             final List<Future<TransferStatus>> parts = new ArrayList<>();
-            final InputStream in;
-            final String random = new UUIDRandomStringService().random();
-            if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
-                in = new SDSTripleCryptEncryptorFeature(session, nodeid).encrypt(file, local.getInputStream(), status);
-            }
-            else {
-                in = local.getInputStream();
-            }
             try {
+                final String random = new UUIDRandomStringService().random();
                 // Full size of file
                 final long size = status.getLength() + status.getOffset();
                 long offset = 0;

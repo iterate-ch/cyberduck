@@ -28,6 +28,8 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.EnumSet;
+
 public class B2VersioningFeature implements Versioning {
 
     private final B2Session session;
@@ -63,8 +65,8 @@ public class B2VersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(final Path file) {
-        return true;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.revert, Flags.configuration, Flags.list);
     }
 
     @Override

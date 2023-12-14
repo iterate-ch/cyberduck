@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.EnumSet;
 import java.util.Map;
 
 public class DriveThresholdTrashFeature implements Trash {
@@ -44,7 +45,7 @@ public class DriveThresholdTrashFeature implements Trash {
     }
 
     @Override
-    public boolean isRecursive() {
-        return true;
+    public EnumSet<Flags> features() {
+        return EnumSet.of(Flags.recursive);
     }
 }

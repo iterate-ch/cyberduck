@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
+import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -236,7 +237,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             log.debug(String.format("Find transfer status of %s for transfer %s", file, this));
         }
         if(this.isCanceled()) {
-            throw new TransferCanceledException();
+            throw new TransferStatusCanceledException();
         }
         if(prompt.isSelected(new TransferItem(file, local))) {
             return this.submit(new RetryTransferCallable(transfer.getSource()) {
@@ -338,7 +339,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
      */
     public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
         if(this.isCanceled()) {
-            throw new TransferCanceledException();
+            throw new TransferStatusCanceledException();
         }
         // Only transfer if accepted by filter and stored in table with transfer status
         if(table.containsKey(item)) {
