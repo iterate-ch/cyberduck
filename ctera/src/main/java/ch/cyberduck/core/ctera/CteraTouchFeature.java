@@ -31,7 +31,7 @@ public class CteraTouchFeature extends DAVTouchFeature {
     private static final Logger log = LogManager.getLogger(CteraTouchFeature.class);
 
     public CteraTouchFeature(final CteraSession session) {
-        super(session);
+        super(session, new CteraAttributesFinderFeature(session));
     }
 
     @Override
@@ -39,6 +39,8 @@ public class CteraTouchFeature extends DAVTouchFeature {
         if(!validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
+        // TODO CTERA-136 do we need to require writepermission as well?
+        super.preflight(workdir, filename);
     }
 
     public static boolean validate(final String filename) {

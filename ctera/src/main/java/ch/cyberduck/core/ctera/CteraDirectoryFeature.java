@@ -26,7 +26,7 @@ import java.text.MessageFormat;
 public class CteraDirectoryFeature extends DAVDirectoryFeature {
 
     public CteraDirectoryFeature(final CteraSession session) {
-        super(session);
+        super(session, new CteraAttributesFinderFeature(session));
     }
 
     @Override
@@ -34,5 +34,7 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
         if(!CteraTouchFeature.validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
+        // TODO CTERA-136 do we need to require writepermission as well?
+        super.preflight(workdir, filename);
     }
 }

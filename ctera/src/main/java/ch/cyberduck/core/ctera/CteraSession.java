@@ -15,15 +15,18 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.MacUniqueIdService;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
@@ -31,20 +34,33 @@ import ch.cyberduck.core.ctera.model.AttachDeviceResponse;
 import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.ctera.model.PortalSession;
 import ch.cyberduck.core.ctera.model.PublicInfo;
+import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVClient;
+import ch.cyberduck.core.dav.DAVCopyFeature;
+import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.dav.DAVListService;
+import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.CustomActions;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -82,21 +98,66 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.sardine.DavResource;
 import com.google.common.util.concurrent.Uninterruptibles;
 
+import static ch.cyberduck.core.ctera.CteraCustomACL.*;
+
+
 public class CteraSession extends DAVSession {
+    // TODO CTERA-136 create Ctera***Feature for all preflight cases? Keeping all checks in one location (CteraSession) for now.
+    // <ctera:readpermission>                                 [Read.preflight()  - files only? see traversepermission ]
+    // <ctera:writepermission>                                [Write.preflight() - files only? see Createfilepermission/CreateDirectoriespermission ]
+    // <ctera:executepermission>           - Files only       [                  - ?]
+    // <ctera:deletepermission>                               [Delete.preflight(), Move.preflight()                  - do we need default writepermission as well?]
+    // <ctera:traversepermission>          - Directories only [                  - what does it mean, listing a folder? List/Find features?]
+    // <ctera:Createfilepermission>        - Directories only [Touch.preflight(), Copy.preflight(), Move.preflight() - do we need default writepermission on target folder as well?]
+    // <ctera:CreateDirectoriespermission> - Directories only [Directory.preflight(), Copy.preflight(), Move.preflight() - do we need default writepermission on target folder as well?]
+
     private static final Logger log = LogManager.getLogger(CteraSession.class);
 
     private final CteraAuthenticationHandler authentication = new CteraAuthenticationHandler(this);
 
+    private final DAVAttributesFinderFeature attributes = new CteraAttributesFinderFeature(this);
+
+    private final ListService list = new DAVListService(this, attributes) {
+//        @Override
+//        public void preflight(Path file) throws BackgroundException {
+//            super.preflight(file);
+//            // TODO CTERA-136 add preflight in listing and find?
+//        }
+
+        @Override
+        protected List<DavResource> list(final Path directory) throws IOException {
+            return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(
+                    Stream.of(
+                            // TODO CTERA-136 sent as CteraSession.getFeature(ListService.class) returns DAVListService, but Timestamp feature disabled in CteraSession.getFeature(Timestamp.class) - do we need it?
+//                    DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE
+                    ),
+                    allCteraCustomACLQn.stream()
+            ).collect(Collectors.toSet())));
+        }
+    };
+    private static boolean embeddedWebDAV = false;
+
+
     public CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+    }
+
+    public static void tweakEmbeddedWebDAV() {
+        // TODO CTERA-136 temporary workaround for mock tests
+        embeddedWebDAV = true;
     }
 
     @Override
@@ -110,6 +171,10 @@ public class CteraSession extends DAVSession {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        if(embeddedWebDAV) {
+            super.login(proxy, prompt, cancel);
+            return;
+        }
         final Credentials credentials = host.getCredentials();
         if(StringUtils.isBlank(credentials.getToken())) {
             final CteraTokens tokens = this.getTokens(credentials, prompt, cancel);
@@ -132,6 +197,7 @@ public class CteraSession extends DAVSession {
             credentials.setUsername(this.getCurrentSession().username);
         }
     }
+
 
     private CteraTokens getTokens(final Credentials credentials, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final AttachDeviceResponse response;
@@ -162,14 +228,42 @@ public class CteraSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        final CteraSession session = this;
         if(type == Touch.class) {
-            return (T) new CteraTouchFeature(this);
+            return (T) new CteraTouchFeature(this) {
+                @Override
+                public void preflight(final Path workdir, final String filename) throws BackgroundException {
+                    // TODO CTERA-136 do we need to require writepermission as well?
+                    super.preflight(workdir, filename);
+                    session.checkCteraRole(workdir, Createfilepermission);
+                }
+            };
         }
         if(type == Directory.class) {
-            return (T) new CteraDirectoryFeature(this);
+            return (T) new CteraDirectoryFeature(this) {
+                @Override
+                public void preflight(final Path workdir, final String filename) throws BackgroundException {
+                    // TODO CTERA-136 do we need to require writepermission as well?
+                    super.preflight(workdir, filename);
+                    session.checkCteraRole(workdir, CreateDirectoriespermission);
+                }
+            };
         }
         if(type == Move.class) {
-            return (T) new CteraMoveFeature(this);
+            return (T) new CteraMoveFeature(this) {
+                @Override
+                public void preflight(final Path source, final Path target) throws BackgroundException {
+                    super.preflight(source, target);
+                    session.checkCteraRole(source, deletepermission);
+                    session.checkCteraRole(target, writepermission);
+                    if(source.isDirectory()) {
+                        session.checkCteraRole(target.getParent(), CreateDirectoriespermission);
+                    }
+                    else {
+                        session.checkCteraRole(target.getParent(), Createfilepermission);
+                    }
+                }
+            };
         }
         if(type == Lock.class) {
             return null;
@@ -186,7 +280,72 @@ public class CteraSession extends DAVSession {
         if(type == UrlProvider.class) {
             return (T) new CteraUrlProvider(host);
         }
+        if(type == AttributesFinder.class) {
+            return (T) attributes;
+        }
+        if(type == ListService.class) {
+            return (T) list;
+        }
+        if(type == AclPermission.class) {
+            return (T) new CteraAclPermissionFeature(this);
+        }
+        if(type == Read.class) {
+            return (T) new DAVReadFeature(this) {
+                @Override
+                public void preflight(Path file) throws BackgroundException {
+                    // TODO CTERA-136 do we need both? Which one to prefer?
+                    super.preflight(file);
+                    session.checkCteraRole(file, readpermission);
+                }
+            };
+        }
+        if(type == Write.class) {
+            return (T) new DAVWriteFeature(this) {
+                @Override
+                public void preflight(Path file) throws BackgroundException {
+                    // TODO CTERA-136 do we need both? Which one to prefer?
+                    super.preflight(file);
+                    session.checkCteraRole(file, writepermission);
+                }
+            };
+        }
+        if(type == Delete.class) {
+            return (T) new DAVDeleteFeature(this) {
+                @Override
+                public void preflight(Path file) throws BackgroundException {
+                    // TODO CTERA-136 do we require writepermission on file as well?
+                    super.preflight(file);
+                    session.checkCteraRole(file, deletepermission);
+                }
+            };
+        }
+        if(type == Copy.class) {
+            return (T) new DAVCopyFeature(this) {
+                @Override
+                public void preflight(final Path source, final Path target) throws BackgroundException {
+                    // TODO CTERA-136 do we require writepermission on target's parent?
+                    super.preflight(source, target);
+                    if(source.isDirectory()) {
+                        session.checkCteraRole(target.getParent(), CreateDirectoriespermission);
+                    }
+                    else {
+                        session.checkCteraRole(target.getParent(), Createfilepermission);
+                    }
+                }
+            };
+        }
         return super._getFeature(type);
+    }
+
+    protected void checkCteraRole(final Path file, final Acl.Role role) throws BackgroundException {
+        final Acl acl = file.attributes().getAcl();
+        if(acl.equals(Acl.EMPTY)) {
+            return;
+        }
+        if(!acl.get(new Acl.CanonicalUser()).contains(role)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),
+                    file.getName())).withFile(file);
+        }
     }
 
     private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
