@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LockedException;
@@ -71,8 +72,9 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
             case HttpStatus.SC_LOCKED:
                 return new LockedException(buffer.toString(), failure);
             case HttpStatus.SC_BAD_GATEWAY:
-            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                return new ConnectionRefusedException(buffer.toString(), failure);
+            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
             case HttpStatus.SC_TOO_MANY_REQUESTS:
                 // Too Many Requests. Rate limiting
             case 509:
