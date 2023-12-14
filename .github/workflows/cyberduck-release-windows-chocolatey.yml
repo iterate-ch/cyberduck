@@ -13,7 +13,7 @@ jobs:
       uses: actions/checkout@v4.1.0
     - name: run batch command
       shell: powershell
-      run: choco config set --name="'defaultPushSource'" --value="'https://push.chocolatey.org/'"; Get-ChildItem "${Env:GITHUB_WORKSPACE}\0-TEMP-CHOCO\" -Filter *.nupkg | Foreach-Object -process { choco push $_.FullName --debug --api-key ${CHOCOLATEY_API} } 
+      run: choco config set --name="'defaultPushSource'" --value="'https://push.chocolatey.org/'"; choco apikey add -k ${CHOCOLATEY_API} -s https://push.chocolatey.org/; Get-ChildItem "${Env:GITHUB_WORKSPACE}\0-TEMP-CHOCO\" -Filter *.nupkg | Foreach-Object -process { choco push $_.FullName --debug  } 
 
         #Get-ChildItem "${Env:GITHUB_WORKSPACE}\..\cyberduck-release-windows\windows\target\release\" -Filter cyberduck.*.nupkg | Foreach-Object -process { choco push $_ --verbose --api-key ${CHOCOLATEY_API} }
         
