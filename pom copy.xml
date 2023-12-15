@@ -71,7 +71,7 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git@github.com:RaveenaRamany/cyberduck.git</connection> <!-- TODO: Änderung von iterate zu RaveenaRamany -->
+        <connection>scm:git:git@github.com:iterate-ch/cyberduck.git</connection>
         <tag>release-8-7-1</tag>
     </scm>
 
@@ -432,7 +432,7 @@
                         <encoding>UTF-8</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
                         <source>${maven.compiler.source}</source>
-                        <target>${maven.compiler.target}</target> <!--ToDO: Das muss abgepasst werden-->
+                        <target>${maven.compiler.target}</target>
                         <release>${maven.compiler.target}</release>
                     </configuration>
                 </plugin>
@@ -814,7 +814,7 @@
                     <message>Documentation for ${project.name} ${project.version}</message>
                     <server>github</server>
                     <repositoryName>cyberduck</repositoryName>
-                    <repositoryOwner>iterate-ch</repositoryOwner> <!--Todo: Muss abgepasst werden-->
+                    <repositoryOwner>iterate-ch</repositoryOwner>
                     <path>docs</path>
                     <dryRun>true</dryRun>
                 </configuration>
@@ -866,7 +866,6 @@
         </dependency>
     </dependencies>
 
-<!--ToDO: Das untere ist zum hochladen,deshalb ist es ein TODO und muss angepasst werden-->
     <distributionManagement>
         <repository>
             <id>maven.cyberduck.io-release</id>
@@ -883,7 +882,7 @@
             <url>docs</url>
         </site>
     </distributionManagement>
-   <!-- Das untere Repo ist nur zum herunterladen von Daten-->
+
     <repositories>
         <repository>
             <id>maven.cyberduck.io-release</id>
@@ -909,9 +908,6 @@
         </repository>
     </repositories>
 
-<!--ToDo: Diese Profile ermöglichen es, unterschiedliche Aktionen 
-oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wird, zu steuern. 
--->
     <profiles>
         <profile>
             <id>release-sign-artifacts</id>
@@ -942,7 +938,7 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
         </profile>
         <profile>
             <id>project-root-jenkins</id>
-            <!-- activate profile for Jenkins builds --> <!--TODO: Dies muss angepasst werden-->
+            <!-- activate profile for Jenkins builds -->
             <activation>
                 <property>
                     <name>env.JENKINS_HOME</name>
@@ -980,7 +976,7 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
         </profile>
         <profile>
             <id>project-root-local</id>
-            <!-- activate profile for non-Jenkins builds --> <!--ToDo: das ober das obere muss angepasst werden-->
+            <!-- activate profile for non-Jenkins builds -->
             <activation>
                 <property>
                     <name>!env.JENKINS_HOME</name>
