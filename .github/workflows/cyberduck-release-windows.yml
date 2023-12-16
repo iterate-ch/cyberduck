@@ -77,7 +77,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
-        settings-path: "${{ github.workspace }}"
+#        settings-path: "${{ github.workspace }}"
         overwrite-settings: false
     - name: get settings.xml config
       shell: powershell
