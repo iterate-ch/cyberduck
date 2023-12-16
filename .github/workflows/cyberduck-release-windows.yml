@@ -48,6 +48,7 @@ jobs:
     - name: Generate maven settings.xml
       uses: s4u/maven-settings-action@v2.8.0
       with:
+        interactiveMode: false
         servers: |
           [{
             "id": "custom-ip5-maven.cyberduck.io-release",
@@ -62,22 +63,22 @@ jobs:
           {
             "id": "maven.iterate.ch-release",
             "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENTD }}"
+            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
           },
           {
             "id": "maven.iterate.ch-snapshot",
             "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENTD }}"
+            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
           },
           {
             "id": "maven.cyberduck.io-release",
             "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENTD }}"
+            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
           },
           {
             "id": "maven.cyberduck.io-snapshot",
             "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENTD }}"
+            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
           }]
     - name: Run maven
       run: mvn clean deploy --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
