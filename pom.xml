@@ -432,7 +432,7 @@
                         <encoding>UTF-8</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
                         <source>${maven.compiler.source}</source>
-                        <target>${maven.compiler.target}</target> <!--ToDO: Das muss abgepasst werden-->
+                        <target>${maven.compiler.target}</target>
                         <release>${maven.compiler.target}</release>
                     </configuration>
                 </plugin>
@@ -814,7 +814,7 @@
                     <message>Documentation for ${project.name} ${project.version}</message>
                     <server>github</server>
                     <repositoryName>cyberduck</repositoryName>
-                    <repositoryOwner>iterate-ch</repositoryOwner> <!--Todo: Muss abgepasst werden-->
+                    <repositoryOwner>RaveenaRamany</repositoryOwner> <!-- TODO: Ort für deployment der dokumentation (Github Projekt: RaveenaRamany/docs)-->
                     <path>docs</path>
                     <dryRun>true</dryRun>
                 </configuration>
@@ -866,16 +866,16 @@
         </dependency>
     </dependencies>
 
-<!--ToDO: Das untere ist zum hochladen,deshalb ist es ein TODO und muss angepasst werden-->
+<!--ToDO: Das untere ist zum uploaden,muss angepasst werden, id und URL.-->
     <distributionManagement>
         <repository>
-            <id>maven.cyberduck.io-release</id>
-            <url>s3://repo.maven.cyberduck.io/releases/</url>
+            <id>custom-ip5-maven.cyberduck.io-release</id> <!--TODO: Original maven.cyberduck.io-release-->
+            <url>s3://ip5-cicd-cyberduck/releases/</url> <!--TODO: Original url s3://repo.maven.cyberduck.io/releases/-->
             <layout>default</layout>
         </repository>
         <snapshotRepository>
-            <id>maven.cyberduck.io-snapshot</id>
-            <url>s3://repo.maven.cyberduck.io/snapshots/</url>
+            <id>custom-ip5-maven.cyberduck.io-snapshot</id> <!--TODO: Original maven.cyberduck.io-snapshot-->
+            <url>s3://ip5-cicd-cyberduck/napshots/</url> <!--TODO: Original url s3://repo.maven.cyberduck.io/snapshots/-->
         </snapshotRepository>
         <site>
             <id>github-pages-site</id>
@@ -945,7 +945,7 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
             <!-- activate profile for Jenkins builds --> <!--TODO: Dies muss angepasst werden-->
             <activation>
                 <property>
-                    <name>env.JENKINS_HOME</name>
+                    <name>${env.GITHUB_WORKSPACE}</name> <!--TODO: This variable tells maven, if its running on a ci/cd pipeline and thus sets other parameters for the building process. The environment variable ${env.GITHUB_WORKSPACE} is only used to determine this but its not used as a path within the project-->
                 </property>
             </activation>
             <properties>
@@ -980,10 +980,10 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
         </profile>
         <profile>
             <id>project-root-local</id>
-            <!-- activate profile for non-Jenkins builds --> <!--ToDo: das ober das obere muss angepasst werden-->
+            <!-- activate profile for non-Jenkins builds --> <!--ToDo: das obere muss angepasst werden-->
             <activation>
                 <property>
-                    <name>!env.JENKINS_HOME</name>
+                    <name>!env.GITHUB_WORKSPACE</name> <!--TODO: This variable tells maven, if its running on a ci/cd pipeline and thus sets other parameters for the building process. The environment variable ${env.GITHUB_WORKSPACE} is only used to determine this but its not used as a path within the project-->
                 </property>
             </activation>
             <properties>
