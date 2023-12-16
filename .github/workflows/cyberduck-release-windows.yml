@@ -81,7 +81,7 @@ jobs:
         settings-path: "${{ github.workspace }}"
         overwrite-settings: false
     - name: Run maven
-      run: mvn clean deploy -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
+      run: mvn clean deploy  --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
     - name: Install Cyberduck CLI using chocolatey
       shell: powershell
       run: choco install duck
