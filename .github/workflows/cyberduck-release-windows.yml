@@ -50,24 +50,34 @@ jobs:
       with:
         servers: |
           [{
+            "id": "custom-ip5-maven.cyberduck.io-release",
+            "username": "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}",
+            "password": "${{ secrets.AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT }}"
+          },
+          {
+            "id": "custom-ip5-maven.cyberduck.io-snapshot",
+            "username": "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}",
+            "password": "${{ secrets.AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT }}"
+          },
+          {
             "id": "maven.iterate.ch-release",
-            "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
+            "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
+            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENTD }}"
           },
           {
             "id": "maven.iterate.ch-snapshot",
-            "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
+            "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
+            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENTD }}"
           },
           {
             "id": "maven.cyberduck.io-release",
-            "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
+            "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
+            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENTD }}"
           },
           {
             "id": "maven.cyberduck.io-snapshot",
-            "username": "AKIAI44PZB4OH5YGWFVA",
-            "password": "${{ secrets.MAVEN_SERVER_PASSWORD }}"
+            "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
+            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENTD }}"
           }]
     - name: Run maven
       run: mvn clean deploy --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
