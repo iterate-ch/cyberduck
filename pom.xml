@@ -494,6 +494,7 @@
                             </goals>
                             <configuration>
                                 <target>
+                                    <echo>Test Configuration Directory: ${main.basedir}</echo> <!--TODO: Testing value/output of variable -->
                                     <property name="home" value="${main.basedir}" />
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
