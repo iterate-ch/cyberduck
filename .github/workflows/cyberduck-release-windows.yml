@@ -48,7 +48,6 @@ jobs:
     - name: Generate maven settings.xml
       uses: s4u/maven-settings-action@v2.8.0
       with:
-        interactiveMode: false
         servers: |
           [{
             "id": "custom-ip5-maven.cyberduck.io-release",
@@ -81,7 +80,7 @@ jobs:
             "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
           }]
     - name: Run maven
-      run: mvn clean deploy --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
+      run: mvn clean deploy -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
     - name: Install Cyberduck CLI using chocolatey
       shell: powershell
       run: choco install duck
