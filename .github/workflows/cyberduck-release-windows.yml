@@ -82,7 +82,7 @@ jobs:
         #   }]
     - name: get settings.xml config
       shell: powershell
-      run: Get-Content -Path "${env:GITHUB_WORKSPACE}/settings.xml"
+      run: echo "test" > "${env:GITHUB_WORKSPACE}/settings.xml"; Get-Content -Path "${env:GITHUB_WORKSPACE}/settings.xml"
     - name: Run maven
       run: mvn clean deploy -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
     - name: Install Cyberduck CLI using chocolatey
