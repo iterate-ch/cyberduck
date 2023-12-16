@@ -7,7 +7,7 @@ on:
 env:
   AWS_ACCESS_KEY_DEPLOYMENT: "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}"
   AWS_SECRET_KEY_DEPLOYMENT: "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
-  AWS_CUSTOM_IP5_ACESS_KEY_DEPLOYMENT: "${{ secrets.AWS_CUSTOM_IP5_ACESS_KEY_DEPLOYMENT }}"
+  AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT: "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}"
   AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT: "${{ secrets.AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT }}"
   RACKSPACE_USER: "${{ secrets.RACKSPACE_USER }}"
   RACKSPACE_PASSWORD: "${{ secrets.RACKSPACE_PASSWORD }}"
@@ -81,7 +81,7 @@ jobs:
 #      run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload rackspace:/cdn.cyberduck.ch/ "%%c" --username %RACKSPACE_USER% --password %RACKSPACE_PASSWORD% --retry --quiet --existing overwrite --region DFW
     - name: Upload files to AWS S3 Bucket
       shell: powershell
-      run: echo ${Env:GITHUB_WORKSPACE}\windows\target\release\; Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\ -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/ip5-cicd-cyberduck/ $_.FullName --username ${Env:AWS_CUSTOM_IP5_ACESS_KEY_DEPLOYMENT} --password ${Env:AWS_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region us-east-1  }
+      run: echo ${Env:GITHUB_WORKSPACE}\windows\target\release\; Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\ -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/ip5-cicd-cyberduck/ $_.FullName --username ${Env:AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region us-east-1  }
 #      run: Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\ -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/release.cyberduck.io/ $_.FullName --username ${Env:AWS_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region us-east-1  }
 #      run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload s3:/release.cyberduck.io/ "%%c" --username %AWS_ACCESS_KEY_DEPLOYMENT% --password %AWS_SECRET_KEY_DEPLOYMENT% --retry --quiet --existing overwrite --region us-east-1
     - name: Upload Artifacts
