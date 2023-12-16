@@ -875,7 +875,7 @@
         </repository>
         <snapshotRepository>
             <id>custom-ip5-maven.cyberduck.io-snapshot</id> <!--TODO: Original maven.cyberduck.io-snapshot-->
-            <url>s3://ip5-cicd-cyberduck/napshots/</url> <!--TODO: Original url s3://repo.maven.cyberduck.io/snapshots/-->
+            <url>s3://ip5-cicd-cyberduck/snapshots/</url> <!--TODO: Original url s3://repo.maven.cyberduck.io/snapshots/-->
         </snapshotRepository>
         <site>
             <id>github-pages-site</id>
