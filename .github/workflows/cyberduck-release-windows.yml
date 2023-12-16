@@ -47,8 +47,8 @@ jobs:
         settings-path: "${{ github.workspace }}"
     # - name: Generate maven settings.xml
     #   uses: s4u/maven-settings-action@v2.8.0
-      with:
-        servers: '[{"id": "custom-ip5-maven.cyberduck.io-release", "username": "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}", "password": "xyz"}]'
+#      with:
+#        servers: '[{"id": "custom-ip5-maven.cyberduck.io-release", "username": "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}", "password": "xyz"}]'
         # servers: |
         #   [{
         #     "id": "custom-ip5-maven.cyberduck.io-release",
