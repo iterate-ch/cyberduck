@@ -72,7 +72,7 @@ jobs:
             "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
             "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
           }]
-    - name: Set up JDK 17 and skip creation of settings.xml
+    - name: Set up JDK 17 and skip overwriting of settings.xml
       uses: actions/setup-java@v4.0.0
       with:
         distribution: 'temurin'
