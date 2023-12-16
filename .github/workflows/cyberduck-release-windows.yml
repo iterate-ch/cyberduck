@@ -41,6 +41,7 @@ jobs:
     - name: Generate maven settings.xml
       uses: s4u/maven-settings-action@v2.8.0
       with:
+        path: "${{ github.workspace }}/settings.xml"
         servers: |
           [{
             "id": "custom-ip5-maven.cyberduck.io-release",
@@ -77,7 +78,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
-#        settings-path: "${{ github.workspace }}"
+        settings-path: "${{ github.workspace }}"
         overwrite-settings: false
 #    - name: get settings.xml config
 #      shell: powershell
