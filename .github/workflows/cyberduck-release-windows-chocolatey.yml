@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
 env:
   CHOCOLATEY_API: "${{ secrets.CHOCOLATEY_API_KEY }}"
-#   # TimestamperBuildWrapper was not converted because the behavior is available by default in GitHub Actions and/or it is not configurable
 jobs:
   build:
     runs-on:
@@ -14,10 +13,8 @@ jobs:
     - name: run batch command
       shell: powershell
       run: choco config set --name="'defaultPushSource'" --value="${Env:GITHUB_WORKSPACE}\..\"; choco apikey add -k ${Env:CHOCOLATEY_API} -s "${Env:GITHUB_WORKSPACE}\..\"; Get-ChildItem "${Env:GITHUB_WORKSPACE}\0-TEMP-CHOCO\" -Filter *.nupkg | Foreach-Object -process { choco push $_.FullName --debug  } 
-        # choco config set --name="'defaultPushSource'" --value="'https://push.chocolatey.org/'"; choco apikey add -k ${Env:CHOCOLATEY_API} -s https://push.chocolatey.org/; Get-ChildItem "${Env:GITHUB_WORKSPACE}\..\cyberduck-release-windows\windows\target\release\" -Filter cyberduck.*.nupkg | Foreach-Object -process { choco push $_.FullName --debug }
-        
-#     # Mailer plugin was not converted because GitHub Actions will email the actor after failed build and does not support emailing a list of recipients
-
-
-
-
+       # The following line must be used for production 
+       # choco config set --name="'defaultPushSource'" --value="'https://push.chocolatey.org/'"; choco apikey add -k ${Env:CHOCOLATEY_API} -s https://push.chocolatey.org/; Get-ChildItem "${Env:GITHUB_WORKSPACE}\..\cyberduck-release-windows\windows\target\release\" -Filter cyberduck.*.nupkg | Foreach-Object -process { choco push $_.FullName --debug }
+ 
+      # Github only allows sending notifications to the actor of the GitHub Action: https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/notifications-for-workflow-runs
+      # Mailer plugin was not converted because GitHub Actions will email the actor after failed build and does not support emailing a list of recipients
