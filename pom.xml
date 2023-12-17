@@ -494,12 +494,9 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <echo>Test Configuration Directory: ${project.basedir}</echo> <!--TODO: Testing value/output of variable -->
-                                    <echo>Test Configuration Directory "${project.basedir}"</echo>
-                                    <echo>Test Configuration Directory "${-Pproject-root-jenkins}"</echo>
-                                    <echo>Test Configuration Directory "${Pproject-root-jenkins}"</echo>
-                                    <echo>Test Configuration Directory "${-project-root-jenkins}"</echo>
-                                    <echo>Test Configuration Directory "${project-root-jenkins}"</echo>
+                                    <echo>Test Configuration Directory: ${main.basedir}</echo> <!--TODO: Testing value/output of variable -->
+                                    <echo>Test Configuration Directory "${main.basedir}"</echo>
+
                                     <property name="home" value="${main.basedir}" />
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
