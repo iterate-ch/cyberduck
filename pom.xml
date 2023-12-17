@@ -496,7 +496,7 @@
                                 <target>
                                     <echo>Test Configuration Directory: ${project.basedir}</echo> <!--TODO: Testing value/output of variable -->
                                     <echo>Test Configuration Directory "${project.basedir}"</echo>
-                                    <property name="home" value="${mainbasedir}" />
+                                    <property name="home" value="${main.basedir}" />
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
                                     <property name="hash" value="${git.revision}" />
@@ -970,7 +970,7 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
                                 </goals>
                                 <phase>initialize</phase>
                                 <configuration>
-                                    <property>mainbasedir</property> <!--TODO: change to "main.basedir"-->
+                                    <property>main.basedir</property>
                                     <project>
                                         <groupId>ch.cyberduck</groupId>
                                         <artifactId>parent</artifactId>
@@ -991,7 +991,7 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
                 </property>
             </activation>
             <properties>
-                <mainbasedir>${maven.multiModuleProjectDirectory}</mainbasedir> <!--Todo change to "main.basedir"-->
+                <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
             </properties>
         </profile>
         <profile>
