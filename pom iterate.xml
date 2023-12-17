@@ -71,7 +71,7 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git@github.com:RaveenaRamany/cyberduck.git</connection> <!-- TODO: Änderung von iterate zu RaveenaRamany -->
+        <connection>scm:git:git@github.com:iterate-ch/cyberduck.git</connection>
         <tag>release-8-7-1</tag>
     </scm>
 
@@ -494,12 +494,6 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <echo>Test Configuration Directory: ${project.basedir}</echo> <!--TODO: Testing value/output of variable -->
-                                    <echo>Test Configuration Directory "${project.basedir}"</echo>
-                                    <echo>Test Configuration Directory "${-Pproject-root-jenkins}"</echo>
-                                    <echo>Test Configuration Directory "${Pproject-root-jenkins}"</echo>
-                                    <echo>Test Configuration Directory "${-project-root-jenkins}"</echo>
-                                    <echo>Test Configuration Directory "${project-root-jenkins}"</echo>
                                     <property name="home" value="${main.basedir}" />
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
@@ -820,7 +814,7 @@
                     <message>Documentation for ${project.name} ${project.version}</message>
                     <server>github</server>
                     <repositoryName>cyberduck</repositoryName>
-                    <repositoryOwner>RaveenaRamany</repositoryOwner> <!-- TODO: Ort für deployment der dokumentation (Github Projekt: RaveenaRamany/docs)-->
+                    <repositoryOwner>iterate-ch</repositoryOwner>
                     <path>docs</path>
                     <dryRun>true</dryRun>
                 </configuration>
@@ -872,19 +866,15 @@
         </dependency>
     </dependencies>
 
-<!--ToDO: Das untere ist zum uploaden,muss angepasst werden, id und URL.-->
     <distributionManagement>
         <repository>
-            <id>custom-ip5-maven.cyberduck.io-release</id> <!--TODO: Original maven.cyberduck.io-release-->
-            <!--<url>s3://ip5-cicd-cyberduck/releases/</url>--> <!--TODO: Original url s3://repo.maven.cyberduck.io/releases/-->
-
-           <url>s3://ip5-cyberduck1/releases/</url><!--TODO: Original url s3://repo.maven.cyberduck.io/releases/-->
+            <id>maven.cyberduck.io-release</id>
+            <url>s3://repo.maven.cyberduck.io/releases/</url>
             <layout>default</layout>
         </repository>
         <snapshotRepository>
-            <id>custom-ip5-maven.cyberduck.io-snapshot</id> <!--TODO: Original maven.cyberduck.io-snapshot-->
-            <!--<url>s3://ip5-cicd-cyberduck/snapshots/</url>--> <!--TODO: Original url s3://repo.maven.cyberduck.io/snapshots/-->
-            <url>s3://ip5-cyberduck1/snapshots/</url> <!--TODO: Original url s3://repo.maven.cyberduck.io/snapshots/-->
+            <id>maven.cyberduck.io-snapshot</id>
+            <url>s3://repo.maven.cyberduck.io/snapshots/</url>
         </snapshotRepository>
         <site>
             <id>github-pages-site</id>
@@ -892,7 +882,7 @@
             <url>docs</url>
         </site>
     </distributionManagement>
-   <!-- Das untere Repo ist nur zum herunterladen von Daten-->
+
     <repositories>
         <repository>
             <id>maven.cyberduck.io-release</id>
@@ -918,9 +908,6 @@
         </repository>
     </repositories>
 
-<!--ToDo: Diese Profile ermöglichen es, unterschiedliche Aktionen 
-oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wird, zu steuern. 
--->
     <profiles>
         <profile>
             <id>release-sign-artifacts</id>
@@ -951,10 +938,10 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
         </profile>
         <profile>
             <id>project-root-jenkins</id>
-            <!-- activate profile for Jenkins builds --> <!--TODO: Dies muss angepasst werden-->
+            <!-- activate profile for Jenkins builds -->
             <activation>
                 <property>
-                    <name>${env.GITHUB_WORKSPACE}</name> <!--TODO: This variable tells maven, if its running on a ci/cd pipeline and thus sets other parameters for the building process. The environment variable ${env.GITHUB_WORKSPACE} is only used to determine this but its not used as a path within the project-->
+                    <name>env.JENKINS_HOME</name>
                 </property>
             </activation>
             <properties>
@@ -986,6 +973,18 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>project-root-local</id>
+            <!-- activate profile for non-Jenkins builds -->
+            <activation>
+                <property>
+                    <name>!env.JENKINS_HOME</name>
+                </property>
+            </activation>
+            <properties>
+                <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
+            </properties>
         </profile>
         <profile>
             <id>no-testcontainers</id>
