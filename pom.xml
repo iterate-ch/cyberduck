@@ -954,7 +954,7 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
             <!-- activate profile for Jenkins builds --> <!--TODO: Dies muss angepasst werden-->
             <activation>
                 <property>
-                    <name>${env.GITHUB_WORKSPACE}</name> <!--TODO: This variable tells maven, if its running on a ci/cd pipeline and thus sets other parameters for the building process. The environment variable ${env.GITHUB_WORKSPACE} is only used to determine this but its not used as a path within the project-->
+                    <name>env.GITHUB_WORKSPACE</name> <!--TODO: This variable tells maven, if its running on a ci/cd pipeline and thus sets other parameters for the building process. The environment variable ${env.GITHUB_WORKSPACE} is only used to determine this but its not used as a path within the project-->
                 </property>
             </activation>
             <properties>
@@ -986,6 +986,18 @@ oder Konfigurationen basierend auf der Umgebung, in der der Build ausgeführt wi
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>project-root-local</id>
+            <!-- activate profile for non-Jenkins builds --> <!--ToDo: das obere muss angepasst werden-->
+            <activation>
+                <property>
+                    <name>!env.GITHUB_WORKSPACE</name> <!--TODO: This variable tells maven, if its running on a ci/cd pipeline and thus sets other parameters for the building process. The environment variable ${env.GITHUB_WORKSPACE} is only used to determine this but its not used as a path within the project-->
+                </property>
+            </activation>
+            <properties>
+                <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
+            </properties>
         </profile>
         <profile>
             <id>no-testcontainers</id>
