@@ -81,16 +81,16 @@ jobs:
         java-version: '17'
         settings-path: "${{ github.workspace }}"
         overwrite-settings: false
-    - name: Add MSBuild.exe to PATH
-      uses: microsoft/setup-msbuild@v1.1
-    - name: Run maven
-      run: mvn clean deploy -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
     - name: Install Cyberduck CLI using chocolatey
       shell: powershell
       run: choco install duck
     - name: Install Build Requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
       shell: powershell
       run: choco install bonjour
+    - name: Add MSBuild.exe to PATH
+      uses: microsoft/setup-msbuild@v1.1
+    - name: Run maven
+      run: mvn clean deploy -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
     - name: Upload files to Rackspace
       shell: powershell
       run: echo "Dummy rackspace upload"
