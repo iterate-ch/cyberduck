@@ -90,7 +90,7 @@ jobs:
     - name: Add MSBuild.exe to PATH
       uses: microsoft/setup-msbuild@v1.1
     - name: Run maven
-      run: mvn clean deploy -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
+      run: mvn clean deploy -Dskip=true -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
     - name: Upload files to Rackspace
       shell: powershell
       run: echo "Dummy rackspace upload"
