@@ -88,6 +88,9 @@ jobs:
     - name: Install Cyberduck CLI using chocolatey
       shell: powershell
       run: choco install duck
+    - name: Install Build Requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
+      shell: powershell
+      run: choco install bonjour
     - name: Upload files to Rackspace
       shell: powershell
       run: echo "Dummy rackspace upload"
