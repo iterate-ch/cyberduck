@@ -81,12 +81,15 @@ jobs:
         java-version: '17'
         settings-path: "${{ github.workspace }}"
         overwrite-settings: false
-    - name: Install Cyberduck CLI using chocolatey
+    - name: Install upload requirement Cyberduck CLI using chocolatey
       shell: powershell
       run: choco install duck
-    - name: Install Build Requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
+    - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
       shell: powershell
       run: choco install bonjour
+    - name: Install build requirement "sh" and "openssl" by Cygwin using chocolatey
+      shell: powershell
+      run: choco install cygwin
     - name: Add MSBuild.exe to PATH
       uses: microsoft/setup-msbuild@v1.1
     - name: Run maven
