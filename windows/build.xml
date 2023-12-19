@@ -115,6 +115,8 @@
         <mkdir dir="${build}/update"/>
 
         <echo message="Calculating DSA signature..."/>
+        <echo message="Build = ${build}"/>
+        <echo message="www update =${www.update}"/>
         <exec dir="${home}" executable="powershell" outputproperty="signature.dsa" failonerror="true">
             <arg value="-o"/>
             <arg value="pipefail"/>
