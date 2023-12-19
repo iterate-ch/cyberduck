@@ -26,7 +26,8 @@
         <equals arg1="${configuration}" arg2="release" />
     </condition>
 
-    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
+    <!--Todo: Property not needed as cpack (cmake) gets added to windows PATH by chocolatey install-->
+    <!--<property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>-->
 
     <property name="chocolatey.source" value="${setup}/chocolatey/duck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
@@ -102,6 +103,7 @@
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
-        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
+        <!--Todo: Removed exectuable="${cpack.bin}" as cpack (cmake) gets added to windows PATH by chocolatey install-->
+        <exec executable="cpack" dir="${chocolatey.target}" failonerror="true"/>
     </target>
 </project>
