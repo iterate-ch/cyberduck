@@ -83,13 +83,13 @@ jobs:
         overwrite-settings: false
     - name: Install upload requirement Cyberduck CLI using chocolatey
       shell: powershell
-      run: choco install duck
+      run: choco install duck -y
     - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
       shell: powershell
-      run: choco install bonjour
-    - name: Install build requirement "sh" and "openssl" by Cygwin using chocolatey
+      run: choco install bonjour -y
+    - name: Install build requirement openssl using chocolatey
       shell: powershell
-      run: choco install cygwin -y
+      run: choco install openssl -y
     - name: Add MSBuild.exe to PATH
       uses: microsoft/setup-msbuild@v1.1
     - name: Run maven
