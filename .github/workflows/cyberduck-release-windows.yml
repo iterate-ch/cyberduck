@@ -86,7 +86,7 @@ jobs:
       run: choco install duck -y
     - name: Install build requirement CMake CLI using chocolatey
       shell: powershell
-      run: choco install cmake -y
+      run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
     - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
       shell: powershell
       run: choco install bonjour -y
