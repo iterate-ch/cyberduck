@@ -84,6 +84,9 @@ jobs:
     - name: Install upload requirement Cyberduck CLI using chocolatey
       shell: powershell
       run: choco install duck -y
+    - name: Install build requirement CMake CLI using chocolatey
+      shell: powershell
+      run: choco install cmake -y
     - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
       shell: powershell
       run: choco install bonjour -y
