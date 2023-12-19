@@ -33,7 +33,7 @@
     <fail message="Executable cpack.exe not found">
         <condition>
             <available file="cpack" filepath="${env.PATH}"/>
-        <condition>
+        </condition>
     </fail>
 
     <property name="chocolatey.source" value="${setup}/chocolatey/duck"/>
