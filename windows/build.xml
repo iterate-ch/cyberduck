@@ -26,7 +26,8 @@
 
     <property name="app.name" value="Cyberduck"/>
 
-    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
+    <!--Todo: Property not needed as cpack (cmake) gets added to windows PATH by chocolatey install-->
+    <!--<property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>-->
 
     <property name="chocolatey.source" value="${setup}/chocolatey/cyberduck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
@@ -115,9 +116,6 @@
         <mkdir dir="${build}/update"/>
 
         <echo message="Calculating DSA signature..."/>
-        <!--Todo: Remove echos Build & Echo www update-->
-        <echo message="Build = ${build}"/>
-        <echo message="www update =${www.update}"/>
         <exec dir="${home}" executable="powershell" outputproperty="signature.dsa" failonerror="true">
             <!--Todo: remove for production "openssl genrsa -out ${www.update}/private.pem 4096;"-->
             <arg value="openssl genrsa -out ${www.update}/private.pem 4096; openssl dgst -sha1 -binary '${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe' | openssl dgst -sha1 -sign '${www.update}/private.pem' | openssl enc -base64"/>
@@ -173,6 +171,7 @@
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
-        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
+        <!--Todo: Removed exectuable="${cpack.bin}" as cpack (cmake) gets added to windows PATH by chocolatey install-->
+        <exec executable="cpack" dir="${chocolatey.target}" failonerror="true"/>
     </target>
 </project>
