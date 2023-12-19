@@ -51,6 +51,8 @@ public interface Serializer<T> {
 
     void setMapForKey(Map<String, String> value, String key);
 
+    void setBooleanForKey(boolean value, String key);
+
     /**
      * @return Native serialized format
      */

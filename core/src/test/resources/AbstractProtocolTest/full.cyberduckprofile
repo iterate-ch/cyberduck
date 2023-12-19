@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>OAuth Client ID</key>
+	<string>My OAuth Client ID</string>
+	<key>OAuth Client Secret</key>
+	<string>My OAuth Client Secret</string>
+	<key>OAuth Token Url</key>
+	<string>OAuth Token Url</string>
+	<key>OAuth Redirect Url</key>
+	<string>OAuth Redirect Url</string>
+	<key>OAuth Authorization Url</key>
+	<string>OAuth Auth Url</string>
+	<key>OAuth PKCE</key>
+	<false/>
+	<key>Scopes</key>
+	<array>
+		<string>a</string>
+		<string>b</string>
+	</array>
+	<key>STS Endpoint</key>
+	<string>sts.iterate.ch</string>
+	<key>Disk</key>
+	<string>disk.tiff</string>
+	<key>Icon</key>
+	<string>icon.tiff</string>
+	<key>Protocol</key>
+	<string>MyId</string>
+	<key>Vendor</key>
+	<string>MyProvider</string>
+	<key>Bundled</key>
+	<true/>
+	<key>Name</key>
+	<string>My Name</string>
+	<key>Description</key>
+	<string>My Description</string>
+	<key>Region</key>
+	<string>My Region</string>
+	<key>Regions</key>
+	<array>
+		<string>Another Region</string>
+	</array>
+	<key>Scheme</key>
+	<string>ftps</string>
+	<key>Schemes</key>
+	<array>
+		<string>first</string>
+		<string>second</string>
+		<string>third</string>
+	</array>
+	<key>Authorization</key>
+	<string>My Auth</string>
+	<key>Context</key>
+	<string>My Context</string>
+	<key>Default Hostname</key>
+	<string>My Hostname</string>
+	<key>Default Port</key>
+	<string>777</string>
+	<key>Default Path</key>
+	<string>My Default Path</string>
+	<key>Default Nickname</key>
+	<string>My Default Nichkname</string>
+	<key>Hostname Placeholder</key>
+	<string>My Hostname Placeholder</string>
+	<key>Username Placeholder</key>
+	<string>My Username Placeholder</string>
+	<key>Password Placeholder</key>
+	<string>My Password Placeholder</string>
+	<key>Token Placeholder</key>
+	<string>My Token Placeholder</string>
+	<key>Hostname Configurable</key>
+	<false/>
+	<key>Port Configurable</key>
+	<false/>
+	<key>Path Configurable</key>
+	<false/>
+	<key>Username Configurable</key>
+	<false/>
+	<key>Password Configurable</key>
+	<false/>
+	<key>Anonymous Configurable</key>
+	<true/>
+	<key>Token Configurable</key>
+	<true/>
+	<key>Certificate Configurable</key>
+	<true/>
+	<key>Private Key Configurable</key>
+	<true/>
+	<key>Properties</key>
+	<array>
+		<string>My Key=My Value</string>
+	</array>
+	<key>Deprecated</key>
+	<true/>
+	<key>Help</key>
+	<string>Help</string>
+</dict>
+</plist>

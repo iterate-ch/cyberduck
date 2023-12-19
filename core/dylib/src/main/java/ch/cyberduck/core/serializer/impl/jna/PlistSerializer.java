@@ -21,6 +21,7 @@ package ch.cyberduck.core.serializer.impl.jna;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSMutableDictionary;
+import ch.cyberduck.binding.foundation.NSNumber;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -74,6 +75,11 @@ public class PlistSerializer implements Serializer<NSDictionary> {
             dict.setObjectForKey(entry.getValue(), entry.getKey());
         }
         dict.setObjectForKey(dict, key);
+    }
+
+    @Override
+    public void setBooleanForKey(final boolean value, final String key) {
+        dict.setObjectForKey(NSNumber.numberWithBoolean(value), key);
     }
 
     @Override
