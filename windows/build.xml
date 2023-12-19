@@ -26,8 +26,15 @@
 
     <property name="app.name" value="Cyberduck"/>
 
-    <!--Todo: Property not needed as cpack (cmake) gets added to windows PATH by chocolatey install-->
+    <!--Todo: Static path for cpack not needed as cpack (cmake) gets added to windows PATH by chocolatey install-->
     <!--<property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>-->
+    <!--Todo: The following fail block searches cpack.exe in windows PATH and adds the fullpath to the cpack.bin property by using "location"-->
+    <property name="cpack.bin" location="cpack"/>
+    <fail message="Executable cpack.exe not found">
+        <condition>
+            <available file="cpack" filepath="${env.PATH}"/>
+        <condition>
+    </fail>
 
     <property name="chocolatey.source" value="${setup}/chocolatey/cyberduck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
@@ -171,7 +178,6 @@
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
-        <!--Todo: Removed exectuable="${cpack.bin}" as cpack (cmake) gets added to windows PATH by chocolatey install-->
-        <exec executable="cpack" dir="${chocolatey.target}" failonerror="true"/>
+        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
     </target>
 </project>
