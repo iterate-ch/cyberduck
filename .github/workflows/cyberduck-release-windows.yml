@@ -89,7 +89,7 @@ jobs:
       run: choco install bonjour
     - name: Install build requirement "sh" and "openssl" by Cygwin using chocolatey
       shell: powershell
-      run: choco install cygwin
+      run: choco install cygwin -y
     - name: Add MSBuild.exe to PATH
       uses: microsoft/setup-msbuild@v1.1
     - name: Run maven
