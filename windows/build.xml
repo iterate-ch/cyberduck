@@ -115,13 +115,12 @@
         <mkdir dir="${build}/update"/>
 
         <echo message="Calculating DSA signature..."/>
+        <!--Todo: Remove echos Build & Echo www update-->
         <echo message="Build = ${build}"/>
         <echo message="www update =${www.update}"/>
         <exec dir="${home}" executable="powershell" outputproperty="signature.dsa" failonerror="true">
-            <arg value="-o"/>
-            <arg value="pipefail"/>
-            <arg value="-c"/>
-            <arg value="openssl dgst -sha1 -binary '${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe' | openssl dgst -sha1 -sign '${www.update}/private.pem' | openssl enc -base64"/>
+            <!--Todo: remove for production "openssl genrsa -out ${www.update}/private.pem 4096;"-->
+            <arg value="openssl genrsa -out ${www.update}/private.pem 4096; openssl dgst -sha1 -binary '${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe' | openssl dgst -sha1 -sign '${www.update}/private.pem' | openssl enc -base64"/>
         </exec>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
 
