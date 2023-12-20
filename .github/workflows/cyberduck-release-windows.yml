@@ -38,7 +38,7 @@ jobs:
         ref: ${{ inputs.GIT_TAG }}
 
     - name: Copy Sparkle Updater Private Key (DSA)
-      shell: powershell
+      shell: pwsh
       env:
         SPARKLE_UPDATER_PK: ${{ secrets.WIN_SPARKLE_UPDATER_PRIVATE_KEY }}
       run: ${env:SPARKLE_UPDATER_PK} > "${env:GITHUB_WORKSPACE}\www\update\private.pem"
@@ -89,14 +89,14 @@ jobs:
 
     - name: Install upload requirement Cyberduck CLI using chocolatey
       shell: pwsh
-      run: choco install duck -y && Get-Command duck | Split-Path -Parent | Out-File -FilePath ${env:GITHUB_PATH} -Append
+      run: choco install duck -y && refreshenv && Get-Command duck | Split-Path -Parent | Out-File -FilePath ${env:GITHUB_PATH} -Append
 
     # - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
-    #   shell: powershell
+    #   shell: pwsh
     #   run: choco install bonjour -y
 
     # - name: Install build requirement openssl using chocolatey
-    #   shell: powershell
+    #   shell: pwsh
     #   run: choco install openssl -y
 
     - name: Add MSBuild.exe to PATH
@@ -107,13 +107,13 @@ jobs:
     #   run: mvn clean deploy -DskipSign=true -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
 
     - name: Upload files to Rackspace
-      shell: powershell
+      shell: pwsh
       run: echo "Dummy rackspace upload"
 #      run: Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload rackspace:/cdn.cyberduck.ch/ $_.FullName --username ${Env:RACKSPACE_USER} --password ${Env:RACKSPACE_PASSWORD} --retry --quiet --existing overwrite --region DFW  }
 #      run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload rackspace:/cdn.cyberduck.ch/ "%%c" --username %RACKSPACE_USER% --password %RACKSPACE_PASSWORD% --retry --quiet --existing overwrite --region DFW
 
     - name: Upload files to AWS S3 Bucket
-      shell: powershell
+      shell: pwsh
       # Todo: Remove echos
       run: dir "C:\Program Files\Cyberduck CLI\"; echo ${Env:Path}; echo ${Env:GITHUB_WORKSPACE}\windows\target\release\; Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/ip5-cicd-cyberduck/ $_.FullName --username ${Env:AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region eu-west-1}
 #      run: Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/release.cyberduck.io/ $_.FullName --username ${Env:AWS_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region us-east-1  }
