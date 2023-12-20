@@ -37,55 +37,55 @@ jobs:
     #     fetch-depth: '0'
     #     ref: ${{ inputs.GIT_TAG }}
 
-    - name: Copy Sparkle Updater Private Key (DSA)
-      shell: pwsh
-      env:
-        SPARKLE_UPDATER_PK: ${{ secrets.WIN_SPARKLE_UPDATER_PRIVATE_KEY }}
-      run: ${env:SPARKLE_UPDATER_PK} > "${env:GITHUB_WORKSPACE}\www\update\private.pem"
+    # - name: Copy Sparkle Updater Private Key (DSA)
+    #   shell: pwsh
+    #   env:
+    #     SPARKLE_UPDATER_PK: ${{ secrets.WIN_SPARKLE_UPDATER_PRIVATE_KEY }}
+    #   run: ${env:SPARKLE_UPDATER_PK} > "${env:GITHUB_WORKSPACE}\www\update\private.pem"
 
-    - name: Generate maven settings.xml
-      uses: s4u/maven-settings-action@v2.8.0
-      with:
-        path: "${{ github.workspace }}/settings.xml"
-        servers: |
-          [{
-            "id": "custom-ip5-maven.cyberduck.io-release",
-            "username": "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT }}"
-          },
-          {
-            "id": "custom-ip5-maven.cyberduck.io-snapshot",
-            "username": "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT }}"
-          },
-          {
-            "id": "maven.iterate.ch-release",
-            "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
-          },
-          {
-            "id": "maven.iterate.ch-snapshot",
-            "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
-          },
-          {
-            "id": "maven.cyberduck.io-release",
-            "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
-          },
-          {
-            "id": "maven.cyberduck.io-snapshot",
-            "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
-            "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
-          }]
+    # - name: Generate maven settings.xml
+    #   uses: s4u/maven-settings-action@v2.8.0
+    #   with:
+    #     path: "${{ github.workspace }}/settings.xml"
+    #     servers: |
+    #       [{
+    #         "id": "custom-ip5-maven.cyberduck.io-release",
+    #         "username": "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}",
+    #         "password": "${{ secrets.AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT }}"
+    #       },
+    #       {
+    #         "id": "custom-ip5-maven.cyberduck.io-snapshot",
+    #         "username": "${{ secrets.AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT }}",
+    #         "password": "${{ secrets.AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT }}"
+    #       },
+    #       {
+    #         "id": "maven.iterate.ch-release",
+    #         "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
+    #         "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
+    #       },
+    #       {
+    #         "id": "maven.iterate.ch-snapshot",
+    #         "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
+    #         "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
+    #       },
+    #       {
+    #         "id": "maven.cyberduck.io-release",
+    #         "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
+    #         "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
+    #       },
+    #       {
+    #         "id": "maven.cyberduck.io-snapshot",
+    #         "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
+    #         "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
+    #       }]
 
-    - name: Set up JDK 17 and skip overwriting of settings.xml
-      uses: actions/setup-java@v4.0.0
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        settings-path: "${{ github.workspace }}"
-        overwrite-settings: false
+    # - name: Set up JDK 17 and skip overwriting of settings.xml
+    #   uses: actions/setup-java@v4.0.0
+    #   with:
+    #     distribution: 'temurin'
+    #     java-version: '17'
+    #     settings-path: "${{ github.workspace }}"
+    #     overwrite-settings: false
 
     - name: Install upload requirement Cyberduck CLI using chocolatey
       shell: pwsh
