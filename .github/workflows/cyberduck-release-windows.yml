@@ -4,6 +4,7 @@ on:
     inputs:
       GIT_TAG:
         required: false
+
 env:
   AWS_ACCESS_KEY_DEPLOYMENT: "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}"
   AWS_SECRET_KEY_DEPLOYMENT: "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
@@ -29,16 +30,19 @@ jobs:
             FileUtils.rm_rf(path) if File.directory?(path)
           end
         end
+
     - name: checkout
       uses: actions/checkout@v4.1.0
       with:
         fetch-depth: '0'
         ref: ${{ inputs.GIT_TAG }}
+
     - name: Copy Sparkle Updater Private Key (DSA)
       shell: powershell
       env:
         SPARKLE_UPDATER_PK: ${{ secrets.WIN_SPARKLE_UPDATER_PRIVATE_KEY }}
       run: ${env:SPARKLE_UPDATER_PK} > "${env:GITHUB_WORKSPACE}\www\update\private.pem"
+
     - name: Generate maven settings.xml
       uses: s4u/maven-settings-action@v2.8.0
       with:
@@ -74,6 +78,7 @@ jobs:
             "username": "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}",
             "password": "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
           }]
+
     - name: Set up JDK 17 and skip overwriting of settings.xml
       uses: actions/setup-java@v4.0.0
       with:
@@ -81,38 +86,38 @@ jobs:
         java-version: '17'
         settings-path: "${{ github.workspace }}"
         overwrite-settings: false
+
     - name: Install upload requirement Cyberduck CLI using chocolatey
       shell: powershell
       run: choco install duck -y
 
-    # TODO: test, if Cpack works, without CMake
-    #- name: Install build requirement CMake CLI using chocolatey
-    #  shell: powershell
-    #  run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
-    - name: Install build requirement CMake CLI using chocolatey
-      shell: powershell
-      run: choco install pack
     - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
       shell: powershell
       run: choco install bonjour -y
+
     - name: Install build requirement openssl using chocolatey
       shell: powershell
       run: choco install openssl -y
+
     - name: Add MSBuild.exe to PATH
       uses: microsoft/setup-msbuild@v1.1
+
     - name: Run maven
       # Todo: Remove "-pl ", "-am", "-e" and "-DskipSign=true" Options for production
       run: mvn clean deploy -pl windows  -am -DskipSign=true -e --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed="
+
     - name: Upload files to Rackspace
       shell: powershell
       run: echo "Dummy rackspace upload"
 #      run: Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload rackspace:/cdn.cyberduck.ch/ $_.FullName --username ${Env:RACKSPACE_USER} --password ${Env:RACKSPACE_PASSWORD} --retry --quiet --existing overwrite --region DFW  }
 #      run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload rackspace:/cdn.cyberduck.ch/ "%%c" --username %RACKSPACE_USER% --password %RACKSPACE_PASSWORD% --retry --quiet --existing overwrite --region DFW
+
     - name: Upload files to AWS S3 Bucket
       shell: powershell
       run: echo ${Env:GITHUB_WORKSPACE}\windows\target\release\; Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/ip5-cicd-cyberduck/ $_.FullName --username ${Env:AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region eu-west-1  }
 #      run: Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/release.cyberduck.io/ $_.FullName --username ${Env:AWS_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region us-east-1  }
 #      run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload s3:/release.cyberduck.io/ "%%c" --username %AWS_ACCESS_KEY_DEPLOYMENT% --password %AWS_SECRET_KEY_DEPLOYMENT% --retry --quiet --existing overwrite --region us-east-1
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3.1.3
       if: always()
@@ -149,6 +154,7 @@ jobs:
           !**/.bzr
           !**/.bzr/**
           !**/.bzrignore
+
 #     # Fingerprinter was not converted because the behavior is available by default in GitHub Actions and/or it is not configurable
 #     # Mailer plugin was not converted because GitHub Actions will email the actor after failed build and does not support emailing a list of recipients
     # Ensure parameter if_key_exists is set correctly
@@ -165,6 +171,7 @@ jobs:
             User ${{ secrets.VERSION_CYBERDUCK_IO_USER }}
             IdentityFile ~/.ssh/id_rsa-version_cyberduck_io
       if: always()
+
     - name: setup file transfer file
       uses: actions/github-script@v7.0.0
       with:
@@ -180,6 +187,7 @@ jobs:
           }
           fs.writeFile("version_cyberduck_io-transfer.txt", files.join("\n"), (err) => {})
       if: always()
+
     - name: run file transfers
       run: |-
         ssh VERSION_CYBERDUCK_IO 'mkdir -p windows'
