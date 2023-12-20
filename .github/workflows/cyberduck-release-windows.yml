@@ -31,11 +31,11 @@ jobs:
           end
         end
 
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-      with:
-        fetch-depth: '0'
-        ref: ${{ inputs.GIT_TAG }}
+    # - name: checkout
+    #   uses: actions/checkout@v4.1.0
+    #   with:
+    #     fetch-depth: '0'
+    #     ref: ${{ inputs.GIT_TAG }}
 
     - name: Copy Sparkle Updater Private Key (DSA)
       shell: pwsh
@@ -89,7 +89,7 @@ jobs:
 
     - name: Install upload requirement Cyberduck CLI using chocolatey
       shell: pwsh
-      run: echo "Before install"; Get-Content -Path ${env:GITHUB_PATH}; choco install duck -y; echo "after install"; Get-Content -Path ${env:GITHUB_PATH};
+      run: echo "Before install"; echo ${env:GITHUB_PATH}; Get-Content -Path ${env:GITHUB_PATH}; choco install duck -y; echo "after install"; Get-Content -Path ${env:GITHUB_PATH};
       # run: Import-Module "${env:ChocolateyInstall}\helpers\chocolateyProfile.psm1" && choco install duck -y && refreshenv && Get-Command duck | Split-Path -Parent | Out-File -FilePath ${env:GITHUB_PATH} -Append
 
     # - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
