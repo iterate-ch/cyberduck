@@ -89,7 +89,7 @@ jobs:
 
     - name: Install upload requirement Cyberduck CLI using chocolatey
       shell: powershell
-      run: choco install duck -y
+      run: choco install duck -y && Get-Command duck | Split-Path -Parent >> $GITHUB_PATH
 
     # - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
     #   shell: powershell
