@@ -28,7 +28,6 @@
     <property name="chocolatey.source" value="${setup}/chocolatey/cyberduck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
 
-    <echo message="ECHO: ENV: ${env}"/>
     <echo message="ECHO: ENV PATH: ${env.Path}"/>
     <!--Todo: Static path for cpack not needed as choco pack is the successor of cpack.exe and choco.exe is automatically added to PATH when chocolatey is installed-->
     <!--<property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>-->
@@ -36,7 +35,7 @@
     <property name="choco.bin" location="choco.exe"/>
     <fail message="Executable choco.exe not found">
         <condition>
-            <available file="choco.exe" filepath="${env.Path}"/>
+            <available file="choco.exe" filepath="C:\ProgramData\Chocolatey\bin"/>
         </condition>
     </fail>
     <echo message="ECHO: CHOCO BIN PATH: ${choco.bin}"/>
