@@ -36,10 +36,10 @@
     <property name="choco.bin" location="choco.exe"/>
     <fail message="Executable choco.exe not found">
         <condition>
-            <available file="choco.exe" filepath="C:\ProgramData\Chocolatey\bin\"/>
+            <available file="choco.exe" filepath="C:\ProgramData\Chocolatey\bin"/>
         </condition>
     </fail>
-    <echo message="ECHO: CHOCO BIN PATH: ${choco.bin}"/>
+
     <!--
     <property name="choco.bin" value="C:\ProgramData\Chocolatey\bin\choco.exe"/>
     <echo message="ECHO: CHOCO BIN PATH: ${choco.bin}"/>
