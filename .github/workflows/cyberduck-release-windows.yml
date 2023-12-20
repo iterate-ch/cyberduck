@@ -91,13 +91,13 @@ jobs:
       shell: powershell
       run: choco install duck -y
 
-    - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
-      shell: powershell
-      run: choco install bonjour -y
+    # - name: Install build requirement Bonjour Print Services for Windows (https://community.chocolatey.org/packages/bonjour)
+    #   shell: powershell
+    #   run: choco install bonjour -y
 
-    - name: Install build requirement openssl using chocolatey
-      shell: powershell
-      run: choco install openssl -y
+    # - name: Install build requirement openssl using chocolatey
+    #   shell: powershell
+    #   run: choco install openssl -y
 
     - name: Add MSBuild.exe to PATH
       uses: microsoft/setup-msbuild@v1.1
