@@ -6,29 +6,104 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.dav.DAVExceptionMappingService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultAclFeature;
+import ch.cyberduck.core.features.AclPermission;
 
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.util.SardineUtil;
 
-import static ch.cyberduck.core.ctera.CteraCustomACL.allCteraCustomACLRoles;
-import static ch.cyberduck.core.ctera.CteraCustomACL.toQn;
+
+public class CteraAclPermissionFeature implements AclPermission {
+
+    public static Acl.Role READPERMISSION = new Acl.Role("readpermission");
+
+    public static Acl.Role WRITEPERMISSION = new Acl.Role("writepermission");
+
+    public static Acl.Role EXECUTEPERMISSION = new Acl.Role("executepermission"); // Files only
+
+    public static Acl.Role DELETEPERMISSION = new Acl.Role("deletepermission");
+
+    public static Acl.Role TRAVERSEPERMISSION = new Acl.Role("traversepermission"); // Directories only
+
+    public static Acl.Role CREATEFILEPERMISSION = new Acl.Role("Createfilepermission"); // Directories only
+
+    public static Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");// Directories only
 
 
-public class CteraAclPermissionFeature extends DefaultAclFeature {
+    final static List<Acl.Role> allCteraCustomACLRoles = Collections.unmodifiableList(Arrays.asList(
+            READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, TRAVERSEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
+    ));
+
+    // TODO CTERA-136 support for ctera namespace?
+    final static List<QName> allCteraCustomACLQn = Collections.unmodifiableList(allCteraCustomACLRoles.stream().map(CteraAclPermissionFeature::toQn).collect(Collectors.toList()));
+
+
+    public static QName toQn(final Acl.Role role) {
+        return SardineUtil.createQNameWithCustomNamespace(role.getName());
+    }
+
+    public static String toProp(final QName qn) {
+        return qn.getLocalPart();
+    }
+
+    public static Acl.Role toRole(final QName qn) {
+        return new Acl.Role(toProp(qn));
+    }
+
+
+    public static Acl customPropsToAcl(final Map<String, String> customProps) {
+        if(customProps.isEmpty()) {
+            return Acl.EMPTY;
+        }
+        final Acl acl = new Acl();
+        acl.addAll(new Acl.CanonicalUser());
+        for(QName qn : allCteraCustomACLQn) {
+            if(customProps.containsKey(toProp(qn))) {
+                final String val = customProps.get(toProp(qn));
+                if(Boolean.parseBoolean(val)) {
+                    acl.addAll(new Acl.CanonicalUser(), toRole(qn));
+                }
+            }
+        }
+        return acl;
+    }
+
+    public static Permission aclToPermission(final Acl acl) {
+        if(Acl.EMPTY.equals(acl)) {
+            return new Permission(700);
+        }
+        int perm = 0;
+        if(acl.get(new Acl.CanonicalUser()).contains(READPERMISSION)) {
+            // r
+            perm += 4;
+        }
+        if(acl.get(new Acl.CanonicalUser()).contains(WRITEPERMISSION)) {
+            // w
+            perm += 2;
+        }
+        if(acl.get(new Acl.CanonicalUser()).contains(EXECUTEPERMISSION) || acl.get(new Acl.CanonicalUser()).contains(TRAVERSEPERMISSION)) {
+            // x
+            perm += 1;
+        }
+        // TODO CTERA-136 only user - what about group/others?
+        return new Permission(perm * 100);
+    }
 
     private final DAVSession session;
 

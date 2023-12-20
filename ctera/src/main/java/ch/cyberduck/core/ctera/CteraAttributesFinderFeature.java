@@ -15,7 +15,7 @@ import java.util.Map;
 
 import com.github.sardine.DavResource;
 
-import static ch.cyberduck.core.ctera.CteraCustomACL.*;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 
 public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     private final DAVSession session;

@@ -23,7 +23,7 @@ import org.junit.runners.Parameterized.Parameter;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static ch.cyberduck.core.ctera.CteraCustomACL.*;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
@@ -34,13 +34,13 @@ public class CteraPermissionFeatureAclToPermissionTest {
         return Arrays.asList(
                 new Object[][]{
                         {Acl.EMPTY, true, true, true},
-                        {new Acl(new Acl.CanonicalUser(), writepermission), false, true, false},
-                        {new Acl(new Acl.CanonicalUser(), readpermission), true, false, false},
-                        {new Acl(new Acl.CanonicalUser(), executepermission), false, false, true},
-                        {new Acl(new Acl.CanonicalUser(), deletepermission), false, false, false},
-                        {new Acl(new Acl.CanonicalUser(), traversepermission), false, false, true},
-                        {new Acl(new Acl.CanonicalUser(), Createfilepermission), false, false, false},
-                        {new Acl(new Acl.CanonicalUser(), CreateDirectoriespermission), false, false, false}
+                        {new Acl(new Acl.CanonicalUser(), WRITEPERMISSION), false, true, false},
+                        {new Acl(new Acl.CanonicalUser(), READPERMISSION), true, false, false},
+                        {new Acl(new Acl.CanonicalUser(), EXECUTEPERMISSION), false, false, true},
+                        {new Acl(new Acl.CanonicalUser(), DELETEPERMISSION), false, false, false},
+                        {new Acl(new Acl.CanonicalUser(), TRAVERSEPERMISSION), false, false, true},
+                        {new Acl(new Acl.CanonicalUser(), CREATEFILEPERMISSION), false, false, false},
+                        {new Acl(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION), false, false, false}
                 }
         );
     }

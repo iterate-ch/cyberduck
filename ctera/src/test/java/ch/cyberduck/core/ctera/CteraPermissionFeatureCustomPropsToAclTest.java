@@ -6,9 +6,11 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.Acl;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -18,41 +20,40 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ch.cyberduck.core.ctera.CteraCustomACL.*;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-class CteraPermissionFeatureCustomPropsToAclTest {
+public class CteraPermissionFeatureCustomPropsToAclTest {
 
-    @Parameterized.Parameters(name = "{0} {1}")
+    @Parameters(name = "{0} {1}")
     public static Collection<Object[]> data() {
-
         return Arrays.asList(
                 new Object[][]{
                         {Collections.emptyMap(), Acl.EMPTY},
                         {
                                 (Map<String, String>) Stream.of(
-                                        new AbstractMap.SimpleEntry<>(readpermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(writepermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(executepermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(deletepermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(traversepermission.getName(), "true"),
-                                        new AbstractMap.SimpleEntry<>(Createfilepermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(CreateDirectoriespermission.getName(), "false")
+                                        new AbstractMap.SimpleEntry<>(READPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(WRITEPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(EXECUTEPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(DELETEPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(TRAVERSEPERMISSION.getName(), "true"),
+                                        new AbstractMap.SimpleEntry<>(CREATEFILEPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(CREATEDIRECTORIESPERMISSION.getName(), "false")
                                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
-                                new Acl(new Acl.CanonicalUser(), traversepermission)
+                                new Acl(new Acl.CanonicalUser(), TRAVERSEPERMISSION)
                         },
                         {
                                 (Map<String, String>) Stream.of(
-                                        new AbstractMap.SimpleEntry<>(readpermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(writepermission.getName(), "true"),
-                                        new AbstractMap.SimpleEntry<>(executepermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(deletepermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(traversepermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(Createfilepermission.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(CreateDirectoriespermission.getName(), "true")
+                                        new AbstractMap.SimpleEntry<>(READPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(WRITEPERMISSION.getName(), "true"),
+                                        new AbstractMap.SimpleEntry<>(EXECUTEPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(DELETEPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(TRAVERSEPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(CREATEFILEPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(CREATEDIRECTORIESPERMISSION.getName(), "true")
                                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
-                                new Acl(new Acl.CanonicalUser(), writepermission, CreateDirectoriespermission)
+                                new Acl(new Acl.CanonicalUser(), WRITEPERMISSION, CREATEDIRECTORIESPERMISSION)
                         }
                 }
         );
@@ -65,8 +66,8 @@ class CteraPermissionFeatureCustomPropsToAclTest {
     public Acl expected;
 
 
-    public void testCustomPropsToAcl(final Map<String, String> map, final Acl expected) {
+    @Test
+    public void testCustomPropsToAcl() {
         assertEquals(expected, customPropsToAcl(map));
-
     }
 }
