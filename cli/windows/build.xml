@@ -26,13 +26,13 @@
         <equals arg1="${configuration}" arg2="release" />
     </condition>
 
-    <!--Todo: Static path for cpack not needed as cpack (cmake) gets added to windows PATH by chocolatey install-->
+    <!--Todo: Static path for cpack not needed as choco pack is the successor of cpack.exe and choco.exe is automatically added to PATH when chocolatey is installed-->
     <!--<property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>-->
-    <!--Todo: The following fail block searches cpack.exe in windows PATH and adds the fullpath to the cpack.bin property by using "location"-->
-    <property name="cpack.bin" location="cpack"/>
-    <fail message="Executable cpack.exe not found">
+    <!--Todo: The following fail block searches choco.exe in windows Path environment variable and adds the fullpath to the choco.bin property by using "location"-->
+    <property name="choco.bin" location="choco"/>
+    <fail message="Executable choco.exe not found">
         <condition>
-            <available file="cpack" filepath="${env.PATH}"/>
+            <available file="choco" filepath="${env.Path}"/>
         </condition>
     </fail>
 
@@ -110,6 +110,9 @@
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
-        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
+        <!--Todo: Changed ${cpack.bin} to ${choco.bin} as cpack.exe is now integrated in choco.exe -->
+        <exec executable="${choco.bin}" dir="${chocolatey.target}" failonerror="true">
+            <arg value="pack"/>
+        </exec>
     </target>
 </project>
