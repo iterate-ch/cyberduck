@@ -116,7 +116,7 @@ jobs:
     - name: Upload files to AWS S3 Bucket
       shell: pwsh
       # Todo: Remove echos
-      run: dir "C:\Program Files\Cyberduck CLI\"; echo ${Env:Path}; echo ${Env:GITHUB_WORKSPACE}\windows\target\release\; Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/ip5-cicd-cyberduck/ $_.FullName --username ${Env:AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region eu-west-1}
+      run: dir "${Env:GITHUB_WORKSPACE}"; echo ${Env:GITHUB_WORKSPACE}\windows\target\release\; Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/ip5-cicd-cyberduck/ $_.FullName --username ${Env:AWS_CUSTOM_IP5_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_CUSTOM_IP5_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region eu-west-1}
 #      run: Get-ChildItem "${Env:GITHUB_WORKSPACE}\windows\target\release\" -Filter Cyberduck-* | Foreach-Object -process { duck --upload s3:/release.cyberduck.io/ $_.FullName --username ${Env:AWS_ACCESS_KEY_DEPLOYMENT} --password ${Env:AWS_SECRET_KEY_DEPLOYMENT} --retry --quiet --existing overwrite --region us-east-1  }
 #      run: FOR %%c in ("%GITHUB_WORKSPACE%\windows\target\release\Cyberduck-*") DO "C:\Program Files\Cyberduck CLI\duck.exe" --upload s3:/release.cyberduck.io/ "%%c" --username %AWS_ACCESS_KEY_DEPLOYMENT% --password %AWS_SECRET_KEY_DEPLOYMENT% --retry --quiet --existing overwrite --region us-east-1
 
