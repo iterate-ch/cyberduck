@@ -67,7 +67,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                         Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                        SMB2CreateDisposition.FILE_OVERWRITE,
+                        SMB2CreateDisposition.FILE_OPEN,
                         Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
                     final FileBasicInformation updatedBasicInformation = new FileBasicInformation(
                             status.getCreated() != null ? FileTime.ofEpochMillis(status.getCreated()) : FileBasicInformation.DONT_SET,
