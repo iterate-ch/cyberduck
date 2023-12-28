@@ -16,18 +16,24 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -49,16 +55,26 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
     public void testTimestampFile() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path f = new SMBTouchFeature(session).touch(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotEquals(-1L, f.attributes().getModificationDate());
+        final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final int length = 100;
+        final byte[] content = RandomUtils.nextBytes(length);
+        status.setLength(content.length);
+        status.setModified(System.currentTimeMillis());
+        final Write writer = new SMBWriteFeature(session);
+        status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
+        final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         // make sure timestamps are different
-        long oldTime = new SMBAttributesFinderFeature(session).find(f).getModificationDate();
+        final PathAttributes attributes = new SMBAttributesFinderFeature(session).find(test);
+        assertNotEquals(-1L, attributes.getModificationDate());
+        long oldTime = attributes.getModificationDate();
         status.setModified(oldTime + 2000);
-        new SMBTimestampFeature(session).setTimestamp(f, status);
-        PathAttributes newAttributes = new SMBAttributesFinderFeature(session).find(f);
+        new SMBTimestampFeature(session).setTimestamp(test, status);
+        PathAttributes newAttributes = new SMBAttributesFinderFeature(session).find(test);
         assertEquals(status.getModified().longValue(), newAttributes.getModificationDate());
-        new SMBDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(content.length, newAttributes.getSize());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
