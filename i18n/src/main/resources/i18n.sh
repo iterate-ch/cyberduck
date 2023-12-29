@@ -219,7 +219,11 @@ tx_push() {
             strings=`basename $stringsfile .strings`
             lang=`basename $language .lproj`
             echo "*** Updating $strings.strings...";
-            $tx push --force --translation -l $lang cyberduck.$strings
+            if [ "$lang" = "en" ] ; then
+              $tx push --source cyberduck.$strings
+            else
+              $tx push --force --translation -l $lang cyberduck.$strings
+            fi;
         fi;
 	}
 	fi;
