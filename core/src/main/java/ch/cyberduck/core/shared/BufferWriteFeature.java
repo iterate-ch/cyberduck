@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
@@ -53,7 +54,7 @@ public class BufferWriteFeature implements MultipartWrite<Void> {
     }
 
     @Override
-    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws AccessDeniedException {
         final FileBuffer buffer = new FileBuffer();
         return new VoidStatusOutputStream(new BufferOutputStream(buffer) {
             private final AtomicBoolean close = new AtomicBoolean();

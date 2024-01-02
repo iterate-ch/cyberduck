@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -27,6 +26,7 @@ import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Paths;
@@ -35,21 +35,27 @@ public class FileBuffer implements Buffer {
     private static final Logger log = LogManager.getLogger(FileBuffer.class);
 
     private final Local temporary;
+    private final RandomAccessFile file;
 
-    private RandomAccessFile file;
     private Long length = 0L;
 
-    public FileBuffer() {
+    public FileBuffer() throws AccessDeniedException {
         this(TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random()));
     }
 
-    public FileBuffer(final Local temporary) {
+    public FileBuffer(final Local temporary) throws AccessDeniedException {
         this.temporary = temporary;
+        try {
+            this.file = new RandomAccessFile(temporary.getAbsolute(), "rw");
+        }
+        catch(FileNotFoundException e) {
+            // Does not denote an existing, writable regular file and a new regular file of that name cannot be created
+            throw new AccessDeniedException(e.getMessage(), e);
+        }
     }
 
     @Override
     public synchronized int write(final byte[] chunk, final Long offset) throws IOException {
-        final RandomAccessFile file = random();
         file.seek(offset);
         file.write(chunk, 0, chunk.length);
         this.length = Math.max(this.length, file.length());
@@ -58,7 +64,6 @@ public class FileBuffer implements Buffer {
 
     @Override
     public synchronized int read(final byte[] chunk, final Long offset) throws IOException {
-        final RandomAccessFile file = random();
         if(offset < file.length()) {
             file.seek(offset);
             if(chunk.length + offset > file.length()) {
@@ -100,64 +105,44 @@ public class FileBuffer implements Buffer {
     @Override
     public void truncate(final Long length) {
         this.length = length;
-        if(temporary.exists()) {
-            try {
-                final RandomAccessFile file = random();
-                if(length < file.length()) {
-                    // Truncate current
-                    file.setLength(length);
-                }
+        try {
+            if(length < file.length()) {
+                // Truncate current
+                file.setLength(length);
             }
-            catch(IOException e) {
-                log.warn(String.format("Failure truncating file %s to %d", temporary, length));
-            }
+        }
+        catch(IOException e) {
+            log.warn(String.format("Failure truncating file %s to %d", temporary, length));
         }
     }
 
     @Override
     public synchronized void close() {
-        this.length = 0L;
-        if(temporary.exists()) {
-            try {
-                if(file != null) {
-                    file.close();
-                }
-            }
-            catch(IOException e) {
-                log.error(String.format("Failure closing buffer %s", this));
-            }
-            finally {
-                try {
-                    temporary.delete();
-                    file = null;
-                }
-                catch(AccessDeniedException | NotfoundException e) {
-                    log.warn(String.format("Failure removing temporary file %s for buffer %s. Schedule for delete on exit.", temporary, this));
-                    Paths.get(temporary.getAbsolute()).toFile().deleteOnExit();
-                }
+        try {
+            if(file != null) {
+                file.close();
             }
         }
-    }
-
-    protected synchronized RandomAccessFile random() throws IOException {
-        if(null == file) {
-            try {
-                LocalTouchFactory.get().touch(temporary);
-            }
-            catch(AccessDeniedException e) {
-                throw new IOException(e);
-            }
-            this.file = new RandomAccessFile(temporary.getAbsolute(), "rw");
-            this.file.seek(0L);
+        catch(IOException e) {
+            log.error(String.format("Failure closing buffer %s", this));
         }
-        return file;
+        finally {
+            try {
+                temporary.delete();
+                length = 0L;
+            }
+            catch(AccessDeniedException | NotfoundException e) {
+                log.warn(String.format("Failure removing temporary file %s for buffer %s. Schedule for delete on exit.", temporary, this));
+                Paths.get(temporary.getAbsolute()).toFile().deleteOnExit();
+            }
+        }
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("FileBuffer{");
         sb.append("temporary=").append(temporary);
-        sb.append(", length=").append(length);
+        sb.append(", file=").append(file);
         sb.append('}');
         return sb.toString();
     }
