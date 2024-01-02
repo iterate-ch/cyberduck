@@ -40,6 +40,9 @@ public class TransferStreamListener extends BytecountStreamListener {
     public void sent(final long bytes) {
         switch(transfer.getType()) {
             case upload:
+            case sync:
+            case copy:
+            case move:
                 transfer.addTransferred(bytes);
         }
         super.sent(bytes);
