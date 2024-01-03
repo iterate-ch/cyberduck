@@ -89,20 +89,18 @@ public class CteraAclPermissionFeature implements AclPermission {
             return new Permission(700);
         }
         int perm = 0;
+        Permission.Action action = Permission.Action.none;
         if(acl.get(new Acl.CanonicalUser()).contains(READPERMISSION)) {
-            // r
-            perm += 4;
+            action = action.or(Permission.Action.read);
         }
         if(acl.get(new Acl.CanonicalUser()).contains(WRITEPERMISSION)) {
-            // w
-            perm += 2;
+            action = action.or(Permission.Action.write);
         }
         if(acl.get(new Acl.CanonicalUser()).contains(EXECUTEPERMISSION) || acl.get(new Acl.CanonicalUser()).contains(TRAVERSEPERMISSION)) {
-            // x
-            perm += 1;
+            action = action.or(Permission.Action.execute);
         }
         // TODO CTERA-136 only user - what about group/others?
-        return new Permission(perm * 100);
+        return new Permission(action, Permission.Action.none, Permission.Action.none);
     }
 
     private final DAVSession session;
