@@ -31,22 +31,22 @@ import com.github.sardine.util.SardineUtil;
 
 public class CteraAclPermissionFeature implements AclPermission {
 
-    public static Acl.Role READPERMISSION = new Acl.Role("readpermission");
+    public static final Acl.Role READPERMISSION = new Acl.Role("readpermission");
 
-    public static Acl.Role WRITEPERMISSION = new Acl.Role("writepermission");
+    public static final Acl.Role WRITEPERMISSION = new Acl.Role("writepermission");
 
-    public static Acl.Role EXECUTEPERMISSION = new Acl.Role("executepermission"); // Files only
+    public static final Acl.Role EXECUTEPERMISSION = new Acl.Role("executepermission"); // Files only
 
-    public static Acl.Role DELETEPERMISSION = new Acl.Role("deletepermission");
+    public static final Acl.Role DELETEPERMISSION = new Acl.Role("deletepermission");
 
-    public static Acl.Role TRAVERSEPERMISSION = new Acl.Role("traversepermission"); // Directories only
+    public static final Acl.Role TRAVERSEPERMISSION = new Acl.Role("traversepermission"); // Directories only
 
-    public static Acl.Role CREATEFILEPERMISSION = new Acl.Role("Createfilepermission"); // Directories only
+    public static final Acl.Role CREATEFILEPERMISSION = new Acl.Role("Createfilepermission"); // Directories only
 
-    public static Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");// Directories only
+    public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");// Directories only
 
 
-    final static List<Acl.Role> allCteraCustomACLRoles = Collections.unmodifiableList(Arrays.asList(
+    static final List<Acl.Role> allCteraCustomACLRoles = Collections.unmodifiableList(Arrays.asList(
             READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, TRAVERSEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
     ));
 
