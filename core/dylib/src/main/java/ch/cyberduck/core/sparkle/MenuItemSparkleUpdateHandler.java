@@ -29,7 +29,6 @@ public class MenuItemSparkleUpdateHandler extends ProxyController implements Han
 
     public MenuItemSparkleUpdateHandler(final NSMenuItem menu) {
         this.menu = menu;
-        this.menu.setTarget(this.id());
     }
 
     @Override
