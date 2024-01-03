@@ -27,11 +27,15 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.CREATEFILEPERMISSION;
+
 public class CteraTouchFeature extends DAVTouchFeature {
     private static final Logger log = LogManager.getLogger(CteraTouchFeature.class);
+    private final CteraSession session;
 
     public CteraTouchFeature(final CteraSession session) {
         super(session, new CteraAttributesFinderFeature(session));
+        this.session = session;
     }
 
     @Override
@@ -41,6 +45,7 @@ public class CteraTouchFeature extends DAVTouchFeature {
         }
         // TODO CTERA-136 do we need to require writepermission as well?
         super.preflight(workdir, filename);
+        session.checkCteraRole(workdir, CREATEFILEPERMISSION);
     }
 
     public static boolean validate(final String filename) {

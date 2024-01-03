@@ -23,10 +23,15 @@ import ch.cyberduck.core.exception.InvalidFilenameException;
 
 import java.text.MessageFormat;
 
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.CREATEDIRECTORIESPERMISSION;
+
 public class CteraDirectoryFeature extends DAVDirectoryFeature {
+
+    private final CteraSession session;
 
     public CteraDirectoryFeature(final CteraSession session) {
         super(session, new CteraAttributesFinderFeature(session));
+        this.session = session;
     }
 
     @Override
@@ -36,5 +41,6 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
         }
         // TODO CTERA-136 do we need to require writepermission as well?
         super.preflight(workdir, filename);
+        session.checkCteraRole(workdir, CREATEDIRECTORIESPERMISSION);
     }
 }

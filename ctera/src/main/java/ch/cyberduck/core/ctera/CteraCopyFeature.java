@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ctera;
 
 /*
- * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,32 +15,25 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVMoveFeature;
+import ch.cyberduck.core.dav.DAVCopyFeature;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InvalidFilenameException;
 
-import java.text.MessageFormat;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.CREATEDIRECTORIESPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.CREATEFILEPERMISSION;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
-
-public class CteraMoveFeature extends DAVMoveFeature {
+class CteraCopyFeature extends DAVCopyFeature {
     private final CteraSession session;
-    public CteraMoveFeature(final CteraSession session) {
-        super(session);
+
+    public CteraCopyFeature(final CteraSession cteraSession, final CteraSession session) {
+        super(cteraSession);
         this.session = session;
     }
 
-
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
+        // TODO CTERA-136 do we require writepermission on target's parent?
         super.preflight(source, target);
-        if(!CteraTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
-        }
-        session.checkCteraRole(source, DELETEPERMISSION);
-        session.checkCteraRole(target, WRITEPERMISSION);
         if(source.isDirectory()) {
             session.checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
         }

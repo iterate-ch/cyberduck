@@ -45,6 +45,7 @@ import com.github.sardine.impl.SardineException;
 public class DAVListService implements ListService {
     private static final Logger log = LogManager.getLogger(DAVListService.class);
 
+    // TODO CTERA-136 temporary workaround for mock tests: make private again
     protected final DAVSession session;
     private final DAVAttributesFinderFeature attributes;
 
