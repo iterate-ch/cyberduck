@@ -19,15 +19,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVCopyFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.CREATEDIRECTORIESPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.CREATEFILEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 
 class CteraCopyFeature extends DAVCopyFeature {
-    private final CteraSession session;
 
     public CteraCopyFeature(final CteraSession cteraSession, final CteraSession session) {
         super(cteraSession);
-        this.session = session;
     }
 
     @Override
@@ -35,10 +32,10 @@ class CteraCopyFeature extends DAVCopyFeature {
         // TODO CTERA-136 do we require writepermission on target's parent?
         super.preflight(source, target);
         if(source.isDirectory()) {
-            session.checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
+            checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
         }
         else {
-            session.checkCteraRole(target.getParent(), CREATEFILEPERMISSION);
+            checkCteraRole(target.getParent(), CREATEFILEPERMISSION);
         }
     }
 }

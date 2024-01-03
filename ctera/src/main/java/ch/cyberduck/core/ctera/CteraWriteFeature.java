@@ -20,19 +20,18 @@ import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.WRITEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
 
 class CteraWriteFeature extends DAVWriteFeature {
-    private final CteraSession session;
 
     public CteraWriteFeature(final CteraSession cteraSession, final CteraSession session) {
         super(cteraSession);
-        this.session = session;
     }
 
     @Override
     public void preflight(Path file) throws BackgroundException {
         // TODO CTERA-136 do we need both? Which one to prefer?
         super.preflight(file);
-        session.checkCteraRole(file, WRITEPERMISSION);
+        checkCteraRole(file, WRITEPERMISSION);
     }
 }

@@ -20,19 +20,18 @@ import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.DELETEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
 
 class CteraDeleteFeature extends DAVDeleteFeature {
-    private final CteraSession session;
 
     public CteraDeleteFeature(final CteraSession cteraSession, final CteraSession session) {
         super(cteraSession);
-        this.session = session;
     }
 
     @Override
     public void preflight(Path file) throws BackgroundException {
         // TODO CTERA-136 do we require writepermission on file as well?
         super.preflight(file);
-        session.checkCteraRole(file, DELETEPERMISSION);
+        checkCteraRole(file, DELETEPERMISSION);
     }
 }

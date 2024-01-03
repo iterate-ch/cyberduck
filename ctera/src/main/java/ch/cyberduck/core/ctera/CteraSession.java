@@ -15,7 +15,6 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -26,7 +25,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.MacUniqueIdService;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
@@ -245,17 +243,6 @@ public class CteraSession extends DAVSession {
             return (T) new CteraCopyFeature(this, session);
         }
         return super._getFeature(type);
-    }
-
-    protected void checkCteraRole(final Path file, final Acl.Role role) throws BackgroundException {
-        final Acl acl = file.attributes().getAcl();
-        if(acl.equals(Acl.EMPTY)) {
-            return;
-        }
-        if(!acl.get(new Acl.CanonicalUser()).contains(role)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),
-                    file.getName())).withFile(file);
-        }
     }
 
     private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {

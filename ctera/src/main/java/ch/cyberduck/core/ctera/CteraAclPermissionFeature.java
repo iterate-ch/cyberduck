@@ -4,12 +4,14 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.dav.DAVExceptionMappingService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 
@@ -17,6 +19,7 @@ import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -165,4 +168,14 @@ public class CteraAclPermissionFeature implements AclPermission {
         return Acl.EMPTY;
     }
 
+    protected static void checkCteraRole(final Path file, final Acl.Role role) throws BackgroundException {
+        final Acl acl = file.attributes().getAcl();
+        if(acl.equals(Acl.EMPTY)) {
+            return;
+        }
+        if(!acl.get(new Acl.CanonicalUser()).contains(role)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),
+                    file.getName())).withFile(file);
+        }
+    }
 }

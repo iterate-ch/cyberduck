@@ -26,12 +26,10 @@ import java.text.MessageFormat;
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 
 public class CteraMoveFeature extends DAVMoveFeature {
-    private final CteraSession session;
+
     public CteraMoveFeature(final CteraSession session) {
         super(session);
-        this.session = session;
     }
-
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
@@ -39,13 +37,13 @@ public class CteraMoveFeature extends DAVMoveFeature {
         if(!CteraTouchFeature.validate(target.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        session.checkCteraRole(source, DELETEPERMISSION);
-        session.checkCteraRole(target, WRITEPERMISSION);
+        checkCteraRole(source, DELETEPERMISSION);
+        checkCteraRole(target, WRITEPERMISSION);
         if(source.isDirectory()) {
-            session.checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
+            checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
         }
         else {
-            session.checkCteraRole(target.getParent(), CREATEFILEPERMISSION);
+            checkCteraRole(target.getParent(), CREATEFILEPERMISSION);
         }
     }
 }

@@ -20,19 +20,18 @@ import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.READPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
 
 class CteraReadFeature extends DAVReadFeature {
-    private final CteraSession session;
 
     public CteraReadFeature(final CteraSession cteraSession, final CteraSession session) {
         super(cteraSession);
-        this.session = session;
     }
 
     @Override
     public void preflight(Path file) throws BackgroundException {
         // TODO CTERA-136 do we need both? Which one to prefer?
         super.preflight(file);
-        session.checkCteraRole(file, READPERMISSION);
+        checkCteraRole(file, READPERMISSION);
     }
 }
