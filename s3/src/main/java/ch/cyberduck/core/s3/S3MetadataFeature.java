@@ -75,11 +75,11 @@ public class S3MetadataFeature implements Headers {
             target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
             if(status.getModified() != null) {
                 final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_MODIFICATION_DATE, status.getModified());
-                target.addMetadata(header.getName(), header.getValue());
+                target.addMetadata(StringUtils.lowerCase(header.getName()), header.getValue());
             }
             if(status.getCreated() != null) {
                 final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_CREATION_DATE, status.getCreated());
-                target.addMetadata(header.getName(), header.getValue());
+                target.addMetadata(StringUtils.lowerCase(header.getName()), header.getValue());
             }
             try {
                 // Apply non-standard ACL
