@@ -62,7 +62,7 @@ public class AbstractProtocolTest {
 
         };
         final String serialized = profile.serialize(new PlistSerializer()).toXMLPropertyList();
-        final String expected = IOUtils.toString(this.getClass().getResource("/AbstractProtocolTest/minimal.cyberduckprofile"));
+        final String expected = IOUtils.toString(this.getClass().getResource("/minimal.cyberduckprofile"));
         assertArrayEquals(expected.split("[\r]?\n"), serialized.split("[\r]?\n"));
     }
 
@@ -273,7 +273,7 @@ public class AbstractProtocolTest {
             }
         };
         final String serialized = profile.serialize(new PlistSerializer()).toXMLPropertyList();
-        final String expected = IOUtils.toString(this.getClass().getResource("/AbstractProtocolTest/full.cyberduckprofile"));
+        final String expected = IOUtils.toString(this.getClass().getResource("/full.cyberduckprofile"));
         assertArrayEquals(expected.split("[\r]?\n"), serialized.split("[\r]?\n"));
     }
 
