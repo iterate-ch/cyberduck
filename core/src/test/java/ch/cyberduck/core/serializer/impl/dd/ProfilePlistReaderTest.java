@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -269,5 +270,31 @@ public class ProfilePlistReaderTest {
         assertTrue(properties.containsKey("s3.storage.class.options"));
         assertEquals("STANDARD OTHER", properties.get("s3.storage.class.options"));
         assertEquals(Arrays.asList("STANDARD", "OTHER"), PreferencesReader.toList(properties.get("s3.storage.class.options")));
+    }
+
+    @Test
+    public void testSerializationFull() throws Exception {
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.s3;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+
+            @Override
+            public String getIdentifier() {
+                return "MyId";
+            }
+        })));
+        final Profile profile = reader.read(
+                new Local("src/test/resources/full.cyberduckprofile")
+        );
+        final String expected = IOUtils.toString(this.getClass().getResource("/full.cyberduckprofile"));
+        final String actual = profile.serialize(new PlistSerializer()).toXMLPropertyList();
+        assertArrayEquals(expected.split("[\r]?\n"), actual.split("[\r]?\n"));
     }
 }
