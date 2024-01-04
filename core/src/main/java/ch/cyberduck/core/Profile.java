@@ -117,7 +117,32 @@ public class Profile implements Protocol {
     @Override
     public <T> T serialize(final Serializer<T> serializer) {
         for(String key : dict.keys()) {
-            serializer.setStringForKey(dict.stringForKey(key), key);
+            switch(key) {
+                case HOSTNAME_CONFIGURABLE_KEY:
+                case PORT_CONFIGURABLE_KEY:
+                case PATH_CONFIGURABLE_KEY:
+                case USERNAME_CONFIGURABLE_KEY:
+                case PASSWORD_CONFIGURABLE_KEY:
+                case ANONYMOUS_CONFIGURABLE_KEY:
+                case TOKEN_CONFIGURABLE_KEY:
+                case OAUTH_CONFIGURABLE_KEY:
+                case CERTIFICATE_CONFIGURABLE_KEY:
+                case PRIVATE_KEY_CONFIGURABLE_KEY:
+                case BUNDLED_KEY:
+                case DEPRECATED_KEY:
+                case OAUTH_PKCE_KEY:
+                    serializer.setBooleanForKey(dict.booleanForKey(key), key);
+                    break;
+                case SCOPES_KEY:
+                case REGIONS_KEY:
+                case PROPERTIES_KEY:
+                case SCHEMES_KEY:
+                    serializer.setStringListForKey(dict.listForKey(key), key);
+                    break;
+                default:
+                    serializer.setStringForKey(dict.stringForKey(key), key);
+                    break;
+            }
         }
         return serializer.getSerialized();
     }
