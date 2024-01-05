@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
@@ -75,6 +76,29 @@ public class BrickAttributesFinderFeature implements AttributesFinder, Attribute
         else if(entity.getMtime() != null) {
             attr.setModificationDate(entity.getMtime().getMillis());
         }
+        if(entity.getPermissions() != null) {
+            final Permission permission = new Permission();
+            switch(PermissionType.valueOf(entity.getPermissions())) {
+                case readonly:
+                case list:
+                    permission.setUser(Permission.Action.read);
+                    break;
+                case writeonly:
+                    permission.setUser(Permission.Action.write);
+                    break;
+                default:
+                    permission.setUser(Permission.Action.all);
+                    break;
+            }
+            attr.setPermission(permission);
+        }
         return attr;
+    }
+
+    /**
+     * Possible values: full, readonly, writeonly, list, history, admin, bundle
+     */
+    enum PermissionType {
+        full, readonly, writeonly, list, history, admin, bundle,
     }
 }
