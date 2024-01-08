@@ -60,6 +60,7 @@ using ch.cyberduck.core.urlhandler;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
+using Ch.Cyberduck.Core.Ui.Preferences;
 using Ch.Cyberduck.Ui.Core.Contracts;
 using java.util;
 using org.apache.logging.log4j;
@@ -879,12 +880,25 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         private void InitStoreContext()
         {
             var storeContext = StoreContext.GetDefault();
             var initWindow = (IInitializeWithWindow)(object)storeContext;
             initWindow.Initialize((HWND)MainForm.Handle);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void OnPackagedStartup()
+        {
+            InitStoreContext();
+            try
+            {
+                PackagedDataMigrator.Migrate();
+            }
+            catch (Exception e)
+            {
+                Logger.warn("Uncaught failure in data migration", e);
+            }
         }
 
         private void OnStartup(object state)
@@ -895,7 +909,7 @@ namespace Ch.Cyberduck.Ui.Controller
             /* UWP Registration, initialize as soon as possible */
             if (Utils.IsRunningAsUWP)
             {
-                InitStoreContext();
+                OnPackagedStartup();
             }
 
             InitializeTransfers();
