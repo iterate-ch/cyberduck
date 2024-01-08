@@ -91,7 +91,6 @@ public class CteraAclPermissionFeature implements AclPermission {
         if(Acl.EMPTY.equals(acl)) {
             return new Permission(700);
         }
-        int perm = 0;
         Permission.Action action = Permission.Action.none;
         if(acl.get(new Acl.CanonicalUser()).contains(READPERMISSION)) {
             action = action.or(Permission.Action.read);
