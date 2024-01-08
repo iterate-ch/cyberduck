@@ -1,0 +1,7 @@
+SHGetImageList
+SHGetStockIconInfo
+SHIL_EXTRALARGE
+SHIL_JUMBO
+SHIL_LARGE
+SHIL_SMALL
+Windows.Win32.UI.Controls.IImageList

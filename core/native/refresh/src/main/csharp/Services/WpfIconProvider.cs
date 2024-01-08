@@ -35,30 +35,6 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public IEnumerable<BitmapSource> GetResources(string name) => Get(name, name, default, false, out var _);
 
-        private BitmapSource FindNearestFit(IEnumerable<BitmapSource> sources, int size, CacheIconCallback cacheCallback)
-        {
-            var nearest = int.MaxValue;
-            BitmapSource nearestFit = null;
-
-            foreach (var item in sources)
-            {
-                int d = size - item.PixelWidth;
-                if (d == 0)
-                {
-                    return item;
-                }
-
-                if ((d < 0 && (nearest > 0 || nearest < d)) || (nearest > 0 && d < nearest))
-                {
-                    nearest = d;
-                    nearestFit = item;
-                }
-            }
-            nearestFit = ResizeImage(nearestFit, size);
-            cacheCallback(IconCache, size, nearestFit);
-            return nearestFit;
-        }
-
         private IEnumerable<BitmapSource> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
         {
             var list = new List<BitmapSource>();
@@ -122,6 +98,30 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         protected override BitmapSource Get(string name)
             => Get(name, name, default);
 
+        protected override BitmapSource NearestFit(IEnumerable<BitmapSource> sources, int size, CacheIconCallback cacheCallback)
+        {
+            var nearest = int.MaxValue;
+            BitmapSource nearestFit = null;
+
+            foreach (var item in sources)
+            {
+                int d = size - item.PixelWidth;
+                if (d == 0)
+                {
+                    return item;
+                }
+
+                if ((d < 0 && (nearest > 0 || nearest < d)) || (nearest > 0 && d < nearest))
+                {
+                    nearest = d;
+                    nearestFit = item;
+                }
+            }
+            nearestFit = ResizeImage(nearestFit, size);
+            cacheCallback(IconCache, size, nearestFit);
+            return nearestFit;
+        }
+
         private BitmapSource Get(object key, string path, string classifier)
             => IconCache.TryGetIcon(key, out BitmapSource image, classifier)
             ? image
@@ -137,7 +137,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             using (IconCache.UpgradeableReadLock())
             {
                 var images = Get(key, path, classifier, returnDefault, out var image);
-                return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+                return image ?? NearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
             }
         }
 

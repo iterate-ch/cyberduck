@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using ch.cyberduck.core;
 
@@ -26,6 +27,8 @@ public class Win32IconProvider : IconProvider<Icon>
         cacheIcon(IconCache, icon.Width, icon);
         return icon;
     }
+
+    protected override Icon NearestFit(IEnumerable<Icon> sources, int size, CacheIconCallback cacheCallback) => default;
 
     private Icon Get(object key, string path, string classifier)
     {

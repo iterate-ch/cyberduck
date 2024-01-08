@@ -128,6 +128,30 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return bitmap;
         }
 
+        protected override Image NearestFit(IEnumerable<Image> sources, int size, CacheIconCallback cacheCallback)
+        {
+            var nearest = int.MaxValue;
+            Image nearestFit = null;
+
+            foreach (var item in sources)
+            {
+                int d = size - item.Width;
+                if (d == 0)
+                {
+                    return item;
+                }
+
+                if ((d < 0 && (nearest > 0 || nearest < d)) || (nearest > 0 && d < nearest))
+                {
+                    nearest = d;
+                    nearestFit = item;
+                }
+            }
+            nearestFit = new Bitmap(nearestFit, size, size);
+            cacheCallback(IconCache, size, nearestFit);
+            return nearestFit;
+        }
+
         private static Image Overlay(Image original, Image overlay, int size)
         {
             var surface = new Bitmap(original, new Size(size, size));
@@ -153,30 +177,6 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
         }
 
-        private Image FindNearestFit(IEnumerable<Image> sources, int size, CacheIconCallback cacheCallback)
-        {
-            var nearest = int.MaxValue;
-            Image nearestFit = null;
-
-            foreach (var item in sources)
-            {
-                int d = size - item.Width;
-                if (d == 0)
-                {
-                    return item;
-                }
-
-                if ((d < 0 && (nearest > 0 || nearest < d)) || (nearest > 0 && d < nearest))
-                {
-                    nearest = d;
-                    nearestFit = item;
-                }
-            }
-            nearestFit = new Bitmap(nearestFit, size, size);
-            cacheCallback(IconCache, size, nearestFit);
-            return nearestFit;
-        }
-
         private Image Get(object key, string path, string classifier)
             => IconCache.TryGetIcon(key, out Image image, classifier)
             ? image
@@ -190,7 +190,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         private Image Get(object key, string path, int size, string classifier, bool returnDefault)
         {
             var images = Get(key, path, classifier, returnDefault, out var image);
-            return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+            return image ?? NearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
         }
 
         private void ProfileListObserver_ProfilesChanged(object sender, EventArgs e) => BuildProtocolImageList();
