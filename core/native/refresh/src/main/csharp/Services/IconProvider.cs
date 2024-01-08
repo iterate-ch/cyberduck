@@ -3,12 +3,18 @@ using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core.Local;
 using org.apache.logging.log4j;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.WindowsAndMessaging;
+using Windows.Win32.UI.Controls;
+using static System.Runtime.CompilerServices.Unsafe;
 using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.CoreRefreshMethods;
 using static Windows.Win32.Storage.FileSystem.FILE_FLAGS_AND_ATTRIBUTES;
 using static Windows.Win32.UI.Shell.SHGFI_FLAGS;
 using Path = System.IO.Path;
@@ -72,7 +78,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                         return default;
                 }
                 realIconPath = iconPath;
-                
+
                 try
                 {
                     iconPath = SHLoadIndirectString(iconPath);
@@ -145,10 +151,68 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             _ => Get(name)
         };
 
+        public T GetStockIcon(SHSTOCKICONID stockIconId, int size)
+        {
+            var filtered = IconCache.Filter<T>(v => stockIconId.Equals(v.Key));
+            if (!filtered.Any())
+            {
+                SHSTOCKICONINFO info = new()
+                {
+                    cbSize = (uint)SizeOf<SHSTOCKICONINFO>()
+                };
+                if (SHGetStockIconInfo(stockIconId, (uint)(SHGFI_SYSICONINDEX), ref info) is { Failed: true, Value: { } shgsiError })
+                {
+                    Log.error($"Failure retrieving {stockIconId}.", Marshal.GetExceptionForHR(shgsiError));
+                    return default;
+                }
+
+                List<T> icons = [];
+                filtered = icons;
+                foreach (var ilSize in (int[])[
+                    1 /* SMALL */,
+                    0 /* LARGE */,
+                    2 /* EXTRA_LARGE */,
+                    4 /* JUMBO */
+                ])
+                {
+                    if (SHGetImageList(ilSize, out IImageList imageList) is { Failed: true, Value: { } shgilError })
+                    {
+                        if (Log.isDebugEnabled())
+                        {
+                            Log.debug("Failure retrieving Image List", Marshal.GetExceptionForHR(shgilError));
+                        }
+
+                        continue;
+                    }
+
+                    using HICON_Handle handle = new();
+                    try
+                    {
+                        imageList.GetIcon(info.iSysImageIndex, 0, out handle.Handle);
+                    }
+                    catch (Exception e)
+                    {
+                        if (Log.isDebugEnabled())
+                        {
+                            Log.debug($"Failure retrieving icon {info.iSysImageIndex} from Image List {ilSize}", e);
+                        }
+
+                        continue;
+                    }
+
+                    icons.Add(Get(handle.Handle.Value, (c, s, i) => IconCache.CacheIcon(stockIconId, s, i)));
+                }
+            }
+
+            return NearestFit(filtered, size, (c, s, i) => IconCache.CacheIcon(stockIconId, s, i));
+        }
+
         protected abstract T Get(string name);
 
         protected abstract T Get(string name, int size);
 
         protected abstract T Get(IntPtr nativeIcon, CacheIconCallback cacheIcon);
+
+        protected abstract T NearestFit(IEnumerable<T> sources, int size, CacheIconCallback cacheCallback);
     }
 }
