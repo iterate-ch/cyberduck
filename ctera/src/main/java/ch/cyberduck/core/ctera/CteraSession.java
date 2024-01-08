@@ -140,7 +140,7 @@ public class CteraSession extends DAVSession {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(embeddedWebDAV) {
+        if(embeddedWebDAV || host.getProperty("embeddedWebDAV").equalsIgnoreCase("true")) {
             super.login(proxy, prompt, cancel);
             return;
         }
@@ -212,7 +212,8 @@ public class CteraSession extends DAVSession {
         if(type == Timestamp.class) {
             return null;
         }
-        if(type == Metadata.class) {
+        // TODO CTERA-137 enable propfind for testing
+        if(type == Metadata.class && !(embeddedWebDAV || host.getProperty("embeddedWebDAV").equalsIgnoreCase("true"))) {
             return null;
         }
         if(type == CustomActions.class) {

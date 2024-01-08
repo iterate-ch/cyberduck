@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.sardine.DavResource;
+import com.github.sardine.util.SardineUtil;
 
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.allCteraCustomACLQn;
 
@@ -48,6 +49,8 @@ class CteraListService extends DAVListService {
                 Stream.of(
                         // TODO CTERA-136 sent as CteraSession.getFeature(ListService.class) returns DAVListService, but Timestamp feature disabled in CteraSession.getFeature(Timestamp.class) - do we need it?
 //                    DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE
+                        // CTERA-137
+                        SardineUtil.createQNameWithCustomNamespace("guid")
                 ),
                 allCteraCustomACLQn.stream()
         ).collect(Collectors.toSet())));
