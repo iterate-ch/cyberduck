@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Quota;
 
 import java.io.IOException;
 
@@ -47,8 +48,9 @@ public class SMBAttributesFinderFeature implements AttributesFinder, AttributesA
             if(new SMBPathContainerService(session).isContainer(file)) {
                 final ShareInfo shareInformation = share.getShareInformation();
                 final PathAttributes attributes = new PathAttributes();
-                attributes.setSize(shareInformation.getTotalSpace() - shareInformation.getFreeSpace());
-                attributes.setQuota(shareInformation.getTotalSpace());
+                final long used = shareInformation.getTotalSpace() - shareInformation.getFreeSpace();
+                attributes.setSize(used);
+                attributes.setQuota(new Quota.Space(used, shareInformation.getFreeSpace()));
                 return attributes;
             }
             else {

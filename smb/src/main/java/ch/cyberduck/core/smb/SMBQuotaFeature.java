@@ -37,8 +37,8 @@ public class SMBQuotaFeature implements Quota {
         long available = 0L;
         for(Path container : session.getFeature(ListService.class).list(Home.ROOT, new DisabledListProgressListener())) {
             final PathAttributes attr = new SMBAttributesFinderFeature(session).find(container);
-            used += attr.getSize();
-            available += attr.getQuota() - attr.getSize();
+            used += attr.getQuota().used;
+            available += attr.getQuota().available;
         }
         return new Quota.Space(used, available);
     }

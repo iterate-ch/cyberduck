@@ -21,6 +21,7 @@ package ch.cyberduck.core.serializer;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
@@ -49,7 +50,7 @@ public class PathAttributesDictionary<T> {
         }
         final String quotaObj = dict.stringForKey("Quota");
         if(quotaObj != null) {
-            attributes.setQuota(Long.parseLong(quotaObj));
+            attributes.setQuota(new Quota.Space(attributes.getSize(), Long.parseLong(quotaObj)));
         }
         final String modifiedObj = dict.stringForKey("Modified");
         if(modifiedObj != null) {
