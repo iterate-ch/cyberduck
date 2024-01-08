@@ -81,6 +81,11 @@ public class PlistSerializer implements Serializer<NSDictionary> {
     }
 
     @Override
+    public void setBooleanForKey(final boolean value, final String key) {
+        dict.put(key, value);
+    }
+
+    @Override
     public NSDictionary getSerialized() {
         return dict;
     }

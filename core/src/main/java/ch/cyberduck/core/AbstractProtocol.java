@@ -39,11 +39,137 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ch.cyberduck.core.Profile.*;
+
 public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public <T> T serialize(final Serializer<T> dict) {
-        return null;
+        if(this.getOAuthClientId() != null) {
+            dict.setStringForKey(this.getOAuthClientId(), OAUTH_CLIENT_ID_KEY);
+        }
+        if(this.getOAuthClientSecret() != null) {
+            dict.setStringForKey(this.getOAuthClientSecret(), OAUTH_CLIENT_SECRET_KEY);
+        }
+        if(this.getOAuthTokenUrl() != null) {
+            dict.setStringForKey(this.getOAuthTokenUrl(), OAUTH_TOKEN_URL_KEY);
+        }
+        if(this.getOAuthRedirectUrl() != null) {
+            dict.setStringForKey(this.getOAuthRedirectUrl(), OAUTH_REDIRECT_URL_KEY);
+        }
+        if(this.getOAuthAuthorizationUrl() != null) {
+            dict.setStringForKey(this.getOAuthAuthorizationUrl(), OAUTH_AUTHORIZATION_URL_KEY);
+        }
+        if(!this.isOAuthPKCE()) {
+            dict.setBooleanForKey(this.isOAuthPKCE(), OAUTH_PKCE_KEY);
+        }
+        if(!this.getOAuthScopes().isEmpty()) {
+            dict.setStringListForKey(this.getOAuthScopes(), SCOPES_KEY);
+        }
+        if(this.getSTSEndpoint() != null) {
+            dict.setStringForKey(this.getSTSEndpoint(), STS_ENDPOINT_KEY);
+        }
+        if(this.disk() != null) {
+            dict.setStringForKey(this.disk(), DISK_KEY);
+        }
+        if(this.icon() != null) {
+            dict.setStringForKey(this.icon(), ICON_KEY);
+        }
+        if(this.getIdentifier() != null) {
+            dict.setStringForKey(this.getIdentifier(), PROTOCOL_KEY);
+        }
+        if(this.getProvider() != null) {
+            dict.setStringForKey(this.getProvider(), VENDOR_KEY);
+        }
+        if(this.isBundled()) {
+            dict.setBooleanForKey(this.isBundled(), BUNDLED_KEY);
+        }
+        if(this.getName() != null) {
+            dict.setStringForKey(this.getName(), NAME_KEY);
+        }
+        if(this.getDescription() != null) {
+            dict.setStringForKey(getDescription(), DESCRIPTION_KEY);
+        }
+        if(this.getRegion() != null) {
+            dict.setStringForKey(this.getRegion(), REGION_KEY);
+        }
+        if(!this.getRegions().isEmpty()) {
+            dict.setStringListForKey(this.getRegions().stream().map(r -> r.getIdentifier()).collect(Collectors.toList()), REGIONS_KEY);
+        }
+        dict.setStringForKey(this.getScheme().name(), SCHEME_KEY);
+        if(this.getSchemes().length > 0) {
+            dict.setStringListForKey(Arrays.asList(this.getSchemes()), SCHEMES_KEY);
+        }
+        if(this.getAuthorization() != null) {
+            dict.setStringForKey(this.getAuthorization(), AUTHORIZATION_KEY);
+        }
+        if(this.getContext() != null) {
+            dict.setStringForKey(this.getContext(), CONTEXT_KEY);
+        }
+        if(StringUtils.isNotBlank(this.getDefaultHostname())) {
+            dict.setStringForKey(this.getDefaultHostname(), DEFAULT_HOSTNAME_KEY);
+        }
+        if(this.getDefaultPort() != this.getScheme().getPort()) {
+            dict.setStringForKey(Integer.toString(this.getDefaultPort()), DEFAULT_PORT_KEY);
+        }
+        if(this.getDefaultPath() != null) {
+            dict.setStringForKey(this.getDefaultPath(), DEFAULT_PATH_KEY);
+        }
+        if(this.getDefaultNickname() != null) {
+            dict.setStringForKey(this.getDefaultNickname(), DEFAULT_NICKNAME_KEY);
+        }
+        if(StringUtils.isNotEmpty(this.getHostnamePlaceholder())) {
+            dict.setStringForKey(this.getHostnamePlaceholder(), HOSTNAME_PLACEHOLDER_KEY);
+        }
+        if(!this.getUsernamePlaceholder().equals(LocaleFactory.localizedString("Username", "Credentials"))) {
+            dict.setStringForKey(this.getUsernamePlaceholder(), USERNAME_PLACEHOLDER_KEY);
+        }
+        if(!this.getPasswordPlaceholder().equals(LocaleFactory.localizedString("Password", "Credentials"))) {
+            dict.setStringForKey(this.getPasswordPlaceholder(), PASSWORD_PLACEHOLDER_KEY);
+        }
+        if(!this.getTokenPlaceholder().equals(LocaleFactory.localizedString("Password", "Credentials"))) {
+            dict.setStringForKey(this.getTokenPlaceholder(), TOKEN_PLACEHOLDER_KEY);
+        }
+        if(StringUtils.isNotBlank(this.getDefaultHostname())) {
+            dict.setBooleanForKey(this.isHostnameConfigurable(), HOSTNAME_CONFIGURABLE_KEY);
+        }
+        if(StringUtils.isNotBlank(this.getDefaultHostname())) {
+            dict.setBooleanForKey(this.isPortConfigurable(), PORT_CONFIGURABLE_KEY);
+        }
+        if(!this.isPathConfigurable()) {
+            dict.setBooleanForKey(this.isPathConfigurable(), PATH_CONFIGURABLE_KEY);
+        }
+        if(!this.isUsernameConfigurable()) {
+            dict.setBooleanForKey(this.isUsernameConfigurable(), USERNAME_CONFIGURABLE_KEY);
+        }
+        if(!this.isPasswordConfigurable()) {
+            dict.setBooleanForKey(this.isPasswordConfigurable(), PASSWORD_CONFIGURABLE_KEY);
+        }
+        if(this.isAnonymousConfigurable()) {
+            dict.setBooleanForKey(this.isAnonymousConfigurable(), ANONYMOUS_CONFIGURABLE_KEY);
+        }
+        if(this.isTokenConfigurable()) {
+            dict.setBooleanForKey(this.isTokenConfigurable(), TOKEN_CONFIGURABLE_KEY);
+        }
+        if(this.isOAuthConfigurable()) {
+            dict.setBooleanForKey(this.isOAuthConfigurable(), OAUTH_CONFIGURABLE_KEY);
+        }
+        if(this.isCertificateConfigurable()) {
+            dict.setBooleanForKey(this.isCertificateConfigurable(), CERTIFICATE_CONFIGURABLE_KEY);
+        }
+        if(this.isPrivateKeyConfigurable()) {
+            dict.setBooleanForKey(this.isPrivateKeyConfigurable(), PRIVATE_KEY_CONFIGURABLE_KEY);
+        }
+        if(!this.getProperties().isEmpty()) {
+            dict.setStringListForKey(this.getProperties().entrySet().stream().map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue())).collect(Collectors.toList()), PROPERTIES_KEY);
+        }
+        if(this.isDeprecated()) {
+            dict.setBooleanForKey(this.isDeprecated(), DEPRECATED_KEY);
+        }
+        if(StringUtils.isNotEmpty(this.getHelp())) {
+            dict.setStringForKey(this.getHelp(), HELP_KEY);
+        }
+        return dict.getSerialized();
     }
 
     @Override

@@ -28,8 +28,10 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -53,13 +55,13 @@ public class ProfilePlistReaderTest {
             }
         };
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent))).read(
-                new Local("src/test/resources/Test Dropbox.cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Test Dropbox.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(profile);
         assertSame(parent, profile.getProtocol());
         // Lookup with fallback
         assertNotNull(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)), ProtocolFactory.BUNDLED_PROFILE_PREDICATE).read(
-                new Local("src/test/resources/Test Dropbox.cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Test Dropbox.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         ));
     }
 
@@ -77,7 +79,7 @@ public class ProfilePlistReaderTest {
             }
         };
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent))).read(
-                new Local("src/test/resources/Azure.cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Azure.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(profile);
         assertSame(parent, profile.getProtocol());
@@ -96,7 +98,7 @@ public class ProfilePlistReaderTest {
                 return false;
             }
         }))).read(
-                new Local("src/test/resources/Unknown.cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Unknown.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
     }
 
@@ -108,7 +110,7 @@ public class ProfilePlistReaderTest {
                 return false;
             }
         }))).read(
-                new Local("src/test/resources/Custom Regions S3.cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Custom Regions S3.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(profile);
         final Set<Location.Name> regions = profile.getRegions();
@@ -132,11 +134,11 @@ public class ProfilePlistReaderTest {
         };
         final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)));
         final Profile profile = reader.read(
-                new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Eucalyptus Walrus S3.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-                new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Eucalyptus Walrus S3.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertSame(parent, profile.getProtocol());
@@ -159,11 +161,11 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile https = reader.read(
-                new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Openstack Swift (Swauth).cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(https);
         final Profile http = reader.read(
-                new Local("src/test/resources/Openstack Swift (Swauth HTTP).cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Openstack Swift (Swauth HTTP).cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(http);
         assertNotEquals(https, http);
@@ -183,11 +185,11 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile keystone = reader.read(
-                new Local("src/test/resources/Openstack Swift (Keystone).cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Openstack Swift (Keystone).cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(keystone);
         final Profile swauth = reader.read(
-                new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Openstack Swift (Swauth).cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(swauth);
         assertNotEquals(keystone, swauth);
@@ -208,11 +210,11 @@ public class ProfilePlistReaderTest {
         };
         final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)));
         final Profile profile = reader.read(
-                new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Test S3 (HTTP).cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-                new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Test S3 (HTTP).cyberduckprofile").toURI()).toFile().getAbsolutePath())
         ));
         assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
@@ -244,11 +246,11 @@ public class ProfilePlistReaderTest {
         };
         final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)));
         final Profile profile = reader.read(
-                new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Test S3 (HTTPS).cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-                new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
+                new Local(Paths.get(this.getClass().getResource("/Test S3 (HTTPS).cyberduckprofile").toURI()).toFile().getAbsolutePath())
         ));
         assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
@@ -269,5 +271,31 @@ public class ProfilePlistReaderTest {
         assertTrue(properties.containsKey("s3.storage.class.options"));
         assertEquals("STANDARD OTHER", properties.get("s3.storage.class.options"));
         assertEquals(Arrays.asList("STANDARD", "OTHER"), PreferencesReader.toList(properties.get("s3.storage.class.options")));
+    }
+
+    @Test
+    public void testSerializationFull() throws Exception {
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.s3;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+
+            @Override
+            public String getIdentifier() {
+                return "MyId";
+            }
+        })));
+        final Profile profile = reader.read(
+                new Local(Paths.get(this.getClass().getResource("/full.cyberduckprofile").toURI()).toFile().getAbsolutePath())
+        );
+        final String expected = IOUtils.toString(this.getClass().getResource("/full.cyberduckprofile"));
+        final String actual = profile.serialize(new PlistSerializer()).toXMLPropertyList();
+        assertArrayEquals(expected.split("[\r]?\n"), actual.split("[\r]?\n"));
     }
 }
