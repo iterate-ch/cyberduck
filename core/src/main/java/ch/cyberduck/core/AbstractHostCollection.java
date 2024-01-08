@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
-import ch.cyberduck.core.text.NaturalOrderCollator;
 import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import org.apache.commons.lang3.CharUtils;
@@ -27,11 +26,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -103,7 +102,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     public Map<String, List<Host>> groups(final HostGroups groups, final HostFilter filter, final Comparator<Host> comparator) {
-        final Map<String, List<Host>> labels = new HashMap<>();
+        final Map<String, List<Host>> labels = new TreeMap<>(new NaturalOrderComparator());
         for(Host host : this.stream().filter(filter::accept).collect(Collectors.toList())) {
             if(groups.groups(host).isEmpty()) {
                 final List<Host> list = labels.getOrDefault(StringUtils.EMPTY, new ArrayList<>());
@@ -118,8 +117,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
                 }
             }
         }
-        labels.forEach((s, hosts) -> hosts.sort(comparator));
-        labels.entrySet().stream().sorted((o1, o2) -> new NaturalOrderCollator().compare(o1.getKey(), o2.getKey()));
+        labels.forEach((String label, List<Host> hosts) -> hosts.sort(comparator));
         return labels;
     }
 
