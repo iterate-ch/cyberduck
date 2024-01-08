@@ -42,8 +42,8 @@ public class BrickAttributesFinderFeature implements AttributesFinder, Attribute
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final FileEntity entity = new FilesApi(new BrickApiClient(session))
-                .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
-                    "stat", null, false, false);
+                    .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                            "stat", null, false, false);
             switch(entity.getType()) {
                 case "file":
                     if(file.isDirectory()) {
@@ -78,20 +78,14 @@ public class BrickAttributesFinderFeature implements AttributesFinder, Attribute
         }
         if(entity.getPermissions() != null) {
             final Permission permission = new Permission();
-            switch(PermissionType.valueOf(entity.getPermissions())) {
-                case readonly:
-                    permission.setUser(Permission.Action.read);
-                    break;
-                case list:
-                    permission.setUser(Permission.Action.read);
-                    permission.setUser(Permission.Action.execute);
-                    break;
-                case writeonly:
-                    permission.setUser(Permission.Action.write);
-                    break;
-                default:
-                    permission.setUser(Permission.Action.all);
-                    break;
+            if(entity.getPermissions().contains(PermissionType.r.name())) {
+                permission.setUser(permission.getUser().or(Permission.Action.read));
+            }
+            if(entity.getPermissions().contains(PermissionType.w.name())) {
+                permission.setUser(permission.getUser().or(Permission.Action.write));
+            }
+            if(entity.getPermissions().contains(PermissionType.l.name())) {
+                permission.setUser(permission.getUser().or(Permission.Action.execute));
             }
             attr.setPermission(permission);
         }
@@ -99,9 +93,24 @@ public class BrickAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     /**
-     * Possible values: full, readonly, writeonly, list, history, admin, bundle
+     * A short string representing the current user's permissions. Can be r,w,d, l or any combination
      */
     enum PermissionType {
-        full, readonly, writeonly, list, history, admin, bundle,
+        /**
+         * Read
+         */
+        r,
+        /**
+         * Write
+         */
+        w,
+        /**
+         * Delete
+         */
+        d,
+        /**
+         * List
+         */
+        l,
     }
 }
