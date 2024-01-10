@@ -516,7 +516,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.2.3</version>
+                    <version>3.2.5</version>
                     <configuration>
                         <argLine>@{argLine} --add-opens=java.base/sun.security.ssl=ALL-UNNAMED
                             --add-opens=java.base/sun.security.util=ALL-UNNAMED
@@ -537,7 +537,7 @@
                         <dependency>
                             <groupId>org.apache.maven.surefire</groupId>
                             <artifactId>surefire-junit47</artifactId>
-                            <version>3.2.3</version>
+                            <version>3.2.5</version>
                         </dependency>
                     </dependencies>
                 </plugin>
