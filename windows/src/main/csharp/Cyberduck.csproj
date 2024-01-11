@@ -51,6 +51,7 @@
     <PackageReference Include="ObjectListView.Official" />
     <PackageReference Include="ReactiveUI.WPF" />
     <PackageReference Include="StructureMap" />
+    <PackageReference Include="System.Memory" />
   </ItemGroup>
 
   <ItemGroup>
