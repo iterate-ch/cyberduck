@@ -33,8 +33,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set variables
-        id: set_vars
+      - name: Set variables if schedule
+        id: set_vars_schedule
         if: github.event_name == 'schedule'
         run: |
           echo "MAVEN_ARGS_WIN=clean deploy --projects windows,i18n,profiles,importer --also-make --update-snapshots --settings $WORKSPACE/settings.xml -DskipTests -Dsparkle.feed=nightly" >> $GITHUB_ENV
@@ -44,7 +44,37 @@ jobs:
           echo "FILETRANSFER_PATH_MACOS=nightly" >> $GITHUB_ENV
           echo "FILETRANSFER_PATH_WIN=windows/nightly" >> $GITHUB_ENV
           echo "BRANCH_TAG=/master" >> $GITHUB_ENV
-        
+          echo "PUBLISH_TIGGER=false" >> $GITHUB_ENV
+
+      - name: Set variables if beta
+        id: set_vars_beta
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tag/beta')}}
+        run: |
+            echo "MAVEN_ARGS_WIN='clean deploy --projects windows --also-make --update-snapshots --settings $WORKSPACE/settings.xml -DskipTests -D"sparkle.feed=beta" " >> $GITHUB_ENV
+            echo "MAVEN_ARGS_MACOS=" " clean deploy --update-snapshots --projects osx,i18n,profiles,importer --also-make --settings $WORKSPACE/settings.xml -DskipTests -D"xcode.configuration=Release" -D"sparkle.feed=beta" -D"installer.certificate=Developer ID Installer: David Kocher (G69SCX94XU)" -D"codesign.certificate=Developer ID Application: David Kocher (G69SCX94XU)" -D"codesign.arg=--entitlements ${{ github.workspace }}/setup/app/default.entitlements --requirements ${{ github.workspace }}/setup/app/codesign-requirement.bin"' ">> $GITHUB_ENV
+            echo "AWS_PATH= s3:/beta.cyberduck.io/" >> $GITHUB_ENV
+            echo "RACKSPACE_PATH=" rackspace:/beta.cyberduck.io/" >> $GITHUB_ENV
+            echo "FILETRANSFER_PATH_MACOS="beta" >> $GITHUB_ENV
+            echo "FILETRANSFER_PATH_WIN=windows/beta"  >> $GITHUB_ENV
+            echo "BRANCH_TAG=github.event.ref">> $GITHUB_ENV  
+            echo "PUBLISH_TIGGER=false" >> $GITHUB_ENV   
+
+      - name: Set variables if release
+        id: set_vars_release
+        if: ${{ github.event_name == 'release' }}
+        run: |   
+            echo "MAVEN_ARGS_WIN= clean deploy  --settings ${env:GITHUB_WORKSPACE}/settings.xml -DskipTests -D"sparkle.feed=" "" >> $GITHUB_ENV
+            echo "MAVEN_ARGS_MACOS="" 'clean deploy --projects osx,i18n -am --settings $WORKSPACE/settings.xml-DskipTests -D"xcode.configuration=Release" -D"sparkle.feed="-D"installer.certificate=Developer ID Installer: David Kocher(G69SCX94XU)" -D"codesign.certificate=Developer ID Application: DavidKocher (G69SCX94XU)" -D"codesign.arg=--entitlements ${{ github.workspace}}/setup/app/default.entitlements --requirements ${{ github.workspace}}/setup/app/codesign-requirement.bin"'" >> $GITHUB_ENV
+            echo "AWS_PATH="s3:/release.cyberduck.io/" >> $GITHUB_ENV
+            echo "RACKSPACE_PATH=" "rackspace:/cdn.cyberduck.ch/ " >> $GITHUB_ENV
+            echo "FILETRANSFER_PATH_MACOS="" ${{ env.REMOTE_DIRECTORY }}"" >> $GITHUB_ENV
+            echo "FILETRANSFER_PATH_WIN=windows"  >> $GITHUB_ENV
+            echo "BRANCH_TAG=github.release.name">> $GITHUB_ENV   
+            echo "PUBLISH_TIGGER=true" >> $GITHUB_ENV  
+
+
+
+
       - name: Set output
         id: vars
         run: |
@@ -73,8 +103,7 @@ jobs:
         with:
           MavenArgsWin: ${{ needs.get_variables_job.outputs.MAVEN_ARGS_WIN }}
           MavenArgsMacos: ${{ needs.get_variables_job.outputs.MAVEN_ARGS_MACOS }}
-          AwsPath: ${{ needs.get_variables_job.outputs.AWS_PATH }}
-          RackspacePath: ${{ needs.get_variables_job.outputs.RACKSPACE_PATH }}
+         
 
       
   call-reusable-job-upload:
@@ -88,4 +117,11 @@ jobs:
       - name: Call reusable job Upload
         uses: ./.github/workflows/template/upload.yml@main
         with:
-          MavenArgsWin: ${{ needs.get_variables_job.outputs.MAVEN_ARGS_WIN }}
+          FiletransferPathMacos: ${{ needs.get_variables_job.outputs.FILETRANSFER_PATH_MACOS }}
+          FiletransferPathWin: ${{ needs.get_variables_job.outputs.FILETRANSFER_PATH_WIN }}
+          versionCyberduckIoHostName: ${{ needs.get_variables_job.outputs.VERSION_CYBERDUCK_IO_HOST_NAME }}
+          versionCyberduckIoKnowHosts: ${{ needs.get_variables_job.outputs.VERSION_CYBERDUCK_IO_KNOW_HOSTS }}
+          versionCyberduckIoUser: ${{ needs.get_variables_job.outputs.VERSION_CYBERDUCK_IO_USER }}
+          AwsPath: ${{ needs.get_variables_job.outputs.AWS_PATH }}
+          RackspacePath: ${{ needs.get_variables_job.outputs.RACKSPACE_PATH }}
+          publishTigger: ${{ needs.get_variables_job.outputs.PUBLISH_TIGGER }}
