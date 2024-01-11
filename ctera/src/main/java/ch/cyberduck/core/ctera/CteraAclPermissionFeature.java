@@ -4,7 +4,6 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -19,7 +18,6 @@ import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -173,8 +171,9 @@ public class CteraAclPermissionFeature implements AclPermission {
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(role)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),
-                    file.getName())).withFile(file);
+            throw new AccessDeniedException(
+                    String.format("Access to %s failed, requires %s, found %s", file.getAbsolute(), role, acl)
+            ).withFile(file);
         }
     }
 }
