@@ -1,0 +1,91 @@
+name: Main
+
+on: 
+  push:
+    branches: [ features/template-workflow]
+
+env:
+    
+  AWS_ACCESS_KEY_DEPLOYMENT: "${{ secrets.AWS_ACCESS_KEY_DEPLOYMENT }}"
+  AWS_SECRET_KEY_DEPLOYMENT: "${{ secrets.AWS_SECRET_KEY_DEPLOYMENT }}"
+  MAVEN_SERVER_PASSWORD: "${{ secrets.MAVEN_SERVER_PASSWORD }}"
+  RACKSPACE_USER: "${{ secrets.RACKSPACE_USER }}"
+  RACKSPACE_PASSWORD: "${{ secrets.RACKSPACE_PASSWORD }}"
+  VERSION_CYBERDUCK_IO_HOST_NAME: "${{ secrets.VERSION_CYBERDUCK_IO_HOST_NAME }}"
+  VERSION_CYBERDUCK_IO_KNOW_HOSTS: "${{ secrets.VERSION_CYBERDUCK_IO_KNOW_HOSTS }}"
+  VERSION_CYBERDUCK_IO_USER: "${{ secrets.VERSION_CYBERDUCK_IO_USER }}"
+
+jobs:
+  get_variables_job:
+    runs-on: ubuntu-latest
+    env:
+      MAVEN_ARGS_WIN: " "
+      MAVEN_ARGS_MACOS: " "
+      AWS_PATH: " "
+      RACKSPACE_PATH:  " "
+      FILETRANSFER_PATH_MACOS: " "
+      FILETRANSFER_PATH_WIN: " "
+      BRANCH_TAG: " "
+      Time: "H18 * *"
+      PUBLISH_TIGGER: false
+      variable2: Wert2$
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set variables
+        id: set_vars
+        if: github.event_name == 'schedule'
+        run: |
+          echo "MAVEN_ARGS_WIN=clean deploy --projects windows,i18n,profiles,importer --also-make --update-snapshots --settings $WORKSPACE/settings.xml -DskipTests -Dsparkle.feed=nightly" >> $GITHUB_ENV
+          echo "MAVEN_ARGS_MACOS=clean deploy --update-snapshots --projects osx,i18n,profiles,importer --also-make --settings $WORKSPACE/settings.xml -DskipTests -DskipNotarize=${{ env.SKIP_NOTARIZE }} -Dxcode.configuration=Release -Dsparkle.feed=nightly -Dinstaller.certificate='Developer ID Installer: David Kocher (G69SCX94XU)' -Dcodesign.certificate='Developer ID Application: David Kocher (G69SCX94XU)' -Dcodesign.arg='--entitlements ${{ github.workspace }}/setup/app/default.entitlements --requirements ${{ github.workspace }}/setup/app/codesign-requirement.bin'" >> $GITHUB_ENV
+          echo "AWS_PATH=s3:/snapshots.cyberduck.io/" >> $GITHUB_ENV
+          echo "RACKSPACE_PATH=rackspace:/snapshots.cyberduck.io/" >> $GITHUB_ENV
+          echo "FILETRANSFER_PATH_MACOS=nightly" >> $GITHUB_ENV
+          echo "FILETRANSFER_PATH_WIN=windows/nightly" >> $GITHUB_ENV
+          echo "BRANCH_TAG=/master" >> $GITHUB_ENV
+        
+      - name: Set output
+        id: vars
+        run: |
+          echo "::set-output name=MAVEN_ARGS_WIN::${{ env.MAVEN_ARGS_WIN }}"
+          echo "::set-output name=MAVEN_ARGS_MACOS::${{ env.MAVEN_ARGS_MACOS }}"
+          echo "::set-output name=AWS_PATH::${{ env.AWS_PATH }}"
+          echo "::set-output name=RACKSPACE_PATH::${{ env.RACKSPACE_PATH }}"
+          echo "::set-output name=FILETRANSFER_PATH_MACOS::${{ env.FILETRANSFER_PATH_MACOS }}"
+          echo "::set-output name=FILETRANSFER_PATH_WIN::${{ env.FILETRANSFER_PATH_WIN }}"
+          echo "::set-output name=BRANCH_TAG::${{ env.BRANCH_TAG }}"
+          echo "::set-output name=Time::${{ env.Time }}"
+          echo "::set-output name=PUBLISH_TIGGER::${{ env.PUBLISH_TIGGER }}"
+
+        
+
+  call-reusable-job-build:
+    needs: get_variables_job
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Call reusable job Build
+        uses: ./.github/workflows/template/build.yml@main
+        with:
+          MavenArgsWin: ${{ needs.get_variables_job.outputs.MAVEN_ARGS_WIN }}
+          MavenArgsMacos: ${{ needs.get_variables_job.outputs.MAVEN_ARGS_MACOS }}
+          AwsPath: ${{ needs.get_variables_job.outputs.AWS_PATH }}
+          RackspacePath: ${{ needs.get_variables_job.outputs.RACKSPACE_PATH }}
+
+      
+  call-reusable-job-upload:
+    needs: [get_variables_job, call-reusable-job-build]
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Call reusable job Upload
+        uses: ./.github/workflows/template/upload.yml@main
+        with:
+          MavenArgsWin: ${{ needs.get_variables_job.outputs.MAVEN_ARGS_WIN }}
