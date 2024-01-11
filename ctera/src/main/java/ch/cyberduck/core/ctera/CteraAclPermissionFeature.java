@@ -33,18 +33,31 @@ import com.github.sardine.util.SardineUtil;
 public class CteraAclPermissionFeature implements AclPermission {
 
     public static final Acl.Role READPERMISSION = new Acl.Role("readpermission");
+    // Read Data: Allows or denies viewing data in files.
+    // TODO CTERA-136 files only or does this control listing folder contents on directories (https://www.ntfs.com/ntfs-permissions-file-advanced.htm).
 
     public static final Acl.Role WRITEPERMISSION = new Acl.Role("writepermission");
+    // Write Data: Allows or denies making changes to a file and overwriting existing content.
+    // TODO CTERA-136 files only or what is the interplay with Createfilepermission/CreateDirectoriespermission?
 
     public static final Acl.Role EXECUTEPERMISSION = new Acl.Role("executepermission"); // Files only
+    // Execute File: Allows or denies running program (executable) files.
 
     public static final Acl.Role DELETEPERMISSION = new Acl.Role("deletepermission");
+    // Allows or denies deleting the file or folder. If you don't have Delete permission on a file or folder,
+    // you can still delete it if you have been granted Delete Subfolders and Files on the parent folder.
 
     public static final Acl.Role TRAVERSEPERMISSION = new Acl.Role("traversepermission"); // Directories only
+    // Traverse Folder: Allows or denies moving through a restricted folder to reach files and folders
+    // beneath the restricted folder in the folder hierarchy. Traverse folder takes effect only when the group or user
+    // is not granted the "Bypass traverse checking user" right in the Group Policy snap-in.
+    // This permission does not automatically allow running program files.
 
     public static final Acl.Role CREATEFILEPERMISSION = new Acl.Role("Createfilepermission"); // Directories only
+    // Create Files: Allows or denies creating files within the folder.
 
     public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");// Directories only
+    // Create Folders: Allows or denies creating subfolders within the folder.
 
 
     static final List<Acl.Role> allCteraCustomACLRoles = Collections.unmodifiableList(Arrays.asList(

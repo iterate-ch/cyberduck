@@ -31,11 +31,9 @@ import com.github.sardine.util.SardineUtil;
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.allCteraCustomACLQn;
 
 class CteraListService extends DAVListService {
-    private final CteraSession cteraSession;
 
     public CteraListService(final CteraSession session) {
         super(session, new CteraAttributesFinderFeature(session));
-        this.cteraSession = session;
     }
 //        @Override
 //        public void preflight(Path file) throws BackgroundException {
@@ -46,11 +44,8 @@ class CteraListService extends DAVListService {
     @Override
     protected List<DavResource> list(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(
-                Stream.of(
-                        // TODO CTERA-136 sent as CteraSession.getFeature(ListService.class) returns DAVListService, but Timestamp feature disabled in CteraSession.getFeature(Timestamp.class) - do we need it?
-//                    DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE
-                        SardineUtil.createQNameWithCustomNamespace("guid")
-                ),
+                // N.B. Timestamp feature disabled in CteraSession.getFeature(Timestamp.class)
+                Stream.of(SardineUtil.createQNameWithCustomNamespace("guid")),
                 allCteraCustomACLQn.stream()
         ).collect(Collectors.toSet())));
     }
