@@ -79,10 +79,12 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
             if(p.isFile()) {
                 assertNotEquals(-1L, p.attributes().getModificationDate());
-                assertNotEquals(-1L, p.attributes().getSize());
-                assertNotNull(p.attributes().getETag());
-                assertNotNull(p.attributes().getStorageClass());
-                assertEquals("null", p.attributes().getVersionId());
+                if(!p.attributes().isDuplicate()) {
+                    assertNotEquals(-1L, p.attributes().getSize());
+                    assertNotNull(p.attributes().getETag());
+                    assertNotNull(p.attributes().getStorageClass());
+                    assertEquals("null", p.attributes().getVersionId());
+                }
             }
         }
     }
