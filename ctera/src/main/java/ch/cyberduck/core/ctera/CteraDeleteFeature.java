@@ -24,8 +24,8 @@ import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
 
 class CteraDeleteFeature extends DAVDeleteFeature {
 
-    public CteraDeleteFeature(final CteraSession cteraSession, final CteraSession session) {
-        super(cteraSession);
+    public CteraDeleteFeature(final CteraSession session) {
+        super(session);
     }
 
     @Override

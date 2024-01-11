@@ -33,9 +33,9 @@ import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.allCteraCustomAC
 class CteraListService extends DAVListService {
     private final CteraSession cteraSession;
 
-    public CteraListService(final CteraSession cteraSession) {
-        super(cteraSession, new CteraAttributesFinderFeature(cteraSession));
-        this.cteraSession = cteraSession;
+    public CteraListService(final CteraSession session) {
+        super(session, new CteraAttributesFinderFeature(session));
+        this.cteraSession = session;
     }
 //        @Override
 //        public void preflight(Path file) throws BackgroundException {

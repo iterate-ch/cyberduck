@@ -235,13 +235,13 @@ public class CteraSession extends DAVSession {
             return (T) new CteraReadFeature(this, session);
         }
         if(type == Write.class) {
-            return (T) new CteraWriteFeature(this, session);
+            return (T) new CteraWriteFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new CteraDeleteFeature(this, session);
+            return (T) new CteraDeleteFeature(session);
         }
         if(type == Copy.class) {
-            return (T) new CteraCopyFeature(this, session);
+            return (T) new CteraCopyFeature(session);
         }
         return super._getFeature(type);
     }

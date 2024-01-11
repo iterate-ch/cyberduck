@@ -1,4 +1,6 @@
-package ch.cyberduck.core.ctera;/*
+package ch.cyberduck.core.ctera;
+
+/*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *

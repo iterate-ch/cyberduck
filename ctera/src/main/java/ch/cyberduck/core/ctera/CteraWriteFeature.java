@@ -24,8 +24,8 @@ import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
 
 class CteraWriteFeature extends DAVWriteFeature {
 
-    public CteraWriteFeature(final CteraSession cteraSession, final CteraSession session) {
-        super(cteraSession);
+    public CteraWriteFeature(final CteraSession session) {
+        super(session);
     }
 
     @Override

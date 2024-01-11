@@ -23,8 +23,8 @@ import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 
 class CteraCopyFeature extends DAVCopyFeature {
 
-    public CteraCopyFeature(final CteraSession cteraSession, final CteraSession session) {
-        super(cteraSession);
+    public CteraCopyFeature(final CteraSession session) {
+        super(session);
     }
 
     @Override
