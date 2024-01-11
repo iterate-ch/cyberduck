@@ -212,7 +212,7 @@ public class CteraSession extends DAVSession {
         if(type == Timestamp.class) {
             return null;
         }
-        // TODO CTERA-137 enable propfind for testing
+        // TODO CTERA-137 undo workaround to enable propfind for embeddedWebDAV testing
         if(type == Metadata.class && !(embeddedWebDAV || host.getProperty("embeddedWebDAV").equalsIgnoreCase("true"))) {
             return null;
         }
