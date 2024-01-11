@@ -4,6 +4,7 @@ https://cyberduck.io/
 8.7.2
 - [Bugfix] Missing digest header when commiting large file upload (Box) (#14564)
 - [Bugfix] Modification date not set in upload (Dropbox) (#15381)
+- [Bugfix] Setting modification date truncates file (SMB) (#15495)
 
 8.7.1
 - [Bugfix] Crash when selecting private key outside of ~/.ssh (macOS, Mac App Store)
