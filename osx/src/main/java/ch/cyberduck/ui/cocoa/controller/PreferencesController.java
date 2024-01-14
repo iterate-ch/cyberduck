@@ -449,6 +449,21 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSButton editorVersioningCheckbox;
+
+    public void setEditorVersioningCheckbox(final NSButton b) {
+        this.editorVersioningCheckbox = b;
+        this.editorVersioningCheckbox.setTarget(this.id());
+        this.editorVersioningCheckbox.setAction(Foundation.selector("editorVersioningCheckboxClicked:"));
+        this.editorVersioningCheckbox.setState(preferences.getBoolean("editor.upload.file.versioning") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    public void editorVersioningCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.NSOnState;
+        preferences.setProperty("editor.upload.file.versioning", enabled);
+    }
+
+    @Outlet
     private NSPopUpButton bookmarkSizePopup;
 
     public void setBookmarkSizePopup(NSPopUpButton b) {

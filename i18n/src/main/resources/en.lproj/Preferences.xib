@@ -68,6 +68,7 @@
                 <outlet property="duplicateUploadCombobox" destination="127" id="467"/>
                 <outlet property="duplicateUploadOverwriteButton" destination="133" id="468"/>
                 <outlet property="editorCombobox" destination="370" id="469"/>
+                <outlet property="editorVersioningCheckbox" destination="kmk-j9-rmj" id="yeHae2oh"/>
                 <outlet property="encodingCombobox" destination="282" id="470"/>
                 <outlet property="horizontalLinesCheckbox" destination="74" id="471"/>
                 <outlet property="infoWindowAsInspectorCheckbox" destination="83" id="472"/>
@@ -108,9 +109,9 @@
                 <outlet property="uownerr" destination="170" id="506"/>
                 <outlet property="uownerw" destination="154" id="507"/>
                 <outlet property="uownerx" destination="156" id="508"/>
+                <outlet property="updateAutoCheckbox" destination="bhz-d7-jSQ" id="Coht0aiF"/>
                 <outlet property="updateCheckButton" destination="319" id="509"/>
                 <outlet property="updateCheckbox" destination="317" id="510"/>
-                <outlet property="updateAutoCheckbox" destination="bhz-d7-jSQ" id="Coht0aiF"/>
                 <outlet property="updateFeedPopup" destination="324" id="511"/>
                 <outlet property="uploadSkipButton" destination="258" id="512"/>
                 <outlet property="uploadSkipRegexDefaultButton" destination="262" id="513"/>
@@ -1539,44 +1540,32 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="317">
                                 <rect key="frame" x="10" y="70" width="235" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Automatically check for updates in"
-                                            bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2"
-                                            id="318">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES"
-                                              lightByContents="YES"/>
+                                <buttonCell key="cell" type="check" title="Automatically check for updates in" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bhz-d7-jSQ">
                                 <rect key="frame" x="10" y="48" width="435" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Automatically download and install updates"
-                                            bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2"
-                                            id="NvW-EF-5oW">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES"
-                                              lightByContents="YES"/>
+                                <buttonCell key="cell" type="check" title="Automatically download and install updates" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="NvW-EF-5oW">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES"
-                                         translatesAutoresizingMaskIntoConstraints="NO" id="324">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="324">
                                 <rect key="frame" x="248" y="64" width="206" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left"
-                                                 lineBreakMode="truncatingTail" borderStyle="borderAndBezel"
-                                                 imageScaling="proportionallyDown" inset="2" id="325">
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="OtherViews" id="326"/>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <button verticalHuggingPriority="750" fixedFrame="YES"
-                                    translatesAutoresizingMaskIntoConstraints="NO" id="319">
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="319">
                                 <rect key="frame" x="146" y="2" width="172" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"
-                                                  flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="Check for Update Now" bezelStyle="rounded"
-                                            alignment="center" borderStyle="border" inset="2" id="320">
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Check for Update Now" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1801,19 +1790,19 @@
             <point key="canvasLocation" x="-1594.5" y="-168"/>
         </customView>
         <customView id="368" userLabel="Panel Editor">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="168"/>
+            <rect key="frame" x="0.0" y="0.0" width="507" height="264"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Editor" translatesAutoresizingMaskIntoConstraints="NO" id="369">
-                    <rect key="frame" x="17" y="16" width="473" height="132"/>
+                <box fixedFrame="YES" title="Application" translatesAutoresizingMaskIntoConstraints="NO" id="369">
+                    <rect key="frame" x="17" y="114" width="473" height="130"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="HTA-ik-z0B">
-                        <rect key="frame" x="4" y="5" width="465" height="112"/>
+                        <rect key="frame" x="4" y="5" width="465" height="110"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="370">
-                                <rect key="frame" x="9" y="43" width="200" height="26"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <rect key="frame" x="8" y="31" width="200" height="26"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="373" id="371">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1825,8 +1814,8 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="374">
-                                <rect key="frame" x="9" y="75" width="447" height="26"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <rect key="frame" x="9" y="67" width="443" height="32"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Select a text editor to open files with by default if no other application installed can be found to edit a given file type." id="375">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1834,8 +1823,8 @@
                                 </textFieldCell>
                             </textField>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="376">
-                                <rect key="frame" x="10" y="11" width="444" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="9" y="10" width="444" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Always use this application" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -1844,8 +1833,35 @@
                         </subviews>
                     </view>
                 </box>
+                <box fixedFrame="YES" title="Versioning" translatesAutoresizingMaskIntoConstraints="NO" id="0OS-In-OnW">
+                    <rect key="frame" x="17" y="16" width="473" height="94"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="fSQ-1l-nvC">
+                        <rect key="frame" x="4" y="5" width="465" height="74"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vxi-AQ-7oH">
+                                <rect key="frame" x="9" y="35" width="446" height="28"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Keep previous version on server when saving file and allow restore in Info → Versions." id="x4Z-Bm-NiW">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kmk-j9-rmj">
+                                <rect key="frame" x="9" y="10" width="444" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Enable Versioning" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="IWt-2r-p5o">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                    </view>
+                </box>
             </subviews>
-            <point key="canvasLocation" x="-86" y="1542"/>
+            <point key="canvasLocation" x="-86.5" y="1590"/>
         </customView>
         <customView id="408" userLabel="Panel Language">
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
