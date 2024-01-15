@@ -17,7 +17,10 @@ package ch.cyberduck.binding;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-@java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD})
-@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE)
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+
+@java.lang.annotation.Target({ElementType.FIELD, ElementType.METHOD})
+@java.lang.annotation.Retention(RetentionPolicy.SOURCE)
 public @interface Delegate {
 }
