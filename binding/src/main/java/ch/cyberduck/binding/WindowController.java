@@ -35,6 +35,8 @@ import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -194,6 +196,44 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     protected NSPoint cascade(final NSPoint point) {
         return window.cascadeTopLeftFromPoint(point);
+    }
+
+    /**
+     * Resize window frame to fit the content view of the currently selected tab.
+     */
+    protected void resize() {
+        final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
+        final double height = this.getMinWindowHeight();
+        final NSRect frameRect = new NSRect(
+                new NSPoint(windowFrame.origin.x.doubleValue(), windowFrame.origin.y.doubleValue() + windowFrame.size.height.doubleValue() - height),
+                new NSSize(windowFrame.size.width.doubleValue(), height)
+        );
+        window.setFrame_display_animate(NSWindow.frameRectForContentRect_styleMask(frameRect, window.styleMask()),
+                true, window.isVisible());
+    }
+
+    protected double getMinWindowHeight() {
+        final NSRect contentRect = this.getContentRect();
+        //Border top + toolbar
+        return contentRect.size.height.doubleValue()
+                + 40 + toolbarHeightForWindow(window);
+    }
+
+    protected double getMinWindowWidth() {
+        final NSRect contentRect = this.getContentRect();
+        return contentRect.size.width.doubleValue();
+    }
+
+    protected static double toolbarHeightForWindow(final NSWindow window) {
+        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
+        return windowFrame.size.height.doubleValue() - window.contentView().frame().size.height.doubleValue();
+    }
+
+    /**
+     * @return Minimum size to fit content view of currently selected tab.
+     */
+    protected NSRect getContentRect() {
+        return window.contentView().frame();
     }
 
     /**
