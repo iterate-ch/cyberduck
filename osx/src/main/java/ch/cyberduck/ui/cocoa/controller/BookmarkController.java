@@ -16,6 +16,7 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
@@ -513,8 +514,6 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Override
     public void setWindow(final NSWindow window) {
-        window.setContentMinSize(window.frame().size);
-        window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -523,6 +522,12 @@ public class BookmarkController extends SheetController implements CollectionLis
         });
         super.setWindow(window);
         cascade = this.cascade(cascade);
+    }
+
+    @Delegate
+    public NSSize windowWillResize_toSize(final NSWindow window, final NSSize newSize) {
+        // Only allow horizontal sizing
+        return new NSSize(newSize.width.doubleValue(), window.frame().size.height.doubleValue());
     }
 
     @Override
