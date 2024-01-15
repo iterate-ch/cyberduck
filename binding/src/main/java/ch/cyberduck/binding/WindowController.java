@@ -115,6 +115,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
+    @Delegate
     public void windowDidBecomeKey(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Become key for window %s", window));
@@ -122,6 +123,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
+    @Delegate
     public void windowDidResignKey(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resign key for window %s", window));
@@ -129,6 +131,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
+    @Delegate
     public void windowDidBecomeMain(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Become main for window %s", window));
@@ -136,29 +139,34 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
+    @Delegate
     public void windowDidResignMain(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resign main for window %s", window));
         }
     }
 
+    @Delegate
     public void windowWillEnterFullScreen(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Enter full screen for window %s", window));
         }
     }
 
+    @Delegate
     public void windowWillExitFullScreen(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Exit full screen for window %s", window));
         }
     }
 
+    @Delegate
     public void windowDidFailToEnterFullScreen(final NSWindow window) {
         log.error("Error entering full screen");
     }
 
     @Override
+    @Delegate
     public void windowWillBeginSheet(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attach sheet for window %s", window));
@@ -169,6 +177,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @see ch.cyberduck.binding.application.NSWindow.Delegate
      */
     @Override
+    @Delegate
     public boolean windowShouldClose(final NSWindow sender) {
         return true;
     }
@@ -177,6 +186,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * Override this method if the controller should not be invalidated after its window closes
      */
     @Override
+    @Delegate
     public void windowWillClose(final NSNotification notification) {
         window.endEditingFor(null);
         if(log.isDebugEnabled()) {
