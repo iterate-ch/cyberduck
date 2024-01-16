@@ -20,17 +20,23 @@ import org.apache.commons.text.RandomStringGenerator;
 public class AsciiRandomStringService implements RandomStringService {
 
     private final int length;
+    private final RandomStringGenerator random;
 
     public AsciiRandomStringService() {
         this(8);
     }
 
     public AsciiRandomStringService(final int length) {
+        this(length, new RandomStringGenerator.Builder().withinRange('a', 'z').build());
+    }
+
+    public AsciiRandomStringService(final int length, final RandomStringGenerator random) {
         this.length = length;
+        this.random = random;
     }
 
     @Override
     public String random() {
-        return new RandomStringGenerator.Builder().withinRange('a', 'z').build().generate(length);
+        return random.generate(length);
     }
 }

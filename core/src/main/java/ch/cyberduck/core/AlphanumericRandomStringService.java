@@ -21,22 +21,28 @@ import org.apache.commons.text.RandomStringGenerator;
 public class AlphanumericRandomStringService implements RandomStringService {
 
     private final int length;
+    private final RandomStringGenerator random;
 
     public AlphanumericRandomStringService() {
         this(8);
     }
 
     public AlphanumericRandomStringService(final int length) {
-        this.length = length;
-    }
-
-    @Override
-    public String random() {
-        return new RandomStringGenerator.Builder().withinRange('0', 'z').filteredBy(new CharacterPredicate() {
+        this(length, new RandomStringGenerator.Builder().withinRange('0', 'z').filteredBy(new CharacterPredicate() {
             @Override
             public boolean test(final int codePoint) {
                 return Character.isAlphabetic(codePoint) || Character.isDigit(codePoint);
             }
-        }).build().generate(length);
+        }).build());
+    }
+
+    public AlphanumericRandomStringService(final int length, final RandomStringGenerator random) {
+        this.length = length;
+        this.random = random;
+    }
+
+    @Override
+    public String random() {
+        return random.generate(length);
     }
 }
