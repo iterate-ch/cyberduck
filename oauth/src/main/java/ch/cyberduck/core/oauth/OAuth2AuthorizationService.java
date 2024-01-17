@@ -29,6 +29,7 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -221,7 +222,7 @@ public class OAuth2AuthorizationService {
         }
         final AuthorizationCodeFlow flow = flowBuilder.build();
         final AuthorizationCodeRequestUrl authorizationCodeUrlBuilder = flow.newAuthorizationUrl();
-        authorizationCodeUrlBuilder.setRedirectUri(redirectUri);
+        authorizationCodeUrlBuilder.setRedirectUri(URIEncoder.decode(redirectUri));
         final String state = new AlphanumericRandomStringService().random();
         authorizationCodeUrlBuilder.setState(state);
         for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
