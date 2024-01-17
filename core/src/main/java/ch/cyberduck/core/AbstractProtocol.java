@@ -303,6 +303,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getPathPlaceholder() {
+        return LocaleFactory.localizedString("Folder", "Localizable");
+    }
+
+    @Override
     public String getUsernamePlaceholder() {
         return LocaleFactory.localizedString("Username", "Credentials");
     }
