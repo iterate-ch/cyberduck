@@ -37,8 +37,13 @@ public class NextcloudProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getName() {
+        return "Nextcloud";
+    }
+
+    @Override
     public String getDescription() {
-        return "NextCloud";
+        return "Nextcloud";
     }
 
     @Override

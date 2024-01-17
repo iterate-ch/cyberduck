@@ -37,6 +37,11 @@ public class OwncloudProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getName() {
+        return "ownCloud";
+    }
+
+    @Override
     public String getDescription() {
         return "ownCloud";
     }
