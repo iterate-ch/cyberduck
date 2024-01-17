@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -48,7 +49,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Quota of folder
      */
-    private long quota = TransferStatus.UNKNOWN_LENGTH;
+    private Quota.Space quota = Quota.unknown;
 
     /**
      * The file modification date in milliseconds
@@ -203,8 +204,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(size != -1) {
             dict.setStringForKey(String.valueOf(size), "Size");
         }
-        if(quota != -1) {
-            dict.setStringForKey(String.valueOf(quota), "Quota");
+        if(quota != Quota.unknown) {
+            // Set remaining quota
+            dict.setStringForKey(String.valueOf(quota.available), "Quota");
         }
         if(modified != -1) {
             dict.setStringForKey(String.valueOf(modified), "Modified");
@@ -303,15 +305,15 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
-    public long getQuota() {
+    public Quota.Space getQuota() {
         return quota;
     }
 
-    public void setQuota(final long quota) {
+    public void setQuota(final Quota.Space quota) {
         this.quota = quota;
     }
 
-    public PathAttributes withQuota(final long quota) {
+    public PathAttributes withQuota(final Quota.Space quota) {
         this.setQuota(quota);
         return this;
     }

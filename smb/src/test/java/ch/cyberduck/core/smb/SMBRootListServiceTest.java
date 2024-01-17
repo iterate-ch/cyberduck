@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class SMBRootListServiceTest extends AbstractSMBTest {
         for(Path f : result) {
             assertTrue(f.isVolume());
             assertNotEquals(TransferStatus.UNKNOWN_LENGTH, f.attributes().getSize());
-            assertNotEquals(TransferStatus.UNKNOWN_LENGTH, f.attributes().getQuota());
+            assertNotEquals(Quota.unknown, f.attributes().getQuota());
         }
         session.close();
     }

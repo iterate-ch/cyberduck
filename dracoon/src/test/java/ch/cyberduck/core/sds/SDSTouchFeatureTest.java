@@ -133,7 +133,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         updateRoomRequest.setQuota(quota);
         assertEquals(quota, new NodesApi(session.getClient()).updateRoom(updateRoomRequest, Long.valueOf(room.attributes().getVersionId()), StringUtils.EMPTY, null).getQuota(), 0L);
         assertTrue(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room)), StringUtils.EMPTY));
-        assertEquals(quota, room.attributes().getQuota());
+        assertEquals(quota, room.attributes().getQuota().available, 0L);
         final byte[] content = RandomUtils.nextBytes(2);
         final TransferStatus status = new TransferStatus();
         status.setLength(2L);
@@ -151,7 +151,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         }
         while(attr.getSize() != 2L);
         assertFalse(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(attr), StringUtils.EMPTY));
-        assertEquals(quota, attr.getQuota());
+        assertEquals(quota, attr.getQuota().available, 0L);
         assertEquals(2L, attr.getSize());
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

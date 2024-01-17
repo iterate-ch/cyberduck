@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.serializer.PathAttributesDictionary;
@@ -19,7 +20,7 @@ public class PathAttributesTest {
     public void testCopy() {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(1L);
-        attributes.setQuota(10L);
+        attributes.setQuota(new Quota.Space(1L, 10L));
         attributes.setModificationDate(System.currentTimeMillis());
         attributes.setRevision(2L);
         attributes.setFileId(new AlphanumericRandomStringService().random());

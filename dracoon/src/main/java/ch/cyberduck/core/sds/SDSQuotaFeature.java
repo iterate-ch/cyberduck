@@ -22,7 +22,6 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerData;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -46,11 +45,11 @@ public class SDSQuotaFeature implements Quota {
         try {
             final Path home = new DefaultHomeFinderService(session).find();
             if(!home.isRoot()) {
-                if(TransferStatus.UNKNOWN_LENGTH == home.attributes().getQuota()) {
+                if(SDSQuotaFeature.unknown == home.attributes().getQuota()) {
                     log.warn(String.format("No quota set for node %s", home));
                 }
                 else {
-                    return new Space(home.attributes().getSize(), home.attributes().getQuota() - home.attributes().getSize());
+                    return home.attributes().getQuota();
                 }
             }
             final CustomerData info = new UserApi(session.getClient()).requestCustomerInfo(StringUtils.EMPTY);

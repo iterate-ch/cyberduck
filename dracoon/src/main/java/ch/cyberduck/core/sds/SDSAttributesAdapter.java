@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesAdapter;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -67,7 +68,8 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
             attributes.setSize(node.getSize());
         }
         if(null != node.getQuota()) {
-            attributes.setQuota(node.getQuota());
+            // Remaining space
+            attributes.setQuota(new Quota.Space(node.getSize(), node.getQuota()));
         }
         attributes.setPermission(this.toPermission(node));
         if(null != node.getUpdatedBy()) {
