@@ -28,6 +28,7 @@ import ch.cyberduck.binding.application.NSText;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.application.NSTextView;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -83,6 +84,13 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void awakeFromNib() {
         super.awakeFromNib();
         this.setState(toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
+    }
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        window.setContentMinSize(window.frame().size);
+        window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
+        super.setWindow(window);
     }
 
     @Override

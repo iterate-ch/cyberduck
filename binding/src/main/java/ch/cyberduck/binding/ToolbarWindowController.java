@@ -36,7 +36,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -268,28 +267,10 @@ public abstract class ToolbarWindowController extends WindowController implement
         this.setSelectedPanel(tabView.indexOfTabViewItemWithIdentifier(sender.itemIdentifier()));
     }
 
-    /**
-     * Resize window frame to fit the content view of the currently selected tab.
-     */
-    private void resize() {
-        final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
-        final double height = this.getMinWindowHeight();
-        final NSRect frameRect = new NSRect(
-            new NSPoint(windowFrame.origin.x.doubleValue(), windowFrame.origin.y.doubleValue() + windowFrame.size.height.doubleValue() - height),
-            new NSSize(windowFrame.size.width.doubleValue(), height)
-        );
-        window.setFrame_display_animate(NSWindow.frameRectForContentRect_styleMask(frameRect, window.styleMask()),
-            true, window.isVisible());
-    }
-
+    @Delegate
     public NSSize windowWillResize_toSize(final NSWindow window, final NSSize newSize) {
         // Only allow horizontal sizing
         return new NSSize(newSize.width.doubleValue(), window.frame().size.height.doubleValue());
-    }
-
-    private double toolbarHeightForWindow(final NSWindow window) {
-        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
-        return windowFrame.size.height.doubleValue() - window.contentView().frame().size.height.doubleValue();
     }
 
     @Override
@@ -311,22 +292,8 @@ public abstract class ToolbarWindowController extends WindowController implement
         }
     }
 
-    protected double getMinWindowHeight() {
-        NSRect contentRect = this.getContentRect();
-        //Border top + toolbar
-        return contentRect.size.height.doubleValue()
-            + 40 + this.toolbarHeightForWindow(window);
-    }
-
-    protected double getMinWindowWidth() {
-        NSRect contentRect = this.getContentRect();
-        return contentRect.size.width.doubleValue();
-    }
-
-    /**
-     * @return Minimum size to fit content view of currently selected tab.
-     */
-    private NSRect getContentRect() {
+    @Override
+    protected NSRect getContentRect() {
         NSRect contentRect = new NSRect(0, 0);
         final NSView view = tabView.selectedTabViewItem().view();
         final NSEnumerator enumerator = view.subviews().objectEnumerator();

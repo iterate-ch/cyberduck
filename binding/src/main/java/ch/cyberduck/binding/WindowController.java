@@ -35,6 +35,8 @@ import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -113,6 +115,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
+    @Delegate
     public void windowDidBecomeKey(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Become key for window %s", window));
@@ -120,6 +123,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
+    @Delegate
     public void windowDidResignKey(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resign key for window %s", window));
@@ -127,6 +131,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
+    @Delegate
     public void windowDidBecomeMain(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Become main for window %s", window));
@@ -134,29 +139,34 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
+    @Delegate
     public void windowDidResignMain(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resign main for window %s", window));
         }
     }
 
+    @Delegate
     public void windowWillEnterFullScreen(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Enter full screen for window %s", window));
         }
     }
 
+    @Delegate
     public void windowWillExitFullScreen(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Exit full screen for window %s", window));
         }
     }
 
+    @Delegate
     public void windowDidFailToEnterFullScreen(final NSWindow window) {
         log.error("Error entering full screen");
     }
 
     @Override
+    @Delegate
     public void windowWillBeginSheet(final NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attach sheet for window %s", window));
@@ -167,6 +177,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @see ch.cyberduck.binding.application.NSWindow.Delegate
      */
     @Override
+    @Delegate
     public boolean windowShouldClose(final NSWindow sender) {
         return true;
     }
@@ -175,6 +186,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * Override this method if the controller should not be invalidated after its window closes
      */
     @Override
+    @Delegate
     public void windowWillClose(final NSNotification notification) {
         window.endEditingFor(null);
         if(log.isDebugEnabled()) {
@@ -194,6 +206,44 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     protected NSPoint cascade(final NSPoint point) {
         return window.cascadeTopLeftFromPoint(point);
+    }
+
+    /**
+     * Resize window frame to fit the content view of the currently selected tab.
+     */
+    protected void resize() {
+        final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
+        final double height = this.getMinWindowHeight();
+        final NSRect frameRect = new NSRect(
+                new NSPoint(windowFrame.origin.x.doubleValue(), windowFrame.origin.y.doubleValue() + windowFrame.size.height.doubleValue() - height),
+                new NSSize(windowFrame.size.width.doubleValue(), height)
+        );
+        window.setFrame_display_animate(NSWindow.frameRectForContentRect_styleMask(frameRect, window.styleMask()),
+                true, window.isVisible());
+    }
+
+    protected double getMinWindowHeight() {
+        final NSRect contentRect = this.getContentRect();
+        //Border top + toolbar
+        return contentRect.size.height.doubleValue()
+                + 40 + toolbarHeightForWindow(window);
+    }
+
+    protected double getMinWindowWidth() {
+        final NSRect contentRect = this.getContentRect();
+        return contentRect.size.width.doubleValue();
+    }
+
+    protected static double toolbarHeightForWindow(final NSWindow window) {
+        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
+        return windowFrame.size.height.doubleValue() - window.contentView().frame().size.height.doubleValue();
+    }
+
+    /**
+     * @return Minimum size to fit content view of currently selected tab.
+     */
+    protected NSRect getContentRect() {
+        return window.contentView().frame();
     }
 
     /**
