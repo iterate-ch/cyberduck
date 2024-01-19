@@ -1,0 +1,42 @@
+name: template-konzept
+
+on: 
+  schedule:
+    - cron: '*/5 * * * *'
+  release:
+    types: [published, prereleased]
+
+jobs:
+  set_variables_job:
+    runs-on: ubuntu-latest
+    outputs:
+      VariablePre: ${{steps.set_vars_schedule.outputs.VARIABLEPRE}}
+      VariableRel: ${{steps.set_vars_schedule.outputs.VARIABLEREL}}
+      VariableTim: ${{steps.set_vars_schedule.outputs.VARIABLETIM}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set variables 
+        id: set_vars_schedule
+        run: |    
+          if [[ "${{ github.event_name }}" = "schedule" ]]
+          then
+            echo "VARIABLETIM=IT IS TIMEBASED! " >> "$GITHUB_OUTPUT"
+          fi
+          if [[ "${{ github.event_name }}" = "release" ]]
+          then
+            if "${{ github.event.release.prerelease }}"
+            then
+              echo "VARIABLEPRE=IT IS A PRERELEASE!" >> "$GITHUB_OUTPUT"
+            else
+              echo "VARIABLEREL=IT IS A RELEASE!" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+  call_resuable_job:
+    needs: set_variables_job
+    uses: ./.github/workflows/template-reusable.yml
+    with:
+      variablePre: ${{needs.set_variables_job.outputs.VariablePre}}
+      variableRel: ${{needs.set_variables_job.outputs.VariableRel}}
+      variableTim: ${{needs.set_variables_job.outputs.VariableTim}}
