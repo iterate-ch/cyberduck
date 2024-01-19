@@ -47,7 +47,6 @@ import ch.cyberduck.core.features.CustomActions;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
@@ -117,17 +116,11 @@ public class CteraSession extends DAVSession {
 
     private final ListService list = new CteraListService(this);
 
-    // TODO CTERA-136 temporary workaround for mock tests
-    private static boolean embeddedWebDAV = false;
 
     public CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
-    public static void tweakEmbeddedWebDAV() {
-        // TODO CTERA-136 temporary workaround for mock tests
-        embeddedWebDAV = true;
-    }
 
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
@@ -140,10 +133,6 @@ public class CteraSession extends DAVSession {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(embeddedWebDAV || host.getProperty("embeddedWebDAV").equalsIgnoreCase("true")) {
-            super.login(proxy, prompt, cancel);
-            return;
-        }
         final Credentials credentials = host.getCredentials();
         if(StringUtils.isBlank(credentials.getToken())) {
             final CteraTokens tokens = this.getTokens(credentials, prompt, cancel);
@@ -210,10 +199,6 @@ public class CteraSession extends DAVSession {
             return null;
         }
         if(type == Timestamp.class) {
-            return null;
-        }
-        // TODO CTERA-137 undo workaround to enable propfind for embeddedWebDAV testing
-        if(type == Metadata.class && !(embeddedWebDAV || host.getProperty("embeddedWebDAV").equalsIgnoreCase("true"))) {
             return null;
         }
         if(type == CustomActions.class) {
