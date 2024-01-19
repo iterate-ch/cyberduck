@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.READPERMISSION;
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
 
-class CteraReadFeature extends DAVReadFeature {
+public class CteraReadFeature extends DAVReadFeature {
 
     public CteraReadFeature(final CteraSession cteraSession, final CteraSession session) {
         super(cteraSession);

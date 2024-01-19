@@ -22,8 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.DELETEPERMISSION;
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
 
-class CteraDeleteFeature extends DAVDeleteFeature {
-
+public class CteraDeleteFeature extends DAVDeleteFeature {
     public CteraDeleteFeature(final CteraSession session) {
         super(session);
     }

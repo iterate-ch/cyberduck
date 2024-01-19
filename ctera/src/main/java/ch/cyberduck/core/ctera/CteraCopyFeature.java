@@ -21,7 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 
-class CteraCopyFeature extends DAVCopyFeature {
+public class CteraCopyFeature extends DAVCopyFeature {
 
     public CteraCopyFeature(final CteraSession session) {
         super(session);

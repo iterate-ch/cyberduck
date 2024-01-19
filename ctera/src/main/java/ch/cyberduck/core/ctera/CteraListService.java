@@ -30,7 +30,7 @@ import com.github.sardine.util.SardineUtil;
 
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.allCteraCustomACLQn;
 
-class CteraListService extends DAVListService {
+public class CteraListService extends DAVListService {
 
     public CteraListService(final CteraSession session) {
         super(session, new CteraAttributesFinderFeature(session));
