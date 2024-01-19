@@ -2,7 +2,7 @@ name: template-konzept
 
 on: 
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '0 18 * * *'
   release:
     types: [published, prereleased]
 
