@@ -57,6 +57,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
     private static final String MISSING_PROPERTY = String.valueOf(StringUtils.INDEX_NOT_FOUND);
 
+    private final BundleApplicationResourcesFinder resources = new BundleApplicationResourcesFinder();
     private NSUserDefaults store;
 
     /**
@@ -70,7 +71,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         // Lookup in the default map
         final String value = super.getDefault(property);
         if(null == value) {
-            final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
+            final NSBundle bundle = resources.bundle();
             // Missing in default. Lookup in Info.plist
             NSObject plist = bundle.infoDictionary().objectForKey(property);
             if(null == plist) {
@@ -169,7 +170,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             this.setDefault("local.user.home", SystemB.INSTANCE.getpwuid(LibC.INSTANCE.getuid()).pw_dir);
         }
 
-        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
+        final NSBundle bundle = resources.bundle();
         if(null != bundle) {
             if(bundle.objectForInfoDictionaryKey("CFBundleName") != null) {
                 this.setDefault("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
@@ -199,7 +200,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             this.setDefault("application.receipt.path", String.format("%s/Contents/_MASReceipt", bundle.bundlePath()));
         }
         this.setDefault("oauth.handler.scheme",
-            String.format("x-%s-action", StringUtils.deleteWhitespace(StringUtils.lowerCase(this.getProperty("application.name")))));
+                String.format("x-%s-action", StringUtils.deleteWhitespace(StringUtils.lowerCase(this.getProperty("application.name")))));
 
         this.setDefault("update.feed.release", "https://version.cyberduck.io/changelog.rss");
         this.setDefault("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
@@ -231,12 +232,12 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("queue.window.tabbing.identifier", "browser.window.tabbing.identifier");
 
         this.setDefault("terminal.command.iterm2", "set t to (create window with default profile)\n" +
-            "tell t\n" +
-            "set s to (current session)\n" +
-            "tell s\n" +
-            "write text \"{0}\"\n" +
-            "end tell\n" +
-            "end tell");
+                "tell t\n" +
+                "set s to (current session)\n" +
+                "tell s\n" +
+                "write text \"{0}\"\n" +
+                "end tell\n" +
+                "end tell");
         this.setDefault("terminal.command.default", "do script \"{0}\"");
 
         // Workaround for #11508
@@ -272,7 +273,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
     @Override
     public List<String> applicationLocales() {
-        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
+        final NSBundle bundle = resources.bundle();
         return this.toList(bundle.localizations());
     }
 
