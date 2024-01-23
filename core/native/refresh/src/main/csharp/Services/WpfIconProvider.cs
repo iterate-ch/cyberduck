@@ -39,14 +39,28 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         {
             var list = new List<BitmapSource>();
 
-            var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.None);
-            foreach (var item in decoder.Frames)
+            var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            if (decoder is GifBitmapDecoder)
             {
-                if (getCache(IconCache, item.PixelWidth)) continue;
+                var frame = decoder.Frames[0];
+                if (!getCache(IconCache, frame.PixelWidth))
+                {
+                    cacheIcon(IconCache, frame.PixelWidth, frame);
+                }
+            }
+            else
+            {
+                foreach (var item in decoder.Frames)
+                {
+                    if (getCache(IconCache, item.PixelWidth))
+                    {
+                        continue;
+                    }
 
-                var fixedImage = FixDPI(item);
-                list.Add(fixedImage);
-                cacheIcon(IconCache, item.PixelWidth, fixedImage);
+                    var resized = FixDPI(item);
+                    list.Add(resized);
+                    cacheIcon(IconCache, resized.PixelWidth, resized);
+                }
             }
 
             return list;
@@ -117,6 +131,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                     nearestFit = item;
                 }
             }
+
             nearestFit = ResizeImage(nearestFit, size);
             cacheCallback(IconCache, size, nearestFit);
             return nearestFit;
