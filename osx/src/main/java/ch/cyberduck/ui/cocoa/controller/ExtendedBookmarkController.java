@@ -121,7 +121,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     @Action
     public void commentInputDidChange(final NSNotification sender) {
         bookmark.setComment(commentField.textStorage().string());
-        this.update();
     }
 
     public void setConnectmodePopup(final NSPopUpButton button) {
