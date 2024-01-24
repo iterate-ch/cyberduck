@@ -54,10 +54,12 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test
     public void testFindFile() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(test.attributes().getFileId());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
+        assertEquals(test.attributes().getFileId(), attributes.getFileId());
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
@@ -77,10 +79,12 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertNotNull(test.attributes().getFileId());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
+        assertEquals(test.attributes().getFileId(), attributes.getFileId());
         assertEquals(-1, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
@@ -158,7 +162,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test(expected = InteroperabilityException.class)
     public void testFindLock() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         assertNull(f.find(test).getLockId());

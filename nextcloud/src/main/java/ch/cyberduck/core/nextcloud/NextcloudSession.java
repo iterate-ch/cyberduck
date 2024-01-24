@@ -18,14 +18,18 @@ package ch.cyberduck.core.nextcloud;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
@@ -50,6 +54,12 @@ public class NextcloudSession extends DAVSession {
         }
         if(type == ListService.class) {
             return (T) new NextcloudListService(this);
+        }
+        if(type == Directory.class) {
+            return (T) new DAVDirectoryFeature(this, new NextcloudAttributesFinderFeature(this));
+        }
+        if(type == Touch.class) {
+            return (T) new DAVTouchFeature(new NextcloudWriteFeature(this), new NextcloudAttributesFinderFeature(this));
         }
         if(type == AttributesFinder.class) {
             return (T) new NextcloudAttributesFinderFeature(this);
