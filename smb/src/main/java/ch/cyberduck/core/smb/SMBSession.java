@@ -48,8 +48,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -70,7 +70,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     private Session session;
     private SMBRootListService shares;
 
-    private final Map<String, ReentrantLock> locks = new HashMap<>();
+    private final Map<String, ReentrantLock> locks = new ConcurrentHashMap<>();
 
     public SMBSession(final Host h) {
         super(h);
