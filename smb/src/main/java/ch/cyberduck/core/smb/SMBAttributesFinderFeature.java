@@ -24,8 +24,6 @@ import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Quota;
 
-import java.io.IOException;
-
 import com.hierynomus.msfscc.fileinformation.FileAllInformation;
 import com.hierynomus.msfscc.fileinformation.ShareInfo;
 import com.hierynomus.smbj.common.SMBRuntimeException;
@@ -44,7 +42,8 @@ public class SMBAttributesFinderFeature implements AttributesFinder, AttributesA
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        try (final DiskShare share = session.openShare(file)) {
+        final DiskShare share = session.openShare(file);
+        try {
             if(new SMBPathContainerService(session).isContainer(file)) {
                 final ShareInfo shareInformation = share.getShareInformation();
                 final PathAttributes attributes = new PathAttributes();
@@ -67,11 +66,8 @@ public class SMBAttributesFinderFeature implements AttributesFinder, AttributesA
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-        catch(IOException e) {
-            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
-        }
         finally {
-            session.releaseShare(file);
+            session.releaseShare(share);
         }
     }
 

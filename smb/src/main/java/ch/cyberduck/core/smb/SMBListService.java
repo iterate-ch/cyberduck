@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
@@ -52,7 +51,8 @@ public class SMBListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> result = new AttributedList<>();
-        try (final DiskShare share = session.openShare(directory)) {
+        final DiskShare share = session.openShare(directory);
+        try {
             for(FileIdBothDirectoryInformation f : share.list(new SMBPathContainerService(session).getKey(directory))) {
                 final String filename = f.getFileName();
                 if(filename.equals(".") || filename.equals("..")) {
@@ -86,11 +86,8 @@ public class SMBListService implements ListService {
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
-        catch(IOException e) {
-            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
-        }
         finally {
-            session.releaseShare(directory);
+            session.releaseShare(share);
         }
         return result;
     }

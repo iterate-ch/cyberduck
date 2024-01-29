@@ -18,7 +18,6 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -56,7 +55,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     status.isExists() ? SMB2CreateDisposition.FILE_OVERWRITE : SMB2CreateDisposition.FILE_CREATE,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-            return new VoidStatusOutputStream(new SMBOutputStream(file, entry.getOutputStream(), share, entry));
+            return new VoidStatusOutputStream(new SMBOutputStream(entry.getOutputStream(), share, entry));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
@@ -64,13 +63,11 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
     }
 
     private final class SMBOutputStream extends ProxyOutputStream {
-        private final Path file;
         private final DiskShare share;
         private final File handle;
 
-        public SMBOutputStream(final Path file, final OutputStream stream, final DiskShare share, final File handle) {
+        public SMBOutputStream(final OutputStream stream, final DiskShare share, final File handle) {
             super(stream);
-            this.file = file;
             this.share = share;
             this.handle = handle;
         }
@@ -79,28 +76,18 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
         public void close() throws IOException {
             try {
                 try {
-                    try {
-                        super.close();
-                    }
-                    finally {
-                        handle.flush();
-                        handle.close();
-                    }
+                    super.close();
                 }
                 finally {
-                    share.close();
+                    handle.flush();
+                    handle.close();
                 }
             }
             catch(SMBRuntimeException e) {
                 throw new IOException(e);
             }
             finally {
-                try {
-                    session.releaseShare(file);
-                }
-                catch(ConnectionCanceledException e) {
-                    throw new IOException(e);
-                }
+                session.releaseShare(share);
             }
         }
     }

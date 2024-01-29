@@ -20,7 +20,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import com.hierynomus.msdtyp.AccessMask;
@@ -45,7 +44,8 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        try (final DiskShare share = session.openShare(file)) {
+        final DiskShare share = session.openShare(file);
+        try {
             if(file.isDirectory()) {
                 try (final Directory entry = share.openDirectory(new SMBPathContainerService(session).getKey(file),
                         Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
@@ -79,14 +79,11 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                 }
             }
         }
-        catch(IOException e) {
-            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
-        }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
         }
         finally {
-            session.releaseShare(file);
+            session.releaseShare(share);
         }
     }
 }

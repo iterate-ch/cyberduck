@@ -51,7 +51,8 @@ public class SMBCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status,
                      final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
-        try (final DiskShare share = session.openShare(source)) {
+        final DiskShare share = session.openShare(source);
+        try {
             try (final File sourceFile = share.openFile(new SMBPathContainerService(session).getKey(source),
                     new HashSet<>(Arrays.asList(AccessMask.FILE_READ_DATA, AccessMask.FILE_READ_ATTRIBUTES)),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
@@ -77,7 +78,7 @@ public class SMBCopyFeature implements Copy {
             throw new BackgroundException(e);
         }
         finally {
-            session.releaseShare(source);
+            session.releaseShare(share);
         }
         return target;
     }
