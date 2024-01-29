@@ -18,6 +18,7 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -94,7 +95,12 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
                 throw new IOException(e);
             }
             finally {
-                session.releaseShare(file);
+                try {
+                    session.releaseShare(file);
+                }
+                catch(ConnectionCanceledException e) {
+                    throw new IOException(e);
+                }
             }
         }
     }

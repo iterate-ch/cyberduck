@@ -18,6 +18,7 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -102,7 +103,13 @@ public class SMBReadFeature implements Read {
                 throw new IOException(e);
             }
             finally {
-                session.releaseShare(file);
+                ;
+                try {
+                    session.releaseShare(file);
+                }
+                catch(ConnectionCanceledException e) {
+                    throw new IOException(e);
+                }
             }
         }
     }

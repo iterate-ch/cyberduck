@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -151,7 +152,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
     }
 
-    public void releaseShare(final Path file) {
+    public void releaseShare(final Path file) throws BackgroundException {
         final String shareName = containerService.getContainer(file).getName();
         final ReentrantLock lock = locks.get(shareName);
         if(null == lock) {
@@ -161,7 +162,14 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Release lock for %s", shareName));
         }
-        lock.unlock();
+        try {
+            lock.unlock();
+        }
+        catch(IllegalMonitorStateException e) {
+            // Not held by current thread
+            log.warn(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+            throw new DefaultExceptionMappingService().map(e);
+        }
     }
 
     @Override
