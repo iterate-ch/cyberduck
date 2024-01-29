@@ -19,7 +19,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.SharepointSiteFileIdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -32,8 +31,10 @@ import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
 import static ch.cyberduck.core.onedrive.SharepointListService.SITES_CONTAINER;
 
 public class SharepointSiteSession extends AbstractSharepointSession {
+
     public SharepointSiteSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+        this.fileid = new SharepointSiteFileIdProvider(this);
     }
 
     @Override
@@ -54,9 +55,6 @@ public class SharepointSiteSession extends AbstractSharepointSession {
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
             return (T) new SharepointSiteListService(this, fileid);
-        }
-        if(type == GraphFileIdProvider.class) {
-            return (T) new SharepointSiteFileIdProvider(this);
         }
         return super._getFeature(type);
     }

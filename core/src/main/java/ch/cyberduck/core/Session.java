@@ -19,20 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Download;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.features.Share;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
@@ -292,6 +279,9 @@ public abstract class Session<C> implements TranscriptListener {
      */
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == FileIdProvider.class) {
+            return (T) new RandomFileIdProvider(host.getProtocol().getCaseSensitivity());
+        }
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this.getFeature(Write.class));
         }

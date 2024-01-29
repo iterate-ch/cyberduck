@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
@@ -101,6 +102,9 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == FileIdProvider.class) {
+            return (T) fileid;
+        }
         if(type == Upload.class) {
             return (T) new BoxThresholdUploadService(this, fileid, registry);
         }
