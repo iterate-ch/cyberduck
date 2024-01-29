@@ -70,6 +70,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     private Session session;
     private SMBRootListService shares;
 
+    private final SMBPathContainerService containerService = new SMBPathContainerService(this);
     private final Map<String, ReentrantLock> locks = new ConcurrentHashMap<>();
 
     public SMBSession(final Host h) {
@@ -128,7 +129,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     public DiskShare openShare(final Path file) throws BackgroundException {
-        final String shareName = new SMBPathContainerService(this).getContainer(file).getName();
+        final String shareName = containerService.getContainer(file).getName();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Await lock for %s", shareName));
         }
@@ -151,7 +152,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     public void releaseShare(final Path file) {
-        final String shareName = new SMBPathContainerService(this).getContainer(file).getName();
+        final String shareName = containerService.getContainer(file).getName();
         final ReentrantLock lock = locks.get(shareName);
         if(null == lock) {
             log.warn(String.format("Missing lock for %s", shareName));
@@ -199,7 +200,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
-            return (T) new SMBPathContainerService(this);
+            return (T) containerService;
         }
         if(type == Find.class) {
             return (T) new SMBFindFeature(this);
