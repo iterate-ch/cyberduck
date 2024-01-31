@@ -21,7 +21,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -40,7 +39,8 @@ public class SMBDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files.keySet()) {
             callback.delete(file);
-            try (final DiskShare share = session.openShare(file)) {
+            final DiskShare share = session.openShare(file);
+            try {
                 if(file.isFile() || file.isSymbolicLink()) {
                     share.rm(new SMBPathContainerService(session).getKey(file));
                 }
@@ -51,11 +51,8 @@ public class SMBDeleteFeature implements Delete {
             catch(SMBRuntimeException e) {
                 throw new SMBExceptionMappingService().map("Cannot delete {0}", e, file);
             }
-            catch(IOException e) {
-                throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
-            }
             finally {
-                session.releaseShare(file);
+                session.releaseShare(share);
             }
         }
     }

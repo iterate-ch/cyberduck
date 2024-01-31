@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Delete.Callback;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -54,7 +53,8 @@ public class SMBMoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Callback delete, final ConnectionCallback prompt) throws BackgroundException {
-        try (final DiskShare share = session.openShare(source)) {
+        final DiskShare share = session.openShare(source);
+        try {
             try (DiskEntry file = share.open(new SMBPathContainerService(session).getKey(source),
                     Collections.singleton(AccessMask.DELETE),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
@@ -64,14 +64,11 @@ public class SMBMoveFeature implements Move {
                 file.rename(new SmbPath(share.getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
             }
         }
-        catch(IOException e) {
-            throw new SMBTransportExceptionMappingService().map("Cannot read container configuration", e);
-        }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
         }
         finally {
-            session.releaseShare(source);
+            session.releaseShare(share);
         }
         return target;
     }
