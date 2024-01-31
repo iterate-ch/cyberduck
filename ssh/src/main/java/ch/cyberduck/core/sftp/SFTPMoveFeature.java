@@ -46,7 +46,7 @@ public class SFTPMoveFeature implements Move {
             if(status.isExists()) {
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
-            session.sftp().rename(file.getAbsolute(), renamed.getAbsolute(), Collections.singleton(RenameFlags.OVERWRITE));
+            session.sftp().rename(file.getAbsolute(), renamed.getAbsolute(), Collections.singleton(status.isExists() ? RenameFlags.OVERWRITE : RenameFlags.NATIVE));
             // Copy original file attributes
             return renamed.withAttributes(file.attributes());
         }
