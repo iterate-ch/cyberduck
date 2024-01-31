@@ -85,6 +85,7 @@ public class Profile implements Protocol {
     public static final String DEFAULT_NICKNAME_KEY = "Default Nickname";
 
     public static final String HOSTNAME_PLACEHOLDER_KEY = "Hostname Placeholder";
+    public static final String PATH_PLACEHOLDER_KEY = "Path Placeholder";
     public static final String USERNAME_PLACEHOLDER_KEY = "Username Placeholder";
     public static final String PASSWORD_PLACEHOLDER_KEY = "Password Placeholder";
     public static final String TOKEN_PLACEHOLDER_KEY = "Token Placeholder";
@@ -217,6 +218,15 @@ public class Profile implements Protocol {
         final String v = this.value(HOSTNAME_PLACEHOLDER_KEY);
         if(StringUtils.isBlank(v)) {
             return parent.getHostnamePlaceholder();
+        }
+        return v;
+    }
+
+    @Override
+    public String getPathPlaceholder() {
+        final String v = this.value(PATH_PLACEHOLDER_KEY);
+        if(StringUtils.isBlank(v)) {
+            return parent.getPathPlaceholder();
         }
         return v;
     }

@@ -234,6 +234,8 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
      */
     String getHostnamePlaceholder();
 
+    String getPathPlaceholder();
+
     /**
      * @return Username label
      */
