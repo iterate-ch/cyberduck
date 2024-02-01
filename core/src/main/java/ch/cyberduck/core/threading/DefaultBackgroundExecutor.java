@@ -16,14 +16,12 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -70,26 +68,24 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         }
         // Add action to registry of controller. Will be removed automatically when stopped
         registry.add(action);
-        try {
-            action.init();
-        }
-        catch(BackgroundException e) {
-            action.alert(e);
-            return ConcurrentUtils.constantFuture(null);
-        }
         // Start background task
-        final Callable<T> command = new BackgroundCallable<>(action, controller);
-        try {
-            final Future<T> task = concurrentExecutor.execute(command);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Scheduled background runnable %s for execution", action));
+        final BackgroundCallable<T> command = new BackgroundCallable<>(action, controller);
+        if(command.init()) {
+            try {
+                final Future<T> task = concurrentExecutor.execute(command);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Scheduled background runnable %s for execution", action));
+                }
+                return task;
             }
-            return task;
+            catch(RejectedExecutionException e) {
+                log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
+                action.cancel();
+                action.cleanup();
+                return ConcurrentUtils.constantFuture(null);
+            }
         }
-        catch(RejectedExecutionException e) {
-            log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
-            action.cancel();
-            action.cleanup();
+        else {
             return ConcurrentUtils.constantFuture(null);
         }
     }

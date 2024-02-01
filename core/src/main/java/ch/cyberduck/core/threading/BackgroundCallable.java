@@ -42,6 +42,32 @@ public class BackgroundCallable<T> implements Callable<T> {
         this.controller = controller;
     }
 
+    public boolean init() {
+        try {
+            action.init();
+            return true;
+        }
+        catch(BackgroundException e) {
+            action.alert(e);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Invoke cleanup for background action %s", action));
+            }
+            // Invoke the cleanup on the main thread to let the action synchronize the user interface
+            controller.invoke(new ControllerMainAction(controller) {
+                @Override
+                public void run() {
+                    try {
+                        action.cleanup();
+                    }
+                    catch(Exception e) {
+                        log.error(String.format("Exception %s running cleanup task", e), e);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+
     @Override
     public T call() {
         if(log.isDebugEnabled()) {
