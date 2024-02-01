@@ -15,6 +15,7 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
@@ -22,6 +23,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
+import ch.cyberduck.core.transfer.download.CompareFilter;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import ch.cyberduck.core.worker.Worker;
 
 import org.apache.logging.log4j.LogManager;
@@ -78,7 +81,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
         final LocalProfilesFinder localProfilesFinder = new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE);
         final Set<ProfileDescription> installed = localProfilesFinder.find();
         // Find all profiles from repository
-        final RemoteProfilesFinder remoteProfilesFinder = new RemoteProfilesFinder(registry, session);
+        final RemoteProfilesFinder remoteProfilesFinder = new RemoteProfilesFinder(registry, session, this.filter(session));
         final Set<ProfileDescription> remote = remoteProfilesFinder.find();
         final ProfileMatcher matcher = new ChecksumProfileMatcher(remote);
         // Iterate over every installed profile and find match in repository
@@ -127,5 +130,9 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
         localProfilesFinder.cleanup();
         remoteProfilesFinder.cleanup();
         return returned;
+    }
+
+    protected CompareFilter filter(final Session<?> session) {
+        return new CompareFilter(new DisabledDownloadSymlinkResolver(), session, new DisabledProgressListener());
     }
 }

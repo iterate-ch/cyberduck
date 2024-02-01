@@ -59,14 +59,20 @@ public class RemoteProfilesFinder implements ProfilesFinder {
     private final TemporaryFileService temp = TemporaryFileServiceFactory.get();
     private final ProtocolFactory protocols;
     private final Session<?> session;
+    private final TransferPathFilter comparison;
 
     public RemoteProfilesFinder(final Session<?> session) {
         this(ProtocolFactory.get(), session);
     }
 
     public RemoteProfilesFinder(final ProtocolFactory protocols, final Session<?> session) {
+        this(protocols, session, new CompareFilter(new DisabledDownloadSymlinkResolver(), session, new DisabledProgressListener()));
+    }
+
+    public RemoteProfilesFinder(final ProtocolFactory protocols, final Session<?> session, final TransferPathFilter comparison) {
         this.protocols = protocols;
         this.session = session;
+        this.comparison = comparison;
     }
 
     @Override
@@ -83,7 +89,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                     protected Local initialize() throws ConcurrentException {
                         try {
                             final Local local = temp.create("profiles", file);
-                            final TransferPathFilter filter = new CompareFilter(new DisabledDownloadSymlinkResolver(), session, new DisabledProgressListener())
+                            final TransferPathFilter filter = comparison
                                     .withFinder(new Find() {
                                         @Override
                                         public boolean find(final Path file, final ListProgressListener listener) {
