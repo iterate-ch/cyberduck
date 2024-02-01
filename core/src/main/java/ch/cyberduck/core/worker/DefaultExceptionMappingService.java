@@ -26,6 +26,9 @@ public class DefaultExceptionMappingService extends AbstractExceptionMappingServ
 
     @Override
     public BackgroundException map(final Throwable failure) {
+        if(failure instanceof BackgroundException) {
+            return (BackgroundException) failure;
+        }
         final StringBuilder buffer = new StringBuilder();
         if(failure instanceof RuntimeException) {
             this.append(buffer, LocaleFactory.localizedString("Unknown application error"));
