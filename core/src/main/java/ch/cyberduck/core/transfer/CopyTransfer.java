@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -53,7 +52,7 @@ public class CopyTransfer extends Transfer {
     private final Comparator<Path> comparator = new NullComparator<>();
 
     private Cache<Path> cache
-        = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     /**
      * Temporary mapping for source to destination files
@@ -145,7 +144,7 @@ public class CopyTransfer extends Transfer {
         else {
             // Use default
             action = TransferAction.forName(
-                PreferencesFactory.get().getProperty("queue.copy.action"));
+                    PreferencesFactory.get().getProperty("queue.copy.action"));
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
@@ -176,9 +175,9 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s", action));
         }
         final Find find = new CachingFindFeature(destination, cache,
-            destination.getFeature(Find.class, new DefaultFindFeature(destination)));
+                destination.getFeature(Find.class, new DefaultFindFeature(destination)));
         final AttributesFinder attributes = new CachingAttributesFinderFeature(destination, cache,
-            destination.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(destination)));
+                destination.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(destination)));
         if(action.equals(TransferAction.comparison)) {
             return new ChecksumFilter(source, destination, mapping).withFinder(find).withAttributes(attributes);
         }
@@ -250,7 +249,7 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
-            source.getName(), mapping.get(source).getName()));
+                source.getName(), mapping.get(source).getName()));
         if(source.isDirectory()) {
             if(!segment.isExists()) {
                 final Directory feature = destination.getFeature(Directory.class);
@@ -261,27 +260,12 @@ public class CopyTransfer extends Transfer {
         else {
             // Transfer
             final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-            feature.copy(source, mapping.get(source), segment, connectionCallback, new CopyStreamListener(this, streamListener));
+            feature.copy(source, mapping.get(source), segment, connectionCallback, streamListener);
         }
     }
 
     @Override
     public void normalize() {
         //
-    }
-
-    private static final class CopyStreamListener extends DelegateStreamListener {
-        private final CopyTransfer transfer;
-
-        public CopyStreamListener(final CopyTransfer transfer, final StreamListener delegate) {
-            super(delegate);
-            this.transfer = transfer;
-        }
-
-        @Override
-        public void sent(final long bytes) {
-            transfer.addTransferred(bytes);
-            super.sent(bytes);
-        }
     }
 }
