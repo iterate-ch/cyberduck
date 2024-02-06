@@ -88,7 +88,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             config.setJmxEnabled(false);
             config.setBlockWhenExhausted(true);
             config.setMaxIdle(1);
-            config.setMaxTotal(Integer.MAX_VALUE);
+            config.setMaxTotal(1);
             this.setConfig(config);
         }
     }
