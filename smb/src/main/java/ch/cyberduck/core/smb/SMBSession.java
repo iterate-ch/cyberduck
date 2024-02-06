@@ -215,7 +215,13 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
         final String shareName = share.getSmbPath().getShareName();
         if(pools.containsKey(shareName)) {
-            pools.get(shareName).returnObject(share);
+            try {
+                pools.get(shareName).returnObject(share);
+            }
+            catch(IllegalStateException e) {
+                log.warn(String.format("Failure %s releasing share %s", e, share));
+                throw e;
+            }
         }
         else {
             log.warn(String.format("Close stale share %s", share));
