@@ -29,9 +29,16 @@ import ch.cyberduck.test.TestcontainerTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -58,6 +65,27 @@ public class SMBListServiceTest extends AbstractSMBTest {
         assertTrue(result.contains(testFile));
         assertTrue(result.contains(innerFolder));
         new SMBDeleteFeature(session).delete(Arrays.asList(innerFolder, testFile, testFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListConcurrency() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final ExecutorService executor = Executors.newFixedThreadPool(50);
+        final List<Future<Object>> results = new ArrayList<>();
+        for(int i = 0; i < 50; i++) {
+            final Future<Object> submitted = executor.submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    new SMBListService(session).list(home, new DisabledListProgressListener());
+                    return null;
+                }
+            });
+            results.add(submitted);
+        }
+        for(Future<Object> result : results) {
+            result.get();
+        }
+        executor.shutdown();
     }
 
     @Test
