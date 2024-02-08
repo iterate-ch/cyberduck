@@ -19,6 +19,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
@@ -42,7 +45,17 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
         if(null != status.getCreated()) {
             headers.add(new BasicHeader("X-OC-CTime", String.valueOf(status.getCreated() / 1000)));
         }
+        if(Checksum.NONE != status.getChecksum()) {
+            final Checksum checksum = status.getChecksum();
+            headers.add(new BasicHeader("OC-Checksum", String.format("%s:%s", checksum.algorithm.toString(), checksum.hash)));
+        }
         return headers;
+    }
+
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return new SHA1ChecksumCompute();
     }
 
     @Override
