@@ -20,12 +20,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.Normalizer;
 
-public abstract class AbstractUnicodeNormalizer implements UnicodeNormalizer {
-    private static final Logger log = LogManager.getLogger(AbstractUnicodeNormalizer.class);
+public class GenericUnicodeNormalizer implements UnicodeNormalizer {
+    private static final Logger log = LogManager.getLogger(GenericUnicodeNormalizer.class);
 
     private final Normalizer.Form form;
 
-    public AbstractUnicodeNormalizer(final Normalizer.Form form) {
+    public GenericUnicodeNormalizer(final Normalizer.Form form) {
         this.form = form;
     }
 

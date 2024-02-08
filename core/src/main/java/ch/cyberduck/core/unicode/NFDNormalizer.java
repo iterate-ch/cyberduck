@@ -17,7 +17,7 @@ package ch.cyberduck.core.unicode;
 
 import java.text.Normalizer;
 
-public class NFDNormalizer extends AbstractUnicodeNormalizer {
+public class NFDNormalizer extends GenericUnicodeNormalizer {
     public NFDNormalizer() {
         super(Normalizer.Form.NFD);
     }
