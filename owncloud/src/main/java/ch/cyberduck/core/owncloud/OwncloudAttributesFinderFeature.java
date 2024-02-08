@@ -52,7 +52,7 @@ public class OwncloudAttributesFinderFeature extends NextcloudAttributesFinderFe
             url = new DAVPathEncoder().encode(file);
         }
         return session.getClient().list(url, 0,
-                Stream.of(FILEID_CUSTOM_NAMESPACE,
+                Stream.of(OC_FILEID_CUSTOM_NAMESPACE, OC_CHECKSUMS_CUSTOM_NAMESPACE, OC_SIZE_CUSTOM_NAMESPACE,
                         DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
                         DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).collect(Collectors.toSet()));
     }

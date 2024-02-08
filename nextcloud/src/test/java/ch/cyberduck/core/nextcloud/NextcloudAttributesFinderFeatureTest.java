@@ -14,10 +14,14 @@ import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -54,14 +58,17 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test
     public void testFindFile() throws Exception {
+        final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(new NullInputStream(0L), new TransferStatus());
         final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withChecksum(checksum));
         assertNotNull(test.attributes().getFileId());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(test.attributes().getFileId(), attributes.getFileId());
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
+        assertNotEquals(Checksum.NONE, attributes.getChecksum());
+        assertEquals(checksum, attributes.getChecksum());
         assertNotNull(attributes.getETag());
         assertNotNull(attributes.getFileId());
         // Test wrong type
@@ -85,7 +92,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(test.attributes().getFileId(), attributes.getFileId());
-        assertEquals(-1, attributes.getSize());
+        assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         // Test wrong type
