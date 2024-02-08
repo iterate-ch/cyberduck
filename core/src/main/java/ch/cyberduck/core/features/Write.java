@@ -124,6 +124,15 @@ public interface Write<Reply> {
         public int hashCode() {
             return Objects.hash(append, size, checksum);
         }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Append{");
+            sb.append("size=").append(size);
+            sb.append(", checksum=").append(checksum);
+            sb.append('}');
+            return sb.toString();
+        }
     }
 
     /**
