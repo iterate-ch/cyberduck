@@ -90,7 +90,7 @@ public class PathAttributesDictionary<T> {
         }
         if(dict.mapForKey("Checksum") != null) {
             final Map<String, String> checksum = dict.mapForKey("Checksum");
-            attributes.setChecksum(new Checksum(HashAlgorithm.valueOf(checksum.get("Algorithm")), checksum.get("Hash")));
+            attributes.setChecksum(new Checksum(HashAlgorithm.valueOf(checksum.get("Algorithm")), checksum.get("Hash"), checksum.get("Base64")));
         }
         else {
             attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));

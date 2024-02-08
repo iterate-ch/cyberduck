@@ -20,7 +20,6 @@ import ch.cyberduck.core.exception.ChecksumCanceledException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -38,8 +37,8 @@ public class MD5FastChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-        return new Checksum(HashAlgorithm.md5, Hex.encodeHexString(this.digest("MD5",
-                this.normalize(in, status), status)));
+        return new Checksum(HashAlgorithm.md5, this.digest("MD5",
+                this.normalize(in, status), status));
     }
 
     protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation) throws ChecksumException, ChecksumCanceledException {

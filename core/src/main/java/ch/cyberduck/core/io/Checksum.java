@@ -18,6 +18,8 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,16 +28,39 @@ public final class Checksum {
     private static final Logger log = LogManager.getLogger(Checksum.class);
 
     public final HashAlgorithm algorithm;
+    /**
+     * @deprecated
+     */
     public final String hash;
+    public final String hex;
+    public final String base64;
 
-    public Checksum(final HashAlgorithm algorithm, final String hash) {
+    public Checksum(final HashAlgorithm algorithm, final byte[] digest) {
         this.algorithm = algorithm;
-        this.hash = hash;
+        this.hex = Hex.encodeHexString(digest);
+        this.hash = hex;
+        this.base64 = Base64.encodeBase64String(digest);
+    }
+
+    public Checksum(final HashAlgorithm algorithm, final String hexString) {
+        this.algorithm = algorithm;
+        this.hash = hexString;
+        this.hex = hexString;
+        this.base64 = null;
+    }
+
+    public Checksum(final HashAlgorithm algorithm, final String hexString, final String base64String) {
+        this.algorithm = algorithm;
+        this.hash = hexString;
+        this.hex = hexString;
+        this.base64 = base64String;
     }
 
     public Checksum(final Checksum other) {
         this.algorithm = other.algorithm;
         this.hash = other.hash;
+        this.hex = other.hex;
+        this.base64 = other.base64;
     }
 
     @Override
@@ -104,5 +129,5 @@ public final class Checksum {
         return result;
     }
 
-    public static final Checksum NONE = new Checksum(null, null);
+    public static final Checksum NONE = new Checksum(null, null, null);
 }
