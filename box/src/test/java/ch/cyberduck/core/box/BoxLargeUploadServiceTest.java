@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -53,7 +54,7 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
         final byte[] content = RandomUtils.nextBytes(20 * 1024 * 1024);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setChecksum(new BoxBase64SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
+        status.setChecksum(new SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         final File response = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());

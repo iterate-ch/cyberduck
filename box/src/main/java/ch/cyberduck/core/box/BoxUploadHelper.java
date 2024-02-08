@@ -110,7 +110,7 @@ public class BoxUploadHelper {
         try {
             final HttpPost request = new HttpPost(String.format("%s/files/upload_sessions/%s/commit", client.getBasePath(), uploadSessionId));
             if(!Checksum.NONE.equals(overall.getChecksum())) {
-                request.addHeader(new BasicHeader("Digest", String.format("sha=%s", overall.getChecksum().hash)));
+                request.addHeader(new BasicHeader("Digest", String.format("sha=%s", overall.getChecksum().base64)));
             }
             else {
                 log.warn("Missing checksum to add SHA1 digest header");
