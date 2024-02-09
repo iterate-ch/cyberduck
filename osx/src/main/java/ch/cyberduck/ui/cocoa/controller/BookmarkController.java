@@ -143,17 +143,6 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.protocolPopup.setAutoenablesItems(false);
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                // Reload protocols which may have changed due to profile selection in Preferences
-                loadProtocols();
-                protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode())));
-            }
-        });
-    }
-
-    private void loadProtocols() {
         this.protocolPopup.removeAllItems();
         for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav, Protocol.Type.smb)))) {
             this.addProtocol(protocol);
@@ -174,6 +163,12 @@ public class BookmarkController extends SheetController implements CollectionLis
         for(Protocol protocol : protocols.find(new ProfileProtocolPredicate())) {
             this.addProtocol(protocol);
         }
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(final Host bookmark) {
+                protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode())));
+            }
+        });
         if(preferences.getBoolean("preferences.profiles.enable")) {
             this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
             this.protocolPopup.addItemWithTitle(String.format("%s%s", LocaleFactory.localizedString("More Options", "Bookmark"), "…"));
@@ -332,7 +327,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Action
     public void portInputDidChange(final NSNotification sender) {
         try {
-            bookmark.setPort(Integer.parseInt(portField.stringValue()));
+            bookmark.setPort(Integer.valueOf(portField.stringValue()));
         }
         catch(NumberFormatException e) {
             bookmark.setPort(-1);
