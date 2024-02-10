@@ -47,11 +47,15 @@ public class RegexLocale implements Locale {
     private final LRUCache<Key, String> cache = LRUCache.build(1000);
     private final Local resources;
 
-    private String locale
-        = java.util.Locale.getDefault().getLanguage();
+    private static final java.util.Locale defaultLocale = java.util.Locale.getDefault();
+
+    private String language
+            = defaultLocale.getLanguage();
+    private String country
+            = defaultLocale.getCountry();
 
     private final Pattern pattern
-        = Pattern.compile("\"(.*)\"\\s*=\\s*\"(.*)\";");
+            = Pattern.compile("\"(.*)\"\\s*=\\s*\"(.*)\";");
 
     public RegexLocale() {
         this(ApplicationResourcesFinderFactory.get().find());
@@ -63,7 +67,7 @@ public class RegexLocale implements Locale {
 
     @Override
     public void setDefault(final String language) {
-        locale = language;
+        this.language = language;
         cache.clear();
         tables.clear();
     }
@@ -91,25 +95,27 @@ public class RegexLocale implements Locale {
     }
 
     private void load(final String table) throws IOException {
-        final File file = new File(String.format("%s/%s.lproj/%s.strings.1", resources.getAbsolute(), locale, table));
-        if(file.exists()) {
-            this.load(table, file);
-        }
-        else {
-            this.load(table, new File(String.format("%s/%s.lproj/%s.strings", resources.getAbsolute(), locale, table)));
+        if(!this.load(table, new File(String.format("%s/%s.lproj/%s.strings.1", resources.getAbsolute(), String.format("%s_%s", language, country), table)))) {
+            if(!this.load(table, new File(String.format("%s/%s.lproj/%s.strings.1", resources.getAbsolute(), language, table)))) {
+                this.load(table, new File(String.format("%s/%s.lproj/%s.strings", resources.getAbsolute(), language, table)));
+            }
         }
     }
 
-    private void load(final String table, final File file) throws IOException {
-        try (final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_16))) {
-            String line;
-            while((line = reader.readLine()) != null) {
-                final Matcher matcher = pattern.matcher(line);
-                if(matcher.matches()) {
-                    cache.put(new Key(table, matcher.group(1)), matcher.group(2));
+    private boolean load(final String table, final File file) throws IOException {
+        if(file.exists()) {
+            try (final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_16))) {
+                String line;
+                while((line = reader.readLine()) != null) {
+                    final Matcher matcher = pattern.matcher(line);
+                    if(matcher.matches()) {
+                        cache.put(new Key(table, matcher.group(1)), matcher.group(2));
+                    }
                 }
             }
+            return true;
         }
+        return false;
     }
 
     private static final class Key {
