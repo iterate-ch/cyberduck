@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.8.0
+- [Localize] Tamil Localization
+
 8.7.3
 - [Bugfix] Crash when opening application (Windows) (#15535)
 
