@@ -242,6 +242,9 @@ public class PathAttributes extends Attributes implements Serializable {
             final Map<String, String> wrapper = new HashMap<>();
             wrapper.put("Algorithm", checksum.algorithm.name());
             wrapper.put("Hash", checksum.hash);
+            if(null != checksum.base64) {
+                wrapper.put("Base64", checksum.base64);
+            }
             dict.setMapForKey(wrapper, "Checksum");
         }
         if(StringUtils.isNotBlank(versionId)) {

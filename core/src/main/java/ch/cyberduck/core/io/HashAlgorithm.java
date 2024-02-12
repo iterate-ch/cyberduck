@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 public enum HashAlgorithm {
     md5,
     sha1,
-    base64sha1,
     sha256,
     sha512,
     crc32,

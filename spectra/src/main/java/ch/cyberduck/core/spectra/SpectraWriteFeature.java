@@ -26,7 +26,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
-import org.jets3t.service.utils.ServiceUtils;
 
 public class SpectraWriteFeature extends S3WriteFeature {
 
@@ -52,7 +51,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
                 case md5:
                     // Set checksum on our own to avoid jets3t setting AWS metadata for MD5 as metadata must remain
                     // constant for all chunks
-                    object.addMetadata("Content-MD5", ServiceUtils.toBase64(ServiceUtils.fromHex(checksum.hash)));
+                    object.addMetadata("Content-MD5", checksum.base64);
                     break;
             }
         }

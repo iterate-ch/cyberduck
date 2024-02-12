@@ -29,6 +29,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpEntity;
@@ -73,7 +74,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
                     // Must not overlap with the range of a part already uploaded this session.
                     request.addHeader(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
                             Long.valueOf(overall_length))));
-                    request.addHeader(new BasicHeader("Digest", String.format("sha=%s", status.getChecksum())));
+                    request.addHeader(new BasicHeader("Digest", String.format("sha=%s", status.getChecksum().base64)));
                     request.setEntity(entity);
                     final UploadPart response = session.getClient().execute(request, new BoxClientErrorResponseHandler<UploadedPart>() {
                         @Override
@@ -104,7 +105,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new BoxBase64SHA1ChecksumCompute();
+        return new SHA1ChecksumCompute();
     }
 
     @Override

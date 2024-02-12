@@ -22,8 +22,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.codec.binary.Hex;
-
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,9 +31,9 @@ public class DropboxChecksumCompute extends AbstractChecksumCompute {
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         try {
-            return new Checksum(HashAlgorithm.dropbox_content_hash, Hex.encodeHexString(this.digest(
+            return new Checksum(HashAlgorithm.dropbox_content_hash, this.digest(
                     this.normalize(in, status), new DropboxContentHasher(
-                            MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0), status)));
+                            MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0), status));
         }
         catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(e);

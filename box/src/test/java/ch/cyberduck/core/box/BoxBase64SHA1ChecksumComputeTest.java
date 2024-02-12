@@ -15,6 +15,7 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -27,7 +28,7 @@ public class BoxBase64SHA1ChecksumComputeTest {
     @Test
     public void testCompute() throws Exception {
         assertEquals("2jmj7l5rSw0yVb/vlWAYkK/YBwk=",
-                new BoxBase64SHA1ChecksumCompute().compute(new NullInputStream(0), new TransferStatus()).hash);
+                new SHA1ChecksumCompute().compute(new NullInputStream(0), new TransferStatus()).base64);
 
     }
 }

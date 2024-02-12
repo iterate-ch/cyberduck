@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,7 +73,7 @@ public final class MantaObjectAttributeAdapter implements AttributesAdapter<Mant
         attributes.setETag(object.getEtag());
         final byte[] md5Bytes = object.getMd5Bytes();
         if(md5Bytes != null) {
-            attributes.setChecksum(new Checksum(HashAlgorithm.md5, Hex.encodeHexString(md5Bytes)));
+            attributes.setChecksum(new Checksum(HashAlgorithm.md5, md5Bytes));
         }
         final String storageClass = object.getHeaderAsString(HEADER_KEY_STORAGE_CLASS);
         if(storageClass != null) {

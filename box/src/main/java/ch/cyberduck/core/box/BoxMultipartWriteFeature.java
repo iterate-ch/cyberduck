@@ -29,6 +29,7 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpEntity;
@@ -116,7 +117,7 @@ public class BoxMultipartWriteFeature implements Write<File> {
                 request.addHeader(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
                         overall.getOffset() + overall.getLength())));
                 request.addHeader(new BasicHeader("Digest", String.format("sha=%s",
-                        new BoxBase64SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), overall).hash)));
+                        new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), overall).base64)));
                 request.setEntity(new ByteArrayEntity(content));
                 checksums.add(session.getClient().execute(request, new BoxClientErrorResponseHandler<UploadedPart>() {
                     @Override
@@ -160,7 +161,7 @@ public class BoxMultipartWriteFeature implements Write<File> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new BoxBase64SHA1ChecksumCompute();
+        return new SHA1ChecksumCompute();
     }
 
     @Override

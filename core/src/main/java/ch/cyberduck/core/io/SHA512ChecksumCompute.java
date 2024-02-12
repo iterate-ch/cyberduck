@@ -18,15 +18,13 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.codec.binary.Hex;
-
 import java.io.InputStream;
 
 public class SHA512ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-        return new Checksum(HashAlgorithm.sha512, Hex.encodeHexString(this.digest("SHA-512",
-                this.normalize(in, status), status)));
+        return new Checksum(HashAlgorithm.sha512, this.digest("SHA-512",
+                this.normalize(in, status), status));
     }
 }
