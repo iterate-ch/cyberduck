@@ -555,8 +555,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelOpenEmtpyBrowser.Name = "labelOpenEmtpyBrowser";
             this.labelOpenEmtpyBrowser.Size = new System.Drawing.Size(458, 15);
             this.labelOpenEmtpyBrowser.TabIndex = 3;
-            this.labelOpenEmtpyBrowser.Text = "Will save all open browsers when quitting and restore the connections upon relaun" +
-    "ch.";
+            this.labelOpenEmtpyBrowser.Text = "Restore connections when opening application.";
             // 
             // managedFtpPanel
             // 
@@ -1083,8 +1082,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelKeychain.Name = "labelKeychain";
             this.labelKeychain.Size = new System.Drawing.Size(551, 15);
             this.labelKeychain.TabIndex = 6;
-            this.labelKeychain.Text = "Search for passwords in the Keychain. Save passwords upon successful login in the" +
-    " Keychain by default.";
+            this.labelKeychain.Text = "Save passwords.";
             // 
             // confirmDisconnectCheckbox
             // 
@@ -1121,7 +1119,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelConfirmDisconnect.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.labelConfirmDisconnect.Size = new System.Drawing.Size(265, 20);
             this.labelConfirmDisconnect.TabIndex = 6;
-            this.labelConfirmDisconnect.Text = "Ask before closing a connected browser window.";
+            this.labelConfirmDisconnect.Text = "Ask before closing connection.";
             // 
             // defaultProtocolCombobox
             // 
