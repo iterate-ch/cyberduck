@@ -69,11 +69,11 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertEquals(1695159781000L, attributes.getCreationDate());
         assertEquals(1630305150000L, new S3ObjectListService(session, acl, true).list(container,
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
-        assertEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 1, true).list(container,
+        assertEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 50, true).list(container,
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
         assertNotEquals(1630305150000L, new S3ObjectListService(session, acl, false).list(container,
                 new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
-        assertNotEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 1, false).list(container,
+        assertNotEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 50, false).list(container,
                 new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
         final Path moved = new S3MoveFeature(session, acl).move(test, new Path(container,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
