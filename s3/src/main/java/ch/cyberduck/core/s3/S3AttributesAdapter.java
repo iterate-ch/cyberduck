@@ -75,7 +75,7 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
                 });
             }
         }
-        final Map<String, String> metadata = Maps.transformValues(object.getModifiableMetadata(), Object::toString);
+        final Map<String, String> metadata = Maps.transformValues(object.getUserMetadataMap(), Object::toString);
         if(!metadata.isEmpty()) {
             attributes.setMetadata(metadata);
         }
