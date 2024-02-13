@@ -111,7 +111,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     object.setMd5Hash(ServiceUtils.fromHex(checksum.hash));
                     break;
                 case sha256:
-                    object.addMetadata("x-amz-checksum-sha256", checksum.base64);
+                    if(!status.isSegment()) {
+                        object.addMetadata("x-amz-checksum-sha256", checksum.base64);
+                    }
                     object.addMetadata("x-amz-content-sha256", checksum.hash);
                     break;
             }
