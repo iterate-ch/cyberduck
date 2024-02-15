@@ -16,6 +16,7 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
@@ -41,6 +42,9 @@ public class EueTouchFeatureTest extends AbstractEueSessionTest {
         assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f >f"));
         assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f "));
         assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f."));
+        // max path length exceeded. Allowed are 250, but the length was 255
+        assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)),
+                new AsciiRandomStringService(255).random()));
     }
 
     @Test

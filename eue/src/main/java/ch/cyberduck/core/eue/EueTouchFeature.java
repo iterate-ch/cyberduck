@@ -61,6 +61,9 @@ public class EueTouchFeature extends DefaultTouchFeature<EueWriteFeature.Chunk> 
         if(StringUtils.endsWith(filename, ".")) {
             return false;
         }
+        if(StringUtils.length(filename) > 250) {
+            return false;
+        }
         return true;
     }
 }
