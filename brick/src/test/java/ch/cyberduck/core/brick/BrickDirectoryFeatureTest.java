@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -30,7 +29,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 @Category(IntegrationTest.class)
 public class BrickDirectoryFeatureTest extends AbstractBrickTest {
@@ -39,13 +38,7 @@ public class BrickDirectoryFeatureTest extends AbstractBrickTest {
     public void testMakeDirectory() throws Exception {
         final Path directory = new BrickDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        try {
-            new BrickDirectoryFeature(session).mkdir(directory, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException | LockedException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new BrickDirectoryFeature(session).mkdir(directory, new TransferStatus()));
         new BrickDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
