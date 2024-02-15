@@ -151,6 +151,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withSoTimeout(new HostPreferences(host).getLong("smb.socket.timeout"), TimeUnit.SECONDS)
                     .withAuthenticators(new NtlmAuthenticator.Factory())
                     .withDfsEnabled(new HostPreferences(host).getBoolean("smb.dfs.enable"))
+                    .withEncryptData(new HostPreferences(host).getBoolean("smb.encrypt.enable"))
                     .withSigningRequired(new HostPreferences(host).getBoolean("smb.signing.required"))
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
                     .withMultiProtocolNegotiate(new HostPreferences(host).getBoolean("smb.protocol.negotiate.enable"))
