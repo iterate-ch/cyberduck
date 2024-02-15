@@ -15,6 +15,7 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -165,6 +166,14 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         catch(IOException e) {
             throw new SMBTransportExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public boolean alert(final ConnectionCallback callback) throws BackgroundException {
+        if(client.getConnectionContext().supportsEncryption()) {
+            return false;
+        }
+        return super.alert(callback);
     }
 
     @Override
