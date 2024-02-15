@@ -226,7 +226,7 @@ public class SDSUploadService {
                 failure.set(new BackgroundException(e));
                 signal.countDown();
             }
-        });
+        }, "uploadstatus");
         final AtomicLong polls = new AtomicLong();
         final ScheduledFuture<?> f = polling.repeat(() -> {
                     try {

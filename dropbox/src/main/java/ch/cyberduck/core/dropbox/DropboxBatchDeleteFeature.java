@@ -73,7 +73,7 @@ public class DropboxBatchDeleteFeature implements Delete {
                 failure.set(new BackgroundException(e));
                 signal.countDown();
             }
-        });
+        }, "deletebatch");
         try {
             final Map<Path, List<String>> containers = new HashMap<>();
             for(Path f : files.keySet()) {

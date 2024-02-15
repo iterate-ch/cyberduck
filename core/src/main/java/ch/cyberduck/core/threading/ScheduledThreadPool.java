@@ -44,7 +44,11 @@ public class ScheduledThreadPool {
      * @param handler Uncaught exception handler
      */
     public ScheduledThreadPool(final Thread.UncaughtExceptionHandler handler) {
-        pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer", handler));
+        this(handler, "timer");
+    }
+
+    public ScheduledThreadPool(final Thread.UncaughtExceptionHandler handler, final String threadNamePrefix) {
+        this.pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory(threadNamePrefix, handler));
     }
 
     /**

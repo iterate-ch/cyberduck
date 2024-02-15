@@ -55,7 +55,7 @@ public class BrickFileMigrationFeature {
                 failure.set(new BackgroundException(e));
                 signal.countDown();
             }
-        });
+        }, "filemigration");
         final long timeout = preferences.getLong("brick.migration.interrupt.ms");
         final long start = System.currentTimeMillis();
         try {
