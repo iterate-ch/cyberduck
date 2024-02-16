@@ -18,13 +18,19 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+
+import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URISyntaxException;
 
@@ -34,9 +40,9 @@ import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 
 public class AzureFindFeature implements Find {
+    private static final Logger log = LogManager.getLogger(AzureFindFeature.class);
 
     private final AzureSession session;
-
     private final OperationContext context;
 
     private final PathContainerService containerService
@@ -57,14 +63,38 @@ public class AzureFindFeature implements Find {
                 final boolean found;
                 if(containerService.isContainer(file)) {
                     final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
-                    found = container.exists(null, null, context);
+                    return container.exists(null, null, context);
                 }
-                else {
-                    final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlobReferenceFromServer(containerService.getKey(file));
-                    found = blob.exists(null, null, context);
+                if(file.isFile() || file.isPlaceholder()) {
+                    try {
+                        final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                                .getBlobReferenceFromServer(containerService.getKey(file));
+                        return blob.exists(null, null, context);
+                    }
+                    catch(StorageException e) {
+                        switch(e.getHttpStatusCode()) {
+                            case HttpStatus.SC_NOT_FOUND:
+                                if(file.isPlaceholder()) {
+                                    // Ignore failure and look for common prefix
+                                    break;
+                                }
+                            default:
+                                throw e;
+                        }
+                    }
                 }
-                return found;
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Search for common prefix %s", file));
+                }
+                // Check for common prefix
+                try {
+                    new AzureObjectListService(session, context).list(file, new CancellingListProgressListener());
+                    return true;
+                }
+                catch(ListCanceledException l) {
+                    // Found common prefix
+                    return true;
+                }
             }
             catch(StorageException e) {
                 throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);

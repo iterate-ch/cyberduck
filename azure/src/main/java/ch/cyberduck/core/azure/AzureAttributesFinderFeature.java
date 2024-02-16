@@ -18,12 +18,14 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -76,21 +78,37 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
                 attributes.setModificationDate(properties.getLastModified().getTime());
                 return attributes;
             }
-            else {
-                final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlobReferenceFromServer(containerService.getKey(file));
-                final BlobRequestOptions options = new BlobRequestOptions();
-                blob.downloadAttributes(AccessCondition.generateEmptyCondition(), options, context);
-                return this.toAttributes(blob);
+            if(file.isFile() || file.isPlaceholder()) {
+                try {
+                    final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getBlobReferenceFromServer(containerService.getKey(file));
+                    final BlobRequestOptions options = new BlobRequestOptions();
+                    blob.downloadAttributes(AccessCondition.generateEmptyCondition(), options, context);
+                    return this.toAttributes(blob);
+                }
+                catch(StorageException e) {
+                    switch(e.getHttpStatusCode()) {
+                        case HttpStatus.SC_NOT_FOUND:
+                            if(file.isPlaceholder()) {
+                                // Ignore failure and look for common prefix
+                                break;
+                            }
+                        default:
+                            throw e;
+                    }
+                }
+            }
+            // Check for common prefix
+            try {
+                new AzureObjectListService(session, context).list(file, new CancellingListProgressListener());
+                return PathAttributes.EMPTY;
+            }
+            catch(ListCanceledException l) {
+                // Found common prefix
+                return PathAttributes.EMPTY;
             }
         }
         catch(StorageException e) {
-            switch(e.getHttpStatusCode()) {
-                case HttpStatus.SC_NOT_FOUND:
-                    if(file.isPlaceholder()) {
-                        return PathAttributes.EMPTY;
-                    }
-            }
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(URISyntaxException e) {
