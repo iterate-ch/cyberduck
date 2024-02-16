@@ -37,6 +37,7 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.diagnostics.Reachability;
 import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.HostParserException;
@@ -278,6 +279,8 @@ public class BookmarkController extends SheetController implements CollectionLis
             this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
         }
         this.addObserver(new BookmarkObserver() {
+            private final Reachability reachability = ReachabilityFactory.get();
+
             @Override
             public void change(final Host bookmark) {
                 if(StringUtils.isNotBlank(bookmark.getHostname())) {
@@ -286,7 +289,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
                         @Override
                         public Boolean run() {
-                            return reachable = ReachabilityFactory.get().isReachable(bookmark);
+                            return reachable = reachability.isReachable(bookmark);
                         }
 
                         @Override
