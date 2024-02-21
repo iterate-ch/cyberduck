@@ -67,7 +67,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
                 public Void handleResponse(final HttpResponse response) throws IOException {
                     final Header header = response.getFirstHeader("Set-Cookie");
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Received cookie %s", header.getValue()));
+                        log.debug(String.format("Received cookie %s", header));
                     }
                     return super.handleResponse(response);
                 }
