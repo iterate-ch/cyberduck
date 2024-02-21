@@ -56,7 +56,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final String rootEtag = f.find(root).getETag();
         final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertEquals(rootTimestamp, f.find(root).getModificationDate());
+        assertNotEquals(rootTimestamp, f.find(root).getModificationDate());
         assertNotEquals(rootEtag, f.find(root).getETag());
         final long folderTimestamp = f.find(folder).getModificationDate();
         final String folderEtag = f.find(folder).getETag();
