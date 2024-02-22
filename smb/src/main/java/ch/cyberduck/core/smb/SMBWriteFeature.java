@@ -24,6 +24,8 @@ import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,6 +41,8 @@ import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBWriteFeature extends AppendWriteFeature<Void> {
+    private static final Logger log = LogManager.getLogger(SMBWriteFeature.class);
+
     private final SMBSession session;
 
     public SMBWriteFeature(final SMBSession session) {
@@ -87,7 +91,12 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
                 throw new IOException(e);
             }
             finally {
-                session.releaseShare(share);
+                try {
+                    session.releaseShare(share);
+                }
+                catch(BackgroundException ignore) {
+                    log.warn(String.format("Ignore failure %s releasing share %s", ignore, share));
+                }
             }
         }
     }

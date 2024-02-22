@@ -39,7 +39,7 @@ import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBReadFeature implements Read {
-    private static final Logger logger = LogManager.getLogger(SMBReadFeature.class);
+    private static final Logger log = LogManager.getLogger(SMBWriteFeature.class);
 
     private final SMBSession session;
 
@@ -95,7 +95,12 @@ public class SMBReadFeature implements Read {
                 throw new IOException(e);
             }
             finally {
-                session.releaseShare(share);
+                try {
+                    session.releaseShare(share);
+                }
+                catch(BackgroundException ignore) {
+                    log.warn(String.format("Ignore failure %s releasing share %s", ignore, share));
+                }
             }
         }
     }

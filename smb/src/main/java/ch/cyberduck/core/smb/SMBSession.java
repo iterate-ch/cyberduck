@@ -198,7 +198,13 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             final String shareName = containerService.getContainer(file).getName();
             final GenericObjectPool<DiskShare> pool = pools.getOrDefault(shareName,
                     new DiskSharePool(shareName));
+            if(pool.getNumIdle() == 0) {
+                log.warn(String.format("No idle share for %s", shareName));
+            }
             pools.putIfAbsent(shareName, pool);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Open share %s in thread %s", shareName, Thread.currentThread().getName()));
+            }
             return pool.borrowObject();
         }
         catch(BackgroundException e) {
@@ -209,18 +215,22 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
     }
 
-    public void releaseShare(final DiskShare share) {
+    public void releaseShare(final DiskShare share) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Release share %s", share));
         }
         final String shareName = share.getSmbPath().getShareName();
         if(pools.containsKey(shareName)) {
             try {
-                pools.get(shareName).returnObject(share);
+                final GenericObjectPool<DiskShare> pool = pools.get(shareName);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Release share %s in thread %s", shareName, Thread.currentThread().getName()));
+                }
+                pool.returnObject(share);
             }
             catch(IllegalStateException e) {
                 log.warn(String.format("Failure %s releasing share %s", e, share));
-                throw e;
+                throw new BackgroundException(e);
             }
         }
         else {
