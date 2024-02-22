@@ -75,6 +75,9 @@ public class SMBMoveFeature implements Move {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(source.isVolume()) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+        }
         final SMBPathContainerService containerService = new SMBPathContainerService(session);
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
