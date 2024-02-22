@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 public class GraphCopyFeature implements Copy {
-    private static final Logger logger = LogManager.getLogger(GraphCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(GraphCopyFeature.class);
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
@@ -62,8 +62,8 @@ public class GraphCopyFeature implements Copy {
             copyOperation.rename(target.getName());
         }
         if(status.isExists()) {
-            if(logger.isWarnEnabled()) {
-                logger.warn(String.format("Delete file %s to be replaced with %s", target, file));
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Delete file %s to be replaced with %s", target, file));
             }
             new GraphDeleteFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
@@ -71,7 +71,7 @@ public class GraphCopyFeature implements Copy {
         copyOperation.copy(targetItem);
         final DriveItem item = session.getItem(file);
         try {
-            Files.copy(item, copyOperation).await(statusObject -> logger.info(String.format("Copy Progress Operation %s progress %f status %s",
+            Files.copy(item, copyOperation).await(statusObject -> log.info(String.format("Copy Progress Operation %s progress %f status %s",
                 statusObject.getOperation(),
                 statusObject.getPercentage(),
                 statusObject.getStatus())));

@@ -47,7 +47,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 public class GraphMoveFeature implements Move {
-    private static final Logger logger = LogManager.getLogger(GraphMoveFeature.class);
+    private static final Logger log = LogManager.getLogger(GraphMoveFeature.class);
 
     private final GraphSession session;
     private final Delete delete;
@@ -62,8 +62,8 @@ public class GraphMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(status.isExists()) {
-            if(logger.isWarnEnabled()) {
-                logger.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
             }
             delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
         }
