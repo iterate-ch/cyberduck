@@ -15,12 +15,15 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -60,5 +63,12 @@ public class SMBDeleteFeature implements Delete {
     @Override
     public EnumSet<Flags> features() {
         return EnumSet.of(Flags.recursive);
+    }
+
+    @Override
+    public void preflight(final Path file) throws BackgroundException {
+        if(file.isVolume()) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
+        }
     }
 }
