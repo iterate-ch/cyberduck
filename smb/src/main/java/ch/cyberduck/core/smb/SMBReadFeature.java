@@ -64,9 +64,11 @@ public class SMBReadFeature implements Read {
             return new SMBInputStream(stream, share, entry);
         }
         catch(SMBRuntimeException e) {
+            session.releaseShare(share);
             throw new SMBExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
+            session.releaseShare(share);
             throw new SMBTransportExceptionMappingService().map("Download {0} failed", e, file);
         }
     }

@@ -62,6 +62,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             return new VoidStatusOutputStream(new SMBOutputStream(entry.getOutputStream(), share, entry));
         }
         catch(SMBRuntimeException e) {
+            session.releaseShare(share);
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
