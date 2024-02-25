@@ -57,6 +57,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.SMBClient;
@@ -95,6 +97,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     private final class DiskSharePoolObjectFactory extends BasePooledObjectFactory<DiskShare> {
         private final String shareName;
+        private final Lock lock = new ReentrantLock();
 
         public DiskSharePoolObjectFactory(final String shareName) {
             this.shareName = shareName;
@@ -120,12 +123,19 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
 
         @Override
-        public void passivateObject(final PooledObject<DiskShare> object) {
+        public void passivateObject(final PooledObject<DiskShare> object) throws BackgroundException {
             final DiskShare share = object.getObject();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Passivate share %s", share));
             }
-            // Keep connected
+            try {
+                lock.unlock();
+            }
+            catch(IllegalMonitorStateException e) {
+                // Not held by current thread
+                log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                throw new DefaultExceptionMappingService().map(e);
+            }
         }
 
         @Override
@@ -135,6 +145,18 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                 log.debug(String.format("Destroy share %s", share));
             }
             share.close();
+        }
+
+        @Override
+        public void activateObject(final PooledObject<DiskShare> object) {
+            final DiskShare share = object.getObject();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtain lock for share %s", share));
+            }
+            lock.lock();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtained lock for share %s", share));
+            }
         }
     }
 
