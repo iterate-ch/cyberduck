@@ -33,8 +33,8 @@ import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.*;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -82,7 +82,7 @@ public abstract class Session<C> implements TranscriptListener {
         if(host.getCredentials().isAnonymousLogin()) {
             return false;
         }
-        final Preferences preferences = PreferencesFactory.get();
+        final PreferencesReader preferences = new HostPreferences(host);
         if(preferences.getBoolean(String.format("connection.unsecure.%s", host.getHostname()))) {
             return false;
         }

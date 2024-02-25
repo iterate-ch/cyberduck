@@ -15,6 +15,7 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -151,6 +152,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withSoTimeout(new HostPreferences(host).getLong("smb.socket.timeout"), TimeUnit.SECONDS)
                     .withAuthenticators(new NtlmAuthenticator.Factory())
                     .withDfsEnabled(new HostPreferences(host).getBoolean("smb.dfs.enable"))
+                    .withEncryptData(new HostPreferences(host).getBoolean("smb.encrypt.enable"))
                     .withSigningRequired(new HostPreferences(host).getBoolean("smb.signing.required"))
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
                     .withMultiProtocolNegotiate(new HostPreferences(host).getBoolean("smb.protocol.negotiate.enable"))
@@ -164,6 +166,14 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         catch(IOException e) {
             throw new SMBTransportExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public boolean alert(final ConnectionCallback callback) throws BackgroundException {
+        if(client.getConnectionContext().supportsEncryption()) {
+            return false;
+        }
+        return super.alert(callback);
     }
 
     @Override
