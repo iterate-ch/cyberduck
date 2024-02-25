@@ -120,10 +120,10 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
 
         @Override
-        public void passivateObject(final PooledObject<DiskShare> object) throws IOException {
+        public void passivateObject(final PooledObject<DiskShare> object) {
             final DiskShare share = object.getObject();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Keep share %s", share));
+                log.debug(String.format("Passivate share %s", share));
             }
             // Keep connected
         }
@@ -199,13 +199,17 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             final GenericObjectPool<DiskShare> pool = pools.getOrDefault(shareName,
                     new DiskSharePool(shareName));
             if(pool.getNumIdle() == 0) {
-                log.warn(String.format("No idle share for %s", shareName));
+                log.warn(String.format("No idle share for %s with %d active", shareName, pool.getNumActive()));
             }
             pools.putIfAbsent(shareName, pool);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Open share %s in thread %s", shareName, Thread.currentThread().getName()));
             }
-            return pool.borrowObject();
+            final DiskShare share = pool.borrowObject();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Opened share %s in thread %s", share, Thread.currentThread().getName()));
+            }
+            return share;
         }
         catch(BackgroundException e) {
             throw e;
@@ -216,17 +220,17 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     public void releaseShare(final DiskShare share) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Release share %s", share));
-        }
         final String shareName = share.getSmbPath().getShareName();
         if(pools.containsKey(shareName)) {
             try {
                 final GenericObjectPool<DiskShare> pool = pools.get(shareName);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Release share %s in thread %s", shareName, Thread.currentThread().getName()));
+                    log.debug(String.format("Release share %s in thread %s", share, Thread.currentThread().getName()));
                 }
                 pool.returnObject(share);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Released share %s in thread %s", share, Thread.currentThread().getName()));
+                }
             }
             catch(IllegalStateException e) {
                 log.warn(String.format("Failure %s releasing share %s", e, share));
