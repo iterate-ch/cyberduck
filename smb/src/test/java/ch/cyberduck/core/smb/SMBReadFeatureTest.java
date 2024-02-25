@@ -36,8 +36,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 
@@ -107,5 +113,42 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
             assertArrayEquals(reference, buffer.toByteArray());
         }
         new SMBDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testReadWriteConcurrency() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final ExecutorService executor = Executors.newFixedThreadPool(50);
+        final List<Future<Object>> results = new ArrayList<>();
+        for(int i = 0; i < 100; i++) {
+            final Future<Object> submitted = executor.submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    final TransferStatus status = new TransferStatus();
+                    final int length = 274;
+                    final byte[] content = RandomUtils.nextBytes(length);
+                    status.setLength(content.length);
+                    final Path folder = new SMBDirectoryFeature(session).mkdir(
+                            new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                    final Path test = new SMBTouchFeature(session).touch(
+                            new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                    final Write writer = new SMBWriteFeature(session);
+                    status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
+                    final OutputStream out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+                    assertNotNull(out);
+                    new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+                    final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+                    final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+                    new StreamCopier(status, status).transfer(in, buffer);
+                    assertArrayEquals(content, buffer.toByteArray());
+                    return null;
+                }
+            });
+            results.add(submitted);
+        }
+        for(Future<Object> result : results) {
+            result.get();
+        }
+        executor.shutdown();
     }
 }
