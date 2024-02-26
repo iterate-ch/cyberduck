@@ -97,6 +97,10 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     private final class DiskSharePoolObjectFactory extends BasePooledObjectFactory<DiskShare> {
         private final String shareName;
+
+        /**
+         * Single lock to access disk share of same name created by this pool
+         */
         private final Lock lock = new ReentrantLock();
 
         public DiskSharePoolObjectFactory(final String shareName) {
@@ -106,6 +110,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         @Override
         public DiskShare create() throws BackgroundException {
             try {
+                // Share returned is cached in tree connect table internally
                 final Share share = session.connectShare(shareName);
                 if(share instanceof DiskShare) {
                     return (DiskShare) share;
