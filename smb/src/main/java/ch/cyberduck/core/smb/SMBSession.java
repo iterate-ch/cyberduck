@@ -147,7 +147,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         public void destroyObject(final PooledObject<DiskShare> object) throws IOException {
             final DiskShare share = object.getObject();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Destroy share %s", share));
+                log.debug(String.format("Close share %s", share));
             }
             share.close();
         }
