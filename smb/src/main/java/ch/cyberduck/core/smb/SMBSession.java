@@ -83,6 +83,11 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
      */
     private final Map<String, GenericObjectPool<DiskShare>> pools = new ConcurrentHashMap<>();
 
+    /**
+     * Synchronize access to pools
+     */
+    private final Lock lock = new ReentrantLock();
+
     private final class DiskSharePool extends GenericObjectPool<DiskShare> {
         public DiskSharePool(final String shareName) {
             super(new DiskSharePoolObjectFactory(shareName));
@@ -222,21 +227,27 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     public DiskShare openShare(final Path file) throws BackgroundException {
         try {
-            final String shareName = containerService.getContainer(file).getName();
-            final GenericObjectPool<DiskShare> pool = pools.getOrDefault(shareName,
-                    new DiskSharePool(shareName));
-            if(pool.getNumIdle() == 0) {
-                log.warn(String.format("No idle share for %s with %d active", shareName, pool.getNumActive()));
+            lock.lock();
+            try {
+                final String shareName = containerService.getContainer(file).getName();
+                final GenericObjectPool<DiskShare> pool = pools.getOrDefault(shareName,
+                        new DiskSharePool(shareName));
+                if(pool.getNumIdle() == 0) {
+                    log.warn(String.format("No idle share for %s with %d active", shareName, pool.getNumActive()));
+                }
+                pools.putIfAbsent(shareName, pool);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Open share %s in thread %s", shareName, Thread.currentThread().getName()));
+                }
+                final DiskShare share = pool.borrowObject();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Opened share %s in thread %s", share, Thread.currentThread().getName()));
+                }
+                return share;
             }
-            pools.putIfAbsent(shareName, pool);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Open share %s in thread %s", shareName, Thread.currentThread().getName()));
+            finally {
+                lock.unlock();
             }
-            final DiskShare share = pool.borrowObject();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Opened share %s in thread %s", share, Thread.currentThread().getName()));
-            }
-            return share;
         }
         catch(BackgroundException e) {
             throw e;
@@ -248,30 +259,36 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     public void releaseShare(final DiskShare share) throws BackgroundException {
         final String shareName = share.getSmbPath().getShareName();
-        if(pools.containsKey(shareName)) {
-            try {
-                final GenericObjectPool<DiskShare> pool = pools.get(shareName);
+        lock.lock();
+        try {
+            final GenericObjectPool<DiskShare> pool = pools.get(shareName);
+            if(null != pool) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Release share %s in thread %s", share, Thread.currentThread().getName()));
                 }
-                pool.returnObject(share);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Released share %s in thread %s", share, Thread.currentThread().getName()));
+                try {
+                    pool.returnObject(share);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Released share %s in thread %s", share, Thread.currentThread().getName()));
+                    }
+                }
+                catch(IllegalStateException e) {
+                    log.warn(String.format("Failure %s releasing share %s", e, share));
+                    throw new BackgroundException(e);
                 }
             }
-            catch(IllegalStateException e) {
-                log.warn(String.format("Failure %s releasing share %s", e, share));
-                throw new BackgroundException(e);
+            else {
+                log.warn(String.format("Close stale share %s", share));
+                try {
+                    share.close();
+                }
+                catch(IOException e) {
+                    // Ignore
+                }
             }
         }
-        else {
-            log.warn(String.format("Close stale share %s", share));
-            try {
-                share.close();
-            }
-            catch(IOException e) {
-                // Ignore
-            }
+        finally {
+            lock.unlock();
         }
     }
 
