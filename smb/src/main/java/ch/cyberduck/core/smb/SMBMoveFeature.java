@@ -69,7 +69,8 @@ public class SMBMoveFeature implements Move {
         finally {
             session.releaseShare(share);
         }
-        return target;
+        // Copy original file attributes
+        return target.withAttributes(source.attributes());
     }
 
     @Override

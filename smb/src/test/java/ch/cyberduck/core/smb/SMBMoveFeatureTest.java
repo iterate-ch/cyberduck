@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -43,6 +44,8 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new SMBTouchFeature(session).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final PathAttributes attr = new SMBAttributesFinderFeature(session).find(file);
+        assertEquals(file.attributes(), attr);
 
         // rename file
         final Path fileRenamed = new SMBMoveFeature(session).move(file, new Path(folder,
@@ -51,6 +54,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
 
         assertFalse(new SMBFindFeature(session).find(file));
         assertTrue(new SMBFindFeature(session).find(fileRenamed));
+        assertEquals(file.attributes(), fileRenamed.attributes());
         assertEquals(file.attributes(), new SMBAttributesFinderFeature(session).find(fileRenamed));
 
         // rename folder
