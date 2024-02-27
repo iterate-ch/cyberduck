@@ -61,26 +61,49 @@ public class SMBReadFeature implements Read {
             if(status.isAppend()) {
                 stream.skip(status.getOffset());
             }
-            return new SMBInputStream(stream, share, entry);
+            return new SMBInputStream(file, stream, entry);
         }
         catch(SMBRuntimeException e) {
-            session.releaseShare(share);
             throw new SMBExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
-            session.releaseShare(share);
             throw new SMBTransportExceptionMappingService().map("Download {0} failed", e, file);
+        }
+        finally {
+            session.releaseShare(share);
         }
     }
 
     private final class SMBInputStream extends ProxyInputStream {
-        private final DiskShare share;
+        private final Path file;
         private final File handle;
 
-        public SMBInputStream(final InputStream stream, final DiskShare share, final File handle) {
+        private DiskShare share;
+
+        public SMBInputStream(final Path file, final InputStream stream, final File handle) {
             super(stream);
-            this.share = share;
+            this.file = file;
             this.handle = handle;
+        }
+
+        @Override
+        protected void beforeRead(final int n) throws IOException {
+            try {
+                share = session.openShare(file);
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
+            }
+        }
+
+        @Override
+        protected void afterRead(final int n) throws IOException {
+            try {
+                session.releaseShare(share);
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
+            }
         }
 
         @Override
@@ -95,14 +118,6 @@ public class SMBReadFeature implements Read {
             }
             catch(SMBRuntimeException e) {
                 throw new IOException(e);
-            }
-            finally {
-                try {
-                    session.releaseShare(share);
-                }
-                catch(BackgroundException ignore) {
-                    log.warn(String.format("Ignore failure %s releasing share %s", ignore, share));
-                }
             }
         }
     }

@@ -59,22 +59,46 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     status.isExists() ? SMB2CreateDisposition.FILE_OVERWRITE : SMB2CreateDisposition.FILE_CREATE,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-            return new VoidStatusOutputStream(new SMBOutputStream(entry.getOutputStream(), share, entry));
+            return new VoidStatusOutputStream(new SMBOutputStream(file, entry.getOutputStream(), entry));
         }
         catch(SMBRuntimeException e) {
-            session.releaseShare(share);
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+        finally {
+            session.releaseShare(share);
         }
     }
 
     private final class SMBOutputStream extends ProxyOutputStream {
-        private final DiskShare share;
+        private final Path file;
         private final File handle;
 
-        public SMBOutputStream(final OutputStream stream, final DiskShare share, final File handle) {
+        private DiskShare share;
+
+        public SMBOutputStream(final Path file, final OutputStream stream, final File handle) {
             super(stream);
-            this.share = share;
+            this.file = file;
             this.handle = handle;
+        }
+
+        @Override
+        protected void beforeWrite(final int n) throws IOException {
+            try {
+                share = session.openShare(file);
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
+            }
+        }
+
+        @Override
+        protected void afterWrite(final int n) throws IOException {
+            try {
+                session.releaseShare(share);
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
+            }
         }
 
         @Override
@@ -90,14 +114,6 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             }
             catch(SMBRuntimeException e) {
                 throw new IOException(e);
-            }
-            finally {
-                try {
-                    session.releaseShare(share);
-                }
-                catch(BackgroundException ignore) {
-                    log.warn(String.format("Ignore failure %s releasing share %s", ignore, share));
-                }
             }
         }
     }
