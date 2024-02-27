@@ -173,7 +173,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
             }
             else {
-                    session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
+                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
             }
         }
         catch(ServiceException e) {
