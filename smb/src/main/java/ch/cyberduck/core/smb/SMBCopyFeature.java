@@ -66,6 +66,7 @@ public class SMBCopyFeature implements Copy {
                          Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
                 sourceFile.remoteCopyTo(targetFile);
             }
+            listener.sent(status.getLength());
         }
         catch(IOException e) {
             throw new SMBTransportExceptionMappingService().map("Cannot copy {0}", e, source);
