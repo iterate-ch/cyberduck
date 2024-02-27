@@ -16,7 +16,6 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
@@ -128,7 +127,7 @@ public class EueCopyFeature implements Copy {
                     }
                 }
             }
-            return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));
+            return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target));
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map("Cannot copy {0}", e, file);
