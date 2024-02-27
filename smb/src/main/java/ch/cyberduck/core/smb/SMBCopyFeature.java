@@ -37,7 +37,6 @@ import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.protocol.commons.buffer.Buffer.BufferException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBCopyFeature implements Copy {
@@ -51,15 +50,15 @@ public class SMBCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status,
                      final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
-        final DiskShare share = session.openShare(source);
+        final SMBSession.DiskShareWrapper share = session.openShare(source);
         try {
-            try (final File sourceFile = share.openFile(new SMBPathContainerService(session).getKey(source),
+            try (final File sourceFile = share.get().openFile(new SMBPathContainerService(session).getKey(source),
                     new HashSet<>(Arrays.asList(AccessMask.FILE_READ_DATA, AccessMask.FILE_READ_ATTRIBUTES)),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-                 final File targetFile = share.openFile(new SMBPathContainerService(session).getKey(target),
+                 final File targetFile = share.get().openFile(new SMBPathContainerService(session).getKey(target),
                          Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                          Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                          Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),

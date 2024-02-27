@@ -34,7 +34,6 @@ import java.util.Set;
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBListService implements ListService {
     private static final Logger log = LogManager.getLogger(SMBListService.class);
@@ -53,10 +52,10 @@ public class SMBListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> result = new AttributedList<>();
         try {
-            final DiskShare share = session.openShare(directory);
+            final SMBSession.DiskShareWrapper share = session.openShare(directory);
             final List<FileIdBothDirectoryInformation> info;
             try {
-                info = share.list(new SMBPathContainerService(session).getKey(directory));
+                info = share.get().list(new SMBPathContainerService(session).getKey(directory));
             }
             finally {
                 session.releaseShare(share);

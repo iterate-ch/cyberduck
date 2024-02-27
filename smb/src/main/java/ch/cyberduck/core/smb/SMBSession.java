@@ -81,17 +81,37 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     /**
      * Disk share pool per share name
      */
-    private final Map<String, GenericObjectPool<DiskShare>> pools = new ConcurrentHashMap<>();
+    private final Map<String, GenericObjectPool<DiskShareWrapper>> pools = new ConcurrentHashMap<>();
 
     /**
      * Synchronize access to pools
      */
     private final Lock lock = new ReentrantLock();
 
-    private final class DiskSharePool extends GenericObjectPool<DiskShare> {
+    public static final class DiskShareWrapper {
+        private final DiskShare share;
+
+        private DiskShareWrapper(DiskShare share) {
+            this.share = share;
+        }
+
+        public DiskShare get() {
+            return share;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("DiskShareWrapper{");
+            sb.append("share=").append(share);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    private final class DiskSharePool extends GenericObjectPool<DiskShareWrapper> {
         public DiskSharePool(final String shareName) {
             super(new DiskSharePoolObjectFactory(shareName));
-            final GenericObjectPoolConfig<DiskShare> config = new GenericObjectPoolConfig<>();
+            final GenericObjectPoolConfig<DiskShareWrapper> config = new GenericObjectPoolConfig<>();
             config.setJmxEnabled(false);
             config.setBlockWhenExhausted(true);
             config.setMaxIdle(1);
@@ -100,7 +120,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
     }
 
-    private final class DiskSharePoolObjectFactory extends BasePooledObjectFactory<DiskShare> {
+    private final class DiskSharePoolObjectFactory extends BasePooledObjectFactory<DiskShareWrapper> {
         private final String shareName;
 
         /**
@@ -113,12 +133,12 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
 
         @Override
-        public DiskShare create() throws BackgroundException {
+        public DiskShareWrapper create() throws BackgroundException {
             try {
                 // Share returned is cached in tree connect table internally
                 final Share share = session.connectShare(shareName);
                 if(share instanceof DiskShare) {
-                    return (DiskShare) share;
+                    return new DiskShareWrapper((DiskShare) share);
                 }
                 throw new UnsupportedException(String.format("Unsupported share %s", share.getSmbPath().getShareName()));
             }
@@ -128,13 +148,13 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
 
         @Override
-        public PooledObject<DiskShare> wrap(final DiskShare share) {
+        public PooledObject<DiskShareWrapper> wrap(final DiskShareWrapper share) {
             return new DefaultPooledObject<>(share);
         }
 
         @Override
-        public void passivateObject(final PooledObject<DiskShare> object) throws BackgroundException {
-            final DiskShare share = object.getObject();
+        public void passivateObject(final PooledObject<DiskShareWrapper> object) throws BackgroundException {
+            final DiskShareWrapper share = object.getObject();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Passivate share %s", share));
             }
@@ -149,8 +169,8 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
 
         @Override
-        public void activateObject(final PooledObject<DiskShare> object) {
-            final DiskShare share = object.getObject();
+        public void activateObject(final PooledObject<DiskShareWrapper> object) {
+            final DiskShareWrapper share = object.getObject();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtain lock for share %s", share));
             }
@@ -216,29 +236,29 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
     }
 
-    public DiskShare openShare(final Path file) throws BackgroundException {
+    public DiskShareWrapper openShare(final Path file) throws BackgroundException {
         try {
+            final String shareName = containerService.getContainer(file).getName();
+            final GenericObjectPool<DiskShareWrapper> pool;
             lock.lock();
             try {
-                final String shareName = containerService.getContainer(file).getName();
-                final GenericObjectPool<DiskShare> pool = pools.getOrDefault(shareName,
-                        new DiskSharePool(shareName));
+                pool = pools.getOrDefault(shareName, new DiskSharePool(shareName));
                 if(pool.getNumIdle() == 0) {
                     log.warn(String.format("No idle share for %s with %d active", shareName, pool.getNumActive()));
                 }
                 pools.putIfAbsent(shareName, pool);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Open share %s in thread %s", shareName, Thread.currentThread().getName()));
-                }
-                final DiskShare share = pool.borrowObject();
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Opened share %s in thread %s", share, Thread.currentThread().getName()));
-                }
-                return share;
             }
             finally {
                 lock.unlock();
             }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Open share %s in thread %s", shareName, Thread.currentThread().getName()));
+            }
+            final DiskShareWrapper wrapper = pool.borrowObject();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Opened share %s in thread %s", wrapper, Thread.currentThread().getName()));
+            }
+            return wrapper;
         }
         catch(BackgroundException e) {
             throw e;
@@ -248,11 +268,11 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
     }
 
-    public void releaseShare(final DiskShare share) throws BackgroundException {
-        final String shareName = share.getSmbPath().getShareName();
+    public void releaseShare(final DiskShareWrapper share) throws BackgroundException {
+        final String shareName = share.get().getSmbPath().getShareName();
         lock.lock();
         try {
-            final GenericObjectPool<DiskShare> pool = pools.get(shareName);
+            final GenericObjectPool<DiskShareWrapper> pool = pools.get(shareName);
             if(null != pool) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Release share %s in thread %s", share, Thread.currentThread().getName()));
@@ -266,15 +286,6 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                 catch(IllegalStateException e) {
                     log.warn(String.format("Failure %s releasing share %s", e, share));
                     throw new BackgroundException(e);
-                }
-            }
-            else {
-                log.warn(String.format("Close stale share %s", share));
-                try {
-                    share.close();
-                }
-                catch(IOException e) {
-                    // Ignore
                 }
             }
         }

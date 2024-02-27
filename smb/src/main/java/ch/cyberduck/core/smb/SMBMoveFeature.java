@@ -36,7 +36,6 @@ import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.common.SmbPath;
 import com.hierynomus.smbj.share.DiskEntry;
-import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBMoveFeature implements Move {
 
@@ -53,15 +52,15 @@ public class SMBMoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Callback delete, final ConnectionCallback prompt) throws BackgroundException {
-        final DiskShare share = session.openShare(source);
+        final SMBSession.DiskShareWrapper share = session.openShare(source);
         try {
-            try (DiskEntry file = share.open(new SMBPathContainerService(session).getKey(source),
+            try (DiskEntry file = share.get().open(new SMBPathContainerService(session).getKey(source),
                     Collections.singleton(AccessMask.DELETE),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(source.isDirectory() ? SMB2CreateOptions.FILE_DIRECTORY_FILE : SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
-                file.rename(new SmbPath(share.getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
+                file.rename(new SmbPath(share.get().getSmbPath(), new SMBPathContainerService(session).getKey(target)).getPath(), status.isExists());
             }
         }
         catch(SMBRuntimeException e) {

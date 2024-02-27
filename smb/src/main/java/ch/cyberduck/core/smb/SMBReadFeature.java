@@ -35,7 +35,6 @@ import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBReadFeature implements Read {
@@ -49,9 +48,9 @@ public class SMBReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DiskShare share = session.openShare(file);
+        final SMBSession.DiskShareWrapper share = session.openShare(file);
         try {
-            final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
+            final File entry = share.get().openFile(new SMBPathContainerService(session).getKey(file),
                     Collections.singleton(AccessMask.FILE_READ_DATA),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
@@ -78,7 +77,7 @@ public class SMBReadFeature implements Read {
         private final Path file;
         private final File handle;
 
-        private DiskShare share;
+        private SMBSession.DiskShareWrapper share;
 
         public SMBInputStream(final Path file, final InputStream stream, final File handle) {
             super(stream);

@@ -31,7 +31,6 @@ import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.Directory;
-import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBTimestampFeature extends DefaultTimestampFeature {
@@ -44,10 +43,10 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        final DiskShare share = session.openShare(file);
+        final SMBSession.DiskShareWrapper share = session.openShare(file);
         try {
             if(file.isDirectory()) {
-                try (final Directory entry = share.openDirectory(new SMBPathContainerService(session).getKey(file),
+                try (final Directory entry = share.get().openDirectory(new SMBPathContainerService(session).getKey(file),
                         Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_DIRECTORY),
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
@@ -63,7 +62,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                 }
             }
             else {
-                try (final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
+                try (final File entry = share.get().openFile(new SMBPathContainerService(session).getKey(file),
                         Collections.singleton(AccessMask.FILE_WRITE_ATTRIBUTES),
                         Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                         Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),

@@ -28,7 +28,6 @@ import java.util.EnumSet;
 import java.util.Map;
 
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBDeleteFeature implements Delete {
 
@@ -42,13 +41,13 @@ public class SMBDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files.keySet()) {
             callback.delete(file);
-            final DiskShare share = session.openShare(file);
+            final SMBSession.DiskShareWrapper share = session.openShare(file);
             try {
                 if(file.isFile() || file.isSymbolicLink()) {
-                    share.rm(new SMBPathContainerService(session).getKey(file));
+                    share.get().rm(new SMBPathContainerService(session).getKey(file));
                 }
                 else if(file.isDirectory()) {
-                    share.rmdir(new SMBPathContainerService(session).getKey(file), true);
+                    share.get().rmdir(new SMBPathContainerService(session).getKey(file), true);
                 }
             }
             catch(SMBRuntimeException e) {
