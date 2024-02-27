@@ -18,9 +18,9 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
@@ -39,7 +39,7 @@ import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
 
-public class SMBWriteFeature extends AppendWriteFeature<Void> {
+public class SMBWriteFeature implements Write<Void> {
     private static final Logger log = LogManager.getLogger(SMBWriteFeature.class);
 
     private final SMBSession session;
@@ -66,6 +66,11 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
         finally {
             session.releaseShare(share);
         }
+    }
+
+    @Override
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     private final class SMBOutputStream extends ProxyOutputStream {
