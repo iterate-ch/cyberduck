@@ -37,8 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DAVCopyFeatureTest extends AbstractDAVTest {
@@ -46,9 +45,12 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
     @Test
     public void testCopyFile() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVTouchFeature(session).touch(test, new TransferStatus());
+        final Path source = new DAVTouchFeature(session).touch(test, new TransferStatus());
+        assertEquals(source.attributes(), new DAVAttributesFinderFeature(session).find(source));
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        final Path target = new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertEquals(source.attributes(), target.attributes());
+        assertEquals(target.attributes(), new DAVAttributesFinderFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(copy));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
