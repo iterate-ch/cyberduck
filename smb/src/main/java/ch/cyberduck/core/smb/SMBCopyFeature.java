@@ -37,7 +37,6 @@ import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.protocol.commons.buffer.Buffer.BufferException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
 public class SMBCopyFeature implements Copy {
@@ -51,15 +50,15 @@ public class SMBCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status,
                      final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
-        final DiskShare share = session.openShare(source);
+        final SMBSession.DiskShareWrapper share = session.openShare(source);
         try {
-            try (final File sourceFile = share.openFile(new SMBPathContainerService(session).getKey(source),
+            try (final File sourceFile = share.get().openFile(new SMBPathContainerService(session).getKey(source),
                     new HashSet<>(Arrays.asList(AccessMask.FILE_READ_DATA, AccessMask.FILE_READ_ATTRIBUTES)),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     SMB2CreateDisposition.FILE_OPEN,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-                 final File targetFile = share.openFile(new SMBPathContainerService(session).getKey(target),
+                 final File targetFile = share.get().openFile(new SMBPathContainerService(session).getKey(target),
                          Collections.singleton(AccessMask.MAXIMUM_ALLOWED),
                          Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                          Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
@@ -67,6 +66,7 @@ public class SMBCopyFeature implements Copy {
                          Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
                 sourceFile.remoteCopyTo(targetFile);
             }
+            listener.sent(status.getLength());
         }
         catch(IOException e) {
             throw new SMBTransportExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -80,11 +80,14 @@ public class SMBCopyFeature implements Copy {
         finally {
             session.releaseShare(share);
         }
-        return target;
+        return target.withAttributes(new SMBAttributesFinderFeature(session).find(target));
     }
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(source.isVolume()) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+        }
         final SMBPathContainerService containerService = new SMBPathContainerService(session);
         // Remote copy is only possible between files on the same server
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {

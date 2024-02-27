@@ -22,7 +22,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBDirectoryFeature implements Directory<Integer> {
 
@@ -34,9 +33,9 @@ public class SMBDirectoryFeature implements Directory<Integer> {
 
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-        final DiskShare share = session.openShare(folder);
+        final SMBSession.DiskShareWrapper share = session.openShare(folder);
         try {
-            share.mkdir(new SMBPathContainerService(session).getKey(folder));
+            share.get().mkdir(new SMBPathContainerService(session).getKey(folder));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot create folder {0}", e, folder);

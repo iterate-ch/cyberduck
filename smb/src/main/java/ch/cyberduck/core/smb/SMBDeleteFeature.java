@@ -15,17 +15,19 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Map;
 
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBDeleteFeature implements Delete {
 
@@ -39,13 +41,13 @@ public class SMBDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files.keySet()) {
             callback.delete(file);
-            final DiskShare share = session.openShare(file);
+            final SMBSession.DiskShareWrapper share = session.openShare(file);
             try {
                 if(file.isFile() || file.isSymbolicLink()) {
-                    share.rm(new SMBPathContainerService(session).getKey(file));
+                    share.get().rm(new SMBPathContainerService(session).getKey(file));
                 }
                 else if(file.isDirectory()) {
-                    share.rmdir(new SMBPathContainerService(session).getKey(file), true);
+                    share.get().rmdir(new SMBPathContainerService(session).getKey(file), true);
                 }
             }
             catch(SMBRuntimeException e) {
@@ -60,5 +62,12 @@ public class SMBDeleteFeature implements Delete {
     @Override
     public EnumSet<Flags> features() {
         return EnumSet.of(Flags.recursive);
+    }
+
+    @Override
+    public void preflight(final Path file) throws BackgroundException {
+        if(file.isVolume()) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
+        }
     }
 }

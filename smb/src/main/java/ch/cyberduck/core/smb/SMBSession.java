@@ -58,6 +58,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.SMBClient;
@@ -80,33 +82,64 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     /**
      * Disk share pool per share name
      */
-    private final Map<String, GenericObjectPool<DiskShare>> pools = new ConcurrentHashMap<>();
+    private final Map<String, GenericObjectPool<DiskShareWrapper>> pools = new ConcurrentHashMap<>();
 
-    private final class DiskSharePool extends GenericObjectPool<DiskShare> {
+    /**
+     * Synchronize access to pools
+     */
+    private final Lock lock = new ReentrantLock();
+
+    public static final class DiskShareWrapper {
+        private final DiskShare share;
+
+        private DiskShareWrapper(DiskShare share) {
+            this.share = share;
+        }
+
+        public DiskShare get() {
+            return share;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("DiskShareWrapper{");
+            sb.append("share=").append(share);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    private final class DiskSharePool extends GenericObjectPool<DiskShareWrapper> {
         public DiskSharePool(final String shareName) {
             super(new DiskSharePoolObjectFactory(shareName));
-            final GenericObjectPoolConfig<DiskShare> config = new GenericObjectPoolConfig<>();
+            final GenericObjectPoolConfig<DiskShareWrapper> config = new GenericObjectPoolConfig<>();
             config.setJmxEnabled(false);
             config.setBlockWhenExhausted(true);
             config.setMaxIdle(1);
-            config.setMaxTotal(1);
+            config.setMaxTotal(Integer.MAX_VALUE);
             this.setConfig(config);
         }
     }
 
-    private final class DiskSharePoolObjectFactory extends BasePooledObjectFactory<DiskShare> {
+    private final class DiskSharePoolObjectFactory extends BasePooledObjectFactory<DiskShareWrapper> {
         private final String shareName;
+
+        /**
+         * Single lock to access disk share of same name created by this pool
+         */
+        private final Lock lock = new ReentrantLock();
 
         public DiskSharePoolObjectFactory(final String shareName) {
             this.shareName = shareName;
         }
 
         @Override
-        public DiskShare create() throws BackgroundException {
+        public DiskShareWrapper create() throws BackgroundException {
             try {
+                // Share returned is cached in tree connect table internally
                 final Share share = session.connectShare(shareName);
                 if(share instanceof DiskShare) {
-                    return (DiskShare) share;
+                    return new DiskShareWrapper((DiskShare) share);
                 }
                 throw new UnsupportedException(String.format("Unsupported share %s", share.getSmbPath().getShareName()));
             }
@@ -116,26 +149,36 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
 
         @Override
-        public PooledObject<DiskShare> wrap(final DiskShare share) {
+        public PooledObject<DiskShareWrapper> wrap(final DiskShareWrapper share) {
             return new DefaultPooledObject<>(share);
         }
 
         @Override
-        public void passivateObject(final PooledObject<DiskShare> object) throws IOException {
-            final DiskShare share = object.getObject();
+        public void passivateObject(final PooledObject<DiskShareWrapper> object) throws BackgroundException {
+            final DiskShareWrapper share = object.getObject();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Keep share %s", share));
+                log.debug(String.format("Passivate share %s", share));
             }
-            // Keep connected
+            try {
+                lock.unlock();
+            }
+            catch(IllegalMonitorStateException e) {
+                // Not held by current thread
+                log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                throw new DefaultExceptionMappingService().map(e);
+            }
         }
 
         @Override
-        public void destroyObject(final PooledObject<DiskShare> object) throws IOException {
-            final DiskShare share = object.getObject();
+        public void activateObject(final PooledObject<DiskShareWrapper> object) {
+            final DiskShareWrapper share = object.getObject();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Destroy share %s", share));
+                log.debug(String.format("Obtain lock for share %s", share));
             }
-            share.close();
+            lock.lock();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtained lock for share %s", share));
+            }
         }
     }
 
@@ -203,13 +246,29 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
     }
 
-    public DiskShare openShare(final Path file) throws BackgroundException {
+    public DiskShareWrapper openShare(final Path file) throws BackgroundException {
         try {
             final String shareName = containerService.getContainer(file).getName();
-            final GenericObjectPool<DiskShare> pool = pools.getOrDefault(shareName,
-                    new DiskSharePool(shareName));
-            pools.putIfAbsent(shareName, pool);
-            return pool.borrowObject();
+            final GenericObjectPool<DiskShareWrapper> pool;
+            lock.lock();
+            try {
+                pool = pools.getOrDefault(shareName, new DiskSharePool(shareName));
+                if(pool.getNumIdle() == 0) {
+                    log.warn(String.format("No idle share for %s with %d active", shareName, pool.getNumActive()));
+                }
+                pools.putIfAbsent(shareName, pool);
+            }
+            finally {
+                lock.unlock();
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Open share %s in thread %s", shareName, Thread.currentThread().getName()));
+            }
+            final DiskShareWrapper wrapper = pool.borrowObject();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Opened share %s in thread %s", wrapper, Thread.currentThread().getName()));
+            }
+            return wrapper;
         }
         catch(BackgroundException e) {
             throw e;
@@ -219,28 +278,29 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
     }
 
-    public void releaseShare(final DiskShare share) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Release share %s", share));
+    public void releaseShare(final DiskShareWrapper share) throws BackgroundException {
+        final String shareName = share.get().getSmbPath().getShareName();
+        lock.lock();
+        try {
+            final GenericObjectPool<DiskShareWrapper> pool = pools.get(shareName);
+            if(null != pool) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Release share %s in thread %s", share, Thread.currentThread().getName()));
+                }
+                try {
+                    pool.returnObject(share);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Released share %s in thread %s", share, Thread.currentThread().getName()));
+                    }
+                }
+                catch(IllegalStateException e) {
+                    log.warn(String.format("Failure %s releasing share %s", e, share));
+                    throw new BackgroundException(e);
+                }
+            }
         }
-        final String shareName = share.getSmbPath().getShareName();
-        if(pools.containsKey(shareName)) {
-            try {
-                pools.get(shareName).returnObject(share);
-            }
-            catch(IllegalStateException e) {
-                log.warn(String.format("Failure %s releasing share %s", e, share));
-                throw e;
-            }
-        }
-        else {
-            log.warn(String.format("Close stale share %s", share));
-            try {
-                share.close();
-            }
-            catch(IOException e) {
-                // Ignore
-            }
+        finally {
+            lock.unlock();
         }
     }
 

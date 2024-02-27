@@ -28,12 +28,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBListService implements ListService {
     private static final Logger log = LogManager.getLogger(SMBListService.class);
@@ -51,9 +51,16 @@ public class SMBListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> result = new AttributedList<>();
-        final DiskShare share = session.openShare(directory);
         try {
-            for(FileIdBothDirectoryInformation f : share.list(new SMBPathContainerService(session).getKey(directory))) {
+            final SMBSession.DiskShareWrapper share = session.openShare(directory);
+            final List<FileIdBothDirectoryInformation> info;
+            try {
+                info = share.get().list(new SMBPathContainerService(session).getKey(directory));
+            }
+            finally {
+                session.releaseShare(share);
+            }
+            for(FileIdBothDirectoryInformation f : info) {
                 final String filename = f.getFileName();
                 if(filename.equals(".") || filename.equals("..")) {
                     if(log.isDebugEnabled()) {
@@ -85,9 +92,6 @@ public class SMBListService implements ListService {
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Listing directory {0} failed", e, directory);
-        }
-        finally {
-            session.releaseShare(share);
         }
         return result;
     }

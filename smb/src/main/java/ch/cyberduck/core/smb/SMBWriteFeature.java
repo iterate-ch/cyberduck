@@ -18,12 +18,14 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,10 +37,11 @@ import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
-import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
-public class SMBWriteFeature extends AppendWriteFeature<Void> {
+public class SMBWriteFeature implements Write<Void> {
+    private static final Logger log = LogManager.getLogger(SMBWriteFeature.class);
+
     private final SMBSession session;
 
     public SMBWriteFeature(final SMBSession session) {
@@ -47,29 +50,59 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DiskShare share = session.openShare(file);
+        final SMBSession.DiskShareWrapper share = session.openShare(file);
         try {
-            final File entry = share.openFile(new SMBPathContainerService(session).getKey(file),
+            final File entry = share.get().openFile(new SMBPathContainerService(session).getKey(file),
                     Collections.singleton(AccessMask.FILE_WRITE_DATA),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
                     status.isExists() ? SMB2CreateDisposition.FILE_OVERWRITE : SMB2CreateDisposition.FILE_CREATE,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-            return new VoidStatusOutputStream(new SMBOutputStream(entry.getOutputStream(), share, entry));
+            return new VoidStatusOutputStream(new SMBOutputStream(file, entry.getOutputStream(), entry));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
         }
+        finally {
+            session.releaseShare(share);
+        }
+    }
+
+    @Override
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     private final class SMBOutputStream extends ProxyOutputStream {
-        private final DiskShare share;
+        private final Path file;
         private final File handle;
 
-        public SMBOutputStream(final OutputStream stream, final DiskShare share, final File handle) {
+        private SMBSession.DiskShareWrapper share;
+
+        public SMBOutputStream(final Path file, final OutputStream stream, final File handle) {
             super(stream);
-            this.share = share;
+            this.file = file;
             this.handle = handle;
+        }
+
+        @Override
+        protected void beforeWrite(final int n) throws IOException {
+            try {
+                share = session.openShare(file);
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
+            }
+        }
+
+        @Override
+        protected void afterWrite(final int n) throws IOException {
+            try {
+                session.releaseShare(share);
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
+            }
         }
 
         @Override
@@ -85,9 +118,6 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             }
             catch(SMBRuntimeException e) {
                 throw new IOException(e);
-            }
-            finally {
-                session.releaseShare(share);
             }
         }
     }
