@@ -125,9 +125,14 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                     .getCompletedUploadResponse(uploadUri, size, cdash64);
             if(!StringUtils.equals(cdash64, completedUploadResponse.getCdash64())) {
-                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                        MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
+                if(file.getType().contains(Path.Type.encrypted)) {
+                    log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+                }
+                else {
+                    throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                            MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                    HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
+                }
             }
             final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
             // Mark parent status as complete

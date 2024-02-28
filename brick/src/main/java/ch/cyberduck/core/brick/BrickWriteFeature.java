@@ -86,17 +86,22 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                     try {
                         switch(response.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Received response %s for part number %d", response, status.getPart()));
+                                }
                                 // Upload complete
                                 if(response.containsHeader("ETag")) {
-                                    if(log.isInfoEnabled()) {
-                                        log.info(String.format("Received response %s for part number %d", response, status.getPart()));
+                                    if(file.getType().contains(Path.Type.encrypted)) {
+                                        log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                                     }
-                                    if(HashAlgorithm.md5.equals(status.getChecksum().algorithm)) {
-                                        final Checksum etag = Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
-                                        if(!status.getChecksum().equals(etag)) {
-                                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                                            etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
+                                    else {
+                                        if(HashAlgorithm.md5.equals(status.getChecksum().algorithm)) {
+                                            final Checksum etag = Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
+                                            if(!status.getChecksum().equals(etag)) {
+                                                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                                        MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                                                etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
+                                            }
                                         }
                                     }
                                 }
