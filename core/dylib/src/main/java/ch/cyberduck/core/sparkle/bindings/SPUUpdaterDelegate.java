@@ -94,7 +94,7 @@ public interface SPUUpdaterDelegate {
     }
 
     /**
-     * Called immediately after succesfull download of the specified update.
+     * Called immediately after successful download of the specified update.
      *
      * @param updater The SUUpdater instance.
      * @param item    The appcast item corresponding to the update that has been downloaded.

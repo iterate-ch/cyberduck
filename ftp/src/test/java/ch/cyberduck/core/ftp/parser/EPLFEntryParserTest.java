@@ -17,7 +17,7 @@ public class EPLFEntryParserTest {
     private FTPFileEntryParser parser;
 
     @Before
-    public void conigure() {
+    public void configure() {
         this.parser = new FTPParserSelector().getParser("UNIX");
     }
 

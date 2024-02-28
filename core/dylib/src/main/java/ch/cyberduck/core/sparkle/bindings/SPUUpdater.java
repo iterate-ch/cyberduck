@@ -46,7 +46,7 @@ public abstract class SPUUpdater extends NSObject {
     /**
      * This creates an updater, but to start it and schedule update checks -startUpdater: needs to be invoked first.
      *
-     * @param hostBundle        The bundle that should be targetted for updating.
+     * @param hostBundle        The bundle that should be targeted for updating.
      * @param applicationBundle The application bundle that should be waited for termination and relaunched (unless overridden). Usually this can be the same as hostBundle. This may differ when updating a plug-in or other non-application bundle.
      * @param userDriver        The user driver that Sparkle uses for user update interaction.
      * @param delegate          SPUUpdaterDelegate. The delegate for SPUUpdater.

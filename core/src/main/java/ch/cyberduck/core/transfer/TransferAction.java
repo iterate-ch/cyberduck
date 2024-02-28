@@ -183,7 +183,7 @@ public abstract class TransferAction {
     };
 
     /**
-     * Automatically decide the transfer action using the comparision service for paths.
+     * Automatically decide the transfer action using the comparison service for paths.
      */
     public static final TransferAction comparison = new TransferAction("compare") {
         @Override

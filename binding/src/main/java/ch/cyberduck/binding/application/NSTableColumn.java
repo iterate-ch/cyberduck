@@ -195,7 +195,7 @@ public abstract class NSTableColumn extends NSObject {
     public abstract com.sun.jna.Pointer sortDescriptorPrototype();
 
     /**
-     * The resizing mask controls the resizability of a table column.  Compatability Note: This method replaces setResizable.<br>
+     * The resizing mask controls the resizability of a table column.  Compatibility Note: This method replaces setResizable.<br>
      * Original signature : <code>void setResizingMask(NSUInteger)</code><br>
      * <i>native declaration : :78</i>
      */

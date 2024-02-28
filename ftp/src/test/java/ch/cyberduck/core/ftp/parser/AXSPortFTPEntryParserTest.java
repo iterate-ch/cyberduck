@@ -29,7 +29,7 @@ public class AXSPortFTPEntryParserTest {
     private FTPFileEntryParser parser;
 
     @Before
-    public void conigure() {
+    public void configure() {
         this.parser = new FTPParserSelector().getParser("CMX TCP/IP - REMOTE FTP server (version 2.0) ready.");
     }
 

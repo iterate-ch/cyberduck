@@ -47,7 +47,7 @@ public class BufferSegmentingOutputStream extends SegmentingOutputStream {
             log.debug(String.format("Copy buffer %s to output %s", buffer, proxy));
         }
         IOUtils.copy(new BufferInputStream(buffer), proxy);
-        // Re-use buffer
+        // Reuse buffer
         buffer.truncate(0L);
     }
 }

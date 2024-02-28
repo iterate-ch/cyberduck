@@ -8,7 +8,7 @@ https://cyberduck.io/
 - [Bugfix] Crash when opening application (Windows) (#15535)
 
 8.7.2
-- [Bugfix] Missing digest header when commiting large file upload (Box) (#14564)
+- [Bugfix] Missing digest header when committing large file upload (Box) (#14564)
 - [Bugfix] Modification date not set in upload (Dropbox) (#15381)
 - [Bugfix] Setting modification date truncates file (SMB) (#15495)
 
@@ -362,7 +362,7 @@ https://cyberduck.io/
 
 7.8.1
 - [Feature] Provide armhf/aarch64 RPM and DEB packages (CLI, Rasperry Pi, Linux) (#10447)
-- [Bugfix] Missing folers in directory listing (OneDrive, SharePoint)
+- [Bugfix] Missing folders in directory listing (OneDrive, SharePoint)
 - [Bugfix] Interoperability with Tencent Cloud Object Storage (S3)
 - [Bugfix] No file size displayed for files (Google Drive)
 
@@ -1535,7 +1535,7 @@ https://cyberduck.io/
 - [Feature] Copy directory listing to clipboard (#2372)
 - [Feature] Support for thirdparty terminal applications (#2987)
 - [Feature] Change SSH options for open in Terminal.app (#4232)
-- [Feature] Unsecure connection warning when password is transmitted in plaintext
+- [Feature] Insecure connection warning when password is transmitted in plaintext
 - [Feature] Alert to change connection to TLS if server supports AUTH TLS (FTP)
 - [Feature] Edit metadata for multiple files (S3, Google Cloud Storage)
 - [Feature] Menu items to copy HTTP, CDN, signed & authenticated URLs to clipboard (#4207)
@@ -1917,7 +1917,7 @@ https://cyberduck.io/
 - [Bugfix] Cannot login with colon in username (#309)
 - [Bugfix] Cannot delete directory from server (#256)
 - [Bugfix] Permission errors when downloading files from read-only directories (#264)
-- [Bugfix] Change download keyboad shortcut (#277)
+- [Bugfix] Change download keyboard shortcut (#277)
 - [Bugfix] Certain operations trigger change of character encoding to default
 - [Bugfix] Character encoding issues (#238, #333, #361, #390)
 - [Bugfix] Improved compatibility with certain FTP servers

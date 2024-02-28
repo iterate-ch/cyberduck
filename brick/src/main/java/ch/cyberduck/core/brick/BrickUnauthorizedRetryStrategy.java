@@ -70,7 +70,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                     }
                     // Pairing token no longer valid
                     if(!semaphore.tryAcquire()) {
-                        log.warn(String.format("Skip pairing because semaphore cannot be aquired for %s", session));
+                        log.warn(String.format("Skip pairing because semaphore cannot be acquired for %s", session));
                         return false;
                     }
                     try {

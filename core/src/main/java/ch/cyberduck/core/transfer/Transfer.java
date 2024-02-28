@@ -333,7 +333,7 @@ public abstract class Transfer implements Serializable {
     /**
      * @param source      Connection to source server of transfer. May be null.
      * @param destination Connection to target server of transfer
-     * @param files       Files transfered
+     * @param files       Files transferred
      * @param error       Error callback
      * @param listener    Listener
      * @param callback    Prompt

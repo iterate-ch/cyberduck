@@ -93,7 +93,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     /**
      * A bookmark may be member of multiple groups
      *
-     * @param groups Defines group critera for host
+     * @param groups Defines group criteria for host
      * @param filter Filter to apply to result set
      * @return Map of bookmarks grouped by labels
      */

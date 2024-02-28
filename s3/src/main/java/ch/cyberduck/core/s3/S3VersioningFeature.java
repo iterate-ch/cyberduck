@@ -90,7 +90,7 @@ public class S3VersioningFeature implements Versioning {
                 }
                 if(configuration.isEnabled() && !configuration.isMultifactor()) {
                     log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), bucket));
-                    // User has choosen to disable MFA
+                    // User has chosen to disable MFA
                     final Credentials factor2 = this.getToken(prompt);
                     session.getClient().disableMFAForVersionedBucket(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
                             factor2.getUsername(), factor2.getPassword());

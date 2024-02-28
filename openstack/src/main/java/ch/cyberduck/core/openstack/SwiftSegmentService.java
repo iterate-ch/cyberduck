@@ -59,7 +59,7 @@ public class SwiftSegmentService {
             = new ISO8601DateFormatter();
 
     /**
-     * Segement files prefix
+     * Segment files prefix
      */
     private final String prefix;
 

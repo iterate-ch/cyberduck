@@ -36,7 +36,7 @@ public class MigratingSupportDirectoryFinder implements SupportDirectoryFinder {
     private final SupportDirectoryFinder proxy;
 
     /**
-     * @param deprecated Deprecated implemenation providing previous application support folder
+     * @param deprecated Deprecated implementation providing previous application support folder
      */
     public MigratingSupportDirectoryFinder(final SupportDirectoryFinder deprecated, final SupportDirectoryFinder proxy) {
         this.deprecated = deprecated;

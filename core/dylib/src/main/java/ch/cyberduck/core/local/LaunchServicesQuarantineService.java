@@ -41,7 +41,7 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
      *                  downloading the file again if the user chooses to view the origin URL while resolving a quarantine
      *                  warning.
      * @param dataUrl   The URL from which the data for the quarantined item data was
-     *                  actaully streamed or downloaded, if available
+     *                  actually streamed or downloaded, if available
      */
     @Override
     public void setQuarantine(final Local file, final String originUrl, final String dataUrl) throws LocalAccessDeniedException {

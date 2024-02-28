@@ -14,7 +14,7 @@ import java.util.List;
  * This implementation allows to pack some FileEntryParsers together
  * and handle the case where to returned dirstyle isn't clearly defined.
  * The matching parser will be cached.
- * If the cached parser wont match due to the server changed the dirstyle,
+ * If the cached parser won't match due to the server changed the dirstyle,
  * a new matching parser will be searched.
  *
  * @author Mario Ivankovits <mario@ops.co.at>

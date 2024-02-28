@@ -104,10 +104,10 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                             .size(f.status.getLength()).offset(f.status.getOffset()).partId(f.part.getId())).collect(Collectors.toList()));
             final Optional<File> optional = files.getEntries().stream().findFirst();
             if(optional.isPresent()) {
-                final File commited = optional.get();
+                final File committed = optional.get();
                 // Mark parent status as complete
-                status.withResponse(new BoxAttributesFinderFeature(session, fileid).toAttributes(commited)).setComplete();
-                return commited;
+                status.withResponse(new BoxAttributesFinderFeature(session, fileid).toAttributes(committed)).setComplete();
+                return committed;
             }
             throw new NotfoundException(file.getAbsolute());
         }

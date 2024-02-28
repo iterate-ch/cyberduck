@@ -48,7 +48,7 @@ public class NotificationSparkleUpdateHandler implements Handler, NotificationSe
 
     @Override
     public void callback(final String identifier) {
-        // If the notificaton is clicked on, make sure we bring the update in focus
+        // If the notification is clicked on, make sure we bring the update in focus
         // If the app is terminated while the notification is clicked on, this will launch the application and perform a new update check
         if("Updater".equals(identifier)) {
             updater.check(false);

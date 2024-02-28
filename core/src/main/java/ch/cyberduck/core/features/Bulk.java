@@ -24,7 +24,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.util.Map;
 
 /**
- * Alllow to invoke any action required before or after a file transfer
+ * Allow to invoke any action required before or after a file transfer
  */
 @Optional
 public interface Bulk<R> {

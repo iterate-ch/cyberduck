@@ -84,7 +84,7 @@ public class SDSUploadService {
     /**
      * @param file   Remote path
      * @param status Length and modification date for file uploaded
-     * @return Uplaod URI
+     * @return Upload URI
      */
     public CreateFileUploadResponse start(final Path file, final TransferStatus status) throws BackgroundException {
         try {

@@ -135,7 +135,7 @@ public abstract class BundleController extends ProxyController {
     protected boolean awaked;
 
     /**
-     * Called by the runtime after the NIB file has been loaded sucessfully
+     * Called by the runtime after the NIB file has been loaded successfully
      */
     public void awakeFromNib() {
         log.debug("awakeFromNib");

@@ -141,7 +141,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         else if(row.intValue() == size) {
             menu.removeItemAtIndex(row);
-            menu.insertItem_atIndex(this.seperator(), row);
+            menu.insertItem_atIndex(this.separator(), row);
         }
         else if(row.intValue() == size + 1) {
             item.setTitle(LocaleFactory.localizedString("Clear Menu"));

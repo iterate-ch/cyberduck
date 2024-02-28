@@ -97,7 +97,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
             // NoAccess	0
             // ReadOnly	 1
             // ReadWrite 2
-            // Synchronize	4	Read, write access and permission to syncronize using desktop client.
+            // Synchronize	4	Read, write access and permission to synchronize using desktop client.
             // FullControl 99
             final Permission permission;
             if((f.getPermission() & 2) == 2 || (f.getPermission() & 4) == 4) {

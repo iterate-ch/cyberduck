@@ -47,7 +47,7 @@ public class Navigation {
     }
 
     /**
-     * Returns the prevously browsed path and moves it to the forward history
+     * Returns the previously browsed path and moves it to the forward history
      *
      * @return The previously browsed path or null if there is none
      */

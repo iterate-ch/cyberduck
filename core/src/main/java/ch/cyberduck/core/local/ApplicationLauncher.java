@@ -49,7 +49,7 @@ public interface ApplicationLauncher {
     boolean open(Application application, String args);
 
     /**
-     * Post notifiation for file
+     * Post notification for file
      *
      * @param file File on disk
      */

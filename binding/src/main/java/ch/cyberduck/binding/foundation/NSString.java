@@ -510,7 +510,7 @@ public abstract class NSString extends NSObject implements NSCopying {
 
     /**
      * Original signature : <code>BOOL getCString(char*, NSUInteger, NSStringEncoding)</code><br>
-     * NO return if conversion not possible due to encoding errors or too small of a buffer. The buffer should include room for maxBufferCount bytes; this number should accomodate the expected size of the return value plus the NULL termination character, which this method adds. (So note that the maxLength passed to this method is one more than the one you would have passed to the deprecated getCString:maxLength:.)<br>
+     * NO return if conversion not possible due to encoding errors or too small of a buffer. The buffer should include room for maxBufferCount bytes; this number should accommodate the expected size of the return value plus the NULL termination character, which this method adds. (So note that the maxLength passed to this method is one more than the one you would have passed to the deprecated getCString:maxLength:.)<br>
      * <i>from NSStringExtensionMethods native declaration : :192</i>
      */
     public abstract boolean getCString_maxLength_encoding(java.nio.ByteBuffer buffer, NSUInteger maxBufferCount, NSUInteger encoding);

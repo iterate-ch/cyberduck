@@ -266,7 +266,7 @@ public class DispatchExecutorService extends AbstractExecutorService {
 
         /**
          * Get the original <code>Runnable</code> used to create this task,
-         * will simply return <code>this</code> if the task was creaed with a
+         * will simply return <code>this</code> if the task was created with a
          * <code>Callable</code> instead.
          *
          * @return the original Runnable

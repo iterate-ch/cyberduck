@@ -60,7 +60,7 @@ public class RumpusFTPEntryParser extends CommonUnixFTPEntryParser {
     /**
      * The default constructor for a UnixFTPEntryParser object.
      *
-     * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
+     * @throws IllegalArgumentException Thrown if the regular expression is unparsable.  Should not be seen
      *                                  under normal conditions.  It it is seen, this is a sign that
      *                                  <code>REGEX</code> is  not a valid regular expression.
      */

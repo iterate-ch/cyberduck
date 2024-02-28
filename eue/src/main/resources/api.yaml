@@ -906,7 +906,7 @@ components:
                 properties:
                     forceOverwrite:
                         type: boolean
-                    ovewrite:
+                    overwrite:
                         type: boolean
                     path:
                         type: string

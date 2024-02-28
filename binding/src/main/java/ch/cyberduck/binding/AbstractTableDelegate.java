@@ -55,7 +55,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     }
 
     /**
-     * @return By default no column is editable. To be overriden in subclasses
+     * @return By default no column is editable. To be overridden in subclasses
      */
     public boolean isColumnRowEditable(final NSTableColumn column, final NSInteger row) {
         return false;

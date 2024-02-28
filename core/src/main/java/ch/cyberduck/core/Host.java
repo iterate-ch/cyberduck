@@ -704,7 +704,7 @@ public class Host implements Serializable, Comparable<Host> {
             }
         },
         /**
-         * Single connnection in Transfer window
+         * Single connection in Transfer window
          */
         newconnection {
             @Override

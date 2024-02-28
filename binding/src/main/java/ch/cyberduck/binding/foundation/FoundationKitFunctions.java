@@ -122,7 +122,7 @@ public interface FoundationKitFunctions extends Library {
         int NSUserDomainMask = 1;
         /// local to the current machine --- place to install items available to everyone on this machine (/Library)
         int NSLocalDomainMask = 2;
-        /// publically available location in the local area network --- place to install items available on the network (/Network)
+        /// publicly available location in the local area network --- place to install items available on the network (/Network)
         int NSNetworkDomainMask = 4;
         /// provided by Apple, unmodifiable (/System)
         int NSSystemDomainMask = 8;

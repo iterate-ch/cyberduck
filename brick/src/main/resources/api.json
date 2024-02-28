@@ -10469,15 +10469,15 @@
                     {
                         "name": "recursive",
                         "in": "query",
-                        "description": "If true, will recursively delete folers.  Otherwise, will error on non-empty folders.",
+                        "description": "If true, will recursively delete folders.  Otherwise, will error on non-empty folders.",
                         "required": false,
                         "style": "form",
                         "explode": true,
                         "schema": {
                             "type": "boolean",
-                            "x-ms-summary": "If true, will recursively delete folers.  Otherwise, will error on non-empty folders."
+                            "x-ms-summary": "If true, will recursively delete folders.  Otherwise, will error on non-empty folders."
                         },
-                        "x-ms-summary": "If true, will recursively delete folers.  Otherwise, will error on non-empty folders."
+                        "x-ms-summary": "If true, will recursively delete folders.  Otherwise, will error on non-empty folders."
                     }
                 ],
                 "responses": {
@@ -23721,7 +23721,7 @@
                     },
                     "allowed_countries": {
                         "type": "string",
-                        "description": "Comma seperated list of allowed Country codes",
+                        "description": "Comma separated list of allowed Country codes",
                         "example": "US,DE"
                     },
                     "allowed_ips": {
@@ -23824,7 +23824,7 @@
                     },
                     "disallowed_countries": {
                         "type": "string",
-                        "description": "Comma seperated list of disallowed Country codes",
+                        "description": "Comma separated list of disallowed Country codes",
                         "example": "US,DE"
                     },
                     "disable_notifications": {
@@ -26457,7 +26457,7 @@
                     },
                     "query_user_id": {
                         "type": "string",
-                        "description": "Return results that are actions performed by the user indiciated by this User ID",
+                        "description": "Return results that are actions performed by the user indicated by this User ID",
                         "example": "1"
                     },
                     "query_file_id": {
@@ -26507,7 +26507,7 @@
                     },
                     "query_target_id": {
                         "type": "string",
-                        "description": "If searching for Histories about specific objects (such as Users, or API Keys), this paremeter restricts results to objects that match this ID.",
+                        "description": "If searching for Histories about specific objects (such as Users, or API Keys), this parameter restricts results to objects that match this ID.",
                         "example": "1"
                     },
                     "query_target_name": {
@@ -26517,7 +26517,7 @@
                     },
                     "query_target_permission": {
                         "type": "string",
-                        "description": "If searching for Histories about Permisisons, this parameter restricts results to permissions of this level.",
+                        "description": "If searching for Histories about Permissions, this parameter restricts results to permissions of this level.",
                         "example": "full"
                     },
                     "query_target_user_id": {
@@ -26624,7 +26624,7 @@
                     },
                     "interface": {
                         "type": "string",
-                        "description": "Inteface through which the action was taken. Valid values: `web`, `ftp`, `robot`, `jsapi`, `webdesktopapi`, `sftp`, `dav`, `desktop`, `restapi`, `scim`, `office`",
+                        "description": "Interface through which the action was taken. Valid values: `web`, `ftp`, `robot`, `jsapi`, `webdesktopapi`, `sftp`, `dav`, `desktop`, `restapi`, `scim`, `office`",
                         "example": "ftp"
                     },
                     "target_id": {
@@ -28215,8 +28215,8 @@
                     },
                     "allowed_countries": {
                         "type": "string",
-                        "description": "Comma seperated list of allowed Country codes",
-                        "x-ms-summary": "Comma seperated list of allowed Country codes"
+                        "description": "Comma separated list of allowed Country codes",
+                        "x-ms-summary": "Comma separated list of allowed Country codes"
                     },
                     "allowed_ips": {
                         "type": "string",
@@ -28225,8 +28225,8 @@
                     },
                     "disallowed_countries": {
                         "type": "string",
-                        "description": "Comma seperated list of disallowed Country codes",
-                        "x-ms-summary": "Comma seperated list of disallowed Country codes"
+                        "description": "Comma separated list of disallowed Country codes",
+                        "x-ms-summary": "Comma separated list of disallowed Country codes"
                     },
                     "days_to_retain_backups": {
                         "type": "integer",
@@ -31025,9 +31025,9 @@
                     },
                     "query_user_id": {
                         "type": "string",
-                        "description": "Return results that are actions performed by the user indiciated by this User ID",
+                        "description": "Return results that are actions performed by the user indicated by this User ID",
                         "example": "1",
-                        "x-ms-summary": "Return results that are actions performed by the user indiciated by this User ID"
+                        "x-ms-summary": "Return results that are actions performed by the user indicated by this User ID"
                     },
                     "query_file_id": {
                         "type": "string",
@@ -31085,9 +31085,9 @@
                     },
                     "query_target_id": {
                         "type": "string",
-                        "description": "If searching for Histories about specific objects (such as Users, or API Keys), this paremeter restricts results to objects that match this ID.",
+                        "description": "If searching for Histories about specific objects (such as Users, or API Keys), this parameter restricts results to objects that match this ID.",
                         "example": "1",
-                        "x-ms-summary": "If searching for Histories about specific objects (such as Users, or API Keys), this paremeter restricts results to objects that match this ID."
+                        "x-ms-summary": "If searching for Histories about specific objects (such as Users, or API Keys), this parameter restricts results to objects that match this ID."
                     },
                     "query_target_name": {
                         "type": "string",
@@ -31097,9 +31097,9 @@
                     },
                     "query_target_permission": {
                         "type": "string",
-                        "description": "If searching for Histories about Permisisons, this parameter restricts results to permissions of this level.",
+                        "description": "If searching for Histories about Permissions, this parameter restricts results to permissions of this level.",
                         "example": "full",
-                        "x-ms-summary": "If searching for Histories about Permisisons, this parameter restricts results to permissions of this level."
+                        "x-ms-summary": "If searching for Histories about Permissions, this parameter restricts results to permissions of this level."
                     },
                     "query_target_user_id": {
                         "type": "string",
@@ -32387,7 +32387,7 @@
             "behavior": "remote_server_mount",
             "children_can_add": false,
             "children_can_override": false,
-            "docs": "Mount a remote server within this folder.  Remote servers can be FTP/SFTP servers, Amazon S3/GCP/Azure Blob/Wasabi/Backblaze B2 Buckets, and more.\n\nSee the RemoteServer object for a full list of the Remote Servers supported.\n\nWhen this behavior is enabled, files in this folder will never actually be stored on Files.com.  Rather, Files.com will mount the remote server and\nact as a mere conduit from your clients to the remote server.\n\nFiles.com workflow elements such as Permissions, Automations, Webhooks, Notifications, etc., will apply only to transfer activities that occur through\nFiles.com.  We won't send Webhooks or Notifications based on activity that occurs via a direct connetion to the Remote Server other than through Files.com.\n\n> Example Value\n\n```json\n<%=JSON.pretty_generate({\n  'remote_server_id' => '1',\n  'remote_path' => ''\n})%>\n```\n\nValue Hash Parameters | &nbsp;\n--- | ---\n`remote_server_id` | ID of the remote server to sync with.  See the Remote Servers API resource for managing these.\n`remote_path` | Path on remote server to treat as the root of this mount. This should be an absolute path on the remote server. This must be slash-delimited, but it must neither start nor end with a slash.\n",
+            "docs": "Mount a remote server within this folder.  Remote servers can be FTP/SFTP servers, Amazon S3/GCP/Azure Blob/Wasabi/Backblaze B2 Buckets, and more.\n\nSee the RemoteServer object for a full list of the Remote Servers supported.\n\nWhen this behavior is enabled, files in this folder will never actually be stored on Files.com.  Rather, Files.com will mount the remote server and\nact as a mere conduit from your clients to the remote server.\n\nFiles.com workflow elements such as Permissions, Automations, Webhooks, Notifications, etc., will apply only to transfer activities that occur through\nFiles.com.  We won't send Webhooks or Notifications based on activity that occurs via a direct connection to the Remote Server other than through Files.com.\n\n> Example Value\n\n```json\n<%=JSON.pretty_generate({\n  'remote_server_id' => '1',\n  'remote_path' => ''\n})%>\n```\n\nValue Hash Parameters | &nbsp;\n--- | ---\n`remote_server_id` | ID of the remote server to sync with.  See the Remote Servers API resource for managing these.\n`remote_path` | Path on remote server to treat as the root of this mount. This should be an absolute path on the remote server. This must be slash-delimited, but it must neither start nor end with a slash.\n",
             "requires_attachment": false,
             "supports_mounted_folders": true,
             "unique_per_folder": true,
@@ -32422,7 +32422,7 @@
         },
         {
             "type": "bad-request/cant-move-with-multiple-locations",
-            "title": "Cant Move With Multiple Locations",
+            "title": "Can't Move With Multiple Locations",
             "http-code": 400
         },
         {
@@ -32672,7 +32672,7 @@
         },
         {
             "type": "not-authorized/cant-act-for-other-user",
-            "title": "Cant Act For Other User",
+            "title": "Can't Act For Other User",
             "http-code": 403
         },
         {

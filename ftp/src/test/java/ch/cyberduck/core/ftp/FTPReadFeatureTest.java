@@ -114,7 +114,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         new DefaultTouchFeature<>(new FTPWriteFeature(session)).touch(file, new TransferStatus());
         final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
-        // Send ABOR because stream was not read completly
+        // Send ABOR because stream was not read completely
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());
@@ -136,7 +136,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         assertTrue(in.read() > 0);
-        // Send ABOR because stream was not read completly
+        // Send ABOR because stream was not read completely
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());

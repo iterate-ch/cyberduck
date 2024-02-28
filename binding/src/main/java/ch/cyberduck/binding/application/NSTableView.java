@@ -160,7 +160,7 @@ public abstract class NSTableView extends NSControl {
     public abstract boolean allowsColumnReordering();
 
     /**
-     * Controls whether the user can attemp to resize columns by dragging between headers. If flag is YES the user can
+     * Controls whether the user can attempt to resize columns by dragging between headers. If flag is YES the user can
      * resize columns; if flag is NO the user can't. The default is YES. Columns can only be resized if a column allows
      * user resizing.  See NSTableColumn setResizingMask: for more details.  You can always change columns
      * programmatically regardless of this setting.<br> Original signature : <code>void
@@ -466,7 +466,7 @@ public abstract class NSTableView extends NSControl {
      * <i>native declaration : :212</i><br>
      * Conversion Error : /**<br>
      *  * This method computes and returns an image to use for dragging.  Override this to return a custom image.  'dragRows' represents the rows participating in the drag.  'tableColumns' represent the columns that should be in the output image.  Note that drawing may be clipped to the visible rows, and columns.  'dragEvent' is a reference to the mouse down event that began the drag.  'dragImageOffset' is an in/out parameter.  This method will be called with dragImageOffset set to NSZeroPoint, but it can be modified to re-position the returned image.  A dragImageOffset of NSZeroPoint will cause the image to be centered under the mouse.<br>
-     *  * Compatability Note: This method replaces dragImageForRows:event:dragImageOffset:.  If present, this is used instead of the deprecated method.<br>
+     *  * Compatibility Note: This method replaces dragImageForRows:event:dragImageOffset:.  If present, this is used instead of the deprecated method.<br>
      *  * Original signature : <code>NSImage* dragImageForRowsWithIndexes(NSIndexSet*, NSArray*, NSEvent*, null)</code><br>
      *  * /<br>
      * - (NSImage*)dragImageForRowsWithIndexes:(NSIndexSet*)dragRows tableColumns:(NSArray*)tableColumns event:(NSEvent*)dragEvent offset:(null)dragImageOffset; (Argument dragImageOffset cannot be converted)
@@ -541,7 +541,7 @@ public abstract class NSTableView extends NSControl {
 
     /**
      * Sets the column selection using the indexes.  Selection is set/extended based on the extend flag. <br>
-     * Compatability Note: This method replaces selectColumn:byExtendingSelection:<br> If a subclasser implements only
+     * Compatibility Note: This method replaces selectColumn:byExtendingSelection:<br> If a subclasser implements only
      * the deprecated single-index method (selectColumn:byExtendingSelection:), the single-index method will be invoked
      * for each index.  If a subclasser implements the multi-index method (selectColumnIndexes:byExtendingSelection:),
      * the deprecated single-index version method will not be used.  This allows subclassers already overriding the
@@ -555,7 +555,7 @@ public abstract class NSTableView extends NSControl {
     /**
      * Sets the row selection using 'indexes'. Selection is set/extended based on the extend flag. On 10.5 and greater,
      * selectRowIndexes:byExtendingSelection: will allow you to progrmatically select more than one index, regardless of
-     * the allowsMultipleSelection and allowsEmptySelection options set on the table.<br> Compatability Note: This
+     * the allowsMultipleSelection and allowsEmptySelection options set on the table.<br> Compatibility Note: This
      * method replaces selectRow:byExtendingSelection:<br> If a subclasser implements only the deprecated single-index
      * method (selectRow:byExtendingSelection:), the single-index method will be invoked for each index.  If a
      * subclasser implements the multi-index method (selectRowIndexes:byExtendingSelection:), the deprecated
@@ -782,7 +782,7 @@ public abstract class NSTableView extends NSControl {
      * Conversion Error : NSRect
      */
     /**
-     * Deprecated in Mac OS 10.3.  Calls setGridStyleMask:, setting grid style to either None, or vertical and horizonal
+     * Deprecated in Mac OS 10.3.  Calls setGridStyleMask:, setting grid style to either None, or vertical and horizontal
      * solid grid lines as appropriate.<br> Original signature : <code>void setDrawsGrid(BOOL)</code><br>
      * <i>from NSDeprecated native declaration : :506</i>
      */

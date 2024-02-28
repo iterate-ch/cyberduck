@@ -41,7 +41,7 @@ public class MD5FastChecksumCompute extends AbstractChecksumCompute {
                 this.normalize(in, status), status));
     }
 
-    protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation) throws ChecksumException, ChecksumCanceledException {
+    protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancellation) throws ChecksumException, ChecksumCanceledException {
         final MD5 md = new MD5();
         try {
             byte[] buffer = new byte[16384];

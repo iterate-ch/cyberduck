@@ -40,7 +40,7 @@ public interface ApplicationFinder {
 
     /**
      * @param application Application description
-     * @return True if path to the applicaiton is found. False if the application is not installed
+     * @return True if path to the application is found. False if the application is not installed
      */
     boolean isInstalled(Application application);
 

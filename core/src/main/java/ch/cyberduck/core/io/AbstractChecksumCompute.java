@@ -35,7 +35,7 @@ import java.security.NoSuchAlgorithmException;
 
 public abstract class AbstractChecksumCompute implements ChecksumCompute {
 
-    protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation)
+    protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancellation)
             throws ConnectionCanceledException, ChecksumException {
         final MessageDigest md;
         try {
@@ -44,16 +44,16 @@ public abstract class AbstractChecksumCompute implements ChecksumCompute {
         catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(e);
         }
-        return this.digest(in, md, cancelation);
+        return this.digest(in, md, cancellation);
     }
 
-    protected byte[] digest(final InputStream in, final MessageDigest md, final StreamCancelation cancelation)
+    protected byte[] digest(final InputStream in, final MessageDigest md, final StreamCancelation cancellation)
             throws ConnectionCanceledException, ChecksumException {
         try {
             byte[] buffer = new byte[16384];
             int bytesRead;
             while((bytesRead = in.read(buffer, 0, buffer.length)) != -1) {
-                cancelation.validate();
+                cancellation.validate();
                 md.update(buffer, 0, bytesRead);
             }
         }

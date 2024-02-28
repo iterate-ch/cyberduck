@@ -51,7 +51,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed
         boolean success = false;
-        // Call hook for those implementors which need to perform some action upon the list after it has been created
+        // Call hook for those implementers which need to perform some action upon the list after it has been created
         // from the server stream, but before any clients see the list
         parser.preParse(replies);
         for(String line : replies) {
