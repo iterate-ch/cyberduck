@@ -273,11 +273,34 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof RelocationErrorException) {
             final RelocationError error = ((RelocationErrorException) failure).errorValue;
             switch(error.tag()) {
-                case TO:
-                    return new ConflictException(buffer.toString(), failure);
                 case TOO_MANY_FILES:
                 case INSUFFICIENT_QUOTA:
                     return new QuotaException(buffer.toString(), failure);
+            }
+            if(error.isTo()) {
+                switch(error.getToValue().tag()) {
+                    case MALFORMED_PATH:
+                    case DISALLOWED_NAME:
+                    case NO_WRITE_PERMISSION:
+                        return new AccessDeniedException(buffer.toString(), failure);
+                    case TOO_MANY_WRITE_OPERATIONS:
+                        return new RetriableAccessDeniedException(buffer.toString(), failure);
+                    case CONFLICT:
+                        return new ConflictException(buffer.toString(), failure);
+                    case INSUFFICIENT_SPACE:
+                        return new QuotaException(buffer.toString(), failure);
+                }
+            }
+            if(error.isFromLookup()) {
+                switch(error.getFromLookupValue().tag()) {
+                    case NOT_FOUND:
+                    case NOT_FILE:
+                    case NOT_FOLDER:
+                        return new NotfoundException(buffer.toString(), failure);
+                    case MALFORMED_PATH:
+                    case RESTRICTED_CONTENT:
+                        return new AccessDeniedException(buffer.toString(), failure);
+                }
             }
         }
         return new InteroperabilityException(buffer.toString(), failure);

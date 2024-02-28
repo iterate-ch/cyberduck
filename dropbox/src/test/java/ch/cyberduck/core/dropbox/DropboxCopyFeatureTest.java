@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -37,6 +38,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -96,5 +98,13 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, target));
         assertThrows(AccessDeniedException.class, () -> feature.copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyNotFound() throws Exception {
+        final DropboxCopyFeature feature = new DropboxCopyFeature(session);
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        assertThrows(NotfoundException.class, () -> feature.copy(test, new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
     }
 }
