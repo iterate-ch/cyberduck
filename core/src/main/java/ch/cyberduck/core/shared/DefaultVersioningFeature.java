@@ -188,7 +188,7 @@ public class DefaultVersioningFeature implements Versioning {
     }
 
     public static final class DefaultVersioningDirectoryProvider implements VersioningDirectoryProvider {
-        private static final String NAME = ".cyberduckversions";
+        private static final String NAME = ".duckversions";
 
         @Override
         public Path provide(final Path file) {
