@@ -100,7 +100,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     }
 
     /**
-     * @return True if this menu has an item that has registerd a keyboard shortcut
+     * @return True if this menu has an item that has registered a keyboard shortcut
      *         equivalent to the event characters.
      */
     public boolean menuHasKeyEquivalent_forEvent(NSMenu menu, NSEvent event) {

@@ -80,7 +80,7 @@ public abstract class SPUUpdater extends NSObject {
     /**
      * Checks for updates, but does not display any UI unless an update is found.
      * <p>
-     * This is meant for programmatically initating a check for updates. That is,
+     * This is meant for programmatically initiating a check for updates. That is,
      * it will display no UI unless it actually finds an update, in which case it
      * proceeds as usual.
      * <p>

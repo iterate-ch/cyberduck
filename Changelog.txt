@@ -702,7 +702,7 @@ https://cyberduck.io/
 - [Bugfix] Do not save vault passphrase by default (Cryptomator)
 - [Bugfix] Fix failures when attempting to read attributes of incomplete multipart upload (S3)
 - [Bugfix] Reloading directory after enabling "Auto detect" in preferences does not ask to unlock vault (Cryptomator) (#10214)
-- [Bugfix] Transfer labled incomplete when segment required multiple attempts to finish (S3, OpenStack Swift, Backblaze B2) (#9552)
+- [Bugfix] Transfer labeled incomplete when segment required multiple attempts to finish (S3, OpenStack Swift, Backblaze B2) (#9552)
 
 6.3.5
 - [Bugfix] Crash on launch in update checker (Windows)
