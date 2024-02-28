@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
@@ -80,6 +81,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 final LookupError lookup = error.getPathValue();
                 this.parse(buffer, lookup.toString());
                 switch(lookup.tag()) {
+                    case LOCKED:
+                        return new LockedException(buffer.toString(), failure);
                     case OTHER:
                         return new InteroperabilityException(buffer.toString(), failure);
                     case NOT_FOUND:
@@ -97,6 +100,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final LookupError lookup = error.getPathLookupValue();
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
+                case LOCKED:
+                    return new LockedException(buffer.toString(), failure);
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
@@ -114,6 +119,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 final LookupError lookup = error.getPathValue();
                 this.parse(buffer, lookup.toString());
                 switch(lookup.tag()) {
+                    case LOCKED:
+                        return new LockedException(buffer.toString(), failure);
                     case OTHER:
                         return new InteroperabilityException(buffer.toString(), failure);
                     case NOT_FOUND:
@@ -151,6 +158,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 final LookupError lookup = error.getPathValue();
                 this.parse(buffer, lookup.toString());
                 switch(lookup.tag()) {
+                    case LOCKED:
+                        return new LockedException(buffer.toString(), failure);
                     case OTHER:
                         return new InteroperabilityException(buffer.toString(), failure);
                     case NOT_FOUND:
@@ -169,6 +178,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 final LookupError lookup = error.getPathValue();
                 this.parse(buffer, lookup.toString());
                 switch(lookup.tag()) {
+                    case LOCKED:
+                        return new LockedException(buffer.toString(), failure);
                     case OTHER:
                         return new InteroperabilityException(buffer.toString(), failure);
                     case NOT_FOUND:
@@ -225,6 +236,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 final LookupError lookup = error.getPathValue();
                 this.parse(buffer, lookup.toString());
                 switch(lookup.tag()) {
+                    case LOCKED:
+                        return new LockedException(buffer.toString(), failure);
                     case NOT_FOUND:
                     case NOT_FILE:
                     case NOT_FOLDER:
@@ -243,6 +256,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 final LookupError lookup = error.getPathValue();
                 this.parse(buffer, lookup.toString());
                 switch(lookup.tag()) {
+                    case LOCKED:
+                        return new LockedException(buffer.toString(), failure);
                     case NOT_FOUND:
                     case NOT_FILE:
                     case NOT_FOLDER:
@@ -293,6 +308,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             }
             if(error.isFromLookup()) {
                 switch(error.getFromLookupValue().tag()) {
+                    case LOCKED:
+                        return new LockedException(buffer.toString(), failure);
                     case NOT_FOUND:
                     case NOT_FILE:
                     case NOT_FOLDER:
