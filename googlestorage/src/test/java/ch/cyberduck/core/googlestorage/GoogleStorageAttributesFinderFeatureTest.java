@@ -16,9 +16,11 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -123,6 +125,33 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
         }
         catch(NotfoundException e) {
             throw e;
+        }
+    }
+
+    @Test
+    public void testFindCommonPrefix() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new GoogleStorageFindFeature(session).find(container));
+        final String prefix = new AlphanumericRandomStringService().random();
+        final Path test = new GoogleStorageTouchFeature(session).touch(
+                new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(new GoogleStorageAttributesFinderFeature(session).find(test));
+        assertNotNull(new GoogleStorageAttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            new GoogleStorageAttributesFinderFeature(session).find(test);
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        try {
+            new GoogleStorageAttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
         }
     }
 }

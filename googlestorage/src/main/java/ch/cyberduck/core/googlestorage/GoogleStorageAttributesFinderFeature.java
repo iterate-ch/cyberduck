@@ -15,12 +15,14 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -29,6 +31,8 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -38,6 +42,7 @@ import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageAttributesFinderFeature implements AttributesFinder, AttributesAdapter<StorageObject> {
+    private static final Logger log = LogManager.getLogger(GoogleStorageAttributesFinderFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -76,7 +81,34 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                         get.setGeneration(Long.parseLong(file.attributes().getVersionId()));
                     }
                 }
-                final PathAttributes attributes = this.toAttributes(get.execute());
+                final PathAttributes attributes;
+                try {
+                    attributes = this.toAttributes(get.execute());
+                }
+                catch(IOException e) {
+                    if(file.isDirectory()) {
+                        final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                        if(failure instanceof NotfoundException) {
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Search for common prefix %s", file));
+                            }
+                            // File may be marked as placeholder but no placeholder file exists. Check for common prefix returned.
+                            try {
+                                new GoogleStorageObjectListService(session).list(file, new CancellingListProgressListener(), String.valueOf(Path.DELIMITER), 1, VersioningConfiguration.empty());
+                            }
+                            catch(ListCanceledException l) {
+                                // Found common prefix
+                                return PathAttributes.EMPTY;
+                            }
+                            catch(NotfoundException n) {
+                                throw e;
+                            }
+                            // Found common prefix
+                            return PathAttributes.EMPTY;
+                        }
+                    }
+                    throw e;
+                }
                 if(versioning.isEnabled()) {
                     // Determine if latest version
                     try {
