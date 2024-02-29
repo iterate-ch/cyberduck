@@ -37,13 +37,13 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
     private static final Logger log = LogManager.getLogger(ExtendedHttpRequestRetryHandler.class);
 
     private static final List<Class<? extends IOException>> excludes = Arrays.asList(
-        UnrecoverableIOException.class,
-        InterruptedIOException.class,
-        UnknownHostException.class,
-        ConnectException.class,
-        // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
-        // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
-        SSLHandshakeException.class);
+            UnrecoverableIOException.class,
+            InterruptedIOException.class,
+            UnknownHostException.class,
+            ConnectException.class,
+            // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
+            // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
+            SSLHandshakeException.class);
 
     public ExtendedHttpRequestRetryHandler(final int retryCount) {
         super(retryCount, true, excludes);
