@@ -38,10 +38,12 @@ public class B2FindFeature implements Find {
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
+    private final B2AttributesFinderFeature attributes;
 
     public B2FindFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.attributes = new B2AttributesFinderFeature(session, fileid);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    new B2AttributesFinderFeature(session, fileid).find(file, listener);
+                    attributes.find(file, listener);
                     return true;
                 }
                 catch(NotfoundException e) {
