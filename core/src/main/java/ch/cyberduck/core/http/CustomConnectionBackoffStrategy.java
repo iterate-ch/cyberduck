@@ -14,12 +14,25 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
+import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultBackoffStrategy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CustomConnectionBackoffStrategy extends DefaultBackoffStrategy {
+    private static final Logger log = LogManager.getLogger(CustomConnectionBackoffStrategy.class);
 
     @Override
     public boolean shouldBackoff(final Throwable t) {
         return false;
+    }
+
+    @Override
+    public boolean shouldBackoff(final HttpResponse response) {
+        final boolean backoff = super.shouldBackoff(response);
+        if(backoff) {
+            log.warn(String.format("Backoff for reply %s", response));
+        }
+        return backoff;
     }
 }
