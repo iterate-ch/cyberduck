@@ -52,7 +52,6 @@ import org.apache.http.impl.auth.KerberosSchemeFactory;
 import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.auth.SPNegoSchemeFactory;
 import org.apache.http.impl.client.AIMDBackoffManager;
-import org.apache.http.impl.client.DefaultBackoffStrategy;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -199,7 +198,7 @@ public class HttpConnectionPoolBuilder {
         configuration.setDnsResolver(new CustomDnsResolver());
         if(new HostPreferences(host).getBoolean("connection.retry.backoff.enable")) {
             configuration.setBackoffManager(new AIMDBackoffManager(connectionManager));
-            configuration.setConnectionBackoffStrategy(new DefaultBackoffStrategy());
+            configuration.setConnectionBackoffStrategy(new CustomConnectionBackoffStrategy());
         }
         return configuration;
     }
