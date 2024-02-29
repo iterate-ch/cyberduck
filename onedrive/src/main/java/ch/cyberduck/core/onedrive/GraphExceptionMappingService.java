@@ -21,11 +21,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -66,6 +68,10 @@ public class GraphExceptionMappingService extends AbstractExceptionMappingServic
                         return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(failure.getRetry()));
                     }
                     return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(PreferencesFactory.get().getInteger("connection.retry.delay")));
+                case HttpStatus.SC_BAD_REQUEST:
+                    if(StringUtils.equalsIgnoreCase("Must provide one of the following facets to create an item: Bundle, File, Folder, RemoteItem", failure.getErrorMessage())) {
+                        return new NotfoundException(buffer.toString(), failure);
+                    }
             }
             return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), buffer.toString()));
         }

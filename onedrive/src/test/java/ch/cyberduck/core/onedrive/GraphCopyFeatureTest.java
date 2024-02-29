@@ -19,8 +19,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
@@ -35,12 +37,27 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GraphCopyFeatureTest extends AbstractOneDriveTest {
+
+    @Test
+    public void testCopyNotFound() throws Exception {
+        final Touch touch = new GraphTouchFeature(session, fileid);
+        final Delete delete = new GraphDeleteFeature(session, fileid);
+        final Path drive = new OneDriveHomeFinderService().find();
+        final Path file = touch.touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("x-application/cyberduck"));
+        final String fileid = file.attributes().getFileId();
+        delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path target = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertThrows(NotfoundException.class, () -> new GraphCopyFeature(session, this.fileid).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        file.attributes().withFileId(fileid);
+        assertThrows(NotfoundException.class, () -> new GraphCopyFeature(session, this.fileid).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
+    }
 
     @Test
     public void testCopy() throws Exception {
