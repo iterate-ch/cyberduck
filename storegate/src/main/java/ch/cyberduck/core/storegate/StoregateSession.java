@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -103,28 +104,29 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
                 request.addHeader(HttpHeaders.AUTHORIZATION,
-                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
+                        String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
             }
         }).build(), host, prompt)
-            .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
-                Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                    host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
-            )
-            .withParameter("login_hint", preferences.getProperty("storegate.login.hint"));
+                .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                        Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                                host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
+                )
+                .withParameter("login_hint", preferences.getProperty("storegate.login.hint"));
         // Force login even if browser session already exists
         authorizationService.withParameter("prompt", "login");
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService));
+        configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
         final StoregateApiClient client = new StoregateApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
-            null, host.getHostname(), host.getProtocol().getContext()));
+                null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
-            .register(new InputStreamProvider())
-            .register(MultiPartFeature.class)
-            .register(new JSON())
-            .register(JacksonFeature.class)
-            .connectorProvider(new HttpComponentsProvider(apache))));
+                .register(new InputStreamProvider())
+                .register(MultiPartFeature.class)
+                .register(new JSON())
+                .register(JacksonFeature.class)
+                .connectorProvider(new HttpComponentsProvider(apache))));
         final int timeout = ConnectionTimeoutFactory.get(host).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
@@ -137,8 +139,8 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         final Credentials credentials = authorizationService.validate();
         try {
             final HttpRequestBase request = new HttpPost(
-                new HostUrlProvider().withUsername(false).withPath(true).get(
-                    host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), "/identity/core/connect/userinfo")
+                    new HostUrlProvider().withUsername(false).withPath(true).get(
+                            host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), "/identity/core/connect/userinfo")
             );
             request.addHeader(HttpHeaders.CONTENT_TYPE, MEDIA_TYPE);
             final CloseableHttpResponse response = client.getClient().execute(request);
@@ -163,11 +165,11 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                     case HttpStatus.SC_FORBIDDEN:
                         // Insufficient scope
                         final BackgroundException failure = new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                            EntityUtils.toString(response.getEntity())));
+                                EntityUtils.toString(response.getEntity())));
                         throw new LoginFailureException(failure.getDetail(), failure);
                     default:
                         throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                            EntityUtils.toString(response.getEntity())));
+                                EntityUtils.toString(response.getEntity())));
                 }
             }
             finally {

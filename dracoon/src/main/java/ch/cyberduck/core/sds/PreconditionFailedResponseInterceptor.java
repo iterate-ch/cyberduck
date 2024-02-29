@@ -23,7 +23,6 @@ import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,15 +33,12 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
     private static final int MAX_RETRIES = 1;
 
     private final OAuth2RequestInterceptor service;
-    private final ServiceUnavailableRetryStrategy next;
 
     public PreconditionFailedResponseInterceptor(final Host bookmark,
                                                  final OAuth2RequestInterceptor service,
-                                                 final LoginCallback prompt,
-                                                 final ServiceUnavailableRetryStrategy next) {
+                                                 final LoginCallback prompt) {
         super(bookmark, service);
         this.service = service;
-        this.next = next;
     }
 
     @Override
@@ -65,6 +61,6 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
                 }
                 return false;
         }
-        return next.retryRequest(response, executionCount, context);
+        return false;
     }
 }

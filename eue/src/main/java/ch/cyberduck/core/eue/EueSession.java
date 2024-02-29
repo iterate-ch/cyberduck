@@ -32,6 +32,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
@@ -108,7 +109,8 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         }).build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService));
+        configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override

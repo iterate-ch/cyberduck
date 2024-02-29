@@ -42,6 +42,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
@@ -279,7 +280,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             final STSAssumeRoleCredentialsRequestInterceptor interceptor
                     = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt);
             configuration.addInterceptorLast(interceptor);
-            configuration.setServiceUnavailableRetryStrategy(new S3AuthenticationResponseInterceptor(this, interceptor));
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new S3AuthenticationResponseInterceptor(this, interceptor)));
             return interceptor;
         }
         else {
@@ -302,7 +304,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                         }
                     });
                 }
-                configuration.setServiceUnavailableRetryStrategy(interceptor);
+                configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host, interceptor));
                 return interceptor;
             }
             else {
