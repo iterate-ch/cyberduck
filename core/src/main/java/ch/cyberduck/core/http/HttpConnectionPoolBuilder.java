@@ -51,6 +51,8 @@ import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.auth.KerberosSchemeFactory;
 import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.auth.SPNegoSchemeFactory;
+import org.apache.http.impl.client.AIMDBackoffManager;
+import org.apache.http.impl.client.DefaultBackoffStrategy;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -180,7 +182,8 @@ public class HttpConnectionPoolBuilder {
         configuration.setRequestExecutor(new LoggingHttpRequestExecutor(listener));
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
-        configuration.setConnectionManager(this.createConnectionManager(this.createRegistry()));
+        final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(this.createRegistry());
+        configuration.setConnectionManager(connectionManager);
         configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
             .register(AuthSchemes.BASIC, new BasicSchemeFactory(
                 Charset.forName(new HostPreferences(host).getProperty("http.credentials.charset"))))
@@ -194,6 +197,10 @@ public class HttpConnectionPoolBuilder {
                 new SPNegoSchemeFactory())
             .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
         configuration.setDnsResolver(new CustomDnsResolver());
+        if(new HostPreferences(host).getBoolean("connection.retry.backoff.enable")) {
+            configuration.setBackoffManager(new AIMDBackoffManager(connectionManager));
+            configuration.setConnectionBackoffStrategy(new DefaultBackoffStrategy());
+        }
         return configuration;
     }
 
