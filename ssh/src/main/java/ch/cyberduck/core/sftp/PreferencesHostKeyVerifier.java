@@ -46,7 +46,7 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
     public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
         String lookup = preferences.getProperty(this.toFormat(host, key));
         if(StringUtils.isEmpty(lookup)) {
-            // Backward compatiblity to find keys with no port number saved
+            // Backward compatibility to find keys with no port number saved
             lookup = preferences.getProperty(this.toFormat(host, key, false));
         }
         if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {

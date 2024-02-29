@@ -29,7 +29,7 @@ public abstract class ControllerMainAction extends MainAction {
     }
 
     /**
-     * @return True if hte window is still on screen
+     * @return True if the window is still on screen
      */
     @Override
     public boolean isValid() {

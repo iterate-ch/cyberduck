@@ -14,7 +14,7 @@ import java.io.InterruptedIOException;
  * This class is sometimes very convenient - if you wrap a session's STDOUT and STDERR
  * InputStreams with instances of this class, then you don't have to bother about
  * the shared window of STDOUT and STDERR in the low level SSH-2 protocol,
- * since all arriving data will be immediatelly consumed by the worker threads.
+ * since all arriving data will be immediately consumed by the worker threads.
  * Also, as a side effect, the streams will be buffered (e.g., single byte
  * read() operations are faster).
  * <p/>

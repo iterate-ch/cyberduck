@@ -172,7 +172,7 @@ public abstract class NSFileManager extends NSObject {
     public abstract NSArray contentsOfDirectoryAtPath_error(String path, ObjCObjectByReference error);
 
     /**
-     * subpathsOfDirectoryAtPath:error: returns an NSArray of Strings represeting the filenames of the items in the
+     * subpathsOfDirectoryAtPath:error: returns an NSArray of Strings representing the filenames of the items in the
      * specified directory and all its subdirectories recursively. If this method returns 'nil', an NSError will be
      * returned by reference in the 'error' parameter. If the directory contains no items, this method will return the
      * empty array.<br> This method replaces subpathsAtPath:<br> Original signature :

@@ -48,7 +48,7 @@ public class ProfilesSynchronizeWorkerTest {
 
     @Test
     public void testRunCloudfrontEndpoint() throws Exception {
-        // Registry in temparary folder
+        // Registry in temporary folder
         final ProtocolFactory protocols = new ProtocolFactory(new HashSet<>(Collections.singletonList(new S3Protocol())));
         final Host host = new HostParser(protocols, new S3Protocol()).get("s3://djynunjb246r8.cloudfront.net").withCredentials(
                 new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")));
@@ -96,7 +96,7 @@ public class ProfilesSynchronizeWorkerTest {
 
     @Test
     public void testRunVirtualHostEndpoint() throws Exception {
-        // Registry in temparary folder
+        // Registry in temporary folder
         final ProtocolFactory protocols = new ProtocolFactory(new HashSet<>(Collections.singletonList(new S3Protocol())));
         final Host host = new HostParser(protocols, new S3Protocol()).get("s3:/profiles.cyberduck.io").withCredentials(
                 new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")));

@@ -46,7 +46,7 @@ public class TotalCommanderBookmarkCollectionTest {
         c.parse(new ProtocolFactory(new HashSet<>(Arrays.asList(new TestProtocol(Scheme.ftp), new TestProtocol(Scheme.ftps), new TestProtocol(Scheme.sftp)))), new Local("src/test/resources/wcx_ftp.ini"));
         assertEquals(2, c.size());
         assertEquals("sudo.ch", c.get(0).getHostname());
-        assertEquals("fo|cyberduck.io session bookmark", c.get(1).getNickname());
+        assertEquals("fo|cyberduck.io session bookmark", c.get(1).getNickname());  /* pragma: codespell-ignore */
         assertEquals("cyberduck.io", c.get(1).getHostname());
         assertEquals("/remote", c.get(1).getDefaultPath());
     }

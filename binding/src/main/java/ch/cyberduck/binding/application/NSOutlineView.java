@@ -229,7 +229,7 @@ public abstract class NSOutlineView extends NSTableView {
 
     /**
      * This method returns YES to indicate that auto expanded items should return to their original collapsed state.
-     * Override this method to provide custom behavior.  'deposited' tells wether or not the drop terminated due to a
+     * Override this method to provide custom behavior.  'deposited' tells whether or not the drop terminated due to a
      * successful drop (as indicated by the return value from acceptDrop:).  Note that exiting the view will be treated
      * the same as a failed drop.<br> Original signature : <code>BOOL shouldCollapseAutoExpandedItemsForDeposited(BOOL)</code><br>
      * <i>native declaration : :183</i>

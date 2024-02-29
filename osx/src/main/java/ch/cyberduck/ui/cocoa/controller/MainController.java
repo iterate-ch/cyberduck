@@ -1138,7 +1138,7 @@ public class MainController extends BundleController implements NSApplication.De
                         return NSApplication.NSTerminateLater;
                     }
                     if(choice == SheetCallback.DEFAULT_OPTION) {
-                        // Quit immediatly
+                        // Quit immediately
                         return this.applicationShouldTerminateAfterDonationPrompt(app);
                     }
                 }
@@ -1219,7 +1219,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void applicationWillRestartAfterUpdate(ID updater) {
-        // Disable donation prompt after udpate install
+        // Disable donation prompt after update install
         displayDonationPrompt = false;
     }
 
@@ -1341,7 +1341,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     /**
      * Posted before a user session is switched out. This allows an application to disable some processing when its user
-     * session is switched out, and reenable when that session gets switched back in, for example.
+     * session is switched out, and re-enable when that session gets switched back in, for example.
      *
      * @param notification Notification name
      */

@@ -100,7 +100,7 @@ public class BrowserListViewDataSource extends BrowserTableDataSource implements
                 }
                 return super.validateDrop(view, destination, row, draggingInfo);
             }
-            // Draging to empty area in browser
+            // Dragging to empty area in browser
             return super.validateDrop(view, destination, row, draggingInfo);
         }
         // Passing to super to look for URLs to mount

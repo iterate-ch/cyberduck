@@ -1881,7 +1881,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         final Host duplicate = new HostDictionary<>().deserialize(selected.serialize(SerializerFactory.get()));
-        // Make sure a new UUID is asssigned for duplicate
+        // Make sure a new UUID is assigned for duplicate
         duplicate.setUuid(null);
         this.addBookmark(duplicate);
     }
@@ -1903,7 +1903,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 selected = workdir;
             }
             bookmark = new HostDictionary<>().deserialize(pool.getHost().serialize(SerializerFactory.get()));
-            // Make sure a new UUID is asssigned for duplicate
+            // Make sure a new UUID is assigned for duplicate
             bookmark.setUuid(null);
             bookmark.setDefaultPath(selected.getAbsolute());
         }
@@ -3606,7 +3606,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * Overrriden to remove any listeners from the session
+     * Overridden to remove any listeners from the session
      */
     @Override
     public void invalidate() {

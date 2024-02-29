@@ -45,7 +45,7 @@ public interface UpdateChecker {
          * Handle update found
          *
          * @param item Update description
-         * @return True if standard driver should not continue handling update or false if no additinal prompt for update is shown
+         * @return True if standard driver should not continue handling update or false if no additional prompt for update is shown
          */
         boolean handle(UpdateChecker.Update item);
     }

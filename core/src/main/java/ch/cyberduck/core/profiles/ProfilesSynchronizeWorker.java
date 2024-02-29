@@ -90,7 +90,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
             final Optional<ProfileDescription> match = matcher.compare(local);
             if(match.isPresent()) {
                 // Found matching checksum for profile in remote list which is not marked as latest version
-                log.warn(String.format("Override %s with latest profile verison %s", local, match));
+                log.warn(String.format("Override %s with latest profile version %s", local, match));
                 // Remove previous version
                 local.getProfile().ifPresent(registry::unregister);
                 // Register updated profile by copying temporary file to application support

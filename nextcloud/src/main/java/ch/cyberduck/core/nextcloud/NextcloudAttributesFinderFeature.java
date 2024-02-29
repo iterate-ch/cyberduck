@@ -51,7 +51,7 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
      * W: Updateable (file)
      * CK: Creatable (folders only)
      * Z: Deniable
-     * P: Trashbin Purgable
+     * P: Trashbin Purgeable
      */
     public static final QName OC_PERMISSIONS_CUSTOM_NAMESPACE = new QName(CUSTOM_NAMESPACE_URI, "permissions", CUSTOM_NAMESPACE_PREFIX);
     /**

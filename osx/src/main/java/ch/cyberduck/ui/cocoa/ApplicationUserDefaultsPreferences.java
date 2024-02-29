@@ -76,7 +76,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         this.setDefault("website.store", "macappstore://itunes.apple.com/app/id409222199?mt=12");
 
         if(new FinderLocal("~/Downloads").exists()) {
-            // For 10.5+ this usually exists and should be preferrred
+            // For 10.5+ this usually exists and should be preferred
             this.setDefault("queue.download.folder", "~/Downloads");
         }
         else {

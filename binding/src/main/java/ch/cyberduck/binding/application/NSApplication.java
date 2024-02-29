@@ -466,7 +466,7 @@ public abstract class NSApplication extends NSObject {
      * <i>native declaration : :149</i><br>
      * Conversion Error : /**<br> * *  Present a sheet on the given window.  When the modal session is ended,<br> * *
      * the didEndSelector will be invoked in the modalDelegate.  The didEndSelector<br> * * should have the following
-     * signature, and will be invoked when the modal session ends.<br> * * This method should dimiss the sheet using
+     * signature, and will be invoked when the modal session ends.<br> * * This method should dismiss the sheet using
      * orderOut:<br> * * - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void
      * *)contextInfo;<br> * *<br> * Original signature : <code>void beginSheet(NSWindow*, NSWindow*, id, null,
      * void*)</code><br> * /<br> - (void)beginSheet:(NSWindow*)sheet modalForWindow:(NSWindow*)docWindow

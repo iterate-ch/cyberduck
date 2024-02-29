@@ -279,7 +279,7 @@ public class FTPMlsdListResponseReaderTest {
         Path path = new Path("/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
                 "type=dir;modify=20140315210350; Gozo 2013/2014",
-                "type=dir;modify=20140315210350; Tigger & Friends"
+                "type=dir;modify=20140315210350; Trigger & Friends"
         };
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
                 .read(path, Arrays.asList(replies));

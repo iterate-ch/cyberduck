@@ -64,7 +64,7 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
     protected void flush(final boolean force) throws IOException {
         // Copy from memory file to output
         final byte[] content = buffer.toByteArray();
-        // Re-use buffer
+        // Reuse buffer
         buffer.reset();
         for(int offset = 0; offset < content.length; offset += threshold) {
             int len = Math.min(threshold, content.length - offset);
@@ -90,7 +90,7 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
             if(buffer.size() > 0) {
                 proxy.write(buffer.toByteArray());
             }
-            // Re-use buffer
+            // Reuse buffer
             buffer.reset();
             super.close();
         }

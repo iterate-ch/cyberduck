@@ -34,7 +34,7 @@ public class FilezillaFTPEntryParserTest {
     private FTPFileEntryParser parser;
 
     @Before
-    public void conigure() {
+    public void configure() {
         this.parser = new FTPParserSelector().getParser("UNIX emulated by FileZilla");
     }
 

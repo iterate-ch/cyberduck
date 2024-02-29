@@ -38,7 +38,7 @@ public interface ChecksumCompute {
      * @param status Offset and limit to read from stream
      * @return Calculated fingerprint
      * @throws ChecksumException         Error calculating checksum
-     * @throws ChecksumCanceledException Calculating checksum was interrrupted
+     * @throws ChecksumCanceledException Calculating checksum was interrupted
      */
     Checksum compute(InputStream in, TransferStatus status) throws BackgroundException;
 
@@ -46,7 +46,7 @@ public interface ChecksumCompute {
      * @param data Hex encoded string
      * @return Calculated fingerprint
      * @throws ChecksumException         Error calculating checksum
-     * @throws ChecksumCanceledException Calculating checksum was interrrupted
+     * @throws ChecksumCanceledException Calculating checksum was interrupted
      */
     default Checksum compute(final String data) throws BackgroundException {
         try {

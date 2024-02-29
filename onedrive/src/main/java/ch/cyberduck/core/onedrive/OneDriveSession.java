@@ -95,7 +95,7 @@ public class OneDriveSession extends GraphSession {
         if(new SimplePathPredicate(OneDriveListService.MYFILES_NAME).test(file)) {
             final User.Metadata user = this.getUser();
             // creationType can be non-assigned (Microsoft Account)
-            // or null, Inviation, LocalAccount or EmailVerified.
+            // or null, Invitation, LocalAccount or EmailVerified.
             // noinspection OptionalAssignedToNull
             if(null == user || user.getCreationType() == null) {
                 return new Drive(client).getRoot();
