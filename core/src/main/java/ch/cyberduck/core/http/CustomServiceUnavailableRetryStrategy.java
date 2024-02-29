@@ -18,10 +18,15 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ServiceUnavailableRetryStrategy;
-import org.apache.http.impl.client.DefaultServiceUnavailableRetryStrategy;
+import org.apache.http.protocol.HttpContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavailableRetryStrategy {
+    private static final Logger log = LogManager.getLogger(CustomServiceUnavailableRetryStrategy.class);
 
     private final Host host;
 
@@ -30,13 +35,31 @@ public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavail
     }
 
     public CustomServiceUnavailableRetryStrategy(final Host host, final ServiceUnavailableRetryStrategy proxy) {
-        super(proxy, new DefaultServiceUnavailableRetryStrategy(new HostPreferences(host).getInteger("http.connections.retry"),
-                new HostPreferences(host).getInteger("http.connections.retry.interval")));
+        super(proxy);
         this.host = host;
     }
 
     @Override
+    public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
+        if(executionCount > new HostPreferences(host).getInteger("connection.retry")) {
+            return false;
+        }
+        // Proxy to chain
+        if(super.retryRequest(response, executionCount, context)) {
+            return true;
+        }
+        // Apply default if not handled
+        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Retry for response %s", response));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public long getRetryInterval() {
-        return new HostPreferences(host).getInteger("http.connections.retry.interval");
+        return new HostPreferences(host).getLong("connection.retry.delay") * 1000L;
     }
 }

@@ -174,7 +174,8 @@ public class HttpConnectionPoolBuilder {
             configuration.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
         }
         // Retry handler for I/O failures
-        configuration.setRetryHandler(new ExtendedHttpRequestRetryHandler(new HostPreferences(host).getInteger("http.connections.retry")));
+        configuration.setRetryHandler(new ExtendedHttpRequestRetryHandler(
+                new HostPreferences(host).getInteger("connection.retry")));
         // Retry handler for HTTP error status
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host));
         if(!new HostPreferences(host).getBoolean("http.compression.enable")) {
