@@ -24,6 +24,18 @@ public class CustomConnectionBackoffStrategy extends DefaultBackoffStrategy {
 
     @Override
     public boolean shouldBackoff(final Throwable t) {
+        if(t instanceof SocketTimeoutException) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Backoff for timeout failure %s", t));
+            }
+            return true;
+        }
+        if(t instanceof ConnectException) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Backoff for connect failure %s", t));
+            }
+            return true;
+        }
         return false;
     }
 
