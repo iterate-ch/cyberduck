@@ -14,13 +14,22 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
+
 import org.apache.http.HttpResponse;
-import org.apache.http.impl.client.DefaultBackoffStrategy;
+import org.apache.http.client.ConnectionBackoffStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CustomConnectionBackoffStrategy extends DefaultBackoffStrategy {
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+
+public class CustomConnectionBackoffStrategy extends CustomServiceUnavailableRetryStrategy implements ConnectionBackoffStrategy {
     private static final Logger log = LogManager.getLogger(CustomConnectionBackoffStrategy.class);
+
+    public CustomConnectionBackoffStrategy(final Host host) {
+        super(host);
+    }
 
     @Override
     public boolean shouldBackoff(final Throwable t) {
@@ -41,10 +50,12 @@ public class CustomConnectionBackoffStrategy extends DefaultBackoffStrategy {
 
     @Override
     public boolean shouldBackoff(final HttpResponse response) {
-        final boolean backoff = super.shouldBackoff(response);
-        if(backoff) {
-            log.warn(String.format("Backoff for reply %s", response));
+        if(this.evaluate(response)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Backoff for reply %s", response));
+            }
+            return true;
         }
-        return backoff;
+        return false;
     }
 }

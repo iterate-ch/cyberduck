@@ -201,7 +201,7 @@ public class HttpConnectionPoolBuilder {
         configuration.setDnsResolver(new CustomDnsResolver());
         if(new HostPreferences(host).getBoolean("connection.retry.backoff.enable")) {
             configuration.setBackoffManager(new AIMDBackoffManager(connectionManager));
-            configuration.setConnectionBackoffStrategy(new CustomConnectionBackoffStrategy());
+            configuration.setConnectionBackoffStrategy(new CustomConnectionBackoffStrategy(host));
         }
         return configuration;
     }

@@ -46,16 +46,31 @@ public class CustomServiceUnavailableRetryStrategy extends ExecutionCountService
         }
         // Proxy to chain
         if(super.retryRequest(response, executionCount, context)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Retry for response %s", response));
+            }
             return true;
         }
+        final boolean retry = this.evaluate(response);
+        if(retry) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Retry for response %s", response));
+            }
+        }
+        return retry;
+    }
+
+    /**
+     * @param response Server response
+     * @return True if request should be retried given the HTTP response
+     */
+    protected boolean evaluate(final HttpResponse response) {
         // Apply default if not handled
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
+            case HttpStatus.SC_GATEWAY_TIMEOUT:
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
             case HttpStatus.SC_REQUEST_TIMEOUT:
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Retry for response %s", response));
-                }
                 return true;
         }
         return false;
