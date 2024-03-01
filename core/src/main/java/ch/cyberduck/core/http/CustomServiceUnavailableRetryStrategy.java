@@ -47,14 +47,14 @@ public class CustomServiceUnavailableRetryStrategy extends ExecutionCountService
         // Proxy to chain
         if(super.retryRequest(response, executionCount, context)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Retry for response %s", response));
+                log.warn(String.format("Allow retry for response %s if repeatable", response));
             }
             return true;
         }
         final boolean retry = this.evaluate(response);
         if(retry) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Retry for response %s", response));
+                log.warn(String.format("Allow retry for response %s if repeatable", response));
             }
         }
         return retry;
