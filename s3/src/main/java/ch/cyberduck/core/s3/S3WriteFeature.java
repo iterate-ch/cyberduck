@@ -38,7 +38,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -71,7 +71,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         final S3Object object = this.getDetails(file, status);
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>(file) {
             @Override
-            public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
+            public StorageObject call(final HttpEntity entity) throws BackgroundException {
                 try {
                     final RequestEntityRestStorageService client = session.getClient();
                     final Path bucket = containerService.getContainer(file);

@@ -30,12 +30,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +58,7 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
     public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return this.write(file, status, new DelayedHttpEntityCallable<Node>(file) {
             @Override
-            public Node call(final AbstractHttpEntity entity) throws BackgroundException {
+            public Node call(final HttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPut request = new HttpPut(status.getUrl());
                     request.setEntity(entity);

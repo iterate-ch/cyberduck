@@ -32,6 +32,7 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -40,7 +41,6 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HTTP;
@@ -73,7 +73,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>(file) {
             @Override
-            public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
+            public StorageObject call(final HttpEntity entity) throws BackgroundException {
                 try {
                     // POST /upload/storage/v1/b/myBucket/o
                     final StringBuilder uri = new StringBuilder(String.format("%supload/storage/v1/b/%s/o?uploadType=resumable",

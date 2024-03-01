@@ -36,7 +36,7 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -71,7 +71,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
+            public StorageObject call(final HttpEntity entity) throws BackgroundException {
                 try {
                     // Previous
                     final HashMap<String, String> headers = new HashMap<>(status.getMetadata());

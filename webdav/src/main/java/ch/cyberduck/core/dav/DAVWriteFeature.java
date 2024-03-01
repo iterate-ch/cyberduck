@@ -34,8 +34,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.logging.log4j.LogManager;
@@ -122,7 +122,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
+            public Void call(final HttpEntity entity) throws BackgroundException {
                 try {
                     session.getClient().put(new DAVPathEncoder().encode(file), entity,
                             headers, new ETagResponseHandler());
