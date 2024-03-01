@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.CachingVersionIdProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
@@ -71,12 +73,26 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
             }
             // Files that have been hidden will not be returned
             final B2ListFilesResponse response = session.getClient().listFileNames(
-                    this.getVersionId(containerService.getContainer(file)), containerService.getKey(file), 1);
-            for(B2FileInfoResponse info : response.getFiles()) {
-                if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
-                    // Cache in file attributes
-                    return this.cache(file, info.getFileId());
+                    this.getVersionId(containerService.getContainer(file)), containerService.getKey(file), 1,
+                    new DirectoryDelimiterPathContainerService().getKey(file.getParent()),
+                    String.valueOf(Path.DELIMITER));
+            // Find for exact filename match (.bzEmpty file for directories)
+            final Optional<B2FileInfoResponse> optional = response.getFiles().stream().filter(
+                    info -> StringUtils.equals(containerService.getKey(file), info.getFileName())).findFirst();
+            if(optional.isPresent()) {
+                // Cache in file attributes
+                return this.cache(file, optional.get().getFileId());
+            }
+            if(file.isDirectory()) {
+                // Search for common prefix returned when no placeholder file was found
+                if(response.getFiles().stream().anyMatch(
+                        info -> StringUtils.startsWith(new DirectoryDelimiterPathContainerService().getKey(file), info.getFileName()))) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Common prefix found for %s but no placeholder file", file));
+                    }
+                    return null;
                 }
+                throw new NotfoundException(file.getAbsolute());
             }
             throw new NotfoundException(file.getAbsolute());
         }

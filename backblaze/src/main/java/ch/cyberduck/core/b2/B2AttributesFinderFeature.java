@@ -91,6 +91,9 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         }
         else {
             final String id = fileid.getVersionId(file);
+            if(null == id) {
+                return PathAttributes.EMPTY;
+            }
             B2FileResponse response;
             try {
                 response = this.findFileInfo(file, id);
