@@ -158,7 +158,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CryptoDeleteFeature{");
+        final StringBuilder sb = new StringBuilder("CryptoDeleteV7Feature{");
         sb.append("proxy=").append(proxy);
         sb.append('}');
         return sb.toString();
