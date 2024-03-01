@@ -27,6 +27,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
@@ -62,7 +63,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     protected B2ApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(
-                host, retryHandler = new B2ErrorResponseInterceptor(this, fileid)));
+                host, new ExecutionCountServiceUnavailableRetryStrategy(retryHandler = new B2ErrorResponseInterceptor(this, fileid))));
         configuration.addInterceptorLast(retryHandler);
         return new B2ApiClient(configuration.build());
     }

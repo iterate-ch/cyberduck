@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
@@ -84,7 +85,7 @@ public class OwncloudSession extends DAVSession {
             }
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                    new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
         }
         return configuration;
     }

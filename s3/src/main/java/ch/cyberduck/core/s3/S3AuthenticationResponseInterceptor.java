@@ -36,8 +36,6 @@ import java.io.IOException;
 public class S3AuthenticationResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements S3CredentialsStrategy {
     private static final Logger log = LogManager.getLogger(S3AuthenticationResponseInterceptor.class);
 
-    private static final int MAX_RETRIES = 1;
-
     private final S3Session session;
     private final S3CredentialsStrategy authenticator;
 
@@ -53,48 +51,41 @@ public class S3AuthenticationResponseInterceptor extends DisabledServiceUnavaila
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        if(executionCount <= MAX_RETRIES) {
-            switch(response.getStatusLine().getStatusCode()) {
-                case HttpStatus.SC_FORBIDDEN:
-                case HttpStatus.SC_BAD_REQUEST:
-                    try {
-                        final BackgroundException failure = new S3ExceptionMappingService().map(response);
-                        if(failure instanceof LoginFailureException) {
-                            // 403 Forbidden (InvalidAccessKeyId) The provided token has expired
-                            // 400 Bad Request (ExpiredToken) The provided token has expired
-                            // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
-                            // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
-                            if(log.isWarnEnabled()) {
-                                log.warn(String.format("Handle failure %s from response %s", failure, response));
-                            }
-                            final Credentials credentials = authenticator.get();
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Reconfigure client with credentials %s", credentials));
-                            }
-                            if(credentials.getTokens().validate()) {
-                                session.getClient().setProviderCredentials(new AWSSessionCredentials(
-                                        credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
-                                        credentials.getTokens().getSessionToken()));
-                            }
-                            else {
-                                session.getClient().setProviderCredentials(new AWSCredentials(
-                                        credentials.getUsername(), credentials.getPassword()));
-                            }
-                            return true;
+        switch(response.getStatusLine().getStatusCode()) {
+            case HttpStatus.SC_FORBIDDEN:
+            case HttpStatus.SC_BAD_REQUEST:
+                try {
+                    final BackgroundException failure = new S3ExceptionMappingService().map(response);
+                    if(failure instanceof LoginFailureException) {
+                        // 403 Forbidden (InvalidAccessKeyId) The provided token has expired
+                        // 400 Bad Request (ExpiredToken) The provided token has expired
+                        // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
+                        // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Handle failure %s from response %s", failure, response));
                         }
+                        final Credentials credentials = authenticator.get();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Reconfigure client with credentials %s", credentials));
+                        }
+                        if(credentials.getTokens().validate()) {
+                            session.getClient().setProviderCredentials(new AWSSessionCredentials(
+                                    credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
+                                    credentials.getTokens().getSessionToken()));
+                        }
+                        else {
+                            session.getClient().setProviderCredentials(new AWSCredentials(
+                                    credentials.getUsername(), credentials.getPassword()));
+                        }
+                        return true;
                     }
-                    catch(IOException e) {
-                        log.warn(String.format("Failure parsing response entity from %s", response));
-                    }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Failure %s retrieving credentials", e));
-                    }
-            }
-        }
-        else {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
-            }
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure parsing response entity from %s", response));
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure %s retrieving credentials", e));
+                }
         }
         return false;
     }

@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
+import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -81,7 +82,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
                 .withParameter("token_access_type", "offline");
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
         if(new HostPreferences(host).getBoolean("dropbox.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
                     new HostPreferences(host).getInteger("dropbox.limit.requests.second")

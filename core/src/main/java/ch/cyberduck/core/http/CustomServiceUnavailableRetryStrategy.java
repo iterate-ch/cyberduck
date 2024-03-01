@@ -25,7 +25,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavailableRetryStrategy {
+public class CustomServiceUnavailableRetryStrategy extends ExecutionCountServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(CustomServiceUnavailableRetryStrategy.class);
 
     private final Host host;
@@ -35,7 +35,7 @@ public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavail
     }
 
     public CustomServiceUnavailableRetryStrategy(final Host host, final ServiceUnavailableRetryStrategy proxy) {
-        super(proxy);
+        super(new HostPreferences(host).getInteger("connection.retry"), proxy);
         this.host = host;
     }
 
@@ -49,11 +49,14 @@ public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavail
             return true;
         }
         // Apply default if not handled
-        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Retry for response %s", response));
-            }
-            return true;
+        switch(response.getStatusLine().getStatusCode()) {
+            case HttpStatus.SC_SERVICE_UNAVAILABLE:
+            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+            case HttpStatus.SC_REQUEST_TIMEOUT:
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Retry for response %s", response));
+                }
+                return true;
         }
         return false;
     }

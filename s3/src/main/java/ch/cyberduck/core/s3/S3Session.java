@@ -43,6 +43,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
@@ -304,7 +305,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                         }
                     });
                 }
-                configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host, interceptor));
+                configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                        new ExecutionCountServiceUnavailableRetryStrategy(interceptor)));
                 return interceptor;
             }
             else {

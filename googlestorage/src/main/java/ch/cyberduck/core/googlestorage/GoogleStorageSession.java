@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -71,7 +72,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
         transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();
         return new Storage.Builder(transport, new GsonFactory(), new UserAgentHttpRequestInitializer(ua))

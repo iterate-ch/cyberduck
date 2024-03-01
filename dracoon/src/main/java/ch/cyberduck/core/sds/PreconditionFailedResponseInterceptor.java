@@ -30,8 +30,6 @@ import org.apache.logging.log4j.Logger;
 public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseInterceptor {
     private static final Logger log = LogManager.getLogger(PreconditionFailedResponseInterceptor.class);
 
-    private static final int MAX_RETRIES = 1;
-
     private final OAuth2RequestInterceptor service;
 
     public PreconditionFailedResponseInterceptor(final Host bookmark,
@@ -45,21 +43,15 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_PRECONDITION_FAILED:
-                if(executionCount <= MAX_RETRIES) {
-                    try {
-                        log.warn(String.format("Invalidate OAuth tokens due to failed precondition %s", response));
-                        service.save(service.authorize());
-                        // Try again
-                        return true;
-                    }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Failure %s refreshing OAuth tokens", e));
-                    }
+                try {
+                    log.warn(String.format("Invalidate OAuth tokens due to failed precondition %s", response));
+                    service.save(service.authorize());
+                    // Try again
+                    return true;
                 }
-                else {
-                    log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure %s refreshing OAuth tokens", e));
                 }
-                return false;
         }
         return false;
     }

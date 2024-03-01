@@ -39,8 +39,6 @@ import java.io.IOException;
 public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(CteraAuthenticationHandler.class);
 
-    private static final int MAX_RETRIES = 1;
-
     private final CteraSession session;
 
     private CteraTokens tokens = CteraTokens.EMPTY;
@@ -87,25 +85,18 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        if(executionCount <= MAX_RETRIES) {
-            switch(response.getStatusLine().getStatusCode()) {
-                case HttpStatus.SC_MOVED_TEMPORARILY:
-                    try {
-                        log.info(String.format("Attempt to refresh cookie for failure %s", response));
-                        this.authenticate();
-                        // Try again
-                        return true;
-                    }
-                    catch(BackgroundException e) {
-                        log.error(String.format("Failure refreshing cookie. %s", e));
-                        return false;
-                    }
-            }
-        }
-        else {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
-            }
+        switch(response.getStatusLine().getStatusCode()) {
+            case HttpStatus.SC_MOVED_TEMPORARILY:
+                try {
+                    log.info(String.format("Attempt to refresh cookie for failure %s", response));
+                    this.authenticate();
+                    // Try again
+                    return true;
+                }
+                catch(BackgroundException e) {
+                    log.error(String.format("Failure refreshing cookie. %s", e));
+                    return false;
+                }
         }
         return false;
     }
