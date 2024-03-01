@@ -29,6 +29,7 @@ import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +42,7 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
             InterruptedIOException.class,
             UnknownHostException.class,
             ConnectException.class,
+            NoRouteToHostException.class,
             // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
             // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
             SSLHandshakeException.class);
