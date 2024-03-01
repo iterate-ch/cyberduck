@@ -39,7 +39,6 @@ import java.io.IOException;
 public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(CteraAuthenticationHandler.class);
 
-    private static final String SAML_LOCATION = "https://myapps.microsoft.com/signin/CTERA/e8e5145e-4fac-412e-b87b-fbfc26123827";
     private static final int MAX_RETRIES = 1;
 
     private final CteraSession session;
