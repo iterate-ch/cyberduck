@@ -17,6 +17,7 @@ package ch.cyberduck.core.oauth;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -40,7 +41,10 @@ public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2Authorizati
 
     @Override
     public String prompt(final Host bookmark, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) throws BackgroundException {
-        if(StringUtils.endsWith(redirectUri, ":oauth")) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Evaluate redirect URI %s", redirectUri));
+        }
+        if(StringUtils.endsWith(URIEncoder.decode(redirectUri), ":oauth")) {
             return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(
                     bookmark, prompt, authorizationCodeUrl, redirectUri, state);
         }
