@@ -68,6 +68,9 @@ public abstract class Transfer implements Serializable {
      */
     private AtomicLong transferred;
 
+    /**
+     * Security scoped bookmarks obtained for file to upload or parent folder for downloads
+     */
     private final Map<Local, Object> locks = new HashMap<>();
 
     public abstract Type getType();
