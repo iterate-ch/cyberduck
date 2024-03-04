@@ -210,6 +210,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             }
             this.await();
             transfer.post(source, destination, table, error, progress, connect);
+            // Close transfer thread pool
+            this.shutdown();
         }
         finally {
             this.release(source, Connection.source, null);
@@ -541,11 +543,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             log.warn(String.format("Skip file %s with unknown transfer status", item));
         }
         return ConcurrentUtils.constantFuture(null);
-    }
-
-    @Override
-    public void cleanup(final Boolean result) {
-        this.shutdown();
     }
 
     protected void shutdown() {
