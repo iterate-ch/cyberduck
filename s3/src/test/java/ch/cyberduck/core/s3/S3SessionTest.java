@@ -32,6 +32,7 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -91,6 +92,22 @@ public class S3SessionTest extends AbstractS3Test {
         }, new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
+    @Test
+    public void testAWS2SignatureVersion() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+        ));
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertTrue(session.isConnected());
+        session.login(new DisabledProxyFinder().find(host.getHostname()), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
         assertFalse(session.isConnected());
     }
