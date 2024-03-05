@@ -15,21 +15,7 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -244,7 +230,7 @@ public class OAuth2AuthorizationService {
             }
             // Swap the given authorization token for access/refresh tokens
             return flow.newTokenRequest(authorizationCode)
-                    .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes)
+                    .setRedirectUri(URIEncoder.decode(redirectUri)).setScopes(scopes.isEmpty() ? null : scopes)
                     .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
         }
         catch(TokenResponseException e) {
