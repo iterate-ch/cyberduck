@@ -23,7 +23,6 @@ import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,40 +30,29 @@ import org.apache.logging.log4j.Logger;
 public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseInterceptor {
     private static final Logger log = LogManager.getLogger(PreconditionFailedResponseInterceptor.class);
 
-    private static final int MAX_RETRIES = 1;
-
     private final OAuth2RequestInterceptor service;
-    private final ServiceUnavailableRetryStrategy next;
 
     public PreconditionFailedResponseInterceptor(final Host bookmark,
                                                  final OAuth2RequestInterceptor service,
-                                                 final LoginCallback prompt,
-                                                 final ServiceUnavailableRetryStrategy next) {
+                                                 final LoginCallback prompt) {
         super(bookmark, service);
         this.service = service;
-        this.next = next;
     }
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_PRECONDITION_FAILED:
-                if(executionCount <= MAX_RETRIES) {
-                    try {
-                        log.warn(String.format("Invalidate OAuth tokens due to failed precondition %s", response));
-                        service.save(service.authorize());
-                        // Try again
-                        return true;
-                    }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Failure %s refreshing OAuth tokens", e));
-                    }
+                try {
+                    log.warn(String.format("Invalidate OAuth tokens due to failed precondition %s", response));
+                    service.save(service.authorize());
+                    // Try again
+                    return true;
                 }
-                else {
-                    log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure %s refreshing OAuth tokens", e));
                 }
-                return false;
         }
-        return next.retryRequest(response, executionCount, context);
+        return false;
     }
 }

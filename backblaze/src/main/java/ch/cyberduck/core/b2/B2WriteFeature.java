@@ -30,7 +30,7 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -77,7 +77,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
              * @return The SHA-1 returned by the server for the uploaded object
              */
             @Override
-            public BaseB2Response call(final AbstractHttpEntity entity) throws BackgroundException {
+            public BaseB2Response call(final HttpEntity entity) throws BackgroundException {
                 try {
                     final Checksum checksum = status.getChecksum();
                     if(status.isSegment()) {
@@ -119,7 +119,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 }
             }
 
-            private BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException {
+            private BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final HttpEntity entity, final Checksum checksum) throws B2ApiException, IOException {
                 final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
                 if(null != status.getModified()) {
                     fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getModified()));

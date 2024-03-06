@@ -29,6 +29,7 @@ import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
@@ -37,13 +38,14 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
     private static final Logger log = LogManager.getLogger(ExtendedHttpRequestRetryHandler.class);
 
     private static final List<Class<? extends IOException>> excludes = Arrays.asList(
-        UnrecoverableIOException.class,
-        InterruptedIOException.class,
-        UnknownHostException.class,
-        ConnectException.class,
-        // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
-        // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
-        SSLHandshakeException.class);
+            UnrecoverableIOException.class,
+            InterruptedIOException.class,
+            UnknownHostException.class,
+            ConnectException.class,
+            NoRouteToHostException.class,
+            // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
+            // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
+            SSLHandshakeException.class);
 
     public ExtendedHttpRequestRetryHandler(final int retryCount) {
         super(retryCount, true, excludes);

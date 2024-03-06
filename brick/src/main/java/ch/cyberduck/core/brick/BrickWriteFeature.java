@@ -36,12 +36,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
@@ -76,7 +76,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
         }
         final HttpResponseOutputStream<FileEntity> stream = this.write(file, status, new DelayedHttpEntityCallable<FileEntity>(file) {
             @Override
-            public FileEntity call(final AbstractHttpEntity entity) throws BackgroundException {
+            public FileEntity call(final HttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPut request = new HttpPut(uploadUri);
                     request.setEntity(entity);

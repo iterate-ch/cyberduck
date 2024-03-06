@@ -41,12 +41,14 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -79,7 +81,8 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     @Override
     protected CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        configuration.setServiceUnavailableRetryStrategy(retryHandler = new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
+        configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                new ExecutionCountServiceUnavailableRetryStrategy(retryHandler = new BrickUnauthorizedRetryStrategy(this, prompt, cancel))));
         configuration.addInterceptorLast(retryHandler);
         configuration.addInterceptorLast(new BrickPreferencesRequestInterceptor());
         return configuration.build();

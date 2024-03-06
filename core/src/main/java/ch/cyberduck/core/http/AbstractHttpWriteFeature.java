@@ -24,12 +24,14 @@ import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesAdapter;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.logging.log4j.LogManager;
@@ -68,12 +70,13 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
     @Override
     public HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
                                              final DelayedHttpEntityCallable<R> command) throws BackgroundException {
-        return this.write(file, status, command, new DelayedHttpEntity() {
+        final DelayedHttpEntity entity = new DelayedHttpEntity() {
             @Override
             public long getContentLength() {
                 return command.getContentLength();
             }
-        });
+        };
+        return this.write(file, status, command, entity);
     }
 
     protected HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
@@ -92,7 +95,9 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             public void run() {
                 try {
                     status.validate();
-                    this.response = command.call(entity);
+                    this.response = command.call(PreferencesFactory.get().getInteger("http.request.entity.buffer.limit")
+                            > status.getLength() ? new BufferedHttpEntity(entity) : entity
+                    );
                 }
                 catch(Exception e) {
                     this.exception = e;

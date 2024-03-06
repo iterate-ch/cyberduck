@@ -37,6 +37,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -44,7 +45,6 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
@@ -91,7 +91,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         final HttpResponseOutputStream<Chunk> stream = this.write(file, status,
                 new DelayedHttpEntityCallable<Chunk>(file) {
                     @Override
-                    public Chunk call(final AbstractHttpEntity entity) throws BackgroundException {
+                    public Chunk call(final HttpEntity entity) throws BackgroundException {
                         try {
                             final HttpResponse response;
                             final StringBuilder uploadUriWithParameters = new StringBuilder(uploadUri);

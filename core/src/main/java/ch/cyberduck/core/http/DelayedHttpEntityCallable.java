@@ -18,7 +18,7 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.HttpEntity;
 
 public abstract class DelayedHttpEntityCallable<T> {
 
@@ -28,7 +28,7 @@ public abstract class DelayedHttpEntityCallable<T> {
         this.file = file;
     }
 
-    public abstract T call(AbstractHttpEntity entity) throws BackgroundException;
+    public abstract T call(HttpEntity entity) throws BackgroundException;
 
     /**
      * @return -1 for chunked transfer
