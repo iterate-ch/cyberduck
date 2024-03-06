@@ -38,6 +38,8 @@ import ch.cyberduck.core.sftp.auth.SFTPChallengeResponseAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPNoneAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
+import ch.cyberduck.core.sftp.compression.JcraftDelayedZlibCompression;
+import ch.cyberduck.core.sftp.compression.JcraftZlibCompression;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
@@ -88,9 +90,7 @@ import net.schmizz.sshj.transport.DisconnectListener;
 import net.schmizz.sshj.transport.NegotiatedAlgorithms;
 import net.schmizz.sshj.transport.Transport;
 import net.schmizz.sshj.transport.cipher.Cipher;
-import net.schmizz.sshj.transport.compression.DelayedZlibCompression;
 import net.schmizz.sshj.transport.compression.NoneCompression;
-import net.schmizz.sshj.transport.compression.ZlibCompression;
 import net.schmizz.sshj.transport.verification.AlgorithmsVerifier;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
@@ -125,8 +125,8 @@ public class SFTPSession extends Session<SSHClient> {
         final DefaultConfig configuration = new DefaultConfig();
         if("zlib".equals(preferences.getProperty("ssh.compression"))) {
             configuration.setCompressionFactories(Arrays.asList(
-                    new DelayedZlibCompression.Factory(),
-                    new ZlibCompression.Factory(),
+                    new JcraftDelayedZlibCompression.Factory(),
+                    new JcraftZlibCompression.Factory(),
                     new NoneCompression.Factory()));
         }
         else {
