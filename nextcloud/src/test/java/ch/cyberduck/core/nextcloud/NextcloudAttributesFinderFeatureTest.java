@@ -1,6 +1,7 @@
 package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -14,19 +15,24 @@ import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.RandomUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import javax.xml.namespace.QName;
+import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -86,23 +92,34 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path test = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+        final Path directory = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotNull(test.attributes().getFileId());
+        assertNotNull(directory.attributes().getFileId());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
-        final PathAttributes attributes = f.find(test);
-        assertEquals(test.attributes().getFileId(), attributes.getFileId());
+        final PathAttributes attributes = f.find(directory);
+        assertEquals(directory.attributes().getFileId(), attributes.getFileId());
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         // Test wrong type
         try {
-            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)));
+            f.find(new Path(directory.getAbsolute(), EnumSet.of(Path.Type.file)));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
+        final byte[] source = RandomUtils.nextBytes(3);
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        {
+            final TransferStatus status = new TransferStatus().withLength(source.length);
+            final HttpResponseOutputStream<Void> out = new NextcloudWriteFeature(session).write(
+                    file, status, new DisabledConnectionCallback());
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
+            out.close();
+        }
+        assertEquals(3L, new NextcloudAttributesFinderFeature(session).find(directory).getSize());
+        new DAVDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
