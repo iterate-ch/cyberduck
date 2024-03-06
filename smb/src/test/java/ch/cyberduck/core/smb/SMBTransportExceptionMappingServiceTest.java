@@ -15,8 +15,13 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+
 import org.junit.Test;
 
+import java.io.EOFException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -29,7 +34,22 @@ public class SMBTransportExceptionMappingServiceTest {
 
     @Test
     public void map() {
-        assertEquals("Connection failed", new SMBTransportExceptionMappingService().map(new TransportException(new ExecutionException(new SMBRuntimeException(new TimeoutException("Timeout expired"))))).getMessage());
-        assertEquals("Timeout expired. The connection attempt timed out. The server may be down, or your network may not be properly configured.", new SMBTransportExceptionMappingService().map(new TransportException(new ExecutionException(new SMBRuntimeException(new TimeoutException("Timeout expired"))))).getDetail());
+        {
+            final BackgroundException f = new SMBTransportExceptionMappingService().map(
+                    new TransportException(new ExecutionException(new SMBRuntimeException(new TimeoutException("Timeout expired")))));
+            assertEquals("Connection failed", f.getMessage());
+            assertEquals(ConnectionTimeoutException.class, f.getClass());
+        }
+        {
+            final BackgroundException f = new SMBTransportExceptionMappingService().map(new TransportException(new ExecutionException(new SMBRuntimeException(new TimeoutException("Timeout expired")))));
+            assertEquals("Timeout expired. The connection attempt timed out. The server may be down, or your network may not be properly configured.",
+                    f.getDetail());
+            assertEquals(ConnectionTimeoutException.class, f.getClass());
+        }
+        // com.hierynomus.smbj.common.SMBRuntimeException: com.hierynomus.protocol.transport.TransportException: java.io.EOFException: EOF while reading packet
+        {
+            final BackgroundException f = new SMBTransportExceptionMappingService().map(new TransportException(new EOFException("EOF while reading packet")));
+            assertEquals(ConnectionRefusedException.class, f.getClass());
+        }
     }
 }
