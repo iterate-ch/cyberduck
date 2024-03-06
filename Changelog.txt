@@ -3,6 +3,11 @@ https://cyberduck.io/
 
 8.8.0
 - [Localize] Tamil Localization
+- [Bugfix] Improved retry and backoff strategy for API errors (Backblaze B2) (#15601)
+- [Bugfix] Require signing and encryption by default (SMB) (#15638)
+- [Bugfix] Support upload to buckets with object lock enabled (S3) (#15557)
+- [Bugfix] Transfer incomplete message when copying between servers (#15583)
+- [Bugfix] Unresponsive application when waiting for transfer to cancel on timeout (#15671)
 
 8.7.3
 - [Bugfix] Crash when opening application (Windows) (#15535)
