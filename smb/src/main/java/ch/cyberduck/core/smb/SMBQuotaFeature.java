@@ -20,8 +20,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 public class SMBQuotaFeature implements Quota {
 
@@ -35,7 +35,8 @@ public class SMBQuotaFeature implements Quota {
     public Space get() throws BackgroundException {
         long used = 0L;
         long available = 0L;
-        for(Path container : session.getFeature(ListService.class).list(Home.ROOT, new DisabledListProgressListener())) {
+        for(Path container : session.getFeature(ListService.class).list(
+                new DefaultHomeFinderService(session).find(), new DisabledListProgressListener())) {
             final PathAttributes attr = new SMBAttributesFinderFeature(session).find(container);
             used += attr.getQuota().used;
             available += attr.getQuota().available;
