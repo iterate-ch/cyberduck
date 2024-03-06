@@ -47,6 +47,8 @@ public class NextcloudListService extends DAVListService {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1,
                 Stream.of(
                                 NextcloudAttributesFinderFeature.OC_FILEID_CUSTOM_NAMESPACE,
+                                NextcloudAttributesFinderFeature.OC_CHECKSUMS_CUSTOM_NAMESPACE,
+                                NextcloudAttributesFinderFeature.OC_SIZE_CUSTOM_NAMESPACE,
                                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
                                 DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
                         collect(Collectors.toSet()));

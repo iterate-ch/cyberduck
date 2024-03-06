@@ -1,7 +1,9 @@
 package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -92,8 +94,9 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path directory = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(new Path(new DefaultHomeFinderService(session).find(),
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path directory = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(directory.attributes().getFileId());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(directory);
@@ -119,6 +122,8 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
             out.close();
         }
         assertEquals(3L, new NextcloudAttributesFinderFeature(session).find(directory).getSize());
+        assertEquals(3L, new NextcloudListService(session).list(home, new DisabledListProgressListener())
+                .find(new DefaultPathPredicate(directory)).attributes().getSize());
         new DAVDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
