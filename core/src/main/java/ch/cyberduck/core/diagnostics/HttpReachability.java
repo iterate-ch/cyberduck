@@ -65,6 +65,9 @@ public class HttpReachability implements Reachability {
 
     @Override
     public boolean isReachable(final Host bookmark) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Test reachability for %s", bookmark));
+        }
         final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
                 new DefaultTrustManagerHostnameCallback(bookmark), store);
         final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
