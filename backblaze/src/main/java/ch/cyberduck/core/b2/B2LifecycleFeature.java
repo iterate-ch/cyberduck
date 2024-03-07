@@ -57,10 +57,10 @@ public class B2LifecycleFeature implements Lifecycle {
             return LifecycleConfiguration.empty();
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, container);
+            throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, container);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, container);
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, container);
         }
     }
 
