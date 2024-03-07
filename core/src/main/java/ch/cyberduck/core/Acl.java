@@ -583,4 +583,9 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
     public int hashCode() {
         return Objects.hash(super.hashCode(), canned);
     }
+
+    @Override
+    public String toString() {
+        return canned;
+    }
 }
