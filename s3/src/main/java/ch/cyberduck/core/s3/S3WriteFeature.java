@@ -46,7 +46,6 @@ import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -107,9 +106,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         final Checksum checksum = status.getChecksum();
         if(Checksum.NONE != checksum) {
             switch(checksum.algorithm) {
-                case md5:
-                    object.setMd5Hash(ServiceUtils.fromHex(checksum.hash));
-                    break;
                 case sha256:
                     if(!status.isSegment()) {
                         object.addMetadata("x-amz-checksum-sha256", checksum.base64);
