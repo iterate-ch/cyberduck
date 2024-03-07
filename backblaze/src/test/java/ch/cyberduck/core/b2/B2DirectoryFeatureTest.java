@@ -80,11 +80,13 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     public void testCreatePlaceholder() throws Exception {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final String filename = new AlphanumericRandomStringService().random();
+        final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, filename, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(directory.getType().contains(Path.Type.placeholder));
         assertTrue(new B2FindFeature(session, fileid).find(directory));
         assertTrue(new DefaultFindFeature(session).find(directory));
         assertNotEquals(PathAttributes.EMPTY, new B2AttributesFinderFeature(session, fileid).find(directory));
+        assertEquals(directory.attributes().getVersionId(), new B2VersionIdProvider(session).getVersionId(new Path(bucket, filename, EnumSet.of(Path.Type.directory))));
         // Mark as hidden
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(directory).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         // .bzEmpty is deleted not hidden

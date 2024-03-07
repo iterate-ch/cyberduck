@@ -75,7 +75,7 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
             final B2ListFilesResponse response = session.getClient().listFileNames(
                     this.getVersionId(containerService.getContainer(file)), containerService.getKey(file), 1,
                     new DirectoryDelimiterPathContainerService().getKey(file.getParent()),
-                    String.valueOf(Path.DELIMITER));
+                    null);
             // Find for exact filename match (.bzEmpty file for directories)
             final Optional<B2FileInfoResponse> optional = response.getFiles().stream().filter(
                     info -> StringUtils.equals(containerService.getKey(file), info.getFileName())).findFirst();

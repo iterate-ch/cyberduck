@@ -75,6 +75,9 @@ public class B2DeleteFeature implements Delete {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e, file));
                         continue;
                     }
+                    if(null == placeholder) {
+                        continue;
+                    }
                     try {
                         session.getClient().deleteFileVersion(containerService.getKey(file), placeholder);
                     }
