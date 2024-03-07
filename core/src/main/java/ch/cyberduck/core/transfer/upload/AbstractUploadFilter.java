@@ -307,14 +307,17 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         if(file.isFile()) {
             if(status.isExists() && !status.isAppend()) {
                 if(options.versioning) {
-                    final Versioning feature = session.getFeature(Versioning.class);
-                    if(feature != null && feature.getConfiguration(file).isEnabled()) {
-                        if(feature.save(file)) {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Clear exist flag for file %s", file));
+                    switch(session.getHost().getProtocol().getVersioningMode()) {
+                        case custom:
+                            final Versioning feature = session.getFeature(Versioning.class);
+                            if(feature != null && feature.getConfiguration(file).isEnabled()) {
+                                if(feature.save(file)) {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Clear exist flag for file %s", file));
+                                    }
+                                    status.exists(false).getDisplayname().exists(false);
+                                }
                             }
-                            status.exists(false).getDisplayname().exists(false);
-                        }
                     }
                 }
             }

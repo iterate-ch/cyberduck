@@ -313,13 +313,17 @@ public class UploadTransfer extends Transfer {
             }
         }
         if(options.versioning) {
-            final Versioning versioning = source.getFeature(Versioning.class);
-            if(versioning != null) {
-                for(TransferItem item : files.keySet()) {
-                    if(versioning.getConfiguration(item.remote).isEnabled()) {
-                        versioning.cleanup(item.remote, callback);
+            // Cleanup of previous files
+            switch(source.getHost().getProtocol().getVersioningMode()) {
+                case custom:
+                    final Versioning versioning = source.getFeature(Versioning.class);
+                    if(versioning != null) {
+                        for(TransferItem item : files.keySet()) {
+                            if(versioning.getConfiguration(item.remote).isEnabled()) {
+                                versioning.cleanup(item.remote, callback);
+                            }
+                        }
                     }
-                }
             }
         }
     }
