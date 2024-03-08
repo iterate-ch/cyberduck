@@ -20,6 +20,7 @@ import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -117,6 +118,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         private final AtomicReference<ServiceException> canceled = new AtomicReference<>();
         private final AtomicReference<MultipartCompleted> response = new AtomicReference<>();
 
+        private final ChecksumCompute md5 = ChecksumComputeFactory.get(HashAlgorithm.md5);
         private final ChecksumCompute sha256 = ChecksumComputeFactory.get(HashAlgorithm.sha256);
 
         private Long offset = 0L;
@@ -150,6 +152,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                         }
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session, acl).getDetails(file, status);
+                        part.addMetadata(HttpHeaders.CONTENT_MD5, md5.compute(new ByteArrayInputStream(content, off, len), status).base64);
                         try {
                             final Path bucket = containerService.getContainer(file);
                             session.getClient().putObjectWithRequestEntityImpl(

@@ -43,6 +43,7 @@ import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -237,6 +238,10 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         break;
                 }
                 status.setSegment(true);
+                final HashMap<String, String> metadata = new HashMap<>(status.getMetadata());
+                metadata.put(HttpHeaders.CONTENT_MD5, ChecksumComputeFactory.get(HashAlgorithm.md5)
+                        .compute(local.getInputStream(), status).base64);
+                status.setMetadata(metadata);
                 final StorageObject part = S3MultipartUploadService.super.upload(
                         file, local, throttle, counter, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
