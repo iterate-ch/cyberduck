@@ -15,10 +15,6 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -33,14 +29,6 @@ public class SMBQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
-        long used = 0L;
-        long available = 0L;
-        for(Path container : session.getFeature(ListService.class).list(
-                new DefaultHomeFinderService(session).find(), new DisabledListProgressListener())) {
-            final PathAttributes attr = new SMBAttributesFinderFeature(session).find(container);
-            used += attr.getQuota().used;
-            available += attr.getQuota().available;
-        }
-        return new Quota.Space(used, available);
+        return new SMBAttributesFinderFeature(session).find(new DefaultHomeFinderService(session).find()).getQuota();
     }
 }
