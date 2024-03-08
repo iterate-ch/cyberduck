@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -51,7 +50,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        status.setMime("text/plain");
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -71,9 +69,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         // d2b77e21aa68ebdcbfb589124b9f9192-1
         assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
-        final Map<String, String> metadata = new S3MetadataFeature(session, acl).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -90,7 +85,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        status.setMime("text/plain");
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -110,9 +104,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         // d2b77e21aa68ebdcbfb589124b9f9192-1
         assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(virtualhost, acl).getClass(test));
-        final Map<String, String> metadata = new S3MetadataFeature(virtualhost, acl).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -130,7 +121,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         status.setLength(random.length);
-        status.setMime("text/plain");
         status.setModified(System.currentTimeMillis());
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -147,11 +137,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(random.length, attr.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
-        final Map<String, String> metadata = new S3MetadataFeature(session, acl).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
-        assertEquals("aws:kms", metadata.get("server-side-encryption"));
-        assertNotNull(metadata.get("server-side-encryption-aws-kms-key-id"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }

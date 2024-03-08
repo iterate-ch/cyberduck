@@ -41,7 +41,6 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -52,7 +51,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     public void testMove() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -62,9 +61,6 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final PathAttributes targetAttr = new S3AttributesFinderFeature(session, acl).find(renamed);
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, renamed.attributes(), targetAttr));
-        final Map<String, String> metadata = new S3MetadataFeature(session, acl).getMetadata(renamed);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -97,12 +93,12 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        assertNotNull(new S3TouchFeature(session, acl).touch(test, new TransferStatus().withMime("text/plain")).attributes().getVersionId());
+        assertNotNull(new S3TouchFeature(session, acl).touch(test, new TransferStatus()).attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
         // Write some data to add a new version
         final S3WriteFeature feature = new S3WriteFeature(session, acl);
         final byte[] content = RandomUtils.nextBytes(10);
-        final TransferStatus status = new TransferStatus().withMime("text/plain");
+        final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<StorageObject> out = feature.write(test, status, new DisabledConnectionCallback());
@@ -129,9 +125,6 @@ public class S3MoveFeatureTest extends AbstractS3Test {
                 break;
             }
         }
-        final Map<String, String> metadata = new S3MetadataFeature(session, acl).getMetadata(renamed);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

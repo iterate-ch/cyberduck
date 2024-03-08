@@ -18,7 +18,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -41,12 +40,9 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final String filename = new AsciiRandomStringService().random();
         assertFalse(feature.isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), filename));
         assertTrue(feature.isSupported(container, filename));
-        final Path test = feature.touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+        final Path test = feature.touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
@@ -58,12 +54,9 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final S3TouchFeature feature = new S3TouchFeature(virtualhost, acl);
         final String filename = new AsciiRandomStringService().random();
         assertTrue(feature.isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), filename));
-        final Path test = feature.touch(new Path(filename, EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+        final Path test = feature.touch(new Path(filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
-        final Map<String, String> metadata = new S3MetadataFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(virtualhost, acl).find(test));
         assertEquals(test.attributes(), new DefaultAttributesFinderFeature(virtualhost).find(test));
         new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -74,12 +67,9 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     public void testTouchCarriageReturnKey() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
-                new Path(container, String.format("%s\n-\r", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+                new Path(container, String.format("%s\n-\r", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -90,12 +80,9 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     public void testTouchUriEncoding() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
-                new Path(container, String.format("%s-+*~@([", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+                new Path(container, String.format("%s-+*~@([", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));

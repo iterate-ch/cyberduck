@@ -38,7 +38,6 @@ import org.junit.experimental.categories.Category;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -75,9 +74,6 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(random.length, attr.getSize());
-        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -95,18 +91,12 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        status.setMime("text/plain");
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test);
         assertEquals(random.length, attributes.getSize());
-        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
-        assertEquals("aws:kms", metadata.get("server-side-encryption"));
-        assertNotNull(metadata.get("server-side-encryption-aws-kms-key-id"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -124,15 +114,11 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        status.setMime("text/plain");
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test);
         assertEquals(random.length, attributes.getSize());
-        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }

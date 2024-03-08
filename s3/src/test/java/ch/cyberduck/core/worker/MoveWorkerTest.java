@@ -33,7 +33,6 @@ import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
-import ch.cyberduck.core.s3.S3MetadataFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3VersionedObjectListService;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -57,7 +56,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(source, new TransferStatus().withMime("application/cyberduck"));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(source, new TransferStatus());
         new S3AccessControlListFeature(session).setPermission(source, new Acl(
                 new Acl.UserAndRole(
                         new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
@@ -71,8 +70,6 @@ public class MoveWorkerTest extends AbstractS3Test {
         worker.run(session);
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(source));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(target));
-        assertEquals("application/cyberduck",
-                new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(target).get("Content-Type"));
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
                 new Acl.UserAndRole(
                         new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)

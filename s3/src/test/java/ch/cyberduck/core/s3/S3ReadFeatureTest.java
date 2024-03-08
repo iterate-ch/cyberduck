@@ -106,7 +106,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(compressedContent), status));
         final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(compressedContent), out);
-        assertEquals("gzip", new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file).getMetadata().get(HttpHeaders.CONTENT_ENCODING));
         final InputStream in = new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getLength());

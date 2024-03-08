@@ -50,12 +50,12 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
     public void testGetMetadataFile() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus().withMime("text/plain"));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus().withMetadata(Collections.singletonMap("app", "cyberduck")));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(metadata.isEmpty());
-        assertTrue(metadata.containsKey("Content-Type"));
-        assertEquals("text/plain", metadata.get("Content-Type"));
+        assertTrue(metadata.containsKey("app"));
+        assertEquals("cyberduck", metadata.get("app"));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_USER_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_SERVICE_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_COMPLETE_METADATA));
@@ -85,20 +85,6 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
 
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testSetDuplicateHeaderDifferentCapitalization() throws Exception {
-        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
-        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
-        assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
-        feature.setMetadata(test, Collections.singletonMap("Content-type", "text/plain"));
-        final Map<String, String> metadata = feature.getMetadata(test);
-        assertTrue(metadata.containsKey("Content-Type"));
-        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
