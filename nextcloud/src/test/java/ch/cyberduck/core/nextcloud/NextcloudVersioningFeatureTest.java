@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
@@ -77,13 +78,18 @@ public class NextcloudVersioningFeatureTest extends AbstractNextcloudTest {
             assertNotNull(initialVersion.attributes().getVersionId());
             assertNotEquals(initialAttributes, new NextcloudAttributesFinderFeature(session).find(test));
             assertEquals(initialVersion.attributes(), new NextcloudAttributesFinderFeature(session).find(initialVersion));
-            assertArrayEquals(initialContent, IOUtils.readFully(new NextcloudReadFeature(session).read(initialVersion, new TransferStatus(), new DisabledLoginCallback()),
-                    initialContent.length));
-
+            {
+                final InputStream reader = new NextcloudReadFeature(session).read(initialVersion, new TransferStatus(), new DisabledLoginCallback());
+                assertArrayEquals(initialContent, IOUtils.readFully(reader, initialContent.length));
+                reader.close();
+            }
             final Path updatedVersion = versions.get(0);
             assertEquals(contentUpdate.length, new NextcloudAttributesFinderFeature(session).find(updatedVersion).getSize());
-            assertArrayEquals(contentUpdate, IOUtils.readFully(new NextcloudReadFeature(session).read(updatedVersion, new TransferStatus(), new DisabledLoginCallback()),
-                    contentUpdate.length));
+            {
+                final InputStream reader = new NextcloudReadFeature(session).read(updatedVersion, new TransferStatus(), new DisabledLoginCallback());
+                assertArrayEquals(contentUpdate, IOUtils.readFully(reader, contentUpdate.length));
+                reader.close();
+            }
         }
         feature.revert(initialVersion);
         assertEquals(initialVersion.attributes().getModificationDate(), new NextcloudAttributesFinderFeature(session).find(test).getModificationDate());
