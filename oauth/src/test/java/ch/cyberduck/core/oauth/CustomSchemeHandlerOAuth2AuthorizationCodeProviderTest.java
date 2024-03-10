@@ -24,5 +24,6 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProviderTest {
     @Test
     public void toScheme() {
         assertEquals("x-cyberduck-action", CustomSchemeHandlerOAuth2AuthorizationCodeProvider.toScheme("x-cyberduck-action:oauth"));
+        assertEquals("https", CustomSchemeHandlerOAuth2AuthorizationCodeProvider.toScheme("https://redirect/"));
     }
 }

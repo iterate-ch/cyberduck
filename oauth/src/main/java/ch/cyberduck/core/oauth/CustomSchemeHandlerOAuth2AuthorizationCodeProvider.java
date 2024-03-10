@@ -81,10 +81,13 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
         if(StringUtils.equalsIgnoreCase(Scheme.https.name(), handler)
                 || StringUtils.equalsIgnoreCase(Scheme.http.name(), handler)) {
             log.warn(String.format("Skip registering %s", redirectUri));
-            return;
+            schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
+                    Collections.singletonList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
         }
-        schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
-                Collections.singletonList(handler));
+        else {
+            schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
+                    Collections.singletonList(handler));
+        }
     }
 
     protected static String toScheme(final String redirectUri) {
