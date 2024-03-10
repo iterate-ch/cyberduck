@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -49,7 +48,7 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testWriteInvalidStorageClass() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -59,9 +58,8 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
             fail();
         }
-        catch(BackgroundException e) {
-            assertEquals("Invalid argument. Please contact your web hosting service provider for assistance.", e.getDetail());
-            throw e;
+        catch(IOException e) {
+            assertEquals("Invalid argument. Please contact your web hosting service provider for assistance.", e.getMessage());
         }
     }
 
