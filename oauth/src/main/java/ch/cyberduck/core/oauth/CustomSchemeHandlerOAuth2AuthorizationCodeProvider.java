@@ -20,6 +20,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -41,12 +42,7 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
 
     @Override
     public String prompt(final Host bookmark, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) throws BackgroundException {
-        final String handler = StringUtils.substringBefore(redirectUri, ':');
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Register OAuth handler %s", handler));
-        }
-        schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
-                Collections.singletonList(handler));
+        this.register(redirectUri);
         this.open(authorizationCodeUrl);
         // Assume scheme handler is registered
         final CountDownLatch signal = new CountDownLatch(1);
@@ -71,5 +67,21 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
                 LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
         bookmark.getCredentials().setSaved(new LoginOptions().save);
         return authenticationCode.get();
+    }
+
+    /**
+     * Register scheme handler for redirect URI
+     */
+    private void register(final String redirectUri) {
+        final String handler = toScheme(redirectUri);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register OAuth handler %s", handler));
+        }
+        schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
+                Collections.singletonList(handler));
+    }
+
+    protected static String toScheme(final String redirectUri) {
+        return StringUtils.substringBefore(URIEncoder.decode(redirectUri), ':');
     }
 }
