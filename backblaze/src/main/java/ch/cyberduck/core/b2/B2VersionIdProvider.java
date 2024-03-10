@@ -86,7 +86,7 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
             if(file.isDirectory()) {
                 // Search for common prefix returned when no placeholder file was found
                 if(response.getFiles().stream().anyMatch(
-                        info -> StringUtils.startsWith(new DirectoryDelimiterPathContainerService().getKey(file), info.getFileName()))) {
+                        info -> StringUtils.startsWith(info.getFileName(), new DirectoryDelimiterPathContainerService().getKey(file)))) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Common prefix found for %s but no placeholder file", file));
                     }
