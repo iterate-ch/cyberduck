@@ -20,6 +20,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
@@ -76,6 +77,11 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
         final String handler = toScheme(redirectUri);
         if(log.isInfoEnabled()) {
             log.info(String.format("Register OAuth handler %s", handler));
+        }
+        if(StringUtils.equalsIgnoreCase(Scheme.https.name(), handler)
+                || StringUtils.equalsIgnoreCase(Scheme.http.name(), handler)) {
+            log.warn(String.format("Skip registering %s", redirectUri));
+            return;
         }
         schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
                 Collections.singletonList(handler));
