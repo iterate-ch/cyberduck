@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
@@ -163,13 +162,13 @@ public class MoveWorkerTest extends AbstractS3Test {
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         new MoveWorker(Collections.singletonMap(file, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
-        assertFalse(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(file));
-        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(fileRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(file));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
-        assertFalse(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(folder));
-        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(folderRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(folder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(folderRenamed));
         try {
             assertTrue(new CryptoListService(session, new S3ListService(session, acl), cryptomator).list(folder, new DisabledListProgressListener()).isEmpty());
         }
@@ -202,7 +201,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
         assertFalse(new S3FindFeature(session, acl).find(clearFile));
-        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(encryptedFile));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedFile));
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         registry.clear();
     }
@@ -226,8 +225,8 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path encryptedFile = new Path(encryptedFolder, clearFile.getName(), EnumSet.of(Path.Type.file));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
-        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(encryptedFolder));
-        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(encryptedFile));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedFolder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedFile));
         assertFalse(new S3FindFeature(session, acl).find(clearFolder));
         assertFalse(new S3FindFeature(session, acl).find(clearFile));
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -255,7 +254,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path fileRenamed = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
-        assertFalse(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(encryptedFile));
+        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedFile));
         assertTrue(new S3FindFeature(session, acl).find(fileRenamed));
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(fileRenamed, clearFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -281,8 +280,8 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
-        assertFalse(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(encryptedFolder));
-        assertFalse(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(encryptedFile));
+        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedFolder));
+        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedFile));
         assertTrue(new S3FindFeature(session, acl).find(directoryRenamed));
         final Path fileRenamed = new Path(directoryRenamed, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new S3FindFeature(session, acl).find(fileRenamed));

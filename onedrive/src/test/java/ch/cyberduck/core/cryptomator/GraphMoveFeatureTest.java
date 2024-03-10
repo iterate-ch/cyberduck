@@ -21,8 +21,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -76,7 +76,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(file.attributes().getFileId(), fileRenamed.attributes().getFileId());
         assertFalse(cryptomator.getFeature(session, Find.class, new GraphFindFeature(session, fileid)).find(new Path(folder, filename, EnumSet.of(Path.Type.file))));
         assertTrue(cryptomator.getFeature(session, Find.class, new GraphFindFeature(session, fileid)).find(fileRenamed));
-        assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(fileRenamed).getModificationDate());
+        assertEquals(fileRenamed.attributes().getModificationDate(), cryptomator.getFeature(session, AttributesFinder.class, new GraphAttributesFinderFeature(session, fileid)).find(fileRenamed).getModificationDate());
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());

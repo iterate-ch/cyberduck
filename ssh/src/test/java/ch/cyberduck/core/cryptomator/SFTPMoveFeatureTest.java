@@ -21,9 +21,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -136,15 +135,15 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         final Path template = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path file = new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)
         ), new SFTPWriteFeature(session), cryptomator), new SFTPWriteFeature(session), cryptomator).touch(
-                template, new TransferStatus()).withAttributes(new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(template));
+                template, new TransferStatus()).withAttributes(cryptomator.getFeature(session, AttributesFinder.class, new SFTPAttributesFinderFeature(session)).find(template));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new SFTPMoveFeature(session));
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(fileRenamed.attributes(), new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(fileRenamed));
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(file));
-        assertEquals(fileRenamed.attributes(), new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(fileRenamed));
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(fileRenamed));
+        assertEquals(fileRenamed.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new SFTPAttributesFinderFeature(session)).find(fileRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(file));
+        assertEquals(fileRenamed.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new SFTPAttributesFinderFeature(session)).find(fileRenamed));
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(fileRenamed));
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(fileRenamed, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -162,8 +161,8 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(folder));
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(folderRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(folder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(folderRenamed));
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Collections.singletonList(folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -185,15 +184,15 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(file));
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(fileRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(file));
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(folder));
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(folderRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(folder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -26,12 +26,11 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
-import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPFindFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
@@ -69,7 +68,7 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         ), new SFTPWriteFeature(session), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.attributes().setSize(0L);
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test);
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -90,7 +89,7 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         ), new SFTPWriteFeature(session), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.attributes().setSize(0L);
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test);
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -112,7 +111,7 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         final AttributedList<Path> list = new AttributedList<>();
         list.add(found);
         cache.put(vault, list);
-        final PathAttributes attributes = new CachingAttributesFinderFeature(session, cache, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator)).find(test);
+        final PathAttributes attributes = new CachingAttributesFinderFeature(session, cache, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(test);
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         assertEquals(0L, cache.get(vault).get(0).attributes().getSize());

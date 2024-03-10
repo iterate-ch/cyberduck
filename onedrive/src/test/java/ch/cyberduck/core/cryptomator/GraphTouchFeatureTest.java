@@ -21,8 +21,8 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
@@ -68,7 +68,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVault());
         assertTrue(cryptomator.getFeature(session, Find.class, new GraphFindFeature(session, fileid)).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
+        final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new GraphAttributesFinderFeature(session, fileid)).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -89,7 +89,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVault());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
+        final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new GraphAttributesFinderFeature(session, fileid)).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

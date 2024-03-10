@@ -32,8 +32,8 @@ import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2FindFeature;
 import ch.cyberduck.core.b2.B2ReadFeature;
 import ch.cyberduck.core.b2.B2VersionIdProvider;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -107,14 +107,14 @@ public class CryptoB2SingleTransferWorkerTest extends AbstractB2Test {
         }.run(session));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(dir1));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(file1).getSize());
+        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new B2AttributesFinderFeature(session, fileid)).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(file2).getSize());
+        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new B2AttributesFinderFeature(session, fileid)).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());

@@ -28,8 +28,8 @@ import ch.cyberduck.core.b2.B2DirectoryFeature;
 import ch.cyberduck.core.b2.B2FindFeature;
 import ch.cyberduck.core.b2.B2ObjectListService;
 import ch.cyberduck.core.b2.B2VersionIdProvider;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -73,9 +73,9 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         // Assert both filename and file id matches
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        assertEquals(versionId, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test).getVersionId());
+        assertEquals(versionId, cryptomator.getFeature(session, AttributesFinder.class, new B2AttributesFinderFeature(session, fileid)).find(test).getVersionId());
         // Placeholder returned in list service with no file info
-        new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test).getVersionId();
+        cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test).getVersionId();
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new B2ObjectListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener())
                 .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());

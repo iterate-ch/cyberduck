@@ -74,7 +74,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         assertEquals(file.attributes().getFileId(), fileRenamed.attributes().getFileId());
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(fileRenamed));
-        assertEquals(fileRenamed.attributes().getFileId(), new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(fileRenamed).getFileId());
+        assertEquals(fileRenamed.attributes().getFileId(), cryptomator.getFeature(session, AttributesFinder.class, new DriveAttributesFinderFeature(session, fileid)).find(fileRenamed).getFileId());
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());

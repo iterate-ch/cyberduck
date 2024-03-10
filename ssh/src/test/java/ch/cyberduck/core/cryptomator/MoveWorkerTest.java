@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
@@ -163,12 +162,12 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         new MoveWorker(Collections.singletonMap(file, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(file));
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(fileRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(file));
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(folder));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(folder));
         try {
             assertTrue(new CryptoListService(session, new SFTPListService(session), cryptomator).list(folder, new DisabledListProgressListener()).isEmpty());
         }
@@ -176,7 +175,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
             //
         }
         assertEquals(1, new CryptoListService(session, new SFTPListService(session), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(folderRenamed));
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -201,7 +200,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
         assertFalse(new SFTPFindFeature(session).find(clearFile));
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(encryptedFile));
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         registry.clear();
     }
@@ -254,7 +253,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         final Path fileRenamed = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFile));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(encryptedFile));
         assertTrue(new SFTPFindFeature(session).find(fileRenamed));
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new SFTPDeleteFeature(session).delete(Arrays.asList(fileRenamed, clearFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -280,8 +279,8 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFolder));
-        assertFalse(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFile));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(encryptedFolder));
+        assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(encryptedFile));
         assertTrue(new SFTPFindFeature(session).find(directoryRenamed));
         final Path fileRenamed = new Path(directoryRenamed, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new SFTPFindFeature(session).find(fileRenamed));

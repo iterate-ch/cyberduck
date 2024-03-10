@@ -16,11 +16,11 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
@@ -112,8 +112,8 @@ public class CryptoSFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
-        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
-        final PathAttributes attributes1 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1);
+        assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(dir1));
+        final PathAttributes attributes1 = cryptomator.getFeature(session, AttributesFinder.class, new SFTPAttributesFinderFeature(session)).find(file1);
         assertEquals(1513092263000L, attributes1.getModificationDate());
         assertEquals(1513092263000L, new CryptoListService(session, new SFTPListService(session), cryptomator).list(dir1, new DisabledListProgressListener()).get(file1).attributes().getModificationDate());
         assertEquals(content.length, attributes1.getSize());
@@ -123,7 +123,7 @@ public class CryptoSFTPSingleTransferWorkerTest extends AbstractSFTPTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        final PathAttributes attributes2 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file2);
+        final PathAttributes attributes2 = cryptomator.getFeature(session, AttributesFinder.class, new SFTPAttributesFinderFeature(session)).find(file2);
         assertEquals(content.length, attributes2.getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

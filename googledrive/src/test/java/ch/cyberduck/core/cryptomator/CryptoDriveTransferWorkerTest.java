@@ -26,8 +26,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
@@ -106,7 +106,7 @@ public class CryptoDriveTransferWorkerTest extends AbstractDriveTest {
 
         }.run(session));
         Assert.assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(dir1));
-        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
+        Assert.assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(file1).getSize());
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
@@ -114,7 +114,7 @@ public class CryptoDriveTransferWorkerTest extends AbstractDriveTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             Assert.assertArrayEquals(content, buffer.toByteArray());
         }
-        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file2).getSize());
+        Assert.assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
