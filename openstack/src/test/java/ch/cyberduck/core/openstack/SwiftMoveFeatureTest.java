@@ -139,7 +139,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         }).toArray());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test
     public void testMoveLargeObjectToDifferentBucket() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
@@ -159,37 +159,8 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         targetBucket.attributes().setRegion("DFW");
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path movedFile = new SwiftMoveFeature(session, regionService).move(sourceFile, targetFile,
-            new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        // source file does not exist anymore
-        assertFalse(findFeature.find(sourceFile));
-        // moved file exists
-        assertTrue(findFeature.find(movedFile));
-        assertTrue(sourceSegments.stream().noneMatch(p -> {
-            try {
-                return findFeature.find(p);
-            }
-            catch(BackgroundException e) {
-                return false;
-            }
-        }));
-
-        final List<Path> targetSegments = segmentService.list(targetFile);
-        assertTrue(targetSegments.size() != 0);
-
-        assertTrue(targetSegments.stream().allMatch(p -> {
-            try {
-                return findFeature.find(p);
-            }
-            catch(BackgroundException e) {
-                return false;
-            }
-        }));
-
-        new SwiftDeleteFeature(session, segmentService, regionService).delete(
-            Collections.singletonMap(targetFile, new TransferStatus()),
-            new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
-        assertFalse(findFeature.find(movedFile));
+        assertThrows(BackgroundException.class, () -> new SwiftMoveFeature(session, regionService).move(sourceFile, targetFile,
+                new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
     }
 
     private void prepareFile(final Path path, final SwiftRegionService regionService, final SwiftSegmentService segmentService) throws BackgroundException {
