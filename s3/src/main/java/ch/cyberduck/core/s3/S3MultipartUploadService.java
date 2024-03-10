@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
@@ -60,6 +61,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
@@ -232,16 +235,19 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 status.setParameters(requestParameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
+                final Set<Checksum> checksum = writer.checksum(file, status).computeAll(local.getInputStream(), status);
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
-                        status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
+                        checksum.stream().filter(v -> v.algorithm.equals(HashAlgorithm.sha256)).findFirst().ifPresent(status::setChecksum);
                         break;
                 }
                 status.setSegment(true);
-                final HashMap<String, String> metadata = new HashMap<>(status.getMetadata());
-                metadata.put(HttpHeaders.CONTENT_MD5, ChecksumComputeFactory.get(HashAlgorithm.md5)
-                        .compute(local.getInputStream(), status).base64);
-                status.setMetadata(metadata);
+                final Optional<Checksum> md5 = checksum.stream().filter(v -> v.algorithm.equals(HashAlgorithm.md5)).findFirst();
+                if(md5.isPresent()) {
+                    final HashMap<String, String> metadata = new HashMap<>(status.getMetadata());
+                    metadata.put(HttpHeaders.CONTENT_MD5, md5.get().base64);
+                    status.setMetadata(metadata);
+                }
                 final StorageObject part = S3MultipartUploadService.super.upload(
                         file, local, throttle, counter, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
