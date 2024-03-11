@@ -47,9 +47,13 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
@@ -179,6 +183,18 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
+        return new ChecksumCompute() {
+            @Override
+            public Set<Checksum> computeAll(final InputStream in, final TransferStatus status) throws BackgroundException {
+                return new HashSet<>(Arrays.asList(
+                        ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(in, status),
+                        ChecksumComputeFactory.get(HashAlgorithm.md5).compute(in, status)));
+            }
+
+            @Override
+            public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
+                return ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(in, status);
+            }
+        };
     }
 }

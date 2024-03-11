@@ -28,8 +28,14 @@ import org.apache.commons.codec.binary.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Set;
 
 public interface ChecksumCompute {
+
+    default Set<Checksum> computeAll(InputStream in, TransferStatus status) throws BackgroundException {
+        return Collections.singleton(this.compute(in, status));
+    }
 
     /**
      * Implementation for given algorithm
