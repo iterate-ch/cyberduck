@@ -2,6 +2,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -9,11 +10,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -114,22 +119,21 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftLargeObjectUploadFeature feature = new SwiftLargeObjectUploadFeature(session, regionService, new SwiftWriteFeature(session, regionService),
-            1024L * 1024L, 1);
+                1024L * 1024L, 1) {
+            @Override
+            public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+                if(!interrupt.get()) {
+                    if(status.getOffset() >= 1L * 1024L * 1024L) {
+                        throw new ConnectionTimeoutException("Test");
+                    }
+                }
+                return super.upload(file, local, throttle, listener, status, cancel, progress, callback);
+            }
+        };
         final BytecountStreamListener listener = new BytecountStreamListener();
         try {
-            feature.upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
-                @Override
-                public InputStream getInputStream() throws AccessDeniedException {
-                    return new CountingInputStream(super.getInputStream()) {
-                        @Override
-                        protected void beforeRead(int n) throws IOException {
-                            if(this.getByteCount() >= 1.1 * 1024L * 1024L) {
-                                throw new IOException();
-                            }
-                        }
-                    };
-                }
-            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, status, new DisabledLoginCallback());
+            feature.upload(test, new Local(System.getProperty("java.io.tmpdir"), name),
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
