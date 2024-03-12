@@ -669,14 +669,13 @@ public class CryptoVault implements Vault {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
                         new CryptoMoveV6Feature(session, (Move) delegate, this) :
                         new CryptoMoveV7Feature(session, (Move) delegate, this));
+
             }
             if(type == AttributesFinder.class) {
                 return (T) new CryptoAttributesFeature(session, (AttributesFinder) delegate, this);
             }
             if(type == Find.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoFindV6Feature(session, (Find) delegate, this) :
-                        new CryptoFindV7Feature(session, (Find) delegate, this));
+                return (T) new CryptoFindFeature(session, (Find) delegate, this);
             }
             if(type == UrlProvider.class) {
                 return (T) new CryptoUrlProvider(session, (UrlProvider) delegate, this);

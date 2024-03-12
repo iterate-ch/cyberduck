@@ -22,13 +22,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 
-public class CryptoFindV6Feature implements Find {
+public class CryptoFindFeature implements Find {
 
     private final Session<?> session;
     private final Find delegate;
     private final Vault vault;
 
-    public CryptoFindV6Feature(final Session<?> session, final Find delegate, final Vault vault) {
+    public CryptoFindFeature(final Session<?> session, final Find delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
