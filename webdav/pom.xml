@@ -25,7 +25,7 @@
 
     <properties>
         <sardine-version>5.14</sardine-version>
-        <milton-api.version>3.1.1.488</milton-api.version>
+        <milton-api.version>4.0.1.1802</milton-api.version>
     </properties>
 
     <dependencies>
@@ -74,9 +74,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
