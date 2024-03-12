@@ -37,6 +37,8 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
@@ -47,6 +49,7 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -186,9 +189,21 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         return new ChecksumCompute() {
             @Override
             public Set<Checksum> computeAll(final InputStream in, final TransferStatus status) throws BackgroundException {
-                return new HashSet<>(Arrays.asList(
-                        ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(in, status),
-                        ChecksumComputeFactory.get(HashAlgorithm.md5).compute(in, status)));
+                final HashSet<Checksum> checksums = new HashSet<>(Arrays.asList(
+                        ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new ProxyInputStream(in) {
+                            @Override
+                            public void close() throws IOException {
+                                in.reset();
+                            }
+                        }, status),
+                        ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ProxyInputStream(in) {
+                            @Override
+                            public void close() throws IOException {
+                                in.reset();
+                            }
+                        }, status)));
+                IOUtils.closeQuietly(in);
+                return checksums;
             }
 
             @Override
