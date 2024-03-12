@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -74,10 +74,8 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         assertEquals(versionId, cryptomator.getFeature(session, AttributesFinder.class, new B2AttributesFinderFeature(session, fileid)).find(test).getVersionId());
-        // Placeholder returned in list service with no file info
-        cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test).getVersionId();
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new CryptoListService(session, new B2ObjectListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener())
+        assertTrue(new CryptoListService(session, new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()), cryptomator).list(vault, new DisabledListProgressListener())
                 .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Collections.singletonList(vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
