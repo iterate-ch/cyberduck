@@ -248,7 +248,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     metadata.put(HttpHeaders.CONTENT_MD5, md5.get().base64);
                     status.setMetadata(metadata);
                 }
-                final StorageObject part = S3MultipartUploadService.super.upload(
+                final StorageObject part = S3MultipartUploadService.this.upload(
                         file, local, throttle, counter, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response %s for part number %d", part, partNumber));

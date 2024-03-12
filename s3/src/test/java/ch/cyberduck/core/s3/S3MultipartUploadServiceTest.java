@@ -1,6 +1,7 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -10,11 +11,15 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCancelation;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -23,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -219,19 +225,15 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final BytecountStreamListener count = new BytecountStreamListener();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         try {
-            new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 10L * 1024L * 1024L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
-                        @Override
-                        public InputStream getInputStream() throws AccessDeniedException {
-                            return new CountingInputStream(super.getInputStream()) {
-                                @Override
-                                protected void beforeRead(int n) throws IOException {
-                                    if(this.getByteCount() >= 11L * 1024L * 1024L) {
-                                        throw new IOException();
-                                    }
-                                }
-                            };
+            new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 10L * 1024L * 1024L, 1) {
+                @Override
+                public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+                    if(status.getOffset() >= 10L * 1024L * 1024L) {
+                        throw new ConnectionTimeoutException("Test");
                     }
-                },
+                    return super.upload(file, local, throttle, listener, status, cancel, progress, callback);
+                }
+            }.upload(test, new Local(System.getProperty("java.io.tmpdir"), name),
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status,
                     new DisabledLoginCallback());
         }
@@ -294,9 +296,9 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                                     }
                                 }
                             };
-                    }
-                }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status,
-                new DisabledConnectionCallback());
+                        }
+                    }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status,
+                    new DisabledConnectionCallback());
         }
         catch(BackgroundException e) {
             // Expected
