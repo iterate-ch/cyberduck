@@ -76,12 +76,6 @@ public class FTPMoveFeatureTest extends AbstractFTPTest {
     public void testMoveNotFound() throws Exception {
         final Home workdir = new FTPWorkdirService(session);
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        try {
-            new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-            fail();
-        }
-        catch(NotfoundException | AccessDeniedException e) {
-            //
-        }
+        assertThrows(NotfoundException.class, () -> new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
     }
 }
