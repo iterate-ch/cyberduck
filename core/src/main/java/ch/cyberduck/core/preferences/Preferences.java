@@ -229,14 +229,20 @@ public abstract class Preferences implements Locales, PreferencesReader {
         }
     }
 
-    protected void setDefaults(final Properties properties) {
-        for(Map.Entry<Object, Object> property : properties.entrySet()) {
+    protected void setDefaults(final Properties props) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set default properties %s", props));
+        }
+        for(Map.Entry<Object, Object> property : props.entrySet()) {
             this.setDefault(property.getKey().toString(), property.getValue().toString());
         }
     }
 
     protected void setDefaults(final Local defaults) {
         if(defaults.exists()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Load defaults from %s", defaults));
+            }
             final Properties props = new Properties();
             try (final InputStream in = defaults.getInputStream()) {
                 props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
@@ -244,13 +250,14 @@ public abstract class Preferences implements Locales, PreferencesReader {
             catch(IllegalArgumentException | AccessDeniedException | IOException e) {
                 // Ignore failure loading configuration
             }
-            for(Map.Entry<Object, Object> entry : props.entrySet()) {
-                this.setDefault(entry.getKey().toString(), entry.getValue().toString());
-            }
+            this.setDefaults(props);
         }
     }
 
     private void loadDefaults(final String name) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Load defaults from %s", name));
+        }
         final InputStream in = Preferences.class.getResourceAsStream(String.format("/%s", name));
         if(in != null) {
             try {
