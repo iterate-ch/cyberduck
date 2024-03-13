@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.8.1
+- [Bugfix] Mismatch with Content-MD5 for multipart uploads to vault (S3, Cryptomator) (#15704)
+
 8.8.0
 - [Localize] Tamil Localization
 - [Bugfix] Improved retry and backoff strategy for API errors (Backblaze B2) (#15601)
