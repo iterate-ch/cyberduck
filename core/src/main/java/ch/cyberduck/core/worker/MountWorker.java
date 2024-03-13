@@ -30,6 +30,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.logging.log4j.LogManager;
@@ -79,6 +80,9 @@ public class MountWorker extends Worker<Path> {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Mount failed with %s", e));
             }
+            if(new HostPreferences(session.getHost()).getBoolean("mount.notfound.skipfallback")) {
+                throw e;
+            }
             // The default path does not exist or is not readable due to possible permission issues. Fallback
             // to default working directory
             home = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -116,7 +120,7 @@ public class MountWorker extends Worker<Path> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Mounting {0}", "Status"),
-            bookmark.getHostname());
+                bookmark.getHostname());
     }
 
     @Override
