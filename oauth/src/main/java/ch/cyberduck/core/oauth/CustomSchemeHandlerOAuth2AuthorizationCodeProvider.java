@@ -44,7 +44,6 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
     @Override
     public String prompt(final Host bookmark, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) throws BackgroundException {
         this.register(redirectUri);
-        this.open(authorizationCodeUrl);
         // Assume scheme handler is registered
         final CountDownLatch signal = new CountDownLatch(1);
         final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
@@ -61,6 +60,7 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
                 signal.countDown();
             }
         });
+        this.open(authorizationCodeUrl);
         if(log.isInfoEnabled()) {
             log.info(String.format("Await callback from custom scheme %s and state %s", redirectUri, state));
         }

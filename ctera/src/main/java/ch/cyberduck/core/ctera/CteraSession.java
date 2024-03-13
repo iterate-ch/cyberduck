@@ -185,15 +185,6 @@ public class CteraSession extends DAVSession {
     }
 
     private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
-        final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
-                new HostUrlProvider().withUsername(false).withPath(false).get(host), CteraProtocol.CTERA_REDIRECT_URI
-        );
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Open browser with URL %s", url));
-        }
-        if(!BrowserLauncherFactory.get().open(url)) {
-            log.warn(String.format("Failed to launch web browser for %s", url));
-        }
         final AtomicReference<String> activationCode = new AtomicReference<>();
         final CountDownLatch signal = new CountDownLatch(1);
         final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
@@ -206,6 +197,15 @@ public class CteraSession extends DAVSession {
             }
             signal.countDown();
         });
+        final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
+                new HostUrlProvider().withUsername(false).withPath(false).get(host), CteraProtocol.CTERA_REDIRECT_URI
+        );
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Open browser with URL %s", url));
+        }
+        if(!BrowserLauncherFactory.get().open(url)) {
+            log.warn(String.format("Failed to launch web browser for %s", url));
+        }
         while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofMillis(500))) {
             cancel.verify();
         }
