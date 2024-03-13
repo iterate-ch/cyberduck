@@ -49,13 +49,17 @@ import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.urlhandler.SchemeHandler;
+import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -77,6 +81,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -197,6 +202,9 @@ public class CteraSession extends DAVSession {
             }
             signal.countDown();
         });
+        final SchemeHandler schemeHandler = SchemeHandlerFactory.get();
+        schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
+                Collections.singletonList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
                 new HostUrlProvider().withUsername(false).withPath(false).get(host), CteraProtocol.CTERA_REDIRECT_URI
         );
