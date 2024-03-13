@@ -49,13 +49,17 @@ import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.urlhandler.SchemeHandler;
+import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -77,6 +81,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -185,15 +190,6 @@ public class CteraSession extends DAVSession {
     }
 
     private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
-        final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
-                new HostUrlProvider().withUsername(false).withPath(false).get(host), CteraProtocol.CTERA_REDIRECT_URI
-        );
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Open browser with URL %s", url));
-        }
-        if(!BrowserLauncherFactory.get().open(url)) {
-            log.warn(String.format("Failed to launch web browser for %s", url));
-        }
         final AtomicReference<String> activationCode = new AtomicReference<>();
         final CountDownLatch signal = new CountDownLatch(1);
         final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
@@ -206,6 +202,18 @@ public class CteraSession extends DAVSession {
             }
             signal.countDown();
         });
+        final SchemeHandler schemeHandler = SchemeHandlerFactory.get();
+        schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
+                Collections.singletonList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
+        final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
+                new HostUrlProvider().withUsername(false).withPath(false).get(host), CteraProtocol.CTERA_REDIRECT_URI
+        );
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Open browser with URL %s", url));
+        }
+        if(!BrowserLauncherFactory.get().open(url)) {
+            log.warn(String.format("Failed to launch web browser for %s", url));
+        }
         while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofMillis(500))) {
             cancel.verify();
         }
