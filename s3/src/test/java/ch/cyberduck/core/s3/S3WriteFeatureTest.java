@@ -111,7 +111,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
+        final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         try {
             feature.write(file, status, new DisabledConnectionCallback());

@@ -95,9 +95,13 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             public void run() {
                 try {
                     status.validate();
-                    this.response = command.call(PreferencesFactory.get().getInteger("http.request.entity.buffer.limit")
-                            > status.getLength() ? new BufferedHttpEntity(entity) : entity
-                    );
+                    if(status.getLength() != TransferStatus.UNKNOWN_LENGTH && PreferencesFactory.get().getInteger("http.request.entity.buffer.limit")
+                            > status.getLength()) {
+                        this.response = command.call(new BufferedHttpEntity(entity));
+                    }
+                    else {
+                        this.response = command.call(entity);
+                    }
                 }
                 catch(Exception e) {
                     this.exception = e;
