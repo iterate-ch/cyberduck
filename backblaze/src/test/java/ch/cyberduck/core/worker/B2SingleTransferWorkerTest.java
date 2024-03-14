@@ -27,6 +27,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2LargeUploadService;
@@ -38,6 +39,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.notification.DisabledNotificationService;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -81,7 +83,8 @@ public class B2SingleTransferWorkerTest extends VaultTest {
         IOUtils.write(content, out);
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
-        final Host host = new Host(new B2Protocol()) {
+        final Host host = new Host(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new B2Protocol()))).read(
+                this.getClass().getResourceAsStream("/B2.cyberduckprofile"))) {
             @Override
             public String getProperty(final String key) {
                 if("connection.retry".equals(key)) {

@@ -15,20 +15,7 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
@@ -44,6 +31,7 @@ import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.PooledSessionFactory;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -91,7 +79,8 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
         IOUtils.write(content, out);
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
-        final Host host = new Host(new B2Protocol()) {
+        final Host host = new Host(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new B2Protocol()))).read(
+                this.getClass().getResourceAsStream("/B2.cyberduckprofile"))) {
             @Override
             public String getProperty(final String key) {
                 if("connection.retry".equals(key)) {

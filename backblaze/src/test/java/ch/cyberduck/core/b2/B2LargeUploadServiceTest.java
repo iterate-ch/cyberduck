@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.features.Delete;
@@ -41,14 +40,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -120,19 +117,17 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final BytecountStreamListener count = new BytecountStreamListener();
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2LargeUploadService service = new B2LargeUploadService(session, fileid,
-                new B2WriteFeature(session, fileid), 5 * 1000L * 1000L, 1);
-        try {
-            service.upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
-                @Override
-                public InputStream getInputStream() throws AccessDeniedException {
-                    return new CountingInputStream(super.getInputStream()) {
-                        @Override
-                        protected void beforeRead(int n) throws IOException {
-                            throw new IOException();
-                        }
-                    };
+                new B2WriteFeature(session, fileid), 5 * 1000L * 1000L, 1) {
+            @Override
+            public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+                if(!interrupt.get()) {
+                    throw new ConnectionTimeoutException("Test");
                 }
-            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledLoginCallback());
+                return super.upload(file, local, throttle, listener, status, cancel, progress, callback);
+            }
+        };
+        try {
+            service.upload(test, new Local(System.getProperty("java.io.tmpdir"), name), new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
