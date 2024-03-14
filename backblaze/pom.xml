@@ -25,7 +25,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <b2-version>2.0.24</b2-version>
+        <b2-version>2.1.0</b2-version>
     </properties>
 
     <dependencyManagement>
