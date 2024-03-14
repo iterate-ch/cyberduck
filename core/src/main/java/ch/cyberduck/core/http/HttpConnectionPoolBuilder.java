@@ -200,7 +200,9 @@ public class HttpConnectionPoolBuilder {
                 .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
         configuration.setDnsResolver(new CustomDnsResolver());
         if(new HostPreferences(host).getBoolean("connection.retry.backoff.enable")) {
-            configuration.setBackoffManager(new AIMDBackoffManager(connectionManager));
+            final AIMDBackoffManager manager = new AIMDBackoffManager(connectionManager);
+            manager.setPerHostConnectionCap(new HostPreferences(host).getInteger("http.connections.route"));
+            configuration.setBackoffManager(manager);
             configuration.setConnectionBackoffStrategy(new CustomConnectionBackoffStrategy(host));
         }
         return configuration;
