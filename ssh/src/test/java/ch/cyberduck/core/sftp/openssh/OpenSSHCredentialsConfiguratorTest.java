@@ -69,6 +69,6 @@ public class OpenSSHCredentialsConfiguratorTest {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
             new OpenSshConfig(
                 new Local("src/main/test/resources", "openssh/config")));
-        assertNotNull(c.configure(new Host(new TestProtocol(Scheme.sftp), null)));
+        assertNotNull(c.configure(new Host(new TestProtocol(Scheme.sftp))));
     }
 }
