@@ -121,7 +121,7 @@ public class B2ObjectListService implements ListService {
     }
 
     private String createPrefix(final Path directory) {
-        return containerService.isContainer(directory) ? StringUtils.EMPTY :
+        return containerService.isContainer(directory) ? null :
                 directory.isDirectory() ? String.format("%s%s", containerService.getKey(directory), Path.DELIMITER) : containerService.getKey(directory);
     }
 
