@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.8.2
+- [Bugfix] Slower file transfers caused by connections per host limit (#15737)
+
 8.8.1
 - [Bugfix] Mismatch with Content-MD5 for multipart uploads to vault (S3, Cryptomator) (#15704)
 
