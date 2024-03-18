@@ -32,6 +32,9 @@ import com.github.sardine.util.SardineUtil;
 
 public class CteraAclPermissionFeature implements AclPermission {
 
+    public static final String CTERA_NAMESPACE_URI = "http://www.ctera.com/ns";
+    public static final String CTERA_NAMESPACE_PREFIX = "ctera";
+
     /**
      * Read Data: Allows or denies viewing data in files.
      */
@@ -81,11 +84,10 @@ public class CteraAclPermissionFeature implements AclPermission {
             READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, TRAVERSEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
     ));
 
-    // TODO CTERA-136 support for ctera namespace?
     final static List<QName> allCteraCustomACLQn = Collections.unmodifiableList(allCteraCustomACLRoles.stream().map(CteraAclPermissionFeature::toQn).collect(Collectors.toList()));
 
     public static QName toQn(final Acl.Role role) {
-        return SardineUtil.createQNameWithCustomNamespace(role.getName());
+        return new QName(CTERA_NAMESPACE_URI, role.getName(), CTERA_NAMESPACE_PREFIX);
     }
 
     public static String toProp(final QName qn) {
@@ -162,12 +164,10 @@ public class CteraAclPermissionFeature implements AclPermission {
         return Collections.singletonList(new Acl.CanonicalUser());
     }
 
-
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         return allCteraCustomACLRoles;
     }
-
 
     protected List<Element> toCustomProperties(final Acl acl) {
         final List<Element> props = new ArrayList<>();

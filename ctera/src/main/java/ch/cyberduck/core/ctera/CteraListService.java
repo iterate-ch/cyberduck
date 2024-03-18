@@ -45,6 +45,7 @@ public class CteraListService extends DAVListService {
     protected List<DavResource> list(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(
                 // N.B. Timestamp feature disabled in CteraSession.getFeature(Timestamp.class)
+                // TODO CTERA-137 namespace/prefix for guid?
                 Stream.of(SardineUtil.createQNameWithCustomNamespace("guid")),
                 allCteraCustomACLQn.stream()
         ).collect(Collectors.toSet())));

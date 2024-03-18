@@ -31,6 +31,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     protected List<DavResource> list(final Path file) throws IOException {
         final List<QName> l = new ArrayList<>();
         l.addAll(allCteraCustomACLQn);
+        // TODO CTERA-137 namespace/prefix for guid?
         l.add(SardineUtil.createQNameWithCustomNamespace("guid"));
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
                 new HashSet<>(l)
