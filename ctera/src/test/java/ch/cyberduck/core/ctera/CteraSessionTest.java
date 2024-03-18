@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -60,12 +59,12 @@ public class CteraSessionTest extends AbstractCteraTest {
         });
         assertEquals("mountainduck@cterasendbox1.onmicrosoft.com", host.getCredentials().getUsername());
         assertTrue(host.getCredentials().isSaved());
-        new DAVListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new CteraListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         session.close();
     }
 
     @Test
     public void testLoginNonSAML() throws Exception {
-        new DAVListService(session).list(new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new CteraListService(session).list(new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 }

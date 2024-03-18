@@ -18,8 +18,6 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -43,9 +41,9 @@ public class CteraDirectoryFeatureTest extends AbstractCteraTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path result = new CteraDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(result.attributes(), new DAVAttributesFinderFeature(session).find(test));
+        assertEquals(result.attributes(), new CteraAttributesFinderFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new CteraDirectoryFeature(session).mkdir(test, new TransferStatus()));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }
 }

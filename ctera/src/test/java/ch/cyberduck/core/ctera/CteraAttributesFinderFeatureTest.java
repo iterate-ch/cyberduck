@@ -20,9 +20,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
-import ch.cyberduck.core.dav.DAVDirectoryFeature;
-import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -43,7 +40,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
+        final DAVAttributesFinderFeature f = new CteraAttributesFinderFeature(session);
         f.find(test);
         fail();
     }
@@ -51,16 +48,16 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     @Test
     public void testFindFile() throws Exception {
         final Path root = new DefaultHomeFinderService(session).find();
-        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
+        final DAVAttributesFinderFeature f = new CteraAttributesFinderFeature(session);
         final long rootTimestamp = f.find(root).getModificationDate();
         final String rootEtag = f.find(root).getETag();
-        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(root,
+        final Path folder = new CteraDirectoryFeature(session).mkdir(new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotEquals(rootTimestamp, f.find(root).getModificationDate());
         assertNotEquals(rootEtag, f.find(root).getETag());
         final long folderTimestamp = f.find(folder).getModificationDate();
         final String folderEtag = f.find(folder).getETag();
-        final Path test = new DAVTouchFeature(session).touch(new Path(folder,
+        final Path test = new CteraTouchFeature(session).touch(new Path(folder,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(folderTimestamp, f.find(folder).getModificationDate());
         assertEquals(folderEtag, f.find(folder).getETag());
@@ -77,15 +74,15 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
             // Expected
         }
         finally {
-            new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new CteraDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
+        final DAVAttributesFinderFeature f = new CteraAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());

@@ -217,7 +217,7 @@ public class CteraSession extends DAVSession {
             return (T) new CteraAclPermissionFeature(this);
         }
         if(type == Read.class) {
-            return (T) new CteraReadFeature(this, session);
+            return (T) new CteraReadFeature(session);
         }
         if(type == Write.class) {
             return (T) new CteraWriteFeature(this);
