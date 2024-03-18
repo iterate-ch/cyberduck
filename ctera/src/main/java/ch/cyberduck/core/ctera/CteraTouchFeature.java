@@ -35,7 +35,7 @@ public class CteraTouchFeature extends DAVTouchFeature {
     private static final Logger log = LogManager.getLogger(CteraTouchFeature.class);
 
     public CteraTouchFeature(final CteraSession session) {
-        super(session, new CteraAttributesFinderFeature(session));
+        super(new CteraWriteFeature(session), new CteraAttributesFinderFeature(session));
     }
 
     @Override
