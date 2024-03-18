@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -26,9 +27,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.sardine.DavResource;
-import com.github.sardine.util.SardineUtil;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.allCteraCustomACLQn;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 
 public class CteraListService extends DAVListService {
 
@@ -45,8 +45,7 @@ public class CteraListService extends DAVListService {
     protected List<DavResource> list(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(
                 // N.B. Timestamp feature disabled in CteraSession.getFeature(Timestamp.class)
-                // TODO CTERA-137 namespace/prefix for guid?
-                Stream.of(SardineUtil.createQNameWithCustomNamespace("guid")),
+                Stream.of(new QName(CTERA_NAMESPACE_URI, "guid", CTERA_NAMESPACE_PREFIX)),
                 allCteraCustomACLQn.stream()
         ).collect(Collectors.toSet())));
     }

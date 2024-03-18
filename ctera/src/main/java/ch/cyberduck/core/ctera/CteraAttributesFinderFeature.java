@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.sardine.DavResource;
-import com.github.sardine.util.SardineUtil;
 
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 
@@ -31,8 +30,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     protected List<DavResource> list(final Path file) throws IOException {
         final List<QName> l = new ArrayList<>();
         l.addAll(allCteraCustomACLQn);
-        // TODO CTERA-137 namespace/prefix for guid?
-        l.add(SardineUtil.createQNameWithCustomNamespace("guid"));
+        l.add(new QName(CTERA_NAMESPACE_URI, "guid", CTERA_NAMESPACE_PREFIX));
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
                 new HashSet<>(l)
         );
