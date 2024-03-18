@@ -46,8 +46,9 @@ public class CteraAclPermissionFeature implements AclPermission {
 
     /**
      * Execute File: Allows or denies running program (executable) files.
+     * Files only.
      */
-    public static final Acl.Role EXECUTEPERMISSION = new Acl.Role("executepermission"); // Files only
+    public static final Acl.Role EXECUTEPERMISSION = new Acl.Role("executepermission");
 
     /**
      * Allows or denies deleting the file or folder. If you don't have Delete permission on a file or folder,
@@ -60,18 +61,21 @@ public class CteraAclPermissionFeature implements AclPermission {
      * beneath the restricted folder in the folder hierarchy. Traverse folder takes effect only when the group or user
      * is not granted the "Bypass traverse checking user" right in the Group Policy snap-in.
      * This permission does not automatically allow running program files.
+     * Directories only.
      */
-    public static final Acl.Role TRAVERSEPERMISSION = new Acl.Role("traversepermission"); // Directories only
+    public static final Acl.Role TRAVERSEPERMISSION = new Acl.Role("traversepermission");
 
     /**
      * Create Files: Allows or denies creating files within the folder.
+     * Directories only.
      */
-    public static final Acl.Role CREATEFILEPERMISSION = new Acl.Role("Createfilepermission"); // Directories only
+    public static final Acl.Role CREATEFILEPERMISSION = new Acl.Role("Createfilepermission");
 
     /**
      * Create Folders: Allows or denies creating subfolders within the folder.
+     * Directories only.
      */
-    public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");// Directories only
+    public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");
 
     static final List<Acl.Role> allCteraCustomACLRoles = Collections.unmodifiableList(Arrays.asList(
             READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, TRAVERSEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
