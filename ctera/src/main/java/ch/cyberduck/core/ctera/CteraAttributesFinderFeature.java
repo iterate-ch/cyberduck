@@ -30,7 +30,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     protected List<DavResource> list(final Path file) throws IOException {
         final List<QName> l = new ArrayList<>();
         l.addAll(allCteraCustomACLQn);
-        l.add(new QName(CTERA_NAMESPACE_URI, "guid", CTERA_NAMESPACE_PREFIX));
+        l.add(new QName(CTERA_NAMESPACE_URI, CTERA_GUID, CTERA_NAMESPACE_PREFIX));
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
                 new HashSet<>(l)
         );
@@ -43,8 +43,8 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         final Acl acl = customPropsToAcl(customProps);
         final Permission p = aclToPermission(acl);
         final PathAttributes attributes = super.toAttributes(resource);
-        if(customProps != null && customProps.containsKey("guid")) {
-            attributes.withFileId(customProps.get("guid"));
+        if(customProps != null && customProps.containsKey(CTERA_GUID)) {
+            attributes.withFileId(customProps.get(CTERA_GUID));
         }
         return attributes
                 .withAcl(acl)

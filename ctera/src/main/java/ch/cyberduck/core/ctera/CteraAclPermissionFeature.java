@@ -34,6 +34,7 @@ public class CteraAclPermissionFeature implements AclPermission {
 
     public static final String CTERA_NAMESPACE_URI = "http://www.ctera.com/ns";
     public static final String CTERA_NAMESPACE_PREFIX = "ctera";
+    public static final String CTERA_GUID = "guid";
 
     /**
      * Read Data: Allows or denies viewing data in files.
