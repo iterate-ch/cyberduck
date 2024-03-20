@@ -38,11 +38,6 @@ public class CteraListService extends DAVListService {
         super(session, new CteraAttributesFinderFeature(session));
         this.session = session;
     }
-//        @Override
-//        public void preflight(Path file) throws BackgroundException {
-//            super.preflight(file);
-//            // TODO CTERA-136 add preflight in listing and find?
-//        }
 
     @Override
     protected List<DavResource> list(final Path directory) throws IOException {
