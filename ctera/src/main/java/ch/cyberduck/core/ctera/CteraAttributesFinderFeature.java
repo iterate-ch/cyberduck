@@ -45,7 +45,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         final Permission p = aclToPermission(acl);
         final PathAttributes attributes = super.toAttributes(resource);
         if(customProps != null && customProps.containsKey(CTERA_GUID)) {
-            attributes.withFileId(customProps.get(CTERA_GUID));
+            attributes.setFileId(customProps.get(CTERA_GUID));
         }
         return attributes
                 .withAcl(acl)
