@@ -65,6 +65,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
+        assertEquals(test.attributes().getFileId(), attributes.getFileId());
         // Test wrong type
         try {
             f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)));
@@ -86,6 +87,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final PathAttributes attributes = f.find(test);
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
+        assertEquals(test.attributes().getFileId(), attributes.getFileId());
         // Test wrong type
         try {
             f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)));
