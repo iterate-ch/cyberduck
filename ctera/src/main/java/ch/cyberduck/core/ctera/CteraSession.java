@@ -32,7 +32,6 @@ import ch.cyberduck.core.ctera.model.AttachDeviceResponse;
 import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.ctera.model.PortalSession;
 import ch.cyberduck.core.ctera.model.PublicInfo;
-import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
@@ -112,15 +111,9 @@ public class CteraSession extends DAVSession {
 
     private final CteraAuthenticationHandler authentication = new CteraAuthenticationHandler(this);
 
-    private final DAVAttributesFinderFeature attributes = new CteraAttributesFinderFeature(this);
-
-    private final ListService list = new CteraListService(this);
-
-
     public CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
-
 
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
@@ -185,15 +178,14 @@ public class CteraSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        final CteraSession session = this;
         if(type == Touch.class) {
-            return (T) new CteraTouchFeature(session);
+            return (T) new CteraTouchFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new CteraDirectoryFeature(session);
+            return (T) new CteraDirectoryFeature(this);
         }
         if(type == Move.class) {
-            return (T) new CteraMoveFeature(session);
+            return (T) new CteraMoveFeature(this);
         }
         if(type == Lock.class) {
             return null;
@@ -208,25 +200,25 @@ public class CteraSession extends DAVSession {
             return (T) new CteraUrlProvider(host);
         }
         if(type == AttributesFinder.class) {
-            return (T) attributes;
+            return (T) new CteraAttributesFinderFeature(this);
         }
         if(type == ListService.class) {
-            return (T) list;
+            return (T) new CteraListService(this);
         }
         if(type == AclPermission.class) {
             return (T) new CteraAclPermissionFeature(this);
         }
         if(type == Read.class) {
-            return (T) new CteraReadFeature(session);
+            return (T) new CteraReadFeature(this);
         }
         if(type == Write.class) {
             return (T) new CteraWriteFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new CteraDeleteFeature(session);
+            return (T) new CteraDeleteFeature(this);
         }
         if(type == Copy.class) {
-            return (T) new CteraCopyFeature(session);
+            return (T) new CteraCopyFeature(this);
         }
         return super._getFeature(type);
     }
