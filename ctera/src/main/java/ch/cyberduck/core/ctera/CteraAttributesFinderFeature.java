@@ -20,6 +20,7 @@ import com.github.sardine.DavResource;
 import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
 
 public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
+    public static final String CTERA_GUID = "guid";
     private final DAVSession session;
 
     public CteraAttributesFinderFeature(final DAVSession session) {
