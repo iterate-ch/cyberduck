@@ -105,11 +105,14 @@ public class CteraAclPermissionFeature implements AclPermission {
 
     public static Acl customPropsToAcl(final Map<String, String> customProps) {
         if(customProps.isEmpty()) {
-            return Acl.EMPTY;
+            final Acl acl = new Acl();
+            // backwards compatibility to default behaviour
+            allCteraCustomACLRoles.forEach(r -> acl.addAll(new Acl.CanonicalUser(), r));
+            return acl;
         }
         final Acl acl = new Acl();
         acl.addAll(new Acl.CanonicalUser());
-        for(QName qn : allCteraCustomACLQn) {
+        for(final QName qn : allCteraCustomACLQn) {
             if(customProps.containsKey(toProp(qn))) {
                 final String val = customProps.get(toProp(qn));
                 if(Boolean.parseBoolean(val)) {
@@ -122,6 +125,7 @@ public class CteraAclPermissionFeature implements AclPermission {
 
     public static Permission aclToPermission(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
+            // backwards compatibility to default behaviour
             return new Permission(700);
         }
         Permission.Action action = Permission.Action.none;
@@ -134,7 +138,6 @@ public class CteraAclPermissionFeature implements AclPermission {
         if(acl.get(new Acl.CanonicalUser()).contains(EXECUTEPERMISSION) || acl.get(new Acl.CanonicalUser()).contains(TRAVERSEPERMISSION)) {
             action = action.or(Permission.Action.execute);
         }
-        // TODO CTERA-136 only user - what about group/others?
         return new Permission(action, Permission.Action.none, Permission.Action.none);
     }
 
