@@ -37,7 +37,6 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         );
     }
 
-
     @Override
     public PathAttributes toAttributes(final DavResource resource) {
         final Map<String, String> customProps = resource.getCustomProps();

@@ -129,12 +129,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        try {
-            new CteraMoveFeature(null).preflight(source, target);
-        }
-        catch(AccessDeniedException e) {
-            assertNotNull(e);
-        }
+        assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(null).preflight(source, target));
     }
 
     @Test
