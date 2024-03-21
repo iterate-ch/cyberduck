@@ -15,6 +15,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -33,6 +35,7 @@ import com.github.sardine.util.SardineUtil;
 
 
 public class CteraAclPermissionFeature implements AclPermission {
+    private static final Logger log = LogManager.getLogger(CteraAclPermissionFeature.class);
 
     public static final String CTERA_NAMESPACE_URI = "http://www.ctera.com/ns";
     public static final String CTERA_NAMESPACE_PREFIX = "ctera";
@@ -201,7 +204,11 @@ public class CteraAclPermissionFeature implements AclPermission {
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(role)) {
-            new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName()));
+            final String msg = MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName());
+            if(log.isWarnEnabled()) {
+                log.warn(msg);
+            }
+            throw new AccessDeniedException(msg);
         }
     }
 }
