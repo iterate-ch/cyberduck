@@ -1,5 +1,6 @@
 package ch.cyberduck.core.ctera;
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -8,6 +9,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVUploadFeature;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -28,6 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.READPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.WRITEPERMISSION;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -109,5 +114,27 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         assertNotEquals(attr1.getETag(), attr2.getETag());
         assertNotEquals(attr1.getModificationDate(), attr2.getModificationDate());
         new CteraDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testPreflightFileMissingCustomProps() throws BackgroundException {
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        file.setAttributes(file.attributes().withAcl(Acl.EMPTY));
+        new CteraWriteFeature(session).preflight(file);
+    }
+
+    @Test
+    public void testPreflightFiledAccessDeniedCustomProps() throws BackgroundException {
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
+        assertThrows(AccessDeniedException.class, () -> new CteraWriteFeature(session).preflight(file));
+    }
+
+    @Test
+    public void testPreflightFileAccessGrantedMinimalCustomProps() throws BackgroundException {
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
+        new CteraWriteFeature(session).preflight(file);
+        // assert no fail
     }
 }

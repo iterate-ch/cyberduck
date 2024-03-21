@@ -101,7 +101,6 @@ public class CteraAclPermissionFeature implements AclPermission {
     }
 
     public static Acl customPropsToAcl(final Map<String, String> customProps) {
-        // TODO CTERA-136 distinguish empty and null custom props?
         if(customProps.isEmpty()) {
             // ignore acl in preflight
             return Acl.EMPTY;

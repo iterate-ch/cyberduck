@@ -91,7 +91,6 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         assertEquals(attr, new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))));
         assertEquals(attr.getModificationDate(), new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getModificationDate());
         assertEquals(attr.getFileId(), new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getFileId());
-        // TODO CTERA-137 what is the expected behaviour?
         //assertNotEquals(attr.getETag(), new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getETag());
         new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -118,58 +117,58 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightDirectoryMissingCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        source.withAttributes(source.attributes().withAcl(Acl.EMPTY));
+        source.setAttributes(source.attributes().withAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        target.withAttributes(target.attributes().withAcl(Acl.EMPTY));
-        new CteraMoveFeature(null).preflight(source, target);
+        target.setAttributes(target.attributes().withAcl(Acl.EMPTY));
+        new CteraMoveFeature(session).preflight(source, target);
     }
 
     @Test
     public void testPreflightFileMissingCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        source.withAttributes(source.attributes().withAcl(Acl.EMPTY));
+        source.setAttributes(source.attributes().withAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        target.withAttributes(target.attributes().withAcl(Acl.EMPTY));
-        new CteraMoveFeature(null).preflight(source, target);
+        target.setAttributes(target.attributes().withAcl(Acl.EMPTY));
+        new CteraMoveFeature(session).preflight(source, target);
     }
 
     @Test
     public void testPreflightDirectoryAccessDeniedCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
+        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        target.withAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(null).preflight(source, target));
+        target.setAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session).preflight(source, target));
     }
 
     @Test
     public void testPreflightFiledAccessDeniedCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
+        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        target.withAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(null).preflight(source, target));
+        target.setAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session).preflight(source, target));
     }
 
     @Test
     public void testPreflightDirectoryAccessGrantedCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), DELETEPERMISSION)));
+        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        target.withAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
-        source.getParent().withAttributes(source.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)));
-        new CteraMoveFeature(null).preflight(source, target);
+        target.setAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
+        source.getParent().setAttributes(source.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)));
+        new CteraMoveFeature(session).preflight(source, target);
         // assert no fail
     }
 
     @Test
     public void testPreflightFileAccessGrantedMinimalCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), DELETEPERMISSION)));
+        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        target.withAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
-        source.getParent().withAttributes(source.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser(), CREATEFILEPERMISSION)));
-        new CteraMoveFeature(null).preflight(source, target);
+        target.setAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
+        source.getParent().setAttributes(source.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser(), CREATEFILEPERMISSION)));
+        new CteraMoveFeature(session).preflight(source, target);
         // assert no fail
     }
 }

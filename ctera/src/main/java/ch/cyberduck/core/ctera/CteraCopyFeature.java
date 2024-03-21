@@ -31,7 +31,7 @@ public class CteraCopyFeature extends DAVCopyFeature {
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
         super.preflight(source, target);
-        if((source.attributes().getAcl() != Acl.EMPTY) && (target.attributes().getAcl() != Acl.EMPTY)) {
+        if((source.getParent().attributes().getAcl() != Acl.EMPTY) && (target.getParent().attributes().getAcl() != Acl.EMPTY)) {
             if(source.isDirectory()) {
                 checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
             }

@@ -1,10 +1,13 @@
 package ch.cyberduck.core.ctera;
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVLockFeature;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -18,8 +21,9 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.DELETEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.WRITEPERMISSION;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class CteraDeleteFeatureTest extends AbstractCteraTest {
@@ -63,5 +67,27 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testPreflightFileMissingCustomProps() throws BackgroundException {
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        file.setAttributes(file.attributes().withAcl(Acl.EMPTY));
+        new CteraDeleteFeature(session).preflight(file);
+    }
+
+    @Test
+    public void testPreflightFiledAccessDeniedCustomProps() throws BackgroundException {
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
+        assertThrows(AccessDeniedException.class, () -> new CteraDeleteFeature(session).preflight(file));
+    }
+
+    @Test
+    public void testPreflightFileAccessGrantedMinimalCustomProps() throws BackgroundException {
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), DELETEPERMISSION)));
+        new CteraDeleteFeature(session).preflight(file);
+        // assert no fail
     }
 }

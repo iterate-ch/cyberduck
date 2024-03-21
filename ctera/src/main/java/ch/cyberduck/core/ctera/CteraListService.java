@@ -15,9 +15,11 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -40,11 +42,17 @@ public class CteraListService extends DAVListService {
     }
 
     @Override
-    protected List<DavResource> list(final Path directory) throws IOException {
+    protected List<DavResource> list(final Path directory) throws IOException, BackgroundException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(
                 // N.B. Timestamp feature disabled in CteraSession.getFeature(Timestamp.class)
                 Stream.of(new QName(CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_GUID, CTERA_NAMESPACE_PREFIX)),
                 allCteraCustomACLQn.stream()
         ).collect(Collectors.toSet())));
+    }
+
+    public void preflight(final Path directory) throws BackgroundException {
+        if(directory.attributes().getAcl() != Acl.EMPTY) {
+            checkCteraRole(directory, TRAVERSEPERMISSION);
+        }
     }
 }

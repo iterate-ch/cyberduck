@@ -98,14 +98,6 @@ import com.google.common.util.concurrent.Uninterruptibles;
 
 
 public class CteraSession extends DAVSession {
-    // TODO CTERA-136 create Ctera***Feature for all preflight cases? Keeping all checks in one location (CteraSession) for now.
-    // <ctera:readpermission>                                 [Read.preflight()  - files only? see traversepermission ]
-    // <ctera:writepermission>                                [Write.preflight() - files only? see Createfilepermission/CreateDirectoriespermission ]
-    // <ctera:executepermission>           - Files only       [                  - ?]
-    // <ctera:deletepermission>                               [Delete.preflight(), Move.preflight()                  - do we need default writepermission as well?]
-    // <ctera:traversepermission>          - Directories only [                  - what does it mean, listing a folder? List/Find features?]
-    // <ctera:Createfilepermission>        - Directories only [Touch.preflight(), Copy.preflight(), Move.preflight() - do we need default writepermission on target folder as well?]
-    // <ctera:CreateDirectoriespermission> - Directories only [Directory.preflight(), Copy.preflight(), Move.preflight() - do we need default writepermission on target folder as well?]
 
     private static final Logger log = LogManager.getLogger(CteraSession.class);
 
