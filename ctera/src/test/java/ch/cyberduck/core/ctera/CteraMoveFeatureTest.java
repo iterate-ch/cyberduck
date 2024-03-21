@@ -91,7 +91,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         assertEquals(attr, new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))));
         assertEquals(attr.getModificationDate(), new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getModificationDate());
         assertEquals(attr.getFileId(), new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getFileId());
-        //assertNotEquals(attr.getETag(), new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getETag());
+        // N.B. ETag should remain constant when moving a resource but Ctera may not be WebDAV compliant.
         new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
