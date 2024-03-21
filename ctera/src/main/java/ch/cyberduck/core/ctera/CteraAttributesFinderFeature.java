@@ -3,7 +3,6 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
@@ -41,13 +40,11 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     public PathAttributes toAttributes(final DavResource resource) {
         final Map<String, String> customProps = resource.getCustomProps();
         final Acl acl = customPropsToAcl(customProps);
-        final Permission p = aclToPermission(acl);
         final PathAttributes attributes = super.toAttributes(resource);
         if(customProps != null && customProps.containsKey(CTERA_GUID)) {
             attributes.setFileId(customProps.get(CTERA_GUID));
         }
         return attributes
-                .withAcl(acl)
-                .withPermission(p);
+                .withAcl(acl);
     }
 }

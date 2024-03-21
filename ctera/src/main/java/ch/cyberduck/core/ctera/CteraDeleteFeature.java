@@ -15,6 +15,7 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -29,8 +30,9 @@ public class CteraDeleteFeature extends DAVDeleteFeature {
 
     @Override
     public void preflight(Path file) throws BackgroundException {
-        // TODO CTERA-136 do we require writepermission on file as well?
         super.preflight(file);
-        checkCteraRole(file, DELETEPERMISSION);
+        if(file.attributes().getAcl() != Acl.EMPTY) {
+            checkCteraRole(file, DELETEPERMISSION);
+        }
     }
 }

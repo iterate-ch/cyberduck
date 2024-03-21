@@ -116,7 +116,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightNoCustomProps() throws BackgroundException {
+    public void testPreflightDirectoryMissingCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         source.withAttributes(source.attributes().withAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -125,15 +125,34 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightAccessDeniedCustomProps() throws BackgroundException {
+    public void testPreflightFileMissingCustomProps() throws BackgroundException {
+        final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        source.withAttributes(source.attributes().withAcl(Acl.EMPTY));
+        final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        target.withAttributes(target.attributes().withAcl(Acl.EMPTY));
+        new CteraMoveFeature(null).preflight(source, target);
+    }
+
+    @Test
+    public void testPreflightDirectoryAccessDeniedCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        target.withAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
         assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(null).preflight(source, target));
     }
 
     @Test
-    public void testPreflightFolderMinimalCustomProps() throws BackgroundException {
+    public void testPreflightFiledAccessDeniedCustomProps() throws BackgroundException {
+        final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
+        final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        target.withAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(null).preflight(source, target));
+    }
+
+    @Test
+    public void testPreflightDirectoryAccessGrantedCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -144,7 +163,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightFileMinimalCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessGrantedMinimalCustomProps() throws BackgroundException {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         source.withAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

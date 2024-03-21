@@ -15,6 +15,7 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
@@ -37,8 +38,9 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
         if(!CteraTouchFeature.validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
-        // TODO CTERA-136 do we need to require writepermission as well?
         super.preflight(workdir, filename);
-        checkCteraRole(workdir, CREATEDIRECTORIESPERMISSION);
+        if(workdir.attributes().getAcl() != Acl.EMPTY) {
+            checkCteraRole(workdir, CREATEDIRECTORIESPERMISSION);
+        }
     }
 }

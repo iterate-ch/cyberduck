@@ -7,7 +7,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.dav.DAVExceptionMappingService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
@@ -104,13 +103,13 @@ public class CteraAclPermissionFeature implements AclPermission {
     }
 
     public static Acl customPropsToAcl(final Map<String, String> customProps) {
+        // TODO CTERA-136 distinguish empty and null custom props?
         if(customProps.isEmpty()) {
-            final Acl acl = new Acl();
-            // backwards compatibility to default behaviour
-            allCteraCustomACLRoles.forEach(r -> acl.addAll(new Acl.CanonicalUser(), r));
-            return acl;
+            // ignore acl in preflight
+            return Acl.EMPTY;
         }
         final Acl acl = new Acl();
+        // initialize with no roles
         acl.addAll(new Acl.CanonicalUser());
         for(final QName qn : allCteraCustomACLQn) {
             if(customProps.containsKey(toProp(qn))) {
@@ -121,24 +120,6 @@ public class CteraAclPermissionFeature implements AclPermission {
             }
         }
         return acl;
-    }
-
-    public static Permission aclToPermission(final Acl acl) {
-        if(Acl.EMPTY.equals(acl)) {
-            // backwards compatibility to default behaviour
-            return new Permission(700);
-        }
-        Permission.Action action = Permission.Action.none;
-        if(acl.get(new Acl.CanonicalUser()).contains(READPERMISSION)) {
-            action = action.or(Permission.Action.read);
-        }
-        if(acl.get(new Acl.CanonicalUser()).contains(WRITEPERMISSION)) {
-            action = action.or(Permission.Action.write);
-        }
-        if(acl.get(new Acl.CanonicalUser()).contains(EXECUTEPERMISSION) || acl.get(new Acl.CanonicalUser()).contains(TRAVERSEPERMISSION)) {
-            action = action.or(Permission.Action.execute);
-        }
-        return new Permission(action, Permission.Action.none, Permission.Action.none);
     }
 
     private final DAVSession session;
@@ -193,17 +174,19 @@ public class CteraAclPermissionFeature implements AclPermission {
 
     @Override
     public Acl getDefault(final EnumSet<Path.Type> type) {
+        // ignore acl in preflight
         return Acl.EMPTY;
     }
 
     @Override
     public Acl getDefault(final Path file, final Local local) throws BackgroundException {
+        // ignore acl in preflight
         return Acl.EMPTY;
     }
 
     protected static void checkCteraRole(final Path file, final Acl.Role role) throws BackgroundException {
         final Acl acl = file.attributes().getAcl();
-        if(acl.equals(Acl.EMPTY)) {
+        if(acl == Acl.EMPTY) {
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(role)) {

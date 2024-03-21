@@ -15,6 +15,7 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,8 +31,9 @@ public class CteraReadFeature extends DAVReadFeature {
 
     @Override
     public void preflight(Path file) throws BackgroundException {
-        // TODO CTERA-136 do we need both? Which one to prefer?
         super.preflight(file);
-        checkCteraRole(file, READPERMISSION);
+        if(file.attributes().getAcl() != Acl.EMPTY) {
+            checkCteraRole(file, READPERMISSION);
+        }
     }
 }

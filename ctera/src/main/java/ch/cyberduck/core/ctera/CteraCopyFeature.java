@@ -15,6 +15,7 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVCopyFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -29,13 +30,14 @@ public class CteraCopyFeature extends DAVCopyFeature {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        // TODO CTERA-136 do we require writepermission on target's parent?
         super.preflight(source, target);
-        if(source.isDirectory()) {
-            checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
-        }
-        else {
-            checkCteraRole(target.getParent(), CREATEFILEPERMISSION);
+        if((source.attributes().getAcl() != Acl.EMPTY) && (target.attributes().getAcl() != Acl.EMPTY)) {
+            if(source.isDirectory()) {
+                checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
+            }
+            else {
+                checkCteraRole(target.getParent(), CREATEFILEPERMISSION);
+            }
         }
     }
 }
