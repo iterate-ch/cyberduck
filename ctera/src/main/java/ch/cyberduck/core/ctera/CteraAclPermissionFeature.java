@@ -42,13 +42,11 @@ public class CteraAclPermissionFeature implements AclPermission {
     /**
      * Read Data: Allows or denies viewing data in files.
      */
-    // TODO CTERA-136 files only or does this control listing folder contents on directories (https://www.ntfs.com/ntfs-permissions-file-advanced.htm).
     public static final Acl.Role READPERMISSION = new Acl.Role("readpermission");
 
     /**
      * Write Data: Allows or denies making changes to a file and overwriting existing content.
      */
-    // TODO CTERA-136 files only or what is the interplay with Createfilepermission/CreateDirectoriespermission?
     public static final Acl.Role WRITEPERMISSION = new Acl.Role("writepermission");
 
     /**
