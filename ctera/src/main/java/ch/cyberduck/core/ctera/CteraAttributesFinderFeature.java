@@ -117,6 +117,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         }
     }
 
+    @Override
     protected List<DavResource> list(final Path file) throws IOException {
         final List<QName> l = new ArrayList<>();
         l.addAll(allCteraCustomACLQn);
