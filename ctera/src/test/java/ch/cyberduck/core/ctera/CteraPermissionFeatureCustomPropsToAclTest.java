@@ -36,12 +36,11 @@ public class CteraPermissionFeatureCustomPropsToAclTest {
                                         new AbstractMap.SimpleEntry<>(READPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(WRITEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(EXECUTEPERMISSION.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(DELETEPERMISSION.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(TRAVERSEPERMISSION.getName(), "true"),
+                                        new AbstractMap.SimpleEntry<>(DELETEPERMISSION.getName(), "true"),
                                         new AbstractMap.SimpleEntry<>(CREATEFILEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CREATEDIRECTORIESPERMISSION.getName(), "false")
                                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
-                                new Acl(new Acl.CanonicalUser(), TRAVERSEPERMISSION)
+                                new Acl(new Acl.CanonicalUser(), DELETEPERMISSION)
                         },
                         {
                                 (Map<String, String>) Stream.of(
@@ -49,7 +48,6 @@ public class CteraPermissionFeatureCustomPropsToAclTest {
                                         new AbstractMap.SimpleEntry<>(WRITEPERMISSION.getName(), "true"),
                                         new AbstractMap.SimpleEntry<>(EXECUTEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(DELETEPERMISSION.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(TRAVERSEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CREATEFILEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CREATEDIRECTORIESPERMISSION.getName(), "true")
                                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),

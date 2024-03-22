@@ -62,15 +62,6 @@ public class CteraAclPermissionFeature implements AclPermission {
     public static final Acl.Role DELETEPERMISSION = new Acl.Role("deletepermission");
 
     /**
-     * Traverse Folder: Allows or denies moving through a restricted folder to reach files and folders
-     * beneath the restricted folder in the folder hierarchy. Traverse folder takes effect only when the group or user
-     * is not granted the "Bypass traverse checking user" right in the Group Policy snap-in.
-     * This permission does not automatically allow running program files.
-     * Directories only.
-     */
-    public static final Acl.Role TRAVERSEPERMISSION = new Acl.Role("traversepermission");
-
-    /**
      * Create Files: Allows or denies creating files within the folder.
      * Directories only.
      */
@@ -83,7 +74,7 @@ public class CteraAclPermissionFeature implements AclPermission {
     public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");
 
     static final List<Acl.Role> allCteraCustomACLRoles = Collections.unmodifiableList(Arrays.asList(
-            READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, TRAVERSEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
+            READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
     ));
 
     final static List<QName> allCteraCustomACLQn = Collections.unmodifiableList(allCteraCustomACLRoles.stream().map(CteraAclPermissionFeature::toQn).collect(Collectors.toList()));
