@@ -23,7 +23,7 @@ jobs:
         run: echo "args=-P=no-testcontainers" >> "$GITHUB_ENV"
         shell: bash
         if: runner.os == 'windows' || runner.os == 'macos' || runner.os == 'macos'
-      - run: choco install bonjour
+      - run: msiexec /i setup\wix\Bonjour64.msi /Quiet /Passive /NoRestart
         if: runner.os == 'windows'
       - uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'windows'
