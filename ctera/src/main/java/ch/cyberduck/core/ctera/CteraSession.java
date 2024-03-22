@@ -46,6 +46,7 @@ import ch.cyberduck.core.features.CustomActions;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Lock;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
@@ -183,6 +184,9 @@ public class CteraSession extends DAVSession {
             return null;
         }
         if(type == Timestamp.class) {
+            return null;
+        }
+        if(type == Metadata.class) {
             return null;
         }
         if(type == CustomActions.class) {
