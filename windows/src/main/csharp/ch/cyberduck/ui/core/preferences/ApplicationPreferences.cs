@@ -26,6 +26,7 @@ using Ch.Cyberduck.Core.Date;
 using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
+using Ch.Cyberduck.Core.Interactivity;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Proxy;
@@ -105,6 +106,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             this.setDefault("factory.badgelabeler.class", typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             this.setDefault("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
             this.setDefault("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
+            this.setDefault("factory.certificatetrustcallback.class", typeof(DialogPromptCertificateTrustCallback).AssemblyQualifiedName);
 
             if (Cyberduck.Core.Utils.IsWin10FallCreatorsUpdate)
             {
