@@ -18,6 +18,7 @@
 
 using System;
 using System.Text;
+using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using java.io;
@@ -61,7 +62,7 @@ namespace Ch.Cyberduck.Ui.Controller
             try
             {
                 //no exception registered yet
-                new SystemCertificateStore().verify(null, hostName, certs);
+                new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs);
                 Assert.Fail();
             }
             catch (EntryPointNotFoundException exception)
@@ -71,7 +72,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
                     SystemCertificateStore.ConvertCertificate(cert).Thumbprint);
-            Assert.IsTrue(new SystemCertificateStore().verify(null, hostName, certs));
+            Assert.IsTrue(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
         }
 
         [Test]
@@ -150,7 +151,7 @@ namespace Ch.Cyberduck.Ui.Controller
             try
             {
                 //no exception registered yet
-                new SystemCertificateStore().verify(null, hostName, certs);
+                new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs);
                 Assert.Fail();
             }
             catch (EntryPointNotFoundException exception)
@@ -161,7 +162,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
                     SystemCertificateStore.ConvertCertificate(hostCert).Thumbprint);
-            Assert.IsTrue(new SystemCertificateStore().verify(null, hostName, certs));
+            Assert.IsTrue(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
         }
     }
 }

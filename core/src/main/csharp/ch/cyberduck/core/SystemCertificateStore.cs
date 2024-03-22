@@ -18,19 +18,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Security.Cryptography.X509Certificates;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.Interactivity;
 using Ch.Cyberduck.Core.Ssl;
-using Ch.Cyberduck.Core.TaskDialog;
 using java.io;
 using java.security;
 using java.security.cert;
 using java.util;
 using org.apache.logging.log4j;
-using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 using X509Certificate = java.security.cert.X509Certificate;
 
 namespace Ch.Cyberduck.Core
@@ -88,7 +86,7 @@ namespace Ch.Cyberduck.Core
 
         public bool verify(CertificateTrustCallback prompt, String hostName, List certs)
         {
-            X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);
+            X509Certificate2 serverCert = ConvertCertificate(certs.get(0) as X509Certificate);
             X509Chain chain = new X509Chain();
             chain.ChainPolicy.RevocationMode =
                 PreferencesFactory.get().getBoolean("connection.ssl.x509.revocation.online")
@@ -103,9 +101,7 @@ namespace Ch.Cyberduck.Core
             }
 
             chain.Build(serverCert);
-
-            bool isException = CheckForException(hostName, serverCert);
-            if (isException)
+            if (CheckForException(hostName, serverCert))
             {
                 // Exceptions always have precedence
                 return true;
@@ -114,7 +110,7 @@ namespace Ch.Cyberduck.Core
             string errorFromChainStatus = GetErrorFromChainStatus(chain, hostName);
             bool certError = null != errorFromChainStatus;
             bool hostnameMismatch = hostName != null &&
-                                    !HostnameVerifier.CheckServerIdentity(certs.iterator().next() as X509Certificate,
+                                    !HostnameVerifier.CheckServerIdentity(certs.get(0) as X509Certificate,
                                         serverCert, hostName);
 
             // check if host name matches
@@ -128,59 +124,26 @@ namespace Ch.Cyberduck.Core
 
             if (null != errorFromChainStatus)
             {
-                // Title: LocaleFactory.localizedString("Certificate Error", "Keychain")
-                // Main Instruction: LocaleFactory.localizedString("Certificate Error", "Keychain")
-                // Content: errorFromChainStatus
-                // Verification Text: LocaleFactory.localizedString("Always Trust", "Keychain")
-                // CommandButtons: { LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Disconnect"), LocaleFactory.localizedString("Show Certificate", "Keychain") }
-                // ShowCancelButton: false
-                // Main Icon: Warning
-                // Footer Icon: Information
-
-                var result = TaskDialog.TaskDialog.Create()
-                    .Title(LocaleFactory.localizedString("Certificate Error", "Keychain"))
-                    .Instruction(LocaleFactory.localizedString("Certificate Error", "Keychain"))
-                    .VerificationText(LocaleFactory.localizedString("Always Trust", "Keychain"), false)
-                    .Content(errorFromChainStatus)
-                    .CommandLinks(c =>
-                    {
-                        c(IDCONTINUE, LocaleFactory.localizedString("Continue", "Credentials"), false);
-                        c(IDABORT, LocaleFactory.localizedString("Disconnect"), true);
-                        c(IDHELP, LocaleFactory.localizedString("Show Certificate", "Keychain"), false);
-                    })
-                    .Callback((sender, e) =>
-                    {
-                        if (e is TaskDialogButtonClickedEventArgs buttonClicked)
-                        {
-                            if (buttonClicked.ButtonId == (int)IDHELP)
-                            {
-                                X509Certificate2UI.DisplayCertificate(serverCert);
-                                return true;
-                            }
-                        }
-
-                        return false;
-                    })
-                    .Show();
-                if (result.Button == IDCONTINUE)
+                // Force use of ThreadLocal, otherwise we can't persist X.certificate.accept
+                using (DialogPromptCertificateTrustCallback.Register(() =>
                 {
-                    if (result.VerificationChecked == true)
+                    if (certError)
                     {
-                        if (certError)
-                        {
-                            //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
-                            AddCertificate(serverCert, StoreName.Root);
-                        }
-
-                        PreferencesFactory.get()
-                            .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
+                        AddCertificate(serverCert, StoreName.Root);
                     }
 
-                    return true;
-                }
-                else
+                    PreferencesFactory.get()
+                        .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
+                }))
                 {
-                    return false;
+                    try
+                    {
+                        prompt.prompt(errorFromChainStatus, certs);
+                    }
+                    catch (ConnectionCanceledException)
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -192,12 +155,12 @@ namespace Ch.Cyberduck.Core
             using X509Store store = new(StoreName.My, StoreLocation.CurrentUser);
             HashSet<string> certs = new();
             store.Open(OpenFlags.ReadOnly);
-            foreach(X509Certificate2 certificate in store.Certificates)
+            foreach (X509Certificate2 certificate in store.Certificates)
             {
                 var alias = string.IsNullOrWhiteSpace(certificate.FriendlyName)
                     ? certificate.GetNameInfo(X509NameType.SimpleName, false)
                     : certificate.FriendlyName;
-                if(!certs.Add(alias) && Log.isDebugEnabled())
+                if (!certs.Add(alias) && Log.isDebugEnabled())
                 {
                     Log.debug($"Skipping duplicate alias \"{alias}\"");
                 }
@@ -264,7 +227,7 @@ namespace Ch.Cyberduck.Core
                         string.Format(LocaleFactory.localizedString(
                             "The certificate for this server has expired. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
                             "Keychain"), hostName);
-                    return error;
+                    break;
                 }
 
                 if (((status.Status & X509ChainStatusFlags.UntrustedRoot) == X509ChainStatusFlags.UntrustedRoot) ||
@@ -275,7 +238,7 @@ namespace Ch.Cyberduck.Core
                         string.Format(LocaleFactory.localizedString(
                             "The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
                             "Keychain"), hostName);
-                    return error;
+                    break;
                 }
 
                 //all other errors we map to !CSSM_CERT_STATUS_IS_IN_ANCHORS
