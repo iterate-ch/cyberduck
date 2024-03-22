@@ -59,15 +59,7 @@ namespace Ch.Cyberduck.Ui.Controller
             const string hostName = "foo.secure.example.com";
             List certs = new ArrayList();
             certs.add(cert);
-            try
-            {
-                //no exception registered yet
-                new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs);
-                Assert.Fail();
-            }
-            catch (EntryPointNotFoundException exception)
-            {
-            }
+            Assert.False(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
             //register exception
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
@@ -148,16 +140,7 @@ namespace Ch.Cyberduck.Ui.Controller
             certs.add(hostCert);
             certs.add(caCert);
 
-            try
-            {
-                //no exception registered yet
-                new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs);
-                Assert.Fail();
-            }
-            catch (EntryPointNotFoundException exception)
-            {
-                Console.WriteLine("TEST");
-            }
+            Assert.False(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
             //register exception
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
