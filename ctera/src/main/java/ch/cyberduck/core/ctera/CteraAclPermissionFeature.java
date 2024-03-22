@@ -101,20 +101,21 @@ public class CteraAclPermissionFeature implements AclPermission {
     }
 
     public static Acl customPropsToAcl(final Map<String, String> customProps) {
-        if(customProps.isEmpty()) {
-            // ignore acl in preflight
-            return Acl.EMPTY;
-        }
+        boolean empty = true;
         final Acl acl = new Acl();
-        // initialize with no roles
         acl.addAll(new Acl.CanonicalUser());
         for(final QName qn : allCteraCustomACLQn) {
             if(customProps.containsKey(toProp(qn))) {
+                empty = false;
                 final String val = customProps.get(toProp(qn));
                 if(Boolean.parseBoolean(val)) {
                     acl.addAll(new Acl.CanonicalUser(), toRole(qn));
                 }
             }
+        }
+        if(empty) {
+            // ignore acl in preflight as none of the CTERA custom ACL roles is found
+            return Acl.EMPTY;
         }
         return acl;
     }
