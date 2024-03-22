@@ -23,8 +23,6 @@ jobs:
         run: echo "args=-P=no-testcontainers" >> "$GITHUB_ENV"
         shell: bash
         if: runner.os == 'windows' || runner.os == 'macos' || runner.os == 'macos'
-      - run: choco install bonjour
-        if: runner.os == 'windows'
       - uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'windows'
       - uses: microsoft/setup-msbuild@v1.3

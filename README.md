@@ -61,7 +61,6 @@ in _Preferences → Update_.
   - `.NET desktop development`
   - `Universal Windows Platform development`
   - `Desktop development with C++`
-- [Bonjour SDK for Windows](https://support.apple.com/kb/dl999)
 - [Wix v3](https://wixtoolset.org/docs/wix3/) (Optional)
 
 **Chocolatey**
@@ -87,7 +86,6 @@ Replace `(edition)` with your licensed IDE SKU: community, professional, enterpr
 Install required dependencies, after installing Visual Studio IDE or build tools:
 ```sh
 choco install microsoft-openjdk17 ant maven -y
-choco install bonjour -y; choco install bonjour -y --force
 ```
 
 Optional, see Remarks:
@@ -97,7 +95,6 @@ choco install wixtoolset -y
 
 _Remarks_: Installing with Chocolatey may or may not fail spectacularly.<br>
 Following issues have been observed on a clean installation:
-- Bonjour package fails with `file not found` - though the Bonjour64.msi is extracted from BonjourPSSetup.exe.
 - wixtoolset depends on .NET 3.5-package, which never completes<br>
   On Windows 11 installation doesn't work
 - `visualstudio*-workload-*` may halt with "Operation canceled",<br>

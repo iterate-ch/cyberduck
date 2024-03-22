@@ -35,7 +35,6 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using org.apache.logging.log4j;
 using CoreApplicationPreferences = Ch.Cyberduck.Core.Preferences.ApplicationPreferences;
-using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
@@ -111,16 +110,16 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 this.setDefault("factory.notification.class", typeof(DesktopNotificationService).AssemblyQualifiedName);
             }
 
+            this.setDefault("factory.rendezvous.class", typeof(DisabledRendezvous).AssemblyQualifiedName);
             if (Runtime.Packaged.GetValueOrDefault())
             {
-                this.setDefault("factory.rendezvous.class", typeof(DisabledRendezvous).AssemblyQualifiedName);
                 this.setDefault("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
             }
             else
             {
-                this.setDefault("factory.rendezvous.class", typeof(Rendezvous).AssemblyQualifiedName);
                 this.setDefault("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
             }
+
             this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
             this.setDefault("factory.securerandom.class", typeof(FastSecureRandomProvider).AssemblyQualifiedName);
         }
