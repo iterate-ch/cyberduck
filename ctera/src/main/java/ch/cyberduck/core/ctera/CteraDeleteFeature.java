@@ -20,8 +20,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.DELETEPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.DELETEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.checkCteraRole;
 
 public class CteraDeleteFeature extends DAVDeleteFeature {
     public CteraDeleteFeature(final CteraSession session) {

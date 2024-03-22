@@ -28,8 +28,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.CREATEFILEPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEFILEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.checkCteraRole;
 
 public class CteraTouchFeature extends DAVTouchFeature {
 

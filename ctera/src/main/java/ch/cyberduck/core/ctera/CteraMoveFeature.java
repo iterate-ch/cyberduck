@@ -24,8 +24,6 @@ import ch.cyberduck.core.exception.InvalidFilenameException;
 
 import java.text.MessageFormat;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
-
 public class CteraMoveFeature extends DAVMoveFeature {
 
     public CteraMoveFeature(final CteraSession session) {
@@ -39,13 +37,13 @@ public class CteraMoveFeature extends DAVMoveFeature {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if((source.attributes().getAcl() != Acl.EMPTY) && (target.attributes().getAcl() != Acl.EMPTY)) {
-            checkCteraRole(source, DELETEPERMISSION);
-            checkCteraRole(target, WRITEPERMISSION);
+            CteraAttributesFinderFeature.checkCteraRole(source, CteraAttributesFinderFeature.DELETEPERMISSION);
+            CteraAttributesFinderFeature.checkCteraRole(target, CteraAttributesFinderFeature.WRITEPERMISSION);
             if(source.isDirectory()) {
-                checkCteraRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
+                CteraAttributesFinderFeature.checkCteraRole(target.getParent(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION);
             }
             else {
-                checkCteraRole(target.getParent(), CREATEFILEPERMISSION);
+                CteraAttributesFinderFeature.checkCteraRole(target.getParent(), CteraAttributesFinderFeature.CREATEFILEPERMISSION);
             }
         }
     }

@@ -28,8 +28,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.CREATEFILEPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.WRITEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEFILEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.WRITEPERMISSION;
 import static org.junit.Assert.assertThrows;
 
 @Category(IntegrationTest.class)

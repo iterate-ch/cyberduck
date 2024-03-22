@@ -20,8 +20,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.READPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.READPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.checkCteraRole;
 
 public class CteraReadFeature extends DAVReadFeature {
 

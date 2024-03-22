@@ -28,8 +28,6 @@ import java.util.stream.Stream;
 
 import com.github.sardine.DavResource;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.*;
-
 public class CteraListService extends DAVListService {
 
     private final CteraSession session;
@@ -43,8 +41,8 @@ public class CteraListService extends DAVListService {
     protected List<DavResource> list(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(
                 // N.B. Timestamp feature disabled in CteraSession.getFeature(Timestamp.class)
-                Stream.of(new QName(CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_GUID, CTERA_NAMESPACE_PREFIX)),
-                allCteraCustomACLQn.stream()
+                Stream.of(new QName(CteraAttributesFinderFeature.CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_GUID, CteraAttributesFinderFeature.CTERA_NAMESPACE_PREFIX)),
+                CteraAttributesFinderFeature.allCteraCustomACLQn.stream()
         ).collect(Collectors.toSet())));
     }
 }

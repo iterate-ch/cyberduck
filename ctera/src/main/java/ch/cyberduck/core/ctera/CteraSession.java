@@ -39,7 +39,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.CustomActions;
@@ -200,9 +199,6 @@ public class CteraSession extends DAVSession {
         }
         if(type == ListService.class) {
             return (T) new CteraListService(this);
-        }
-        if(type == AclPermission.class) {
-            return (T) new CteraAclPermissionFeature(this);
         }
         if(type == Read.class) {
             return (T) new CteraReadFeature(this);

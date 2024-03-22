@@ -20,8 +20,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.WRITEPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.checkCteraRole;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.WRITEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.checkCteraRole;
 
 public class CteraWriteFeature extends DAVWriteFeature {
 

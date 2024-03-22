@@ -48,8 +48,8 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.READPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAclPermissionFeature.WRITEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.READPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.WRITEPERMISSION;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
