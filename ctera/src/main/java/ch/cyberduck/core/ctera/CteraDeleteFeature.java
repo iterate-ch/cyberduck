@@ -24,6 +24,7 @@ import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.DELETEPERMISS
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
 
 public class CteraDeleteFeature extends DAVDeleteFeature {
+
     public CteraDeleteFeature(final CteraSession session) {
         super(session);
     }
