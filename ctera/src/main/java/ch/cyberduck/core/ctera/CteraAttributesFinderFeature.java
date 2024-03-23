@@ -120,8 +120,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
 
     @Override
     protected List<DavResource> list(final Path file) throws IOException {
-        final List<QName> l = new ArrayList<>();
-        l.addAll(allCteraCustomACLQn);
+        final List<QName> l = new ArrayList<>(allCteraCustomACLQn);
         l.add(new QName(CTERA_NAMESPACE_URI, CTERA_GUID, CTERA_NAMESPACE_PREFIX));
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
                 new HashSet<>(l)
