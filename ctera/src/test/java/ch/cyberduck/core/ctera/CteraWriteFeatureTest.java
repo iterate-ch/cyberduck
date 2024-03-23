@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -60,7 +61,8 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(content.length, new CteraListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
+        assertEquals(content.length, new CteraListService(session).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test)).attributes().getSize(), 0L);
         assertEquals(content.length, new CteraWriteFeature(session).append(test, status.withRemote(new CteraAttributesFinderFeature(session).find(test))).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
