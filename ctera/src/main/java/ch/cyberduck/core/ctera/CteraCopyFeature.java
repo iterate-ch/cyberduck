@@ -20,6 +20,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVCopyFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
+
 public class CteraCopyFeature extends DAVCopyFeature {
 
     public CteraCopyFeature(final CteraSession session) {
@@ -30,10 +32,10 @@ public class CteraCopyFeature extends DAVCopyFeature {
     public void preflight(final Path source, final Path target) throws BackgroundException {
         if((source.getParent().attributes().getAcl() != Acl.EMPTY) && (target.getParent().attributes().getAcl() != Acl.EMPTY)) {
             if(source.isDirectory()) {
-                CteraAttributesFinderFeature.assumeRole(target.getParent(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION);
+                assumeRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
             }
             else {
-                CteraAttributesFinderFeature.assumeRole(target.getParent(), CteraAttributesFinderFeature.CREATEFILEPERMISSION);
+                assumeRole(target.getParent(), CREATEFILEPERMISSION);
             }
         }
     }
