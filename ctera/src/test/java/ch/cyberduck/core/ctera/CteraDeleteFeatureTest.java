@@ -10,6 +10,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,7 +37,7 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
-    @Test
+    @Test(expected = RetriableAccessDeniedException.class)
     public void testDeleteFileWithLock() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new CteraTouchFeature(session).touch(test, new TransferStatus());
