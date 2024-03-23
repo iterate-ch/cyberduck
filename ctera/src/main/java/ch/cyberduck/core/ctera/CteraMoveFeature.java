@@ -32,7 +32,6 @@ public class CteraMoveFeature extends DAVMoveFeature {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        super.preflight(source, target);
         if(!CteraTouchFeature.validate(target.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }

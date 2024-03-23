@@ -38,7 +38,6 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
         if(!CteraTouchFeature.validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
-        super.preflight(workdir, filename);
         if(workdir.attributes().getAcl() != Acl.EMPTY) {
             checkCteraRole(workdir, CREATEDIRECTORIESPERMISSION);
         }

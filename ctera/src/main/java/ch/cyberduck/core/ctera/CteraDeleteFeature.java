@@ -30,7 +30,6 @@ public class CteraDeleteFeature extends DAVDeleteFeature {
 
     @Override
     public void preflight(Path file) throws BackgroundException {
-        super.preflight(file);
         if(file.attributes().getAcl() != Acl.EMPTY) {
             checkCteraRole(file, DELETEPERMISSION);
         }
