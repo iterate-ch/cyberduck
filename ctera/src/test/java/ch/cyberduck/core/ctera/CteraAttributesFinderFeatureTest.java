@@ -51,6 +51,8 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final DAVAttributesFinderFeature f = new CteraAttributesFinderFeature(session);
         final long rootTimestamp = f.find(root).getModificationDate();
         final String rootEtag = f.find(root).getETag();
+        // No milliseconds precision
+        Thread.sleep(1000L);
         final Path folder = new CteraDirectoryFeature(session).mkdir(new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotEquals(rootTimestamp, f.find(root).getModificationDate());
