@@ -42,7 +42,8 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
     public void testReadWrite() throws Exception {
         final Path root = new DefaultHomeFinderService(session).find();
         final String rootEtag = new CteraAttributesFinderFeature(session).find(root).getETag();
-        assertEquals(rootEtag, new CteraAttributesFinderFeature(session).find(root).getETag());
+        // ETag is not constant for "My Files"
+        // assertEquals(rootEtag, new CteraAttributesFinderFeature(session).find(root).getETag());
         final Path folder = new CteraDirectoryFeature(session).mkdir(new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String folderEtag = new CteraAttributesFinderFeature(session).find(folder).getETag();
@@ -75,7 +76,8 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        assertNotEquals(folderEtag, new CteraAttributesFinderFeature(session).find(folder).getETag());
+        // Folder ETag does not change if content changes
+        // assertNotEquals(folderEtag, new CteraAttributesFinderFeature(session).find(folder).getETag());
         assertNotEquals(rootEtag, new CteraAttributesFinderFeature(session).find(root).getETag());
         new CteraDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
