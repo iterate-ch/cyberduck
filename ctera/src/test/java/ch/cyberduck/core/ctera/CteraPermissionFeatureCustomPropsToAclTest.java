@@ -64,6 +64,6 @@ public class CteraPermissionFeatureCustomPropsToAclTest {
 
     @Test
     public void testCustomPropsToAcl() {
-        assertEquals(expected, CteraAttributesFinderFeature.customPropsToAcl(map));
+        assertEquals(expected, CteraAttributesFinderFeature.toAcl(map));
     }
 }

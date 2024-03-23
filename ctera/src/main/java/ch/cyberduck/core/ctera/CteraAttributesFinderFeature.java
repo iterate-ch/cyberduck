@@ -84,7 +84,11 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         return new Acl.Role(toProp(qn));
     }
 
-    public static Acl customPropsToAcl(final Map<String, String> customProps) {
+    /**
+     * @param customProps Custom properties from DAV resource
+     * @return Known ACLs in custom namespace
+     */
+    public static Acl toAcl(final Map<String, String> customProps) {
         boolean empty = true;
         final Acl acl = new Acl();
         acl.addAll(new Acl.CanonicalUser());
@@ -135,7 +139,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     @Override
     public PathAttributes toAttributes(final DavResource resource) {
         final Map<String, String> customProps = resource.getCustomProps();
-        final Acl acl = customPropsToAcl(customProps);
+        final Acl acl = toAcl(customProps);
         final PathAttributes attributes = super.toAttributes(resource);
         if(customProps != null && customProps.containsKey(CTERA_GUID)) {
             attributes.setFileId(customProps.get(CTERA_GUID));
