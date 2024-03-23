@@ -28,8 +28,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEFILEPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.WRITEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 import static org.junit.Assert.assertThrows;
 
 @Category(IntegrationTest.class)
@@ -45,7 +44,7 @@ public class CteraTouchFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightFiledAccessDeniedCustomProps() throws BackgroundException {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
+        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         assertThrows(AccessDeniedException.class, () -> new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random()));
     }
 

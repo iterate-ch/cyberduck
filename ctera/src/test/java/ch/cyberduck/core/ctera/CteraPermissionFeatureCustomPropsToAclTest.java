@@ -34,9 +34,7 @@ public class CteraPermissionFeatureCustomPropsToAclTest {
                                 (Map<String, String>) Stream.of(
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.READPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.WRITEPERMISSION.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.EXECUTEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.DELETEPERMISSION.getName(), "true"),
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.CREATEFILEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION.getName(), "false")
                                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
                                 new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)
@@ -45,9 +43,7 @@ public class CteraPermissionFeatureCustomPropsToAclTest {
                                 (Map<String, String>) Stream.of(
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.READPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.WRITEPERMISSION.getName(), "true"),
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.EXECUTEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.DELETEPERMISSION.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.CREATEFILEPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION.getName(), "true")
                                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
                                 new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.WRITEPERMISSION, CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)

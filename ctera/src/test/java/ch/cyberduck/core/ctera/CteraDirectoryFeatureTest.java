@@ -34,8 +34,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.WRITEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -62,7 +61,7 @@ public class CteraDirectoryFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightFiledAccessDeniedCustomProps() throws BackgroundException {
         final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        workdir.setAttributes(workdir.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
+        workdir.setAttributes(workdir.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         assertThrows(AccessDeniedException.class, () -> new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random()));
     }
 
