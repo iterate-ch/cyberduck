@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.sardine.DavResource;
@@ -61,10 +62,10 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
      */
     public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");
 
-    public static final List<Acl.Role> ALL_ACL_ROLES = Collections.unmodifiableList(Arrays.asList(
+    public static final Set<Acl.Role> ALL_ACL_ROLES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
-    ));
-    public static final List<QName> ALL_ACL_QN = Collections.unmodifiableList(ALL_ACL_ROLES.stream().map(CteraAttributesFinderFeature::toQn).collect(Collectors.toList()));
+    )));
+    public static final Set<QName> ALL_ACL_QN = Collections.unmodifiableSet(ALL_ACL_ROLES.stream().map(CteraAttributesFinderFeature::toQn).collect(Collectors.toSet()));
 
     private final DAVSession session;
 
