@@ -60,10 +60,11 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
      * Directories only.
      */
     public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("CreateDirectoriespermission");
-    static final List<Acl.Role> allCteraCustomACLRoles = Collections.unmodifiableList(Arrays.asList(
+
+    public static final List<Acl.Role> ALL_ACL_ROLES = Collections.unmodifiableList(Arrays.asList(
             READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
     ));
-    final static List<QName> allCteraCustomACLQn = Collections.unmodifiableList(allCteraCustomACLRoles.stream().map(CteraAttributesFinderFeature::toQn).collect(Collectors.toList()));
+    public static final List<QName> ALL_ACL_QN = Collections.unmodifiableList(ALL_ACL_ROLES.stream().map(CteraAttributesFinderFeature::toQn).collect(Collectors.toList()));
 
     private final DAVSession session;
 
@@ -92,7 +93,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         boolean empty = true;
         final Acl acl = new Acl();
         acl.addAll(new Acl.CanonicalUser());
-        for(final QName qn : allCteraCustomACLQn) {
+        for(final QName qn : ALL_ACL_QN) {
             if(customProps.containsKey(toProp(qn))) {
                 empty = false;
                 final String val = customProps.get(toProp(qn));
@@ -129,7 +130,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
 
     @Override
     protected List<DavResource> list(final Path file) throws IOException {
-        final List<QName> l = new ArrayList<>(allCteraCustomACLQn);
+        final List<QName> l = new ArrayList<>(ALL_ACL_QN);
         l.add(new QName(CTERA_NAMESPACE_URI, CTERA_GUID, CTERA_NAMESPACE_PREFIX));
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
                 new HashSet<>(l)

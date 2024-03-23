@@ -42,7 +42,7 @@ public class CteraListService extends DAVListService {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(
                 // N.B. Timestamp feature disabled in CteraSession.getFeature(Timestamp.class)
                 Stream.of(new QName(CteraAttributesFinderFeature.CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_GUID, CteraAttributesFinderFeature.CTERA_NAMESPACE_PREFIX)),
-                CteraAttributesFinderFeature.allCteraCustomACLQn.stream()
+                CteraAttributesFinderFeature.ALL_ACL_QN.stream()
         ).collect(Collectors.toSet())));
     }
 }
