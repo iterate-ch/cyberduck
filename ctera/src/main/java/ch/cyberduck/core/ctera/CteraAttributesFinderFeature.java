@@ -28,6 +28,7 @@ import com.github.sardine.DavResource;
 
 public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     private static final Logger log = LogManager.getLogger(CteraAttributesFinderFeature.class);
+
     public static final String CTERA_GUID = "guid";
     public static final String CTERA_NAMESPACE_URI = "http://www.ctera.com/ns";
     public static final String CTERA_NAMESPACE_PREFIX = "ctera";
