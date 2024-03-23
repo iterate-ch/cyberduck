@@ -36,13 +36,13 @@ public class CteraMoveFeature extends DAVMoveFeature {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if((source.attributes().getAcl() != Acl.EMPTY) && (target.attributes().getAcl() != Acl.EMPTY)) {
-            CteraAttributesFinderFeature.checkCteraRole(source, CteraAttributesFinderFeature.DELETEPERMISSION);
-            CteraAttributesFinderFeature.checkCteraRole(target, CteraAttributesFinderFeature.WRITEPERMISSION);
+            CteraAttributesFinderFeature.assumeRole(source, CteraAttributesFinderFeature.DELETEPERMISSION);
+            CteraAttributesFinderFeature.assumeRole(target, CteraAttributesFinderFeature.WRITEPERMISSION);
             if(source.isDirectory()) {
-                CteraAttributesFinderFeature.checkCteraRole(target.getParent(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION);
+                CteraAttributesFinderFeature.assumeRole(target.getParent(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION);
             }
             else {
-                CteraAttributesFinderFeature.checkCteraRole(target.getParent(), CteraAttributesFinderFeature.CREATEFILEPERMISSION);
+                CteraAttributesFinderFeature.assumeRole(target.getParent(), CteraAttributesFinderFeature.CREATEFILEPERMISSION);
             }
         }
     }

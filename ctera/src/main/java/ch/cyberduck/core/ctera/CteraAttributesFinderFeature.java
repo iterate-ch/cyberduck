@@ -104,7 +104,12 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         return acl;
     }
 
-    protected static void checkCteraRole(final Path file, final Acl.Role role) throws BackgroundException {
+    /**
+     * @param file File with ACLs to validate role
+     * @param role Assumed role
+     * @throws AccessDeniedException ACLs do not contain role
+     */
+    protected static void assumeRole(final Path file, final Acl.Role role) throws BackgroundException {
         final Acl acl = file.attributes().getAcl();
         if(acl == Acl.EMPTY) {
             return;

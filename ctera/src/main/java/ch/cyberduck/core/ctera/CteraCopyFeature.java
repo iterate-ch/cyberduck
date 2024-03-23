@@ -30,10 +30,10 @@ public class CteraCopyFeature extends DAVCopyFeature {
     public void preflight(final Path source, final Path target) throws BackgroundException {
         if((source.getParent().attributes().getAcl() != Acl.EMPTY) && (target.getParent().attributes().getAcl() != Acl.EMPTY)) {
             if(source.isDirectory()) {
-                CteraAttributesFinderFeature.checkCteraRole(target.getParent(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION);
+                CteraAttributesFinderFeature.assumeRole(target.getParent(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION);
             }
             else {
-                CteraAttributesFinderFeature.checkCteraRole(target.getParent(), CteraAttributesFinderFeature.CREATEFILEPERMISSION);
+                CteraAttributesFinderFeature.assumeRole(target.getParent(), CteraAttributesFinderFeature.CREATEFILEPERMISSION);
             }
         }
     }

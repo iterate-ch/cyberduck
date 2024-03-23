@@ -21,7 +21,7 @@ import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.DELETEPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.checkCteraRole;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
 
 public class CteraDeleteFeature extends DAVDeleteFeature {
     public CteraDeleteFeature(final CteraSession session) {
@@ -31,7 +31,7 @@ public class CteraDeleteFeature extends DAVDeleteFeature {
     @Override
     public void preflight(Path file) throws BackgroundException {
         if(file.attributes().getAcl() != Acl.EMPTY) {
-            checkCteraRole(file, DELETEPERMISSION);
+            assumeRole(file, DELETEPERMISSION);
         }
     }
 }

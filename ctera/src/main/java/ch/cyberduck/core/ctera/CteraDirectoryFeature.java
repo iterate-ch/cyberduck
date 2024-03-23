@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.InvalidFilenameException;
 import java.text.MessageFormat;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.checkCteraRole;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
 
 public class CteraDirectoryFeature extends DAVDirectoryFeature {
 
@@ -39,7 +39,7 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
         if(workdir.attributes().getAcl() != Acl.EMPTY) {
-            checkCteraRole(workdir, CREATEDIRECTORIESPERMISSION);
+            assumeRole(workdir, CREATEDIRECTORIESPERMISSION);
         }
     }
 }

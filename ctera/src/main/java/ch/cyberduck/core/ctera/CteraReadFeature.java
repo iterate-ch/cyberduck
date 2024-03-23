@@ -21,7 +21,7 @@ import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.READPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.checkCteraRole;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
 
 public class CteraReadFeature extends DAVReadFeature {
 
@@ -32,7 +32,7 @@ public class CteraReadFeature extends DAVReadFeature {
     @Override
     public void preflight(Path file) throws BackgroundException {
         if(file.attributes().getAcl() != Acl.EMPTY) {
-            checkCteraRole(file, READPERMISSION);
+            assumeRole(file, READPERMISSION);
         }
     }
 }

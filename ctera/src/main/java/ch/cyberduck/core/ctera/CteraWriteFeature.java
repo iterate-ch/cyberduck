@@ -21,7 +21,7 @@ import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.WRITEPERMISSION;
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.checkCteraRole;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
 
 public class CteraWriteFeature extends DAVWriteFeature {
 
@@ -32,7 +32,7 @@ public class CteraWriteFeature extends DAVWriteFeature {
     @Override
     public void preflight(Path file) throws BackgroundException {
         if(file.attributes().getAcl() != Acl.EMPTY) {
-            checkCteraRole(file, WRITEPERMISSION);
+            assumeRole(file, WRITEPERMISSION);
         }
     }
 }
