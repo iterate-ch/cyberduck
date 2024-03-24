@@ -92,7 +92,7 @@ public class DAVListService implements ListService {
         }
     }
 
-    protected List<DavResource> list(final Path directory) throws IOException, BackgroundException {
+    protected List<DavResource> list(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1,
                 Stream.of(
                                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
