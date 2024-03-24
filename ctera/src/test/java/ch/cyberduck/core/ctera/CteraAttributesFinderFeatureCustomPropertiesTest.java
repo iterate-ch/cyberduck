@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class CteraPermissionFeatureCustomPropsToAclTest {
+public class CteraAttributesFinderFeatureCustomPropertiesTest {
 
     @Parameters(name = "{0} {1}")
     public static Collection<Object[]> data() {
@@ -34,19 +34,25 @@ public class CteraPermissionFeatureCustomPropsToAclTest {
                                 (Map<String, String>) Stream.of(
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.READPERMISSION.getName(), "false"),
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.WRITEPERMISSION.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.DELETEPERMISSION.getName(), "true"),
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION.getName(), "false")
+                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.DELETEPERMISSION.getName(), "true")
                                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
                                 new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)
                         },
                         {
                                 (Map<String, String>) Stream.of(
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.READPERMISSION.getName(), "false"),
+                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.READPERMISSION.getName(), "true"),
                                         new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.WRITEPERMISSION.getName(), "true"),
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.DELETEPERMISSION.getName(), "false"),
-                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION.getName(), "true")
+                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.DELETEPERMISSION.getName(), "false")
                                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
-                                new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.WRITEPERMISSION, CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)
+                                new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION, CteraAttributesFinderFeature.WRITEPERMISSION)
+                        },
+                        {
+                                (Map<String, String>) Stream.of(
+                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.READPERMISSION.getName(), "true"),
+                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.WRITEPERMISSION.getName(), "true"),
+                                        new AbstractMap.SimpleEntry<>(CteraAttributesFinderFeature.DELETEPERMISSION.getName(), "true")
+                                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
+                                new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION, CteraAttributesFinderFeature.WRITEPERMISSION, CteraAttributesFinderFeature.DELETEPERMISSION)
                         }
                 }
         );
