@@ -91,23 +91,12 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
      * @return Known ACLs in custom namespace
      */
     public static Acl toAcl(final Map<String, String> customProps) {
-        boolean empty = true;
-        final Acl acl = new Acl();
-        acl.addAll(new Acl.CanonicalUser());
-        for(final QName qn : ALL_ACL_QN) {
-            if(customProps.containsKey(toProp(qn))) {
-                empty = false;
-                final String val = customProps.get(toProp(qn));
-                if(Boolean.parseBoolean(val)) {
-                    acl.addAll(new Acl.CanonicalUser(), toRole(qn));
-                }
-            }
+        if(customProps.keySet().stream().anyMatch(property -> ALL_ACL_QN.stream().anyMatch(qn -> toProp(qn).equals(property)))) {
+            return new Acl(new Acl.CanonicalUser(), customProps.entrySet().stream().filter(property -> ALL_ACL_QN.stream().anyMatch(qn -> toProp(qn).equals(property.getKey())))
+                    .filter(property -> Boolean.parseBoolean(property.getValue())).map(property -> new Acl.Role(property.getKey())).distinct().toArray(Acl.Role[]::new));
         }
-        if(empty) {
-            // ignore acl in preflight as none of the CTERA custom ACL roles is found
-            return Acl.EMPTY;
-        }
-        return acl;
+        // Ignore ACL in preflight checks as none of the custom roles is found
+        return Acl.EMPTY;
     }
 
     /**
