@@ -64,6 +64,9 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(folderTimestamp, f.find(folder).getModificationDate());
         assertEquals(folderEtag, f.find(folder).getETag());
         final PathAttributes attributes = f.find(test);
+        assertTrue(attributes.getAcl().asList().stream().anyMatch(userAndRole -> userAndRole.getRole().equals(CteraAttributesFinderFeature.READPERMISSION)));
+        assertTrue(attributes.getAcl().asList().stream().anyMatch(userAndRole -> userAndRole.getRole().equals(CteraAttributesFinderFeature.WRITEPERMISSION)));
+        assertTrue(attributes.getAcl().asList().stream().anyMatch(userAndRole -> userAndRole.getRole().equals(CteraAttributesFinderFeature.DELETEPERMISSION)));
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
@@ -87,6 +90,9 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new CteraAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
+        assertTrue(attributes.getAcl().asList().stream().anyMatch(userAndRole -> userAndRole.getRole().equals(CteraAttributesFinderFeature.READPERMISSION)));
+        assertTrue(attributes.getAcl().asList().stream().anyMatch(userAndRole -> userAndRole.getRole().equals(CteraAttributesFinderFeature.WRITEPERMISSION)));
+        assertTrue(attributes.getAcl().asList().stream().anyMatch(userAndRole -> userAndRole.getRole().equals(CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)));
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         assertEquals(test.attributes().getFileId(), attributes.getFileId());
