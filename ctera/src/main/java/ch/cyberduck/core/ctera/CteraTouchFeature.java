@@ -43,7 +43,7 @@ public class CteraTouchFeature extends DAVTouchFeature {
         if(!validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
-        assumeRole(workdir, CREATEFILEPERMISSION);
+        assumeRole(workdir, filename, CREATEFILEPERMISSION);
     }
 
     public static boolean validate(final String filename) {

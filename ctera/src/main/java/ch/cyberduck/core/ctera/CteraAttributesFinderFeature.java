@@ -116,6 +116,10 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
      * @throws AccessDeniedException ACLs do not contain role
      */
     protected static void assumeRole(final Path file, final Acl.Role role) throws BackgroundException {
+        assumeRole(file, file.getName(), role);
+    }
+
+    protected static void assumeRole(final Path file, final String filename, final Acl.Role role) throws BackgroundException {
         final Acl acl = file.attributes().getAcl();
         if(acl == Acl.EMPTY) {
             if(log.isWarnEnabled()) {
@@ -124,11 +128,27 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(role)) {
-            final String msg = MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName());
             if(log.isWarnEnabled()) {
-                log.warn(msg);
+                log.warn(String.format("ACL %s for %s does not include %s", acl, file, role));
             }
-            throw new AccessDeniedException(msg);
+            if(role == READPERMISSION) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),
+                        filename)).withFile(file);
+            }
+            if(role == WRITEPERMISSION) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"),
+                        filename)).withFile(file);
+            }
+            if(role == DELETEPERMISSION) {
+                throw new AccessDeniedException(MessageFormat.format(
+                        LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
+            }
+            if(role == CREATEDIRECTORIESPERMISSION) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"),
+                        filename)).withFile(file);
+            }
+            throw new AccessDeniedException(MessageFormat.format(
+                    LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName())).withFile(file);
         }
     }
 

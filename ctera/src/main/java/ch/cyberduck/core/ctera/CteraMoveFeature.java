@@ -38,11 +38,6 @@ public class CteraMoveFeature extends DAVMoveFeature {
         }
         assumeRole(source, DELETEPERMISSION);
         assumeRole(target, WRITEPERMISSION);
-        if(source.isDirectory()) {
-            assumeRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
-        }
-        else {
-            assumeRole(target.getParent(), CREATEFILEPERMISSION);
-        }
+        assumeRole(target.getParent(), target.getName(), source.isDirectory() ? CREATEDIRECTORIESPERMISSION : CREATEFILEPERMISSION);
     }
 }

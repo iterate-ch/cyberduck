@@ -23,7 +23,8 @@ import ch.cyberduck.core.exception.InvalidFilenameException;
 
 import java.text.MessageFormat;
 
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
 import static ch.cyberduck.core.ctera.CteraTouchFeature.validate;
 
 public class CteraDirectoryFeature extends DAVDirectoryFeature {
