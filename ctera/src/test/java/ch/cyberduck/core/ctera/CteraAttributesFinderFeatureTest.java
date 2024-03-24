@@ -16,9 +16,11 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -71,6 +73,8 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         assertEquals(test.attributes().getFileId(), attributes.getFileId());
+        assertNotNull(new CteraListService(session).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test)));
+        assertEquals(attributes, new CteraListService(session).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
         // Test wrong type
         try {
             f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)));
@@ -86,7 +90,8 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path test = new CteraDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new CteraDirectoryFeature(session).mkdir(new Path(home,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new CteraAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
@@ -96,6 +101,8 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         assertEquals(test.attributes().getFileId(), attributes.getFileId());
+        assertNotNull(new CteraListService(session).list(home, new DisabledListProgressListener()).find(new SimplePathPredicate(test)));
+        assertEquals(attributes, new CteraListService(session).list(home, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
         // Test wrong type
         try {
             f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)));
