@@ -19,7 +19,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +26,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.sardine.DavResource;
+
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.ALL_ACL_QN;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.GUID_QN;
 
 public class CteraListService extends DAVListService {
 
@@ -40,9 +42,7 @@ public class CteraListService extends DAVListService {
     @Override
     protected List<DavResource> list(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(
-                // N.B. Timestamp feature disabled in CteraSession.getFeature(Timestamp.class)
-                Stream.of(new QName(CteraAttributesFinderFeature.CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_GUID, CteraAttributesFinderFeature.CTERA_NAMESPACE_PREFIX)),
-                CteraAttributesFinderFeature.ALL_ACL_QN.stream()
+                Stream.of(GUID_QN), ALL_ACL_QN.stream()
         ).collect(Collectors.toSet())));
     }
 }

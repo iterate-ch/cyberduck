@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.sardine.DavResource;
 
@@ -66,6 +66,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
             READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
     )));
     public static final Set<QName> ALL_ACL_QN = Collections.unmodifiableSet(ALL_ACL_ROLES.stream().map(CteraAttributesFinderFeature::toQn).collect(Collectors.toSet()));
+    public static final QName GUID_QN = new QName(CteraAttributesFinderFeature.CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_GUID, CteraAttributesFinderFeature.CTERA_NAMESPACE_PREFIX);
 
     private final DAVSession session;
 
@@ -143,11 +144,9 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
 
     @Override
     protected List<DavResource> list(final Path file) throws IOException {
-        final List<QName> l = new ArrayList<>(ALL_ACL_QN);
-        l.add(new QName(CTERA_NAMESPACE_URI, CTERA_GUID, CTERA_NAMESPACE_PREFIX));
-        return session.getClient().list(new DAVPathEncoder().encode(file), 0,
-                new HashSet<>(l)
-        );
+        return session.getClient().list(new DAVPathEncoder().encode(file), 0, Collections.unmodifiableSet(Stream.concat(
+                Stream.of(GUID_QN), ALL_ACL_QN.stream()
+        ).collect(Collectors.toSet())));
     }
 
     @Override
