@@ -15,7 +15,6 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
@@ -38,8 +37,6 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
         if(!validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
-        if(workdir.attributes().getAcl() != Acl.EMPTY) {
-            assumeRole(workdir, CREATEDIRECTORIESPERMISSION);
-        }
+        assumeRole(workdir, CREATEDIRECTORIESPERMISSION);
     }
 }

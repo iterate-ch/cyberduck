@@ -15,7 +15,6 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVCopyFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,13 +29,6 @@ public class CteraCopyFeature extends DAVCopyFeature {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        if((source.getParent().attributes().getAcl() != Acl.EMPTY) && (target.getParent().attributes().getAcl() != Acl.EMPTY)) {
-            if(source.isDirectory()) {
-                assumeRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
-            }
-            else {
-                assumeRole(target.getParent(), CREATEFILEPERMISSION);
-            }
-        }
+        assumeRole(target.getParent(), target.getName(), source.isDirectory() ? CREATEDIRECTORIESPERMISSION : CREATEFILEPERMISSION);
     }
 }

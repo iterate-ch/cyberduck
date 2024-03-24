@@ -15,7 +15,6 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -31,8 +30,6 @@ public class CteraDeleteFeature extends DAVDeleteFeature {
 
     @Override
     public void preflight(Path file) throws BackgroundException {
-        if(file.attributes().getAcl() != Acl.EMPTY) {
-            assumeRole(file, DELETEPERMISSION);
-        }
+        assumeRole(file, DELETEPERMISSION);
     }
 }

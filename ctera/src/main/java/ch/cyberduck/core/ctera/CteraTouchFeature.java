@@ -15,7 +15,6 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVTouchFeature;
@@ -28,7 +27,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEFILEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
 
 public class CteraTouchFeature extends DAVTouchFeature {
 
@@ -43,9 +43,7 @@ public class CteraTouchFeature extends DAVTouchFeature {
         if(!validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
-        if(workdir.attributes().getAcl() != Acl.EMPTY) {
-            assumeRole(workdir, CREATEFILEPERMISSION);
-        }
+        assumeRole(workdir, CREATEFILEPERMISSION);
     }
 
     public static boolean validate(final String filename) {

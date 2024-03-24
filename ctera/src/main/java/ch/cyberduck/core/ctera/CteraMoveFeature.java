@@ -15,7 +15,6 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVMoveFeature;
@@ -37,15 +36,13 @@ public class CteraMoveFeature extends DAVMoveFeature {
         if(!CteraTouchFeature.validate(target.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if((source.attributes().getAcl() != Acl.EMPTY) && (target.attributes().getAcl() != Acl.EMPTY)) {
-            assumeRole(source, DELETEPERMISSION);
-            assumeRole(target, WRITEPERMISSION);
-            if(source.isDirectory()) {
-                assumeRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
-            }
-            else {
-                assumeRole(target.getParent(), CREATEFILEPERMISSION);
-            }
+        assumeRole(source, DELETEPERMISSION);
+        assumeRole(target, WRITEPERMISSION);
+        if(source.isDirectory()) {
+            assumeRole(target.getParent(), CREATEDIRECTORIESPERMISSION);
+        }
+        else {
+            assumeRole(target.getParent(), CREATEFILEPERMISSION);
         }
     }
 }
