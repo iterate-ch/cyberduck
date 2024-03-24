@@ -118,6 +118,9 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     protected static void assumeRole(final Path file, final Acl.Role role) throws BackgroundException {
         final Acl acl = file.attributes().getAcl();
         if(acl == Acl.EMPTY) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Missing ACL for %s", file));
+            }
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(role)) {
