@@ -73,28 +73,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
 
     @Override
     public void notify(final String group, final String identifier, final String title, final String description) {
-        if(filter.shouldSuppress()) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
-            }
-            return;
-        }
-        final NSUserNotification notification = NSUserNotification.notification();
-        if(StringUtils.isNotBlank(identifier)) {
-            if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
-                notification.setIdentifier(identifier);
-            }
-            if(StringUtils.isNotBlank(Path.getExtension(identifier))) {
-                notification.setContentImage(IconCacheFactory.<NSImage>get().documentIcon(Path.getExtension(identifier), 32));
-            }
-        }
-        notification.setTitle(LocaleFactory.localizedString(title, "Status"));
-        notification.setInformativeText(description);
-        notification.setHasActionButton(false);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Schedule notification %s", notification));
-        }
-        center.scheduleNotification(notification);
+        this.notify(group, identifier, title, description, null);
     }
 
     @Override
@@ -118,8 +97,10 @@ public class NotificationCenter extends ProxyController implements NotificationS
         }
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
-        notification.setHasActionButton(true);
-        notification.setActionButtonTitle(action);
+        if(StringUtils.isNotBlank(action)) {
+            notification.setHasActionButton(true);
+            notification.setActionButtonTitle(action);
+        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Schedule notification %s", notification));
         }
