@@ -15,6 +15,9 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Local;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
@@ -28,7 +31,13 @@ public class FileBufferTest {
 
     @Test
     public void testTruncate() throws Exception {
-        final FileBuffer buffer = new FileBuffer();
+        final Local temp = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        assertFalse(temp.exists());
+        final FileBuffer buffer = new FileBuffer(temp);
+        assertTrue(temp.exists());
+        assertEquals(0L, buffer.length(), 0L);
+        buffer.truncate(0L);
+        assertTrue(temp.exists());
         assertEquals(0L, buffer.length(), 0L);
         final byte[] chunk = RandomUtils.nextBytes(100);
         buffer.write(chunk, 0L);
@@ -91,15 +100,16 @@ public class FileBufferTest {
 
     @Test
     public void testClose() throws Exception {
-        final FileBuffer buffer = new FileBuffer();
+        final Local temp = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final FileBuffer buffer = new FileBuffer(temp);
         assertEquals(0L, buffer.length(), 0L);
         final byte[] chunk = RandomUtils.nextBytes(100);
         buffer.write(chunk, 0L);
         assertEquals(100L, buffer.length(), 0L);
         buffer.close();
+        assertFalse(temp.exists());
         assertEquals(0L, buffer.length(), 0L);
-        buffer.write(chunk, 0L);
-        assertEquals(100L, buffer.length(), 0L);
+        assertThrows(IOException.class, () -> buffer.write(chunk, 0L));
     }
 
     @Test
