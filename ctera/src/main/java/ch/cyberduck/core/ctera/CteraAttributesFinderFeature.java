@@ -60,7 +60,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
      * Create Folders: Allows or denies creating subfolders within the folder.
      * Directories only.
      */
-    public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role(WRITEPERMISSION.getName());
+    public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("createdirectorypermission");
 
     public static final Set<Acl.Role> ALL_ACL_ROLES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
