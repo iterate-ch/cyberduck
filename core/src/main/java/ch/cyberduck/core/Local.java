@@ -43,6 +43,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
@@ -239,8 +240,13 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
                 return filter.accept(entry.getFileName().toString());
             }
         })) {
-            for(Path entry : stream) {
-                children.add(LocalFactory.get(entry.toString()));
+            try {
+                for(Path entry : stream) {
+                    children.add(LocalFactory.get(entry.toString()));
+                }
+            }
+            catch(DirectoryIteratorException e) {
+                throw e.getCause();
             }
         }
         catch(IOException e) {
