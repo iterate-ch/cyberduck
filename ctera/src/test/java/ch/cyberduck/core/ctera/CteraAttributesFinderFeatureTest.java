@@ -195,4 +195,41 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final Acl readOnlyFileAcl = new CteraAttributesFinderFeature(session).find(readOnlyFile).getAcl();
         assertEquals(new Acl(new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)), readOnlyFileAcl);
     }
+
+    @Test
+    public void testWORMAcl() throws BackgroundException, IOException {
+        final Path home = new Path("/ServicesPortal/webdav/Shared With Me", EnumSet.of(AbstractPath.Type.directory));
+        final Path folder = new Path(home, "WORM test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
+        assertEquals(new Acl(
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), WRITEPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
+        ), folderAcl);
+
+        final Path subfolder = new Path(folder, "Retention Folder (no write, no delete)", EnumSet.of(AbstractPath.Type.directory));
+        final Acl subfolderAcl = new CteraAttributesFinderFeature(session).find(subfolder).getAcl();
+        assertEquals(new Acl(
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)
+        ), subfolderAcl);
+    }
+
+    @Test
+    public void testWORMNoRetentionAcl() throws BackgroundException, IOException {
+        final Path home = new Path("/ServicesPortal/webdav/Shared With Me", EnumSet.of(AbstractPath.Type.directory));
+        final Path folder = new Path(home, "WORM-NoRetention(Delete allowed) (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
+        assertEquals(new Acl(
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), WRITEPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
+        ), folderAcl);
+
+        final Path file = new Path(folder, "WORM-DeleteAllowed.txt", EnumSet.of(AbstractPath.Type.file));
+        final Acl fileAcle = new CteraAttributesFinderFeature(session).find(file).getAcl();
+        assertEquals(new Acl(
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
+        ), fileAcle);
+    }
 }
