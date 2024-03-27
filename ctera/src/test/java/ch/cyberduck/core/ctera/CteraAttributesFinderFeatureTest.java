@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -89,16 +90,8 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertNotNull(new CteraListService(session).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test)));
         assertEquals(attributes, new CteraListService(session).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
         // Test wrong type
-        try {
-            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)));
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
-        finally {
-            new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
+        assertThrows(NotfoundException.class, () -> f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -117,13 +110,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertNotNull(new CteraListService(session).list(home, new DisabledListProgressListener()).find(new SimplePathPredicate(test)));
         assertEquals(attributes, new CteraListService(session).list(home, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
         // Test wrong type
-        try {
-            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)));
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
+        assertThrows(NotfoundException.class, () -> f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
@@ -143,7 +130,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
                 noAccess.get(0).getCustomProps());
         assertEquals(new Acl(new Acl.CanonicalUser()), new CteraAttributesFinderFeature(session).toAttributes(noAccess.get(0)).getAcl());
         // find fails with 403 in backend
-        final BackgroundException findException = assertThrows(BackgroundException.class, () -> new CteraAttributesFinderFeature(session).find(new Path(home, "NoAccess", EnumSet.of(AbstractPath.Type.directory))));
+        final AccessDeniedException findException = assertThrows(AccessDeniedException.class, () -> new CteraAttributesFinderFeature(session).find(new Path(home, "NoAccess", EnumSet.of(AbstractPath.Type.directory))));
         assertTrue(findException.getCause() instanceof SardineException);
         assertEquals(403, ((SardineException) findException.getCause()).getStatusCode());
         // listing the folder fails with 403 in the backend
