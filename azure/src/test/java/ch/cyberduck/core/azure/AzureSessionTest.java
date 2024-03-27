@@ -9,7 +9,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
@@ -29,8 +28,6 @@ public class AzureSessionTest extends AbstractAzureTest {
 
     @Test
     public void testFeatures() {
-        final Host host = new Host(new AzureProtocol(), "test.cyberduck.ch");
-        final Session session = new AzureSession(host);
         assertNotNull(session.getFeature(AclPermission.class));
         assertNotNull(session.getFeature(Directory.class));
         assertNotNull(session.getFeature(Delete.class));
@@ -122,8 +119,7 @@ public class AzureSessionTest extends AbstractAzureTest {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
-                assertEquals("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
-                    reason);
+                assertEquals("Forbidden. Please contact your web hosting service provider for assistance.", reason);
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
@@ -140,8 +136,7 @@ public class AzureSessionTest extends AbstractAzureTest {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
-                assertEquals("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
-                    reason);
+                assertEquals("Forbidden. Please contact your web hosting service provider for assistance.", reason);
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
