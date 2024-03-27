@@ -145,7 +145,6 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
         assertEquals(new Acl(new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)), folderAcl);
 
-        // TODO CTERA-136 file is named RW but returns only R?
         final Path file = new Path(folder, "RW no delete.txt", EnumSet.of(AbstractPath.Type.file));
         final Acl fileAcl = new CteraAttributesFinderFeature(session).find(file).getAcl();
         assertEquals(new Acl(new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)), fileAcl);
