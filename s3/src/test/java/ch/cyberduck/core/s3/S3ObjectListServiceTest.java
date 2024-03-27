@@ -372,4 +372,11 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertFalse(session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testListCommonPrefixSlashOnly() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck-unsupportedprefix", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).isEmpty());
+    }
 }

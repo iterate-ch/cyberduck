@@ -358,4 +358,11 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         assertTrue(new S3VersionedObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).contains(placeholder));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testListCommonPrefixSlashOnly() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck-unsupportedprefix", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).isEmpty());
+    }
 }
