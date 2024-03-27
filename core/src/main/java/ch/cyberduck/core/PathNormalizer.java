@@ -186,6 +186,9 @@ public final class PathNormalizer {
         if(StringUtils.startsWith(path, String.valueOf(Path.DELIMITER))) {
             // Mount absolute path
             final String normalized = normalize(StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), true);
+            if(StringUtils.equals(normalized, String.valueOf(Path.DELIMITER))) {
+                return root;
+            }
             return new Path(normalized, normalized.equals(String.valueOf(Path.DELIMITER)) ?
                     EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
         }
@@ -199,6 +202,9 @@ public final class PathNormalizer {
             else {
                 // Relative path
                 normalized = normalize(StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), false);
+            }
+            if(StringUtils.equals(normalized, String.valueOf(Path.DELIMITER))) {
+                return root;
             }
             return new Path(String.format("%s%s%s", root.getAbsolute(), root.isRoot() ? StringUtils.EMPTY : Path.DELIMITER, normalized), EnumSet.of(Path.Type.directory));
         }

@@ -4,8 +4,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class PathNormalizerTest {
 
@@ -55,52 +54,52 @@ public class PathNormalizerTest {
     public void testPathNormalize() {
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "/path/to/remove/.."), EnumSet.of(Path.Type.directory));
+                    "/path/to/remove/.."), EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "/path/to/remove/.././"), EnumSet.of(Path.Type.directory));
+                    "/path/to/remove/.././"), EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "/path/remove/../to/remove/.././"), EnumSet.of(Path.Type.directory));
+                    "/path/remove/../to/remove/.././"), EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "/path/to/remove/remove/../../"), EnumSet.of(Path.Type.directory));
+                    "/path/to/remove/remove/../../"), EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "/path/././././to"), EnumSet.of(Path.Type.directory));
+                    "/path/././././to"), EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "./.path/to"), EnumSet.of(Path.Type.directory));
+                    "./.path/to"), EnumSet.of(Path.Type.directory));
             assertEquals("/.path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                ".path/to"), EnumSet.of(Path.Type.directory));
+                    ".path/to"), EnumSet.of(Path.Type.directory));
             assertEquals("/.path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "/path/.to"), EnumSet.of(Path.Type.directory));
+                    "/path/.to"), EnumSet.of(Path.Type.directory));
             assertEquals("/path/.to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "/path//to"), EnumSet.of(Path.Type.directory));
+                    "/path//to"), EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(PathNormalizer.normalize(
-                "/path///to////"), EnumSet.of(Path.Type.directory));
+                    "/path///to////"), EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
     }
@@ -109,13 +108,13 @@ public class PathNormalizerTest {
     public void testPathName() {
         {
             Path path = new Path(PathNormalizer.normalize(
-                "/path/to/file/"), EnumSet.of(Path.Type.directory));
+                    "/path/to/file/"), EnumSet.of(Path.Type.directory));
             assertEquals("file", path.getName());
             assertEquals("/path/to/file", path.getAbsolute());
         }
         {
             Path path = new Path(PathNormalizer.normalize(
-                "/path/to/file"), EnumSet.of(Path.Type.directory));
+                    "/path/to/file"), EnumSet.of(Path.Type.directory));
             assertEquals("file", path.getName());
             assertEquals("/path/to/file", path.getAbsolute());
         }
@@ -129,9 +128,9 @@ public class PathNormalizerTest {
     @Test
     public void testFindWithWorkdir() {
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-            PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
+                PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-            PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
+                PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
     }
 
     @Test
@@ -164,6 +163,15 @@ public class PathNormalizerTest {
     @Test
     public void testDefaultLocalPathDriveLetterBackwardSlashes() {
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
-            PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "C:\\Users\\example\\Documents\\vault"));
+                PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "C:\\Users\\example\\Documents\\vault"));
+    }
+
+    @Test
+    public void testComposeInvalidName() {
+        final Path workdir = new Path("/workdir", EnumSet.of(Path.Type.directory));
+        assertSame(workdir, PathNormalizer.compose(workdir, "/"));
+        assertSame(workdir, PathNormalizer.compose(workdir, "//"));
+        assertSame(workdir, PathNormalizer.compose(workdir, ""));
+        assertEquals(new Path(workdir, " ", EnumSet.of(Path.Type.directory)), PathNormalizer.compose(workdir, " "));
     }
 }
