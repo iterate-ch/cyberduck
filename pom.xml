@@ -88,7 +88,7 @@
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>1.42.3</google-http-client.version>
         <jwt.version>4.4.0</jwt.version>
-        <ikvm-version>8.0.312.b07-8</ikvm-version>
+        <ikvm-version>8.3.1</ikvm-version>
         <java-native-dll>8u312b07</java-native-dll>
         <surefire.group.excluded>ch.cyberduck.test.IntegrationTest</surefire.group.excluded>
     </properties>
