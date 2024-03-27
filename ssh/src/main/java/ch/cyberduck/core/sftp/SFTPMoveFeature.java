@@ -25,8 +25,10 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 
 import net.schmizz.sshj.sftp.RenameFlags;
 
@@ -43,10 +45,8 @@ public class SFTPMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
-            if(status.isExists()) {
-                delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
-            }
-            session.sftp().rename(file.getAbsolute(), renamed.getAbsolute(), Collections.singleton(status.isExists() ? RenameFlags.OVERWRITE : RenameFlags.NATIVE));
+            session.sftp().rename(file.getAbsolute(), renamed.getAbsolute(),
+                    status.isExists() ? new HashSet<>(Arrays.asList(RenameFlags.OVERWRITE, RenameFlags.NATIVE)) : Collections.singleton(RenameFlags.NATIVE));
             // Copy original file attributes
             return renamed.withAttributes(file.attributes());
         }
