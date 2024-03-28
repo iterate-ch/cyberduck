@@ -125,6 +125,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
                         new AbstractMap.SimpleEntry<>("writepermission", "false"),
                         new AbstractMap.SimpleEntry<>("readpermission", "false"),
                         new AbstractMap.SimpleEntry<>("deletepermission", "false"),
+                        new AbstractMap.SimpleEntry<>("createdirectoriespermission", "false"),
                         new AbstractMap.SimpleEntry<>("guid", "c51c40dc-1de0-441c-a6bf-3d07c0420329:1")
                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
                 noAccess.get(0).getCustomProps());
@@ -170,7 +171,8 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(new Acl(
                 new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
                 new Acl.UserAndRole(new Acl.CanonicalUser(), WRITEPERMISSION),
-                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
+                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)
         ), folderAcl);
 
         final Path file = new Path(folder, "Free Access.txt", EnumSet.of(AbstractPath.Type.file));
@@ -203,13 +205,15 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(new Acl(
                 new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
                 new Acl.UserAndRole(new Acl.CanonicalUser(), WRITEPERMISSION),
-                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
+                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)
         ), folderAcl);
 
         final Path subfolder = new Path(folder, "Retention Folder (no write, no delete)", EnumSet.of(AbstractPath.Type.directory));
         final Acl subfolderAcl = new CteraAttributesFinderFeature(session).find(subfolder).getAcl();
         assertEquals(new Acl(
-                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)
         ), subfolderAcl);
     }
 
@@ -221,7 +225,8 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(new Acl(
                 new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
                 new Acl.UserAndRole(new Acl.CanonicalUser(), WRITEPERMISSION),
-                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
+                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)
         ), folderAcl);
 
         final Path file = new Path(folder, "WORM-DeleteAllowed.txt", EnumSet.of(AbstractPath.Type.file));
