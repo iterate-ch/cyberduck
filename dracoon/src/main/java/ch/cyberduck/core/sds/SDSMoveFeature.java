@@ -68,8 +68,8 @@ public class SDSMoveFeature implements Move {
             if(containerService.isContainer(file)) {
                 final Node node = new NodesApi(session.getClient()).updateRoom(
                     new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
-                nodeid.cache(renamed, file.attributes().getVersionId());
-                nodeid.cache(file, null);
+                nodeid.cache(renamed, file.attributes().getVersionId(), file.attributes().getFileId());
+                nodeid.cache(file, null, null);
                 return renamed.withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
             }
             else {
@@ -99,8 +99,8 @@ public class SDSMoveFeature implements Move {
                         Long.parseLong(nodeid.getVersionId(renamed.getParent())),
                         StringUtils.EMPTY, null);
                 }
-                nodeid.cache(renamed, file.attributes().getVersionId());
-                nodeid.cache(file, null);
+                nodeid.cache(renamed, file.attributes().getVersionId(), file.attributes().getFileId());
+                nodeid.cache(file, null, null);
                 // Copy original file attributes
                 return renamed.withAttributes(new PathAttributes(file.attributes()).withVersionId(String.valueOf(nodeId)));
             }

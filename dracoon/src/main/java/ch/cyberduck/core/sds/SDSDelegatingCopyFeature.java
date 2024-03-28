@@ -52,7 +52,7 @@ public class SDSDelegatingCopyFeature implements Copy {
             status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         }
         final Path result = copy.copy(source, target, status, callback, listener);
-        nodeid.cache(target, null);
+        nodeid.cache(target, null, null);
         return result.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(result));
     }
 

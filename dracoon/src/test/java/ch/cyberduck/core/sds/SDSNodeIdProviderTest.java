@@ -50,20 +50,20 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final String name = String.format("%s%s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         nodeid.clear();
-        final String nodeId = nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1);
+        final String nodeId = nodeid.getNode(new Path(room, name, EnumSet.of(Path.Type.file)), 1).getId().toString();
         assertNotNull(nodeId);
-        assertEquals(nodeId, nodeid.getNodeId(new Path(room.withAttributes(PathAttributes.EMPTY), name, EnumSet.of(Path.Type.file)), 1));
-        assertEquals(nodeId, nodeid.getNodeId(new Path(room, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), 1));
-        assertEquals(nodeId, nodeid.getNodeId(new Path(room, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file)), 1));
+        assertEquals(nodeId, nodeid.getNode(new Path(room.withAttributes(PathAttributes.EMPTY), name, EnumSet.of(Path.Type.file)), 1).getId().toString());
+        assertEquals(nodeId, nodeid.getNode(new Path(room, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), 1).getId().toString());
+        assertEquals(nodeId, nodeid.getNode(new Path(room, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file)), 1).getId().toString());
         try {
-            assertNull(nodeid.getNodeId(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), 1));
+            assertNull(nodeid.getNode(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), 1).getId().toString());
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
         try {
-            assertNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), 1));
+            assertNull(nodeid.getNode(new Path(room, name, EnumSet.of(Path.Type.directory)), 1).getId().toString());
             fail();
         }
         catch(NotfoundException e) {
@@ -80,7 +80,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionIdTouch = file.attributes().getVersionId();
         nodeid.clear();
-        assertEquals(versionIdTouch, nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
+        assertEquals(versionIdTouch, nodeid.getNode(new Path(room, name, EnumSet.of(Path.Type.file)), 1).getId().toString());
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -92,7 +92,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         assertNotNull(file.attributes().getVersionId());
         assertNotEquals(versionIdTouch, file.attributes().getVersionId());
         nodeid.clear();
-        assertEquals(file.attributes().getVersionId(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
+        assertEquals(file.attributes().getVersionId(), nodeid.getNode(new Path(room, name, EnumSet.of(Path.Type.file)), 1).getId().toString());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -106,15 +106,15 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         nodeid.clear();
-        assertEquals(folder.attributes().getVersionId(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), 1));
+        assertEquals(folder.attributes().getVersionId(), nodeid.getNode(new Path(room, name, EnumSet.of(Path.Type.directory)), 1).getId().toString());
         try {
-            assertNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
+            assertNull(nodeid.getNode(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
             fail();
         }
         catch(NotfoundException e) {
             //
         }
-        assertEquals(file.attributes().getVersionId(), nodeid.getNodeId(new Path(folder, file.getName(), EnumSet.of(Path.Type.file)), 1));
+        assertEquals(file.attributes().getVersionId(), nodeid.getNode(new Path(folder, file.getName(), EnumSet.of(Path.Type.file)), 1).getId().toString());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -128,10 +128,10 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, subroomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotNull(subroom.attributes().getVersionId());
         nodeid.clear();
-        assertEquals(room.attributes().getVersionId(), nodeid.getNodeId(new Path(roomname, EnumSet.of(Path.Type.directory)), 1));
-        assertEquals(subroom.attributes().getVersionId(), nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.directory)), 1));
+        assertEquals(room.attributes().getVersionId(), nodeid.getNode(new Path(roomname, EnumSet.of(Path.Type.directory)), 1).getId().toString());
+        assertEquals(subroom.attributes().getVersionId(), nodeid.getNode(new Path(room, subroomname, EnumSet.of(Path.Type.directory)), 1).getId().toString());
         try {
-            assertNull(nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.file)), 1));
+            assertNull(nodeid.getNode(new Path(room, subroomname, EnumSet.of(Path.Type.file)), 1));
             fail();
         }
         catch(NotfoundException e) {

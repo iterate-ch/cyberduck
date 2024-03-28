@@ -61,7 +61,7 @@ public class SDSBatchDeleteFeature implements Delete {
                 set.put(file.getParent(), nodes);
             }
             callback.delete(file);
-            nodeid.cache(file, null);
+            nodeid.cache(file, null, null);
         }
         for(List<Long> nodes : regular.values()) {
             try {

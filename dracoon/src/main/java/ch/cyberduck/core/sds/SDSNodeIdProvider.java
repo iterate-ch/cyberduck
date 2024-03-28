@@ -57,6 +57,11 @@ public class SDSNodeIdProvider implements FileIdProvider, VersionIdProvider {
         this.references = new CachingFileIdProvider(session.getCaseSensitivity());
     }
 
+    public void cache(final Path file, final String nodeId, final String referenceId) {
+        this.versions.cache(file, nodeId);
+        this.references.cache(file, referenceId);
+    }
+
     @Override
     public String getVersionId(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
@@ -153,8 +158,12 @@ public class SDSNodeIdProvider implements FileIdProvider, VersionIdProvider {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Return node %s for file %s", node.getId(), file));
                         }
-                        versions.cache(file, node.getId().toString());
-                        references.cache(file, node.getReferenceId().toString());
+                        if(node.getId() != null) {
+                            versions.cache(file, node.getId().toString());
+                        }
+                        if(node.getReferenceId() != null) {
+                            references.cache(file, node.getReferenceId().toString());
+                        }
                         return node;
                     }
                 }

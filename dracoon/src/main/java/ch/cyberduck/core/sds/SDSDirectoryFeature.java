@@ -74,7 +74,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
         folderRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent())));
         folderRequest.setName(folder.getName());
         final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
-        nodeid.cache(folder, String.valueOf(node.getId()));
+        nodeid.cache(folder, String.valueOf(node.getId()), String.valueOf(node.getReferenceId()));
         return folder.withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
     }
 
@@ -89,7 +89,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
         }
         roomRequest.setName(room.getName());
         final Node node = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
-        nodeid.cache(room, String.valueOf(node.getId()));
+        nodeid.cache(room, String.valueOf(node.getId()), String.valueOf(node.getReferenceId()));
         if(encrypt) {
             final EncryptRoomRequest options = new EncryptRoomRequest();
             options.setIsEncrypted(true);
