@@ -74,7 +74,7 @@ public class OwncloudProtocol extends AbstractProtocol {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new ETagComparisonService(), new ETagComparisonService());
+            return (T) new DefaultComparisonService(DefaultComparisonService.forFiles(this), new ETagComparisonService());
         }
         if(type == CredentialsConfigurator.class) {
             return (T) new WindowsIntegratedCredentialsConfigurator();
