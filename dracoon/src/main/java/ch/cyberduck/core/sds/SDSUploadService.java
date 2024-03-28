@@ -171,7 +171,7 @@ public class SDSUploadService {
                     }
                 }
             }
-            nodeid.cache(file, String.valueOf(upload.getId()));
+            nodeid.cache(file, String.valueOf(upload.getId()), String.valueOf(upload.getReferenceId()));
             return upload;
         }
         catch(ApiException e) {
@@ -260,7 +260,7 @@ public class SDSUploadService {
                                 break;
                             case "done":
                                 // Set node id in transfer status
-                                nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
+                                nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()), String.valueOf(uploadStatus.getNode().getReferenceId()));
                                 // Mark parent status as complete
                                 status.withResponse(new SDSAttributesAdapter(session).toAttributes(uploadStatus.getNode())).setComplete();
                                 signal.countDown();
