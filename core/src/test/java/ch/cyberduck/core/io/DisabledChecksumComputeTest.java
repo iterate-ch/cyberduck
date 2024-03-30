@@ -20,17 +20,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 
 public class DisabledChecksumComputeTest {
 
-    @Test(expected = IOException.class)
+    @Test
     public void compute() throws Exception {
         final NullInputStream in = new NullInputStream(0L);
         new DisabledChecksumCompute().compute(in, new TransferStatus());
         assertEquals(-1, in.read());
-        in.read();
+        assertEquals(-1, in.read());
     }
 }
