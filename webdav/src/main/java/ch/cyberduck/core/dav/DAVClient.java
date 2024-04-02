@@ -22,6 +22,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -97,7 +98,11 @@ public class DAVClient extends SardineImpl {
         return resources;
     }
 
-    public HttpClientContext context() {
+    public HttpClientContext getContext() {
         return context;
+    }
+
+    public HttpClient getClient() {
+        return client;
     }
 }

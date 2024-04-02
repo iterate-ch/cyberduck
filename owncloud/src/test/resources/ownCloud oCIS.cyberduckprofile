@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>owncloud</string>
+        <key>Vendor</key>
+        <string>owncloud.works</string>
+        <key>Description</key>
+        <string>ownCloud Infinite Scale</string>
+        <key>Default Nickname</key>
+        <string>ownCloud Infinite Scale</string>
+        <key>Default Hostname</key>
+        <string>ocis.ocis-keycloak.latest.owncloud.works</string>
+        <key>Default Path</key>
+        <string>/remote.php/webdav/</string>
+        <key>Path Configurable</key>
+        <true/>
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>OAuth Configurable</key>
+        <true/>
+        <key>OAuth Authorization Url</key>
+        <string>https://keycloak.ocis-keycloak.latest.owncloud.works/realms/oCIS/protocol/openid-connect/auth</string>
+        <key>OAuth Token Url</key>
+        <string>https://keycloak.ocis-keycloak.latest.owncloud.works/realms/oCIS/protocol/openid-connect/token</string>
+        <key>Scopes</key>
+        <array>
+            <string>openid</string>
+            <string>email</string>
+            <string>offline_access</string>
+        </array>
+        <key>OAuth Client ID</key>
+        <string>3keLfua0olYvW1zKXTDB3OjAMPEYWEQNuiscli395GKJOiPnPURNQWGvGCJZf4Hw</string>
+        <key>OAuth Client Secret</key>
+        <string>yoqICbLIeYbpZPqDH4D8k4NKb04HqnrWBntEeVZEQ5gO1RmaUlln0Aqu1dj2UoF4</string>
+        <key>OAuth Redirect Url</key>
+        <string>x-cyberduck-action:oauth</string>
+        <key>Password Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
+        <false/>
+    </dict>
+</plist>

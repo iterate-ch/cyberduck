@@ -16,11 +16,15 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTouchFeature;
@@ -39,6 +43,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
@@ -57,21 +62,64 @@ import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.tus.TusCapabilities;
+import ch.cyberduck.core.tus.TusCapabilitiesResponseHandler;
+import ch.cyberduck.core.tus.TusWriteFeature;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+
+import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 
 public class OwncloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(OwncloudSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
+    private HttpUploadFeature upload;
 
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+    }
+
+    @Override
+    protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final DAVClient client = super.connect(proxy, key, prompt, cancel);
+        final TusCapabilities capabilities = this.options(client);
+        if(ArrayUtils.contains(capabilities.versions, TUS_VERSION) && capabilities.extensions.contains(TusCapabilities.Extension.creation)) {
+            upload = new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(capabilities, client.getClient()), capabilities);
+        }
+        else {
+            upload = new HttpUploadFeature(new NextcloudWriteFeature(this));
+        }
+        return client;
+    }
+
+    private TusCapabilities options(final DAVClient client) throws BackgroundException {
+        final HttpOptions options = new HttpOptions(URIEncoder.encode(
+                new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find().getAbsolute()));
+        try {
+            final TusCapabilities capabilities = client.execute(options, new TusCapabilitiesResponseHandler());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Determined capabilities %s", capabilities));
+            }
+            return capabilities;
+        }
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override
@@ -131,7 +179,7 @@ public class OwncloudSession extends DAVSession {
             return null;
         }
         if(type == Upload.class) {
-            return (T) new HttpUploadFeature(new NextcloudWriteFeature(this));
+            return (T) upload;
         }
         if(type == Write.class) {
             return (T) new NextcloudWriteFeature(this);

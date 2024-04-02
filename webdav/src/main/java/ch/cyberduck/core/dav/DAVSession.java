@@ -242,7 +242,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             // Propose protocol change if HEAD request redirects to HTTPS
             final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
             try {
-                final RequestConfig context = client.context().getRequestConfig();
+                final RequestConfig context = client.getContext().getRequestConfig();
                 final HttpHead request = new HttpHead(new DAVPathEncoder().encode(home));
                 request.setConfig(RequestConfig.copy(context).setRedirectsEnabled(false).build());
                 final Header location = client.execute(request, new ValidatingResponseHandler<Header>() {
@@ -255,7 +255,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     }
                 });
                 // Reset default redirect configuration in context
-                client.context().setRequestConfig(RequestConfig.copy(context).setRedirectsEnabled(true).build());
+                client.getContext().setRequestConfig(RequestConfig.copy(context).setRedirectsEnabled(true).build());
                 if(null != location) {
                     final URL url = new URL(location.getValue());
                     if(StringUtils.equals(Scheme.https.name(), url.getProtocol())) {
