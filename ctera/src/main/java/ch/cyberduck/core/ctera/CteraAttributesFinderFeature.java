@@ -54,7 +54,9 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     /**
      * Create Files: Allows or denies creating files within the folder.
      * Directories only.
+     * For future use, not used yet.
      */
+    @Deprecated
     public static final Acl.Role CREATEFILEPERMISSION = new Acl.Role(WRITEPERMISSION.getName());
     /**
      * Create Folders: Allows or denies creating subfolders within the folder.
@@ -63,7 +65,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     public static final Acl.Role CREATEDIRECTORIESPERMISSION = new Acl.Role("createdirectoriespermission");
 
     public static final Set<Acl.Role> ALL_ACL_ROLES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-            READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, CREATEFILEPERMISSION, CREATEDIRECTORIESPERMISSION
+            READPERMISSION, WRITEPERMISSION, EXECUTEPERMISSION, DELETEPERMISSION, CREATEDIRECTORIESPERMISSION
     )));
     public static final Set<QName> ALL_ACL_QN = Collections.unmodifiableSet(ALL_ACL_ROLES.stream().map(CteraAttributesFinderFeature::toQn).collect(Collectors.toSet()));
     public static final QName GUID_QN = new QName(CteraAttributesFinderFeature.CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_GUID, CteraAttributesFinderFeature.CTERA_NAMESPACE_PREFIX);

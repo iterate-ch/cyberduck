@@ -18,7 +18,6 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
@@ -27,9 +26,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
-
-import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
-import static org.junit.Assert.assertThrows;
 
 @Category(IntegrationTest.class)
 public class CteraTouchFeatureTest extends AbstractCteraTest {
@@ -41,17 +37,10 @@ public class CteraTouchFeatureTest extends AbstractCteraTest {
         new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
     }
 
-    @Test
-    public void testPreflightFiledAccessDeniedCustomProps() throws BackgroundException {
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
-        assertThrows(AccessDeniedException.class, () -> new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random()));
-    }
 
     @Test
-    public void testPreflightFileAccessGrantedMinimalCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessGrantedCustomProps() throws BackgroundException {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CREATEFILEPERMISSION)));
         new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
         // assert no fail
     }

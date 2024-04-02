@@ -128,14 +128,14 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightFiledAccessDeniedCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessDeniedCustomProps() throws BackgroundException {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         assertThrows(AccessDeniedException.class, () -> new CteraWriteFeature(session).preflight(file));
     }
 
     @Test
-    public void testPreflightFileAccessGrantedMinimalCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessGrantedCustomProps() throws BackgroundException {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
         new CteraWriteFeature(session).preflight(file);

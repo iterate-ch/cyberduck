@@ -18,17 +18,39 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVCopyFeature;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 
 public class CteraCopyFeature extends DAVCopyFeature {
 
+    private final CteraAttributesFinderFeature attributes;
+
+    public CteraCopyFeature(final CteraSession session, final CteraAttributesFinderFeature attributes) {
+        super(session);
+        this.attributes = attributes;
+    }
+
     public CteraCopyFeature(final CteraSession session) {
         super(session);
+        this.attributes = new CteraAttributesFinderFeature(session);
     }
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        assumeRole(target.getParent(), target.getName(), source.isDirectory() ? CREATEDIRECTORIESPERMISSION : CREATEFILEPERMISSION);
+        boolean targetExists = true;
+        try {
+            attributes.find(target);
+        }
+        catch(NotfoundException e) {
+            targetExists = false;
+        }
+        if(targetExists) {
+            assumeRole(target, WRITEPERMISSION);
+        }
+        // no createfilespermission required for now
+        if(source.isDirectory()) {
+            assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+        }
     }
 }

@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVMoveFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import java.text.MessageFormat;
 
@@ -27,8 +28,16 @@ import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 
 public class CteraMoveFeature extends DAVMoveFeature {
 
+    private final CteraAttributesFinderFeature attributes;
+
     public CteraMoveFeature(final CteraSession session) {
         super(session);
+        this.attributes = new CteraAttributesFinderFeature(session);
+    }
+
+    public CteraMoveFeature(final CteraSession session, final CteraAttributesFinderFeature attributes) {
+        super(session);
+        this.attributes = attributes;
     }
 
     @Override
@@ -37,7 +46,19 @@ public class CteraMoveFeature extends DAVMoveFeature {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         assumeRole(source, DELETEPERMISSION);
-        assumeRole(target, WRITEPERMISSION);
-        assumeRole(target.getParent(), target.getName(), source.isDirectory() ? CREATEDIRECTORIESPERMISSION : CREATEFILEPERMISSION);
+        boolean targetExists = true;
+        try {
+            attributes.find(target);
+        }
+        catch(NotfoundException e) {
+            targetExists = false;
+        }
+        if(targetExists) {
+            assumeRole(target, WRITEPERMISSION);
+        }
+        // no createfilespermission required for now
+        if(source.isDirectory()) {
+            assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+        }
     }
 }
