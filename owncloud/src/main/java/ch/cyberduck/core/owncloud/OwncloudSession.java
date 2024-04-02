@@ -96,8 +96,10 @@ public class OwncloudSession extends DAVSession {
             final Credentials credentials = authorizationService.validate();
             final OAuthTokens oauth = credentials.getOauth();
             try {
-                final String email = JWT.decode(oauth.getIdToken()).getClaim("email").asString();
-                credentials.setUsername(email);
+                final String username = JWT.decode(oauth.getIdToken()).getClaim("preferred_username").asString();
+                if(StringUtils.isNotBlank(username)) {
+                    credentials.setUsername(username);
+                }
             }
             catch(JWTDecodeException e) {
                 log.warn(String.format("Failure %s decoding JWT %s", e, oauth.getIdToken()));
