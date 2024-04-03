@@ -76,7 +76,7 @@ public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMapp
      * @param response Error response with JSON body
      * @return Error message parsed from error key
      */
-    public String parse(final HttpResponse response) {
+    public static String parse(final HttpResponse response) {
         if(response.getEntity() != null) {
             try (JsonParser parser = new GsonFactory().createJsonParser(response.getEntity().getContent())) {
                 JsonToken currentToken = parser.getCurrentToken();

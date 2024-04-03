@@ -145,7 +145,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                             default:
                                 throw new DefaultHttpResponseExceptionMappingService().map(
                                         new HttpResponseException(response.getStatusLine().getStatusCode(),
-                                                new GoogleStorageExceptionMappingService().parse(response)));
+                                                GoogleStorageExceptionMappingService.parse(response)));
                         }
                     }
                     finally {
@@ -166,7 +166,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                                 default:
                                     throw new DefaultHttpResponseExceptionMappingService().map(
                                             new HttpResponseException(putResponse.getStatusLine().getStatusCode(),
-                                                    new GoogleStorageExceptionMappingService().parse(putResponse)));
+                                                    GoogleStorageExceptionMappingService.parse(putResponse)));
                             }
                         }
                         finally {
@@ -176,7 +176,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                     else {
                         throw new DefaultHttpResponseExceptionMappingService().map(
                                 new HttpResponseException(response.getStatusLine().getStatusCode(),
-                                        new GoogleStorageExceptionMappingService().parse(response)));
+                                        GoogleStorageExceptionMappingService.parse(response)));
                     }
                 }
                 catch(IOException e) {
