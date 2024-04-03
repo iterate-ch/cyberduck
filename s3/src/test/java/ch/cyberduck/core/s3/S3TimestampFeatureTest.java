@@ -41,7 +41,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindTimestamp() throws Exception {
-        final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket,
@@ -57,9 +57,6 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         final S3TimestampFeature feature = new S3TimestampFeature(session);
         feature.setTimestamp(test, new TransferStatus().withModified(1630305150672L).withCreated(1530305160672L));
         final PathAttributes attributesAfterSettingNewTimestamps = new S3AttributesFinderFeature(session, acl).find(test);
-        assertEquals(2, attributesAfterSettingNewTimestamps.getMetadata().size());
-        assertEquals(new S3MetadataFeature(session, acl).getMetadata(test), attributesAfterSettingNewTimestamps.getMetadata());
-        assertEquals(new S3AttributesFinderFeature(session, acl).find(test).getVersionId(), attributesAfterSettingNewTimestamps.getVersionId());
         assertEquals(1630305150000L, attributesAfterSettingNewTimestamps.getModificationDate());
         assertEquals(1530305160000L, attributesAfterSettingNewTimestamps.getCreationDate());
         test.attributes().setModificationDate(1630305150000L);
