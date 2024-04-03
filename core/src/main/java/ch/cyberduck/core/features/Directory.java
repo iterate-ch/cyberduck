@@ -64,7 +64,8 @@ public interface Directory<Reply> {
      */
     default void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!workdir.attributes().getPermission().isWritable()) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), filename));
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

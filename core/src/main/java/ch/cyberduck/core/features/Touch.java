@@ -50,7 +50,8 @@ public interface Touch<Reply> {
      */
     default void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(!workdir.attributes().getPermission().isWritable()) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), filename));
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }
