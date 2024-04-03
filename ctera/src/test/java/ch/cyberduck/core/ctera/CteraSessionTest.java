@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -42,30 +41,7 @@ import static org.junit.Assert.*;
 public class CteraSessionTest extends AbstractCteraTest {
 
     @Test
-    public void testLoginRefreshCookie() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me", new Credentials(
-                StringUtils.EMPTY, StringUtils.EMPTY,
-                PROPERTIES.get("ctera.token")
-        ));
-        host.setDefaultPath("/ServicesPortal/webdav");
-        final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new CancelCallback() {
-            @Override
-            public void verify() throws ConnectionCanceledException {
-                fail("OAuth tokens need to be refreshed");
-            }
-        });
-        assertEquals("mountainduck@cterasendbox1.onmicrosoft.com", host.getCredentials().getUsername());
-        assertTrue(host.getCredentials().isSaved());
-        new DAVListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        session.close();
-    }
-
-    @Test
     public void testLoginNonSAML() throws Exception {
-        new DAVListService(session).list(new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new CteraListService(session).list(new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 }

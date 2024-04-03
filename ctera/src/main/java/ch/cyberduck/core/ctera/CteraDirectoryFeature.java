@@ -23,16 +23,21 @@ import ch.cyberduck.core.exception.InvalidFilenameException;
 
 import java.text.MessageFormat;
 
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
+import static ch.cyberduck.core.ctera.CteraTouchFeature.validate;
+
 public class CteraDirectoryFeature extends DAVDirectoryFeature {
 
     public CteraDirectoryFeature(final CteraSession session) {
-        super(session);
+        super(session, new CteraAttributesFinderFeature(session));
     }
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(!CteraTouchFeature.validate(filename)) {
+        if(!validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
+        assumeRole(workdir, filename, CREATEDIRECTORIESPERMISSION);
     }
 }

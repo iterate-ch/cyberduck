@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ctera;
 
 /*
- * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,36 +15,28 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVMoveFeature;
+import ch.cyberduck.core.dav.DAVCopyFeature;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InvalidFilenameException;
-
-import java.text.MessageFormat;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 
-public class CteraMoveFeature extends DAVMoveFeature {
+public class CteraCopyFeature extends DAVCopyFeature {
 
     private final CteraAttributesFinderFeature attributes;
 
-    public CteraMoveFeature(final CteraSession session) {
-        super(session);
-        this.attributes = new CteraAttributesFinderFeature(session);
-    }
-
-    public CteraMoveFeature(final CteraSession session, final CteraAttributesFinderFeature attributes) {
+    public CteraCopyFeature(final CteraSession session, final CteraAttributesFinderFeature attributes) {
         super(session);
         this.attributes = attributes;
     }
 
+    public CteraCopyFeature(final CteraSession session) {
+        super(session);
+        this.attributes = new CteraAttributesFinderFeature(session);
+    }
+
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!CteraTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
-        }
-        assumeRole(source, DELETEPERMISSION);
         // defaults to Acl.EMPTY (disabling role checking) if target does not exist
         assumeRole(target, WRITEPERMISSION);
         // no createfilespermission required for now

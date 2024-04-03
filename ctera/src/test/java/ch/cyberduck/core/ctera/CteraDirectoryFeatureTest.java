@@ -15,11 +15,12 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -33,6 +34,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.READPERMISSION;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -43,9 +46,31 @@ public class CteraDirectoryFeatureTest extends AbstractCteraTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path result = new CteraDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(result.attributes(), new DAVAttributesFinderFeature(session).find(test));
+        assertEquals(result.attributes(), new CteraAttributesFinderFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new CteraDirectoryFeature(session).mkdir(test, new TransferStatus()));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
+    }
+
+    @Test
+    public void testPreflightFileMissingCustomProps() throws BackgroundException {
+        final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        workdir.setAttributes(workdir.attributes().withAcl(Acl.EMPTY));
+        new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random());
+    }
+
+    @Test
+    public void testPreflightFileAccessDeniedCustomProps() throws BackgroundException {
+        final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        workdir.setAttributes(workdir.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
+        assertThrows(AccessDeniedException.class, () -> new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random()));
+    }
+
+    @Test
+    public void testPreflightFileAccessGrantedCustomProps() throws BackgroundException {
+        final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        workdir.setAttributes(workdir.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)));
+        new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random());
+        // assert no fail
     }
 }

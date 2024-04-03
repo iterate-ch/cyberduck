@@ -20,6 +20,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -38,13 +39,18 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.CustomActions;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -90,7 +96,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
 
+
 public class CteraSession extends DAVSession {
+
     private static final Logger log = LogManager.getLogger(CteraSession.class);
 
     private final CteraAuthenticationHandler authentication = new CteraAuthenticationHandler(this);
@@ -185,6 +193,24 @@ public class CteraSession extends DAVSession {
         }
         if(type == UrlProvider.class) {
             return (T) new CteraUrlProvider(host);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new CteraAttributesFinderFeature(this);
+        }
+        if(type == ListService.class) {
+            return (T) new CteraListService(this);
+        }
+        if(type == Read.class) {
+            return (T) new CteraReadFeature(this);
+        }
+        if(type == Write.class) {
+            return (T) new CteraWriteFeature(this);
+        }
+        if(type == Delete.class) {
+            return (T) new CteraDeleteFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new CteraCopyFeature(this);
         }
         return super._getFeature(type);
     }
