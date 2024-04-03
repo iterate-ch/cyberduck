@@ -75,16 +75,22 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
      */
     private void register(final String redirectUri) {
         final String handler = toScheme(redirectUri);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Register OAuth handler %s", handler));
-        }
         if(StringUtils.equalsIgnoreCase(Scheme.https.name(), handler)
                 || StringUtils.equalsIgnoreCase(Scheme.http.name(), handler)) {
-            log.warn(String.format("Skip registering %s", redirectUri));
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Skip registering %s", redirectUri));
+            }
+            final String defaultHandler = PreferencesFactory.get().getProperty("oauth.handler.scheme");
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Register OAuth handler %s", defaultHandler));
+            }
             schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
-                    Collections.singletonList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
+                    Collections.singletonList(defaultHandler));
         }
         else {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Register OAuth handler %s", handler));
+            }
             schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
                     Collections.singletonList(handler));
         }
