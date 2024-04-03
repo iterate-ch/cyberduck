@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVMoveFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
-import ch.cyberduck.core.exception.NotfoundException;
 
 import java.text.MessageFormat;
 
@@ -46,16 +45,8 @@ public class CteraMoveFeature extends DAVMoveFeature {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         assumeRole(source, DELETEPERMISSION);
-        boolean targetExists = true;
-        try {
-            attributes.find(target);
-        }
-        catch(NotfoundException e) {
-            targetExists = false;
-        }
-        if(targetExists) {
-            assumeRole(target, WRITEPERMISSION);
-        }
+        // defaults to Acl.EMPTY (disabling role checking) if target does not exist
+        assumeRole(target, WRITEPERMISSION);
         // no createfilespermission required for now
         if(source.isDirectory()) {
             assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
