@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="22505" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -27,10 +27,10 @@
         </customObject>
         <menu title="முதன்மை பட்டியல்" systemMenu="main" id="225">
             <items>
-                <menuItem title="சைபர்டக்" id="226">
-                    <menu key="submenu" title="சைபர்டக்" systemMenu="apple" id="227">
+                <menuItem title="இணையவாத்து" id="226">
+                    <menu key="submenu" title="இணையவாத்து" systemMenu="apple" id="227">
                         <items>
-                            <menuItem title="சைபர்டக் பற்றி" id="228">
+                            <menuItem title="இணையவாத்து பற்றி" id="228">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -67,7 +67,7 @@
                             <menuItem isSeparatorItem="YES" id="237">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="சைபர்டக்கை மறைக்கவும்" keyEquivalent="h" id="238">
+                            <menuItem title="இணையவாத்தை மறை" keyEquivalent="h" id="238">
                                 <connections>
                                     <action selector="hide:" target="224" id="370"/>
                                 </connections>
@@ -86,7 +86,7 @@
                             <menuItem isSeparatorItem="YES" id="241">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="சைபர்டக் வெளியேறு" keyEquivalent="q" id="242">
+                            <menuItem title="இணையவாத்து வெளியேறு" keyEquivalent="q" id="242">
                                 <connections>
                                     <action selector="terminate:" target="224" id="373"/>
                                 </connections>
@@ -111,25 +111,25 @@
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="திறந்த இணைப்பு…" keyEquivalent="o" id="246">
+                            <menuItem title="இணைப்பு திற…" keyEquivalent="o" id="246">
                                 <connections>
                                     <action selector="connectButtonClicked:" target="-1" id="375"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="247"/>
-                            <menuItem title="புதிய பதிவிறக்க" keyEquivalent="" id="248">
+                            <menuItem title="புதிய பதிவிறக்கம்" keyEquivalent="" id="248">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="249"/>
-                            <menuItem title="புதிய அடைவை…" keyEquivalent="N" id="250">
+                            <menuItem title="புதிய அடைவு…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="புதிய மறைகுறியாக்கப்பட்ட வால்ட்…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="புதிய மறைகுறியாக்கப்பட்ட பெட்டகம்…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -147,7 +147,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="255"/>
-                            <menuItem title="மறுபெயரிடுங்கள்…" id="253">
+                            <menuItem title="மறுபெயரிடு…" id="253">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
@@ -182,25 +182,25 @@
                                     <action selector="downloadButtonClicked:" target="-1" id="384"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="பதிவிறக்கவும்…" keyEquivalent="" id="264">
+                            <menuItem title="எனப் பதிவிறக்கவும்…" keyEquivalent="" id="264">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
                                 <connections>
                                     <action selector="downloadAsButtonClicked:" target="-1" id="385"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="பதிவிறக்கவும்…" id="265">
+                            <menuItem title="இங்குப் பதிவிறக்கவும்…" id="265">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="பதிவேற்ற…" keyEquivalent="" id="266">
+                            <menuItem title="பதிவேற்றம்…" keyEquivalent="" id="266">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" target="-1" id="387"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="ஒத்திசைக்கவும்…" id="267">
+                            <menuItem title="ஒத்திசை…" id="267">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="syncButtonClicked:" target="-1" id="388"/>
@@ -215,7 +215,7 @@ CA
                                     <action selector="deleteFileButtonClicked:" target="-1" id="389"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="மாற்றியமைக்கவும்" id="270">
+                            <menuItem title="மாற்றியமை" id="270">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
@@ -228,25 +228,25 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="271"/>
-                            <menuItem title="பூட்டு வால்ட்" keyEquivalent="l" id="bBu-IP-reP">
+                            <menuItem title="பூட்டு பெட்டகம்" keyEquivalent="l" id="bBu-IP-reP">
                                 <connections>
                                     <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="GdE-9v-Sbq"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="mtY-h2-1n1"/>
-                            <menuItem title="காப்பகத்தை உருவாக்கவும்" id="272">
-                                <menu key="submenu" title="காப்பகத்தை உருவாக்கவும்" id="273"/>
+                            <menuItem title="காப்பகத்தை உருவாக்கு" id="272">
+                                <menu key="submenu" title="காப்பகத்தை உருவாக்கு" id="273"/>
                             </menuItem>
-                            <menuItem title="காப்பகத்தை விரிவாக்குங்கள்" id="274">
+                            <menuItem title="காப்பகத்தை விரிவாக்கு" id="274">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Xdd-Sj-x3y"/>
-                            <menuItem title="திறந்த முகவரி" id="256">
+                            <menuItem title="முகவரி திற" id="256">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="திறந்த முகவரி" id="257"/>
+                                <menu key="submenu" title="முகவரி திற" id="257"/>
                             </menuItem>
                             <menuItem title="பகிர்…" id="Dp0-uw-cX3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -254,7 +254,7 @@ CA
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="கோப்புகளை கோருங்கள்…" id="GnH-xE-vqc">
+                            <menuItem title="கோப்புகளைக் கோருங்கள்…" id="GnH-xE-vqc">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="requestFilesButtonClicked:" target="-1" id="Tw9-ZC-2SW"/>
@@ -301,9 +301,9 @@ CA
                                     <action selector="copy:" target="-1" id="397"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="முகவரி ஐ நகலெடுக்கவும்" id="286">
+                            <menuItem title="முகவரி ஐ நகலெடு" id="286">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="முகவரி ஐ நகலெடுக்கவும்" id="287"/>
+                                <menu key="submenu" title="முகவரி ஐ நகலெடு" id="287"/>
                             </menuItem>
                             <menuItem title="ஒட்டு" keyEquivalent="v" id="288">
                                 <connections>
@@ -321,12 +321,12 @@ CA
                 <menuItem title="பார்வை" id="290">
                     <menu key="submenu" title="பார்வை" id="291">
                         <items>
-                            <menuItem title="பட்டியல்" keyEquivalent="1" id="292">
+                            <menuItem title="பட்டியல் என" keyEquivalent="1" id="292">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="400"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="அவுட்லைன் என" tag="1" keyEquivalent="2" id="293">
+                            <menuItem title="சுருக்கம் என" tag="1" keyEquivalent="2" id="293">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="401"/>
                                 </connections>
@@ -336,13 +336,13 @@ CA
                                 <menu key="submenu" title="நெடுவரிசை" id="296"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="297"/>
-                            <menuItem title="கருவிப்பட்டியை மறைக்கவும்" id="298">
+                            <menuItem title="கருவிப்பட்டியை மறை" id="298">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleToolbarShown:" target="-1" id="402"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="கருவிப்பட்டியைத் தனிப்பயனாக்குங்கள்…" tag="1" id="299">
+                            <menuItem title="கருவிப்பட்டியைத் தனிப்பயனாக்கு…" tag="1" id="299">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="runToolbarCustomizationPalette:" target="-1" id="403"/>
@@ -370,7 +370,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="309"/>
-                            <menuItem title="கோப்புறைக்குச் செல்லுங்கள்…" keyEquivalent="g" id="310">
+                            <menuItem title="கோப்புறைக்குச் செல்…" keyEquivalent="g" id="310">
                                 <connections>
                                     <action selector="gotoButtonClicked:" target="-1" id="407"/>
                                 </connections>
@@ -385,7 +385,7 @@ CA
                                     <action selector="forwardButtonClicked:" target="-1" id="409"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="கோப்புறையை இணைத்தல்" keyEquivalent="" id="313">
+                            <menuItem title="கொண்டுள்ள கோப்புறை" keyEquivalent="" id="313">
                                 <connections>
                                     <action selector="upButtonClicked:" target="-1" id="410"/>
                                 </connections>
@@ -395,7 +395,7 @@ CA
                                     <action selector="insideButtonClicked:" target="-1" id="411"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="தேடுங்கள்…" keyEquivalent="/" id="315">
+                            <menuItem title="தேடு…" keyEquivalent="/" id="315">
                                 <connections>
                                     <action selector="searchButtonClicked:" target="-1" id="412"/>
                                 </connections>
@@ -407,7 +407,7 @@ CA
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="முனையத்தில் திறந்திருக்கும்" id="318">
+                            <menuItem title="முனையத்தில் திற" id="318">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>
@@ -419,7 +419,7 @@ CA
                                     <action selector="interruptButtonClicked:" target="-1" id="415"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="துண்டிக்கவும்" keyEquivalent="y" id="321">
+                            <menuItem title="துண்டி" keyEquivalent="y" id="321">
                                 <connections>
                                     <action selector="disconnectButtonClicked:" target="-1" id="416"/>
                                 </connections>
@@ -430,14 +430,14 @@ CA
                 <menuItem title="புத்தககுறி" id="322">
                     <menu key="submenu" title="புத்தககுறி" id="323">
                         <items>
-                            <menuItem title="புக்மார்க்குகளை மாற்றவும்" keyEquivalent="b" id="324">
+                            <menuItem title="புத்தகக்குறிகளை மாற்றவும்" keyEquivalent="b" id="324">
                                 <connections>
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="வரிசைப்படுத்தவும்" id="325">
+                            <menuItem title="இதால் வரிசைப்படுத்து" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="வரிசைப்படுத்தவும்" id="326">
+                                <menu key="submenu" title="இதால் வரிசைப்படுத்து" id="326">
                                     <items>
                                         <menuItem title="புனைப்பெயர்" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
@@ -461,7 +461,7 @@ CA
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="330"/>
-                            <menuItem title="புதிய புக்மார்க்கு" keyEquivalent="B" id="331">
+                            <menuItem title="புதிய புத்தகக்குறி" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
                                 </connections>
@@ -472,12 +472,12 @@ CA
                                     <action selector="deleteBookmarkButtonClicked:" target="-1" id="422"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="புக்மார்க்கைத் திருத்து" keyEquivalent="e" id="333">
+                            <menuItem title="புத்தகக்குறியைத் திருத்து" keyEquivalent="e" id="333">
                                 <connections>
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="நகல் புக்மார்க்கு" id="334">
+                            <menuItem title="நகல் புத்தகக்குறி" id="334">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
@@ -519,7 +519,7 @@ CA
                 <menuItem title="உதவி" id="344">
                     <menu key="submenu" title="உதவி" id="345">
                         <items>
-                            <menuItem title="சைபர்டக் உதவி" keyEquivalent="?" id="346">
+                            <menuItem title="இணையவாத்து உதவி" keyEquivalent="?" id="346">
                                 <connections>
                                     <action selector="helpMenuClicked:" target="-2" id="429"/>
                                 </connections>
@@ -537,7 +537,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="349"/>
-                            <menuItem title="ஒரு பிழையைப் புகாரளிக்கவும்" id="350">
+                            <menuItem title="ஒரு பிழையைப் புகாரளி" id="350">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="bugreportMenuClicked:" target="-2" id="432"/>
@@ -565,6 +565,6 @@ CA
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="27" height="16"/>
+        <image name="NSQuickLookTemplate" width="20" height="13"/>
     </resources>
 </document>
