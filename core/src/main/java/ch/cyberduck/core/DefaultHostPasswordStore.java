@@ -168,6 +168,9 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                         this.getPassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), hostname,
                                 String.format("%s OIDC Id Token", prefix)));
                 if(tokens.validate()) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Return tokens %s for %s", tokens, bookmark));
+                    }
                     return tokens;
                 }
                 // Continue with deprecated descriptors
