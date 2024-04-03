@@ -87,7 +87,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
                     return new File().size(response.getSize()).sha1(response.getSha1()).id(response.getPartId());
                 }
                 catch(HttpResponseException e) {
-                    throw new DefaultHttpResponseExceptionMappingService().map(e);
+                    throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);

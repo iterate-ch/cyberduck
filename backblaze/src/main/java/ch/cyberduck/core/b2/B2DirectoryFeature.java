@@ -80,7 +80,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             throw new B2ExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
 

@@ -139,7 +139,7 @@ public class B2LargeCopyFeature implements Copy {
             throw new B2ExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         finally {
             pool.shutdown(false);

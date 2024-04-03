@@ -121,8 +121,9 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
                                 fileid.cache(file, result.getId());
                                 return result;
                             default:
-                                throw new StoregateExceptionMappingService(fileid).map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                        EntityUtils.toString(putResponse.getEntity())));
+                                throw new StoregateExceptionMappingService(fileid).map("Upload {0} failed",
+                                        new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                                EntityUtils.toString(putResponse.getEntity())), file);
                         }
                     }
                     catch(BackgroundException e) {
@@ -183,8 +184,9 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
                     case HttpStatus.SC_OK:
                         break;
                     default:
-                        throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                EntityUtils.toString(response.getEntity())));
+                        throw new StoregateExceptionMappingService(fileid).map("Upload {0} failed",
+                                new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                        EntityUtils.toString(response.getEntity())), file);
                 }
             }
             finally {
@@ -193,8 +195,9 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
             if(response.containsHeader(HttpHeaders.LOCATION)) {
                 return response.getFirstHeader(HttpHeaders.LOCATION).getValue();
             }
-            throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                    EntityUtils.toString(response.getEntity())));
+            throw new StoregateExceptionMappingService(fileid).map("Upload {0} failed",
+                    new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                            EntityUtils.toString(response.getEntity())), file);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);

@@ -136,8 +136,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                                 }
                                 break;
                             default:
-                                throw new DefaultHttpResponseExceptionMappingService().map(
-                                        new HttpResponseException(postResponse.getStatusLine().getStatusCode(), postResponse.getStatusLine().getReasonPhrase()));
+                                throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
+                                        new HttpResponseException(postResponse.getStatusLine().getStatusCode(), postResponse.getStatusLine().getReasonPhrase()), file);
                         }
                     }
                     finally {
@@ -159,8 +159,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                                         fileid.cache(file, response.getId());
                                         return response;
                                     default:
-                                        throw new DefaultHttpResponseExceptionMappingService().map(
-                                                new HttpResponseException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
+                                        throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
+                                                new HttpResponseException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()), file);
                                 }
                             }
                             finally {
@@ -168,8 +168,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                             }
                         }
                         else {
-                            throw new DefaultHttpResponseExceptionMappingService().map(
-                                    new HttpResponseException(postResponse.getStatusLine().getStatusCode(), postResponse.getStatusLine().getReasonPhrase()));
+                            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
+                                    new HttpResponseException(postResponse.getStatusLine().getStatusCode(), postResponse.getStatusLine().getReasonPhrase()), file);
                         }
                     }
                     return null;

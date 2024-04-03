@@ -80,8 +80,8 @@ public class StoregateReadFeature implements Read {
                     fileid.cache(file, null);
                     // Break through
                 default:
-                    throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(
-                        response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                    throw new DefaultHttpResponseExceptionMappingService().map("Download {0} failed", new HttpResponseException(
+                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);
             }
         }
         catch(IOException e) {

@@ -85,7 +85,7 @@ public class B2DeleteFeature implements Delete {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
                     }
                     catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map(e);
+                        throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
                     }
                 }
                 else if(file.isFile()) {
@@ -119,7 +119,7 @@ public class B2DeleteFeature implements Delete {
                         throw new B2ExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
                     }
                     catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map(e);
+                        throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
                     }
                 }
                 fileid.cache(file, null);
@@ -137,7 +137,7 @@ public class B2DeleteFeature implements Delete {
                 throw new B2ExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }

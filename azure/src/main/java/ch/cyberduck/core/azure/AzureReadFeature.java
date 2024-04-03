@@ -80,7 +80,7 @@ public class AzureReadFeature implements Read {
                 }
                 catch(IndexOutOfBoundsException e) {
                     // If offset is invalid
-                    throw new DefaultExceptionMappingService().map(e);
+                    throw new DefaultExceptionMappingService().map("Download {0} failed", e, file);
                 }
             }
             return new ProxyInputStream(in) {

@@ -143,9 +143,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                             case HttpStatus.SC_OK:
                                 break;
                             default:
-                                throw new DefaultHttpResponseExceptionMappingService().map(
+                                throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
                                         new HttpResponseException(response.getStatusLine().getStatusCode(),
-                                                GoogleStorageExceptionMappingService.parse(response)));
+                                                GoogleStorageExceptionMappingService.parse(response)), file);
                         }
                     }
                     finally {
@@ -164,9 +164,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                                     return session.getClient().getObjectParser().parseAndClose(new InputStreamReader(
                                             putResponse.getEntity().getContent(), StandardCharsets.UTF_8), StorageObject.class);
                                 default:
-                                    throw new DefaultHttpResponseExceptionMappingService().map(
+                                    throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
                                             new HttpResponseException(putResponse.getStatusLine().getStatusCode(),
-                                                    GoogleStorageExceptionMappingService.parse(putResponse)));
+                                                    GoogleStorageExceptionMappingService.parse(putResponse)), file);
                             }
                         }
                         finally {
@@ -174,9 +174,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                         }
                     }
                     else {
-                        throw new DefaultHttpResponseExceptionMappingService().map(
+                        throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
                                 new HttpResponseException(response.getStatusLine().getStatusCode(),
-                                        GoogleStorageExceptionMappingService.parse(response)));
+                                        GoogleStorageExceptionMappingService.parse(response)), file);
                     }
                 }
                 catch(IOException e) {

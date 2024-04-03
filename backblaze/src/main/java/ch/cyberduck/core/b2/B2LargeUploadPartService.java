@@ -108,7 +108,7 @@ public class B2LargeUploadPartService {
             throw new B2ExceptionMappingService(fileid).map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 

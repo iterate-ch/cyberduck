@@ -93,10 +93,10 @@ public class SwiftLargeObjectCopyFeature implements Copy {
                 completed.add(destination);
             }
             catch(GenericException e) {
-                throw new SwiftExceptionMappingService().map(e);
+                throw new SwiftExceptionMappingService().map("Cannot copy {0}", e, source);
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+                throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
             }
         }
         final List<StorageObject> manifestObjects = new ArrayList<>();
@@ -119,10 +119,10 @@ public class SwiftLargeObjectCopyFeature implements Copy {
             stored.setMd5sum(checksum);
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map(e);
+            throw new SwiftExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         final PathAttributes attributes = new PathAttributes(source.attributes());
         attributes.setChecksum(new Checksum(HashAlgorithm.md5, stored.getMd5sum()));

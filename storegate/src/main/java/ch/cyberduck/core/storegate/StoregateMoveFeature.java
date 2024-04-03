@@ -77,7 +77,8 @@ public class StoregateMoveFeature implements Move {
                         fileid.cache(renamed, file.attributes().getFileId());
                         return renamed.withAttributes(attr);
                     default:
-                        throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        throw new StoregateExceptionMappingService(fileid).map("Cannot rename {0}",
+                                new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);
                 }
             }
             finally {
@@ -85,7 +86,7 @@ public class StoregateMoveFeature implements Move {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }
 

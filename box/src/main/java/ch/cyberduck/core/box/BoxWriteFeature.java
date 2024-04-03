@@ -125,7 +125,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                     throw new NotfoundException(file.getAbsolute());
                 }
                 catch(HttpResponseException e) {
-                    throw new DefaultHttpResponseExceptionMappingService().map(e);
+                    throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);

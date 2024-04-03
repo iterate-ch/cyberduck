@@ -128,10 +128,10 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
                             }
                         }
                         catch(HttpResponseException e) {
-                            throw new DefaultHttpResponseExceptionMappingService().map(e);
+                            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         catch(IOException e) {
-                            throw new DefaultIOExceptionMappingService().map(e);
+                            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         catch(DecoderException e) {
                             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e);

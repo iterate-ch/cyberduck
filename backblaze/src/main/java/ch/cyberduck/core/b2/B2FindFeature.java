@@ -72,7 +72,7 @@ public class B2FindFeature implements Find {
             throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 }

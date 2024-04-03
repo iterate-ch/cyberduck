@@ -199,7 +199,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
         finally {
             temp.shutdown();

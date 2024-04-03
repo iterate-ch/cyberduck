@@ -184,8 +184,8 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                                             }
                                         default:
                                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                                            throw new DefaultHttpResponseExceptionMappingService().map(
-                                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
+                                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);
                                     }
                                 }
                                 finally {
