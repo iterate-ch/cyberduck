@@ -71,7 +71,7 @@ public class S3BucketCreateService {
             }
             // Create bucket
             session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(bucket).getName()),
-                    "us-east-1".equals(region) ? "US" : region, acl);
+                    S3LocationFeature.DEFAULT_REGION.getIdentifier().equals(region) ? "US" : region, acl);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, bucket);

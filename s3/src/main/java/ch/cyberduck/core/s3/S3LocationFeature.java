@@ -42,6 +42,8 @@ public class S3LocationFeature implements Location {
     private final PathContainerService containerService;
     private final RegionEndpointCache cache;
 
+    public static final S3Region DEFAULT_REGION = new S3Region("us-east-1");
+
     public S3LocationFeature(final S3Session session) {
         this(session, new RegionEndpointCache());
     }
@@ -111,12 +113,12 @@ public class S3LocationFeature implements Location {
             final S3Region region;
             if(StringUtils.isBlank(location)) {
                 log.warn(String.format("No region known for bucket %s", bucketname));
-                region = new S3Region("us-east-1");
+                region = DEFAULT_REGION;
             }
             else {
                 switch(location) {
                     case "US":
-                        region = new S3Region("us-east-1");
+                        region = DEFAULT_REGION;
                         break;
                     case "EU":
                         region = new S3Region("eu-west-1");
