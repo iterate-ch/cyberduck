@@ -25,6 +25,7 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -77,7 +78,7 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
                 });
             }
         }
-        final Map<String, String> metadata = Maps.transformValues(object.getModifiableMetadata(), Object::toString);
+        final Map<String, String> metadata = metadata(object);
         if(!metadata.isEmpty()) {
             attributes.setMetadata(metadata);
         }
@@ -92,5 +93,18 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
             attributes.setCreationDate(ctime);
         }
         return attributes;
+    }
+
+    /**
+     * @return Pruned metadata with user editable headers only
+     */
+    public static Map<String, String> metadata(final StorageObject object) {
+        final Map<String, String> metadata = new HashMap<>(Maps.transformValues(object.getModifiableMetadata(), Object::toString));
+        metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "storage-class"));
+        metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "server-side-encryption"));
+        metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "expiration"));
+        metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "checksum-sha256"));
+        metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "version-id"));
+        return metadata;
     }
 }
