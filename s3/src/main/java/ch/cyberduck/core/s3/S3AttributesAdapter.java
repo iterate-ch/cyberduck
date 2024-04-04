@@ -29,6 +29,8 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
+import static org.jets3t.service.model.StorageObject.METADATA_HEADER_SERVER_SIDE_ENCRYPTION_KMS_KEY_ID;
+
 public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
 
     @Override
@@ -55,9 +57,9 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }
-        if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
+        if(object.containsMetadata(METADATA_HEADER_SERVER_SIDE_ENCRYPTION_KMS_KEY_ID)) {
             attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
-                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
+                    object.getMetadata(METADATA_HEADER_SERVER_SIDE_ENCRYPTION_KMS_KEY_ID).toString()) {
                 @Override
                 public String getDescription() {
                     return String.format("SSE-KMS (%s)", key);
