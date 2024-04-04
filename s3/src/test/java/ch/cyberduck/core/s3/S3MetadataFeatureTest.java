@@ -67,8 +67,29 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testSetMetadataHttpHeaders() throws Exception {
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
+                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
+        final Map<String, String> metadata = feature.getMetadata(test);
+
+        metadata.put("Content-Disposition", "attachment");
+        feature.setMetadata(test, metadata);
+        assertTrue(feature.getMetadata(test).containsKey("Content-Disposition"));
+        metadata.put("Cache-Control", "public,max-age=1");
+        feature.setMetadata(test, metadata);
+        assertTrue(feature.getMetadata(test).containsKey("Cache-Control"));
+        metadata.put("Content-Type", "text/html");
+        feature.setMetadata(test, metadata);
+        assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
+
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acls = new S3AccessControlListFeature(session);
         new S3TouchFeature(session, acls).touch(test, new TransferStatus());
