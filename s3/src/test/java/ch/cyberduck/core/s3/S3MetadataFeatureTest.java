@@ -70,21 +70,27 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
+        final Map<String, String> reference = feature.getMetadata(test);
+
         final String v = UUID.randomUUID().toString();
+
         final S3StorageClassFeature storage = new S3StorageClassFeature(session, new S3AccessControlListFeature(session));
         storage.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
+        assertEquals(reference, feature.getMetadata(test));
 
         final S3EncryptionFeature encryption = new S3EncryptionFeature(session, new S3AccessControlListFeature(session));
         encryption.setEncryption(test, S3EncryptionFeature.SSE_AES256);
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
+        assertEquals(reference, feature.getMetadata(test));
 
-        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
         feature.setMetadata(test, Collections.singletonMap("Test", v));
         final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("test"));
         assertEquals(v, metadata.get("test"));
+        assertEquals(reference.size() + 1, metadata.size());
 
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
