@@ -42,8 +42,10 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.CustomActions;
+import ch.cyberduck.core.features.DefaultFileIdProvider;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
@@ -211,6 +213,9 @@ public class CteraSession extends DAVSession {
         }
         if(type == Copy.class) {
             return (T) new CteraCopyFeature(this);
+        }
+        if(type == FileIdProvider.class) {
+            return (T) new DefaultFileIdProvider();
         }
         return super._getFeature(type);
     }
