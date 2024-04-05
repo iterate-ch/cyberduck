@@ -27,7 +27,6 @@ import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -48,7 +47,8 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
 
     @Test
     public void testRevert() throws Exception {
-        final Path directory = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+        final Path directory = new DAVDirectoryFeature(session).mkdir(new Path(
+                new OwncloudHomeFeature(session.getHost()).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
