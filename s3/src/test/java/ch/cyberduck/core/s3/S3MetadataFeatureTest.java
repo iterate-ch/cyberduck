@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -50,41 +51,94 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
     public void testGetMetadataFile() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus().withMetadata(Collections.singletonMap("app", "cyberduck")));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus()
+                .withMetadata(Collections.singletonMap("app", "cyberduck"))
+                .withMime("text/plain"));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("app"));
         assertEquals("cyberduck", metadata.get("app"));
+        assertTrue(metadata.containsKey("Content-Type"));
+        assertEquals("text/plain", metadata.get("Content-Type"));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_USER_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_SERVICE_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_COMPLETE_METADATA));
     }
 
     @Test
+    public void testSetMetadataHttpHeaders() throws Exception {
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
+                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
+        final Map<String, String> metadata = feature.getMetadata(test);
+
+        metadata.put("Content-Disposition", "attachment");
+        feature.setMetadata(test, metadata);
+        assertTrue(feature.getMetadata(test).containsKey("Content-Disposition"));
+        metadata.put("Cache-Control", "public,max-age=1");
+        feature.setMetadata(test, metadata);
+        assertTrue(feature.getMetadata(test).containsKey("Cache-Control"));
+        metadata.put("Content-Type", "text/html");
+        feature.setMetadata(test, metadata);
+        assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
+
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        final S3AccessControlListFeature acls = new S3AccessControlListFeature(session);
+        new S3TouchFeature(session, acls).touch(test, new TransferStatus());
+        final S3MetadataFeature feature = new S3MetadataFeature(session, acls);
+        final Map<String, String> reference = feature.getMetadata(test);
+
         final String v = UUID.randomUUID().toString();
-        final S3StorageClassFeature storage = new S3StorageClassFeature(session, new S3AccessControlListFeature(session));
+
+        final Acl acl = acls.getPermission(test);
+        acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
+        acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
+        acls.setPermission(test, acl);
+        assertEquals(reference, feature.getMetadata(test));
+
+        final S3StorageClassFeature storage = new S3StorageClassFeature(session, acls);
         storage.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
+        assertEquals(reference, feature.getMetadata(test));
 
-        final S3EncryptionFeature encryption = new S3EncryptionFeature(session, new S3AccessControlListFeature(session));
+        final S3EncryptionFeature encryption = new S3EncryptionFeature(session, acls);
         encryption.setEncryption(test, S3EncryptionFeature.SSE_AES256);
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
+        assertEquals(reference, feature.getMetadata(test));
 
-        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
         feature.setMetadata(test, Collections.singletonMap("Test", v));
         final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("test"));
         assertEquals(v, metadata.get("test"));
+        assertEquals(reference.size() + 1, metadata.size());
 
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
+        assertEquals(acl, acls.getPermission(test));
 
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetDuplicateHeaderDifferentCapitalization() throws Exception {
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
+        assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
+        feature.setMetadata(test, Collections.singletonMap("Content-type", "text/plain"));
+        final Map<String, String> metadata = feature.getMetadata(test);
+        assertTrue(metadata.containsKey("Content-Type"));
+        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

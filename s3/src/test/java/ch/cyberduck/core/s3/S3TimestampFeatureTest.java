@@ -34,7 +34,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3TimestampFeatureTest extends AbstractS3Test {
@@ -45,7 +45,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket,
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
+                        new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
                 status
                         .withCreated(1695159781972L)
                         .withModified(1530305150672L));
@@ -54,11 +54,16 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
         assertEquals(1530305150000L, attributes.getModificationDate());
         assertEquals(1695159781000L, attributes.getCreationDate());
+        final Map<String, String> metadata = attributes.getMetadata();
+        assertEquals(3, metadata.size());
+        assertTrue(metadata.containsKey("mtime"));
+        assertTrue(metadata.containsKey("btime"));
+        assertTrue(metadata.containsKey("Content-Type"));
         final S3TimestampFeature feature = new S3TimestampFeature(session);
         feature.setTimestamp(test, new TransferStatus().withModified(1630305150672L).withCreated(1530305160672L));
         final PathAttributes attributesAfterSettingNewTimestamps = new S3AttributesFinderFeature(session, acl).find(test);
-        assertEquals(2, attributesAfterSettingNewTimestamps.getMetadata().size());
-        assertEquals(new S3MetadataFeature(session, acl).getMetadata(test), attributesAfterSettingNewTimestamps.getMetadata());
+        assertNotEquals(metadata, attributesAfterSettingNewTimestamps.getMetadata());
+        assertEquals(metadata.size(), attributesAfterSettingNewTimestamps.getMetadata().size());
         assertEquals(new S3AttributesFinderFeature(session, acl).find(test).getVersionId(), attributesAfterSettingNewTimestamps.getVersionId());
         assertEquals(1630305150000L, attributesAfterSettingNewTimestamps.getModificationDate());
         assertEquals(1530305160000L, attributesAfterSettingNewTimestamps.getCreationDate());
