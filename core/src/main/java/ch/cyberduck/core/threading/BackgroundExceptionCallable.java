@@ -19,7 +19,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.concurrent.Callable;
 
-public abstract class BackgroundExceptionCallable<T> implements Callable<T> {
+public interface BackgroundExceptionCallable<T> extends Callable<T> {
     @Override
-    public abstract T call() throws BackgroundException;
+    T call() throws BackgroundException;
 }

@@ -23,7 +23,7 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class S3PathStyleFallbackAdapter<R> extends BackgroundExceptionCallable<R> {
+public class S3PathStyleFallbackAdapter<R> implements BackgroundExceptionCallable<R> {
     private static final Logger log = LogManager.getLogger(S3PathStyleFallbackAdapter.class);
 
     private final RequestEntityRestStorageService client;
