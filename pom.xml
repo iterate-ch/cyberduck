@@ -84,7 +84,7 @@
         <jackson-version>2.14.2</jackson-version>
         <slf4j-version>1.7.36</slf4j-version>
         <log4j-version>2.23.1</log4j-version>
-        <bouncycastle-version>1.77</bouncycastle-version>
+        <bouncycastle-version>1.78</bouncycastle-version>
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>1.42.3</google-http-client.version>
         <jwt.version>4.4.0</jwt.version>
