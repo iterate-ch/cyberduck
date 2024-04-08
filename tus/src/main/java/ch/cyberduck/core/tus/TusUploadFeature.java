@@ -109,7 +109,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 final HttpPost request = new HttpPost(new DefaultUrlProvider(host).toUrl(file.getParent()).find(DescriptiveUrl.Type.provider).getUrl());
                 request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
                 // The Upload-Length header indicates the size of the entire upload in bytes
-                request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getLength()));
+                request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getDestinationlength()));
                 // The Upload-Metadata request and response header MUST consist of one or more comma-separated key-value pairs
                 final StringAppender metadata = new StringAppender(',');
                 metadata.append(String.format("filename %s", Base64.encodeBase64String(file.getName().getBytes(StandardCharsets.UTF_8))));
