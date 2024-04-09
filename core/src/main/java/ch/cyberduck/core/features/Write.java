@@ -141,10 +141,14 @@ public interface Write<Reply> {
     Append override = new Append(false);
 
     default void preflight(final Path file) throws BackgroundException {
+        if(!file.attributes().getPermission().isWritable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"),
+                    file.getName())).withFile(file);
+        }
         final Path workdir = file.getParent();
         if(!workdir.attributes().getPermission().isWritable()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"),
-                    file.getName())).withFile(file);
+                    file.getName())).withFile(workdir);
         }
     }
 
