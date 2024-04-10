@@ -118,6 +118,7 @@ public final class UploadFilterOptions {
         sb.append(", timestamp=").append(timestamp);
         sb.append(", metadata=").append(metadata);
         sb.append(", temporary=").append(temporary);
+        sb.append(", versioning=").append(versioning);
         sb.append(", encryption=").append(encryption);
         sb.append(", redundancy=").append(redundancy);
         sb.append(", checksum=").append(checksum);
