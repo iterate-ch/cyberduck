@@ -1908,7 +1908,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             bookmark.setDefaultPath(selected.getAbsolute());
         }
         else {
-            bookmark = new Host(ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default")));
+            bookmark = new Host(ProtocolFactory.get().forNameOrDefault(preferences.getProperty("connection.protocol.default")));
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         this.addBookmark(bookmark);

@@ -271,4 +271,37 @@ public class ProtocolFactoryTest {
         assertFalse(profile.isEnabled());
         assertTrue(file.exists());
     }
+
+    @Test
+    public void testForNameOrDefault() throws Exception {
+        final TestProtocol ftp = new TestProtocol(Scheme.ftp);
+        final TestProtocol dav = new TestProtocol(Scheme.dav);
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(ftp, dav)));
+        assertEquals(dav, f.forNameOrDefault("dav"));
+        assertEquals(ftp, f.forNameOrDefault("invalid"));
+        assertEquals(ftp, f.forNameOrDefault("ftp"));
+    }
+
+    @Test
+    public void testForNameOrDefaultWithProvider() throws Exception {
+        final TestProtocol ftp = new TestProtocol(Scheme.ftp);
+        final TestProtocol ftp2 = new TestProtocol(Scheme.ftp) {
+            @Override
+            public String getProvider() {
+                return "test";
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(ftp, ftp2)));
+        assertEquals(ftp, f.forNameOrDefault("invalid"));
+        assertEquals(ftp, f.forNameOrDefault("ftp"));
+        assertEquals(ftp2, f.forNameOrDefault("ftp", "test"));
+    }
+
+    @Test
+    public void testForNameOrDefaultMissing() throws Exception {
+        final TestProtocol dav = new TestProtocol(Scheme.dav);
+        final ProtocolFactory f = new ProtocolFactory(Collections.singleton(dav));
+        assertEquals(dav, f.forNameOrDefault("dav"));
+        assertNull(f.forNameOrDefault("ftp"));
+    }
 }

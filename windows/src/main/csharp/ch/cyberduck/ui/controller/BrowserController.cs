@@ -1382,7 +1382,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 bookmark =
-                    new Host(ProtocolFactory.get().forName(PreferencesFactory.get()
+                    new Host(ProtocolFactory.get().forNameOrDefault(PreferencesFactory.get()
                         .getProperty("connection.protocol.default")));
             }
             ToggleView(BrowserView.Bookmark);

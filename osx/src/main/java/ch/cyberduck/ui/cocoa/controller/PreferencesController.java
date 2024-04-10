@@ -1944,8 +1944,7 @@ public class PreferencesController extends ToolbarWindowController {
         for(Protocol protocol : protocols.find(new ProfileProtocolPredicate())) {
             this.addProtocol(protocol);
         }
-        final Protocol defaultProtocol
-                = ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default"));
+        final Protocol defaultProtocol = protocols.forNameOrDefault(preferences.getProperty("connection.protocol.default"));
         this.protocolCombobox.selectItemAtIndex(this.protocolCombobox.indexOfItemWithRepresentedObject(String.valueOf(defaultProtocol.hashCode())));
     }
 
