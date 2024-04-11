@@ -18,7 +18,6 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HistoryCollection;
@@ -62,10 +61,8 @@ public class MountWorker extends Worker<Path> {
     }
 
     protected Path list(final Session<?> session, final Home feature) throws BackgroundException {
-        Path home;
-        AttributedList<Path> list;
         try {
-            home = feature.find();
+            final Path home = feature.find();
             if(log.isInfoEnabled()) {
                 log.info(String.format("Mount path %s", home));
             }
@@ -74,7 +71,8 @@ public class MountWorker extends Worker<Path> {
             // Retrieve directory listing of default path
             final SessionListWorker worker = new SessionListWorker(cache, home, listener);
             listener.message(worker.getActivity());
-            list = worker.run(session);
+            cache.put(home, worker.run(session));
+            return home;
         }
         catch(NotfoundException e) {
             if(log.isWarnEnabled()) {
@@ -85,7 +83,7 @@ public class MountWorker extends Worker<Path> {
             }
             // The default path does not exist or is not readable due to possible permission issues. Fallback
             // to default working directory
-            home = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+            final Path home = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Fallback to mount path %s", home));
             }
@@ -94,10 +92,9 @@ public class MountWorker extends Worker<Path> {
             // Retrieve directory listing of working directory
             final SessionListWorker worker = new SessionListWorker(cache, home, listener);
             listener.message(worker.getActivity());
-            list = worker.run(session);
+            cache.put(home, worker.run(session));
+            return home;
         }
-        cache.put(home, list);
-        return home;
     }
 
     @Override
