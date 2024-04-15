@@ -24,7 +24,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class UploadPromptController : TransferPromptController
     {
-        public UploadPromptController(WindowController parent, Transfer transfer, SessionPool source, SessionPool destination)
+        public UploadPromptController(TransferController parent, Transfer transfer, SessionPool source, SessionPool destination)
             : base(parent, transfer, source, destination)
         {
             TransferPromptModel = new UploadPromptModel(this, source, destination, Transfer);

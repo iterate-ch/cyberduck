@@ -17,8 +17,10 @@
 // 
 
 using System;
+using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using java.lang;
@@ -27,7 +29,7 @@ using Exception = System.Exception;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public abstract class AsyncController : AbstractController
+    public abstract class AsyncController : AbstractController, IWindowController
     {
         public delegate void AsyncDelegate();
 
@@ -36,6 +38,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Log = LogManager.getLogger(typeof (AsyncController).Name);
 
         public virtual IView View { get; set; }
+
+        public IWin32Window Window => View;
 
         public void Background(AsyncDelegate del, AsyncDelegate cleanup)
         {

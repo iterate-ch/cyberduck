@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Markup;
+using System.Windows.Media.Imaging;
 using Ch.Cyberduck.Core.Refresh.Services;
 using Splat;
 

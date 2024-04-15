@@ -266,6 +266,13 @@
       <Component Id="structuremap">
         <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
+      <!-- CommunityToolkit.Mvvm -->
+      <Component Id="CommunityToolkit.Mvvm">
+        <File Source="$(var.cyberduck.TargetDir)/CommunityToolkit.Mvvm.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="Microsoft.Bcl.AsyncInterfaces">
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
       <!-- /Nuget Dependencies -->
 
       <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">

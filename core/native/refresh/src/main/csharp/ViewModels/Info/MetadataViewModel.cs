@@ -17,6 +17,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -78,8 +79,8 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             var preferences = Locator.Current.GetService<Preferences>();
             var provider = Locator.Current.GetService<MetadataTemplateProvider>();
 
-            Load = ReactiveCommand.CreateFromTask(OnLoadAsync);
-            Save = ReactiveCommand.CreateFromTask(OnSaveAsync);
+            Load = ReactiveCommand.CreateFromTask(OnLoadAsync, outputScheduler: DispatcherScheduler.Current);
+            Save = ReactiveCommand.CreateFromTask(OnSaveAsync, outputScheduler: DispatcherScheduler.Current);
             Save.InvokeCommand(Load);
             var busyObservable = Observable.CombineLatest(Load.IsExecuting, Save.IsExecuting, (l, s) => l | s).Replay(1).RefCount();
             busy = busyObservable.ToProperty(this, nameof(Busy));

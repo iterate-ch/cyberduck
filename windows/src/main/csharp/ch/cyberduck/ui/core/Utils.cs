@@ -22,6 +22,7 @@ using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using System.Windows.Forms;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
 
@@ -31,6 +32,134 @@ namespace Ch.Cyberduck.Ui.Core
     {
         private const MESSAGEBOX_RESULT BUTTON_ID = (MESSAGEBOX_RESULT)0b1000_0000;
         private const MESSAGEBOX_RESULT BUTTON_MASK = (MESSAGEBOX_RESULT)0b0111_1111;
+
+        public static TaskDialogResult Show(
+            IWin32Window owner = default,
+            bool allowDialogCancellation = false,
+            string title = null,
+            TaskDialogIcon? mainIcon = default,
+            string mainInstruction = null,
+            string content = null,
+            string expandedInfo = null,
+            bool expandedByDefault = false,
+            TASKDIALOG_COMMON_BUTTON_FLAGS commonButtons = 0,
+            string[] customButtons = null,
+            string[] radioButtons = null,
+            string[] commandLinks = null,
+            bool showProgressBar = false,
+            bool showMarqueeProgressBar = false,
+            TaskDialogIcon? footerIcon = default,
+            string footerText = null,
+            bool expandToFooter = false,
+            string verificationText = null,
+            bool verificationByDefault = false,
+            DialogResponseHandler callback = null,
+            bool enableCallbackTimer = false)
+        {
+            var dialog = TaskDialog.Create()
+                .CommonButtons(commonButtons)
+                .Content(content)
+                .ExpandedInformation(expandedInfo)
+                .FooterText(footerText)
+                .Instruction(mainInstruction)
+                .Parent((HWND)(owner?.Handle ?? default))
+                .Title(title)
+                .UseHyperlinks()
+                .VerificationText(verificationText, verificationByDefault)
+                .Callback((s, e) =>
+                {
+                    if (e is TaskDialogHyperlinkClickedEventArgs hyperlinkClickedEventArgs)
+                    {
+                        BrowserLauncherFactory.get().open(hyperlinkClickedEventArgs.Url);
+                        return true;
+                    }
+
+                    return false;
+                });
+
+            if (allowDialogCancellation)
+            {
+                dialog.AllowCancellation();
+            }
+
+            if (enableCallbackTimer)
+            {
+                dialog.EnableCallbackTimer();
+            }
+
+            if (expandedByDefault)
+            {
+                dialog.ExpandedByDefault();
+            }
+
+            if (expandToFooter)
+            {
+                dialog.ExpandToFooter();
+            }
+
+            if (footerIcon is { } footerIconValue)
+            {
+                dialog.FooterIcon(footerIconValue);
+            }
+
+            if (mainIcon is { } mainIconValue)
+            {
+                dialog.MainIcon(mainIconValue);
+            }
+
+            if (showProgressBar)
+            {
+                dialog.ShowProgressbar(showMarqueeProgressBar);
+            }
+
+            if (radioButtons != null)
+            {
+                dialog.RadioButtons(c =>
+                {
+                    for (int i = 0, end = radioButtons.Length; i < end; i++)
+                    {
+                        var value = radioButtons[i];
+                        c((MESSAGEBOX_RESULT)i, value, false);
+                    }
+                });
+            }
+
+            switch (customButtons, commandLinks)
+            {
+                case (not null, null) v:
+                    dialog.CustomButtons(c =>
+                    {
+                        for (int i = 0, end = v.customButtons.Length; i < end; i++)
+                        {
+                            var value = v.customButtons[i];
+                            c((MESSAGEBOX_RESULT)i | BUTTON_ID, value, false);
+                        }
+                    });
+                    break;
+
+                case (null, not null) v:
+                    dialog.CommandLinks(c =>
+                    {
+                        for (int i = 0, end = v.commandLinks.Length; i < end; i++)
+                        {
+                            var value = v.commandLinks[i];
+                            c((MESSAGEBOX_RESULT)i | BUTTON_ID, value, false);
+                        }
+                    });
+                    break;
+            }
+
+            var result = dialog.Show();
+            if ((result.Button & BUTTON_ID) > 0)
+            {
+                result = new(result.Button & BUTTON_MASK,
+                    result.RadioButton,
+                    result.VerificationChecked);
+            }
+
+            callback?.Invoke((int)result.Button, result.VerificationChecked.GetValueOrDefault());
+            return result;
+        }
 
         public static TaskDialogResult CommandBox(IWin32Window owner, string title, string mainInstruction,
             string content, string expandedInfo, string help, string verificationText, string commandButtons,
@@ -130,7 +259,7 @@ namespace Ch.Cyberduck.Ui.Core
             return result;
         }
 
-        private static string FormatHelp(string help)
+        public static string FormatHelp(string help)
         {
             if (string.IsNullOrEmpty(help))
             {

@@ -34,6 +34,7 @@ using ch.cyberduck.core.vault;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
+using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Refresh.Interactivity;
@@ -63,6 +64,7 @@ using StringBuilder = System.Text.StringBuilder;
 using X509Certificate = java.security.cert.X509Certificate;
 using X509Certificate2 = System.Security.Cryptography.X509Certificates.X509Certificate2;
 using X509Certificate2UI = System.Security.Cryptography.X509Certificates.X509Certificate2UI;
+using TransferItem = ch.cyberduck.core.transfer.TransferItem;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -2281,7 +2283,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ShowTransfers()
         {
-            ITransferView view = TransferController.Instance.View;
+            TransferController.Instance.ShowWindow();
+            //var view = new TransfersWindow();
+            //view.Show();
+            /*ITransferView view = TransferController.Instance.View;
 
             bool isOnCurrentDesktop = true;
             try
@@ -2327,7 +2332,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             
-            view.Show();
+            view.Show();*/
         }
 
         private void View_ShowInspector()

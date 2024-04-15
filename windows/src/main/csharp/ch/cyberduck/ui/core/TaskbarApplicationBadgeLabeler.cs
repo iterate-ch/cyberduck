@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Ui.Core
     {
         public void badge(string text)
         {
-            if (Cyberduck.Core.Utils.IsBlank(text))
+            /*if (Cyberduck.Core.Utils.IsBlank(text))
             {
                 clear();
             }
@@ -52,12 +52,12 @@ namespace Ch.Cyberduck.Ui.Core
                     }
                     TransferController.Instance.TaskbarOverlayIcon(Icon.FromHandle(bm.GetHicon()), text);
                 }
-            }
+            }*/
         }
 
         public void clear()
         {
-            TransferController.Instance.TaskbarOverlayIcon(null, String.Empty);
+            //TransferController.Instance.TaskbarOverlayIcon(null, String.Empty);
         }
     }
 }

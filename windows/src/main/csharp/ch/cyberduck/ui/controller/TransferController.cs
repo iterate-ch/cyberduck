@@ -16,602 +16,130 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
-using ch.cyberduck.core.formatter;
-using ch.cyberduck.core.io;
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
-using Ch.Cyberduck.Core;
+using ch.cyberduck.ui.core;
+using ch.cyberduck.ui.Model;
+using ch.cyberduck.ui.ViewModels;
+using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using java.text;
-using org.apache.logging.log4j;
+using DynamicData;
+using DynamicData.Kernel;
 using StructureMap;
-using static Ch.Cyberduck.ImageHelper;
+using System.Windows.Forms;
+using System.Windows.Interop;
+using System.Windows.Threading;
+using static Ch.Cyberduck.Ui.Controller.AsyncController;
+using CoreController = ch.cyberduck.core.Controller;
+using IWin32Window = System.Windows.Forms.IWin32Window;
+using TransferProgress = ch.cyberduck.core.transfer.TransferProgress;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class TransferController : WindowController<ITransferView>, TranscriptListener, CollectionListener
+    public class TransferController : AbstractController, TransferListener, IWindowController
     {
-        private static readonly Logger Log = LogManager.getLogger(typeof(TransferController).FullName);
-        private static readonly object SyncRoot = new Object();
-        private static volatile TransferController _instance;
-        private readonly TransferCollection _collection = TransferCollection.defaultCollection();
-        private readonly Preferences _preferences = PreferencesFactory.get();
+        private static TransferController instance;
+        private readonly Dispatcher dispatcher;
+        private readonly Preferences preferences = PreferencesFactory.get();
+        private readonly SourceCache<TransferProgressModel, Transfer> progressCache = new(m => m.Transfer);
+        private readonly NativeWindow nativeTransfersWindow = new();
+        private readonly TransferCollection transfers = TransferCollection.defaultCollection();
+        private TransfersWindow transfersWindow;
 
-        private readonly IDictionary<Transfer, ProgressController> _transferMap =
-            new Dictionary<Transfer, ProgressController>();
+        public static TransferController Instance => instance ??= ObjectFactory.GetInstance<TransferController>();
 
-        private TransferController()
+        public IObservableCache<TransferProgressModel, Transfer> Progress => progressCache;
+
+        public TransfersWindow Window => transfersWindow;
+
+        public IWin32Window WindowInterop => nativeTransfersWindow;
+
+        IWin32Window IWindowController.Window => nativeTransfersWindow;
+
+        public TransferController()
         {
-            View = ObjectFactory.GetInstance<ITransferView>();
-            lock (_collection)
-            {
-                foreach (Transfer transfer in _collection)
-                {
-                    collectionItemAdded(transfer);
-                }
-            }
-            Init();
-        }
-
-        public override bool Singleton
-        {
-            get { return true; }
-        }
-
-        public static TransferController Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (SyncRoot)
-                    {
-                        if (_instance == null)
-                            _instance = new TransferController();
-                    }
-                }
-                return _instance;
-            }
-        }
-
-        public void collectionLoaded()
-        {
-        }
-
-        public void collectionItemAdded(object obj)
-        {
-            Invoke(delegate
-            {
-                Transfer transfer = obj as Transfer;
-                ProgressController progressController = new ProgressController(transfer);
-                _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
-                IProgressView progressView = progressController.View;
-                View.AddTransfer(progressView);
-                View.SelectTransfer(progressView);
-            });
-        }
-
-        public void collectionItemRemoved(object obj)
-        {
-            Invoke(delegate
-            {
-                Transfer transfer = obj as Transfer;
-                if (null != transfer)
-                {
-                    ProgressController progressController;
-                    if (_transferMap.TryGetValue(transfer, out progressController))
-                    {
-                        View.RemoveTransfer(progressController.View);
-                    }
-                }
-            });
-        }
-
-        public void collectionItemChanged(object obj)
-        {
-        }
-
-        public override void log(TranscriptListener.Type request, string transcript)
-        {
-            if (View.TranscriptVisible)
-            {
-                invoke(new LogAction(this, request, transcript));
-            }
-        }
-
-        public ProgressController GetController(Transfer transfer)
-        {
-            ProgressController progressController;
-            if (!_transferMap.TryGetValue(transfer, out progressController))
-            {
-                progressController = new ProgressController(transfer);
-                _transferMap.Add(transfer, new ProgressController(transfer));
-            }
-            return progressController;
+            dispatcher = MainController.Application.Dispatcher;
         }
 
         public static bool ApplicationShouldTerminate()
         {
-            if (null != _instance)
+            if (instance == null)
             {
-                //Saving state of transfer window
-                PreferencesFactory.get().setProperty("queue.window.open.default", _instance.Visible);
-                if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
-                {
-                    TaskDialogResult result =
-                        _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
-                            LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"),
-                            null, String.Format("{0}", LocaleFactory.localizedString("Exit")), true);
-                    if (result.Button == 0)
-                    {
-                        // Quit
-                        for (int i = 0; i < _instance.getRegistry().size(); i++)
-                        {
-                            ((BackgroundAction)_instance.getRegistry().get(i)).cancel();
-                        }
-                        return true;
-                    }
-                    // Cancel
-                    return false;
-                }
+                return true;
             }
+
+            //Saving state of transfer window
+            PreferencesFactory.get().setProperty("queue.window.open.default", instance.transfersWindow is not null);
+            if (instance.transfers.numberOfRunningTransfers() == 0)
+            {
+                return true;
+            }
+
+            TaskDialogResult result = default;
+            if (result.Button != 0)
+            {
+                return false;
+            }
+
+            // Quit
+            foreach (BackgroundAction action in instance.getRegistry())
+            {
+                action.cancel();
+            }
+
             return true;
         }
 
-        private void Init()
+        public void CloseWindow()
         {
-            _collection.addListener(this);
-            PopulateBandwidthList();
-            PopulateConnectionsList();
-
-            View.PositionSizeRestoredEvent += delegate
+            if (Window is { } window)
             {
-                View.TranscriptVisible = _preferences.getBoolean("queue.transcript.open");
-                View.TranscriptHeight = _preferences.getInteger("queue.transcript.size.height");
-
-                View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
-                View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
-            };
-            View.QueueSize = _preferences.getInteger("queue.connections.limit");
-            View.BandwidthEnabled = false;
-
-            View.ResumeEvent += View_ResumeEvent;
-            View.ReloadEvent += View_ReloadEvent;
-            View.StopEvent += View_StopEvent;
-            View.RemoveEvent += View_RemoveEvent;
-            View.CleanEvent += View_CleanEvent;
-            View.OpenEvent += View_OpenEvent;
-            View.ShowEvent += View_ShowEvent;
-            View.TrashEvent += View_TrashEvent;
-            View.SelectionChangedEvent += View_SelectionChangedEvent;
-            View.BandwidthChangedEvent += View_BandwidthChangedEvent;
-            View.ConnectionsChangedEvent += ViewConnectionsChangedEvent;
-
-            View.ValidateResumeEvent += View_ValidateResumeEvent;
-            View.ValidateReloadEvent += View_ValidateReloadEvent;
-            View.ValidateStopEvent += View_ValidateStopEvent;
-            View.ValidateRemoveEvent += View_ValidateRemoveEvent;
-            View.ValidateCleanEvent += View_ValidateCleanEvent;
-            View.ValidateOpenEvent += View_ValidateOpenEvent;
-            View.ValidateShowEvent += View_ValidateShowEvent;
-        }
-
-        private void View_TrashEvent()
-        {
-            foreach (IProgressView progressView in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(progressView);
-                if (!transfer.isRunning())
-                {
-                    for (int i = 0; i < transfer.getRoots().size(); i++)
-                    {
-                        TransferItem item = (TransferItem)transfer.getRoots().get(i);
-                        try
-                        {
-                            LocalTrashFactory.get().trash(item.local);
-                        }
-                        catch (Exception exception)
-                        {
-                            Log.warn(String.Format("Failure trashing file {0} {1}", item.local, exception.Message));
-                        }
-                    }
-                }
+                window.Dispatcher.Invoke(window.Close);
             }
         }
 
-        private void View_TranscriptHeightChangedEvent()
+        public override void invoke(MainAction action, bool wait)
         {
-            _preferences.setProperty("queue.transcript.size.height", View.TranscriptHeight);
-        }
-
-        private void View_ToggleTranscriptEvent()
-        {
-            View.TranscriptVisible = !View.TranscriptVisible;
-            _preferences.setProperty("queue.transcript.open", View.TranscriptVisible);
-        }
-
-        private bool View_ValidateShowEvent()
-        {
-            return ValidateToolbarItem(delegate (Transfer transfer)
+            if (!action.isValid())
             {
-                if (transfer.getLocal() != null)
-                {
-                    for (int i = 0; i < transfer.getRoots().size(); i++)
-                    {
-                        TransferItem t = (TransferItem)transfer.getRoots().get(i);
-                        if (t.local.exists())
-                        {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            });
-        }
-
-        private bool View_ValidateOpenEvent()
-        {
-            return ValidateToolbarItem(delegate (Transfer transfer)
-            {
-                if (transfer.getLocal() != null)
-                {
-                    if (!transfer.isComplete())
-                    {
-                        return false;
-                    }
-                    if (!transfer.isRunning())
-                    {
-                        for (int i = 0; i < transfer.getRoots().size(); i++)
-                        {
-                            TransferItem item = (TransferItem)transfer.getRoots().get(i);
-                            if (item.local.exists())
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                return false;
-            });
-        }
-
-        private bool View_ValidateStopEvent()
-        {
-            return ValidateToolbarItem(transfer => transfer.isRunning());
-        }
-
-        private bool View_ValidateReloadEvent()
-        {
-            return ValidateToolbarItem(transfer => (transfer.getType().isReloadable() && !transfer.isRunning()));
-        }
-
-        /// <summary>
-        /// Validates the selected items in the transfer window against the toolbar validator
-        /// </summary>
-        /// <param name="validate"></param>
-        /// <returns>True if one or more of the selected items passes the validation test</returns>
-        private bool ValidateToolbarItem(TransferToolbarValidator validate)
-        {
-            foreach (IProgressView selectedTransfer in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(selectedTransfer);
-                if (transfer != null && validate(transfer))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private bool View_ValidateResumeEvent()
-        {
-            return ValidateToolbarItem(delegate (Transfer transfer)
-            {
-                if (transfer.isRunning())
-                {
-                    return false;
-                }
-                return !transfer.isComplete();
-            });
-        }
-
-        private void PopulateBandwidthList()
-        {
-            IList<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
-            list.Add(new KeyValuePair<int, string>(BandwidthThrottle.UNLIMITED,
-                LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
-            foreach (String option in
-                _preferences.getProperty("queue.bandwidth.options")
-                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                list.Add(new KeyValuePair<int, string>(Convert.ToInt32(option.Trim()),
-                    (SizeFormatterFactory.get(true).format(Convert.ToInt32(option.Trim())) + "/s")));
-            }
-            View.PopulateBandwidthList(list);
-        }
-        private void PopulateConnectionsList()
-        {
-            IList<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
-            foreach (String option in
-                _preferences.getProperty("queue.connections.options")
-                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                int connections = Convert.ToInt32(option.Trim());
-                if (TransferConnectionLimiter.AUTO == connections)
-                {
-                    list.Add(new KeyValuePair<int, string>(connections, LocaleFactory.localizedString("Auto")));
-
-                }
-                else
-                {
-                    list.Add(new KeyValuePair<int, string>(connections,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} Connections", "Transfer"), connections)));
-                }
-            }
-            View.PopulateConnectionsList(list);
-        }
-
-        private void ViewConnectionsChangedEvent()
-        {
-            int connections = View.QueueSize;
-            _preferences.setProperty("queue.connections.limit", connections);
-            TransferQueue queue = TransferQueueFactory.get();
-            queue.resize(connections);
-        }
-
-        private void View_BandwidthChangedEvent()
-        {
-            foreach (IProgressView progressView in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(progressView);
-                transfer.setBandwidth(View.Bandwidth);
-                if (transfer.isRunning())
-                {
-                    BackgroundActionRegistry registry = getRegistry();
-                    // Find matching background task
-                    for (int i = 0; i < registry.size(); i++)
-                    {
-                        if (registry.get(i) is TransferBackgroundAction)
-                        {
-                            TransferBackgroundAction t = (TransferBackgroundAction)registry.get(i);
-                            if (t.getTransfer().Equals(transfer))
-                            {
-                                TransferSpeedometer meter = t.getMeter();
-                                meter.reset();
-                            }
-                        }
-                    }
-                }
-            }
-            UpdateBandwidthPopup();
-        }
-
-        private void View_SelectionChangedEvent()
-        {
-            Log.debug("SelectionChanged");
-            UpdateLabels();
-            UpdateIcon();
-            UpdateBandwidthPopup();
-        }
-
-        private void UpdateBandwidthPopup()
-        {
-            Log.debug("UpdateBandwidthPopup");
-            IList<IProgressView> selectedTransfers = View.SelectedTransfers;
-            View.BandwidthEnabled = selectedTransfers.Count > 0;
-
-            foreach (IProgressView progressView in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(progressView);
-                if (transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED)
-                {
-                    View.Bandwidth = Convert.ToInt32(transfer.getBandwidth().getRate());
-                }
-                else
-                {
-                    View.Bandwidth = BandwidthThrottle.UNLIMITED;
-                }
                 return;
             }
-        }
 
-        private void UpdateIcon()
-        {
-            IList<IProgressView> selectedTransfers = View.SelectedTransfers;
-            if (1 == selectedTransfers.Count)
+            if (wait)
             {
-                Transfer transfer = GetTransferFromView(selectedTransfers[0]);
-                if (transfer.getRoots().size() == 1)
-                {
-                    if (transfer.getLocal() != null)
-                    {
-                        View.FileIcon = IconProvider.GetFileIcon(transfer.getRoot().local.getAbsolute(), false, true, false);
-                    }
-                    else
-                    {
-                        View.FileIcon = IconProvider.GetPath(transfer.getRoot().remote, 32);
-                    }
-                }
-                else
-                {
-                    View.FileIcon = Images.Multiple;
-                }
+                MainController.Application.SynchronizationContext.Send(
+                    d => ((MainAction)d).run(),
+                    action);
             }
             else
             {
-                View.FileIcon = null;
+                MainController.Application.SynchronizationContext.Post(
+                    d => ((MainAction)d).run(),
+                    action);
             }
         }
 
-        private void UpdateLabels()
+        public void Invoke(AsyncDelegate action) => Invoke(action, true);
+
+        public void Invoke(AsyncDelegate action, bool wait)
         {
-            IList<IProgressView> selectedTransfers = View.SelectedTransfers;
-            if (1 == selectedTransfers.Count)
-            {
-                Transfer transfer = GetTransferFromView(selectedTransfers[0]);
-                View.Url = transfer.getRemote().getUrl();
-                //Workaround to prevent NullReferenceException
-                if (transfer.getLocal() != null)
-                {
-                    View.Local = transfer.getLocal();
-                }
-                else
-                {
-                    View.Local = string.Empty;
-                }
-            }
-            else
-            {
-                View.Url = string.Empty;
-                View.Local = string.Empty;
-            }
+            invoke(new SimpleDefaultMainAction(this, action), wait);
         }
 
-        private void View_ShowEvent()
+        public TransferProgressModel Lookup(Transfer transfer)
         {
-            foreach (IProgressView progressView in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(progressView);
-                for (int i = 0; i < transfer.getRoots().size(); i++)
-                {
-                    TransferItem item = (TransferItem)transfer.getRoots().get(i);
-                    RevealServiceFactory.get().reveal(item.local);
-                }
-            }
+            return progressCache.Lookup(transfer).ValueOrDefault();
         }
 
-        private void View_OpenEvent()
+        public void RemoveTransfer(Transfer transfer)
         {
-            IList<IProgressView> selected = View.SelectedTransfers;
-            if (selected.Count == 1)
-            {
-                Transfer transfer = GetTransferFromView(selected[0]);
-
-                for (int i = 0; i < transfer.getRoots().size(); i++)
-                {
-                    TransferItem item = (TransferItem)transfer.getRoots().get(i);
-                    Local l = item.local;
-                    if (ApplicationLauncherFactory.get().open(l))
-                    {
-                        break;
-                    }
-                }
-            }
+            transfers.remove(transfer);
         }
 
-        private bool View_ValidateCleanEvent()
-        {
-            return _transferMap.Count > 0;
-        }
-
-        private void View_CleanEvent()
-        {
-            IList<Transfer> remove = new List<Transfer>();
-            foreach (KeyValuePair<Transfer, ProgressController> pair in _transferMap)
-            {
-                Transfer t = pair.Key;
-                if (t.isComplete())
-                {
-                    remove.Add(t);
-                }
-            }
-            _collection.removeAll(Utils.ConvertToJavaList(remove));
-            _collection.save();
-        }
-
-        private bool View_ValidateRemoveEvent()
-        {
-            return View.SelectedTransfers.Count > 0;
-        }
-
-        private void View_RemoveEvent()
-        {
-            foreach (IProgressView progressView in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(progressView);
-                if (!transfer.isRunning())
-                {
-                    _collection.remove(transfer);
-                }
-            }
-            _collection.save();
-        }
-
-        private void View_StopEvent()
-        {
-            foreach (IProgressView progressView in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(progressView);
-                BackgroundActionRegistry registry = getRegistry();
-                if (transfer.isRunning())
-                {
-                    // Find matching background task
-                    for (int i = 0; i < registry.size(); i++)
-                    {
-                        if (registry.get(i) is TransferBackgroundAction)
-                        {
-                            TransferBackgroundAction t = (TransferBackgroundAction)registry.get(i);
-                            if (t.getTransfer().Equals(transfer))
-                            {
-                                t.cancel();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void View_ReloadEvent()
-        {
-            foreach (IProgressView progressView in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(progressView);
-                if (!transfer.isRunning())
-                {
-                    TransferOptions options = new TransferOptions()
-                        .resume(false)
-                        .reload(true);
-                    StartTransfer(transfer, options);
-                }
-            }
-        }
-
-        private Transfer GetTransferFromView(IProgressView view)
-        {
-            foreach (KeyValuePair<Transfer, ProgressController> pair in _transferMap)
-            {
-                if (pair.Value.View == view) return pair.Key;
-            }
-            return null;
-        }
-
-        private void View_ResumeEvent()
-        {
-            foreach (IProgressView progressView in View.SelectedTransfers)
-            {
-                Transfer transfer = GetTransferFromView(progressView);
-                if (!transfer.isRunning())
-                {
-                    TransferOptions options = new TransferOptions()
-                        .resume(true)
-                        .reload(false);
-                    StartTransfer(transfer, options);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="transfer"></param>
         public void StartTransfer(Transfer transfer)
         {
             StartTransfer(transfer, new TransferOptions());
@@ -619,128 +147,199 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void StartTransfer(Transfer transfer, TransferOptions options)
         {
-            StartTransfer(transfer, options, new NoopTransferCallback());
+            StartTransfer(transfer, options, null);
         }
 
         public void StartTransfer(Transfer transfer, TransferOptions options, TransferCallback callback)
         {
-            if (!_collection.contains(transfer))
-            {
-                if (_collection.size() > _preferences.getInteger("queue.size.warn"))
+            if (progressCache.Lookup(transfer) is not
                 {
-                    CommandBox(LocaleFactory.localizedString("Clean Up"),
-                        LocaleFactory.localizedString("Remove completed transfers from list."), null,
-                        LocaleFactory.localizedString("Clean Up"), true,
-                        LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
-                        delegate (int option, bool verificationChecked)
+                    HasValue: true,
+                    Value: { } progress
+                })
+            {
+                progress = new(transfer);
+                progressCache.AddOrUpdate(progress);
+            }
+
+            if (!transfers.contains(transfer))
+            {
+                /* TODO: Queue Size Warn */
+                transfers.add(transfer);
+            }
+
+            PathCache cache = new(preferences.getInteger("transfer.cache.size"));
+            TransferBackgroundAction action = new(
+                this,
+                transfer.withCache(cache),
+                progress,
+                options,
+                callback);
+            progress.Action = action;
+            background(action);
+        }
+
+        public void ShowWindow()
+        {
+            dispatcher.Invoke((TransferController controller) =>
+            {
+                if (controller.transfersWindow is not { } window)
+                {
+                    controller.transfersWindow = window = new()
+                    {
+                        DataContext = ObjectFactory.GetInstance<TransfersViewModel>()
+                    };
+
+                    window.Closed += (s, e) =>
+                    {
+                        try
                         {
-                            if (verificationChecked)
-                            {
-                                // Never show again.
-                                _preferences.setProperty("queue.size.warn", int.MaxValue);
-                            }
-                            switch (option)
-                            {
-                                case 0: // Clean Up
-                                    View_CleanEvent();
-                                    break;
-                            }
-                        });
+                            controller.nativeTransfersWindow.ReleaseHandle();
+                        }
+                        catch { }
+                        finally
+                        {
+                            controller.transfersWindow = null;
+                        }
+                    };
+
+                    controller.nativeTransfersWindow.AssignHandle(new WindowInteropHelper(window).EnsureHandle());
                 }
-                _collection.add(transfer);
-            }
-            ProgressController progressController;
-            _transferMap.TryGetValue(transfer, out progressController);
-            PathCache cache = new PathCache(_preferences.getInteger("transfer.cache.size"));
-            background(new TransferBackgroundAction(this, transfer.withCache(cache), options, callback, cache, progressController));
+
+                window.Show();
+                window.Activate();
+            }, this);
         }
 
-        public void TaskbarOverlayIcon(Icon icon, string description)
+        void TransferListener.transferDidProgress(Transfer t, TransferProgress tp)
         {
-            Invoke(delegate { View.TaskbarOverlayIcon(icon, description); });
-        }
-
-        private class LogAction : WindowMainAction
-        {
-            private readonly string _msg;
-            private readonly TranscriptListener.Type _request;
-
-            public LogAction(TransferController c, TranscriptListener.Type request, string msg) : base(c)
+            if (progressCache.Lookup(t) is not
+                {
+                    HasValue: true,
+                    Value: { } progress
+                })
             {
-                _request = request;
-                _msg = msg;
+                return;
             }
 
-            public override void run()
-            {
-                ((TransferController)Controller).View.AddTranscriptEntry(_request, _msg);
-            }
+            progress.Refresh(tp);
         }
 
-        private class NoopTransferCallback : TransferCallback
+        void TransferListener.transferDidStart(Transfer t)
         {
-            public void complete(Transfer t)
+            if (progressCache.Lookup(t) is not
+                {
+                    HasValue: true,
+                    Value: { } progress
+                })
             {
-                ;
+                progressCache.AddOrUpdate(progress = new TransferProgressModel(t)
+                {
+                    Action = FindTransferAction(t)
+                });
             }
+
+            progress.Refresh(null);
         }
 
-        private class TransferBackgroundAction : TransferCollectionBackgroundAction
+        void TransferListener.transferDidStop(Transfer t)
         {
-            private readonly TransferCallback _callback;
-            private readonly TransferController _controller;
-            private readonly Preferences _preferences = PreferencesFactory.get();
-            private readonly Transfer _transfer;
-
-            public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
-                TransferCallback callback, PathCache cache, ProgressListener listener)
-                : base(controller,
-                    null == transfer.getSource() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, transfer.getSource(), listener),
-                    null == transfer.getDestination() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, transfer.getDestination(), listener),
-                    controller.GetController(transfer),
-                    controller.GetController(transfer),
-                    transfer, options)
+            if (progressCache.Lookup(t) is not
+                {
+                    HasValue: true
+                })
             {
-                _transfer = transfer;
-                _callback = callback;
-                _controller = controller;
+                return;
+            }
+
+            progressCache.Remove(t);
+        }
+
+        private TransferBackgroundAction FindTransferAction(Transfer transfer)
+        {
+            foreach (BackgroundAction action in getRegistry())
+            {
+                if (action is not TransferBackgroundAction transferAction)
+                {
+                    continue;
+                }
+
+                if (transferAction.getTransfer() != transfer)
+                {
+                    continue;
+                }
+
+                return transferAction;
+            }
+
+            return null;
+        }
+
+        private class TransferBackgroundAction(
+            TransferController controller,
+            Transfer transfer,
+            ProgressListener listener,
+            TransferOptions options,
+            TransferCallback callback
+        ) : TransferCollectionBackgroundAction(
+            controller,
+            source: CreateSessionPool(
+                controller,
+                transfer.getSource(),
+                listener),
+            destination: CreateSessionPool(
+                controller,
+                transfer.getDestination(),
+                listener),
+            transferListener: controller,
+            listener: listener,
+            transfer, options
+        )
+        {
+            private readonly Preferences preferences = controller.preferences;
+            private readonly Transfer transfer = transfer;
+
+            public override void cleanup()
+            {
+                base.cleanup();
+                if (transfer.isComplete()
+                    && transfer.isReset()
+                    && preferences.getBoolean("queue.window.open.transfer.stop"))
+                {
+                    if (controller.transfers.numberOfRunningTransfers() == 0)
+                    {
+                        controller.CloseWindow();
+                    }
+                }
             }
 
             public override void init()
             {
                 base.init();
-                if (_preferences.getBoolean("queue.window.open.transfer.start"))
+                if (preferences.getBoolean("queue.window.open.transfer.start"))
                 {
-                    _controller.View.Show();
-                    _controller.View.BringToFront();
+                    controller.ShowWindow();
                 }
             }
 
             public override void finish()
             {
                 base.finish();
-                if (_transfer.isComplete())
+                if (transfer.isComplete())
                 {
-                    _callback.complete(_transfer);
+                    callback?.complete(transfer);
                 }
             }
 
-            public override void cleanup()
+            private static SessionPool CreateSessionPool(CoreController controller, Host host, ProgressListener listener)
             {
-                base.cleanup();
-                if (_transfer.isComplete() && _transfer.isReset())
+                if (host == null)
                 {
-                    if (_preferences.getBoolean("queue.window.open.transfer.stop"))
-                    {
-                        if (!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0))
-                        {
-                            _controller.View.Close();
-                        }
-                    }
+                    return SessionPool.DISCONNECTED;
                 }
+
+                return SessionPoolFactory.create(controller, host, listener);
             }
         }
-
-        private delegate bool TransferToolbarValidator(Transfer transfer);
     }
 }

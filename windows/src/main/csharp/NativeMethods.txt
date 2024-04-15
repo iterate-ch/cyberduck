@@ -3,6 +3,7 @@ CLSID_DragDropHelper
 CoCreateInstance
 CreateStreamOnHGlobal
 DeleteObject
+DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 DROPDESCRIPTION
 DROPIMAGETYPE
 EM_SETCUEBANNER
@@ -27,6 +28,7 @@ RegisterClipboardFormat
 SB_BOTTOM
 SetMenuInfo
 SetMenuItemInfo
+SetThreadDpiAwarenessContext
 TaskbarList
 TO_ADVANCEDTYPOGRAPHY
 VIRTUAL_KEY

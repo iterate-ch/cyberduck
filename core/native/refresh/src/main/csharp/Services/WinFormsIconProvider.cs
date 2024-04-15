@@ -55,63 +55,6 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             ? image
             : Get(protocol, protocol.icon(), size, "Icon");
 
-        public Image GetPath(Path path, int size)
-        {
-            string key = "path:" + (path.isDirectory() ? "folder" : path.getExtension());
-
-            Func<(string, Func<int, Image>)> overlayFactory = default;
-            if (path.getType().contains(AbstractPath.Type.decrypted))
-            {
-                overlayFactory = () => ("unlocked", (int size) => GetResource("unlockedbadge", size));
-            }
-            else if (path.isSymbolicLink())
-            {
-                overlayFactory = () => ("alias", (int size) => GetResource("aliasbadge", size));
-            }
-            else
-            {
-                var permission = path.attributes().getPermission();
-                if (path.isFile())
-                {
-                    return string.IsNullOrWhiteSpace(path.getExtension()) && permission.isExecutable()
-                        ? GetResource("executable", size)
-                        : GetFileIcon(path.getName(), false, size >= 32, false);
-                }
-                else if (path.isDirectory())
-                {
-                    if (Permission.EMPTY != permission)
-                    {
-                        if (!permission.isExecutable())
-                        {
-                            overlayFactory = () => ("privatefolder", (int size) => GetResource("privatefolderbadge", size));
-                        }
-                        else if (!permission.isReadable() && permission.isWritable())
-                        {
-                            overlayFactory = () => ("dropfolder", (int size) => GetResource("dropfolderbadge", size));
-                        }
-                        else if (!permission.isWritable() && permission.isReadable())
-                        {
-                            overlayFactory = () => ("readonlyfolder", (int size) => GetResource("readonlyfolderbadge", size));
-                        }
-                    }
-                }
-            }
-
-            (string Class, Func<int, Image> factory) = overlayFactory?.Invoke() ?? default;
-            if (IconCache.TryGetIcon(key, out Image image, Class))
-            {
-                return image;
-            }
-
-            var baseImage = GetFileIcon(path.getExtension(), path.isDirectory(), size >= 32, false);
-            if (factory is not null)
-            {
-                var overlayed = Overlay(baseImage, factory(size), size);
-                IconCache.CacheIcon(key, size, overlayed, Class);
-            }
-            return baseImage;
-        }
-
         public Image ResizeImageDangerous(Image image, int size) => new Bitmap(image, new Size(size, size));
 
         protected override Image Get(string name, int size)
@@ -152,9 +95,9 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return nearestFit;
         }
 
-        private static Image Overlay(Image original, Image overlay, int size)
+        protected override Image Overlay(Image original, Image overlay, int size)
         {
-            var surface = new Bitmap(original, new Size(size, size));
+            Bitmap surface = new(original, new Size(size, size));
             using var graphics = Graphics.FromImage(surface);
             graphics.DrawImage(overlay, graphics.ClipBounds);
             return surface;

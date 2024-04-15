@@ -20,6 +20,9 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
+using ch.cyberduck.ui.Model;
+using ch.cyberduck.ui.ViewModels;
+using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Refresh;
 using Ch.Cyberduck.Core.Refresh.Services;
@@ -72,20 +75,22 @@ namespace Ch.Cyberduck.Ui
                 x.For<ICreateSymlinkPromptView>().Use<CreateSymlinkPromptForm>();
                 x.For<IGotoPromptView>().Use<GotoPromptForm>();
                 x.For<IDuplicateFilePromptView>().Use<DuplicateFilePromptForm>();
-                x.For<ITransferView>().Use<TransferForm>();
-                x.For<IProgressView>().Use<TransferControl>();
                 x.For<ICommandView>().Use<CommandForm>();
                 x.For<IDonationController>().Use<DonationController>();
                 x.For<PeriodicProfilesUpdater>().Use(ctx => new PeriodicProfilesUpdater(ctx.GetInstance<ch.cyberduck.core.Controller>()));
 
                 x.ForSingletonOf<IIconProviderImageSource>().Use<CyberduckImageSource>();
 
+                x.ForConcreteSingleton<BandwidthProvider>();
+                x.ForConcreteSingleton<ConnectionProvider>();
                 x.ForConcreteSingleton<IconCache>();
-                x.ForConcreteSingleton<Win32IconProvider>();
                 x.ForConcreteSingleton<Images>();
                 x.ForConcreteSingleton<MetadataTemplateProvider>();
                 x.ForConcreteSingleton<ProfileListObserver>();
                 x.ForConcreteSingleton<PromptShareeWindow.Factory>();
+                x.ForConcreteSingleton<TransferController>();
+                x.ForConcreteSingleton<TransfersStore>();
+                x.ForConcreteSingleton<Win32IconProvider>();
                 x.ForConcreteSingleton<WinFormsIconProvider>();
                 x.ForConcreteSingleton<WpfIconProvider>();
 
@@ -99,11 +104,11 @@ namespace Ch.Cyberduck.Ui
                 x.Forward<ApplicationPreferences, Preferences>();
                 x.ForConcreteSingleton<AppRuntime>();
                 // StructureMap doesn't like multiple constructors
-                x.ForSingletonOf<IRuntime>().Use(() => new AppRuntime()); 
+                x.ForSingletonOf<IRuntime>().Use(() => new AppRuntime());
             });
         }
 
-        public static SmartInstance<T> ForConcreteSingleton<T>(this IRegistry registry) => registry.For<T>().Singleton().Add<T>();
+        public static SmartInstance<T> ForConcreteSingleton<T>(this IRegistry registry) => registry.For<T>().Singleton().Use<T>();
 
         public class SplatDependencyResolver : IDependencyResolver
         {

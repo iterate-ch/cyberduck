@@ -1,0 +1,373 @@
+﻿<Window x:Class="ch.cyberduck.ui.Views.TransfersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ch.cyberduck.ui.Views"
+        xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml;assembly=Cyberduck.Core.Refresh"
+        xmlns:viewmodels="clr-namespace:ch.cyberduck.ui.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:TransfersViewModel}"
+        mc:Ignorable="d"
+        Title="{xaml:Text Transfers,Table=Localizable}"
+        Height="400"
+        Width="585">
+    <Window.Resources>
+        <Style x:Key="ButtonImage"
+               TargetType="Image">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled"
+                         Value="False">
+                    <Setter Property="Opacity"
+                            Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <DockPanel Name="ToolBar"
+                   Background="Transparent"
+                   Margin="8,3"
+                   LastChildFill="False"
+                   DockPanel.Dock="Top"
+                   KeyboardNavigation.TabIndex="0"
+                   KeyboardNavigation.TabNavigation="Local">
+            <DockPanel.Resources>
+                <Style TargetType="Button"
+                       BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
+
+                <Style TargetType="Separator"
+                       BasedOn="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            </DockPanel.Resources>
+            <DockPanel.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{xaml:Text Remove,Table=Localizable}"
+                              IsChecked="{Binding ToolbarRemove}"
+                              StaysOpenOnClick="True"
+                              IsCheckable="True" />
+                    <MenuItem Header="{xaml:Text Trash,Table=Transfer}"
+                              IsChecked="{Binding ToolbarTrash}"
+                              StaysOpenOnClick="True"
+                              IsCheckable="True" />
+                    <MenuItem Header="{xaml:Text 'Clean Up',Table=Localizable}"
+                              IsChecked="{Binding ToolbarCleanup}"
+                              StaysOpenOnClick="True"
+                              IsCheckable="True" />
+                    <Separator />
+                    <MenuItem Header="{xaml:Text Resume,Table=Transfer}"
+                              IsChecked="{Binding ToolbarResume}"
+                              StaysOpenOnClick="True"
+                              IsCheckable="True" />
+                    <MenuItem Header="{xaml:Text Stop,Table=Localizable}"
+                              IsChecked="{Binding ToolbarStop}"
+                              StaysOpenOnClick="True"
+                              IsCheckable="True" />
+                    <MenuItem Header="{xaml:Text Reload,Table=Localizable}"
+                              IsChecked="{Binding ToolbarReload}"
+                              StaysOpenOnClick="True"
+                              IsCheckable="True" />
+                    <Separator />
+                    <MenuItem Header="{xaml:Text Open,Table=Localizable}"
+                              IsChecked="{Binding ToolbarOpen}"
+                              StaysOpenOnClick="True"
+                              IsCheckable="True" />
+                    <MenuItem Header="{xaml:Text Show,Table=Localizable}"
+                              IsChecked="{Binding ToolbarShow}"
+                              StaysOpenOnClick="True"
+                              IsCheckable="True" />
+                </ContextMenu>
+            </DockPanel.ContextMenu>
+
+            <StackPanel Orientation="Horizontal"
+                        DockPanel.Dock="Left"
+                        TextBlock.FontSize="10"
+                        TextBlock.TextAlignment="Center">
+                <Button Command="{Binding RemoveCommand}"
+                        Visibility="{Binding ToolbarRemove,Converter={StaticResource b2vis}}"
+                        Margin="3,0"
+                        AutomationProperties.LabeledBy="{Binding ElementName=RemoveButtonLabel}">
+                    <StackPanel>
+                        <Image Source="{xaml:Icon Clean,Size=24}"
+                               Height="24"
+                               Width="24"
+                               Style="{StaticResource ButtonImage}" />
+                        <TextBlock Name="RemoveButtonLabel"
+                                   Text="{xaml:Text Remove,Table=Localizable}" />
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{Binding TrashCommand}"
+                        Visibility="{Binding ToolbarTrash,Converter={StaticResource b2vis}}"
+                        Margin="3,0"
+                        AutomationProperties.LabeledBy="{Binding ElementName=TrashButtonLabel}">
+                    <StackPanel>
+                        <Image Source="{xaml:Icon Trash,Size=24}"
+                               Height="24"
+                               Width="24"
+                               Style="{StaticResource ButtonImage}" />
+                        <TextBlock Name="TrashButtonLabel"
+                                   Text="{xaml:Text Trash,Table=Transfer}" />
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{Binding CleanCommand}"
+                        Visibility="{Binding ToolbarCleanup,Converter={StaticResource b2vis}}"
+                        Margin="3,0"
+                        AutomationProperties.LabeledBy="{Binding ElementName=CleanAllButtonLabel}">
+                    <StackPanel>
+                        <Image Source="{xaml:Icon CleanAll,Size=24}"
+                               Height="24"
+                               Width="24"
+                               Style="{StaticResource ButtonImage}" />
+                        <TextBlock Name="CleanAllButtonLabel"
+                                   Text="{xaml:Text 'Clean Up',Table=Localizable}" />
+                    </StackPanel>
+                </Button>
+                <Separator Visibility="{Binding ToolbarSeparatorLeft,Converter={StaticResource b2vis}}" />
+                <Button Command="{Binding ResumeCommand}"
+                        Visibility="{Binding ToolbarResume,Converter={StaticResource b2vis}}"
+                        Margin="3,0"
+                        AutomationProperties.LabeledBy="{Binding ElementName=ResumeButtonLabel}">
+                    <StackPanel>
+                        <Image Source="{xaml:Icon Resume,Size=24}"
+                               Height="24"
+                               Width="24"
+                               Style="{StaticResource ButtonImage}" />
+                        <TextBlock Name="ResumeButtonLabel"
+                                   Text="{xaml:Text Resume,Table=Transfer}" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding StopCommand}"
+                        Visibility="{Binding ToolbarStop,Converter={StaticResource b2vis}}"
+                        Margin="3,0"
+                        AutomationProperties.LabeledBy="{Binding ElementName=StopButtonLabel}">
+                    <StackPanel>
+                        <Image Source="{xaml:Icon Stop,Size=24}"
+                               Height="24"
+                               Width="24"
+                               Style="{StaticResource ButtonImage}" />
+                        <TextBlock Name="StopButtonLabel"
+                                   Text="{xaml:Text Stop,Table=Localizable}" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ReloadCommand}"
+                        Visibility="{Binding ToolbarReload,Converter={StaticResource b2vis}}"
+                        Margin="3,0"
+                        AutomationProperties.LabeledBy="{Binding ElementName=ReloadButtonLabel}">
+                    <StackPanel>
+                        <Image Source="{xaml:Icon Reload,Size=24}"
+                               Height="24"
+                               Width="24"
+                               Style="{StaticResource ButtonImage}" />
+                        <TextBlock Name="ReloadButtonLabel"
+                                   Text="{xaml:Text Reload,Table=Localizable}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        DockPanel.Dock="Right">
+                <Grid Margin="3,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Image Source="{xaml:Icon Bandwidth,Size=16}"
+                           Height="16"
+                           Width="16"
+                           Grid.Column="0"
+                           Grid.Row="0" />
+                    <ComboBox ItemsSource="{Binding Bandwidth}"
+                              IsEnabled="{Binding BandwidthEnabled}"
+                              SelectedItem="{Binding SelectedBandwidth}"
+                              Style="{StaticResource WhiteComboBoxStyle}"
+                              DisplayMemberPath="Title"
+                              Margin="3,0"
+                              VerticalAlignment="Center"
+                              Width="80"
+                              Grid.Column="1"
+                              Grid.Row="0"
+                              AutomationProperties.LabeledBy="{Binding ElementName=BandwidthLabel}">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="IsEnabled"
+                                        Value="{Binding Enabled}" />
+                                <Setter Property="Visibility"
+                                        Value="{Binding Enabled, Converter={StaticResource b2vis}}" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                    <TextBlock Text="{xaml:Text Bandwidth,Table=Preferences}"
+                               Name="BandwidthLabel"
+                               FontSize="10"
+                               TextAlignment="Center"
+                               Grid.ColumnSpan="2"
+                               Grid.Row="1" />
+                </Grid>
+
+                <Grid Margin="3,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Image Source="{xaml:Icon Connection,Size=16}"
+                           Height="16"
+                           Width="16"
+                           Grid.Column="0"
+                           Grid.Row="0" />
+                    <ComboBox ItemsSource="{Binding Connections}"
+                              SelectedItem="{Binding SelectedConnectionLimit}"
+                              Style="{StaticResource WhiteComboBoxStyle}"
+                              DisplayMemberPath="Title"
+                              Width="80"
+                              VerticalAlignment="Center"
+                              Margin="3,0"
+                              Grid.Column="1"
+                              Grid.Row="0"
+                              AutomationProperties.LabeledBy="{Binding ElementName=ConnectionsLabel}" />
+                    <TextBlock Text="{xaml:Text Connections,Table=Transfer}"
+                               Name="ConnectionsLabel"
+                               FontSize="10"
+                               TextAlignment="Center"
+                               Grid.ColumnSpan="2"
+                               Grid.Row="1" />
+                </Grid>
+                <Separator Visibility="{Binding ToolbarSeparatorRight,Converter={StaticResource b2vis}}" />
+                <StackPanel Orientation="Horizontal"
+                            TextBlock.FontSize="10">
+                    <Button Command="{Binding OpenCommand}"
+                            Visibility="{Binding ToolbarOpen,Converter={StaticResource b2vis}}"
+                            Margin="3,0"
+                            AutomationProperties.LabeledBy="{Binding ElementName=OpenButtonLabel}">
+                        <StackPanel>
+                            <Image Source="{xaml:Icon Open,Size=24}"
+                                   Width="24"
+                                   Height="24"
+                                   Style="{StaticResource ButtonImage}" />
+                            <TextBlock Name="OpenButtonLabel"
+                                       Text="{xaml:Text Open,Table=Localizable}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowCommand}"
+                            Visibility="{Binding ToolbarShow,Converter={StaticResource b2vis}}"
+                            Margin="3,0"
+                            AutomationProperties.LabeledBy="{Binding ElementName=ShowButtonLabel}">
+                        <StackPanel>
+                            <Image Source="{xaml:Icon Reveal,Size=24}"
+                                   Height="24"
+                                   Width="24"
+                                   Style="{StaticResource ButtonImage}" />
+                            <TextBlock Text="{xaml:Text Show,Table=Localizable}"
+                                       Name="ShowButtonLabel"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+
+        <Border BorderThickness="0,1,0,0"
+                BorderBrush="{StaticResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                Background="{StaticResource {x:Static SystemColors.ControlBrushKey}}"
+                Padding="11,7"
+                DockPanel.Dock="Bottom"
+                KeyboardNavigation.TabIndex="2"
+                KeyboardNavigation.TabNavigation="Local">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Image Source="{Binding SelectedTransferFileIcon}"
+                       Height="24"
+                       Margin="3"
+                       Width="24"
+                       Grid.RowSpan="2" />
+
+                <TextBlock Name="UrlLabel"
+                           Text="{xaml:Text 'URL:',Table=Transfer}"
+                           Margin="3"
+                           TextAlignment="Right"
+                           VerticalAlignment="Center"
+                           Grid.Column="1"
+                           Grid.Row="0" />
+                <TextBlock Text="{Binding SelectedTransferUrl}"
+                           ToolTip="{Binding Text,RelativeSource={RelativeSource Self}}"
+                           Focusable="True"
+                           Margin="3"
+                           TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center"
+                           Grid.Column="2"
+                           Grid.Row="0"
+                           AutomationProperties.HelpText="{Binding Text,ElementName=UrlLabel}" />
+                <TextBlock Name="LocalFileLabel"
+                           Text="{xaml:Text 'Local File:',Table=Transfer}"
+                           Margin="3"
+                           TextAlignment="Right"
+                           VerticalAlignment="Center"
+                           Grid.Column="1"
+                           Grid.Row="1" />
+                <TextBlock Text="{Binding SelectedTransferLocal}"
+                           ToolTip="{Binding Text,RelativeSource={RelativeSource Self}}"
+                           Focusable="True"
+                           Margin="3"
+                           TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center"
+                           Grid.Column="2"
+                           Grid.Row="1"
+                           AutomationProperties.HelpText="{Binding Text,ElementName=LocalFileLabel}" />
+            </Grid>
+        </Border>
+
+        <ListBox ItemsSource="{Binding Transfers}"
+                 SelectedItem="{Binding SelectedTransfer}"
+                 IsSynchronizedWithCurrentItem="True"
+                 HorizontalContentAlignment="Stretch"
+                 SelectionMode="Extended"
+                 Background="Transparent"
+                 Grid.IsSharedSizeScope="True"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 KeyboardNavigation.TabIndex="1">
+            <ListBox.InputBindings>
+                <KeyBinding Gesture="Delete"
+                            Command="{Binding RemoveCommand}" />
+            </ListBox.InputBindings>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="AutomationProperties.HelpText"
+                            Value="{Binding Name}" />
+                    <Setter Property="AutomationProperties.ItemStatus"
+                            Value="{Binding ItemStatus}" />
+                    <Setter Property="AutomationProperties.Name"
+                            Value="{Binding Summary}" />
+                    <Setter Property="IsSelected"
+                            Value="{Binding IsSelected}" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <local:TransfersItem />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</Window>

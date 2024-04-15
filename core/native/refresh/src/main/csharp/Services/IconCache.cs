@@ -2,17 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Threading;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
     public class IconCache
     {
+        private static readonly CacheItemPolicy AutoEvictUnused = new()
+        {
+            SlidingExpiration = TimeSpan.FromSeconds(30),
+            RemovedCallback = OnCacheEvict,
+        };
+
         // DE0006: Non-generic collections shouldn't be used
         // Don't care here, as this basically comes down to maintaining two different platforms
         // (WPF/WinForms) within a single cache.
-        private readonly Dictionary<(object Key, string Classifier, bool Default, int Size), Hashtable> cache = new();
-
+        private readonly Dictionary<(object Key, string Classifier, bool Default, int Size), Hashtable> cache = [];
         private readonly ReaderWriterLockSlim writer = new(LockRecursionPolicy.SupportsRecursion);
 
         public void CacheIcon<T>(object key, int size, string classifier = default)
@@ -67,6 +73,15 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public ReaderWriterLockSlimExtensions.ReadLock ReadLock() => writer.UseReadLock();
 
+        public void Temporary(string key, string classifier = default)
+        {
+            var cacheKey = $"{key}{(classifier is { } v ? $"{{{v}}}" : "")}";
+            if (MemoryCache.Default.Get(cacheKey) is not EvictCacheItem)
+            {
+                MemoryCache.Default.Add(cacheKey, new EvictCacheItem(this, key, classifier), AutoEvictUnused);
+            }
+        }
+
         /// <summary>
         /// Returns image with default registered size.
         /// </summary>
@@ -106,5 +121,24 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         public ReaderWriterLockSlimExtensions.UpgradeableReadLock UpgradeableReadLock() => writer.UseUpgradeableReadLock();
 
         public ReaderWriterLockSlimExtensions.WriteLock WriteLock() => writer.UseWriteLock();
+
+        private static void OnCacheEvict(CacheEntryRemovedArguments arguments)
+        {
+            EvictCacheItem item = (EvictCacheItem)arguments.CacheItem.Value;
+            using (item.Cache.WriteLock())
+            {
+                var cacheKeys = item.Cache.cache.Keys
+                    .Where(x => Equals(item.Key, x.Key) && string.Equals(item.Classifier, x.Classifier))
+                    .ToArray();
+                foreach(var key in cacheKeys)
+                {
+                    var local = item.Cache.cache[key];
+                    item.Cache.cache.Remove(key);
+                    local.Clear();
+                }
+            }
+        }
+
+        private record class EvictCacheItem(IconCache Cache, string Key, string Classifier = null);
     }
 }

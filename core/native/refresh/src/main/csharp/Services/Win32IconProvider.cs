@@ -30,6 +30,8 @@ public class Win32IconProvider : IconProvider<Icon>
 
     protected override Icon NearestFit(IEnumerable<Icon> sources, int size, CacheIconCallback cacheCallback) => default;
 
+    protected override Icon Overlay(Icon baseImage, Icon overlay, int size) => throw new NotImplementedException();
+
     private Icon Get(object key, string path, string classifier)
     {
         if (IconCache.TryGetIcon(key, out Icon image, classifier))
