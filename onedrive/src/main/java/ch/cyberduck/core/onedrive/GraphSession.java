@@ -62,6 +62,8 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.apache.http.client.protocol.HttpClientContext.REDIRECT_LOCATIONS;
+
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     private static final Logger log = LogManager.getLogger(GraphSession.class);
 
@@ -135,7 +137,12 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
-                    super.process(request, context);
+                    if(context.getAttribute(REDIRECT_LOCATIONS) == null) {
+                        super.process(request, context);
+                    }
+                    else {
+                        request.removeHeaders(HttpHeaders.AUTHORIZATION);
+                    }
                 }
             }
         }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
