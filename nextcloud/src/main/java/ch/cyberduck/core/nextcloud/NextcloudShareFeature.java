@@ -93,7 +93,7 @@ public class NextcloudShareFeature implements Share {
                 return Collections.singleton(Sharee.world);
             default:
                 final Host bookmark = session.getHost();
-                final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
+                final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
                         bookmark.getHostname(),
                         SHARE_TYPE_USER // User
                 ));
