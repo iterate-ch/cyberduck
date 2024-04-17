@@ -56,7 +56,6 @@ import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
-import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -529,7 +528,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3SearchFeature(this, acl);
         }
         if(type == Scheduler.class) {
-            return (T) new DelegatingSchedulerFeature(new CloudFrontDistributionConfigurationPreloader(this));
+            if(new HostPreferences(host).getBoolean("s3.cloudfront.preload.enable")) {
+                return (T) new CloudFrontDistributionConfigurationPreloader(this);
+            }
         }
         if(type == Restore.class) {
             return (T) glacier;
