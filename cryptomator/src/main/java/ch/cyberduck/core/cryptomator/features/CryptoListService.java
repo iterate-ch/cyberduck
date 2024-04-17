@@ -46,6 +46,11 @@ public class CryptoListService implements ListService {
     }
 
     @Override
+    public void preflight(final Path directory) throws BackgroundException {
+        delegate.preflight(vault.encrypt(session, directory));
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoListService{");
         sb.append("delegate=").append(delegate);

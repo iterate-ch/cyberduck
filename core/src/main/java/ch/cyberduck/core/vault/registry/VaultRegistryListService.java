@@ -89,4 +89,9 @@ public class VaultRegistryListService implements ListService {
         sb.append('}');
         return sb.toString();
     }
+
+    @Override
+    public void preflight(final Path directory) throws BackgroundException {
+        proxy.preflight(directory);
+    }
 }
