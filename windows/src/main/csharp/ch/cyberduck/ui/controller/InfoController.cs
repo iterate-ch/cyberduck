@@ -108,6 +108,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 _files = value;
 
+                View.Filename = Name;
                 ConfigureToolbar();
                 ConfigureHelp();
                 InitTab(View.ActiveTab);
@@ -817,8 +818,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 DetachGeneralHandlers();
 
                 Path file = _files[0];
-                View.Filename = Name;
-
+                
                 View.FilenameEnabled = (1 == count &&
                                         ((Move)_controller.Session.getFeature(typeof(Move))).isSupported(file, file));
                 string path;
