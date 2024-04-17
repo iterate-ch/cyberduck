@@ -32,10 +32,10 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -201,17 +201,20 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftAttributesFinderFeature(this, regionService);
         }
         if(type == Scheduler.class) {
-            return (T) new DelegatingSchedulerFeature(
-                new SwiftAccountLoader(this) {
-                    @Override
-                    public Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                        final Map<Region, AccountInfo> result = super.operate(callback, container);
-                        // Only executed single time
-                        accounts.putAll(result);
-                        return result;
-                    }
-                },
-                new SwiftDistributionConfigurationLoader(this));
+            if(new HostPreferences(host).getBoolean("openstack.accounts.preload")) {
+                return (T) new DelegatingSchedulerFeature(
+                        new SwiftAccountLoader(this) {
+                            @Override
+                            public Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
+                                final Map<Region, AccountInfo> result = super.operate(callback, container);
+                                // Only executed single time
+                                accounts.putAll(result);
+                                return result;
+                            }
+                        },
+                        new SwiftDistributionConfigurationLoader(this));
+            }
+            return null;
         }
         return super._getFeature(type);
     }
