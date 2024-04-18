@@ -53,4 +53,9 @@ public class VaultFinderListService implements ListService {
             return delegate.list(cryptomator.encrypt(session, directory), new DecryptingListProgressListener(session, cryptomator, listener.reset()));
         }
     }
+
+    @Override
+    public void preflight(final Path directory) throws BackgroundException {
+        delegate.preflight(directory);
+    }
 }
