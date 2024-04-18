@@ -119,7 +119,14 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
             }
             return;
         }
-        if(!acl.get(new Acl.CanonicalUser()).contains(role)) {
+        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser());
+        if(null == roles) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Missing user in acl %s", acl));
+            }
+            return;
+        }
+        if(!roles.contains(role)) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, file, role));
             }
