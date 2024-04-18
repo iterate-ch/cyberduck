@@ -51,6 +51,7 @@
         <module>brick</module>
         <module>nextcloud</module>
         <module>owncloud</module>
+        <module>tus</module>
         <module>manta</module>
         <module>box</module>
         <module>ctera</module>

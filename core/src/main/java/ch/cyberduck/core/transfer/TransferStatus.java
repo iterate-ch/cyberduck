@@ -104,6 +104,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private long length = TransferStatus.UNKNOWN_LENGTH;
 
     /**
+     * Destination size may differ when encrypted or by some other transformation
+     */
+    private long destinationlength = TransferStatus.UNKNOWN_LENGTH;
+
+    /**
      * The transfer has been canceled by the user.
      */
     private final AtomicBoolean canceled
@@ -213,6 +218,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.hidden = copy.hidden;
         this.offset.set(copy.offset.get());
         this.length = copy.length;
+        this.destinationlength = copy.destinationlength;
         this.canceled.set(copy.canceled.get());
         this.complete.set(copy.complete.get());
         this.checksum = copy.checksum;
@@ -334,6 +340,22 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      */
     public TransferStatus withLength(final long bytes) {
         this.setLength(bytes);
+        return this;
+    }
+
+    public long getDestinationlength() {
+        if(UNKNOWN_LENGTH == destinationlength) {
+            return length;
+        }
+        return destinationlength;
+    }
+
+    public void setDestinationlength(final long destinationlength) {
+        this.destinationlength = destinationlength;
+    }
+
+    public TransferStatus withEncryptedlength(final long encryptedlength) {
+        this.destinationlength = encryptedlength;
         return this;
     }
 
