@@ -151,10 +151,20 @@ public class FinderLocal extends Local {
         return bookmark;
     }
 
+    /**
+     * Save bookmark reference for file in preferences
+     *
+     * @param data Security scoped bookmark to save for later retrieval of file reference or null to remove
+     */
     @Override
     public void setBookmark(final String data) {
         final String path = this.getAbbreviatedPath();
-        PreferencesFactory.get().setProperty(String.format("local.bookmark.%s", path), data);
+        if(null == data) {
+            PreferencesFactory.get().deleteProperty(String.format("local.bookmark.%s", path));
+        }
+        else {
+            PreferencesFactory.get().setProperty(String.format("local.bookmark.%s", path), data);
+        }
     }
 
     @Override
