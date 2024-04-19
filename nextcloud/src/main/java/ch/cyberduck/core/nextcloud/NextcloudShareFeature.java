@@ -155,7 +155,7 @@ public class NextcloudShareFeature implements Share {
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
                 bookmark.getHostname(),
                 URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
@@ -212,7 +212,7 @@ public class NextcloudShareFeature implements Share {
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares",
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares",
                 bookmark.getHostname()
         ));
         final Credentials password = callback.prompt(bookmark,
