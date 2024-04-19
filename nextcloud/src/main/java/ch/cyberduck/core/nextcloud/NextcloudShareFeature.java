@@ -157,7 +157,8 @@ public class NextcloudShareFeature implements Share {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
                 bookmark.getHostname(),
-                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
+                URIEncoder.encode(PathRelativizer.relativize(bookmark.getProtocol().getDefaultPath(),
+                        PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute()))),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 Sharee.world.equals(sharee) ? StringUtils.EMPTY : sharee.getIdentifier()
         ));
@@ -224,7 +225,8 @@ public class NextcloudShareFeature implements Share {
         }
         final HttpPost resource = new HttpPost(request.toString());
         resource.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format("{\"path\":\"%s\",\"shareType\":%d,\"permissions\":%d}",
-                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
+                URIEncoder.encode(PathRelativizer.relativize(bookmark.getProtocol().getDefaultPath(),
+                        PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute()))),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 SHARE_PERMISSIONS_CREATE // Create
         )).build());
