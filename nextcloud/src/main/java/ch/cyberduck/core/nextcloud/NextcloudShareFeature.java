@@ -216,7 +216,7 @@ public class NextcloudShareFeature implements Share {
                     final XmlMapper mapper = new XmlMapper();
                     final ocs value = mapper.readValue(entity.getContent(), ocs.class);
                     // Additional request, because permissions are ignored in POST
-                    final HttpPut put = new HttpPut(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares/%d",
+                    final HttpPut put = new HttpPut(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares/%s",
                             bookmark.getHostname(),
                             value.data.id
                     ));
@@ -298,7 +298,7 @@ public class NextcloudShareFeature implements Share {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
         private static final class data {
-            public int id;
+            public String id;
             public String url;
             public user[] users;
         }
