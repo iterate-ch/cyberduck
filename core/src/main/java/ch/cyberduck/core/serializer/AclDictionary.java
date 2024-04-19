@@ -37,10 +37,11 @@ public class AclDictionary<T> {
         final Acl acl = new Acl();
         final List<String> keys = dict.keys();
         for(String key : keys) {
+            final Acl.CanonicalUser user = new Acl.CanonicalUser(key);
+            acl.addAll(user);
             final List<Object> rolesObj = dict.listForKey(key);
             for(Object roleObj : rolesObj) {
-                final Acl.Role role = new Acl.RoleDictionary(deserializer).deserialize(roleObj);
-                acl.addAll(new Acl.CanonicalUser(key), role);
+                acl.get(user).add(new Acl.RoleDictionary(deserializer).deserialize(roleObj));
             }
         }
         return acl;
