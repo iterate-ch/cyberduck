@@ -42,7 +42,6 @@ import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
-import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
 import ch.cyberduck.core.nextcloud.NextcloudListService;
 import ch.cyberduck.core.nextcloud.NextcloudShareFeature;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
@@ -110,7 +109,7 @@ public class OwncloudSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Home.class) {
-            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new NextcloudHomeFeature(host));
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new OwncloudHomeFeature(host));
         }
         if(type == ListService.class) {
             return (T) new NextcloudListService(this);
