@@ -158,7 +158,7 @@ public class NextcloudShareFeature implements Share {
                 MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                 new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk()));
         if(password.isPasswordAuthentication()) {
-            request.append(String.format("&password=%s", password.getPassword()));
+            request.append(String.format("&password=%s", URIEncoder.encode(password.getPassword())));
         }
         final HttpPost resource = new HttpPost(request.toString());
         resource.setHeader("OCS-APIRequest", "true");
@@ -198,7 +198,7 @@ public class NextcloudShareFeature implements Share {
                 MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                 new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk()));
         if(password.isPasswordAuthentication()) {
-            request.append(String.format("?password=%s", password.getPassword()));
+            request.append(String.format("?password=%s", URIEncoder.encode(password.getPassword())));
         }
         final HttpPost resource = new HttpPost(request.toString());
         resource.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format("{\"path\":\"%s\",\"shareType\":%d,\"permissions\":%d}",
