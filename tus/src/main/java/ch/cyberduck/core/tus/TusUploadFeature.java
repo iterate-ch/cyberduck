@@ -96,7 +96,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             long remaining = status.getLength();
             final String uploadUrl;
             if(status.isAppend()) {
-                uploadUrl = preferences.getProperty(toUploadUrlPropertyKey(host, file));
+                uploadUrl = preferences.getProperty(toUploadUrlPropertyKey(host, file, status));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Resume upload to %s for %s from offset %d", uploadUrl, file, status.getOffset()));
                 }
@@ -136,7 +136,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Save upload URL %s for %s", uploadUrl, file));
                 }
-                preferences.setProperty(toUploadUrlPropertyKey(host, file), uploadUrl);
+                preferences.setProperty(toUploadUrlPropertyKey(host, file, status), uploadUrl);
             }
             while(remaining > 0) {
                 final long length = Math.min(preferences.getInteger("tus.chunk.size"), remaining);
@@ -149,7 +149,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             Interruptibles.awaitAll(chunks);
             // Mark parent status as complete
             status.setComplete();
-            preferences.deleteProperty(toUploadUrlPropertyKey(host, file));
+            preferences.deleteProperty(toUploadUrlPropertyKey(host, file, status));
             return null;
         }
         catch(HttpResponseException e) {
@@ -194,7 +194,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         // Determine the offset at which the upload should be continued
-        final String property = toUploadUrlPropertyKey(host, file);
+        final String property = toUploadUrlPropertyKey(host, file, status);
         final String uploadUrl = preferences.getProperty(property);
         if(StringUtils.isBlank(uploadUrl)) {
             if(log.isDebugEnabled()) {
@@ -237,9 +237,10 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     /**
      * Key to use in preferences to save upload URL for file
      */
-    private static String toUploadUrlPropertyKey(final Host host, final Path file) {
-        return String.format("tus.url.%s",
-                new DefaultUrlProvider(host).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl());
+    private static String toUploadUrlPropertyKey(final Host host, final Path file, final TransferStatus status) {
+        return String.format("tus.url.%s%s",
+                Base64.encodeBase64String(new DefaultUrlProvider(host).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl().getBytes(StandardCharsets.UTF_8)),
+                null == status.getChecksum() ? StringUtils.EMPTY : String.format(":%s", status.getChecksum().base64));
     }
 
     @Override
