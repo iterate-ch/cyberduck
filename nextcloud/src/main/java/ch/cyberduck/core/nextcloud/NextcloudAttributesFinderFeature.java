@@ -24,8 +24,11 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -37,6 +40,7 @@ import java.util.stream.Stream;
 import com.github.sardine.DavResource;
 
 public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature {
+    private static final Logger log = LogManager.getLogger(NextcloudAttributesFinderFeature.class);
 
     public static final String CUSTOM_NAMESPACE_PREFIX = "oc";
     public static final String CUSTOM_NAMESPACE_URI = "http://owncloud.org/ns";
@@ -121,10 +125,12 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
             }
             if(properties.containsKey(OC_CHECKSUMS_CUSTOM_NAMESPACE)) {
                 for(String v : StringUtils.split(properties.get(OC_CHECKSUMS_CUSTOM_NAMESPACE), StringUtils.SPACE)) {
-                    final String hash = StringUtils.lowerCase(StringUtils.split(v, ":")[1]);
-                    final Checksum checksum = Checksum.parse(StringUtils.lowerCase(StringUtils.split(v, ":")[1]));
-                    if(Checksum.NONE != checksum) {
-                        attributes.setChecksum(checksum);
+                    try {
+                        attributes.setChecksum(new Checksum(HashAlgorithm.valueOf(StringUtils.lowerCase(StringUtils.split(v, ":")[0])),
+                                StringUtils.lowerCase(StringUtils.split(v, ":")[1])));
+                    }
+                    catch(IllegalArgumentException e) {
+                        log.warn(String.format("Unsupported checksum %s", v));
                     }
                 }
             }
