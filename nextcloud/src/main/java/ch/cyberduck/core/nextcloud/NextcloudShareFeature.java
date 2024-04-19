@@ -130,7 +130,8 @@ public class NextcloudShareFeature implements Share {
                     ));
                 }
                 catch(HttpResponseException e) {
-                    throw new DefaultHttpResponseExceptionMappingService().map(e);
+                    log.warn(String.format("Failure %s retrieving sharees", e));
+                    return Collections.emptySet();
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
