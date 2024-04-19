@@ -927,6 +927,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.AlternatingRowBackground = PreferencesFactory.get().getBoolean("browser.alternatingRows");
             View.VerticalLines = PreferencesFactory.get().getBoolean("browser.verticalLines");
             View.HorizontalLines = PreferencesFactory.get().getBoolean("browser.horizontalLines");
+            View.DefaultProtocol = ProtocolFactory.get().forNameOrDefault(
+                PreferencesFactory.get().getProperty("connection.protocol.default"));
             PopulateEncodings();
             View.DefaultEncoding = PreferencesFactory.get().getProperty("browser.charset.encoding");
 
