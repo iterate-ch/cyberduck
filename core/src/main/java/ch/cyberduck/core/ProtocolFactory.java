@@ -234,31 +234,32 @@ public final class ProtocolFactory {
             There may be other, better matches in the stream
             Each state represents findFirst stream semantic, and overwrites the result of lower matches
              */
-            else if(state < 4 && StringUtils.equals(protocol.getIdentifier(), identifier)
+            else if(state < 5 && StringUtils.equals(protocol.getIdentifier(), identifier)
                     && StringUtils.equals(protocol.getProvider(), provider)) {
                 // Matching vendor string for third party profiles
                 match = protocol;
-                state = 4;
+                state = 5;
             }
-            else if(state < 3 && StringUtils.equals(protocol.getProvider(), identifier)) {
+            else if(state < 4 && StringUtils.equals(protocol.getProvider(), identifier)) {
                 // Matching vendor string usage in CLI
                 match = protocol;
-                state = 3;
+                state = 4;
             }
-            else if(state < 2 && StringUtils.equals(
+            else if(state < 3 && StringUtils.equals(
                     String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)) {
                 // Fallback for bug in 6.1
                 match = protocol;
-                state = 2;
+                state = 3;
             }
-            else if(state < 1 && protocol.isBundled() && StringUtils.equals(protocol.getIdentifier(), identifier)) {
+            else if(state < 2 && protocol.isBundled() && StringUtils.equals(protocol.getIdentifier(), identifier)) {
                 // Matching bundled first with identifier match
                 match = protocol;
-                state = 1;
+                state = 2;
             }
-            else if(null == match && StringUtils.equals(protocol.getType().name(), identifier)) {
+            else if(state < 1 && StringUtils.equals(protocol.getType().name(), identifier)) {
                 // Fallback used in forScheme
                 match = protocol;
+                state = 1;
             }
         }
         if(state == 0) {
