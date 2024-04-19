@@ -51,10 +51,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -109,14 +108,14 @@ public class NextcloudShareFeature implements Share {
                         Collections.singletonList(Sharee.world)
                 );
                 try {
-                    sharees.addAll(session.getClient().execute(resource, new OcsResponseHandler<List<Sharee>>() {
+                    sharees.addAll(session.getClient().execute(resource, new OcsResponseHandler<Set<Sharee>>() {
                                 @Override
-                                public List<Sharee> handleEntity(final HttpEntity entity) throws IOException {
+                                public Set<Sharee> handleEntity(final HttpEntity entity) throws IOException {
                                     final XmlMapper mapper = new XmlMapper();
                                     final ocs value = mapper.readValue(entity.getContent(), ocs.class);
                                     if(value.data != null) {
                                         if(value.data.users != null) {
-                                            final List<Sharee> sharees = new ArrayList<>();
+                                            final Set<Sharee> sharees = new HashSet<>();
                                             for(ocs.user user : value.data.users) {
                                                 final String id = user.value.shareWith;
                                                 final String label = String.format("%s (%s)", user.label, user.shareWithDisplayNameUnique);
@@ -125,7 +124,7 @@ public class NextcloudShareFeature implements Share {
                                             return sharees;
                                         }
                                     }
-                                    return Collections.emptyList();
+                                    return Collections.emptySet();
                                 }
                             }
                     ));
