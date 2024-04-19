@@ -37,7 +37,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -190,23 +189,21 @@ public class NextcloudShareFeature implements Share {
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares",
-                bookmark.getHostname()
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&permissions=%d",
+                bookmark.getHostname(),
+                URIEncoder.encode(PathRelativizer.relativize(bookmark.getProtocol().getDefaultPath(),
+                        PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute()))),
+                Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
+                SHARE_PERMISSIONS_CREATE
         ));
         final Credentials password = callback.prompt(bookmark,
                 LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                 MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                 new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk()));
         if(password.isPasswordAuthentication()) {
-            request.append(String.format("?password=%s", URIEncoder.encode(password.getPassword())));
+            request.append(String.format("&password=%s", URIEncoder.encode(password.getPassword())));
         }
         final HttpPost resource = new HttpPost(request.toString());
-        resource.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format("{\"path\":\"%s\",\"shareType\":%d,\"permissions\":%d}",
-                URIEncoder.encode(PathRelativizer.relativize(bookmark.getProtocol().getDefaultPath(),
-                        PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute()))),
-                Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
-                SHARE_PERMISSIONS_CREATE // Create
-        )).build());
         resource.setHeader("OCS-APIRequest", "true");
         resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
@@ -215,17 +212,17 @@ public class NextcloudShareFeature implements Share {
                 public DescriptiveUrl handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
                     final ocs value = mapper.readValue(entity.getContent(), ocs.class);
-                    // Additional request, because permissions are ignored in POST
-                    final HttpPut put = new HttpPut(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares/%s",
-                            bookmark.getHostname(),
-                            value.data.id
-                    ));
-                    put.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format(
-                            "{\"permissions\":\"%d\"}", SHARE_PERMISSIONS_CREATE)).build());
-                    put.setHeader("OCS-APIRequest", "true");
-                    put.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
-                    session.getClient().execute(put, new VoidResponseHandler());
                     if(null != value.data) {
+                        // Additional request, because permissions are ignored in POST
+                        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares/%s?permissions=%d",
+                                bookmark.getHostname(),
+                                value.data.id,
+                                SHARE_PERMISSIONS_CREATE
+                        ));
+                        final HttpPut put = new HttpPut(request.toString());
+                        put.setHeader("OCS-APIRequest", "true");
+                        put.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
+                        session.getClient().execute(put, new VoidResponseHandler());
                         if(null != value.data.url) {
                             return new DescriptiveUrl(URI.create(value.data.url), DescriptiveUrl.Type.http);
                         }
