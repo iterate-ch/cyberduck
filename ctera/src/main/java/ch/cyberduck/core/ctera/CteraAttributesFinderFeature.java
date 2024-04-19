@@ -51,12 +51,6 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
      * you can still delete it if you have been granted Delete Subfolders and Files on the parent folder.
      */
     public static final Acl.Role DELETEPERMISSION = new Acl.Role("deletepermission");
-    /**
-     * Create Files: Allows or denies creating files within the folder.
-     * Directories only.
-     * For future use, not used yet.
-     */
-    @Deprecated
     public static final Acl.Role CREATEFILEPERMISSION = new Acl.Role(WRITEPERMISSION.getName());
     /**
      * Create Folders: Allows or denies creating subfolders within the folder.

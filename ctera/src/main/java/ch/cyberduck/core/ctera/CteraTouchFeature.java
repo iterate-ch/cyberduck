@@ -27,6 +27,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEFILEPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
+
 public class CteraTouchFeature extends DAVTouchFeature {
 
     private static final Logger log = LogManager.getLogger(CteraTouchFeature.class);
@@ -40,7 +43,7 @@ public class CteraTouchFeature extends DAVTouchFeature {
         if(!validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
-        // no createfilespermission required for now
+        assumeRole(workdir, CREATEFILEPERMISSION);
     }
 
     public static boolean validate(final String filename) {
