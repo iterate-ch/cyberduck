@@ -41,8 +41,12 @@ import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.AbstractResponseHandler;
+import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -58,6 +62,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class NextcloudShareFeature implements Share {
+    private static final Logger log = LogManager.getLogger(NextcloudShareFeature.class);
 
     private final DAVSession session;
 
@@ -104,21 +109,7 @@ public class NextcloudShareFeature implements Share {
                         Collections.singletonList(Sharee.world)
                 );
                 try {
-                    sharees.addAll(session.getClient().execute(resource, new AbstractResponseHandler<List<Sharee>>() {
-                                @Override
-                                public List<Sharee> handleResponse(final HttpResponse response) throws IOException {
-                                    final StatusLine statusLine = response.getStatusLine();
-                                    final HttpEntity entity = response.getEntity();
-                                    if(statusLine.getStatusCode() >= 300) {
-                                        final StringAppender message = new StringAppender();
-                                        message.append(statusLine.getReasonPhrase());
-                                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
-                                        message.append(error.meta.message);
-                                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-                                    }
-                                    return super.handleResponse(response);
-                                }
-
+                    sharees.addAll(session.getClient().execute(resource, new OcsResponseHandler<List<Sharee>>() {
                                 @Override
                                 public List<Sharee> handleEntity(final HttpEntity entity) throws IOException {
                                     final XmlMapper mapper = new XmlMapper();
@@ -173,21 +164,7 @@ public class NextcloudShareFeature implements Share {
         resource.setHeader("OCS-APIRequest", "true");
         resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
-            return session.getClient().execute(resource, new AbstractResponseHandler<DescriptiveUrl>() {
-                @Override
-                public DescriptiveUrl handleResponse(final HttpResponse response) throws IOException {
-                    final StatusLine statusLine = response.getStatusLine();
-                    final HttpEntity entity = response.getEntity();
-                    if(statusLine.getStatusCode() >= 300) {
-                        final StringAppender message = new StringAppender();
-                        message.append(statusLine.getReasonPhrase());
-                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
-                        message.append(error.meta.message);
-                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-                    }
-                    return super.handleResponse(response);
-                }
-
+            return session.getClient().execute(resource, new OcsResponseHandler<DescriptiveUrl>() {
                 @Override
                 public DescriptiveUrl handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
@@ -233,21 +210,7 @@ public class NextcloudShareFeature implements Share {
         resource.setHeader("OCS-APIRequest", "true");
         resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
-            return session.getClient().execute(resource, new AbstractResponseHandler<DescriptiveUrl>() {
-                @Override
-                public DescriptiveUrl handleResponse(final HttpResponse response) throws IOException {
-                    final StatusLine statusLine = response.getStatusLine();
-                    final HttpEntity entity = response.getEntity();
-                    if(statusLine.getStatusCode() >= 300) {
-                        final StringAppender message = new StringAppender();
-                        message.append(statusLine.getReasonPhrase());
-                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
-                        message.append(error.meta.message);
-                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-                    }
-                    return super.handleResponse(response);
-                }
-
+            return session.getClient().execute(resource, new OcsResponseHandler<DescriptiveUrl>() {
                 @Override
                 public DescriptiveUrl handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
@@ -358,6 +321,33 @@ public class NextcloudShareFeature implements Share {
             public int shareType;
             public String shareWith;
             public String shareWithAdditionalInfo;
+        }
+    }
+
+    private abstract static class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
+        @Override
+        public R handleResponse(final HttpResponse response) throws IOException {
+            final StatusLine statusLine = response.getStatusLine();
+            EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+            if(statusLine.getStatusCode() >= 300) {
+                final StringAppender message = new StringAppender();
+                message.append(statusLine.getReasonPhrase());
+                final ocs error = new XmlMapper().readValue(response.getEntity().getContent(), ocs.class);
+                message.append(error.meta.message);
+                throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
+            }
+            final ocs error = new XmlMapper().readValue(response.getEntity().getContent(), ocs.class);
+            try {
+                if(Integer.parseInt(error.meta.statuscode) > 100) {
+                    final StringAppender message = new StringAppender();
+                    message.append(error.meta.message);
+                    throw new HttpResponseException(Integer.parseInt(error.meta.statuscode), message.toString());
+                }
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Failure parsing status code in response %s", error));
+            }
+            return super.handleResponse(response);
         }
     }
 }
