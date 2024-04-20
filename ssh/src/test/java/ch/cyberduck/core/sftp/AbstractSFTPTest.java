@@ -35,21 +35,30 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
+import org.apache.sshd.common.util.OsUtils;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.keyboard.DefaultKeyboardInteractiveAuthenticator;
 import org.apache.sshd.server.auth.password.PasswordAuthenticator;
 import org.apache.sshd.server.auth.pubkey.StaticPublickeyAuthenticator;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
+import org.apache.sshd.sftp.server.SftpFileSystemAccessor;
 import org.apache.sshd.sftp.server.SftpSubsystemFactory;
+import org.apache.sshd.sftp.server.SftpSubsystemProxy;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runners.Parameterized;
 
+import java.io.IOException;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.PublicKey;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.NavigableMap;
 import java.util.UUID;
 
 import static org.junit.Assert.fail;
@@ -97,7 +106,18 @@ public class AbstractSFTPTest {
             }
         });
         sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
-        sshServer.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
+        final SftpSubsystemFactory factory = new SftpSubsystemFactory();
+        factory.setFileSystemAccessor(new SftpFileSystemAccessor() {
+            @Override
+            public NavigableMap<String, Object> resolveReportedFileAttributes(final SftpSubsystemProxy subsystem, final Path file, final int flags, final NavigableMap<String, Object> attrs, final LinkOption... options) throws IOException {
+                final NavigableMap<String, Object> reported = SftpFileSystemAccessor.super.resolveReportedFileAttributes(subsystem, file, flags, attrs, options);
+                if(OsUtils.isWin32() && file.toFile().isDirectory()) {
+                    reported.put("Permissions", EnumSet.allOf(PosixFilePermission.class));
+                }
+                return reported;
+            }
+        });
+        sshServer.setSubsystemFactories(Collections.singletonList(factory));
         final Local directory = LocalFactory.get(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         directory.mkdir();
         sshServer.setFileSystemFactory(new VirtualFileSystemFactory(Paths.get(directory.getAbsolute())));
@@ -119,7 +139,7 @@ public class AbstractSFTPTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SFTPProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/SFTP.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/SFTP.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), 2202, new Credentials("test", "test"));
         session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -129,8 +149,8 @@ public class AbstractSFTPTest {
                 return null;
             }
         },
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
     }
 }
