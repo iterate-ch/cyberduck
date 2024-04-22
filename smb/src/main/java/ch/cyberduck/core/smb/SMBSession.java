@@ -117,6 +117,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             config.setBlockWhenExhausted(true);
             config.setMaxIdle(1);
             config.setMaxTotal(Integer.MAX_VALUE);
+            config.setTestOnBorrow(true);
             this.setConfig(config);
         }
     }
@@ -179,6 +180,26 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained lock for share %s", share));
             }
+        }
+
+        @Override
+        public boolean validateObject(final PooledObject<DiskShareWrapper> object) {
+            final DiskShareWrapper share = object.getObject();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Validate share %s", share));
+            }
+            final boolean connected = share.get().isConnected();
+            if(!connected) {
+                log.warn(String.format("Share %s not connected", share));
+                try {
+                    lock.unlock();
+                }
+                catch(IllegalMonitorStateException e) {
+                    // Not held by current thread
+                    log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                }
+            }
+            return connected;
         }
     }
 
