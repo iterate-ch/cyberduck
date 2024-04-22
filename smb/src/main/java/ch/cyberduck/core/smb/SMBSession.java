@@ -47,6 +47,7 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -207,6 +208,22 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                 }
             }
             return connected;
+        }
+
+        @Override
+        public void destroyObject(final PooledObject<DiskShareWrapper> object, final DestroyMode mode) throws Exception {
+            switch(mode) {
+                case ABANDONED:
+                    try {
+                        lock.unlock();
+                    }
+                    catch(IllegalMonitorStateException e) {
+                        // Not held by current thread
+                        log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                        throw new DefaultExceptionMappingService().map(e);
+                    }
+            }
+            super.destroyObject(object, mode);
         }
     }
 
