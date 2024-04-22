@@ -48,6 +48,7 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -119,6 +120,12 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             config.setMaxTotal(Integer.MAX_VALUE);
             config.setTestOnBorrow(true);
             this.setConfig(config);
+            this.setSwallowedExceptionListener(new SwallowedExceptionListener() {
+                @Override
+                public void onSwallowException(final Exception e) {
+                    log.warn(String.format("Ignore failure %s", e));
+                }
+            });
         }
     }
 
