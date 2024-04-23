@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
-import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -42,6 +41,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.*;
 
@@ -49,8 +56,8 @@ import static org.junit.Assert.*;
 public class MicrosoftIISDAVReadFeatureTest extends AbstractMicrosoftIISDAVTest {
 
     @Test
-    public void testReadMicrosoft() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+    public void testReadConcurrency() throws Exception {
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = local.getOutputStream(false);
@@ -61,18 +68,34 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractMicrosoftIISDAVTest 
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().withLength(content.length),
                 new DisabledConnectionCallback());
-        assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
-        assertEquals(content.length, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        final TransferStatus status = new TransferStatus();
-        status.setLength(-1L);
-        final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
-        assertNotNull(in);
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        new StreamCopier(status, status).transfer(in, buffer);
-        final byte[] reference = new byte[content.length];
-        System.arraycopy(content, 0, reference, 0, content.length);
-        assertArrayEquals(reference, buffer.toByteArray());
-        in.close();
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final ExecutorService service = Executors.newCachedThreadPool();
+        final BlockingQueue<Future<Void>> queue = new LinkedBlockingQueue<>();
+        final CompletionService<Void> completion = new ExecutorCompletionService<>(service, queue);
+        final int num = 5;
+        for(int i = 0; i < num; i++) {
+            completion.submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
+                    assertEquals(content.length, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
+                    final TransferStatus status = new TransferStatus();
+                    status.setLength(-1L);
+                    final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
+                    assertNotNull(in);
+                    final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+                    new StreamCopier(status, status).transfer(in, buffer);
+                    final byte[] reference = new byte[content.length];
+                    System.arraycopy(content, 0, reference, 0, content.length);
+                    assertArrayEquals(reference, buffer.toByteArray());
+                    in.close();
+                    return null;
+                }
+            });
+        }
+        for(int i = 0; i < num; i++) {
+            completion.take().get();
+        }
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
     }
 }
