@@ -70,7 +70,6 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Activate session %s", session));
         }
-        // Load vault to increment open count for pooled vault
         connect.check(session, new DisabledCancelCallback());
     }
 
