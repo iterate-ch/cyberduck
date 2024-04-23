@@ -35,7 +35,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -114,7 +113,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testNoAccessAcl() throws IOException {
+    public void testNoAccessAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
 
         // list parent folder to inspect attributes
@@ -140,7 +139,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testNoDeleteAcl() throws BackgroundException {
+    public void testNoDeleteAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "NoDelete", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
@@ -152,7 +151,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testReadOnlyAcl() throws BackgroundException {
+    public void testReadOnlyAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "ReadOnly", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
@@ -164,7 +163,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testReadWriteAcl() throws BackgroundException {
+    public void testReadWriteAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "ReadWrite", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
@@ -198,7 +197,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testWORMAcl() throws BackgroundException, IOException {
+    public void testWORMAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "WORM test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
@@ -218,7 +217,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testWORMNoRetentionAcl() throws BackgroundException, IOException {
+    public void testWORMNoRetentionAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "WORM-NoRetention(Delete allowed) (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();

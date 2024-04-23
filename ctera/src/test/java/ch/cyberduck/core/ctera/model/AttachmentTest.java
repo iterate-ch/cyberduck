@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AttachmentTest {
 
-    private final String LF = System.getProperty("line.separator");
+    private final String LF = System.lineSeparator();
 
     @Test
     public void testSerialize() throws JsonProcessingException {

@@ -18,7 +18,6 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -31,7 +30,7 @@ import java.util.EnumSet;
 public class CteraTouchFeatureTest extends AbstractCteraTest {
 
     @Test
-    public void testPreflightFileMissingCustomProps() throws BackgroundException {
+    public void testPreflightFileMissingCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         file.setAttributes(file.attributes().withAcl(Acl.EMPTY));
         new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
@@ -39,7 +38,7 @@ public class CteraTouchFeatureTest extends AbstractCteraTest {
 
 
     @Test
-    public void testPreflightFileAccessGrantedCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessGrantedCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
         // assert no fail

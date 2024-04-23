@@ -21,7 +21,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.when;
 @Category(IntegrationTest.class)
 public class CteraCopyFeatureTest extends AbstractCteraTest {
     @Test
-    public void testPreflightDirectoryMissingCustomProps() throws BackgroundException {
+    public void testPreflightDirectoryMissingCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         source.setAttributes(source.attributes().withAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -49,7 +48,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightFileMissingCustomProps() throws BackgroundException {
+    public void testPreflightFileMissingCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         source.setAttributes(source.attributes().withAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -58,7 +57,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightDirectoryAccessDeniedTargetNoCreatedirectoriesPermissionCustomProps() throws BackgroundException {
+    public void testPreflightDirectoryAccessDeniedTargetNoCreatedirectoriesPermissionCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -69,7 +68,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightDirectoryAccessDeniedTargetExistsNotWritablePermissionCustomProps() throws BackgroundException {
+    public void testPreflightDirectoryAccessDeniedTargetExistsNotWritablePermissionCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -83,7 +82,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightFileAccessDeniedTargetExistsNotWritableCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessDeniedTargetExistsNotWritableCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -98,7 +97,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightDirectoryAccessGrantedCustomProps() throws BackgroundException {
+    public void testPreflightDirectoryAccessGrantedCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -108,7 +107,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightFileAccessGrantedCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessGrantedCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

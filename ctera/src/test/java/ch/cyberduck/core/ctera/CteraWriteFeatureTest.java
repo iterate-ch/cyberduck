@@ -11,7 +11,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -121,21 +120,21 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
     }
 
     @Test
-    public void testPreflightFileMissingCustomProps() throws BackgroundException {
+    public void testPreflightFileMissingCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         file.setAttributes(file.attributes().withAcl(Acl.EMPTY));
         new CteraWriteFeature(session).preflight(file);
     }
 
     @Test
-    public void testPreflightFileAccessDeniedCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessDeniedCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         assertThrows(AccessDeniedException.class, () -> new CteraWriteFeature(session).preflight(file));
     }
 
     @Test
-    public void testPreflightFileAccessGrantedCustomProps() throws BackgroundException {
+    public void testPreflightFileAccessGrantedCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
         new CteraWriteFeature(session).preflight(file);

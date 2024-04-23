@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AttachDeviceResponseTest {
 
