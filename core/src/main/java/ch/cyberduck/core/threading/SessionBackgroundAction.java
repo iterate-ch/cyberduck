@@ -44,7 +44,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             = new StringBuffer();
 
     private static final String LINE_SEPARATOR
-            = System.getProperty("line.separator");
+            = System.lineSeparator();
 
     private final AlertCallback alert;
     private final ProgressListener progress;
