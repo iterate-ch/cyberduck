@@ -60,16 +60,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -113,6 +113,14 @@ public class DAVSession extends HttpSession<DAVClient> {
     protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
+        configuration.addInterceptorLast(new HttpResponseInterceptor() {
+            @Override
+            public void process(final HttpResponse response, final HttpContext context) {
+                if(response.containsHeader("Persistent-Auth")) {
+                    client.disablePreemptiveAuthentication();
+                }
+            }
+        });
         return configuration;
     }
 
@@ -139,27 +147,25 @@ public class DAVSession extends HttpSession<DAVClient> {
                 username = credentials.getUsername();
                 domain = new HostPreferences(host).getProperty("webdav.ntlm.domain");
             }
-            final CredentialsProvider provider = new BasicCredentialsProvider();
-            provider.setCredentials(
+            client.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
                     new NTCredentials(username, credentials.getPassword(),
                             preferences.getProperty("webdav.ntlm.workstation"), domain)
             );
-            provider.setCredentials(
+            client.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
                     new NTCredentials(username, credentials.getPassword(),
                             preferences.getProperty("webdav.ntlm.workstation"), domain)
             );
-            provider.setCredentials(
+            client.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
                     new UsernamePasswordCredentials(username, credentials.getPassword()));
-            provider.setCredentials(
+            client.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
                     new UsernamePasswordCredentials(username, credentials.getPassword()));
-            provider.setCredentials(
+            client.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
                     new UsernamePasswordCredentials(username, credentials.getPassword()));
-            client.setCredentials(provider);
             if(preferences.getBoolean("webdav.basic.preemptive")) {
                 switch(proxy.getType()) {
                     case DIRECT:
