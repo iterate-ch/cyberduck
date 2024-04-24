@@ -28,6 +28,7 @@ public enum TerminalAction {
     download,
     upload,
     copy,
+    move,
     synchronize,
     delete,
     mkdir,

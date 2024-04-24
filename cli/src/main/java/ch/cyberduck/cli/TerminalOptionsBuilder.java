@@ -50,6 +50,10 @@ public final class TerminalOptionsBuilder {
             .longOpt(TerminalAction.copy.name())
             .desc("Copy from origin server to target server")
             .hasArgs().numberOfArgs(2).argName("url> <url").build());
+        actionGroup.addOption(Option.builder()
+            .longOpt(TerminalAction.move.name())
+            .desc("Move or rename file on server")
+                .hasArgs().numberOfArgs(2).argName("url> <file").build());
         actionGroup.addOption(Option.builder("l")
             .longOpt(TerminalAction.list.name())
             .desc("List files in remote folder")

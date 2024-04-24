@@ -83,6 +83,7 @@ import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.DistributionPurgeWorker;
 import ch.cyberduck.core.worker.HomeFinderWorker;
 import ch.cyberduck.core.worker.LoadVaultWorker;
+import ch.cyberduck.core.worker.MoveWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
 
@@ -100,6 +101,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -329,6 +331,7 @@ public class Terminal {
                                 case edit:
                                 case download:
                                 case copy:
+                                case move:
                                 case synchronize:
                                 case delete:
                                     // We expect file on server to exist
@@ -362,18 +365,23 @@ public class Terminal {
             switch(action) {
                 case download:
                 case upload:
-                case synchronize:
-                    return this.transfer(login, new TerminalTransferFactory().create(input, host, remote,
-                                    new ArrayList<>(new SingleTransferItemFinder().find(input, action, remote))),
-                            source, SessionPool.DISCONNECTED);
-                case copy:
+                case synchronize: {
+                    final Transfer transfer = new TerminalTransferFactory().create(input, host, remote,
+                            new ArrayList<>(new SingleTransferItemFinder().find(input, action, remote)));
+                    return this.transfer(login, transfer, source, SessionPool.DISCONNECTED);
+                }
+                case copy: {
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     destination = SessionPoolFactory.create(connect, transcript, target,
                             new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
                             new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)), registry);
-                    return this.transfer(login, new CopyTransfer(
-                                    host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))).withCache(cache),
-                            source, destination);
+                    final CopyTransfer transfer = new CopyTransfer(host, target,
+                            Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1])));
+                    return this.transfer(login, transfer.withCache(cache), source, destination);
+                }
+                case move:
+                    final Path target = new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]);
+                    return this.move(source, remote, target);
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
                             String.format("Unknown transfer type %s", action.name()));
@@ -506,6 +514,18 @@ public class Terminal {
         return Exit.success;
     }
 
+    protected Exit move(final SessionPool session, final Path remote, final Path target) {
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(remote, target), session, cache, progress, new TerminalLoginCallback(reader));
+        final SessionBackgroundAction<Map<Path, Path>> action = new TerminalBackgroundAction<>(controller, session, worker);
+        try {
+            this.execute(action);
+        }
+        catch(TerminalBackgroundException e) {
+            return Exit.failure;
+        }
+        return Exit.success;
+    }
+
     protected Exit purge(final SessionPool session, final Path remote) {
         final DistributionPurgeWorker purge = new DistributionPurgeWorker(Collections.singletonList(remote),
                 new TerminalLoginCallback(reader), Distribution.DOWNLOAD, Distribution.WEBSITE_CDN, Distribution.CUSTOM);
@@ -606,7 +626,7 @@ public class Terminal {
         }
     }
 
-    private static final class TerminalBackgroundException extends BackgroundException {
+    public static final class TerminalBackgroundException extends BackgroundException {
         public TerminalBackgroundException(final Throwable cause) {
             super(cause);
         }
