@@ -37,20 +37,22 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.AbstractResponseHandler;
+import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -58,6 +60,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class NextcloudShareFeature implements Share {
+    private static final Logger log = LogManager.getLogger(NextcloudShareFeature.class);
 
     private final DAVSession session;
 
@@ -93,7 +96,7 @@ public class NextcloudShareFeature implements Share {
                 return Collections.singleton(Sharee.world);
             default:
                 final Host bookmark = session.getHost();
-                final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
+                final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
                         bookmark.getHostname(),
                         SHARE_TYPE_USER // User
                 ));
@@ -104,28 +107,14 @@ public class NextcloudShareFeature implements Share {
                         Collections.singletonList(Sharee.world)
                 );
                 try {
-                    sharees.addAll(session.getClient().execute(resource, new AbstractResponseHandler<List<Sharee>>() {
+                    sharees.addAll(session.getClient().execute(resource, new OcsResponseHandler<Set<Sharee>>() {
                                 @Override
-                                public List<Sharee> handleResponse(final HttpResponse response) throws IOException {
-                                    final StatusLine statusLine = response.getStatusLine();
-                                    final HttpEntity entity = response.getEntity();
-                                    if(statusLine.getStatusCode() >= 300) {
-                                        final StringAppender message = new StringAppender();
-                                        message.append(statusLine.getReasonPhrase());
-                                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
-                                        message.append(error.meta.message);
-                                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-                                    }
-                                    return super.handleResponse(response);
-                                }
-
-                                @Override
-                                public List<Sharee> handleEntity(final HttpEntity entity) throws IOException {
+                                public Set<Sharee> handleEntity(final HttpEntity entity) throws IOException {
                                     final XmlMapper mapper = new XmlMapper();
                                     final ocs value = mapper.readValue(entity.getContent(), ocs.class);
                                     if(value.data != null) {
                                         if(value.data.users != null) {
-                                            final List<Sharee> sharees = new ArrayList<>();
+                                            final Set<Sharee> sharees = new HashSet<>();
                                             for(ocs.user user : value.data.users) {
                                                 final String id = user.value.shareWith;
                                                 final String label = String.format("%s (%s)", user.label, user.shareWithDisplayNameUnique);
@@ -134,13 +123,14 @@ public class NextcloudShareFeature implements Share {
                                             return sharees;
                                         }
                                     }
-                                    return Collections.emptyList();
+                                    return Collections.emptySet();
                                 }
                             }
                     ));
                 }
                 catch(HttpResponseException e) {
-                    throw new DefaultHttpResponseExceptionMappingService().map(e);
+                    log.warn(String.format("Failure %s retrieving sharees", e));
+                    return Collections.emptySet();
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
@@ -155,9 +145,10 @@ public class NextcloudShareFeature implements Share {
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
                 bookmark.getHostname(),
-                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
+                URIEncoder.encode(PathRelativizer.relativize(bookmark.getProtocol().getDefaultPath(),
+                        PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute()))),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 Sharee.world.equals(sharee) ? StringUtils.EMPTY : sharee.getIdentifier()
         ));
@@ -166,27 +157,13 @@ public class NextcloudShareFeature implements Share {
                 MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                 new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk()));
         if(password.isPasswordAuthentication()) {
-            request.append(String.format("&password=%s", password.getPassword()));
+            request.append(String.format("&password=%s", URIEncoder.encode(password.getPassword())));
         }
         final HttpPost resource = new HttpPost(request.toString());
         resource.setHeader("OCS-APIRequest", "true");
         resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
-            return session.getClient().execute(resource, new AbstractResponseHandler<DescriptiveUrl>() {
-                @Override
-                public DescriptiveUrl handleResponse(final HttpResponse response) throws IOException {
-                    final StatusLine statusLine = response.getStatusLine();
-                    final HttpEntity entity = response.getEntity();
-                    if(statusLine.getStatusCode() >= 300) {
-                        final StringAppender message = new StringAppender();
-                        message.append(statusLine.getReasonPhrase());
-                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
-                        message.append(error.meta.message);
-                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-                    }
-                    return super.handleResponse(response);
-                }
-
+            return session.getClient().execute(resource, new OcsResponseHandler<DescriptiveUrl>() {
                 @Override
                 public DescriptiveUrl handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
@@ -212,55 +189,40 @@ public class NextcloudShareFeature implements Share {
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares",
-                bookmark.getHostname()
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&permissions=%d",
+                bookmark.getHostname(),
+                URIEncoder.encode(PathRelativizer.relativize(bookmark.getProtocol().getDefaultPath(),
+                        PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute()))),
+                Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
+                SHARE_PERMISSIONS_CREATE
         ));
         final Credentials password = callback.prompt(bookmark,
                 LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                 MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                 new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk()));
         if(password.isPasswordAuthentication()) {
-            request.append(String.format("?password=%s", password.getPassword()));
+            request.append(String.format("&password=%s", URIEncoder.encode(password.getPassword())));
         }
         final HttpPost resource = new HttpPost(request.toString());
-        resource.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format("{\"path\":\"%s\",\"shareType\":%d,\"permissions\":%d}",
-                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
-                Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
-                SHARE_PERMISSIONS_CREATE // Create
-        )).build());
         resource.setHeader("OCS-APIRequest", "true");
         resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
-            return session.getClient().execute(resource, new AbstractResponseHandler<DescriptiveUrl>() {
-                @Override
-                public DescriptiveUrl handleResponse(final HttpResponse response) throws IOException {
-                    final StatusLine statusLine = response.getStatusLine();
-                    final HttpEntity entity = response.getEntity();
-                    if(statusLine.getStatusCode() >= 300) {
-                        final StringAppender message = new StringAppender();
-                        message.append(statusLine.getReasonPhrase());
-                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
-                        message.append(error.meta.message);
-                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-                    }
-                    return super.handleResponse(response);
-                }
-
+            return session.getClient().execute(resource, new OcsResponseHandler<DescriptiveUrl>() {
                 @Override
                 public DescriptiveUrl handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
                     final ocs value = mapper.readValue(entity.getContent(), ocs.class);
-                    // Additional request, because permissions are ignored in POST
-                    final HttpPut put = new HttpPut(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares/%d",
-                            bookmark.getHostname(),
-                            value.data.id
-                    ));
-                    put.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format(
-                            "{\"permissions\":\"%d\"}", SHARE_PERMISSIONS_CREATE)).build());
-                    put.setHeader("OCS-APIRequest", "true");
-                    put.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
-                    session.getClient().execute(put, new VoidResponseHandler());
                     if(null != value.data) {
+                        // Additional request, because permissions are ignored in POST
+                        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares/%s?permissions=%d",
+                                bookmark.getHostname(),
+                                value.data.id,
+                                SHARE_PERMISSIONS_CREATE
+                        ));
+                        final HttpPut put = new HttpPut(request.toString());
+                        put.setHeader("OCS-APIRequest", "true");
+                        put.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
+                        session.getClient().execute(put, new VoidResponseHandler());
                         if(null != value.data.url) {
                             return new DescriptiveUrl(URI.create(value.data.url), DescriptiveUrl.Type.http);
                         }
@@ -333,7 +295,7 @@ public class NextcloudShareFeature implements Share {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
         private static final class data {
-            public int id;
+            public String id;
             public String url;
             public user[] users;
         }
@@ -356,6 +318,33 @@ public class NextcloudShareFeature implements Share {
             public int shareType;
             public String shareWith;
             public String shareWithAdditionalInfo;
+        }
+    }
+
+    private abstract static class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
+        @Override
+        public R handleResponse(final HttpResponse response) throws IOException {
+            final StatusLine statusLine = response.getStatusLine();
+            EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+            if(statusLine.getStatusCode() >= 300) {
+                final StringAppender message = new StringAppender();
+                message.append(statusLine.getReasonPhrase());
+                final ocs error = new XmlMapper().readValue(response.getEntity().getContent(), ocs.class);
+                message.append(error.meta.message);
+                throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
+            }
+            final ocs error = new XmlMapper().readValue(response.getEntity().getContent(), ocs.class);
+            try {
+                if(Integer.parseInt(error.meta.statuscode) > 100) {
+                    final StringAppender message = new StringAppender();
+                    message.append(error.meta.message);
+                    throw new HttpResponseException(Integer.parseInt(error.meta.statuscode), message.toString());
+                }
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Failure parsing status code in response %s", error));
+            }
+            return super.handleResponse(response);
         }
     }
 }

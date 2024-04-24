@@ -99,7 +99,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
             fail();
         }
         catch(AccessDeniedException e) {
-            assertEquals("Forbidden. Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
@@ -131,7 +131,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
             fail();
         }
         catch(AccessDeniedException e) {
-            assertEquals("Forbidden. You cannot share your root folder. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("You cannot share your root folder. Please contact your web hosting service provider for assistance.", e.getDetail());
         }
     }
 
@@ -163,7 +163,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
             fail();
         }
         catch(AccessDeniedException e) {
-            assertEquals("Forbidden. Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
