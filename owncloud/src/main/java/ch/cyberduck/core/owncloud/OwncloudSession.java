@@ -87,7 +87,8 @@ import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 public class OwncloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(OwncloudSession.class);
 
-    private OcsCapabilities capabilities = OcsCapabilities.none;
+    protected OcsCapabilities capabilities = OcsCapabilities.none;
+
     private OAuth2RequestInterceptor authorizationService;
 
     private final TusCapabilities capabilities = new TusCapabilities();

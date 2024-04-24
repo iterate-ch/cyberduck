@@ -62,7 +62,7 @@ import java.io.IOException;
 public class NextcloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(NextcloudSession.class);
 
-    private OcsCapabilities capabilities = OcsCapabilities.none;
+    protected OcsCapabilities capabilities = OcsCapabilities.none;
 
     public NextcloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
