@@ -158,7 +158,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                                             final UserUserPublicKey pubkey, final FileFileKeys fileKeys)
             throws InvalidFileKeyException, InvalidKeyPairException, InvalidPasswordException, CryptoSystemException, UnknownVersionException {
         final PlainFileKey plainFileKey = Crypto.decryptFileKey(
-                TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword());
+                TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword().toCharArray());
         return Crypto.encryptFileKey(
                 plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(pubkey.getPublicKeyContainer()));
     }

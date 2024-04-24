@@ -36,7 +36,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoUtils;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -74,7 +73,7 @@ public class TripleCryptEncryptingInputStreamTest {
         assertNotNull(fileKey.getTag());
         final TripleCryptDecryptingInputStream cryptInputStream = new TripleCryptDecryptingInputStream(is,
                 Crypto.createFileDecryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)),
-                CryptoUtils.stringToByteArray(fileKey.getTag()));
+                TripleCryptConverter.base64StringToByteArray(fileKey.getTag()));
         final byte[] compare = new byte[content.length];
         IOUtils.read(cryptInputStream, compare);
         assertArrayEquals(content, compare);
@@ -107,7 +106,7 @@ public class TripleCryptEncryptingInputStreamTest {
         assertNotNull(fileKey.getTag());
         final TripleCryptDecryptingInputStream cryptInputStream = new TripleCryptDecryptingInputStream(is,
                 Crypto.createFileDecryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)),
-                CryptoUtils.stringToByteArray(fileKey.getTag()));
+                TripleCryptConverter.base64StringToByteArray(fileKey.getTag()));
         final byte[] compare = new byte[content.length];
         IOUtils.read(cryptInputStream, compare);
         assertArrayEquals(content, compare);
@@ -139,7 +138,7 @@ public class TripleCryptEncryptingInputStreamTest {
         final FileKey fileKey = reader.readValue(status.getFilekey().array());
         final TripleCryptDecryptingInputStream cryptInputStream = new TripleCryptDecryptingInputStream(is,
                 Crypto.createFileDecryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)),
-                CryptoUtils.stringToByteArray(fileKey.getTag()));
+                TripleCryptConverter.base64StringToByteArray(fileKey.getTag()));
         final byte[] compare = new byte[content.length];
         IOUtils.read(cryptInputStream, compare);
         assertArrayEquals(content, compare);

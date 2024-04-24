@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.dracoon.sdk.crypto.CryptoUtils;
 import com.dracoon.sdk.crypto.FileEncryptionCipher;
 import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.model.EncryptedDataContainer;
@@ -119,7 +118,7 @@ public class TripleCryptEncryptingInputStream extends ProxyInputStream {
             final EncryptedDataContainer encContainer = cipher.doFinal();
             final byte[] content = encContainer.getContent();
             buffer = this.combine(buffer, ByteBuffer.wrap(content));
-            final String tag = CryptoUtils.byteArrayToString(encContainer.getTag());
+            final String tag = TripleCryptConverter.byteArrayToBase64String(encContainer.getTag());
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
             if(null == fileKey.getTag()) {

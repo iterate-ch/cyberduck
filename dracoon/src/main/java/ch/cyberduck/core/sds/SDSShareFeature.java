@@ -124,17 +124,17 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
                 final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
                 final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, bookmark, userKeyPair);
 
-                final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), passphrase.getPassword());
+                final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), passphrase.getPassword().toCharArray());
                 // encrypt file key with a new key pair
                 final UserKeyPair pair;
                 if(null == options.getPassword()) {
                     pair = Crypto.generateUserKeyPair(session.requiredKeyPairVersion(), callback.prompt(
                             bookmark, LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                             LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(session.getHost().getProtocol().disk())
-                    ).getPassword());
+                    ).getPassword().toCharArray());
                 }
                 else {
-                    pair = Crypto.generateUserKeyPair(session.requiredKeyPairVersion(), options.getPassword());
+                    pair = Crypto.generateUserKeyPair(session.requiredKeyPairVersion(), options.getPassword().toCharArray());
                 }
                 final EncryptedFileKey encryptedFileKey = Crypto.encryptFileKey(plainFileKey, pair.getUserPublicKey());
                 options.setPassword(null);

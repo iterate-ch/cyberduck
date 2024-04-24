@@ -21,6 +21,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.PrivateKeyContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicKeyContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 
+import com.dracoon.sdk.crypto.CryptoUtils;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
@@ -33,51 +34,68 @@ import com.dracoon.sdk.crypto.model.UserPublicKey;
  */
 public class TripleCryptConverter {
     public static FileKey toSwaggerFileKey(final EncryptedFileKey k) {
-        return new FileKey().key(k.getKey()).iv(k.getIv()).tag(k.getTag()).version(k.getVersion().getValue());
+        return new FileKey().key(byteArrayToBase64String(k.getKey())).iv(byteArrayToBase64String(k.getIv())).tag(byteArrayToBase64String(k.getTag())).version(k.getVersion().getValue());
     }
 
     public static FileKey toSwaggerFileKey(final PlainFileKey k) {
-        return new FileKey().key(k.getKey()).iv(k.getIv()).tag(k.getTag()).version(k.getVersion().getValue());
+        return new FileKey().key(byteArrayToBase64String(k.getKey())).iv(byteArrayToBase64String(k.getIv())).tag(byteArrayToBase64String(k.getTag())).version(k.getVersion().getValue());
     }
 
     public static UserKeyPairContainer toSwaggerUserKeyPairContainer(final UserKeyPair pair) {
         final UserKeyPairContainer container = new UserKeyPairContainer();
-        container.setPrivateKeyContainer(new PrivateKeyContainer().privateKey(pair.getUserPrivateKey().getPrivateKey()).version(pair.getUserPrivateKey().getVersion().getValue()));
-        container.setPublicKeyContainer(new PublicKeyContainer().publicKey(pair.getUserPublicKey().getPublicKey()).version(pair.getUserPublicKey().getVersion().getValue()));
+        container.setPrivateKeyContainer(new PrivateKeyContainer().privateKey(new String(pair.getUserPrivateKey().getPrivateKey())).version(pair.getUserPrivateKey().getVersion().getValue()));
+        container.setPublicKeyContainer(new PublicKeyContainer().publicKey(new String(pair.getUserPublicKey().getPublicKey())).version(pair.getUserPublicKey().getVersion().getValue()));
         return container;
     }
 
     public static UserKeyPair toCryptoUserKeyPair(final UserKeyPairContainer c) throws UnknownVersionException {
         final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.getByValue(c.getPrivateKeyContainer().getVersion()),
-                c.getPrivateKeyContainer().getPrivateKey());
+                c.getPrivateKeyContainer().getPrivateKey().toCharArray());
         final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.getByValue(c.getPublicKeyContainer().getVersion()),
-                c.getPublicKeyContainer().getPublicKey());
+                c.getPublicKeyContainer().getPublicKey().toCharArray());
         return new UserKeyPair(privateKey, publicKey);
     }
 
     public static UserPublicKey toCryptoUserPublicKey(final PublicKeyContainer c) throws UnknownVersionException {
-        return new UserPublicKey(UserKeyPair.Version.getByValue(c.getVersion()), c.getPublicKey());
+        return new UserPublicKey(UserKeyPair.Version.getByValue(c.getVersion()), c.getPublicKey().toCharArray());
     }
 
     public static UserPrivateKey toCryptoUserPrivateKey(final PrivateKeyContainer c) throws UnknownVersionException {
-        return new UserPrivateKey(UserKeyPair.Version.getByValue(c.getVersion()), c.getPrivateKey());
+        return new UserPrivateKey(UserKeyPair.Version.getByValue(c.getVersion()), c.getPrivateKey().toCharArray());
     }
 
     public static PlainFileKey toCryptoPlainFileKey(final FileKey key) throws UnknownVersionException {
-        final PlainFileKey fileKey = new PlainFileKey(PlainFileKey.Version.getByValue(key.getVersion()), key.getKey(), key.getIv());
-        fileKey.setTag(key.getTag());
+        final PlainFileKey fileKey = new PlainFileKey(PlainFileKey.Version.getByValue(key.getVersion()),
+                base64StringToByteArray(key.getKey()), base64StringToByteArray(key.getIv()));
+        fileKey.setTag(base64StringToByteArray(key.getTag()));
         return fileKey;
     }
 
     public static EncryptedFileKey toCryptoEncryptedFileKey(final FileKeyContainer key) throws UnknownVersionException {
-        final EncryptedFileKey fileKey = new EncryptedFileKey(EncryptedFileKey.Version.getByValue(key.getVersion()), key.getKey(), key.getIv());
-        fileKey.setTag(key.getTag());
+        final EncryptedFileKey fileKey = new EncryptedFileKey(EncryptedFileKey.Version.getByValue(key.getVersion()),
+                base64StringToByteArray(key.getKey()), base64StringToByteArray(key.getIv()));
+        fileKey.setTag(base64StringToByteArray(key.getTag()));
         return fileKey;
     }
 
     public static EncryptedFileKey toCryptoEncryptedFileKey(final FileKey k) throws UnknownVersionException {
-        final EncryptedFileKey key = new EncryptedFileKey(EncryptedFileKey.Version.getByValue(k.getVersion()), k.getKey(), k.getIv());
-        key.setTag(k.getTag());
+        final EncryptedFileKey key = new EncryptedFileKey(EncryptedFileKey.Version.getByValue(k.getVersion()),
+                base64StringToByteArray(k.getKey()), base64StringToByteArray(k.getIv()));
+        key.setTag(base64StringToByteArray(k.getTag()));
         return key;
+    }
+
+    public static String byteArrayToBase64String(final byte[] bytes) {
+        if(bytes == null) {
+            return null;
+        }
+        return CryptoUtils.byteArrayToBase64String(bytes);
+    }
+
+    public static byte[] base64StringToByteArray(final String s) {
+        if(s == null) {
+            return null;
+        }
+        return CryptoUtils.base64StringToByteArray(s);
     }
 }
