@@ -53,6 +53,8 @@ import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.ocs.OcsCapabilities;
+import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
@@ -66,8 +68,11 @@ import ch.cyberduck.core.tus.TusWriteFeature;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,6 +87,7 @@ import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 public class OwncloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(OwncloudSession.class);
 
+    private OcsCapabilities capabilities = OcsCapabilities.none;
     private OAuth2RequestInterceptor authorizationService;
 
     private final TusCapabilities capabilities = new TusCapabilities();
@@ -167,6 +173,11 @@ public class OwncloudSession extends DAVSession {
         if(type == AttributesFinder.class) {
             return (T) new OwncloudAttributesFinderFeature(this);
         }
+        if(type == Lock.class) {
+            if(!capabilities.locking) {
+                return null;
+            }
+        }
         if(type == Upload.class) {
             if(ArrayUtils.contains(capabilities.versions, TUS_VERSION) && capabilities.extensions.contains(TusCapabilities.Extension.creation)) {
                 return (T) new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(capabilities, client.getClient()), capabilities);
@@ -185,6 +196,9 @@ public class OwncloudSession extends DAVSession {
             return (T) new NextcloudShareFeature(this);
         }
         if(type == Versioning.class) {
+            if(!capabilities.versioning) {
+                return null;
+            }
             return (T) new OwncloudVersioningFeature(this);
         }
         if(type == Delete.class) {
