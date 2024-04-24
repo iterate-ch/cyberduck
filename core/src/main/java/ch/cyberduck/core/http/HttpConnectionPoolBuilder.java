@@ -53,10 +53,8 @@ import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.auth.SPNegoSchemeFactory;
 import org.apache.http.impl.client.AIMDBackoffManager;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
-import org.apache.http.impl.client.DefaultUserTokenHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.NoopUserTokenHandler;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
@@ -175,11 +173,8 @@ public class HttpConnectionPoolBuilder {
         else {
             configuration.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
         }
-        if(new HostPreferences(host).getBoolean("http.connections.tokenhandler.enable")) {
-            configuration.setUserTokenHandler(DefaultUserTokenHandler.INSTANCE);
-        }
-        else {
-            configuration.setUserTokenHandler(NoopUserTokenHandler.INSTANCE);
+        if(!new HostPreferences(host).getBoolean("http.connections.state.enable")) {
+            configuration.disableConnectionState();
         }
         // Retry handler for I/O failures
         configuration.setRetryHandler(new ExtendedHttpRequestRetryHandler(
