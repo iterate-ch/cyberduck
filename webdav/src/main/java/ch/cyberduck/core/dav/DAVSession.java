@@ -130,26 +130,35 @@ public class DAVSession extends HttpSession<DAVClient> {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
         if(host.getProtocol().isPasswordConfigurable()) {
+            final String domain, username;
+            if(credentials.getUsername().contains("\\")) {
+                domain = StringUtils.substringBefore(credentials.getUsername(), "\\");
+                username = StringUtils.substringAfter(credentials.getUsername(), "\\");
+            }
+            else {
+                username = credentials.getUsername();
+                domain = new HostPreferences(host).getProperty("webdav.ntlm.domain");
+            }
             final CredentialsProvider provider = new BasicCredentialsProvider();
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
-                    new NTCredentials(credentials.getUsername(), credentials.getPassword(),
-                            preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+                    new NTCredentials(username, credentials.getPassword(),
+                            preferences.getProperty("webdav.ntlm.workstation"), domain)
             );
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
-                    new NTCredentials(credentials.getUsername(), credentials.getPassword(),
-                            preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+                    new NTCredentials(username, credentials.getPassword(),
+                            preferences.getProperty("webdav.ntlm.workstation"), domain)
             );
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
-                    new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
+                    new UsernamePasswordCredentials(username, credentials.getPassword()));
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
-                    new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
+                    new UsernamePasswordCredentials(username, credentials.getPassword()));
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
-                    new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
+                    new UsernamePasswordCredentials(username, credentials.getPassword()));
             client.setCredentials(provider);
             if(preferences.getBoolean("webdav.basic.preemptive")) {
                 switch(proxy.getType()) {
