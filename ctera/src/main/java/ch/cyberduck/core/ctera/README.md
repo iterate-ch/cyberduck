@@ -14,7 +14,7 @@
 | touch      | Touch       |        | x    | (future: target's parent `createfilepermission`)                                                                                                | x         |
 | mkdir      | Directory   | x      |      | `createdirectoriespermission`                                                                                                                   | x         |
 | rm / rmdir | Delete      | x      | x    | `deletepermission`                                                                                                                              | x         |
-| exec       | --          |        | x    | `executepermission` on file                                                                                                                     | --        |
+| exec       | --          |        | x    | --                                                                                                                                              | --        |
 
 N.B. no need to check `readpermission` upon mv/cp.
 
@@ -25,12 +25,11 @@ N.B. no need to check `readpermission` upon mv/cp.
 | folder | file | NFS (POSIX) | affected local operations                                    | implementation (`NfsFileSystemDelegate.getattr`)                                                                                                           |
 |--------|------|-------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |        | x    | `r`         | read                                                         | `r` <-- `Read.preflight` <-- `readpermission`                                                                                                              |
-|        | x    | `x`         | exec                                                         | `x` <-- TRUE                                                                                                                                               |
 | x      |      | `rx`        | ls                                                           | `rx` <-- `Read.preflight` <-- `readpermission`                                                                                                             |                      
 |        | x    | `w`         | write, rm, mv source file, mv target file (if exists)        | `w` <--  (`Write.preflight` OR `Delete.preflight`  <-- (`writepermission` OR `deletepermission`)                                                           |
 | x      |      | `w`         | rmdir, mkdir, mv source folder, mv target folder (if exists) | `w` <--  (`Write.preflight` OR `Delete.preflight` OR `Directory.preflight`) <-- (`writepermission` OR `deletepermission` OR `createdirectoriespermission`) |
 
-N.B. we use `Read` feature for `readpermission` on directories, as well.
+N.B. `x` on files is only set for POSIX backends, i.e. never for CTERA.
 
 ### macOS File Provider Capabilities (=mode integrated)
 
@@ -56,13 +55,14 @@ N.B. File Provider sets the `x` flag on all folders independent of `NSFileProvid
 
 | folder | file | access right        | affected local operations                                           | implementation (`WindowsAcl.Translate`)                 |
 |--------|------|---------------------|---------------------------------------------------------------------|---------------------------------------------------------|
-|        | x    | `ReadAndExecute`    | read, exec, ls                                                      | `Read.preflight` <-- `readpermission`                   |                      
+|        | x    | `Read`              | read, exec                                                          | `Read.preflight` <-- `readpermission`                   |                      
 | x      |      | `ReadAndExecute`    | ls                                                                  | `ListService.preflight` <-- `readpermission`            |                      
 | x      | x    | `Write`             | write, touch, mkdir, mv source file, mv target file (if exists)     | `Write.preflight` <-- `writepermission`                 |
 | x      | x    | `Delete`            | rm, rmdir, mv source file/folder, mv target file/folder (if exists) | `Delete.preflight` <-- `deletepermission`               |
 | x      |      | `CreateDirectories` | mkdir, mv target folder (if target folder does not exist)           | `Directory.preflight` <-- `createdirectoriespermission` |
 
 N.B. `Write` on folders implies `CreateFiles` (=`WriteData` on files) and `CreateDirectories` (=`AppendData` on files).
+N.B. `x` on files is only set for POSIX backends, i.e. never for CTERA.
 
 #### Documentation
 
