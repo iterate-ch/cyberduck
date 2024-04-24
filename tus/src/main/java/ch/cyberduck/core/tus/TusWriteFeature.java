@@ -27,7 +27,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpEntity;
@@ -108,6 +108,6 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("No checksum support in capabilities %s", capabilities));
         }
-        return new DisabledChecksumCompute();
+        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }
 }
