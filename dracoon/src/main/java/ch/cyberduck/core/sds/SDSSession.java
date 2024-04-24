@@ -352,7 +352,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.debug(String.format("Attempt to unlock and migrate deprecated private key %s", keypair.getUserPrivateKey()));
                     }
                     deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
-                    final UserKeyPair newPair = Crypto.generateUserKeyPair(requiredKeyPairVersion, deprecatedCredentials.getPassword());
+                    final UserKeyPair newPair = Crypto.generateUserKeyPair(requiredKeyPairVersion, deprecatedCredentials.getPassword().toCharArray());
                     final CreateKeyPairRequest request = new CreateKeyPairRequest();
                     request.setPreviousPrivateKey(deprecated.getPrivateKeyContainer());
                     final UserKeyPairContainer userKeyPairContainer = TripleCryptConverter.toSwaggerUserKeyPairContainer(newPair);
@@ -372,7 +372,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Attempt to unlock private key with passphrase from deprecated private key %s", keypair.getUserPrivateKey()));
                 }
-                if(Crypto.checkUserKeyPair(keypair, deprecatedCredentials.getPassword())) {
+                if(Crypto.checkUserKeyPair(keypair, deprecatedCredentials.getPassword().toCharArray())) {
                     new TripleCryptKeyPair().unlock(prompt, host, keypair, deprecatedCredentials.getPassword());
                 }
                 else {

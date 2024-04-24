@@ -161,7 +161,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             }
         }
         // create legacy key pair
-        final UserKeyPair userKeyPair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, "eth[oh8uv4Eesij");
+        final UserKeyPair userKeyPair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, "eth[oh8uv4Eesij".toCharArray());
         userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(userKeyPair), null);
         List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(1, keyPairs.size());

@@ -132,7 +132,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         this.removeKeyPairs(userApi);
         session.resetUserKeyPairs();
         // create legacy and new crypto key pair
-        final UserKeyPair deprecated = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, "eth[oh8uv4Eesij");
+        final UserKeyPair deprecated = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, "eth[oh8uv4Eesij".toCharArray());
         userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(deprecated), null);
         List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(1, keyPairs.size());
