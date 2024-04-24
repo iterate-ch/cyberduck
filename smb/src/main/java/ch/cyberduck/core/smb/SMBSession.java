@@ -47,7 +47,9 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -118,7 +120,14 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             config.setBlockWhenExhausted(true);
             config.setMaxIdle(1);
             config.setMaxTotal(Integer.MAX_VALUE);
+            config.setTestOnBorrow(true);
             this.setConfig(config);
+            this.setSwallowedExceptionListener(new SwallowedExceptionListener() {
+                @Override
+                public void onSwallowException(final Exception e) {
+                    log.warn(String.format("Ignore failure %s", e));
+                }
+            });
         }
     }
 
@@ -180,6 +189,42 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained lock for share %s", share));
             }
+        }
+
+        @Override
+        public boolean validateObject(final PooledObject<DiskShareWrapper> object) {
+            final DiskShareWrapper share = object.getObject();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Validate share %s", share));
+            }
+            final boolean connected = share.get().isConnected();
+            if(!connected) {
+                log.warn(String.format("Share %s not connected", share));
+                try {
+                    lock.unlock();
+                }
+                catch(IllegalMonitorStateException e) {
+                    // Not held by current thread
+                    log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                }
+            }
+            return connected;
+        }
+
+        @Override
+        public void destroyObject(final PooledObject<DiskShareWrapper> object, final DestroyMode mode) throws Exception {
+            switch(mode) {
+                case ABANDONED:
+                    try {
+                        lock.unlock();
+                    }
+                    catch(IllegalMonitorStateException e) {
+                        // Not held by current thread
+                        log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                        throw new DefaultExceptionMappingService().map(e);
+                    }
+            }
+            super.destroyObject(object, mode);
         }
     }
 
