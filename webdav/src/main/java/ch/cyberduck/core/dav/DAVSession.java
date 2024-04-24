@@ -21,6 +21,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -127,27 +128,28 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final Credentials credentials = host.getCredentials();
         if(host.getProtocol().isPasswordConfigurable()) {
             final CredentialsProvider provider = new BasicCredentialsProvider();
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
-                    new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                    new NTCredentials(credentials.getUsername(), credentials.getPassword(),
                             preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
             );
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
-                    new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                    new NTCredentials(credentials.getUsername(), credentials.getPassword(),
                             preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
             );
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
-                    new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+                    new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
-                    new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+                    new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
             provider.setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
-                    new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+                    new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
             client.setCredentials(provider);
             if(preferences.getBoolean("webdav.basic.preemptive")) {
                 switch(proxy.getType()) {
@@ -168,7 +170,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 client.disablePreemptiveAuthentication();
             }
         }
-        if(host.getCredentials().isPassed()) {
+        if(credentials.isPassed()) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             }
