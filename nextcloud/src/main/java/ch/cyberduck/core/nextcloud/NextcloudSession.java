@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Timestamp;
@@ -63,10 +62,6 @@ public class NextcloudSession extends DAVSession {
         }
         if(type == AttributesFinder.class) {
             return (T) new NextcloudAttributesFinderFeature(this);
-        }
-        if(type == Lock.class) {
-            // https://github.com/nextcloud/server/issues/1308
-            return null;
         }
         if(type == Upload.class) {
             return (T) new HttpUploadFeature(new NextcloudWriteFeature(this));

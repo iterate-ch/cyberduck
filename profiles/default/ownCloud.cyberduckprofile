@@ -43,5 +43,9 @@
         <false/>
         <key>Certificate Configurable</key>
         <true/>
+        <key>Properties</key>
+        <array>
+            <string>webdav.lock.enable=false</string>
+        </array>
     </dict>
 </plist>
