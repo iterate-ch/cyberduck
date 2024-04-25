@@ -107,14 +107,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
-        configuration.addInterceptorLast(new HttpResponseInterceptor() {
-            @Override
-            public void process(final HttpResponse response, final HttpContext context) {
-                if(response.containsHeader("Persistent-Auth")) {
-                    client.disablePreemptiveAuthentication();
-                }
-            }
-        });
+        configuration.addInterceptorLast(new MicrosoftIISPersistentAuthResponseInterceptor());
         return configuration;
     }
 
@@ -398,6 +391,15 @@ public class DAVSession extends HttpSession<DAVClient> {
         public HttpCapabilities withIIS(final boolean iis) {
             this.iis = iis;
             return this;
+        }
+    }
+
+    private final class MicrosoftIISPersistentAuthResponseInterceptor implements HttpResponseInterceptor {
+        @Override
+        public void process(final HttpResponse response, final HttpContext context) {
+            if(response.containsHeader("Persistent-Auth")) {
+                client.disablePreemptiveAuthentication();
+            }
         }
     }
 }
