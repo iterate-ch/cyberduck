@@ -86,8 +86,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = LogManager.getLogger(DAVSession.class);
 
     private final RedirectCallback redirect;
-    private final PreferencesReader preferences
-            = new HostPreferences(host);
+    private final PreferencesReader preferences = new HostPreferences(host);
+    private final HttpCapabilities capabilities = new HttpCapabilities(preferences);
 
     private ListService list = new DAVListService(this, new DAVAttributesFinderFeature(this));
     private Read read = new DAVReadFeature(this);
@@ -321,10 +321,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) read;
         }
         if(type == Write.class) {
-            return (T) new DAVWriteFeature(this);
+            return (T) new DAVWriteFeature(this, capabilities.expectcontinue);
         }
         if(type == Upload.class) {
-            return (T) new DAVUploadFeature(this);
+            return (T) new DAVUploadFeature(new DAVWriteFeature(this, capabilities.expectcontinue));
         }
         if(type == Delete.class) {
             return (T) new DAVDeleteFeature(this);
@@ -383,6 +383,17 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
             this.validateResponse(response);
             return null;
+        }
+    }
+
+    private static final class HttpCapabilities {
+        /**
+         * Support for Expect: Continue
+         */
+        boolean expectcontinue;
+
+        public HttpCapabilities(final PreferencesReader preferences) {
+            this.expectcontinue = preferences.getBoolean("webdav.expect-continue");
         }
     }
 }
