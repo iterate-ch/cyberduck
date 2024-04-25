@@ -110,15 +110,17 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);
         }
-        final Checksum checksum = status.getChecksum();
-        if(Checksum.NONE != checksum) {
-            switch(checksum.algorithm) {
-                case sha256:
-                    if(!status.isSegment()) {
-                        object.addMetadata("x-amz-checksum-sha256", checksum.base64);
-                    }
-                    object.addMetadata("x-amz-content-sha256", checksum.hash);
-                    break;
+        if(new HostPreferences(session.getHost()).getBoolean("s3.upload.checksum.header")) {
+            final Checksum checksum = status.getChecksum();
+            if(Checksum.NONE != checksum) {
+                switch(checksum.algorithm) {
+                    case sha256:
+                        if(!status.isSegment()) {
+                            object.addMetadata("x-amz-checksum-sha256", checksum.base64);
+                        }
+                        object.addMetadata("x-amz-content-sha256", checksum.hash);
+                        break;
+                }
             }
         }
         if(StringUtils.isNotBlank(status.getStorageClass())) {
