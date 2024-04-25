@@ -83,5 +83,6 @@ public class MicrosoftIISDAVLockFeatureTest extends AbstractMicrosoftIISDAVTest 
         }
         new DAVLockFeature(session).unlock(test, lock);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
     }
 }
