@@ -70,7 +70,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final S3DefaultMultipartService multipartService;
+    private final S3MultipartService multipartService;
     private final S3AccessControlListFeature acl;
 
     private Write<StorageObject> writer;
