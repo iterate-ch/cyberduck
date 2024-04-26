@@ -98,6 +98,9 @@ public class ResumeFilter extends AbstractUploadFilter {
                 status.withRename((Path) null).withDisplayname((Path) null).setAppend(true);
                 status.setLength(status.getLength() - append.size);
                 status.setOffset(append.size);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Resume file %s at offset %d and remaining length %d", file, status.getOffset(), status.getLength()));
+                }
             }
         }
         return status;
