@@ -52,7 +52,9 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
 
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
-        final TusCapabilities capabilities = new TusCapabilities().withHashAlgorithm(HashAlgorithm.sha1);
+        final TusCapabilities capabilities = new TusCapabilities().withHashAlgorithm(HashAlgorithm.sha1)
+                .withExtension(TusCapabilities.Extension.checksum)
+                .withExtension(TusCapabilities.Extension.creation);
         final OcisUploadFeature feature = new OcisUploadFeature(session,
                 new TusWriteFeature(capabilities, session.getClient().getClient()), capabilities);
         final Path directory = new DAVDirectoryFeature(session).mkdir(new Path(new OwncloudHomeFeature(session.getHost()).find(),
