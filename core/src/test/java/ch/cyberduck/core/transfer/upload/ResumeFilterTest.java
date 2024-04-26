@@ -7,6 +7,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullUploadFeature;
 import ch.cyberduck.core.NullWriteFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -152,7 +153,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature(session)));
+                new UploadFilterOptions(host).withTemporary(true), new NullUploadFeature());
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertFalse(f.accept(t, new NullLocal("t") {
@@ -191,7 +192,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-            new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature(session)));
+                new UploadFilterOptions(host).withTemporary(true), new NullUploadFeature());
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {
@@ -235,7 +236,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-            new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature(session)));
+                new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature()));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {

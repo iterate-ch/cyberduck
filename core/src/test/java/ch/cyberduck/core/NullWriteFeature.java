@@ -15,17 +15,14 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.NullOutputStream;
 
-public class NullWriteFeature extends AppendWriteFeature<Void> {
-    public NullWriteFeature(final Session session) {
-        super();
-    }
+public class NullWriteFeature implements Write<Void> {
 
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {

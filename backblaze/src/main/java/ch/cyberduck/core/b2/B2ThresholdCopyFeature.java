@@ -47,7 +47,7 @@ public class B2ThresholdCopyFeature implements Copy {
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
-        if(new B2ThresholdUploadService(session, fileid, threshold).threshold(status.getLength())) {
+        if(new B2ThresholdUploadService(session, fileid, threshold).threshold(status)) {
             return new B2LargeCopyFeature(session, fileid).copy(source, target, status, callback, listener);
         }
         else {

@@ -62,7 +62,6 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new CteraListService(session).list(test.getParent(), new DisabledListProgressListener())
                 .find(new SimplePathPredicate(test)).attributes().getSize(), 0L);
-        assertEquals(content.length, new CteraWriteFeature(session).append(test, status.withRemote(new CteraAttributesFinderFeature(session).find(test))).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new CteraReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);

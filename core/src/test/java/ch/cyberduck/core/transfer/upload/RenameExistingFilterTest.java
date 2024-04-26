@@ -146,12 +146,6 @@ public class RenameExistingFilterTest {
                             fail();
                             return null;
                         }
-
-                        @Override
-                        public Append append(final Path file, final TransferStatus status) {
-                            fail();
-                            return new Append(false);
-                        }
                     };
                 }
                 return null;
@@ -227,12 +221,6 @@ public class RenameExistingFilterTest {
                         public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             fail();
                             return null;
-                        }
-
-                        @Override
-                        public Append append(final Path file, final TransferStatus status) {
-                            fail();
-                            return new Append(false);
                         }
                     };
                 }

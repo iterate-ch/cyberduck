@@ -234,7 +234,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
             status.setAppend(false);
             status.setLength(content.length);
 
-            assertEquals(0L, feature.append(test, status).size, 0L);
+            assertEquals(0L, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
             final StatusOutputStream<ObjStat> out = feature.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -259,8 +259,8 @@ public class IRODSWriteFeatureTest extends VaultTest {
             status.setLength(newcontent.length);
             status.setRemote(new IRODSAttributesFinderFeature(session).find(test));
 
-            assertTrue(feature.append(test, status).append);
-            assertEquals(content.length, feature.append(test, status).size, 0L);
+            assertTrue(new IRODSUploadFeature(session).append(test, status).append);
+            assertEquals(content.length, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
             final StatusOutputStream<ObjStat> out = feature.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -307,7 +307,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
         status.setLength(content.length);
 
         final IRODSWriteFeature feature = new IRODSWriteFeature(session);
-        assertEquals(0L, feature.append(test, status).size, 0L);
+        assertEquals(0L, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
         final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -333,8 +333,8 @@ public class IRODSWriteFeatureTest extends VaultTest {
         status_append.setLength(content_append.length);
         status_append.setRemote(new IRODSAttributesFinderFeature(session).find(test));
 
-        assertTrue(feature.append(test, status_append).append);
-        assertEquals(status.getLength(), feature.append(test, status_append).size, 0L);
+        assertTrue(new IRODSUploadFeature(session).append(test, status_append).append);
+        assertEquals(status.getLength(), new IRODSUploadFeature(session).append(test, status_append).offset, 0L);
 
         final OutputStream out_append = feature.write(test, status_append, new DisabledConnectionCallback());
         assertNotNull(out_append);

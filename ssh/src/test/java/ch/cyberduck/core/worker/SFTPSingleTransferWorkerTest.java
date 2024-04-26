@@ -15,12 +15,24 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -28,11 +40,9 @@ import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPDirectoryFeature;
-import ch.cyberduck.core.sftp.SFTPFindFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
-import ch.cyberduck.core.sftp.SFTPListService;
-import ch.cyberduck.core.sftp.SFTPReadFeature;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.sftp.SFTPUploadFeature;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -54,9 +64,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
@@ -67,7 +75,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertArrayEquals;
 
 @Category(IntegrationTest.class)
 public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
@@ -90,7 +97,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 }
                 return super.getProperty(key);
             }
-        };
+        }.withCredentials(new Credentials("test", "test"));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final SFTPWriteFeature write = new SFTPWriteFeature(this) {
                 @Override
@@ -123,8 +130,8 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Write.class) {
-                    return (T) write;
+                if(type == Upload.class) {
+                    return (T) new SFTPUploadFeature(write);
                 }
                 return super._getFeature(type);
             }
@@ -153,7 +160,6 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
     }
 
     @Test

@@ -53,11 +53,6 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     }
 
     @Override
-    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return writer.append(file, status);
-    }
-
-    @Override
     public EueWriteFeature.Chunk upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                         final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {

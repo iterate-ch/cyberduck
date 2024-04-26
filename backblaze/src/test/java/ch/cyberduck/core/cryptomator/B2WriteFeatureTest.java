@@ -88,7 +88,6 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new B2AttributesFinderFeature(session, fileid)).find(test);
         assertEquals(content.length, attributes.getSize());
-        assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);

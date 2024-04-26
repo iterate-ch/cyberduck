@@ -18,11 +18,12 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPAttributesFinderFeature;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ftp.FTPUploadFeature;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -130,8 +131,8 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                             @Override
                             @SuppressWarnings("unchecked")
                             public <T> T _getFeature(final Class<T> type) {
-                                if(type == Write.class) {
-                                    return (T) write;
+                                if(type == Upload.class) {
+                                    return (T) new FTPUploadFeature(write);
                                 }
                                 return super._getFeature(type);
                             }

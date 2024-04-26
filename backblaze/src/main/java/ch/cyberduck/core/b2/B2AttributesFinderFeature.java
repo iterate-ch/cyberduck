@@ -68,9 +68,9 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         }
         if(file.getType().contains(Path.Type.upload)) {
             // Pending large file upload
-            final Write.Append append = new B2WriteFeature(session, fileid).append(file, new TransferStatus());
+            final Write.Append append = new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid)).append(file, new TransferStatus());
             if(append.append) {
-                return new PathAttributes().withSize(append.size);
+                return new PathAttributes().withSize(append.offset);
             }
             return PathAttributes.EMPTY;
         }

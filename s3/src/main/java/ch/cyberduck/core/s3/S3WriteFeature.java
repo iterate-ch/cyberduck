@@ -22,9 +22,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -44,8 +42,6 @@ import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.MultipartPart;
-import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
@@ -54,7 +50,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -158,27 +153,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             object.setContentLength(status.getLength());
         }
         return object;
-    }
-
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        if(new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
-            try {
-                final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
-                final List<MultipartUpload> upload = multipartService.find(file);
-                if(!upload.isEmpty()) {
-                    Long size = 0L;
-                    for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
-                        size += completed.getSize();
-                    }
-                    return new Append(true).withStatus(status).withSize(size);
-                }
-            }
-            catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
-            }
-        }
-        return Write.override;
     }
 
     @Override

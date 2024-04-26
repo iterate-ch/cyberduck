@@ -50,7 +50,6 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         out.close();
         assertTrue(new SFTPFindFeature(session).find(test));
         assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.withRemote(new SFTPAttributesFinderFeature(session).find(test))).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -146,15 +145,6 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
     public void testWriteNotFound() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID(), EnumSet.of(Path.Type.file));
         new SFTPWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
-    }
-
-    @Test
-    public void testAppend() throws Exception {
-        final Path workdir = new SFTPHomeDirectoryService(session).find();
-        final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test, new TransferStatus());
-        assertTrue(new SFTPWriteFeature(session).append(test, new TransferStatus().exists(true).withLength(1L).withRemote(new SFTPAttributesFinderFeature(session).find(test))).append);
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

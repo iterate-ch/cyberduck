@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -75,9 +74,6 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertEquals(1620113107725L, attributes.getModificationDate());
             assertEquals(1695160857860L, attributes.getCreationDate());
             assertEquals(content.length, attributes.getSize());
-            final Write.Append append = new DriveWriteFeature(session, idProvider).append(test, status.withRemote(new DriveAttributesFinderFeature(session, idProvider).find(test)));
-            assertFalse(append.append);
-            assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
             final InputStream in = new DriveReadFeature(session, idProvider).read(test, new TransferStatus(), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);

@@ -69,6 +69,11 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private Write<StorageObject> writer;
 
+    public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer) {
+        this(session, regionService, writer, new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.size"),
+                new HostPreferences(session.getHost()).getInteger("openstack.upload.largeobject.concurrency"));
+    }
+
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
         this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), writer,
@@ -211,6 +216,26 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         segment, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
+    }
+
+    @Override
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        final List<Path> segments;
+        long size = 0L;
+        try {
+            segments = new SwiftObjectListService(session, regionService).list(new SwiftSegmentService(session, regionService)
+                    .getSegmentsDirectory(file), new DisabledListProgressListener()).toList();
+            if(segments.isEmpty()) {
+                return Write.override;
+            }
+        }
+        catch(NotfoundException e) {
+            return Write.override;
+        }
+        for(Path segment : segments) {
+            size += segment.attributes().getSize();
+        }
+        return new Write.Append(true).withStatus(status).withOffset(size);
     }
 
     @Override

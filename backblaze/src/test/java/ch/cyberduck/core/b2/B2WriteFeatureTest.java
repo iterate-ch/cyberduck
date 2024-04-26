@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
@@ -94,9 +93,6 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, attributes.getSize());
         assertEquals(new B2AttributesFinderFeature(session, fileid).toAttributes(response), attributes);
         assertEquals(bucketAttr, new B2AttributesFinderFeature(session, fileid).find(bucket));
-        final Write.Append append = new B2WriteFeature(session, fileid).append(test, status.withRemote(attributes));
-        assertFalse(append.append);
-        assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);

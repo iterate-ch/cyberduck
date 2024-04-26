@@ -89,7 +89,6 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DropboxFindFeature(session)).find(test));
         final PathAttributes pathAttributes = new CryptoListService(session, new DropboxListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, pathAttributes.getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new DropboxWriteFeature(session, 150000000L), cryptomator).append(test, status.withRemote(pathAttributes)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new DropboxReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);

@@ -42,8 +42,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DAVUploadFeatureTest extends AbstractDAVTest {
@@ -100,5 +99,13 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         assertArrayEquals(content, buffer);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
+    }
+
+    @Test
+    public void testAppendZeroBytes() throws Exception {
+        final DAVUploadFeature feature = new DAVUploadFeature(session);
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(feature.append(test, new TransferStatus().exists(true).withLength(0L).withRemote(new DAVAttributesFinderFeature(session).find(test))).append);
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -57,11 +57,6 @@ public class BoxThresholdUploadService implements Upload<File> {
     }
 
     @Override
-    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Write.Append(false).withStatus(status);
-    }
-
-    @Override
     public Upload<File> withWriter(final Write<File> writer) {
         this.writer = writer;
         return this;

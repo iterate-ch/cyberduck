@@ -243,6 +243,20 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     }
 
     @Override
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
+        final List<B2FileInfoResponse> upload = partService.find(file);
+        if(!upload.isEmpty()) {
+            Long size = 0L;
+            for(B2UploadPartResponse completed : partService.list(upload.iterator().next().getFileId())) {
+                size += completed.getContentLength();
+            }
+            return new Write.Append(true).withStatus(status).withOffset(size);
+        }
+        return new Write.Append(false).withStatus(status);
+    }
+
+    @Override
     public Upload<BaseB2Response> withWriter(final Write<BaseB2Response> writer) {
         this.writer = writer;
         return super.withWriter(writer);

@@ -223,7 +223,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                     throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
                 }
             });
-            return new Write.Append(true).withStatus(status).withSize(offset);
+            return new Write.Append(true).withStatus(status).withOffset(offset);
         }
         catch(HttpResponseException e) {
             preferences.deleteProperty(property);

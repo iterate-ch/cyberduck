@@ -57,21 +57,16 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return writer.append(file, status);
+        if(this.threshold(status)) {
+            return new S3MultipartUploadService(session, writer, acl).append(file, status);
+        }
+        return new Write.Append(false).withStatus(status);
     }
 
     @Override
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
-        if(status.getLength() >= threshold) {
-            if(!new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
-                log.warn("Multipart upload is disabled with property s3.upload.multipart");
-                // Disabled by user
-                if(status.getLength() < new HostPreferences(session.getHost()).getLong("s3.upload.multipart.required.threshold")) {
-                    // Use single upload service
-                    return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
-                }
-            }
+        if(this.threshold(status)) {
             try {
                 return new S3MultipartUploadService(session, writer, acl).upload(file, local, throttle, listener, status, prompt);
             }
@@ -89,6 +84,20 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         }
         // Use single upload service
         return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
+    }
+
+    protected boolean threshold(final TransferStatus status) {
+        if(status.getLength() >= threshold) {
+            if(!new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
+                log.warn("Multipart upload is disabled with property s3.upload.multipart");
+                // Disabled by user
+                if(status.getLength() < new HostPreferences(session.getHost()).getLong("s3.upload.multipart.required.threshold")) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

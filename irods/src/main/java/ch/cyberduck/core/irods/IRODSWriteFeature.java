@@ -20,8 +20,8 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -33,7 +33,7 @@ import org.irods.jargon.core.pub.domain.ObjStat;
 import org.irods.jargon.core.pub.io.IRODSFileOutputStream;
 import org.irods.jargon.core.pub.io.PackingIrodsOutputStream;
 
-public class IRODSWriteFeature extends AppendWriteFeature<ObjStat> {
+public class IRODSWriteFeature implements Write<ObjStat> {
 
     private final IRODSSession session;
 

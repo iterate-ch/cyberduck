@@ -403,13 +403,6 @@ public class UploadTransferTest {
                             fail();
                             return null;
                         }
-
-                        @Override
-                        public Append append(final Path file, final TransferStatus status) {
-                            fail();
-                            return new Write.Append(false);
-                        }
-
                     };
                 }
                 return super._getFeature(type);

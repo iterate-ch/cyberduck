@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -153,9 +152,6 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             out.close();
             assertNotNull(out.getStatus().getGeneration());
             assertTrue(new GoogleStorageFindFeature(session).find(test));
-            final Write.Append append = new GoogleStorageWriteFeature(session).append(test, status.withRemote(new GoogleStorageAttributesFinderFeature(session).find(test)));
-            assertFalse(append.append);
-            assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
             final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);

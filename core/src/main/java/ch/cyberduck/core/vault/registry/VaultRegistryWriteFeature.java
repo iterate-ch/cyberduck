@@ -46,11 +46,6 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Write.class, proxy).append(file, status);
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
         return proxy.features(file);
     }

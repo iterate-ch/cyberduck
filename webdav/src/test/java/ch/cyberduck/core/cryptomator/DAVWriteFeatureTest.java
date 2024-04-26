@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.dav.AbstractDAVTest;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVReadFeature;
+import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -86,8 +88,8 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         out.close();
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));
         assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, true), cryptomator).append(test, status
-                .withRemote(cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(test))).size, 0L);
+        assertEquals(content.length, new CryptoUploadFeature<>(session, new DAVUploadFeature(session), new DAVWriteFeature(session), cryptomator).append(test, status
+                .withRemote(cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(test))).offset, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);

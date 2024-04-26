@@ -264,6 +264,25 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     @Override
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
+            final List<MultipartUpload> upload = multipartService.find(file);
+            if(!upload.isEmpty()) {
+                Long size = 0L;
+                for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
+                    size += completed.getSize();
+                }
+                return new Write.Append(true).withStatus(status).withOffset(size);
+            }
+        }
+        catch(AccessDeniedException | InteroperabilityException e) {
+            log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+        }
+        return Write.override;
+    }
+
+    @Override
     public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
         this.writer = writer;
         return super.withWriter(writer);
