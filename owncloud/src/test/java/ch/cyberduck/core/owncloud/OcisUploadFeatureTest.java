@@ -62,24 +62,48 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final byte[] content = RandomUtils.nextBytes(11 * 1024 * 1024);
-        IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
-        status.setModified(1712047338787L);
-        status.setChecksum(new SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
-        status.setLength(content.length);
-        final BytecountStreamListener count = new BytecountStreamListener();
-        assertFalse(feature.append(file, status).append);
-        final Void response = feature.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
-        assertTrue(status.isComplete());
-        assertEquals(content.length, count.getSent());
-        assertTrue(status.isComplete());
-        assertEquals(PathAttributes.EMPTY, status.getResponse());
-        assertTrue(new DAVFindFeature(session).find(file));
-        assertEquals(content.length, new DAVAttributesFinderFeature(session).find(file).getSize());
-        final byte[] compare = new byte[content.length];
-        IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
-        assertArrayEquals(content, compare);
+        {
+            final byte[] content = RandomUtils.nextBytes(11 * 1024 * 1024);
+            IOUtils.write(content, local.getOutputStream(false));
+            final TransferStatus status = new TransferStatus();
+            status.setModified(1712047338787L);
+            status.setChecksum(new SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
+            status.setLength(content.length);
+            final BytecountStreamListener count = new BytecountStreamListener();
+            assertFalse(feature.append(file, status).append);
+            final Void response = feature.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+            assertTrue(status.isComplete());
+            assertEquals(content.length, count.getSent());
+            assertTrue(status.isComplete());
+            assertEquals(PathAttributes.EMPTY, status.getResponse());
+            assertTrue(new DAVFindFeature(session).find(file));
+            assertEquals(content.length, new DAVAttributesFinderFeature(session).find(file).getSize());
+            final byte[] compare = new byte[content.length];
+            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+            assertArrayEquals(content, compare);
+        }
+        {
+            // Replace
+            final byte[] content = RandomUtils.nextBytes(10 * 1024 * 1024);
+            IOUtils.write(content, local.getOutputStream(false));
+            final TransferStatus status = new TransferStatus();
+            status.setExists(true);
+            status.setModified(1714114714290L);
+            status.setChecksum(new SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
+            status.setLength(content.length);
+            final BytecountStreamListener count = new BytecountStreamListener();
+            assertFalse(feature.append(file, status).append);
+            final Void response = feature.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+            assertTrue(status.isComplete());
+            assertEquals(content.length, count.getSent());
+            assertTrue(status.isComplete());
+            assertEquals(PathAttributes.EMPTY, status.getResponse());
+            assertTrue(new DAVFindFeature(session).find(file));
+            assertEquals(content.length, new DAVAttributesFinderFeature(session).find(file).getSize());
+            final byte[] compare = new byte[content.length];
+            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+            assertArrayEquals(content, compare);
+        }
         new DAVDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
