@@ -63,11 +63,6 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
-    @Override
     public HttpResponseOutputStream<Metadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient(file));

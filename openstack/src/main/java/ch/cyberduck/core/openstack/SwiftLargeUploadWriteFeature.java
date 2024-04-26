@@ -84,11 +84,6 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
         };
     }
 
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
     private final class LargeUploadOutputStream extends OutputStream {
         private final List<StorageObject> completed = new ArrayList<>();
         private final Path file;

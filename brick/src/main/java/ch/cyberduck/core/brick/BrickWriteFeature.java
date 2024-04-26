@@ -177,9 +177,4 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.timestamp);
     }
-
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
 }

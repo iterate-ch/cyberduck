@@ -48,7 +48,9 @@ public interface Write<Reply> {
      * @param status Transfer status including attributes of file on server and size of file to write
      * @return True if can append to existing file
      */
-    Append append(Path file, TransferStatus status) throws BackgroundException;
+    default Append append(Path file, TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
+    }
 
     /**
      * @return True if supporting random writes with arbitrary offset and length

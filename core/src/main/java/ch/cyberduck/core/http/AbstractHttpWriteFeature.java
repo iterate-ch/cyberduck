@@ -25,7 +25,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
@@ -41,7 +40,7 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
-public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> implements HttpWriteFeature<R> {
+public abstract class AbstractHttpWriteFeature<R> implements HttpWriteFeature<R> {
     private static final Logger log = LogManager.getLogger(AbstractHttpWriteFeature.class);
 
     private final AttributesAdapter<R> attributes;

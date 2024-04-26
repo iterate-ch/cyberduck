@@ -82,11 +82,6 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
         return proxy.features(file);
     }

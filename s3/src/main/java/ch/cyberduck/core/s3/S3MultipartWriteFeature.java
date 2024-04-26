@@ -95,11 +95,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
-    @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }

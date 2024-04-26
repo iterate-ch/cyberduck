@@ -193,11 +193,6 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.timestamp);
     }
