@@ -28,6 +28,12 @@ import org.apache.logging.log4j.Logger;
 public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabilities> {
     private static final Logger log = LogManager.getLogger(TusCapabilitiesResponseHandler.class);
 
+    private final TusCapabilities capabilities;
+
+    public TusCapabilitiesResponseHandler(final TusCapabilities capabilities) {
+        this.capabilities = capabilities;
+    }
+
     @Override
     public TusCapabilities handleResponse(final HttpResponse response) {
         switch(response.getStatusLine().getStatusCode()) {
@@ -35,10 +41,9 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Support for resumable uploads detected from %s", response));
                 }
-                final TusCapabilities tus = new TusCapabilities();
                 if(response.containsHeader(TusCapabilities.TUS_HEADER_RESUMABLE)) {
                     if(response.containsHeader(TusCapabilities.TUS_HEADER_VERSION)) {
-                        tus.withVersions(StringUtils.split(response.getFirstHeader(TusCapabilities.TUS_HEADER_VERSION).getValue(), ","));
+                        capabilities.withVersions(StringUtils.split(response.getFirstHeader(TusCapabilities.TUS_HEADER_VERSION).getValue(), ","));
                     }
                 }
                 if(response.containsHeader(TusCapabilities.TUS_HEADER_EXTENSION)) {
@@ -50,7 +55,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                             if(response.containsHeader(TusCapabilities.TUS_HEADER_CHECKSUM_ALGORITHM)) {
                                 for(String algorithm : StringUtils.split(response.getFirstHeader(TusCapabilities.TUS_HEADER_CHECKSUM_ALGORITHM).getValue(), ",")) {
                                     try {
-                                        tus.withExtension(Extension.checksum).withHashAlgorithm(HashAlgorithm.valueOf(algorithm));
+                                        capabilities.withExtension(Extension.checksum).withHashAlgorithm(HashAlgorithm.valueOf(algorithm));
                                         break;
                                     }
                                     catch(IllegalArgumentException e) {
@@ -61,7 +66,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                         }
                         else {
                             try {
-                                tus.withExtension(Extension.valueOf(StringUtils.remove(extension, '-')));
+                                capabilities.withExtension(Extension.valueOf(StringUtils.remove(extension, '-')));
                             }
                             catch(IllegalArgumentException e) {
                                 log.warn(String.format("No support for extension %s", extension));
@@ -69,8 +74,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                         }
                     }
                 }
-                return tus;
         }
-        return TusCapabilities.none;
+        return capabilities;
     }
 }
