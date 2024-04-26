@@ -83,7 +83,8 @@ public class OwncloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(OwncloudSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
-    private HttpUploadFeature upload;
+
+    private final TusCapabilities capabilities = new TusCapabilities();
 
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -93,12 +94,6 @@ public class OwncloudSession extends DAVSession {
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final DAVClient client = super.connect(proxy, key, prompt, cancel);
         final TusCapabilities capabilities = this.options(client);
-        if(ArrayUtils.contains(capabilities.versions, TUS_VERSION) && capabilities.extensions.contains(TusCapabilities.Extension.creation)) {
-            upload = new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(capabilities, client.getClient()), capabilities);
-        }
-        else {
-            upload = new HttpUploadFeature(new NextcloudWriteFeature(this));
-        }
         return client;
     }
 
@@ -106,7 +101,7 @@ public class OwncloudSession extends DAVSession {
         final HttpOptions options = new HttpOptions(URIEncoder.encode(
                 new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find().getAbsolute()));
         try {
-            final TusCapabilities capabilities = client.execute(options, new TusCapabilitiesResponseHandler());
+            client.execute(options, new TusCapabilitiesResponseHandler(capabilities));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Determined capabilities %s", capabilities));
             }
@@ -173,7 +168,12 @@ public class OwncloudSession extends DAVSession {
             return (T) new OwncloudAttributesFinderFeature(this);
         }
         if(type == Upload.class) {
-            return (T) upload;
+            if(ArrayUtils.contains(capabilities.versions, TUS_VERSION) && capabilities.extensions.contains(TusCapabilities.Extension.creation)) {
+                return (T) new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(capabilities, client.getClient()), capabilities);
+            }
+            else {
+                return (T) new HttpUploadFeature(new NextcloudWriteFeature(this));
+            }
         }
         if(type == Write.class) {
             return (T) new NextcloudWriteFeature(this);
