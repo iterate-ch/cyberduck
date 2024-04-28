@@ -35,5 +35,17 @@ public class NextcloudHomeFeatureTest {
         assertNull(feature.find());
         bookmark.setCredentials(new Credentials("u"));
         assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/remote.php/dav/");
+        assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/remote.php/dav");
+        assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/remote.php/dav/d");
+        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/remote.php/dav/d/");
+        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/d");
+        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/d/");
+        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
     }
 }
