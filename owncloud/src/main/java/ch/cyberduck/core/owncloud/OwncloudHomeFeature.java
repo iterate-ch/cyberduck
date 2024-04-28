@@ -18,6 +18,7 @@ package ch.cyberduck.core.owncloud;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ public class OwncloudHomeFeature extends NextcloudHomeFeature {
     private final String root;
 
     public OwncloudHomeFeature(final Host bookmark) {
-        this(bookmark, "remote.php/dav");
+        this(bookmark, new HostPreferences(bookmark).getProperty("owncloud.root.default"));
     }
 
     public OwncloudHomeFeature(final Host bookmark, final String root) {

@@ -17,6 +17,7 @@ package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.AbstractHomeFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
     private final String root;
 
     public NextcloudHomeFeature(final Host bookmark) {
-        this(bookmark, "remote.php/dav");
+        this(bookmark, new HostPreferences(bookmark).getProperty("nextcloud.root.default"));
     }
 
     /**
