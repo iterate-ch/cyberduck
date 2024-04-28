@@ -17,7 +17,6 @@ package ch.cyberduck.core.ocs;
 
 import ch.cyberduck.core.ocs.model.Capabilities;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +44,18 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                     capabilities.withWebdav(value.data.capabilities.core.webdav);
                 }
                 if(value.data.capabilities.files != null) {
-                    capabilities.withLocking(StringUtils.isNotBlank(value.data.capabilities.files.locking));
+                    try {
+                        capabilities.withLocking(1 == Double.parseDouble(value.data.capabilities.files.locking));
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn(String.format("Failure parsing %s", value.data.capabilities.files.locking));
+                    }
+                    try {
+                        capabilities.withVersioning(1 == Integer.parseInt(value.data.capabilities.files.versioning));
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn(String.format("Failure parsing %s", value.data.capabilities.files.versioning));
+                    }
                 }
             }
         }
