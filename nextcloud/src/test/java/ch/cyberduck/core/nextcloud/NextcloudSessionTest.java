@@ -20,7 +20,8 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class NextcloudSessionTest extends AbstractNextcloudTest {
@@ -29,6 +30,6 @@ public class NextcloudSessionTest extends AbstractNextcloudTest {
     public void testCapabilities() {
         assertNotNull(session.ocs.webdav);
         assertTrue(session.ocs.versioning);
-        assertFalse(session.ocs.locking);
+        assertTrue(session.ocs.locking);
     }
 }
