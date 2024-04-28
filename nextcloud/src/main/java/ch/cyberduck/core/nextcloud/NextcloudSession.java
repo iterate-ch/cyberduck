@@ -62,7 +62,7 @@ import java.io.IOException;
 public class NextcloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(NextcloudSession.class);
 
-    protected OcsCapabilities capabilities = OcsCapabilities.none;
+    protected final OcsCapabilities capabilities = new OcsCapabilities();
 
     public NextcloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -70,7 +70,12 @@ public class NextcloudSession extends DAVSession {
 
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final DAVClient client = super.connect(proxy, key, prompt, cancel);
+        return super.connect(proxy, key, prompt, cancel);
+    }
+
+    @Override
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        super.login(proxy, prompt, cancel);
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/cloud/capabilities",
                 host.getHostname()
         ));
@@ -78,7 +83,7 @@ public class NextcloudSession extends DAVSession {
         resource.setHeader("OCS-APIRequest", "true");
         resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
-            capabilities = client.execute(resource, new OcsCapabilitiesResponseHandler());
+            client.execute(resource, new OcsCapabilitiesResponseHandler(capabilities));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Determined OCS capabilities %s", capabilities));
             }
@@ -89,7 +94,6 @@ public class NextcloudSession extends DAVSession {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        return client;
     }
 
     @Override

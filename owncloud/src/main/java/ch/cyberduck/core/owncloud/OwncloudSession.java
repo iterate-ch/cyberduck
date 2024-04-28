@@ -87,7 +87,7 @@ import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 public class OwncloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(OwncloudSession.class);
 
-    protected OcsCapabilities capabilities = OcsCapabilities.none;
+    protected OcsCapabilities capabilities = new OcsCapabilities();
 
     private OAuth2RequestInterceptor authorizationService;
 
@@ -100,7 +100,17 @@ public class OwncloudSession extends DAVSession {
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final DAVClient client = super.connect(proxy, key, prompt, cancel);
+<<<<<<< HEAD
         final TusCapabilities capabilities = this.options(client);
+=======
+        final TusCapabilities tus = this.options(client);
+        if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
+            upload = new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(tus, client.getClient()), tus);
+        }
+        else {
+            upload = new HttpUploadFeature(new NextcloudWriteFeature(this));
+        }
+>>>>>>> 5a7a269d5c (OCS request must be authenticated.)
         return client;
     }
 
@@ -154,6 +164,24 @@ public class OwncloudSession extends DAVSession {
             }
         }
         super.login(proxy, prompt, cancel);
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/cloud/capabilities",
+                host.getHostname()
+        ));
+        final HttpGet resource = new HttpGet(request.toString());
+        resource.setHeader("OCS-APIRequest", "true");
+        resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
+        try {
+            client.execute(resource, new OcsCapabilitiesResponseHandler(capabilities));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Determined OCS capabilities %s", capabilities));
+            }
+        }
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override

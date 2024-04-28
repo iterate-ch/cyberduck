@@ -26,9 +26,14 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabilities> {
 
+    private final OcsCapabilities capabilities;
+
+    public OcsCapabilitiesResponseHandler(final OcsCapabilities capabilities) {
+        this.capabilities = capabilities;
+    }
+
     @Override
     public OcsCapabilities handleEntity(final HttpEntity entity) throws IOException {
-        final OcsCapabilities capabilities = new OcsCapabilities();
         final XmlMapper mapper = new XmlMapper();
         final Capabilities value = mapper.readValue(entity.getContent(), Capabilities.class);
         if(value.data != null) {
