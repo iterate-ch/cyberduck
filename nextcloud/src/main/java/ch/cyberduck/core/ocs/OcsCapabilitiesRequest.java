@@ -1,4 +1,4 @@
-package ch.cyberduck.core.nextcloud;
+package ch.cyberduck.core.ocs;
 
 /*
  * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
@@ -15,20 +15,19 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.Host;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.ContentType;
 
-import static org.junit.Assert.*;
+public class OcsCapabilitiesRequest extends HttpGet {
 
-@Category(IntegrationTest.class)
-public class NextcloudSessionTest extends AbstractNextcloudTest {
-
-    @Test
-    public void testCapabilities() {
-        assertNotNull(session.ocs.webdav);
-        assertTrue(session.ocs.versioning);
-        assertFalse(session.ocs.locking);
+    public OcsCapabilitiesRequest(final Host host) {
+        super(new StringBuilder(String.format("https://%s/ocs/v1.php/cloud/capabilities",
+                host.getHostname()
+        )).toString());
+        this.setHeader("OCS-APIRequest", "true");
+        this.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
     }
 }

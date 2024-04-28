@@ -22,7 +22,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
@@ -34,6 +33,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Timestamp;
@@ -54,6 +54,7 @@ import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.ocs.OcsCapabilities;
+import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -63,16 +64,13 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.tus.TusCapabilities;
+import ch.cyberduck.core.tus.TusCapabilitiesRequest;
 import ch.cyberduck.core.tus.TusCapabilitiesResponseHandler;
 import ch.cyberduck.core.tus.TusWriteFeature;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -87,11 +85,10 @@ import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 public class OwncloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(OwncloudSession.class);
 
-    protected OcsCapabilities capabilities = new OcsCapabilities();
-
     private OAuth2RequestInterceptor authorizationService;
 
-    private final TusCapabilities capabilities = new TusCapabilities();
+    protected final TusCapabilities tus = new TusCapabilities();
+    protected final OcsCapabilities ocs = new OcsCapabilities();
 
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -100,29 +97,8 @@ public class OwncloudSession extends DAVSession {
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final DAVClient client = super.connect(proxy, key, prompt, cancel);
-<<<<<<< HEAD
-        final TusCapabilities capabilities = this.options(client);
-=======
-        final TusCapabilities tus = this.options(client);
-        if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
-            upload = new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(tus, client.getClient()), tus);
-        }
-        else {
-            upload = new HttpUploadFeature(new NextcloudWriteFeature(this));
-        }
->>>>>>> 5a7a269d5c (OCS request must be authenticated.)
-        return client;
-    }
-
-    private TusCapabilities options(final DAVClient client) throws BackgroundException {
-        final HttpOptions options = new HttpOptions(URIEncoder.encode(
-                new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find().getAbsolute()));
         try {
-            client.execute(options, new TusCapabilitiesResponseHandler(capabilities));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Determined capabilities %s", capabilities));
-            }
-            return capabilities;
+            client.execute(new TusCapabilitiesRequest(host), new TusCapabilitiesResponseHandler(tus));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -130,6 +106,7 @@ public class OwncloudSession extends DAVSession {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        return client;
     }
 
     @Override
@@ -164,17 +141,8 @@ public class OwncloudSession extends DAVSession {
             }
         }
         super.login(proxy, prompt, cancel);
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/cloud/capabilities",
-                host.getHostname()
-        ));
-        final HttpGet resource = new HttpGet(request.toString());
-        resource.setHeader("OCS-APIRequest", "true");
-        resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
-            client.execute(resource, new OcsCapabilitiesResponseHandler(capabilities));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Determined OCS capabilities %s", capabilities));
-            }
+            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -203,13 +171,13 @@ public class OwncloudSession extends DAVSession {
             return (T) new OwncloudAttributesFinderFeature(this);
         }
         if(type == Lock.class) {
-            if(!capabilities.locking) {
+            if(!ocs.locking) {
                 return null;
             }
         }
         if(type == Upload.class) {
-            if(ArrayUtils.contains(capabilities.versions, TUS_VERSION) && capabilities.extensions.contains(TusCapabilities.Extension.creation)) {
-                return (T) new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(capabilities, client.getClient()), capabilities);
+            if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
+                return (T) new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(tus, client.getClient()), tus);
             }
             else {
                 return (T) new HttpUploadFeature(new NextcloudWriteFeature(this));
@@ -225,7 +193,7 @@ public class OwncloudSession extends DAVSession {
             return (T) new NextcloudShareFeature(this);
         }
         if(type == Versioning.class) {
-            if(!capabilities.versioning) {
+            if(!ocs.versioning) {
                 return null;
             }
             return (T) new OwncloudVersioningFeature(this);

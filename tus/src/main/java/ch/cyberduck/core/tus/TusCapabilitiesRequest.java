@@ -1,4 +1,4 @@
-package ch.cyberduck.core.nextcloud;
+package ch.cyberduck.core.tus;
 
 /*
  * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
@@ -15,20 +15,17 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.apache.http.client.methods.HttpOptions;
 
-import static org.junit.Assert.*;
-
-@Category(IntegrationTest.class)
-public class NextcloudSessionTest extends AbstractNextcloudTest {
-
-    @Test
-    public void testCapabilities() {
-        assertNotNull(session.ocs.webdav);
-        assertTrue(session.ocs.versioning);
-        assertFalse(session.ocs.locking);
+public class TusCapabilitiesRequest extends HttpOptions {
+    public TusCapabilitiesRequest(final Host host) throws BackgroundException {
+        super(URIEncoder.encode(
+                new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find().getAbsolute()));
     }
 }

@@ -41,6 +41,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.ocs.OcsCapabilities;
+import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -50,10 +51,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,7 +60,7 @@ import java.io.IOException;
 public class NextcloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(NextcloudSession.class);
 
-    protected final OcsCapabilities capabilities = new OcsCapabilities();
+    protected final OcsCapabilities ocs = new OcsCapabilities();
 
     public NextcloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -76,17 +74,8 @@ public class NextcloudSession extends DAVSession {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         super.login(proxy, prompt, cancel);
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/cloud/capabilities",
-                host.getHostname()
-        ));
-        final HttpGet resource = new HttpGet(request.toString());
-        resource.setHeader("OCS-APIRequest", "true");
-        resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
-            client.execute(resource, new OcsCapabilitiesResponseHandler(capabilities));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Determined OCS capabilities %s", capabilities));
-            }
+            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -115,7 +104,7 @@ public class NextcloudSession extends DAVSession {
             return (T) new NextcloudAttributesFinderFeature(this);
         }
         if(type == Lock.class) {
-            if(!capabilities.locking) {
+            if(!ocs.locking) {
                 return null;
             }
         }
@@ -132,7 +121,7 @@ public class NextcloudSession extends DAVSession {
             return (T) new NextcloudShareFeature(this);
         }
         if(type == Versioning.class) {
-            if(!capabilities.versioning) {
+            if(!ocs.versioning) {
                 return null;
             }
             return (T) new NextcloudVersioningFeature(this);

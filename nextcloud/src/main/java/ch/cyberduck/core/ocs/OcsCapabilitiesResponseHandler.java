@@ -19,12 +19,15 @@ import ch.cyberduck.core.ocs.model.Capabilities;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabilities> {
+    private static final Logger log = LogManager.getLogger(OcsCapabilitiesResponseHandler.class);
 
     private final OcsCapabilities capabilities;
 
@@ -44,8 +47,10 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                 if(value.data.capabilities.files != null) {
                     capabilities.withLocking(StringUtils.isNotBlank(value.data.capabilities.files.locking));
                 }
-
             }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determined OCS capabilities %s", capabilities));
         }
         return capabilities;
     }

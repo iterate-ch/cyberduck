@@ -27,8 +27,8 @@ public class OwncloudSessionTest extends AbstractOwncloudTest {
 
     @Test
     public void testCapabilities() {
-        assertNotNull(session.capabilities.webdav);
-        assertTrue(session.capabilities.versioning);
-        assertFalse(session.capabilities.locking);
+        assertNotNull(session.ocs.webdav);
+        assertTrue(session.ocs.versioning);
+        assertFalse(session.ocs.locking);
     }
 }
