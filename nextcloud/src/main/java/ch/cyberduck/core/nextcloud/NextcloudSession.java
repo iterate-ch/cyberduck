@@ -89,7 +89,8 @@ public class NextcloudSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Home.class) {
-            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new NextcloudHomeFeature(host, ocs.webdav));
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host),
+                    new NextcloudHomeFeature(host));
         }
         if(type == ListService.class) {
             return (T) new NextcloudListService(this);
