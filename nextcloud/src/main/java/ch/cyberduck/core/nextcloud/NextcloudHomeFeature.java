@@ -29,9 +29,18 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
     private static final Logger log = LogManager.getLogger(NextcloudHomeFeature.class);
 
     private final Host bookmark;
+    private final String root;
 
     public NextcloudHomeFeature(final Host bookmark) {
+        this(bookmark, "remote.php/dav");
+    }
+
+    /**
+     * @param root WebDAV root
+     */
+    public NextcloudHomeFeature(final Host bookmark, final String root) {
         this.bookmark = bookmark;
+        this.root = root;
     }
 
     @Override
@@ -47,7 +56,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
             }
             return null;
         }
-        final Path workdir = new Path(new Path(String.format("/remote.php/dav/%s", files.name()), EnumSet.of(Path.Type.directory)),
+        final Path workdir = new Path(new Path(String.format("%s/%s", root, files.name()), EnumSet.of(Path.Type.directory)),
                 username, EnumSet.of(Path.Type.directory));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use home directory %s", workdir));

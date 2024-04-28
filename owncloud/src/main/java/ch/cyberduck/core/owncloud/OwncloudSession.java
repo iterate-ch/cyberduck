@@ -156,7 +156,7 @@ public class OwncloudSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Home.class) {
-            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new OwncloudHomeFeature(host));
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new OwncloudHomeFeature(host, ocs.webdav));
         }
         if(type == ListService.class) {
             return (T) new NextcloudListService(this);

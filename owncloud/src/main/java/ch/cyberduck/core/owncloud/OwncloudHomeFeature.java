@@ -27,14 +27,21 @@ import java.util.EnumSet;
 public class OwncloudHomeFeature extends NextcloudHomeFeature {
     private static final Logger log = LogManager.getLogger(OwncloudHomeFeature.class);
 
+    private final String root;
+
     public OwncloudHomeFeature(final Host bookmark) {
-        super(bookmark);
+        this(bookmark, "remote.php/dav");
+    }
+
+    public OwncloudHomeFeature(final Host bookmark, final String root) {
+        super(bookmark, root);
+        this.root = root;
     }
 
     public Path find(final Context context) {
         switch(context) {
             case versions:
-                final Path workdir = new Path("/remote.php/dav/meta", EnumSet.of(Path.Type.directory));
+                final Path workdir = new Path(String.format("%s/meta", root), EnumSet.of(Path.Type.directory));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Use home directory %s", workdir));
                 }
