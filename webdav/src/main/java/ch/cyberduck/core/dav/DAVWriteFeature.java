@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
@@ -72,21 +73,29 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            return this.write(file, this.getHeaders(file, status), status);
+            return this.write(file, this.toHeaders(file, status, expect), status);
         }
         catch(ConflictException e) {
             if(expect) {
                 if(null != status.getLockId()) {
                     // Handle 412 Precondition Failed with expired token
                     log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
-                    return this.write(file, this.getHeaders(file, status.withLockId(null)), status);
+                    return this.write(file, this.toHeaders(file, status.withLockId(null), expect), status);
                 }
+            }
+            throw e;
+        }
+        catch(InteroperabilityException e) {
+            if(expect) {
+                // Handle 417 Expectation Failed
+                log.warn(String.format("Retry failure %s with Expect: Continue removed", e));
+                return this.write(file, this.toHeaders(file, status.withLockId(null), false), status);
             }
             throw e;
         }
     }
 
-    protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
+    protected List<Header> toHeaders(final Path file, final TransferStatus status, final boolean expectdirective) throws UnsupportedException {
         final List<Header> headers = new ArrayList<>();
         if(status.isAppend()) {
             if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
@@ -102,7 +111,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
             }
             headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
         }
-        if(expect) {
+        if(expectdirective) {
             if(status.getLength() > 0L) {
                 headers.add(new BasicHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE));
             }
