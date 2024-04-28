@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNull;
 public class NextcloudHomeFeatureTest {
 
     @Test
-    public void testFind() {
+    public void testFind() throws Exception {
         final Host bookmark = new Host(new NextcloudProtocol());
         final NextcloudHomeFeature feature = new NextcloudHomeFeature(bookmark);
         assertNull(feature.find());

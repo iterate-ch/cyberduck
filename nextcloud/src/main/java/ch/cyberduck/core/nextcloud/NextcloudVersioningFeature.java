@@ -21,9 +21,9 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.dav.DAVExceptionMappingService;
-import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -72,10 +72,12 @@ public class NextcloudVersioningFeature implements Versioning {
     public void revert(final Path file) throws BackgroundException {
         // To restore a version all that needs to be done is to move a version the special restore folder at /remote.php/dav/versions/USER/restore
         try {
-            session.getClient().move(String.format("%sversions/%s/%s",
-                            new DAVPathEncoder().encode(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions)),
-                            file.attributes().getFileId(), file.attributes().getVersionId()),
-                    String.format("%srestore/target", new DAVPathEncoder().encode(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions))));
+            session.getClient().move(URIEncoder.encode(String.format("%s/versions/%s/%s",
+                            new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
+                            file.attributes().getFileId(), file.attributes().getVersionId())),
+                    URIEncoder.encode(String.format("%s/restore/target",
+                            new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute()))
+            );
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot revert file", e, file);
@@ -149,9 +151,8 @@ public class NextcloudVersioningFeature implements Versioning {
         return true;
     }
 
-    protected List<DavResource> propfind(final Path file, final Propfind body) throws IOException {
-        return session.getClient().propfind(String.format("%sversions/%s",
-                new DAVPathEncoder().encode(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions)),
-                file.attributes().getFileId()), 1, body);
+    protected List<DavResource> propfind(final Path file, final Propfind body) throws IOException, BackgroundException {
+        return session.getClient().propfind(URIEncoder.encode(String.format("%s/versions/%s",
+                new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(), file.attributes().getFileId())), 1, body);
     }
 }

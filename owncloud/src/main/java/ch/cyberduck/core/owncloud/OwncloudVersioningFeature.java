@@ -17,6 +17,7 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVExceptionMappingService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
@@ -68,9 +69,9 @@ public class OwncloudVersioningFeature extends NextcloudVersioningFeature {
     }
 
     @Override
-    protected List<DavResource> propfind(final Path file, final Propfind body) throws IOException {
-        return session.getClient().propfind(String.format("%s/%s/v",
+    protected List<DavResource> propfind(final Path file, final Propfind body) throws IOException, BackgroundException {
+        return session.getClient().propfind(URIEncoder.encode(String.format("%s/%s/v",
                 new OwncloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
-                file.attributes().getFileId()), 1, body);
+                file.attributes().getFileId())), 1, body);
     }
 }

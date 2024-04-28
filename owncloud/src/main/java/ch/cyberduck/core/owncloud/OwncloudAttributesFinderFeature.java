@@ -16,9 +16,10 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.nextcloud.NextcloudAttributesFinderFeature;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
 
@@ -41,17 +42,17 @@ public class OwncloudAttributesFinderFeature extends NextcloudAttributesFinderFe
     }
 
     @Override
-    protected List<DavResource> list(final Path file) throws IOException {
-        final String url;
+    protected List<DavResource> list(final Path file) throws IOException, BackgroundException {
+        final String path;
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            url = String.format("%s/%s/v/%s",
+            path = String.format("%s/%s/v/%s",
                     new OwncloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
                     file.attributes().getFileId(), file.attributes().getVersionId());
         }
         else {
-            url = new DAVPathEncoder().encode(file);
+            path = file.getAbsolute();
         }
-        return session.getClient().list(url, 0,
+        return session.getClient().list(URIEncoder.encode(path), 0,
                 Stream.of(OC_FILEID_CUSTOM_NAMESPACE, OC_CHECKSUMS_CUSTOM_NAMESPACE, OC_SIZE_CUSTOM_NAMESPACE,
                         DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
                         DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).collect(Collectors.toSet()));

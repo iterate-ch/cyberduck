@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
 public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
 
     @Test
-    public void testIsSupported() {
+    public void testIsSupported() throws Exception {
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
         assertTrue(new NextcloudShareFeature(session).isSupported(home, Share.Type.download));
         assertTrue(new NextcloudShareFeature(session).isSupported(home, Share.Type.upload));

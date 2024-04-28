@@ -16,9 +16,10 @@ package ch.cyberduck.core.nextcloud;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,12 +37,12 @@ public class NextcloudReadFeature extends DAVReadFeature {
     }
 
     @Override
-    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
+    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) throws BackgroundException {
         final HttpRequestBase request = super.toRequest(file, status);
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            request.setURI(URI.create(String.format("%sversions/%s/%s",
-                    new DAVPathEncoder().encode(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions)),
-                    file.attributes().getFileId(), file.attributes().getVersionId())));
+            request.setURI(URI.create(URIEncoder.encode(String.format("%s/versions/%s/%s",
+                    new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
+                    file.attributes().getFileId(), file.attributes().getVersionId()))));
         }
         return request;
     }
