@@ -173,6 +173,9 @@ public class HttpConnectionPoolBuilder {
         else {
             configuration.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
         }
+        if(!new HostPreferences(host).getBoolean("http.connections.state.enable")) {
+            configuration.disableConnectionState();
+        }
         // Retry handler for I/O failures
         configuration.setRetryHandler(new ExtendedHttpRequestRetryHandler(
                 new HostPreferences(host).getInteger("connection.retry")));
@@ -181,7 +184,7 @@ public class HttpConnectionPoolBuilder {
         if(!new HostPreferences(host).getBoolean("http.compression.enable")) {
             configuration.disableContentCompression();
         }
-        configuration.setRequestExecutor(new LoggingHttpRequestExecutor(listener));
+        configuration.setRequestExecutor(new CustomHttpRequestExecutor(host, listener));
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
         final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(this.createRegistry());

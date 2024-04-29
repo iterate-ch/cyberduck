@@ -18,9 +18,12 @@ package ch.cyberduck.core.http;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -29,20 +32,28 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestExecutor;
 
 import java.io.IOException;
+import java.util.Arrays;
 
-public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
+public class CustomHttpRequestExecutor extends HttpRequestExecutor {
 
     private final UseragentProvider useragentProvider
             = new PreferencesUseragentProvider();
 
+    private final Host host;
     private final TranscriptListener listener;
 
-    public LoggingHttpRequestExecutor(final TranscriptListener listener) {
+    public CustomHttpRequestExecutor(final Host host, final TranscriptListener listener) {
+        this.host = host;
         this.listener = listener;
     }
 
@@ -77,8 +88,29 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
         }
         final HttpResponse response = super.doSendRequest(request, conn, context);
         if(null != response) {
-            // response received as part of an expect-continue handshake
+            // Response received as part of an expect-continue handshake
             this.log(response);
+            if(new HostPreferences(host).getBoolean("request.unauthorized.ntlm.preflight")) {
+                // Unable to authenticate with NTLM for requests with non-zero entity
+                if(HttpStatus.SC_UNAUTHORIZED == response.getStatusLine().getStatusCode()) {
+                    if(response.containsHeader(HttpHeaders.WWW_AUTHENTICATE)) {
+                        switch(request.getRequestLine().getMethod()) {
+                            case HttpPut.METHOD_NAME:
+                            case HttpPost.METHOD_NAME:
+                            case HttpPatch.METHOD_NAME:
+                                if(Arrays.asList(response.getAllHeaders()).stream()
+                                        .filter(header -> HttpHeaders.WWW_AUTHENTICATE.equals(header.getName()))
+                                        .filter(header -> "NTLM".equals(header.getValue())).findAny().isPresent()) {
+                                    // Unauthenticated connection cannot proceed with PUT
+                                    final HttpResponseException preflight = new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                                    preflight.initCause(new RetriableAccessDeniedException(String.format("Authentication cannot proceed for %s",
+                                            request.getRequestLine().getMethod())));
+                                    throw preflight;
+                                }
+                        }
+                    }
+                }
+            }
         }
         return response;
     }

@@ -67,17 +67,12 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     private OutputStream stream;
 
     /**
-     * Entity written to server
-     */
-    private boolean entityWritten = false;
-
-    /**
      * Parent thread to check if still alive
      */
     private final Thread parentThread;
 
     public boolean isRepeatable() {
-        return !entityWritten;
+        return false;
     }
 
     public abstract long getContentLength();
@@ -120,12 +115,10 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
         }
         // Wait for signal when content has been written to the pipe
         Interruptibles.await(streamClosed, IOException.class, new Interruptibles.ThreadAliveCancelCallback(parentThread));
-        // Entity written to server
-        entityWritten = true;
     }
 
     public boolean isStreaming() {
-        return !entityWritten;
+        return true;
     }
 
     /**

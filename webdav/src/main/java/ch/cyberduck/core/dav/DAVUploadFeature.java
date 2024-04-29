@@ -17,6 +17,7 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import java.security.MessageDigest;
@@ -25,5 +26,9 @@ public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
     public DAVUploadFeature(final DAVSession session) {
         super(new DAVWriteFeature(session));
+    }
+
+    public DAVUploadFeature(final Write<Void> writer) {
+        super(writer);
     }
 }
