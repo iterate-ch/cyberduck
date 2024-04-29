@@ -1,6 +1,6 @@
-# CTERA Custom XML fields to support NT-ACL and WORM data
+# Custom Properties in namespace `http://www.ctera.com/ns` in DAV Resources to Support NT-ACL and WORM Data
 
-## 2nd line of defense: preflight (Cyberduck)
+## Preflight Checks
 
 | local      | Feature     | folder | file | CTERA required permissions                                                                                                                      | preflight |
 |------------|-------------|--------|------|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
@@ -18,11 +18,11 @@
 
 N.B. no need to check `readpermission` upon mv/cp.
 
-## 1st line of defense: filesystem (Mountain Duck)
+## Filesystem Mapping
 
-### macOS NFS POSIX (=mode sync)
+### macOS NFS POSIX
 
-| folder | file | NFS (POSIX) | affected local operations                                    | implementation (`NfsFileSystemDelegate.getattr`)                                                                                                           |
+| folder | file | NFS (POSIX) | affected local operations                                    | implementation                                                                                                                                             |
 |--------|------|-------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |        | x    | `r`         | read                                                         | `r` <-- `Read.preflight` <-- `readpermission`                                                                                                              |
 | x      |      | `rx`        | ls                                                           | `rx` <-- `Read.preflight` <-- `readpermission`                                                                                                             |                      
@@ -31,9 +31,9 @@ N.B. no need to check `readpermission` upon mv/cp.
 
 N.B. `x` on files is only set for POSIX backends, i.e. never for CTERA.
 
-### macOS File Provider Capabilities (=mode integrated)
+### macOS File Provider Capabilities
 
-| folder | file | File Provider capabilities (`DefaultFileProviderItemConverter.toFileProviderItem`)         | affected local operations |
+| folder | file | File Provider Capabilities                                                                 | affected local operations |
 |--------|------|--------------------------------------------------------------------------------------------|---------------------------|
 | x      |      | `NSFileProviderFileSystemUserReadable` <-- `ListService.preflight`                         | ls                        |
 |        | x    | `NSFileProviderFileSystemUserReadable` <-- `Read.preflight`                                | read                      |
@@ -51,7 +51,7 @@ N.B. File Provider sets the `x` flag on all folders independent of `NSFileProvid
 * https://developer.apple.com/documentation/fileprovider/nsfileproviderfilesystemflags
 * https://developer.apple.com/documentation/fileprovider/nsfileprovideritemcapabilities
 
-### Windows (Cloud Files API (=mode integrated) and CBFS (=mode sync))
+### Windows ACLs
 
 | folder | file | access right        | affected local operations                                           | implementation (`WindowsAcl.Translate`)                 |
 |--------|------|---------------------|---------------------------------------------------------------------|---------------------------------------------------------|
