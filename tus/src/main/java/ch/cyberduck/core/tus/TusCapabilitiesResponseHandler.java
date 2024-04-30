@@ -75,6 +75,9 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                     }
                 }
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determined capabilities %s", capabilities));
+        }
         return capabilities;
     }
 }

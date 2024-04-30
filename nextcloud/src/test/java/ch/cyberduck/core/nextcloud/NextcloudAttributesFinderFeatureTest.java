@@ -14,7 +14,7 @@ import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.dav.DAVTouchFeature;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -189,7 +189,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
         assertEquals(modified.getTime(), attrs.getModificationDate());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testFindLock() throws Exception {
         final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -197,6 +197,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
         assertNull(f.find(test).getLockId());
         final String lockId = new DAVLockFeature(session).lock(test);
         assertNotNull(f.find(test).getLockId());
+        assertThrows(LockedException.class, () -> new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback()));
         new DAVLockFeature(session).unlock(test, lockId);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }

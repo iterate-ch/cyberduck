@@ -22,7 +22,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
@@ -34,6 +33,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Timestamp;
@@ -53,21 +53,23 @@ import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.ocs.OcsCapabilities;
+import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
+import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.tus.TusCapabilities;
+import ch.cyberduck.core.tus.TusCapabilitiesRequest;
 import ch.cyberduck.core.tus.TusCapabilitiesResponseHandler;
 import ch.cyberduck.core.tus.TusWriteFeature;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,7 +86,8 @@ public class OwncloudSession extends DAVSession {
 
     private OAuth2RequestInterceptor authorizationService;
 
-    private final TusCapabilities capabilities = new TusCapabilities();
+    protected final TusCapabilities tus = new TusCapabilities();
+    protected final OcsCapabilities ocs = new OcsCapabilities();
 
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -93,19 +96,8 @@ public class OwncloudSession extends DAVSession {
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final DAVClient client = super.connect(proxy, key, prompt, cancel);
-        final TusCapabilities capabilities = this.options(client);
-        return client;
-    }
-
-    private TusCapabilities options(final DAVClient client) throws BackgroundException {
-        final HttpOptions options = new HttpOptions(URIEncoder.encode(
-                new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find().getAbsolute()));
         try {
-            client.execute(options, new TusCapabilitiesResponseHandler(capabilities));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Determined capabilities %s", capabilities));
-            }
-            return capabilities;
+            client.execute(new TusCapabilitiesRequest(host), new TusCapabilitiesResponseHandler(tus));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -113,6 +105,7 @@ public class OwncloudSession extends DAVSession {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        return client;
     }
 
     @Override
@@ -147,13 +140,22 @@ public class OwncloudSession extends DAVSession {
             }
         }
         super.login(proxy, prompt, cancel);
+        try {
+            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
+        }
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Home.class) {
-            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new OwncloudHomeFeature(host));
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new OwncloudHomeFeature(host));
         }
         if(type == ListService.class) {
             return (T) new NextcloudListService(this);
@@ -167,9 +169,14 @@ public class OwncloudSession extends DAVSession {
         if(type == AttributesFinder.class) {
             return (T) new OwncloudAttributesFinderFeature(this);
         }
+        if(type == Lock.class) {
+            if(!ocs.locking) {
+                return null;
+            }
+        }
         if(type == Upload.class) {
-            if(ArrayUtils.contains(capabilities.versions, TUS_VERSION) && capabilities.extensions.contains(TusCapabilities.Extension.creation)) {
-                return (T) new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(capabilities, client.getClient()), capabilities);
+            if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
+                return (T) new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(tus, client.getClient()), tus);
             }
             else {
                 return (T) new HttpUploadFeature(new NextcloudWriteFeature(this));
@@ -185,6 +192,9 @@ public class OwncloudSession extends DAVSession {
             return (T) new NextcloudShareFeature(this);
         }
         if(type == Versioning.class) {
+            if(!ocs.versioning) {
+                return null;
+            }
             return (T) new OwncloudVersioningFeature(this);
         }
         if(type == Delete.class) {

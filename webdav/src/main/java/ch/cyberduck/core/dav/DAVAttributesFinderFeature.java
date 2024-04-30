@@ -134,7 +134,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
         return attributes;
     }
 
-    protected List<DavResource> list(final Path file) throws IOException {
+    protected List<DavResource> list(final Path file) throws IOException, BackgroundException {
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
                 Stream.of(
                                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,

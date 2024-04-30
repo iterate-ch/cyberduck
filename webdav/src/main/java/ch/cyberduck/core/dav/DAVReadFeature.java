@@ -114,7 +114,7 @@ public class DAVReadFeature implements Read {
         }
     }
 
-    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
+    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) throws BackgroundException {
         final StringBuilder resource = new StringBuilder(new DAVPathEncoder().encode(file));
         if(!status.getParameters().isEmpty()) {
             resource.append("?");

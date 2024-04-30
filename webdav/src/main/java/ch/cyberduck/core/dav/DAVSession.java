@@ -154,19 +154,11 @@ public class DAVSession extends HttpSession<DAVClient> {
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
                     new UsernamePasswordCredentials(username, credentials.getPassword()));
             if(preferences.getBoolean("webdav.basic.preemptive")) {
-                switch(proxy.getType()) {
-                    case DIRECT:
-                    case SOCKS:
-                        // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-                        client.enablePreemptiveAuthentication(host.getHostname(),
-                                host.getPort(),
-                                host.getPort(),
-                                Charset.forName(preferences.getProperty("http.credentials.charset"))
-                        );
-                        break;
-                    default:
-                        client.disablePreemptiveAuthentication();
-                }
+                client.enablePreemptiveAuthentication(host.getHostname(),
+                        host.getPort(),
+                        host.getPort(),
+                        Charset.forName(preferences.getProperty("http.credentials.charset"))
+                );
             }
             else {
                 client.disablePreemptiveAuthentication();

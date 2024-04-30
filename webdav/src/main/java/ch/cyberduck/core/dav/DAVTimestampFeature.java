@@ -90,7 +90,7 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
      * @param file File
      * @return Latest properties
      */
-    protected DavResource getResource(final Path file) throws NotfoundException, IOException {
+    protected DavResource getResource(final Path file) throws BackgroundException, IOException {
         final Optional<DavResource> optional = new DAVAttributesFinderFeature(session).list(file).stream().findFirst();
         if(!optional.isPresent()) {
             throw new NotfoundException(file.getAbsolute());

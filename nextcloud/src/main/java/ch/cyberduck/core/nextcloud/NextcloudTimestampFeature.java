@@ -17,6 +17,7 @@ package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class NextcloudTimestampFeature extends DAVTimestampFeature {
     }
 
     @Override
-    protected DavResource getResource(final Path file) throws NotfoundException, IOException {
+    protected DavResource getResource(final Path file) throws BackgroundException, IOException {
         final Optional<DavResource> optional = new NextcloudAttributesFinderFeature(session).list(file).stream().findFirst();
         if(!optional.isPresent()) {
             throw new NotfoundException(file.getAbsolute());

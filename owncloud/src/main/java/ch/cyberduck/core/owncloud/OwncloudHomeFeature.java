@@ -17,28 +17,34 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.EnumSet;
 
 public class OwncloudHomeFeature extends NextcloudHomeFeature {
     private static final Logger log = LogManager.getLogger(OwncloudHomeFeature.class);
 
     public OwncloudHomeFeature(final Host bookmark) {
-        super(bookmark);
+        this(new DefaultPathHomeFeature(bookmark), bookmark);
     }
 
-    public Path find(final Context context) {
+    public OwncloudHomeFeature(final Home delegate, final Host bookmark) {
+        this(delegate, bookmark, new HostPreferences(bookmark).getProperty("owncloud.root.default"));
+    }
+
+    public OwncloudHomeFeature(final Home delegate, final Host bookmark, final String root) {
+        super(delegate, bookmark, root);
+    }
+
+    public Path find(final Context context) throws BackgroundException {
         switch(context) {
             case versions:
-                final Path workdir = new Path("/remote.php/dav/meta", EnumSet.of(Path.Type.directory));
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Use home directory %s", workdir));
-                }
-                return workdir;
+                return super.find(Context.meta);
         }
         return super.find(context);
     }

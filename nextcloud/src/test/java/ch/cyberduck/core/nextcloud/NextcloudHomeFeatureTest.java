@@ -29,11 +29,23 @@ import static org.junit.Assert.assertNull;
 public class NextcloudHomeFeatureTest {
 
     @Test
-    public void testFind() {
+    public void testFind() throws Exception {
         final Host bookmark = new Host(new NextcloudProtocol());
         final NextcloudHomeFeature feature = new NextcloudHomeFeature(bookmark);
         assertNull(feature.find());
         bookmark.setCredentials(new Credentials("u"));
         assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/remote.php/dav/");
+        assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/remote.php/dav");
+        assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/remote.php/dav/d");
+        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/remote.php/dav/d/");
+        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/d");
+        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
+        bookmark.setDefaultPath("/d/");
+        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
     }
 }
