@@ -26,6 +26,7 @@ import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -116,6 +117,13 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
         });
         assertNotSame(DescriptiveUrl.EMPTY, url);
         new DAVDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testToDownloadNotfound() throws Exception {
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
+        final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertThrows(NotfoundException.class, () -> new NextcloudShareFeature(session).toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback()));
     }
 
     @Test
