@@ -18,9 +18,9 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LocalWriteFeature extends AppendWriteFeature<Void> {
+public class LocalWriteFeature implements Write<Void> {
 
     private final LocalSession session;
 

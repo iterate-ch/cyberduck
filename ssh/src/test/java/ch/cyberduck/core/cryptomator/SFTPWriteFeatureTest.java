@@ -93,7 +93,6 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(test));
         assertEquals(content.length, new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, writer.append(test, status.withRemote(cryptomator.getFeature(session, AttributesFinder.class, new SFTPAttributesFinderFeature(session)).find(test))).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
@@ -133,17 +132,14 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         {
             final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new SFTPAttributesFinderFeature(session)).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         }
         {
             final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         }
         {
             final PathAttributes attributes = new CachingAttributesFinderFeature(session, cache, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         }
         assertEquals(content.length, cache.get(vault).get(0).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

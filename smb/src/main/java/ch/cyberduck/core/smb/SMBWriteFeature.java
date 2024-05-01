@@ -68,11 +68,6 @@ public class SMBWriteFeature implements Write<Void> {
         }
     }
 
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
     private final class SMBOutputStream extends ProxyOutputStream {
         private final Path file;
         private final File handle;

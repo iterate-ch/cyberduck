@@ -6,6 +6,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -48,8 +49,11 @@ public class NullSession extends Session<Void> implements ListService {
         if(type == ListService.class) {
             return (T) this;
         }
+        if(type == Upload.class) {
+            return (T) new NullUploadFeature();
+        }
         if(type == Write.class) {
-            return (T) new NullWriteFeature(this);
+            return (T) new NullWriteFeature();
         }
         if(type == Read.class) {
             return (T) new NullReadFeature();

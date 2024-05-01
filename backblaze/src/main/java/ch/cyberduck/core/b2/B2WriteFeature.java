@@ -37,15 +37,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
-import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
-import synapticloop.b2.response.B2UploadPartResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
@@ -146,20 +143,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
-    }
-
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
-        final List<B2FileInfoResponse> upload = partService.find(file);
-        if(!upload.isEmpty()) {
-            Long size = 0L;
-            for(B2UploadPartResponse completed : partService.list(upload.iterator().next().getFileId())) {
-                size += completed.getContentLength();
-            }
-            return new Append(true).withStatus(status).withSize(size);
-        }
-        return new Append(false).withStatus(status);
     }
 
     @Override

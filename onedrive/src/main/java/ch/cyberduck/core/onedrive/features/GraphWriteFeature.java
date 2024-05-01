@@ -91,11 +91,6 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
         }
     }
 
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
     private final class ChunkedOutputStream extends OutputStream {
         private final UploadSession upload;
         private final Path file;

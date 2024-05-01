@@ -82,11 +82,6 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
         };
     }
 
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
     private final class MultipartOutputStream extends OutputStream {
         private final BrickWriteFeature writer = new BrickWriteFeature(session);
         private final Path file;

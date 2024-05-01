@@ -139,7 +139,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
         final Write.Append resume = service.append(test, status);
         assertTrue(resume.append);
-        assertEquals(0L, resume.size, 0L);
+        assertEquals(0L, resume.offset, 0L);
         final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
         service.upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
@@ -196,7 +196,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
         final Write.Append appendStatus = feature.append(test, status);
         assertTrue(appendStatus.append);
-        assertEquals(5 * 1000L * 1000L, appendStatus.size, 0L);
+        assertEquals(5 * 1000L * 1000L, appendStatus.offset, 0L);
         final Path upload = new Path(test).withType(EnumSet.of(Path.Type.file, Path.Type.upload));
         assertTrue(new B2FindFeature(session, fileid).find(upload));
         assertEquals(5 * 1000L * 1000L, new B2AttributesFinderFeature(session, fileid).find(upload).getSize(), 0L);

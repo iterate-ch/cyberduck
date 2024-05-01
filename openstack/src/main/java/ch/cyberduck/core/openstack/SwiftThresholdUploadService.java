@@ -59,29 +59,37 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return writer.append(file, status);
+        if(this.threshold(status)) {
+            return new SwiftLargeObjectUploadFeature(session, regionService, writer).append(file, status);
+        }
+        return new Write.Append(false).withStatus(status);
     }
 
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Upload<StorageObject> feature;
-        if(status.getLength() > threshold) {
-            if(!new HostPreferences(session.getHost()).getBoolean("openstack.upload.largeobject")) {
-                // Disabled by user
-                if(status.getLength() < new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.required.threshold")) {
-                    log.warn("Large upload is disabled with property openstack.upload.largeobject");
-                    return new SwiftSmallObjectUploadFeature(session, writer).upload(file, local, throttle, listener, status, callback);
-                }
-            }
-            feature = new SwiftLargeObjectUploadFeature(session, regionService, writer,
-                new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.size"),
-                new HostPreferences(session.getHost()).getInteger("openstack.upload.largeobject.concurrency"));
+        if(this.threshold(status)) {
+            feature = new SwiftLargeObjectUploadFeature(session, regionService, writer);
         }
         else {
             feature = new SwiftSmallObjectUploadFeature(session, writer);
         }
         return feature.upload(file, local, throttle, listener, status, callback);
+    }
+
+    protected boolean threshold(final TransferStatus status) {
+        if(status.getLength() > threshold) {
+            if(!new HostPreferences(session.getHost()).getBoolean("openstack.upload.largeobject")) {
+                // Disabled by user
+                if(status.getLength() < new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.required.threshold")) {
+                    log.warn("Large upload is disabled with property openstack.upload.largeobject");
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

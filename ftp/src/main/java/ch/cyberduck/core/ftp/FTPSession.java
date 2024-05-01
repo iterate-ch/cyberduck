@@ -31,20 +31,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Command;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -331,6 +318,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
         if(type == Read.class) {
             return (T) new FTPReadFeature(this);
+        }
+        if(type == Upload.class) {
+            return (T) new FTPUploadFeature(this);
         }
         if(type == Write.class) {
             return (T) new FTPWriteFeature(this);

@@ -73,11 +73,6 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
-    @Override
     public HttpResponseOutputStream<EueWriteFeature.Chunk> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         String uploadUri;
         String resourceId;

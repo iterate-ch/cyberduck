@@ -88,7 +88,6 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
         assertEquals(content.length, attributes.getSize());
-        assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);

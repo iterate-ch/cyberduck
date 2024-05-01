@@ -17,7 +17,6 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
@@ -43,13 +42,5 @@ public class MantaWriteFeature implements Write<Void> {
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final OutputStream putStream = session.getClient().putAsOutputStream(file.getAbsolute());
         return new VoidStatusOutputStream(putStream);
-    }
-
-    /**
-     * Manta does not support raw append operations.
-     */
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
     }
 }

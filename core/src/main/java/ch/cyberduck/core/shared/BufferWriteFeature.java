@@ -112,9 +112,4 @@ public class BufferWriteFeature implements MultipartWrite<Void> {
             }
         });
     }
-
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
 }

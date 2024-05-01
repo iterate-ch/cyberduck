@@ -113,7 +113,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return Write.override;
+        return new Write.Append(status.isExists()).withStatus(status);
     }
 
     @Override

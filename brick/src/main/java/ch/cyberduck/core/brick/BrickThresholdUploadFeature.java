@@ -50,7 +50,7 @@ public class BrickThresholdUploadFeature implements Upload<FileEntity> {
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return writer.append(file, status);
+        return new BrickUploadFeature(session, writer).append(file, status);
     }
 
     @Override

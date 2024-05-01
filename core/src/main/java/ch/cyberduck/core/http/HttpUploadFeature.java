@@ -56,11 +56,6 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return writer.append(file, status);
-    }
-
-    @Override
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
                         final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Reply response = this.upload(file, local, throttle, listener, status, status, status, callback);

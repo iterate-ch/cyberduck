@@ -75,7 +75,6 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new SMBFindFeature(session).find(test));
         assertEquals(content.length, new SMBListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, writer.append(test, status.withRemote(new SMBAttributesFinderFeature(session).find(test))).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);
             final TransferStatus read = new TransferStatus();

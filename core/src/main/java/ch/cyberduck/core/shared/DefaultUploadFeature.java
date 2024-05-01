@@ -56,11 +56,6 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return writer.append(file, status);
-    }
-
-    @Override
     public Upload<Reply> withWriter(final Write<Reply> writer) {
         this.writer = writer;
         return this;

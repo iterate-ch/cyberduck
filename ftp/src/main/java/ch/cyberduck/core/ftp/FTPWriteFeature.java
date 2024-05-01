@@ -20,9 +20,9 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.net.ftp.FTPReply;
@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class FTPWriteFeature extends AppendWriteFeature<Void> {
+public class FTPWriteFeature implements Write<Void> {
     private static final Logger log = LogManager.getLogger(FTPWriteFeature.class);
 
     private final FTPSession session;

@@ -473,6 +473,9 @@ public class SFTPSession extends Session<SSHClient> {
         if(type == Read.class) {
             return (T) new SFTPReadFeature(this);
         }
+        if(type == Upload.class) {
+            return (T) new SFTPUploadFeature(this);
+        }
         if(type == Write.class) {
             return (T) new SFTPWriteFeature(this);
         }

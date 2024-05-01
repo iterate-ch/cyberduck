@@ -101,7 +101,6 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test);
         assertEquals(content.length, attributes.getSize());
-        assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
@@ -141,7 +140,6 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         cache.put(vault, list);
         assertEquals(content.length, cache.get(vault).get(0).attributes().getSize());
         assertEquals(content.length, found.attributes().getSize());
-        assertEquals(content.length, writer.append(test, status.withRemote(found.attributes())).size, 0L);
         {
             final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new DriveAttributesFinderFeature(session, fileid)).find(test);
             assertEquals(content.length, attributes.getSize());

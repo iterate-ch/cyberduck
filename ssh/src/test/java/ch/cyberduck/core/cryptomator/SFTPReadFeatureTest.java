@@ -86,7 +86,6 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(test));
         final PathAttributes attributes = new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(30000);
         final TransferStatus read = new TransferStatus();
         read.setOffset(40000);

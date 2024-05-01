@@ -12,6 +12,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -275,5 +276,17 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertEquals(0, new SwiftSegmentService(session).list(test).size());
         local.delete();
+    }
+
+    @Test
+    public void testAppendNoSegmentFound() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService,
+                new SwiftWriteFeature(session, regionService))
+                .append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertFalse(append.append);
+        assertEquals(Write.override, append);
     }
 }

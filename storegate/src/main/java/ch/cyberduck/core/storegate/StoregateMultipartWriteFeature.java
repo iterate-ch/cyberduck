@@ -64,11 +64,6 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(false).withStatus(status);
-    }
-
-    @Override
     public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String location = new StoregateWriteFeature(session, fileid).start(file, status);
         final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);

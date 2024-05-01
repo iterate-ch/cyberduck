@@ -44,6 +44,7 @@ import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.proxy.Proxy;
@@ -194,6 +195,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         }
         if(type == Read.class) {
             return (T) new AzureReadFeature(this, context);
+        }
+        if(type == Upload.class) {
+            return (T) new AzureUploadFeature(this, context);
         }
         if(type == Write.class) {
             return (T) new AzureWriteFeature(this, context);

@@ -157,12 +157,4 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.random);
     }
-
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
-            return new Append(false).withStatus(status);
-        }
-        return super.append(file, status);
-    }
 }

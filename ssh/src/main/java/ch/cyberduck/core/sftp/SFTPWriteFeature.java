@@ -20,11 +20,11 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ChunkedOutputStream;
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
-public class SFTPWriteFeature extends AppendWriteFeature<Void> {
+public class SFTPWriteFeature implements Write<Void> {
     private static final Logger log = LogManager.getLogger(SFTPWriteFeature.class);
 
     private final SFTPSession session;

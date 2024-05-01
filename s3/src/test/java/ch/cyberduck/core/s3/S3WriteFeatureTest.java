@@ -11,7 +11,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
@@ -79,29 +78,6 @@ public class S3WriteFeatureTest extends AbstractS3Test {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testAppendBelowLimit() throws Exception {
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
-        assertFalse(append.append);
-    }
-
-    @Test
-    public void testSize() throws Exception {
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L).withRemote(new PathAttributes().withSize(3L)));
-        assertFalse(append.append);
-        assertEquals(0L, append.size, 0L);
-    }
-
-    @Test
-    public void testAppendNoMultipartFound() throws Exception {
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3WriteFeature(session, new S3AccessControlListFeature(session)).append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(Long.MAX_VALUE)).append);
-        assertEquals(Write.override, new S3WriteFeature(session, new S3AccessControlListFeature(session)).append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(Long.MAX_VALUE)));
-        assertEquals(Write.override, new S3WriteFeature(session, new S3AccessControlListFeature(session)).append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L)));
     }
 
     @Test(expected = InteroperabilityException.class)
