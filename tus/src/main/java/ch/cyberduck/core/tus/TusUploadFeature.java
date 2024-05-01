@@ -26,6 +26,7 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -97,6 +98,12 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             final String uploadUrl;
             if(status.isAppend()) {
                 uploadUrl = preferences.getProperty(toUploadUrlPropertyKey(host, file, status));
+                if(StringUtils.isBlank(uploadUrl)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("No previous upload URL for %s", file));
+                    }
+                    throw new NotfoundException(file.getAbsolute());
+                }
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Resume upload to %s for %s from offset %d", uploadUrl, file, status.getOffset()));
                 }
