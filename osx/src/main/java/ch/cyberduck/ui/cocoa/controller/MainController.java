@@ -117,6 +117,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Predicate;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
@@ -976,9 +977,8 @@ public class MainController extends BundleController implements NSApplication.De
         });
         final Rendezvous bonjour = RendezvousFactory.instance();
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
-        if(preferences.getBoolean("defaulthandler.reminder")
-            && preferences.getInteger("uses") > 0) {
-            final SchemeHandler schemeHandler = SchemeHandlerFactory.get();
+        final SchemeHandler schemeHandler = SchemeHandlerFactory.get();
+        if(preferences.getBoolean("defaulthandler.reminder") && preferences.getInteger("uses") > 0) {
             if(!schemeHandler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
                 new Application(preferences.getProperty("application.identifier")))) {
                 final NSAlert alert = NSAlert.alert(
@@ -1002,6 +1002,19 @@ public class MainController extends BundleController implements NSApplication.De
                         new Application(preferences.getProperty("application.identifier")),
                         Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name())
                     );
+                }
+            }
+        }
+        final ProtocolFactory protocols = ProtocolFactory.get();
+        // Iterate over custom schemes and register by default
+        for(Protocol protocol : protocols.find()) {
+            final String[] schemes = protocol.getSchemes();
+            for(String scheme : schemes) {
+                if(Arrays.stream(Scheme.values()).filter(Predicate.isEqual(Scheme.s3).negate()).noneMatch(s -> s.name().equals(scheme))) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Register custom scheme %s", scheme));
+                    }
+                    schemeHandler.setDefaultHandler(new Application(preferences.getProperty("application.identifier")), Collections.singletonList(scheme));
                 }
             }
         }

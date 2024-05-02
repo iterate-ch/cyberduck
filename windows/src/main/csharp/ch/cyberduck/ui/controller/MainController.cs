@@ -583,13 +583,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static void InitializeProtocolHandler()
         {
-            var self = new Application(System.Windows.Forms.Application.ExecutablePath);
-            if (PreferencesFactory.get().getBoolean("defaulthandler.reminder") &&
-                            PreferencesFactory.get().getInteger("uses") > 0)
+            var handler = SchemeHandlerFactory.get();
+            var app = new Application(System.Windows.Forms.Application.ExecutablePath);
+            if (PreferencesFactory.get().getBoolean("defaulthandler.reminder") && PreferencesFactory.get().getInteger("uses") > 0)
             {
-                var handler = SchemeHandlerFactory.get();
                 if (
-                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()), self))
+                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()), app))
                 {
                     Core.Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
                         LocaleFactory.localizedString(
@@ -610,11 +609,27 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    handler.setDefaultHandler(self,
+                                    handler.setDefaultHandler(app,
                                         Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()));
                                     break;
                             }
                         });
+                }
+            }
+            var schemes = Scheme.values().ToDictionary(x => x.name());
+            schemes.Remove(Scheme.s3.name());
+            foreach (var protocol in Protocols)
+            {
+                foreach (var scheme in protocol.getSchemes())
+                {
+                    if (!schemes.ContainsKey(scheme))
+                    {
+                        if (Log.isInfoEnabled())
+                        {
+                            Log.info(string.Format("Register custom scheme {0}", scheme));
+                        }
+                        handler.setDefaultHandler(app, Arrays.asList(scheme));
+                    }
                 }
             }
         }
