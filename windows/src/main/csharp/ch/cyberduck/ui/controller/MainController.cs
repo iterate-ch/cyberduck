@@ -70,6 +70,7 @@ using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -616,17 +617,18 @@ namespace Ch.Cyberduck.Ui.Controller
                         });
                 }
             }
+            var protocols = Utils.ConvertFromJavaList<Protocol>(ProtocolFactory.get().find());
             var schemes = Scheme.values().ToDictionary(x => x.name());
             schemes.Remove(Scheme.s3.name());
-            foreach (var protocol in Protocols)
+            foreach (var protocol in protocols)
             {
                 foreach (var scheme in protocol.getSchemes())
                 {
                     if (!schemes.ContainsKey(scheme))
                     {
-                        if (Log.isInfoEnabled())
+                        if (Logger.isInfoEnabled())
                         {
-                            Log.info(string.Format("Register custom scheme {0}", scheme));
+                            Logger.info($"Register custom scheme {scheme}");
                         }
                         handler.setDefaultHandler(app, Arrays.asList(scheme));
                     }
