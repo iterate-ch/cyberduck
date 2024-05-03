@@ -10,8 +10,7 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DefaultLocalTouchFeatureTest {
 
@@ -24,10 +23,7 @@ public class DefaultLocalTouchFeatureTest {
         f.touch(l);
         assertTrue(parent.exists());
         assertTrue(l.exists());
-        f.touch(l);
-        assertTrue(l.exists());
-        // Test fail silently
-        f.touch(l);
+        assertThrows(LocalAccessDeniedException.class, () -> f.touch(l));
         l.delete();
         parent.delete();
     }
