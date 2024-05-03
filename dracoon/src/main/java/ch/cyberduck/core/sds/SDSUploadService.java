@@ -44,6 +44,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -288,7 +289,9 @@ public class SDSUploadService {
                 }
             }
             catch(ExecutionException e) {
-                Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                for(Throwable cause : ExceptionUtils.getThrowableList(e)) {
+                    Throwables.throwIfInstanceOf(cause, BackgroundException.class);
+                }
                 throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
             }
         }
