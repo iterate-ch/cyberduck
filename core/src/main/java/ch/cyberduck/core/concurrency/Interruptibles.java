@@ -103,7 +103,9 @@ public class Interruptibles {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Execution of %s failed with %s", future, e));
             }
-            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+            for(Throwable cause : ExceptionUtils.getThrowableList(e)) {
+                Throwables.throwIfInstanceOf(cause, BackgroundException.class);
+            }
             throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
         }
         catch(InterruptedException e) {

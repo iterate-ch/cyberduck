@@ -22,6 +22,7 @@ import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -120,7 +121,9 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
                     response = Uninterruptibles.getUninterruptibly(future);
                 }
                 catch(ExecutionException e) {
-                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), IOException.class);
+                    for(Throwable cause : ExceptionUtils.getThrowableList(e)) {
+                        Throwables.throwIfInstanceOf(cause, IOException.class);
+                    }
                     throw new IOException(e.getCause());
                 }
                 finally {

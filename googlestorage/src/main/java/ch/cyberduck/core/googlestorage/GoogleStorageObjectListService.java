@@ -35,6 +35,7 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -170,7 +171,9 @@ public class GoogleStorageObjectListService implements ListService {
                         }
                         catch(ExecutionException e) {
                             log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
-                            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                            for(Throwable cause : ExceptionUtils.getThrowableList(e)) {
+                                Throwables.throwIfInstanceOf(cause, BackgroundException.class);
+                            }
                             throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                         }
                     }

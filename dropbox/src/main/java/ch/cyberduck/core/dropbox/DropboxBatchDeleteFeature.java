@@ -29,6 +29,8 @@ import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -126,7 +128,9 @@ public class DropboxBatchDeleteFeature implements Delete {
                         }
                     }
                     catch(ExecutionException e) {
-                        Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                        for(Throwable cause : ExceptionUtils.getThrowableList(e)) {
+                            Throwables.throwIfInstanceOf(cause, BackgroundException.class);
+                        }
                         throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                     }
                 }

@@ -19,6 +19,7 @@ import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -156,7 +157,9 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                     response = Uninterruptibles.getUninterruptibly(future);
                 }
                 catch(ExecutionException e) {
-                    Throwables.throwIfInstanceOf(e, IOException.class);
+                    for(Throwable cause : ExceptionUtils.getThrowableList(e)) {
+                        Throwables.throwIfInstanceOf(cause, IOException.class);
+                    }
                     throw new IOException(e.getCause());
                 }
                 finally {
