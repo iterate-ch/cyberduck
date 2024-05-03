@@ -226,6 +226,8 @@ public class LocalTest {
     public void testOpenOutputStream() throws Exception {
         Local l = new TestLocal(String.format("%s/%s", System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random()));
         assertNotNull(l.getOutputStream(false));
+        assertThrows(LocalAccessDeniedException.class, () -> new DefaultLocalTouchFeature().touch(l));
+        l.delete();
         new DefaultLocalTouchFeature().touch(l);
         assertNotNull(l.getOutputStream(false));
         assertNotNull(l.getOutputStream(true));
