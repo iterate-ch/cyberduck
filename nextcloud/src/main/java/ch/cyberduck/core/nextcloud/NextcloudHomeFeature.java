@@ -17,41 +17,29 @@ package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.AbstractHomeFeature;
-import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 public class NextcloudHomeFeature extends AbstractHomeFeature {
     private static final Logger log = LogManager.getLogger(NextcloudHomeFeature.class);
 
-    private final Home delegate;
     private final Host bookmark;
-    private final String root;
 
     public NextcloudHomeFeature(final Host bookmark) {
-        this(new DefaultPathHomeFeature(bookmark), bookmark);
-    }
-
-    public NextcloudHomeFeature(final Home delegate, final Host bookmark) {
-        this(delegate, bookmark, new HostPreferences(bookmark).getProperty("nextcloud.root.default"));
-    }
-
-    /**
-     * @param root WebDAV root
-     */
-    public NextcloudHomeFeature(final Home delegate, final Host bookmark, final String root) {
-        this.delegate = delegate;
         this.bookmark = bookmark;
-        this.root = root;
     }
 
     @Override
@@ -59,34 +47,131 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
         return this.find(Context.files);
     }
 
-    public Path find(final Context files) throws BackgroundException {
-        final String username = bookmark.getCredentials().getUsername();
-        if(StringUtils.isBlank(username)) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Missing username for %s", bookmark));
-            }
-            return delegate.find();
-        }
-        // Custom path setting
-        final Path workdir;
-        final Path defaultpath = new DelegatingHomeFeature(delegate).find();
-        if(!defaultpath.isRoot() && StringUtils.isNotBlank(StringUtils.removeStart(defaultpath.getAbsolute(), root))) {
-            workdir = new Path(new Path(String.format("%s/%s/%s", root, files.name(), username), EnumSet.of(Path.Type.directory)),
-                    StringUtils.removeStart(defaultpath.getAbsolute(), root), EnumSet.of(Path.Type.directory));
-        }
-        else {
-            workdir = new Path(new Path(String.format("%s/%s", root, files.name()), EnumSet.of(Path.Type.directory)),
-                    username, EnumSet.of(Path.Type.directory));
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Use home directory %s", workdir));
-        }
-        return workdir;
+    public <T> Path find(final Context context) throws BackgroundException {
+        return context.workdir(bookmark).find();
     }
 
     public enum Context {
-        files,
+        ocs {
+            @Override
+            public Home home(final Host bookmark) {
+                return () -> new Path(new HostPreferences(bookmark).getProperty("nextcloud.root.ocs"), EnumSet.of(Path.Type.directory));
+            }
+        },
+        files {
+            @Override
+            public Home home(final Host bookmark) throws BackgroundException {
+                return new DelegatingHomeFeature(new UserDavRoot(bookmark, this), new DefaultDavRoot(bookmark));
+            }
+
+            @Override
+            public Home workdir(final Host bookmark) throws BackgroundException {
+                final Path workdir = super.workdir(bookmark).find();
+                return new DelegatingHomeFeature(new DefaultPathSuffix(bookmark, workdir), () -> workdir);
+            }
+        },
         versions,
-        meta
+        meta;
+
+        public Home home(final Host bookmark) throws BackgroundException {
+            return new UserDavRoot(bookmark, this);
+        }
+
+        public Home workdir(final Host bookmark) throws BackgroundException {
+            final Path home = this.home(bookmark).find();
+            return new DelegatingHomeFeature(new WebDavRootPrefix(bookmark, home), () -> home);
+        }
+    }
+
+    private static final class UserDavRoot implements Home {
+        private final Host bookmark;
+        private final Context context;
+
+        public UserDavRoot(final Host bookmark, final Context context) {
+            this.bookmark = bookmark;
+            this.context = context;
+        }
+
+        @Override
+        public Path find() {
+            final String username = bookmark.getCredentials().getUsername();
+            if(StringUtils.isBlank(username)) {
+                return null;
+            }
+            return new Path(MessageFormat.format(
+                    new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.user"), context.name(), username), EnumSet.of(Path.Type.directory));
+        }
+    }
+
+    private static final class DefaultDavRoot implements Home {
+        private final Host bookmark;
+
+        public DefaultDavRoot(final Host bookmark) {
+            this.bookmark = bookmark;
+        }
+
+        @Override
+        public Path find() {
+            return new Path(new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.default"), EnumSet.of(Path.Type.directory));
+        }
+    }
+
+    private static final class WebDavRootPrefix implements Home {
+        private final Host bookmark;
+        private final Path home;
+
+        public WebDavRootPrefix(final Host bookmark, final Path home) {
+            this.bookmark = bookmark;
+            this.home = home;
+        }
+
+        @Override
+        public Path find() {
+            if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
+                for(String s : Arrays.asList(home.getAbsolute(), new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.default"),
+                        MessageFormat.format(new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.user"), Context.files.name(),
+                                bookmark.getCredentials().getUsername()))) {
+                    if(StringUtils.contains(bookmark.getDefaultPath(), PathNormalizer.normalize(s))) {
+                        final String prefix = StringUtils.substringBefore(bookmark.getDefaultPath(), PathNormalizer.normalize(s));
+                        if(StringUtils.isBlank((prefix))) {
+                            return null;
+                        }
+                        return PathNormalizer.compose(new Path(prefix, EnumSet.of(Path.Type.directory)),
+                                PathRelativizer.relativize(String.valueOf(Path.DELIMITER), home.getAbsolute()));
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    private static final class DefaultPathSuffix implements Home {
+        private final Host bookmark;
+        private final Path home;
+
+        public DefaultPathSuffix(final Host bookmark, final Path home) {
+            this.bookmark = bookmark;
+            this.home = home;
+        }
+
+        @Override
+        public Path find() {
+            if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
+                for(String s : Arrays.asList(home.getAbsolute(), new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.default"),
+                        MessageFormat.format(new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.user"), Context.files.name(),
+                                bookmark.getCredentials().getUsername()))) {
+                    if(StringUtils.contains(bookmark.getDefaultPath(), s)) {
+                        final String suffix = StringUtils.substringAfter(bookmark.getDefaultPath(), s);
+                        if(StringUtils.isBlank((suffix))) {
+                            return null;
+                        }
+                        return PathNormalizer.compose(home, PathRelativizer.relativize(String.valueOf(Path.DELIMITER), suffix));
+                    }
+                }
+                return PathNormalizer.compose(home, PathRelativizer.relativize(String.valueOf(Path.DELIMITER),
+                        PathNormalizer.normalize(bookmark.getDefaultPath())));
+            }
+            return null;
+        }
     }
 }

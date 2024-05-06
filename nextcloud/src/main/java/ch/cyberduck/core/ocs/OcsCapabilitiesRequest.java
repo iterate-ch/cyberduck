@@ -16,6 +16,8 @@ package ch.cyberduck.core.ocs;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
@@ -23,9 +25,9 @@ import org.apache.http.entity.ContentType;
 
 public class OcsCapabilitiesRequest extends HttpGet {
 
-    public OcsCapabilitiesRequest(final Host host) {
-        super(new StringBuilder(String.format("https://%s/ocs/v1.php/cloud/capabilities",
-                host.getHostname()
+    public OcsCapabilitiesRequest(final Host host) throws BackgroundException {
+        super(new StringBuilder(String.format("https://%s%s/cloud/capabilities",
+                host.getHostname(), new NextcloudHomeFeature(host).find(NextcloudHomeFeature.Context.ocs).getAbsolute()
         )).toString());
         this.setHeader("OCS-APIRequest", "true");
         this.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());

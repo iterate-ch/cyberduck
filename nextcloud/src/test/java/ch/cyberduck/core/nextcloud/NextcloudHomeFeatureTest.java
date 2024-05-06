@@ -24,28 +24,83 @@ import org.junit.Test;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class NextcloudHomeFeatureTest {
 
     @Test
-    public void testFind() throws Exception {
-        final Host bookmark = new Host(new NextcloudProtocol());
+    public void testFindNoUsername() throws Exception {
+        final NextcloudHomeFeature feature = new NextcloudHomeFeature(new Host(new NextcloudProtocol()));
+        {
+            assertEquals(new Path("/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/remote.php/webdav", EnumSet.of(Path.Type.directory)), feature.find());
+            assertEquals(new Path("/remote.php/webdav", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+            assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.meta));
+            assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.versions));
+        }
+    }
+
+    @Test
+    public void testFindWithUsername() throws Exception {
+        final NextcloudHomeFeature feature = new NextcloudHomeFeature(new Host(new NextcloudProtocol(), new Credentials("u")));
+        assertEquals(new Path("/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+        assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+        assertEquals(new Path("/remote.php/dav/meta/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.meta));
+        assertEquals(new Path("/remote.php/dav/versions/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.versions));
+    }
+
+    @Test
+    public void testFindWithDefaultPath() throws Exception {
+        final Host bookmark = new Host(new NextcloudProtocol(), new Credentials("u"));
         final NextcloudHomeFeature feature = new NextcloudHomeFeature(bookmark);
-        assertNull(feature.find());
-        bookmark.setCredentials(new Credentials("u"));
-        assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
-        bookmark.setDefaultPath("/remote.php/dav/");
-        assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
-        bookmark.setDefaultPath("/remote.php/dav");
-        assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find());
-        bookmark.setDefaultPath("/remote.php/dav/d");
-        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
-        bookmark.setDefaultPath("/remote.php/dav/d/");
-        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
-        bookmark.setDefaultPath("/d");
-        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
-        bookmark.setDefaultPath("/d/");
-        assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find());
+        for(String s : variants("remote.php/webdav")) {
+            bookmark.setDefaultPath(s);
+            assertEquals(new Path("/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+        }
+        for(String s : variants("remote.php/webdav/d")) {
+            bookmark.setDefaultPath(s);
+            assertEquals(new Path("/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+            assertEquals(new Path("/remote.php/dav/meta/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.meta));
+            assertEquals(new Path("/remote.php/dav/versions/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.versions));
+        }
+        for(String s : variants("remote.php/dav/files/u")) {
+            bookmark.setDefaultPath(s);
+            assertEquals(new Path("/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/remote.php/dav/files/u/", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+            assertEquals(new Path("/remote.php/dav/meta/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.meta));
+            assertEquals(new Path("/remote.php/dav/versions/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.versions));
+        }
+        for(String s : variants("remote.php/dav/files/u/d")) {
+            bookmark.setDefaultPath(s);
+            assertEquals(new Path("/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+            assertEquals(new Path("/remote.php/dav/meta/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.meta));
+            assertEquals(new Path("/remote.php/dav/versions/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.versions));
+        }
+        for(String s : variants("d")) {
+            bookmark.setDefaultPath(s);
+            assertEquals(new Path("/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+        }
+        for(String s : variants("w/remote.php/webdav")) {
+            bookmark.setDefaultPath(s);
+            assertEquals(new Path("/w/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/w/remote.php/dav/files/u", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+        }
+        for(String s : variants("w/remote.php/webdav/d")) {
+            bookmark.setDefaultPath(s);
+            assertEquals(new Path("/w/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/w/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+        }
+        for(String s : variants("w/remote.php/dav/files/u/d")) {
+            bookmark.setDefaultPath(s);
+            assertEquals(new Path("/w/ocs/v1.php", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.ocs));
+            assertEquals(new Path("/w/remote.php/dav/files/u/d", EnumSet.of(Path.Type.directory)), feature.find(NextcloudHomeFeature.Context.files));
+        }
+    }
+
+    static String[] variants(final String test) {
+        return new String[]{test, test + "/", "/" + test, "/" + test + "/"};
     }
 }
