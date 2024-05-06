@@ -122,7 +122,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
                 bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
-                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.files).getAbsolute(), file.getAbsolute())),
+                URIEncoder.encode(PathRelativizer.relativize(NextcloudHomeFeature.Context.files.home(bookmark).find().getAbsolute(), file.getAbsolute())),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 Sharee.world.equals(sharee) ? StringUtils.EMPTY : sharee.getIdentifier()
         ));
@@ -153,7 +153,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&permissions=%d",
                 bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
-                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.files).getAbsolute(), file.getAbsolute())),
+                URIEncoder.encode(PathRelativizer.relativize(NextcloudHomeFeature.Context.files.home(bookmark).find().getAbsolute(), file.getAbsolute())),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 SHARE_PERMISSIONS_CREATE
         ));
