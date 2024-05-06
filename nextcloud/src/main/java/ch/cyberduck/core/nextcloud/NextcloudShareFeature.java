@@ -90,8 +90,8 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
                 return Collections.singleton(Sharee.world);
             default:
                 final Host bookmark = session.getHost();
-                final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
-                        bookmark.getHostname(),
+                final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
+                        bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
                         SHARE_TYPE_USER // User
                 ));
                 final HttpGet resource = new HttpGet(request.toString());
@@ -120,10 +120,9 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
-                bookmark.getHostname(),
-                URIEncoder.encode(PathRelativizer.relativize(bookmark.getProtocol().getDefaultPath(),
-                        PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute()))),
+        final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
+                bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
+                URIEncoder.encode(PathRelativizer.relativize(NextcloudHomeFeature.Context.files.home(bookmark).find().getAbsolute(), file.getAbsolute())),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 Sharee.world.equals(sharee) ? StringUtils.EMPTY : sharee.getIdentifier()
         ));
@@ -152,10 +151,9 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&permissions=%d",
-                bookmark.getHostname(),
-                URIEncoder.encode(PathRelativizer.relativize(bookmark.getProtocol().getDefaultPath(),
-                        PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute()))),
+        final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&permissions=%d",
+                bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
+                URIEncoder.encode(PathRelativizer.relativize(NextcloudHomeFeature.Context.files.home(bookmark).find().getAbsolute(), file.getAbsolute())),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 SHARE_PERMISSIONS_CREATE
         ));
