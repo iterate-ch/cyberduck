@@ -78,6 +78,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ValidatingResponseHandler;
@@ -134,25 +135,18 @@ public class DAVSession extends HttpSession<DAVClient> {
                 username = credentials.getUsername();
                 domain = new HostPreferences(host).getProperty("webdav.ntlm.domain");
             }
-            client.setCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
-                    new NTCredentials(username, credentials.getPassword(),
-                            preferences.getProperty("webdav.ntlm.workstation"), domain)
-            );
-            client.setCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
-                    new NTCredentials(username, credentials.getPassword(),
-                            preferences.getProperty("webdav.ntlm.workstation"), domain)
-            );
-            client.setCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
-                    new UsernamePasswordCredentials(username, credentials.getPassword()));
-            client.setCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
-                    new UsernamePasswordCredentials(username, credentials.getPassword()));
-            client.setCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
-                    new UsernamePasswordCredentials(username, credentials.getPassword()));
+            for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
+                client.setCredentials(
+                        new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
+                        new NTCredentials(username, credentials.getPassword(),
+                                preferences.getProperty("webdav.ntlm.workstation"), domain)
+                );
+            }
+            for(String scheme : Arrays.asList(AuthSchemes.BASIC, AuthSchemes.DIGEST, AuthSchemes.KERBEROS)) {
+                client.setCredentials(
+                        new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
+                        new UsernamePasswordCredentials(username, credentials.getPassword()));
+            }
             if(preferences.getBoolean("webdav.basic.preemptive")) {
                 client.enablePreemptiveAuthentication(host.getHostname(),
                         host.getPort(),
