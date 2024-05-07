@@ -34,7 +34,6 @@ import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
@@ -167,7 +166,7 @@ public class DefaultBookmarkController extends BookmarkController {
                 return;
             }
             try {
-                PasswordStoreFactory.get().addPassword(bookmark.getProtocol().getScheme(),
+                keychain.addPassword(bookmark.getProtocol().getScheme(),
                     bookmark.getPort(),
                     bookmark.getHostname(),
                     bookmark.getCredentials().getUsername(),

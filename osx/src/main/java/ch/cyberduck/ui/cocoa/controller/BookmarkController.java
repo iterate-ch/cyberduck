@@ -86,7 +86,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected final LoginInputValidator validator;
     protected final LoginOptions options;
 
-    private final HostPasswordStore keychain
+    protected final HostPasswordStore keychain
             = PasswordStoreFactory.get();
 
     @Outlet
@@ -194,7 +194,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             controller.setSelectedPanel(PreferencesController.PreferencesToolbarItem.profiles.name());
         }
         else {
-            final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
+            final Protocol selected = protocols.forName(sender.selectedItem().representedObject());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Protocol selection changed to %s", selected));
             }
