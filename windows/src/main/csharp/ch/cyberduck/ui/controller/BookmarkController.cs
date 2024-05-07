@@ -107,6 +107,7 @@ namespace Ch.Cyberduck.Ui.Controller
             InitTimezones();
             InitTransferModes();
             Update();
+            ReadPasswordFromKeychain();
 
             View.ChangedProtocolEvent += View_ChangedProtocolEvent;
             View.ChangedProtocolEvent += ReadPasswordFromKeychain;
@@ -160,10 +161,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
-                string password = _keychain.getPassword(_host.getProtocol().getScheme(),
-                    _host.getPort(),
-                    _host.getHostname(),
-                    _host.getCredentials().getUsername());
+                string password = _keychain.findLoginPassword(_host);
                 if (!string.IsNullOrWhiteSpace(password))
                 {
                     View.Password = password;
