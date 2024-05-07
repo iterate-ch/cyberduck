@@ -107,6 +107,7 @@ namespace Ch.Cyberduck.Ui.Controller
             InitTimezones();
             InitTransferModes();
             Update();
+            ReadPasswordFromKeychain();
 
             View.ChangedProtocolEvent += View_ChangedProtocolEvent;
             View.ChangedProtocolEvent += ReadPasswordFromKeychain;
