@@ -16,12 +16,13 @@ package ch.cyberduck.core.diagnostics;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.exception.BackgroundException;
 
 public class DisabledReachability implements Reachability {
 
     @Override
-    public boolean isReachable(final Host bookmark) {
-        return true;
+    public void test(final Host bookmark) throws BackgroundException {
+        //
     }
 
     @Override

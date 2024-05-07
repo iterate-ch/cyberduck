@@ -17,7 +17,9 @@ package ch.cyberduck.core.diagnostics;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -25,12 +27,10 @@ import ch.cyberduck.core.shared.WorkdirHomeFeature;
 public class DiskReachability implements Reachability {
 
     @Override
-    public boolean isReachable(final Host bookmark) {
-        try {
-            return LocalFactory.get(new DelegatingHomeFeature(new WorkdirHomeFeature(bookmark), new DefaultPathHomeFeature(bookmark)).find().getAbsolute()).exists();
-        }
-        catch(BackgroundException e) {
-            return false;
+    public void test(final Host bookmark) throws BackgroundException {
+        final Path home = new DelegatingHomeFeature(new WorkdirHomeFeature(bookmark), new DefaultPathHomeFeature(bookmark)).find();
+        if(!LocalFactory.get(home.getAbsolute()).exists()) {
+            throw new NotfoundException(home.getName());
         }
     }
 

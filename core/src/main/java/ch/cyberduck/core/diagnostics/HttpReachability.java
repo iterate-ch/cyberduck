@@ -17,12 +17,15 @@ package ch.cyberduck.core.diagnostics;
 
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateTrustCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -35,6 +38,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -64,7 +68,7 @@ public class HttpReachability implements Reachability {
     }
 
     @Override
-    public boolean isReachable(final Host bookmark) {
+    public void test(final Host bookmark) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Test reachability for %s", bookmark));
         }
@@ -91,7 +95,8 @@ public class HttpReachability implements Reachability {
                     if(log.isWarnEnabled()) {
                         log.warn(String.format("HTTP error %s determined offline status", response));
                     }
-                    return false;
+                    throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(response.getStatusLine().getStatusCode(),
+                            response.getStatusLine().getReasonPhrase()));
             }
         }
         catch(ClientProtocolException e) {
@@ -103,22 +108,20 @@ public class HttpReachability implements Reachability {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Ignore SSL failure %s", e));
             }
-            return true;
         }
         catch(SocketException e) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Failure %s opening socket for %s", e, bookmark));
             }
-            return false;
+            throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(IOException e) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Generic failure %s for %s", e, bookmark));
             }
-            return false;
+            throw new DefaultIOExceptionMappingService().map(e);
         }
         // Ignore
-        return true;
     }
 
     @Override

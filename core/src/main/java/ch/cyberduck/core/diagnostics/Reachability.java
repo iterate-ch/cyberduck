@@ -22,6 +22,7 @@ package ch.cyberduck.core.diagnostics;
 import ch.cyberduck.core.ConnectionTimeout;
 import ch.cyberduck.core.DisabledConnectionTimeout;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public interface Reachability {
@@ -32,7 +33,17 @@ public interface Reachability {
      * network configuration error, no such host is known or the server does
      * not listing at any such port
      */
-    boolean isReachable(Host bookmark);
+    default boolean isReachable(Host bookmark) {
+        try {
+            this.test(bookmark);
+            return true;
+        }
+        catch(BackgroundException e) {
+            return false;
+        }
+    }
+
+    void test(Host bookmark) throws BackgroundException;
 
     Monitor monitor(Host bookmark, Callback callback);
 

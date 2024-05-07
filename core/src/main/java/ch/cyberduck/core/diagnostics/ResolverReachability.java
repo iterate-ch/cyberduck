@@ -18,8 +18,7 @@ package ch.cyberduck.core.diagnostics;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.Resolver;
-import ch.cyberduck.core.exception.ResolveCanceledException;
-import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 public class ResolverReachability extends DisabledReachability {
@@ -27,14 +26,8 @@ public class ResolverReachability extends DisabledReachability {
     private final Resolver resolver = new Resolver();
 
     @Override
-    public boolean isReachable(final Host bookmark) {
-        try {
-            final HostnameConfigurator configurator = bookmark.getProtocol().getFeature(HostnameConfigurator.class);
-            resolver.resolve(configurator.getHostname(bookmark.getHostname()), CancelCallback.noop);
-            return true;
-        }
-        catch(ResolveFailedException | ResolveCanceledException e) {
-            return false;
-        }
+    public void test(final Host bookmark) throws BackgroundException {
+        final HostnameConfigurator configurator = bookmark.getProtocol().getFeature(HostnameConfigurator.class);
+        resolver.resolve(configurator.getHostname(bookmark.getHostname()), CancelCallback.noop);
     }
 }
