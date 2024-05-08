@@ -11,12 +11,12 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-using ch.cyberduck.ui.ViewModels;
-using Ch.Cyberduck.Core.Refresh.Services;
-using Splat;
 using System;
 using System.Globalization;
 using System.Windows.Data;
+using ch.cyberduck.ui.ViewModels;
+using Ch.Cyberduck.Core.Refresh.Services;
+using Splat;
 
 namespace ch.cyberduck.ui.Controls;
 
@@ -46,5 +46,8 @@ public class TransferDirectionConverter : IValueConverter
         return wpfIcons?.GetResource(resourceName, parameter as int?);
     }
 
-    object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();
+    object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotSupportedException();
+    }
 }

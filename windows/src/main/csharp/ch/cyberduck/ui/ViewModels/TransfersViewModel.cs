@@ -21,12 +21,15 @@ using Ch.Cyberduck.Ui.Controller;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
+using DynamicData.Aggregation;
+using DynamicData.Binding;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
+using System.Windows.Shell;
 using static Ch.Cyberduck.ImageHelper;
 
 namespace ch.cyberduck.ui.ViewModels;
@@ -34,13 +37,15 @@ namespace ch.cyberduck.ui.ViewModels;
 public partial class TransfersViewModel : SynchronizedObservableObject
 {
     private readonly Dictionary<int, BandwidthViewModel> bandwidthLookup;
-    private readonly TransferController controller;
+    private readonly Dictionary<int, ConnectionViewModel> connectionLookup;
     private readonly WpfIconProvider iconProvider;
     private readonly Preferences preferences;
     private readonly ReadOnlyObservableCollection<TransferViewModel> selectedTransfers;
     private readonly TransfersStore store;
+    private readonly DrawingImage taskbarOverlayCache;
     private readonly ReadOnlyObservableCollection<TransferViewModel> transfers;
-    private readonly Dictionary<int, ConnectionViewModel> connectionLookup;
+    [ObservableProperty]
+    private double globalProgress;
     private BandwidthViewModel selectedBandwidth;
     [ObservableProperty]
     private ConnectionViewModel selectedConnectionLimit;
@@ -60,6 +65,12 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     private string selectedTransferLocal;
     [ObservableProperty]
     private string selectedTransferUrl;
+    [ObservableProperty]
+    private string taskbarDescription;
+    [ObservableProperty]
+    private DrawingImage taskbarOverlay;
+    [ObservableProperty]
+    private TaskbarItemProgressState trayProgressState;
 
     public ObservableCollection<BandwidthViewModel> Bandwidth { get; }
 
@@ -197,6 +208,8 @@ public partial class TransfersViewModel : SynchronizedObservableObject
 
     public ReadOnlyObservableCollection<TransferViewModel> Transfers => transfers;
 
+    private TransferController Controller { get; }
+
     public TransfersViewModel(
         TransferController controller,
         TransfersStore store,
@@ -206,7 +219,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         Preferences preferences,
         WpfIconProvider iconProvider)
     {
-        this.controller = controller;
+        Controller = controller;
         this.store = store;
         this.preferences = preferences;
         this.iconProvider = iconProvider;
@@ -218,6 +231,16 @@ public partial class TransfersViewModel : SynchronizedObservableObject
             .AsObservableCache();
         localTransfers.Connect().WhenAnyPropertyChanged().Subscribe(OnSelectedTransferPropertyChanged);
         localTransfers.CountChanged.Subscribe(OnSelectionCountChanged);
+
+        var progressStream = controller.Progress.Connect();
+        Observable.CombineLatest(
+            controller.Progress.CountChanged,
+            progressStream.Avg(m => m.Progress)
+                .InvalidateWhen(progressStream.WhenPropertyChanged(v => v.Progress, false)),
+            progressStream.TrueForAll(
+                v => v.WhenPropertyChanged(v => v.Progress),
+                v => v.Value is not null),
+            (count, progress, allRunning) => new ProgressState(allRunning, count, progress)).Subscribe(OnProgressChanged);
 
         BandwidthViewModel unlimitedBandwidth = new(-1, true, locale.localize("Unlimited Bandwidth", "Preferences"));
         Bandwidth = [
@@ -232,6 +255,8 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         ];
         connectionLookup = Connections.ToDictionary(m => m.Connections);
         selectedConnectionLimit = FetchConnectionLimit();
+
+        this.WhenValueChanged(v => v.Controller.BadgeLabel, fallbackValue: () => null).Subscribe(v => TaskbarDescription = v);
     }
 
     partial void OnSelectedConnectionLimitChanged(ConnectionViewModel value)
@@ -274,6 +299,17 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         }
     }
 
+    private void OnProgressChanged(ProgressState obj)
+    {
+        var (running, count, progress) = obj;
+        TrayProgressState = count == 0
+            ? TaskbarItemProgressState.None
+            : running
+                ? TaskbarItemProgressState.Normal
+                : TaskbarItemProgressState.Indeterminate;
+        GlobalProgress = progress / 100;
+    }
+
     [RelayCommand(CanExecute = nameof(ValidateReloadCommand))]
     private void OnReload()
     {
@@ -282,7 +318,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
             if (!item.Running)
             {
                 TransferOptions options = new TransferOptions().resume(false).reload(true);
-                controller.StartTransfer(item.Transfer.Model, options);
+                Controller.StartTransfer(item.Transfer.Model, options);
             }
         }
     }
@@ -312,7 +348,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
                 TransferOptions options = new TransferOptions()
                     .resume(true)
                     .reload(false);
-                controller.StartTransfer(item.Transfer.Model, options);
+                Controller.StartTransfer(item.Transfer.Model, options);
             }
         }
     }
@@ -322,7 +358,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         foreach (var transfer in SelectedTransfers)
         {
             transfer.Transfer.Model.setBandwidth(value.Bandwidth);
-            if (transfer.Running && controller.Lookup(transfer.Transfer.Model) is { Action: { } action })
+            if (transfer.Running && Controller.Lookup(transfer.Transfer.Model) is { Action: { } action })
             {
                 action.getMeter().reset();
             }
@@ -532,4 +568,6 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     {
         return SelectedTransfer is not null;
     }
+
+    private readonly record struct ProgressState(bool Running, int Count, double Progress);
 }

@@ -46,13 +46,11 @@ namespace ch.cyberduck.ui.ViewModels
         [ObservableProperty]
         private bool progressPending;
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ItemStatus))]
         [NotifyPropertyChangedFor(nameof(MessageText))]
         [NotifyPropertyChangedFor(nameof(ProgressText))]
         [NotifyPropertyChangedFor(nameof(Summary))]
         private TransferProgressModel progressState;
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ItemStatus))]
         [NotifyPropertyChangedFor(nameof(Summary))]
         private bool running;
         [ObservableProperty]
@@ -61,8 +59,6 @@ namespace ch.cyberduck.ui.ViewModels
         private int selectedTransferItemIndex;
 
         public bool Completed => Transfer.Completed;
-
-        public string ItemStatus => Running ? ProgressText : StatusText;
 
         public string Local => Transfer.Local;
 
@@ -196,7 +192,6 @@ namespace ch.cyberduck.ui.ViewModels
                     double progress => (false, progress)
                 };
 
-                OnPropertyChanged(nameof(ItemStatus));
                 OnPropertyChanged(nameof(MessageText));
                 OnPropertyChanged(nameof(ProgressText));
             }

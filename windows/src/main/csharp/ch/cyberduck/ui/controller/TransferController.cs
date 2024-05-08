@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
@@ -27,6 +28,7 @@ using ch.cyberduck.ui.ViewModels;
 using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Kernel;
 using StructureMap;
@@ -34,21 +36,28 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using static Ch.Cyberduck.Ui.Controller.AsyncController;
+using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 using CoreController = ch.cyberduck.core.Controller;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 using TransferProgress = ch.cyberduck.core.transfer.TransferProgress;
+using UiUtils = Ch.Cyberduck.Ui.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class TransferController : AbstractController, TransferListener, IWindowController
+    [INotifyPropertyChanged]
+    public partial class TransferController : AbstractController, TransferListener, IWindowController, ApplicationBadgeLabeler
     {
         private static TransferController instance;
         private readonly Dispatcher dispatcher;
+        private readonly NativeWindow nativeTransfersWindow = new();
         private readonly Preferences preferences = PreferencesFactory.get();
         private readonly SourceCache<TransferProgressModel, Transfer> progressCache = new(m => m.Transfer);
-        private readonly NativeWindow nativeTransfersWindow = new();
+        private readonly TransfersStore store;
         private readonly TransferCollection transfers = TransferCollection.defaultCollection();
         private TransfersWindow transfersWindow;
+        [ObservableProperty]
+        private string badgeLabel;
 
         public static TransferController Instance => instance ??= ObjectFactory.GetInstance<TransferController>();
 
@@ -60,8 +69,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         IWin32Window IWindowController.Window => nativeTransfersWindow;
 
-        public TransferController()
+        public TransferController(TransfersStore store)
         {
+            this.store = store;
             dispatcher = MainController.Application.Dispatcher;
         }
 
@@ -164,7 +174,28 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (!transfers.contains(transfer))
             {
-                /* TODO: Queue Size Warn */
+                if (transfers.size() > preferences.getInteger("queue.size.warn"))
+                {
+                    var result = UiUtils.Show(nativeTransfersWindow,
+                        title: LocaleFactory.localizedString("Clean Up"),
+                        mainIcon: TaskDialogIcon.Question,
+                        mainInstruction: LocaleFactory.localizedString("Clean Up"),
+                        content: LocaleFactory.localizedString("Remove completed transfers from list."),
+                        verificationText: LocaleFactory.localizedString("Don't ask again", "Configuration"),
+                        allowDialogCancellation: true,
+                        commonButtons: TDCBF_YES_BUTTON | TDCBF_NO_BUTTON);
+                    if (result.VerificationChecked == true)
+                    {
+                        // Never show again.
+                        preferences.setProperty("queue.size.warn", int.MaxValue);
+                    }
+
+                    if (result.Button == IDYES)
+                    {
+                        store.CleanCompleted();
+                    }
+                }
+
                 transfers.add(transfer);
             }
 
@@ -210,6 +241,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 window.Activate();
             }, this);
         }
+
+        void ApplicationBadgeLabeler.badge(string str) => BadgeLabel = str;
+
+        void ApplicationBadgeLabeler.clear() => BadgeLabel = null;
 
         void TransferListener.transferDidProgress(Transfer t, TransferProgress tp)
         {

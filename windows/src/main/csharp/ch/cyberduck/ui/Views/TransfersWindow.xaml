@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ch.cyberduck.ui.Views"
         xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml;assembly=Cyberduck.Core.Refresh"
+        xmlns:controls="clr-namespace:ch.cyberduck.ui.Controls"
         xmlns:viewmodels="clr-namespace:ch.cyberduck.ui.ViewModels"
+        xmlns:sys="clr-namespace:System;assembly=netstandard"
         d:DataContext="{d:DesignInstance Type=viewmodels:TransfersViewModel}"
         mc:Ignorable="d"
         Title="{xaml:Text Transfers,Table=Localizable}"
@@ -23,6 +25,25 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo Description="{Binding TaskbarDescription}"
+                         ProgressState="{Binding TrayProgressState}"
+                         ProgressValue="{Binding GlobalProgress}"
+                         controls:TaskbarItemOverlay.Content="{Binding TaskbarDescription}">
+            <controls:TaskbarItemOverlay.Template>
+                <DataTemplate DataType="{x:Type sys:String}">
+                    <Grid>
+                        <Ellipse Fill="Navy" />
+                        <Viewbox Margin="1">
+                            <TextBlock Text="{Binding}"
+                                       Foreground="White"
+                                       FontWeight="Bold" />
+                        </Viewbox>
+                    </Grid>
+                </DataTemplate>
+            </controls:TaskbarItemOverlay.Template>
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
 
     <DockPanel>
         <DockPanel Name="ToolBar"
@@ -349,13 +370,14 @@
             <ListBox.InputBindings>
                 <KeyBinding Gesture="Delete"
                             Command="{Binding RemoveCommand}" />
+                <KeyBinding Gesture="Return"
+                            Command="{Binding ReloadCommand}" />
             </ListBox.InputBindings>
+            
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="AutomationProperties.HelpText"
                             Value="{Binding Name}" />
-                    <Setter Property="AutomationProperties.ItemStatus"
-                            Value="{Binding ItemStatus}" />
                     <Setter Property="AutomationProperties.Name"
                             Value="{Binding Summary}" />
                     <Setter Property="IsSelected"

@@ -11,11 +11,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-using Ch.Cyberduck.Core.Refresh.Services;
-using Splat;
 using System;
 using System.Globalization;
 using System.Windows.Data;
+using Ch.Cyberduck.Core.Refresh.Services;
+using Splat;
 
 namespace ch.cyberduck.ui.Controls;
 
@@ -33,5 +33,8 @@ public class TransferStatusConverter : IValueConverter
         }, parameter as int?);
     }
 
-    object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();
+    object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotSupportedException();
+    }
 }
