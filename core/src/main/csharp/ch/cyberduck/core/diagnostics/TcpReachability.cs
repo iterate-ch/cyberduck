@@ -15,12 +15,8 @@
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 
-using System;
 using System.Diagnostics;
-using System.Net;
-using System.Net.Cache;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
 using org.apache.logging.log4j;
@@ -31,10 +27,13 @@ namespace Ch.Cyberduck.Core.Diagnostics
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(TcpReachability).FullName);
 
-        public bool isReachable(Host h)
+        public void test(Host h)
         {
-            return true;
+            //
         }
+
+        public bool isReachable(Host bookmark)
+            => Reachability.__DefaultMethods.isReachable(this, bookmark);
 
         public void diagnose(Host h)
         {

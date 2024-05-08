@@ -15,8 +15,10 @@ package ch.cyberduck.core.diagnostics;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostnameConfigurator;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 
@@ -30,20 +32,19 @@ public class TcpReachability implements Reachability {
     private static final Logger log = LogManager.getLogger(TcpReachability.class);
 
     @Override
-    public boolean isReachable(final Host bookmark) {
+    public void test(final Host bookmark) throws BackgroundException {
         final HostnameConfigurator configurator = bookmark.getProtocol().getFeature(HostnameConfigurator.class);
         try (Socket socket = new ProxySocketFactory(bookmark, new DefaultSocketConfigurator(Reachability.timeout))
                 .createSocket(configurator.getHostname(bookmark.getHostname()), bookmark.getPort())) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Opened socket %s for %s", socket, bookmark));
             }
-            return true;
         }
         catch(IOException e) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Failure opening socket for %s", bookmark));
             }
-            return false;
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

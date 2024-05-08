@@ -21,6 +21,7 @@ package ch.cyberduck.core.diagnostics;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.exception.BackgroundException;
 
 public class ReachabilityFactory extends Factory<Reachability> {
 
@@ -40,15 +41,19 @@ public class ReachabilityFactory extends Factory<Reachability> {
         }
 
         @Override
-        public boolean isReachable(final Host bookmark) {
+        public void test(final Host bookmark) throws BackgroundException {
             switch(bookmark.getProtocol().getScheme()) {
                 case file:
-                    return new DiskReachability().isReachable(bookmark);
+                    new DiskReachability().test(bookmark);
+                    break;
                 case https:
                 case http:
-                    return new ChainedReachability(monitor, new ResolverReachability(), new HttpReachability()).isReachable(bookmark);
+                    new ChainedReachability(monitor, new ResolverReachability(), new HttpReachability()).test(bookmark);
+                    break;
+                default:
+                    new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
+                    break;
             }
-            return new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).isReachable(bookmark);
         }
 
         @Override
