@@ -45,9 +45,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.hierynomus</groupId>
+            <groupId>ch.iterate.ssh</groupId>
             <artifactId>sshj</artifactId>
-            <version>${sshj-version}</version>
+            <version>0.39.0</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
