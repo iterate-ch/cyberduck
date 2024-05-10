@@ -244,7 +244,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="42">
                                 <rect key="frame" x="9" y="10" width="452" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Restore connections when opening application." id="43">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="استعادة الاتصالات عند فتح التطبيق." id="43">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -660,7 +660,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U8B-Wt-dfT">
                                         <rect key="frame" x="10" y="203" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Segmented downloads with multiple connections per file" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
+                                        <buttonCell key="cell" type="check" title="تنزيلات مجزأة مع اتصالات متعددة لكل ملف" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1034,7 +1034,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="Buu-j0-hMk">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
+                                        <buttonCell key="cell" type="check" title="التحقق من checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1042,7 +1042,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="jvf-VY-vT3">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
+                                        <buttonCell key="cell" type="check" title="التحقق من checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1342,7 +1342,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iv8-tk-Wkx">
                                 <rect key="frame" x="7" y="56" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Save passwords." id="58">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="حفظ كلمات المرور." id="58">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1373,7 +1373,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kiy-ac-4ub">
                                 <rect key="frame" x="7" y="11" width="442" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ask before closing connection." id="60">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="اسأل قبل إغلاق الاتصال." id="60">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1382,7 +1382,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="البركسيات" translatesAutoresizingMaskIntoConstraints="NO" id="288">
+                <box fixedFrame="YES" title="البروكسيات" translatesAutoresizingMaskIntoConstraints="NO" id="288">
                     <rect key="frame" x="17" y="114" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
@@ -1400,7 +1400,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="291">
                                 <rect key="frame" x="10" y="48" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="أستخدم أعدادات بروكسي النظام" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
+                                <buttonCell key="cell" type="check" title="أستخدم إعدادات بروكسي النظام" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1495,7 +1495,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Log" translatesAutoresizingMaskIntoConstraints="NO" id="lZs-z3-3nW">
+                <box fixedFrame="YES" title="السجل" translatesAutoresizingMaskIntoConstraints="NO" id="lZs-z3-3nW">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Qz9-Ok-1iw">
@@ -1505,7 +1505,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P74-g6-epb">
                                 <rect key="frame" x="10" y="48" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Enable debug log" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Ocq-JC-4Gq">
+                                <buttonCell key="cell" type="check" title="تفعيل سجل المصحح" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Ocq-JC-4Gq">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1547,7 +1547,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bhz-d7-jSQ">
                                 <rect key="frame" x="10" y="50" width="435" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Automatically download and install updates" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="NvW-EF-5oW">
+                                <buttonCell key="cell" type="check" title="قم بتنزيل التحديثات وتثبيتها تلقائيا" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="NvW-EF-5oW">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1757,7 +1757,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
+                <box fixedFrame="YES" title="ACL الافتراضي" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Sgq-Kr-VcS">
@@ -1776,7 +1776,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dmt-yG-0WL">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="Qg3-4s-tpR">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="اختر مجموعة معينة محددة مسبقًا من الحاصلين على المنح والأذونات لتطبيقها على الحاويات والملفات الجديدة." id="Qg3-4s-tpR">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1964,7 +1964,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
+                <box fixedFrame="YES" title="ACL الافتراضي" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wuK-Me-6mi">
@@ -1983,7 +1983,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lB4-Ql-F2I">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="4Yf-WE-fsN">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="اختر مجموعة معينة محددة مسبقًا من الحاصلين على المنح والأذونات لتطبيقها على الحاويات والملفات الجديدة." id="4Yf-WE-fsN">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
