@@ -7,88 +7,102 @@
              xmlns:viewmodels="clr-namespace:ch.cyberduck.ui.ViewModels"
              mc:Ignorable="d"
              d:DesignWidth="450"
-             d:DataContext="{d:DesignInstance Type=viewmodels:TransferViewModel}"
-             TextBlock.FontSize="10">
-    <Grid HorizontalAlignment="Stretch"
-          Margin="0,4">
+             d:DataContext="{d:DesignInstance Type=viewmodels:TransferViewModel}">
+    <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
         <Image Source="{Binding TransferDirection, Converter={StaticResource TransferDirection}, ConverterParameter=32}"
                Height="32"
                Width="32"
-               Margin="7"
+               Margin="3,0"
                VerticalAlignment="Top"
-               Grid.Column="0" />
-        <Image Source="{Binding Completed, Converter={StaticResource TransferStatus}, ConverterParameter=32}"
-               Height="32"
-               Width="32"
-               Margin="7"
-               VerticalAlignment="Top"
-               Grid.Column="2" />
+               Grid.Column="0"
+               Grid.RowSpan="4" />
+        
+        <ComboBox ItemsSource="{Binding Roots}"
+                  SelectedItem="{Binding SelectedTransferItem}"
+                  SelectedIndex="{Binding SelectedTransferItemIndex}"
+                  Style="{StaticResource WhiteComboBoxStyle}"
+                  DisplayMemberPath="Title"
+                  Margin="3,0,0,2"
+                  VerticalAlignment="Center"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Grid.Row="0"
+                  VirtualizingPanel.IsVirtualizing="True"
+                  VirtualizingPanel.VirtualizationMode="Recycling" />
 
-        <StackPanel Margin="7,0"
-                    Grid.Column="1">
-            <ComboBox ItemsSource="{Binding Roots}"
-                      SelectedItem="{Binding SelectedTransferItem}"
-                      SelectedIndex="{Binding SelectedTransferItemIndex}"
-                      Style="{StaticResource WhiteComboBoxStyle}"
-                      DisplayMemberPath="Title"
-                      Margin="0,3"
-                      VerticalAlignment="Center"
-                      Grid.Column="1"
-                      Grid.Row="0"
-                      VirtualizingPanel.IsVirtualizing="True"
-                      VirtualizingPanel.VirtualizationMode="Recycling" />
+        <ProgressBar Value="{Binding Progress}"
+                     IsIndeterminate="{Binding ProgressPending}"
+                     Focusable="True"
+                     Margin="3,3,0,4"
+                     AutomationProperties.LabeledBy="{Binding ElementName=ProgressTextLabel}"
+                     Grid.Column="1"
+                     Grid.ColumnSpan="2"
+                     Grid.Row="1">
+            <ProgressBar.Style>
+                <Style TargetType="ProgressBar">
+                    <Setter Property="Visibility"
+                            Value="Visible" />
 
-            <Grid Grid.Column="1"
-                  Grid.Row="1">
-                <ProgressBar Value="{Binding Progress}"
-                             IsIndeterminate="{Binding ProgressPending}"
-                             Focusable="True"
-                             AutomationProperties.LabeledBy="{Binding ElementName=ProgressTextLabel}">
-                    <ProgressBar.Style>
-                        <Style TargetType="ProgressBar">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Running}"
+                                     Value="False">
                             <Setter Property="Visibility"
-                                    Value="Visible" />
+                                    Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ProgressBar.Style>
+        </ProgressBar>
+        <TextBlock Text="{Binding StatusText}"
+                   FontWeight="Bold"
+                   Margin="3,2,0,2"
+                   Grid.Column="1"
+                   Grid.ColumnSpan="2"
+                   Grid.Row="1">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility"
+                            Value="Visible" />
 
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Running}"
-                                             Value="False">
-                                    <Setter Property="Visibility"
-                                            Value="Hidden" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ProgressBar.Style>
-                </ProgressBar>
-                <TextBlock Text="{Binding StatusText}"
-                           FontWeight="Bold">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Running}"
+                                     Value="True">
                             <Setter Property="Visibility"
-                                    Value="Visible" />
+                                    Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
 
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Running}"
-                                             Value="True">
-                                    <Setter Property="Visibility"
-                                            Value="Hidden" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
-
-            <TextBlock Text="{Binding ProgressText}"
-                       Name="ProgressTextLabel"
-                       Margin="11,0,0,0" />
-            <TextBlock Text="{Binding MessageText}"
-                       Margin="11,0,0,0" />
-        </StackPanel>
+        <Image Source="{Binding Completed, Converter={StaticResource TransferStatus}}"
+               Height="18"
+               Width="18"
+               Margin="2,-2,4,-2"
+               Grid.Column="1"
+               Grid.Row="2" />
+        <TextBlock Text="{Binding ProgressText}"
+                   Name="ProgressTextLabel"
+                   Margin="4,0,0,0"
+                   VerticalAlignment="Center"
+                   Grid.Column="2"
+                   Grid.Row="2" />
+        <TextBlock Text="{Binding MessageText}"
+                   Margin="4,0,0,0"
+                   VerticalAlignment="Center"
+                   Grid.Column="2"
+                   Grid.Row="3" />
     </Grid>
 </UserControl>

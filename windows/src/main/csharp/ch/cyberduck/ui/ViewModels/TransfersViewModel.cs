@@ -51,13 +51,6 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     private ConnectionViewModel selectedConnectionLimit;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(BandwidthEnabled))]
-    [NotifyCanExecuteChangedFor(nameof(OpenCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ReloadCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RemoveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ResumeCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ShowCommand))]
-    [NotifyCanExecuteChangedFor(nameof(StopCommand))]
-    [NotifyCanExecuteChangedFor(nameof(TrashCommand))]
     private TransferViewModel selectedTransfer;
     [ObservableProperty]
     private ImageSource selectedTransferFileIcon;
@@ -224,11 +217,15 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         this.preferences = preferences;
         this.iconProvider = iconProvider;
 
-        var localTransfers = store.Transfers.Connect().ObserveOnDispatcher()
+        var transfersCache = store.Transfers.Connect().ObserveOnDispatcher()
             .Transform(m => new TransferViewModel(controller, m, locale)).DisposeMany()
-            .Bind(out transfers)
-            .AutoRefresh(m => m.IsSelected).Filter(m => m.IsSelected).Bind(out selectedTransfers)
-            .AsObservableCache();
+            .Bind(out transfers).AsObservableCache();
+        transfersCache.Connect().WhenAnyPropertyChanged().Subscribe(OnTransferItemChanged);
+        transfersCache.CountChanged.Subscribe(OnTransfersCountChanged);
+
+        var localTransfers = transfersCache.Connect()
+            .AutoRefresh(m => m.IsSelected).Filter(m => m.IsSelected)
+            .Bind(out selectedTransfers).AsObservableCache();
         localTransfers.Connect().WhenAnyPropertyChanged().Subscribe(OnSelectedTransferPropertyChanged);
         localTransfers.CountChanged.Subscribe(OnSelectionCountChanged);
 
@@ -269,6 +266,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     {
         UpdateSelectedBandwidth();
         UpdateSelectionPanel();
+        ValidateCommands();
     }
 
     private ConnectionViewModel FetchConnectionLimit()
@@ -283,7 +281,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         return selection;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(ValidateCleanCommand))]
     private void OnClean() => store.CleanCompleted();
 
     [RelayCommand(CanExecute = nameof(ValidateOpenCommand))]
@@ -369,17 +367,11 @@ public partial class TransfersViewModel : SynchronizedObservableObject
 
     private void OnSelectedTransferPropertyChanged(TransferViewModel _)
     {
-        OpenCommand.NotifyCanExecuteChanged();
-        ReloadCommand.NotifyCanExecuteChanged();
-        ResumeCommand.NotifyCanExecuteChanged();
-        ShowCommand.NotifyCanExecuteChanged();
-        StopCommand.NotifyCanExecuteChanged();
-        TrashCommand.NotifyCanExecuteChanged();
+        ValidateCommands();
     }
 
     private void OnSelectionCountChanged(int _)
     {
-        OpenCommand.NotifyCanExecuteChanged();
         OnSelectedTransferChanged(null);
     }
 
@@ -410,6 +402,19 @@ public partial class TransfersViewModel : SynchronizedObservableObject
             }
 
             item.Cancel();
+        }
+    }
+
+    private void OnTransfersCountChanged(int obj)
+    {
+        CleanCommand.NotifyCanExecuteChanged();
+    }
+
+    private void OnTransferItemChanged(TransferViewModel transferViewModel)
+    {
+        if (SelectedTransfers.Count is 0 && transferViewModel.ProgressState is not null)
+        {
+            transferViewModel.IsSelected = true;
         }
     }
 
@@ -474,6 +479,20 @@ public partial class TransfersViewModel : SynchronizedObservableObject
             SelectedTransferLocal = null;
             SelectedTransferUrl = null;
         }
+    }
+
+    private bool ValidateCleanCommand() => Transfers.Count > 0;
+
+    private void ValidateCommands()
+    {
+        CleanCommand.NotifyCanExecuteChanged();
+        OpenCommand.NotifyCanExecuteChanged();
+        ReloadCommand.NotifyCanExecuteChanged();
+        RemoveCommand.NotifyCanExecuteChanged();
+        ResumeCommand.NotifyCanExecuteChanged();
+        ShowCommand.NotifyCanExecuteChanged();
+        StopCommand.NotifyCanExecuteChanged();
+        TrashCommand.NotifyCanExecuteChanged();
     }
 
     private bool ValidateOpenCommand()
