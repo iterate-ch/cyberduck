@@ -502,7 +502,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
             return false;
         }
 
-        if (SelectedTransfer?.Local is null || !SelectedTransfer.Completed || SelectedTransfer.Running)
+        if (SelectedTransfer?.Local is null || SelectedTransfer.Completed != true)
         {
             return false;
         }
@@ -537,12 +537,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     {
         foreach (var item in SelectedTransfers)
         {
-            if (item.Running)
-            {
-                continue;
-            }
-
-            if (!item.Completed)
+            if (item.Completed == false)
             {
                 return true;
             }
