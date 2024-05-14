@@ -114,4 +114,15 @@ public class HttpReachabilityTest {
                 new Host(new TestProtocol(Scheme.https), "cyberduck.io.f")
         ));
     }
+
+    @Test
+    public void testHostNoAuthority() {
+        final Reachability r = new HttpReachability();
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(Scheme.http), "")
+        ));
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(Scheme.https), "")
+        ));
+    }
 }
