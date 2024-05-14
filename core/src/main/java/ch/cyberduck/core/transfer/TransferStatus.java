@@ -350,12 +350,12 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return destinationlength;
     }
 
-    public void setDestinationlength(final long destinationlength) {
+    public void setDestinationLength(final long destinationlength) {
         this.destinationlength = destinationlength;
     }
 
-    public TransferStatus withEncryptedlength(final long encryptedlength) {
-        this.destinationlength = encryptedlength;
+    public TransferStatus withDestinationLength(final long destinationlength) {
+        this.destinationlength = destinationlength;
         return this;
     }
 
