@@ -33,7 +33,6 @@ import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.ctera.model.PortalSession;
 import ch.cyberduck.core.ctera.model.PublicInfo;
 import ch.cyberduck.core.dav.DAVClient;
-import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -56,7 +55,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
-import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
@@ -112,7 +110,7 @@ public class CteraSession extends DAVSession {
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
+        configuration.disableRedirectHandling();
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new ExecutionCountServiceUnavailableRetryStrategy(authentication)));
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
