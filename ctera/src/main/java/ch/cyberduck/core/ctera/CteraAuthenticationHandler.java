@@ -39,6 +39,8 @@ import java.io.IOException;
 public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(CteraAuthenticationHandler.class);
 
+    public static final String AUTH_PATH = "/ServicesPortal/api/login?format=jsonext";
+
     private final CteraSession session;
 
     private CteraTokens tokens = CteraTokens.EMPTY;
@@ -52,7 +54,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     }
 
     public void authenticate() throws BackgroundException {
-        final HttpPost login = new HttpPost("/ServicesPortal/api/login?format=jsonext");
+        final HttpPost login = new HttpPost(AUTH_PATH);
         try {
             login.setEntity(
                     new StringEntity(String.format("j_username=device%%5c%s&j_password=%s", tokens.getDeviceId(), tokens.getSharedSecret()),
