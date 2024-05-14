@@ -35,6 +35,7 @@ import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -120,6 +121,12 @@ public class HttpReachability implements Reachability {
                 log.warn(String.format("Generic failure %s for %s", e, bookmark));
             }
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        catch(IllegalArgumentException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Parsing URI %s: %s", bookmark, e));
+            }
+            throw new DefaultExceptionMappingService().map(e);
         }
         // Ignore
     }
