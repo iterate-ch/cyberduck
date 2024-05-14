@@ -60,7 +60,7 @@
             <version>${jsch-agentproxy-version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>net.schmizz</groupId>
+                    <groupId>com.hierynomus</groupId>
                     <artifactId>sshj</artifactId>
                 </exclusion>
             </exclusions>
