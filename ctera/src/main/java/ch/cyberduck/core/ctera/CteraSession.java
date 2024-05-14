@@ -115,6 +115,7 @@ public class CteraSession extends DAVSession {
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new ExecutionCountServiceUnavailableRetryStrategy(authentication)));
+        configuration.addInterceptorFirst(new CteraCookieInterceptor());
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
