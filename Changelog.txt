@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 8.9.0
 - [Feature] Resumable file uploads (ownCloud) (#15619)
+- [Feature] Support authentication using SSH certificates (SFTP) (#15183)
 - [Bugfix] Failure sharing file (ownCloud) (#15855, #15839)
 - [Bugfix] Disable signing and encryption by default (SMB) (#15817)
 - [Bugfix] NTLM authentication failures (WebDAV, SharePoint) (#15127)
