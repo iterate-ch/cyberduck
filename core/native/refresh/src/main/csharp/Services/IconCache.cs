@@ -80,12 +80,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         {
             using (UpgradeableReadLock())
             {
-                if (cache.TryGetValue(key, out var list))
+                if (!cache.TryGetValue(key, out var list))
                 {
-                    return list;
+                    list = GetCacheExclusive(key);
                 }
-
-                return GetCacheExclusive(key);
+                return list;
             }
         }
 
@@ -93,12 +92,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         {
             using (WriteLock())
             {
-                if (cache.TryGetValue(key, out var list))
+                if (!cache.TryGetValue(key, out var list))
                 {
-                    return list;
+                    cache[key] = list = new();
                 }
-
-                return cache[key] = [];
+                return list;
             }
         }
 
