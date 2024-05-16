@@ -30,7 +30,7 @@ public class TransferStatusConverter : IValueConverter
             true => "statusGreen",
             false => "statusRed",
             null => "statusYellow",
-        }, parameter as int?);
+        }, int.TryParse(parameter?.ToString(), out var size) ? size : null);
     }
 
     object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

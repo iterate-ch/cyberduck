@@ -43,7 +43,7 @@ public class TransferDirectionConverter : IValueConverter
             return null;
         }
 
-        return wpfIcons?.GetResource(resourceName, parameter as int?);
+        return wpfIcons?.GetResource(resourceName, int.TryParse(parameter?.ToString(), out var size) ? size : null);
     }
 
     object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
