@@ -133,7 +133,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         private Image Get(object key, string path, int size, string classifier, bool returnDefault)
         {
             var images = Get(key, path, classifier, returnDefault, out var image);
-            return image ?? NearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+            return image ?? NearestFit(images, size, (c, s, i) =>
+            {
+                c.CacheIcon(key, s, i, classifier);
+                c.MarkResized(key, s, classifier);
+            });
         }
 
         private void ProfileListObserver_ProfilesChanged(object sender, EventArgs e) => BuildProtocolImageList();

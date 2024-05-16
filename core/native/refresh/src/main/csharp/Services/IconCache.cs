@@ -39,11 +39,40 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         {
             using (ReadLock())
             {
-                return cache.Where(kv => !kv.Key.Default)
-                    .Where(kv => filter((kv.Key.Key, kv.Key.Classifier, kv.Key.Size)))
-                    .Select(x => x.Value)
-                    .Select(x => (T)x[typeof(T)])
-                    .Where(x => x is not null).ToList();
+                List<T> result = [];
+                foreach (var (key, lookup) in cache)
+                {
+                    if (key.Default)
+                    {
+                        // Skip keys where Default is set.
+                        // These are basically just mappings
+                        // to the non-default key, with a specific
+                        // size.
+                        continue;
+                    }
+
+                    if (lookup.ContainsKey("Resized"))
+                    {
+                        // Skip already resized images.
+                        // This way there is no degradation by resizing
+                        // already resized images.
+                        continue;
+                    }
+
+                    if (!filter((key.Key, key.Classifier, key.Size)))
+                    {
+                        continue;
+                    }
+
+                    if (lookup[typeof(T)] is not T value)
+                    {
+                        continue;
+                    }
+
+                    result.Add(value);
+                }
+
+                return result;
             }
         }
 
@@ -51,11 +80,12 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         {
             using (UpgradeableReadLock())
             {
-                if (!cache.TryGetValue(key, out var list))
+                if (cache.TryGetValue(key, out var list))
                 {
-                    list = GetCacheExclusive(key);
+                    return list;
                 }
-                return list;
+
+                return GetCacheExclusive(key);
             }
         }
 
@@ -63,12 +93,20 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         {
             using (WriteLock())
             {
-                if (!cache.TryGetValue(key, out var list))
+                if (cache.TryGetValue(key, out var list))
                 {
-                    cache[key] = list = new();
+                    return list;
                 }
-                return list;
+
+                return cache[key] = [];
             }
+        }
+
+        public void MarkResized(object key, int size, string classifier = null)
+        {
+            var e = (key, classifier, false, size);
+            var cache = GetCache(e);
+            cache["Resized"] = null; // use Key as Flag-marker
         }
 
         public ReaderWriterLockSlimExtensions.ReadLock ReadLock() => writer.UseReadLock();
@@ -134,6 +172,14 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 {
                     var local = item.Cache.cache[key];
                     item.Cache.cache.Remove(key);
+                    foreach (var value in local)
+                    {
+                        if (value is IDisposable disposable)
+                        {
+                            disposable.Dispose();
+                        }
+                    }
+
                     local.Clear();
                 }
             }

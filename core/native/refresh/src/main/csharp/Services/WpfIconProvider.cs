@@ -119,7 +119,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             using (IconCache.UpgradeableReadLock())
             {
                 var images = Get(key, path, classifier, returnDefault, out var image);
-                return image ?? NearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+                return image ?? NearestFit(images, size, (c, s, i) =>
+                {
+                    c.CacheIcon(key, s, i, classifier);
+                    c.MarkResized(key, s, classifier);
+                });
             }
         }
 
