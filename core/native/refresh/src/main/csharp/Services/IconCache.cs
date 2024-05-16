@@ -130,7 +130,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 var cacheKeys = item.Cache.cache.Keys
                     .Where(x => Equals(item.Key, x.Key) && string.Equals(item.Classifier, x.Classifier))
                     .ToArray();
-                foreach(var key in cacheKeys)
+                foreach (var key in cacheKeys)
                 {
                     var local = item.Cache.cache[key];
                     item.Cache.cache.Remove(key);

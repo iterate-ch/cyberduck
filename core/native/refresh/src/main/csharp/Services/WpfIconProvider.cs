@@ -84,6 +84,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
 
             RenderTargetBitmap bmp = new(size, size, 96, 96, baseImage.Format);
+            RenderOptions.SetBitmapScalingMode(bmp, BitmapScalingMode.Fant);
             bmp.Render(visual);
             bmp.Freeze();
             return bmp;
@@ -186,17 +187,14 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         private BitmapSource ResizeImage(BitmapSource source, int size)
         {
             Rect rect = new(new(size, size));
-            DrawingGroup group = new();
-            RenderOptions.SetBitmapScalingMode(group, BitmapScalingMode.Fant);
-            group.Children.Add(new ImageDrawing(source, rect));
-
             DrawingVisual targetVisual = new();
             using (var context = targetVisual.RenderOpen())
             {
-                context.DrawDrawing(group);
+                context.DrawImage(source, rect);
             }
 
             RenderTargetBitmap resized = new(size, size, 96, 96, PixelFormats.Default);
+            RenderOptions.SetBitmapScalingMode(targetVisual, BitmapScalingMode.Fant);
             resized.Render(targetVisual);
             resized.Freeze();
             return resized;
