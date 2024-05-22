@@ -23,11 +23,14 @@ using CommunityToolkit.Mvvm.Input;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
+using org.apache.logging.log4j;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Shell;
 using static Ch.Cyberduck.ImageHelper;
@@ -36,6 +39,8 @@ namespace ch.cyberduck.ui.ViewModels;
 
 public partial class TransfersViewModel : SynchronizedObservableObject
 {
+    public static readonly Logger Log = LogManager.getLogger(typeof(TransferViewModel).FullName);
+
     private readonly Dictionary<int, BandwidthViewModel> bandwidthLookup;
     private readonly Dictionary<int, ConnectionViewModel> connectionLookup;
     private readonly WpfIconProvider iconProvider;
@@ -44,6 +49,10 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     private readonly TransfersStore store;
     private readonly DrawingImage taskbarOverlayCache;
     private readonly ReadOnlyObservableCollection<TransferViewModel> transfers;
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(OpenCommand))]
+    private bool canOpen;
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(ShowCommand))]
+    private bool canShow;
     [ObservableProperty]
     private double globalProgress;
     private BandwidthViewModel selectedBandwidth;
@@ -269,6 +278,14 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         ValidateCommands();
     }
 
+    private static void LogTask(Task task)
+    {
+        if (Log.isDebugEnabled() && task is { IsFaulted: true, Exception: { } exception })
+        {
+            Log.debug(exception);
+        }
+    }
+
     private ConnectionViewModel FetchConnectionLimit()
     {
         var rate = preferences.getInteger("queue.connections.limit");
@@ -284,7 +301,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     [RelayCommand(CanExecute = nameof(ValidateCleanCommand))]
     private void OnClean() => store.CleanCompleted();
 
-    [RelayCommand(CanExecute = nameof(ValidateOpenCommand))]
+    [RelayCommand(CanExecute = nameof(CanOpen))]
     private void OnOpen()
     {
         var launcher = ApplicationLauncherFactory.get();
@@ -294,6 +311,41 @@ public partial class TransfersViewModel : SynchronizedObservableObject
             {
                 return;
             }
+        }
+    }
+
+    [RelayCommand(AllowConcurrentExecutions = true)]
+    private async Task OnOpenCanExecute(CancellationToken cancellationToken)
+    {
+        CanOpen = false;
+        try
+        {
+            CanOpen = await Task.Run(Run, cancellationToken).ConfigureAwait(true);
+        }
+        catch { }
+
+        bool Run()
+        {
+            if (SelectedTransfers.Count != 1)
+            {
+                return false;
+            }
+
+            if (SelectedTransfer?.Local is null || SelectedTransfer.Completed != true)
+            {
+                return false;
+            }
+
+            using var enumerator = SelectedTransfer.Roots.GetEnumerator();
+            while (!cancellationToken.IsCancellationRequested && enumerator.MoveNext())
+            {
+                if (enumerator.Current.TransferItem.Local.exists())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
@@ -375,7 +427,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         OnSelectedTransferChanged(null);
     }
 
-    [RelayCommand(CanExecute = nameof(ValidateShowCommand))]
+    [RelayCommand(CanExecute = nameof(CanShow))]
     private void OnShow()
     {
         var reveal = RevealServiceFactory.get();
@@ -388,6 +440,40 @@ public partial class TransfersViewModel : SynchronizedObservableObject
                     reveal.reveal(file.TransferItem.Local);
                 }
             }
+        }
+    }
+
+    [RelayCommand(AllowConcurrentExecutions = true)]
+    private async Task OnShowCanExecute(CancellationToken cancellationToken)
+    {
+        CanShow = false;
+        try
+        {
+            CanShow = await Task.Run(Run, cancellationToken).ConfigureAwait(true);
+        }
+        catch { }
+
+        bool Run()
+        {
+            foreach (var item in SelectedTransfers)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (item.Local is null)
+                {
+                    continue;
+                }
+
+                foreach (var file in item.Roots)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (file.TransferItem.Local.exists())
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 
@@ -486,36 +572,14 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     private void ValidateCommands()
     {
         CleanCommand.NotifyCanExecuteChanged();
-        OpenCommand.NotifyCanExecuteChanged();
         ReloadCommand.NotifyCanExecuteChanged();
         RemoveCommand.NotifyCanExecuteChanged();
         ResumeCommand.NotifyCanExecuteChanged();
-        ShowCommand.NotifyCanExecuteChanged();
         StopCommand.NotifyCanExecuteChanged();
         TrashCommand.NotifyCanExecuteChanged();
-    }
 
-    private bool ValidateOpenCommand()
-    {
-        if (SelectedTransfers.Count != 1)
-        {
-            return false;
-        }
-
-        if (SelectedTransfer?.Local is null || SelectedTransfer.Completed != true)
-        {
-            return false;
-        }
-
-        foreach (var item in SelectedTransfer.Roots)
-        {
-            if (item.TransferItem.Local.exists())
-            {
-                return true;
-            }
-        }
-
-        return false;
+        OpenCanExecuteCommand.ExecuteAsync(null).ContinueWith(LogTask);
+        ShowCanExecuteCommand.ExecuteAsync(null).ContinueWith(LogTask);
     }
 
     private bool ValidateReloadCommand()
@@ -540,25 +604,6 @@ public partial class TransfersViewModel : SynchronizedObservableObject
             if (item.Completed == false)
             {
                 return true;
-            }
-        }
-
-        return false;
-    }
-
-    private bool ValidateShowCommand()
-    {
-        foreach (var item in SelectedTransfers)
-        {
-            if (item.Local != null)
-            {
-                foreach (var file in item.Roots)
-                {
-                    if (file.TransferItem.Local.exists())
-                    {
-                        return true;
-                    }
-                }
             }
         }
 
