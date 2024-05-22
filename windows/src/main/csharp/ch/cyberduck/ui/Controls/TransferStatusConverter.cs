@@ -14,23 +14,20 @@
 using System;
 using System.Globalization;
 using System.Windows.Data;
-using Ch.Cyberduck.Core.Refresh.Services;
-using Splat;
+using System.Windows.Media;
 
 namespace ch.cyberduck.ui.Controls;
 
 public class TransferStatusConverter : IValueConverter
 {
-    private readonly WpfIconProvider wpfIcons = Locator.Current.GetService<WpfIconProvider>();
-
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return wpfIcons?.GetResource((value as bool?) switch
+        return (value as bool?) switch
         {
-            true => "statusGreen",
-            false => "statusRed",
-            null => "statusYellow",
-        }, int.TryParse(parameter?.ToString(), out var size) ? size : null);
+            true => Brushes.LimeGreen,
+            false => Brushes.Tomato,
+            null => Brushes.Goldenrod,
+        };
     }
 
     object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -89,12 +89,27 @@
             </TextBlock.Style>
         </TextBlock>
 
-        <Image Source="{Binding Completed, Converter={StaticResource TransferStatus}, ConverterParameter=16}"
-               Height="16"
-               Width="16"
-               Margin="3,-5,4,-5"
-               Grid.Column="1"
-               Grid.Row="2" />
+        <Ellipse Fill="{Binding Completed, Converter={StaticResource TransferStatus}}"
+                 Height="12"
+                 Margin="3,-3,4,-3"
+                 Width="12"
+                 Grid.Column="1"
+                 Grid.Row="2">
+            <!-- 
+            This grid is cursed.
+            Set constant height, then move to center by
+            removing layout through negative margin.
+            Height is set to 12, label has height of 13.3.
+            When removing negative margin height resets to 17
+            For ellipse height, grid row height equals
+            - 8 = 14
+            - 10 = 15.5
+            - 12 = 17
+            - 14 = 18.5
+            - 16 = 20
+            - 18 = 21.5
+            -->
+        </Ellipse>
         <TextBlock Text="{Binding ProgressText, FallbackValue=ProgressText}"
                    Name="ProgressTextLabel"
                    Margin="4,0,0,0"
