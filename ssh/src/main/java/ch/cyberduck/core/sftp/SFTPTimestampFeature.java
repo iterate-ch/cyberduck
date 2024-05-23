@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
@@ -41,10 +42,11 @@ public class SFTPTimestampFeature extends DefaultTimestampFeature implements Tim
             if(null != status.getModified()) {
                 // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
                 // All times are represented as seconds from Jan 1, 1970 in UTC.
-                final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(
-                        System.currentTimeMillis() / 1000, status.getModified() != null ? status.getModified() / 1000 : System.currentTimeMillis() / 1000
-                ).build();
+                final long atime = Timestamp.toSeconds(System.currentTimeMillis());
+                final long mtime = Timestamp.toSeconds(status.getModified() != null ? status.getModified() : System.currentTimeMillis());
+                final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(atime, mtime).build();
                 session.sftp().setAttributes(file.getAbsolute(), attrs);
+                status.setResponse(new PathAttributes(status.getResponse()).withModificationDate(mtime));
             }
         }
         catch(IOException e) {
