@@ -73,7 +73,8 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
                 final DavResource resource = this.getResource(file);
                 session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getModified()), Collections.emptyList(),
                         this.getCustomHeaders(file, status));
-                status.setResponse(new DAVAttributesFinderFeature(session).toAttributes(resource).withModificationDate(status.getModified()));
+                status.setResponse(new DAVAttributesFinderFeature(session).toAttributes(resource).withModificationDate(
+                        Timestamp.toSeconds(status.getModified())));
             }
         }
         catch(SardineException e) {
