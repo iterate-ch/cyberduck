@@ -29,23 +29,21 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
 
     @Override
     public Credentials configure(final Host host) {
-        if(new HostPreferences(host).getBoolean("webdav.ntlm.windows.authentication.enable")) {
-            if(WinHttpClients.isWinAuthAvailable()) {
-                if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
-                    final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
-                    final Credentials credentials = new Credentials(host.getCredentials())
-                            .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
-                    if(StringUtils.contains(nameSamCompatible, '\\')) {
-                        credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
-                    }
-                    else {
-                        credentials.setUsername(nameSamCompatible);
-                    }
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Configure %s with username %s", host, credentials));
-                    }
-                    return credentials;
+        if(WinHttpClients.isWinAuthAvailable()) {
+            if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+                final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
+                final Credentials credentials = new Credentials(host.getCredentials())
+                        .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
+                if(StringUtils.contains(nameSamCompatible, '\\')) {
+                    credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
                 }
+                else {
+                    credentials.setUsername(nameSamCompatible);
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Configure %s with username %s", host, credentials));
+                }
+                return credentials;
             }
         }
         return host.getCredentials();
