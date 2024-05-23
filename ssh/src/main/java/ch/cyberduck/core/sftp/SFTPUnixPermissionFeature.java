@@ -18,10 +18,12 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
@@ -67,9 +69,9 @@ public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature impl
     }
 
     @Override
-    public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+    public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
         final FileAttributes attr = new FileAttributes.Builder()
-                .withPermissions(Integer.parseInt(permission.getMode(), 8))
+                .withPermissions(Integer.parseInt(status.getPermission().getMode(), 8))
                 .build();
         try {
             session.sftp().setAttributes(file.getAbsolute(), attr);
@@ -77,5 +79,6 @@ public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature impl
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
+        status.setResponse(new PathAttributes(status.getResponse()).withPermission(status.getPermission()));
     }
 }

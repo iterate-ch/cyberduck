@@ -19,6 +19,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
 
@@ -31,7 +32,11 @@ public interface UnixPermission {
 
     Permission getUnixPermission(Path file) throws BackgroundException;
 
-    void setUnixPermission(Path file, Permission permission) throws BackgroundException;
+    default void setUnixPermission(Path file, Permission permission) throws BackgroundException {
+        this.setUnixPermission(file, new TransferStatus().withPermission(permission));
+    }
+
+    void setUnixPermission(Path file, TransferStatus status) throws BackgroundException;
 
     /**
      * @param file File on local disk

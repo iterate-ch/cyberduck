@@ -22,6 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
 
@@ -63,8 +64,8 @@ public class CryptoUnixPermission implements UnixPermission {
     }
 
     @Override
-    public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-        delegate.setUnixPermission(cryptomator.encrypt(session, file), permission);
+    public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
+        delegate.setUnixPermission(cryptomator.encrypt(session, file), status);
     }
 
     @Override

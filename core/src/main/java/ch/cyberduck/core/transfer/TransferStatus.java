@@ -530,6 +530,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.permission = permission;
     }
 
+    public TransferStatus withPermission(Permission permission) {
+        this.permission = permission;
+        return this;
+    }
+
     public Acl getAcl() {
         return acl;
     }

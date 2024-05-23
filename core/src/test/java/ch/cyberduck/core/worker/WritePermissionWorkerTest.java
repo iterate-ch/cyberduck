@@ -28,8 +28,10 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.TestPermissionAttributes;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -82,8 +84,8 @@ public class WritePermissionWorkerTest {
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) {
-                            assertEquals(new Permission(744), permission);
+                        public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
+                            assertEquals(new Permission(744), status.getPermission());
                         }
                     };
                 }
@@ -137,16 +139,16 @@ public class WritePermissionWorkerTest {
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) {
+                        public void setUnixPermission(final Path file, final TransferStatus status) {
                             switch(file.getName()) {
                                 case "a":
-                                    assertEquals(new Permission(644), permission);
+                                    assertEquals(new Permission(644), status.getPermission());
                                     break;
                                 case "d":
-                                    assertEquals(new Permission(544), permission);
+                                    assertEquals(new Permission(544), status.getPermission());
                                     break;
                                 case "f":
-                                    assertEquals(new Permission(644), permission);
+                                    assertEquals(new Permission(644), status.getPermission());
                                     break;
                                 default:
                                     fail();
@@ -207,15 +209,15 @@ public class WritePermissionWorkerTest {
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) {
+                        public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
                             if(file.equals(a)) {
-                                assertEquals(file.toString(), new Permission(775), permission);
+                                assertEquals(file.toString(), new Permission(775), status.getPermission());
                             }
                             if(file.equals(d)) {
-                                assertEquals(file.toString(), new Permission(775), permission);
+                                assertEquals(file.toString(), new Permission(775), status.getPermission());
                             }
                             if(file.equals(f)) {
-                                assertEquals(file.toString(), new Permission(664), permission);
+                                assertEquals(file.toString(), new Permission(664), status.getPermission());
                             }
                         }
                     };
@@ -266,8 +268,8 @@ public class WritePermissionWorkerTest {
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) {
-                            assertEquals(new Permission(1744), permission);
+                        public void setUnixPermission(final Path file, final TransferStatus status) {
+                            assertEquals(new Permission(1744), status.getPermission());
                         }
                     };
                 }
