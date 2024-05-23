@@ -344,6 +344,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.created = millis;
     }
 
+    public PathAttributes withCreationDate(final long millis) {
+        this.setCreationDate(millis);
+        return this;
+    }
+
     @Override
     public long getAccessedDate() {
         return accessed;
