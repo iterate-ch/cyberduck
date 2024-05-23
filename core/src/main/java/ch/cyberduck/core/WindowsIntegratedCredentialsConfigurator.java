@@ -16,7 +16,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.auth.win.CurrentWindowsCredentials;
@@ -27,6 +26,16 @@ import org.apache.logging.log4j.Logger;
 public class WindowsIntegratedCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(WindowsIntegratedCredentialsConfigurator.class);
 
+    private final boolean includeDomain;
+
+    public WindowsIntegratedCredentialsConfigurator() {
+        this(false);
+    }
+
+    public WindowsIntegratedCredentialsConfigurator(final boolean includeDomain) {
+        this.includeDomain = includeDomain;
+    }
+
     @Override
     public Credentials configure(final Host host) {
         if(WinHttpClients.isWinAuthAvailable()) {
@@ -34,7 +43,7 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
                 final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
                 final Credentials credentials = new Credentials(host.getCredentials())
                         .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
-                if(StringUtils.contains(nameSamCompatible, '\\')) {
+                if(!includeDomain && StringUtils.contains(nameSamCompatible, '\\')) {
                     credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
                 }
                 else {

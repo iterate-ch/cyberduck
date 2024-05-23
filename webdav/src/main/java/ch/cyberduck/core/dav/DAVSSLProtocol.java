@@ -88,7 +88,7 @@ public class DAVSSLProtocol extends AbstractProtocol {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == CredentialsConfigurator.class) {
-            return (T) new WindowsIntegratedCredentialsConfigurator();
+            return (T) new WindowsIntegratedCredentialsConfigurator(true);
         }
         return super.getFeature(type);
     }
