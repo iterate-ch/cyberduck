@@ -16,6 +16,10 @@
 // feedback@cyberduck.io
 // 
 
+using System;
+using System.Windows.Forms;
+using System.Windows.Interop;
+using System.Windows.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pool;
@@ -28,13 +32,12 @@ using ch.cyberduck.ui.ViewModels;
 using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Core.VirtualDesktop;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Kernel;
+using org.apache.logging.log4j;
 using StructureMap;
-using System.Windows.Forms;
-using System.Windows.Interop;
-using System.Windows.Threading;
 using static Ch.Cyberduck.Ui.Controller.AsyncController;
 using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
 using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
@@ -48,6 +51,8 @@ namespace Ch.Cyberduck.Ui.Controller
     [INotifyPropertyChanged]
     public partial class TransferController : AbstractController, TransferListener, IWindowController, ApplicationBadgeLabeler
     {
+        public static Logger Log = LogManager.getLogger(typeof(TransferController).FullName);
+
         private static TransferController instance;
         private readonly Dispatcher dispatcher;
         private readonly NativeWindow nativeTransfersWindow = new();
@@ -210,7 +215,7 @@ namespace Ch.Cyberduck.Ui.Controller
             background(action);
         }
 
-        public void ShowWindow()
+        public void ShowWindow(Guid? desktop = null)
         {
             dispatcher.Invoke((TransferController controller) =>
             {
@@ -235,6 +240,34 @@ namespace Ch.Cyberduck.Ui.Controller
                     };
 
                     controller.nativeTransfersWindow.AssignHandle(new WindowInteropHelper(window).EnsureHandle());
+                }
+
+                if (desktop is { } desktopLocal)
+                {
+                    bool isOnDesktop = false;
+                    try
+                    {
+                        isOnDesktop = DesktopManager.IsWindowOnCurrentVirtualDesktop(nativeTransfersWindow);
+                    }
+                    catch (Exception e)
+                    {
+                        if (Log.isDebugEnabled())
+                        {
+                            Log.debug("Failure determining whether window is on current desktop", e);
+                        }
+                    }
+
+                    try
+                    {
+                        DesktopManager.MoveWindowToDesktop(nativeTransfersWindow, desktopLocal);
+                    }
+                    catch (Exception e)
+                    {
+                        if (Log.isDebugEnabled())
+                        {
+                            Log.debug("cannot move window to desktop.", e);
+                        }
+                    }
                 }
 
                 window.Show();

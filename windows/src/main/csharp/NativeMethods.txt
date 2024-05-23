@@ -16,8 +16,6 @@ HideCaret
 IDropTargetHelper
 IInitializeWithWindow
 IObjectArray
-ITaskbarList
-ITaskbarList3
 IVirtualDesktopManager
 LVM_FIRST
 LVM_GETCOLUMNORDERARRAY
@@ -29,7 +27,6 @@ SB_BOTTOM
 SetMenuInfo
 SetMenuItemInfo
 SetThreadDpiAwarenessContext
-TaskbarList
 TO_ADVANCEDTYPOGRAPHY
 VIRTUAL_KEY
 VirtualDesktopManager
