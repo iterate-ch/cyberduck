@@ -344,7 +344,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                                 file.getName(), status.getPermission()));
-                        feature.setUnixPermission(file, status.getPermission());
+                        feature.setUnixPermission(file, status);
                     }
                     catch(BackgroundException e) {
                         // Ignore
