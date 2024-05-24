@@ -543,6 +543,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.acl = acl;
     }
 
+    public TransferStatus withAcl(Acl acl) {
+        this.acl = acl;
+        return this;
+    }
+
     public Encryption.Algorithm getEncryption() {
         return encryption;
     }

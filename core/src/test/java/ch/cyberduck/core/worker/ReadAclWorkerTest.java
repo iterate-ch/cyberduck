@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.shared.DefaultAclFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -55,7 +56,7 @@ public class ReadAclWorkerTest {
                                 }
 
                                 @Override
-                                public void setPermission(final Path file, final Acl acl) {
+                                public void setPermission(final Path file, final TransferStatus status) {
                                     //
                                 }
 

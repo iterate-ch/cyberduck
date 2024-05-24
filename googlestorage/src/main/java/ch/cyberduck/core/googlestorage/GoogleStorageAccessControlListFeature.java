@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -171,16 +173,16 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     }
 
     @Override
-    public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+    public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
-                final List<BucketAccessControl> bucketAccessControls = this.toBucketAccessControl(acl);
+                final List<BucketAccessControl> bucketAccessControls = this.toBucketAccessControl(status.getAcl());
                 session.getClient().buckets().update(bucket.getName(),
                         new Bucket().setAcl(bucketAccessControls)).execute();
             }
             else {
-                final List<ObjectAccessControl> objectAccessControls = this.toObjectAccessControl(acl);
+                final List<ObjectAccessControl> objectAccessControls = this.toObjectAccessControl(status.getAcl());
                 final Storage.Objects.Update request = session.getClient().objects().update(bucket.getName(), containerService.getKey(file),
                         new StorageObject().setAcl(objectAccessControls));
                 if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
@@ -188,6 +190,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
                 }
                 request.execute();
             }
+            status.setResponse(new PathAttributes(status.getResponse()).withAcl(status.getAcl()));
         }
         catch(IOException e) {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Cannot change permissions of {0}", e, file);
