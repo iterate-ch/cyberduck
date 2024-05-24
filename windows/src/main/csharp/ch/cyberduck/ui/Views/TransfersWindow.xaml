@@ -261,8 +261,7 @@
                                Grid.Row="1" />
                 </Grid>
                 <Separator Visibility="{Binding ToolbarSeparatorRight,Converter={StaticResource b2vis}}" />
-                <StackPanel Orientation="Horizontal"
-                            TextBlock.FontSize="10">
+                <StackPanel Orientation="Horizontal">
                     <Button Command="{Binding OpenCommand}"
                             Visibility="{Binding ToolbarOpen,Converter={StaticResource b2vis}}"
                             Margin="3,0"
