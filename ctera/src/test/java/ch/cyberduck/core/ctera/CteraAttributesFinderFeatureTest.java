@@ -214,6 +214,12 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
                 new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
                 new Acl.UserAndRole(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)
         ), subfolderAcl);
+
+        final Path file = new Path(subfolder, "long term retention.txt", EnumSet.of(AbstractPath.Type.file));
+        final Acl fileAcl = new CteraAttributesFinderFeature(session).find(file).getAcl();
+        assertEquals(new Acl(
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)
+        ), fileAcl);
     }
 
     @Test
