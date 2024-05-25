@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -106,8 +108,14 @@ public class HttpReachability implements Reachability {
             }
         }
         catch(SSLException e) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Ignore SSL failure %s", e));
+            try {
+                throw new SSLExceptionMappingService().map(e);
+            }
+            catch(ConnectionCanceledException c) {
+                // Certificate error only
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Ignore SSL failure %s", e));
+                }
             }
         }
         catch(SocketException e) {
