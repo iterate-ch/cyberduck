@@ -23,14 +23,15 @@ using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
+using ch.cyberduck.ui.core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class PromptPasswordController : WindowController<IPasswordPromptView>, PasswordCallback
     {
-        private readonly WindowController _browser;
+        private readonly IWindowController _browser;
 
-        public PromptPasswordController(WindowController c)
+        public PromptPasswordController(IWindowController c)
         {
             _browser = c;
         }
@@ -57,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.CanSkip = options.anonymous();
 
                 View.ValidateInput += ValidateInputEventHandler;
-                switch (View.ShowDialog(_browser.View))
+                switch (View.ShowDialog(_browser.Window))
                 {
                     case DialogResult.Cancel:
                         throw new LoginCanceledException();

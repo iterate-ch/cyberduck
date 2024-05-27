@@ -25,7 +25,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class SyncPromptController : TransferPromptController
     {
-        public SyncPromptController(WindowController parent, Transfer transfer, SessionPool source, SessionPool destination)
+        public SyncPromptController(TransferController parent, Transfer transfer, SessionPool source, SessionPool destination)
             : base(parent, transfer, source, destination)
         {
             TransferPromptModel = new SyncPromptModel(this, source, destination, Transfer);

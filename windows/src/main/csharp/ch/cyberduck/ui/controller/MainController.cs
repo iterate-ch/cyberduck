@@ -46,11 +46,11 @@ using ch.cyberduck.core.owncloud;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
-using ch.cyberduck.core.smb;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.sds;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
+using ch.cyberduck.core.smb;
 using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.storegate;
 using ch.cyberduck.core.threading;
@@ -77,6 +77,7 @@ using System.Runtime.CompilerServices;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using System.Windows.Shell;
@@ -84,6 +85,8 @@ using System.Windows.Threading;
 using Windows.Services.Store;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
+using XamlGeneratedNamespace;
+using static Windows.Win32.PInvoke;
 using Application = ch.cyberduck.core.local.Application;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 
@@ -104,6 +107,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BaseController _controller;
         private readonly PathKindDetector _detector = new DefaultPathKindDetector();
         private readonly SynchronizationContext mainThreadSync;
+        private readonly GeneratedApplication wpfHelper;
 
         /// <summary>
         /// Saved browsers
@@ -127,6 +131,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private PeriodicUpdateChecker _updater;
         private ServiceHost serviceHost;
 
+        public Dispatcher Dispatcher => wpfHelper.Dispatcher;
+
+        public SynchronizationContext SynchronizationContext => mainThreadSync;
+
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -149,20 +157,20 @@ namespace Ch.Cyberduck.Ui.Controller
                 AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             }
 
-            // Initialize WindowsFormsSynchronizationContext (sets SynchronizationContext.Current)
-            SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
-            mainThreadSync = SynchronizationContext.Current;
-
             protocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new SMBProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(), new SharepointSiteProtocol(),
                 new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol(), new OwncloudProtocol(), new CteraProtocol(), new BoxProtocol(), new EueProtocol());
             protocolFactory.load();
+            
+            SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+            mainThreadSync = SynchronizationContext.Current;
 
             Locator.SetLocator(new StructureMapBootstrapper.SplatDependencyResolver());
             Locator.CurrentMutable.InitializeSplat();
             Locator.CurrentMutable.InitializeReactiveUI();
+            wpfHelper = GeneratedApplication.OffThread();
 
             // Execute OnStartup later
             mainThreadSync.Post(OnStartup, null);
@@ -865,7 +873,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _bc.Invoke(() =>
                 {
                     transfersSemaphore.Wait();
-                    TransferController.Instance.View.Show();
+                    TransferController.Instance.ShowWindow();
                 });
             }
         }
@@ -985,6 +993,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Shutdown(bool updating)
         {
+            wpfHelper.Dispatcher.InvokeShutdown();
+
             // Clear temporary files
             TemporaryFileServiceFactory.get().shutdown();
             try

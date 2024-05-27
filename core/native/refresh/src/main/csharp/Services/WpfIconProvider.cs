@@ -13,7 +13,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
     public class WpfIconProvider : IconProvider<BitmapSource>
     {
-        public WpfIconProvider(IconCache cache, IIconProviderImageSource imageSource) : base(cache, imageSource)
+        public WpfIconProvider(IconCache cache, IIconProviderImageSource BitmapSource) : base(cache, BitmapSource)
         {
         }
 
@@ -35,75 +35,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public IEnumerable<BitmapSource> GetResources(string name) => Get(name, name, default, false, out var _);
 
-        private IEnumerable<BitmapSource> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
-        {
-            var list = new List<BitmapSource>();
-
-            var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-            if (decoder is GifBitmapDecoder)
-            {
-                var frame = decoder.Frames[0];
-                if (!getCache(IconCache, frame.PixelWidth))
-                {
-                    cacheIcon(IconCache, frame.PixelWidth, frame);
-                }
-            }
-            else
-            {
-                foreach (var item in decoder.Frames)
-                {
-                    if (getCache(IconCache, item.PixelWidth))
-                    {
-                        continue;
-                    }
-
-                    var resized = FixDPI(item);
-                    list.Add(resized);
-                    cacheIcon(IconCache, resized.PixelWidth, resized);
-                }
-            }
-
-            return list;
-        }
-
         protected override BitmapSource Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
         {
             var source = Imaging.CreateBitmapSourceFromHIcon(nativeIcon, default, default);
             cacheIcon(IconCache, source.PixelWidth, source);
             return source;
-        }
-
-        private BitmapSource FixDPI(BitmapSource source)
-        {
-            var writeableBitmap = new WriteableBitmap(source.PixelWidth, source.PixelHeight, 96, 96, source.Format, source.Palette);
-            var bytesPerPixel = (source.Format.BitsPerPixel + 7) / 8;
-            var stride = bytesPerPixel * source.PixelWidth;
-            var pixelBuffer = new byte[stride * source.PixelHeight];
-            source.CopyPixels(pixelBuffer, stride, 0);
-            writeableBitmap.Lock();
-            writeableBitmap.WritePixels(new(0, 0, source.PixelWidth, source.PixelHeight), pixelBuffer, stride, 0);
-            writeableBitmap.Unlock();
-            writeableBitmap.Freeze();
-            return writeableBitmap;
-        }
-
-        private BitmapSource ResizeImage(BitmapSource source, int size)
-        {
-            Rect rect = new(new(size, size));
-            DrawingGroup group = new();
-            RenderOptions.SetBitmapScalingMode(group, BitmapScalingMode.Fant);
-            group.Children.Add(new ImageDrawing(source, rect));
-
-            DrawingVisual targetVisual = new();
-            using (var context = targetVisual.RenderOpen())
-            {
-                context.DrawDrawing(group);
-            }
-
-            RenderTargetBitmap resized = new(size, size, 96, 96, PixelFormats.Default);
-            resized.Render(targetVisual);
-            resized.Freeze();
-            return resized;
         }
 
         protected override BitmapSource Get(string name, int size)
@@ -137,6 +73,37 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return nearestFit;
         }
 
+        protected override BitmapSource Overlay(BitmapSource baseImage, BitmapSource overlay, int size)
+        {
+            DrawingVisual visual = new();
+            using (var context = visual.RenderOpen())
+            {
+                Rect r = new(0, 0, size, size);
+                context.DrawImage(baseImage, r);
+                context.DrawImage(overlay, r);
+            }
+
+            RenderTargetBitmap bmp = new(size, size, 96, 96, baseImage.Format);
+            RenderOptions.SetBitmapScalingMode(bmp, BitmapScalingMode.Fant);
+            bmp.Render(visual);
+            bmp.Freeze();
+            return bmp;
+        }
+
+        private BitmapSource FixDPI(BitmapSource source)
+        {
+            var writeableBitmap = new WriteableBitmap(source.PixelWidth, source.PixelHeight, 96, 96, source.Format, source.Palette);
+            var bytesPerPixel = (source.Format.BitsPerPixel + 7) / 8;
+            var stride = bytesPerPixel * source.PixelWidth;
+            var pixelBuffer = new byte[stride * source.PixelHeight];
+            source.CopyPixels(pixelBuffer, stride, 0);
+            writeableBitmap.Lock();
+            writeableBitmap.WritePixels(new(0, 0, source.PixelWidth, source.PixelHeight), pixelBuffer, stride, 0);
+            writeableBitmap.Unlock();
+            writeableBitmap.Freeze();
+            return writeableBitmap;
+        }
+
         private BitmapSource Get(object key, string path, string classifier)
             => IconCache.TryGetIcon(key, out BitmapSource image, classifier)
             ? image
@@ -152,7 +119,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             using (IconCache.UpgradeableReadLock())
             {
                 var images = Get(key, path, classifier, returnDefault, out var image);
-                return image ?? NearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+                return image ?? NearestFit(images, size, (c, s, i) =>
+                {
+                    c.CacheIcon(key, s, i, classifier);
+                    c.MarkResized(key, s, classifier);
+                });
             }
         }
 
@@ -184,6 +155,53 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             @default = image;
 
             return images;
+        }
+
+        private IEnumerable<BitmapSource> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
+        {
+            var list = new List<BitmapSource>();
+
+            var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            if (decoder is GifBitmapDecoder)
+            {
+                var frame = decoder.Frames[0];
+                if (!getCache(IconCache, frame.PixelWidth))
+                {
+                    cacheIcon(IconCache, frame.PixelWidth, frame);
+                }
+            }
+            else
+            {
+                foreach (var item in decoder.Frames)
+                {
+                    if (getCache(IconCache, item.PixelWidth))
+                    {
+                        continue;
+                    }
+
+                    var resized = FixDPI(item);
+                    list.Add(resized);
+                    cacheIcon(IconCache, resized.PixelWidth, resized);
+                }
+            }
+
+            return list;
+        }
+
+        private BitmapSource ResizeImage(BitmapSource source, int size)
+        {
+            Rect rect = new(new(size, size));
+            DrawingVisual targetVisual = new();
+            using (var context = targetVisual.RenderOpen())
+            {
+                context.DrawImage(source, rect);
+            }
+
+            RenderTargetBitmap resized = new(size, size, 96, 96, PixelFormats.Default);
+            RenderOptions.SetBitmapScalingMode(targetVisual, BitmapScalingMode.Fant);
+            resized.Render(targetVisual);
+            resized.Freeze();
+            return resized;
         }
     }
 }

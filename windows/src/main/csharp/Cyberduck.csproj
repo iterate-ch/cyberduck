@@ -9,6 +9,7 @@
     <ApplicationIcon>$(CyberduckDir)cyberduck-application.ico</ApplicationIcon>
     <DefaultItemExcludes>$(DefaultItemExcludes);ch/cyberduck/ui/winforms/commondialog/**</DefaultItemExcludes>
     <ApplicationManifest>ch\cyberduck\properties\app.manifest</ApplicationManifest>
+    <StartupObject>Ch.Cyberduck.Ui.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +35,7 @@
     <Reference Include="CustomOpenFileFolderDialog">
       <HintPath>$(TargetBuildDir)CustomOpenFileFolderDialog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System.Design" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
@@ -41,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
     <PackageReference Include="ExceptionReporter" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
@@ -74,6 +77,16 @@
       <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ch\cyberduck\ui\winforms\*Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>

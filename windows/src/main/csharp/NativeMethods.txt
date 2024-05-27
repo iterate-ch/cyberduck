@@ -3,6 +3,7 @@ CLSID_DragDropHelper
 CoCreateInstance
 CreateStreamOnHGlobal
 DeleteObject
+DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 DROPDESCRIPTION
 DROPIMAGETYPE
 EM_SETCUEBANNER
@@ -15,8 +16,6 @@ HideCaret
 IDropTargetHelper
 IInitializeWithWindow
 IObjectArray
-ITaskbarList
-ITaskbarList3
 IVirtualDesktopManager
 LVM_FIRST
 LVM_GETCOLUMNORDERARRAY
@@ -27,7 +26,7 @@ RegisterClipboardFormat
 SB_BOTTOM
 SetMenuInfo
 SetMenuItemInfo
-TaskbarList
+SetThreadDpiAwarenessContext
 TO_ADVANCEDTYPOGRAPHY
 VIRTUAL_KEY
 VirtualDesktopManager

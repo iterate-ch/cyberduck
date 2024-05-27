@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <Reference Include="@(IKVMReferences)" />
+    <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 
   <ItemGroup>

@@ -31,7 +31,7 @@
         <OutputPath>$(BaseOutputPath)</OutputPath>
 
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <LangVersion>10</LangVersion>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemDefinitionGroup>

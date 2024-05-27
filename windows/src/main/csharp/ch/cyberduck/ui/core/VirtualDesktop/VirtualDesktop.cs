@@ -15,10 +15,10 @@ namespace Ch.Cyberduck.Ui.Core.VirtualDesktop
             desktopmanager = (IVirtualDesktopManager)new VirtualDesktopManager();
         }
 
-        public static Guid GetWindowDesktopId(Form form) => desktopmanager.GetWindowDesktopId((HWND)form.Handle);
+        public static Guid GetWindowDesktopId(IWin32Window window) => desktopmanager.GetWindowDesktopId((HWND)window.Handle);
 
-        public static bool IsWindowOnCurrentVirtualDesktop(Form form) => desktopmanager.IsWindowOnCurrentVirtualDesktop((HWND)form.Handle);
+        public static bool IsWindowOnCurrentVirtualDesktop(IWin32Window window) => desktopmanager.IsWindowOnCurrentVirtualDesktop((HWND)window.Handle);
 
-        public static void MoveWindowToDesktop(Form form, in Guid desktop) => desktopmanager.MoveWindowToDesktop((HWND)form.Handle, desktop);
+        public static void MoveWindowToDesktop(IWin32Window window, in Guid desktop) => desktopmanager.MoveWindowToDesktop((HWND)window.Handle, desktop);
     }
 }

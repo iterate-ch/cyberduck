@@ -1,0 +1,31 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="LabeledControl"
+           TargetType="HeaderedContentControl"
+           BasedOn="{StaticResource {x:Type HeaderedContentControl}}">
+        <Setter Property="Focusable"
+                Value="False" />
+        <Setter Property="IsHitTestVisible"
+                Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="HeaderedContentControl">
+                    <StackPanel>
+                        <ContentPresenter Name="PART_ContentHost"
+                                          ContentSource="Content" />
+                        <ContentPresenter Name="PART_HeaderHost"
+                                          ContentSource="Header"
+                                          IsEnabled="{Binding IsEnabled,ElementName=PART_ContentHost}"
+                                          HorizontalAlignment="Center"
+                                          TextBlock.FontSize="8" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Controls/FlatComboBox.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

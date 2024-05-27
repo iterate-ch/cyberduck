@@ -16,48 +16,17 @@
 // yves@cyberduck.ch
 // 
 
-using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Ui.Controller;
+using Splat;
 
-namespace Ch.Cyberduck.Ui.Core
+namespace Ch.Cyberduck.Ui.Core;
+
+public sealed class TaskbarApplicationBadgeLabeler : ApplicationBadgeLabeler
 {
-    public sealed class TaskbarApplicationBadgeLabeler : ApplicationBadgeLabeler
-    {
-        public void badge(string text)
-        {
-            if (Cyberduck.Core.Utils.IsBlank(text))
-            {
-                clear();
-            }
-            else
-            {
-                using (Bitmap bm = new Bitmap(16, 16))
-                using (Graphics g = Graphics.FromImage(bm))
-                {
-                    g.SmoothingMode = SmoothingMode.AntiAlias;
-                    g.FillEllipse(Brushes.Navy, new Rectangle(0, 0, 15, 15));
+    private readonly ApplicationBadgeLabeler controller = Locator.Current.GetService<TransferController>();
 
-                    if (text.Length == 1)
-                    {
-                        Font f = new Font("Segoe UI", 8, FontStyle.Bold);
-                        g.DrawString(text, f, new SolidBrush(Color.White), 3, 1);
-                    }
-                    else
-                    {
-                        Font f = new Font("Segoe UI", 7, FontStyle.Bold);
-                        g.DrawString(text, f, new SolidBrush(Color.White), 1, 1);
-                    }
-                    TransferController.Instance.TaskbarOverlayIcon(Icon.FromHandle(bm.GetHicon()), text);
-                }
-            }
-        }
+    void ApplicationBadgeLabeler.badge(string text) => controller.badge(text);
 
-        public void clear()
-        {
-            TransferController.Instance.TaskbarOverlayIcon(null, String.Empty);
-        }
-    }
+    void ApplicationBadgeLabeler.clear() => controller.clear();
 }

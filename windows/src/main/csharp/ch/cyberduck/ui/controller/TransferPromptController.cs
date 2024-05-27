@@ -30,6 +30,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using org.apache.logging.log4j;
 using Ch.Cyberduck.Core;
+using System.Windows.Interop;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -42,14 +43,14 @@ namespace Ch.Cyberduck.Ui.Controller
         protected readonly SessionPool Destination;
 
         protected readonly Transfer Transfer;
-        private readonly WindowController _parent;
+        private readonly TransferController _parent;
 
         protected internal TransferAction Action =
             TransferAction.forName(PreferencesFactory.get().getProperty("queue.prompt.action.default"));
 
         protected TransferPromptModel TransferPromptModel;
 
-        protected TransferPromptController(WindowController parent, Transfer transfer, SessionPool source, SessionPool destination)
+        protected TransferPromptController(TransferController parent, Transfer transfer, SessionPool source, SessionPool destination)
         {
             View = ObjectFactory.GetInstance<ITransferPromptView>();
             _parent = parent;
@@ -118,7 +119,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                 View.SelectedItem = en.Current;
                             }
                         };
-                    DialogResult result = View.ShowDialog(_parent.View);
+
+                    
+                    DialogResult result = View.ShowDialog(_parent.WindowInterop);
 
                     if (result == DialogResult.Cancel)
                     {

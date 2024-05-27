@@ -16,6 +16,11 @@
 // feedback@cyberduck.io
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
@@ -34,6 +39,7 @@ using ch.cyberduck.core.vault;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
+using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Refresh.Interactivity;
@@ -46,11 +52,6 @@ using java.text;
 using java.util;
 using org.apache.logging.log4j;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Windows.Forms;
 using Windows.Win32;
 using static Ch.Cyberduck.ImageHelper;
 using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
@@ -60,6 +61,7 @@ using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
+using TransferItem = ch.cyberduck.core.transfer.TransferItem;
 using X509Certificate = java.security.cert.X509Certificate;
 using X509Certificate2 = System.Security.Cryptography.X509Certificates.X509Certificate2;
 using X509Certificate2UI = System.Security.Cryptography.X509Certificates.X509Certificate2UI;
@@ -2281,53 +2283,19 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ShowTransfers()
         {
-            ITransferView view = TransferController.Instance.View;
-
-            bool isOnCurrentDesktop = true;
+            Guid? currentDesktop = null;
             try
             {
-                isOnCurrentDesktop = view.IsOnCurrentDesktop();
+                currentDesktop = View.GetDesktopId();
             }
             catch (Exception e)
             {
                 if (Log.isDebugEnabled())
                 {
-                    Log.debug("Failure determining whether window is on current desktop", e);
+                    Log.debug("Cannot get browser window desktop id", e);
                 }
             }
-
-            if (!isOnCurrentDesktop)
-            {
-                Guid? currentDesktop = null;
-                try
-                {
-                    currentDesktop = View.GetDesktopId();
-                }
-                catch (Exception e)
-                {
-                    if (Log.isDebugEnabled())
-                    {
-                        Log.debug("Cannot get browser window desktop id", e);
-                    }
-                }
-
-                if (currentDesktop is { } id)
-                {
-                    try
-                    {
-                        view.MoveToDesktop(id);
-                    }
-                    catch (Exception e)
-                    {
-                        if (Log.isDebugEnabled())
-                        {
-                            Log.debug("cannot move window to desktop.", e);
-                        }
-                    }
-                }
-            }
-            
-            view.Show();
+            TransferController.Instance.ShowWindow(currentDesktop);
         }
 
         private void View_ShowInspector()
@@ -2393,7 +2361,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 _file = file;
             }
 
-            public void callback() {
+            public void callback()
+            {
                 _editors.Remove(_file);
             }
         }

@@ -1,32 +1,20 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace java.util
 {
-    public class CollectionEnumerable<T> : IEnumerable<T>
+    public class CollectionEnumerable<T>(Collection collection) : IEnumerable<T>
     {
-        private readonly Collection collection;
-
-        public struct Enumerator : IEnumerator<T>
+        public struct Enumerator(Collection collection) : IEnumerator<T>
         {
-            private readonly Collection collection;
             private T current;
             private Iterator iterator;
 
-            public T Current => current;
+            public readonly T Current => current;
 
-            object IEnumerator.Current => current;
+            readonly object IEnumerator.Current => current;
 
-            public Enumerator(Collection collection)
-            {
-                this.collection = collection;
-            }
-
-            public void Dispose()
+            public readonly void Dispose()
             {
             }
 
@@ -50,11 +38,6 @@ namespace java.util
             {
                 iterator = collection.iterator();
             }
-        }
-
-        public CollectionEnumerable(Collection collection)
-        {
-            this.collection = collection;
         }
 
         public Enumerator GetEnumerator() => new(collection);

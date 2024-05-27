@@ -1,15 +1,12 @@
-﻿using ch.cyberduck.core.ctera;
-using ch.cyberduck.core.preferences;
+﻿using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
-using Ch.Cyberduck.Ui.Core.Preferences;
 using StructureMap;
 using System;
 using System.IO;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui
