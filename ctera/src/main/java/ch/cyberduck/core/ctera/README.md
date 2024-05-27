@@ -1,6 +1,6 @@
 # Custom Properties in namespace `http://www.ctera.com/ns` in DAV Resources to Support NT-ACL and WORM Data
 
-## Preflight Checks (nfs 4.x)
+## Preflight Checks Mountain Duck 4.15.7+
 
 | local      | Feature     | folder | file | CTERA required permissions                                                                                                                      | preflight |
 |------------|-------------|--------|------|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
@@ -18,7 +18,7 @@
 
 N.B. no need to check `readpermission` upon mv/cp.
 
-## Filesystem Mapping (5.x)
+## Filesystem Mapping Mountain Duck 5+
 
 | permission set from backend                                                            | POSIX folders                                   | POSIX files                               | ACL folder                                                | ACL files                 | example folders                                                    | example files                                       |
 |----------------------------------------------------------------------------------------|-------------------------------------------------|-------------------------------------------|-----------------------------------------------------------|---------------------------|--------------------------------------------------------------------|-----------------------------------------------------|
@@ -31,7 +31,7 @@ N.B. no need to check `readpermission` upon mv/cp.
 
 (§) i.e. synchronously for nfs and asynchronously for file provider (sync flag)
 
-### macOS NFS POSIX (mode online/sync) (5.x)
+### macOS NFS POSIX (mode online/sync) Mountain Duck 5+
 
 | folder | file | NFS (POSIX) | affected local operations                                    | implementation                                                                                                                                             |
 |--------|------|-------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
