@@ -42,7 +42,7 @@ N.B. no need to check `readpermission` upon mv/cp.
 
 N.B. `x` on files is only set for POSIX backends, i.e. never for CTERA.
 
-### macOS File Provider Capabilities (mode integrated) 5.x
+### macOS File Provider Capabilities (_Integrated_ connect mode) Mountain Duck 5+
 
 | folder | file | File Provider Capabilities                                                                 | affected local operations |
 |--------|------|--------------------------------------------------------------------------------------------|---------------------------|
@@ -61,7 +61,7 @@ N.B. `x` on files is only set for POSIX backends, i.e. never for CTERA.
 * https://developer.apple.com/documentation/fileprovider/nsfileproviderfilesystemflags
 * https://developer.apple.com/documentation/fileprovider/nsfileprovideritemcapabilities
 
-### Windows CBFS API (mode sync) and Cloud Files API (mode integrated) (5.x)
+### Windows CBFS API (_Online_ and _Smart Synchronization_ connect mode) and Cloud Files API (_Integrated_ connect mode) Mountain Duck 5+
 
 | folder | file | access right        | affected local operations                                           | implementation (`WindowsAcl.Translate`)                 |
 |--------|------|---------------------|---------------------------------------------------------------------|---------------------------------------------------------|
