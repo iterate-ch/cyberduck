@@ -27,8 +27,6 @@
         <string>ownCloud</string>
         <key>Default Nickname</key>
         <string>ownCloud</string>
-        <key>Default Path</key>
-        <string>/remote.php/webdav/</string>
         <key>Path Configurable</key>
         <true/>
         <key>Hostname Configurable</key>
