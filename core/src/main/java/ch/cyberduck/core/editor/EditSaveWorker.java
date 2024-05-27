@@ -77,8 +77,8 @@ public class EditSaveWorker extends Worker<Transfer> {
             @Override
             public AbstractUploadFilter filter(final Session<?> session, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return super.filter(session, destination, action, listener).withOptions(new UploadFilterOptions(host)
-                    .withTemporary(PreferencesFactory.get().getBoolean("queue.upload.file.temporary"))
-                    .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
+                        .withVersioning(PreferencesFactory.get().getBoolean("editor.upload.file.versioning"))
+                        .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
             }
         };
         this.listener = listener;
@@ -90,9 +90,9 @@ public class EditSaveWorker extends Worker<Transfer> {
             log.debug(String.format("Run upload action for editor %s", editor));
         }
         final SingleTransferWorker worker
-            = new SingleTransferWorker(session, session, upload, new TransferOptions(),
+                = new SingleTransferWorker(session, session, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
-            listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
+                listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
         worker.run(session);
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", file));

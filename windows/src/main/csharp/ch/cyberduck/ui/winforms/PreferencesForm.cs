@@ -215,6 +215,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { doubleClickEditorCheckbox.Checked = value; }
         }
 
+        public bool EnableVersioning
+        {
+            get => versioningCheckbox.Checked;
+            set => versioningCheckbox.Checked = value;
+        }
+
         public bool ReturnKeyRenames
         {
             get { return returnKeyCheckbox.Checked; }
@@ -762,6 +768,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler RepopulateEditorsEvent = delegate { };
         public event VoidHandler AlwaysUseDefaultEditorChangedEvent = delegate { };
         public event VoidHandler ChmodDownloadChangedEvent = delegate { };
+        public event VoidHandler EnableVersioningChangedEvent = delegate { };
         public event VoidHandler ChmodDownloadUseDefaultChangedEvent = delegate { };
         public event VoidHandler ChmodDownloadTypeChangedEvent = delegate { };
         public event VoidHandler DownloadOwnerReadChangedEvent = delegate { };
@@ -1643,6 +1650,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void cryptomatorUseKeychain_CheckedChanged(object sender, EventArgs e)
         {
             CryptomatorUseKeychainChangedEvent();
+        }
+
+        private void versioningCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            EnableVersioningChangedEvent();
         }
     }
 }

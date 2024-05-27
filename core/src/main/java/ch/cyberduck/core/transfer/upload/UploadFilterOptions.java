@@ -110,6 +110,11 @@ public final class UploadFilterOptions {
         return this;
     }
 
+    public UploadFilterOptions withVersioning(final boolean versioning) {
+        this.versioning = versioning;
+        return this;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("UploadFilterOptions{");

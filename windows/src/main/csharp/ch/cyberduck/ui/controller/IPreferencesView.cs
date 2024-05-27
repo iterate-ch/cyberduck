@@ -35,6 +35,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool AlwaysUseDefaultEditor { set; get; }
         bool ShowHiddenFiles { set; get; }
         bool DoubleClickEditor { set; get; }
+        bool EnableVersioning { get; set; }
         bool ReturnKeyRenames { set; get; }
         bool InfoWindowShowsCurrentSelection { set; get; }
         int BookmarkSize { set; get; }
@@ -155,6 +156,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DefaultEditorChangedEvent;
         event VoidHandler RepopulateEditorsEvent;
         event VoidHandler AlwaysUseDefaultEditorChangedEvent;
+        event VoidHandler EnableVersioningChangedEvent;
         event VoidHandler ChmodDownloadChangedEvent;
         event VoidHandler ChmodDownloadUseDefaultChangedEvent;
         event VoidHandler ChmodDownloadTypeChangedEvent;
