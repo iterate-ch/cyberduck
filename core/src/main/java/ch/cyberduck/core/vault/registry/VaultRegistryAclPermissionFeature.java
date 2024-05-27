@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.EnumSet;
@@ -44,8 +45,8 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
     }
 
     @Override
-    public void setPermission(final Path file, final Acl acl) throws BackgroundException {
-        registry.find(session, file).getFeature(session, AclPermission.class, proxy).setPermission(file, acl);
+    public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
+        registry.find(session, file).getFeature(session, AclPermission.class, proxy).setPermission(file, status);
     }
 
     @Override

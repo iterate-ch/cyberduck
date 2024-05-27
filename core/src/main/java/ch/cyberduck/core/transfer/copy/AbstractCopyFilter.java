@@ -228,7 +228,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                         try {
                             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                                 target.getName(), status.getPermission()));
-                            feature.setUnixPermission(target, status.getPermission());
+                            feature.setUnixPermission(target, status);
                         }
                         catch(BackgroundException e) {
                             // Ignore

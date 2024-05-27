@@ -22,6 +22,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -164,10 +166,10 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     }
 
     @Override
-    public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+    public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             // Read owner from bucket
-            final AccessControlList list = this.toAcl(acl);
+            final AccessControlList list = this.toAcl(status.getAcl());
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
@@ -175,6 +177,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             else {
                 session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
             }
+            status.setResponse(new PathAttributes(status.getResponse()).withAcl(status.getAcl()));
         }
         catch(ServiceException e) {
             final BackgroundException failure = new S3ExceptionMappingService().map("Cannot change permissions of {0}", e, file);

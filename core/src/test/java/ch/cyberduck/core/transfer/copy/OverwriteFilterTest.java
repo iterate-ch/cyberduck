@@ -130,8 +130,8 @@ public class OverwriteFilterTest {
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) {
-                            assertEquals(new Permission(777), permission);
+                        public void setUnixPermission(final Path file, final TransferStatus status) {
+                            assertEquals(new Permission(777), status.getPermission());
                             permissionWrite[0] = true;
                         }
                     };

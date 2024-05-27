@@ -16,9 +16,11 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,9 +67,9 @@ public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
     }
 
     @Override
-    public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+    public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            Files.setPosixFilePermissions(session.toPath(file), PosixFilePermissions.fromString(permission.getSymbol()));
+            Files.setPosixFilePermissions(session.toPath(file), PosixFilePermissions.fromString(status.getPermission().getSymbol()));
         }
         catch(IllegalArgumentException e) {
             throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", new IOException(e), file);
@@ -75,5 +77,6 @@ public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
+        status.setResponse(new PathAttributes(status.getResponse()).withPermission(status.getPermission()));
     }
 }

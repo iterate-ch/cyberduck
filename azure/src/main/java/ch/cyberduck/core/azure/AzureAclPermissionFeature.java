@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.shared.DefaultAclFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.acl.Permission;
 
@@ -106,13 +107,13 @@ public class AzureAclPermissionFeature extends DefaultAclFeature implements AclP
     }
 
     @Override
-    public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+    public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 final CloudBlobContainer container = session.getClient()
                         .getContainerReference(containerService.getContainer(file).getName());
                 final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
-                for(Acl.UserAndRole userAndRole : acl.asList()) {
+                for(Acl.UserAndRole userAndRole : status.getAcl().asList()) {
                     if(userAndRole.getUser() instanceof Acl.GroupUser) {
                         if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
                             permissions.setPublicAccess(BlobContainerPublicAccessType.BLOB);

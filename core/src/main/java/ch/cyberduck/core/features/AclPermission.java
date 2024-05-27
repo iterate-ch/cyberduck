@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -43,7 +44,11 @@ public interface AclPermission {
      * @param file File or folder
      * @param acl  Access control list to replace any previously set
      */
-    void setPermission(Path file, Acl acl) throws BackgroundException;
+    default void setPermission(Path file, Acl acl) throws BackgroundException {
+        this.setPermission(file, new TransferStatus().withAcl(acl));
+    }
+
+    void setPermission(Path file, TransferStatus status) throws BackgroundException;
 
     /**
      * @return List of known ACL users

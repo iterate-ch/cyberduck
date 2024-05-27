@@ -18,10 +18,12 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +47,7 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
         try {
             if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
                 throw new FTPException(session.getClient().getReplyCode(),
-                    session.getClient().getReplyString());
+                        session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
@@ -72,7 +74,7 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
     }
 
     @Override
-    public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+    public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
         if(failure != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Skip setting permission for %s due to previous failure %s", file, failure.getMessage()));
@@ -80,10 +82,11 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
             throw failure;
         }
         try {
-            if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getMode(), file.getAbsolute()))) {
+            if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", status.getPermission().getMode(), file.getAbsolute()))) {
                 throw new FTPException(session.getClient().getReplyCode(),
-                    session.getClient().getReplyString());
+                        session.getClient().getReplyString());
             }
+            status.setResponse(new PathAttributes(status.getResponse()).withPermission(status.getPermission()));
         }
         catch(IOException e) {
             throw failure = new FTPExceptionMappingService().map("Cannot change permissions of {0}", e, file);

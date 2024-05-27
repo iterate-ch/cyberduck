@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.shared.DefaultAclFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +64,7 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
     }
 
     @Override
-    public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+    public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         throw new UnsupportedException();
     }
 

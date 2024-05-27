@@ -16,6 +16,7 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -77,6 +78,9 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
                     entry.setFileInformation(updatedBasicInformation);
                 }
             }
+            status.setResponse(new PathAttributes(status.getResponse())
+                    .withCreationDate(status.getCreated() != null ? status.getCreated() : -1L)
+                    .withModificationDate(status.getModified() != null ? status.getModified() : -1L));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);

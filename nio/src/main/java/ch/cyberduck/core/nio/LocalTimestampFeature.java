@@ -16,6 +16,7 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -38,6 +39,7 @@ public class LocalTimestampFeature extends DefaultTimestampFeature {
         try {
             if(null != status.getModified()) {
                 Files.setLastModifiedTime(session.toPath(file), FileTime.from(status.getModified(), TimeUnit.MILLISECONDS));
+                status.setResponse(new PathAttributes(status.getResponse()).withModificationDate(status.getModified()));
             }
         }
         catch(IOException e) {

@@ -19,12 +19,14 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.acl.Permission;
 
@@ -60,12 +62,12 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
     }
 
     @Override
-    public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+    public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             try {
-                final BucketType bucketType = this.toBucketType(acl);
-                session.getClient().updateBucket(fileid.getVersionId(containerService.getContainer(file)),
-                        bucketType);
+                final BucketType bucketType = this.toBucketType(status.getAcl());
+                session.getClient().updateBucket(fileid.getVersionId(containerService.getContainer(file)), bucketType);
+                status.setResponse(new PathAttributes(status.getResponse()).withAcl(status.getAcl()));
             }
             catch(B2ApiException e) {
                 throw new B2ExceptionMappingService(fileid).map("Cannot change permissions of {0}", e, file);

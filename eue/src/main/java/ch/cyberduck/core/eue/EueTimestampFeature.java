@@ -16,6 +16,7 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.UpdateResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModel;
@@ -48,6 +49,9 @@ public class EueTimestampFeature extends DefaultTimestampFeature {
             resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
             new UpdateResourceApi(new EueApiClient(session)).resourceResourceIdPatch(resourceId,
                     resourceUpdateModel, null, null, null);
+            status.setResponse(new PathAttributes(status.getResponse())
+                    .withCreationDate(status.getCreated() != null ? status.getCreated() : -1L)
+                    .withModificationDate(status.getModified() != null ? status.getModified() : -1L));
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map("Failure to write attributes of {0}", e, file);

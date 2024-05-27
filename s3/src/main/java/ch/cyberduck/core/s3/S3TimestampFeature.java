@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -46,6 +47,7 @@ public class S3TimestampFeature extends DefaultTimestampFeature {
         final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
         final Map<String, String> metadata = feature.getMetadata(file);
         feature.setMetadata(file, status.withMetadata(metadata));
+        status.setResponse(new PathAttributes(status.getResponse()).withModificationDate(status.getModified()));
     }
 
     public static Header toHeader(final String header, final Long millis) {
