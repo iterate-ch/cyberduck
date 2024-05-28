@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -58,10 +58,10 @@ public class B2SessionTest {
     public void testLoginFailure() throws Exception {
         final Host host = new Host(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new B2Protocol()))).read(
                 this.getClass().getResourceAsStream("/B2.cyberduckprofile")), new Credentials(
-            System.getProperties().getProperty("b2.user"), "s"
+                System.getProperties().getProperty("b2.user"), "s"
         ));
         final B2Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 }

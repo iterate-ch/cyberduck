@@ -64,8 +64,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Credentials credentials = host.getCredentials();
         assertNotEquals("rouser", credentials.getUsername());
@@ -86,8 +86,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertThrows(LoginFailureException.class, () -> session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertThrows(LoginFailureException.class, () -> session.login(new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 
@@ -97,8 +97,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalidPassword"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertThrows(LoginFailureException.class, () -> session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertThrows(LoginFailureException.class, () -> session.login(new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 
@@ -108,8 +108,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Credentials credentials = host.getCredentials();
         final OAuthTokens oauth = credentials.getOauth();
@@ -147,10 +147,10 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 .withTokens(TemporaryAccessTokens.EMPTY);
         final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledProxyFinder().find(host.getHostname()), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
     }
@@ -173,7 +173,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 ));
         final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.getClient().setProviderCredentials(new AWSSessionCredentials(

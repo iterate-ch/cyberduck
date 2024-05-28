@@ -56,7 +56,7 @@ import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -94,7 +94,7 @@ public class OwncloudSession extends DAVSession {
     }
 
     @Override
-    protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected DAVClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final DAVClient client = super.connect(proxy, key, prompt, cancel);
         try {
             client.execute(new TusCapabilitiesRequest(host), new TusCapabilitiesResponseHandler(tus));
@@ -109,7 +109,7 @@ public class OwncloudSession extends DAVSession {
     }
 
     @Override
-    protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) throws ConnectionCanceledException {
+    protected HttpClientBuilder getConfiguration(final ProxyFinder proxy, final LoginCallback prompt) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = super.getConfiguration(proxy, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
             authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
@@ -125,7 +125,7 @@ public class OwncloudSession extends DAVSession {
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
             final Credentials credentials = authorizationService.validate();
             final OAuthTokens oauth = credentials.getOauth();
@@ -139,7 +139,7 @@ public class OwncloudSession extends DAVSession {
                 log.warn(String.format("Failure %s decoding JWT %s", e, oauth.getIdToken()));
             }
         }
-        super.login(proxy, prompt, cancel);
+        super.login(prompt, cancel);
         try {
             client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
         }

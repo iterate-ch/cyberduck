@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -133,7 +133,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         new SFTPHomeDirectoryService(session).find();
     }
 
@@ -157,7 +157,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final AtomicBoolean verify = new AtomicBoolean();
         try {
-            session.open(Proxy.DIRECT, new HostKeyCallback() {
+            session.open(new DisabledProxyFinder(), new HostKeyCallback() {
                 @Override
                 public boolean verify(Host hostname, PublicKey key) throws ConnectionCanceledException {
                     verify.set(true);
@@ -258,7 +258,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         final Local f = new Local("test/ch/cyberduck/core/sftp", "known_hosts");
         final AtomicReference<String> fingerprint = new AtomicReference<String>();
         try {
-            assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
+            assertNotNull(session.open(new DisabledProxyFinder(), new OpenSSHHostKeyVerifier(f) {
                 @Override
                 public boolean verify(final Host hostname, final PublicKey key) throws BackgroundException {
                     fingerprint.set(new SSHFingerprintGenerator().fingerprint(key));
@@ -278,7 +278,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 }
             }, new DisabledLoginCallback(), new DisabledCancelCallback()));
             session.close();
-            assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
+            assertNotNull(session.open(new DisabledProxyFinder(), new OpenSSHHostKeyVerifier(f) {
                 @Override
                 public boolean verify(final Host hostname, final PublicKey key) throws BackgroundException {
                     assertEquals(fingerprint.get(), new SSHFingerprintGenerator().fingerprint(key));

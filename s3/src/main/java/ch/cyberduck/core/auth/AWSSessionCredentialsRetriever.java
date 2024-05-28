@@ -104,7 +104,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
         final Host address = new HostParser(ProtocolFactory.get()).get(url);
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(address,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, address.getHostname()), key, ProxyFactory.get());
-        final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(new HostUrlProvider().get(address)),
+        final HttpClientBuilder configuration = builder.build(ProxyFactory.get(),
                 new DisabledTranscriptListener(), new DisabledLoginCallback());
         try (CloseableHttpClient client = configuration.build()) {
             final HttpRequestBase resource = new HttpGet(new HostUrlProvider().withUsername(false).withPath(true).get(address));

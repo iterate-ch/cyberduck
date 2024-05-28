@@ -39,7 +39,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -233,7 +233,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     @Override
-    protected Connection connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected Connection connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final SMBClient client = new SMBClient(SmbConfig.builder()
                     .withSocketFactory(new ProxySocketFactory(host))
@@ -267,7 +267,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final AuthenticationContext context;
         final Credentials credentials = host.getCredentials();
         if(credentials.isAnonymousLogin()) {

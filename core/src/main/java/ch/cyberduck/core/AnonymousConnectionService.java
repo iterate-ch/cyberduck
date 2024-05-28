@@ -37,7 +37,7 @@ public class AnonymousConnectionService implements ConnectionService {
 
     @Override
     public void connect(final Session<?> session, final CancelCallback cancel) throws BackgroundException {
-        session.open(ProxyFactory.get().find(session.getHost().getHostname()),
+        session.open(ProxyFactory.get(),
             new DisabledHostKeyCallback(), new DisabledLoginCallback(), cancel);
     }
 

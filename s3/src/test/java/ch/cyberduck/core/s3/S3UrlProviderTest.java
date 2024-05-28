@@ -11,6 +11,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -37,7 +38,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
                 }
                 catch(BackgroundException e) {
                     fail();
@@ -114,7 +115,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
                 }
                 catch(BackgroundException e) {
                     fail();
@@ -139,7 +140,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
                 }
                 catch(BackgroundException e) {
                     fail();

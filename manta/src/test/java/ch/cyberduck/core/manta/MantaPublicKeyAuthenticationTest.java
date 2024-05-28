@@ -24,7 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -65,8 +65,8 @@ public class MantaPublicKeyAuthenticationTest extends VaultTest {
             final String hostname = new URL(PROPERTIES.get("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            session.login(Proxy.DIRECT,
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.login(
                     new DisabledLoginCallback() {
                         @Override
                         public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -102,13 +102,13 @@ public class MantaPublicKeyAuthenticationTest extends VaultTest {
             IOUtils.copy(
                     new FileReader(passphraseKeyPath),
                     key.getOutputStream(false),
-                StandardCharsets.UTF_8
+                    StandardCharsets.UTF_8
             );
             final String hostname = new URL(PROPERTIES.get("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            session.login(Proxy.DIRECT,
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.login(
                     new DisabledLoginCallback() {
                         @Override
                         public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

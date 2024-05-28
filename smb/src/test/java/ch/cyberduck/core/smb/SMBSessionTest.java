@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -48,7 +49,7 @@ public class SMBSessionTest extends AbstractSMBTest {
         final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), 135)
                 .withCredentials(session.getHost().getCredentials());
         final SMBSession session = new SMBSession(host);
-        assertThrows(ConnectionRefusedException.class, () -> session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertThrows(ConnectionRefusedException.class, () -> session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
     }
 
     @Test

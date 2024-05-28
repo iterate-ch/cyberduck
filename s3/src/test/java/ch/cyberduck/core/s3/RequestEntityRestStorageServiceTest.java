@@ -51,7 +51,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     public void testSetupConnection() throws Exception {
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(session, new HttpConnectionPoolBuilder(session.getHost(),
                 new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), session.getHost().getHostname()),
-                new DefaultX509KeyManager(), new DisabledProxyFinder()).build(Proxy.DIRECT, new DisabledTranscriptListener(), new DisabledLoginCallback()));
+                new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), new DisabledLoginCallback()));
         final RegionEndpointCache cache = service.getRegionEndpointCache();
         cache.clear();
         final String key = new AlphanumericRandomStringService().random();
@@ -70,7 +70,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     public void testSetupConnectionVirtualHost() throws Exception {
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(virtualhost, new HttpConnectionPoolBuilder(virtualhost.getHost(),
                 new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), session.getHost().getHostname()),
-                new DefaultX509KeyManager(), new DisabledProxyFinder()).build(Proxy.DIRECT, new DisabledTranscriptListener(), new DisabledLoginCallback()));
+                new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), new DisabledLoginCallback()));
         final RegionEndpointCache cache = service.getRegionEndpointCache();
         cache.clear();
         final String key = new AlphanumericRandomStringService().random();

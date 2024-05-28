@@ -28,13 +28,16 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
@@ -56,6 +59,9 @@ import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.WinHttpClients;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.impl.conn.DefaultRoutePlanner;
+import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
@@ -136,26 +142,31 @@ public class HttpConnectionPoolBuilder {
     }
 
     /**
-     * @param proxy    Proxy configuration
+     * @param proxyfinder    Proxy configuration
      * @param listener Log listener
      * @param prompt   Prompt for proxy credentials
      * @return Builder for HTTP client
      */
-    public HttpClientBuilder build(final Proxy proxy, final TranscriptListener listener, final LoginCallback prompt) {
+    public HttpClientBuilder build(final ProxyFinder proxyfinder, final TranscriptListener listener, final LoginCallback prompt) {
         final HttpClientBuilder configuration = HttpClients.custom();
-        // Use HTTP Connect proxy implementation provided here instead of
-        // relying on internal proxy support in socket factory
-        switch(proxy.getType()) {
-            case HTTP:
-            case HTTPS:
-                final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Setup proxy %s", h));
+        configuration.setRoutePlanner(new DefaultRoutePlanner(DefaultSchemePortResolver.INSTANCE) {
+            @Override
+            protected HttpHost determineProxy(final HttpHost target, final HttpRequest request, final HttpContext context) {
+                // Use HTTP Connect proxy implementation provided here instead of relying on internal proxy support in socket factory
+                final Proxy proxy = proxyfinder.find(target.toURI());
+                switch(proxy.getType()) {
+                    case HTTP:
+                    case HTTPS:
+                        final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Setup proxy %s", h));
+                        }
+                        return h;
                 }
-                configuration.setProxy(h);
-                configuration.setProxyAuthenticationStrategy(new CallbackProxyAuthenticationStrategy(ProxyCredentialsStoreFactory.get(), host, prompt));
-                break;
-        }
+                return null;
+            }
+        });
+        configuration.setProxyAuthenticationStrategy(new CallbackProxyAuthenticationStrategy(ProxyCredentialsStoreFactory.get(), host, prompt));
         configuration.setUserAgent(new PreferencesUseragentProvider().get());
         final int timeout = connectionTimeout.getTimeout() * 1000;
         configuration.setDefaultSocketConfig(SocketConfig.custom()
