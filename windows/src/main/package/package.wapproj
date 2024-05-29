@@ -46,6 +46,9 @@
         <Content Include="$(ModulePath)\src\resources\CyberduckAppx.44x44.png">
             <Link>Images\CyberduckAppx.44x44.png</Link>
         </Content>
+        <Content Include="$(ModulePath)\src\resources\CyberduckAppx.44x44.png">
+            <Link>Images\CyberduckAppx.44x44.targetsize-44_altform-unplated.png</Link>
+        </Content>
         <Content Include="$(ModulePath)\src\resources\CyberduckAppx.50x50.png">
             <Link>Images\CyberduckAppx.50x50.png</Link>
         </Content>
