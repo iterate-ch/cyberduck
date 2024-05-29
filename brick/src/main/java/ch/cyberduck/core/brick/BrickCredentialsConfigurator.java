@@ -38,7 +38,7 @@ public class BrickCredentialsConfigurator implements CredentialsConfigurator {
             credentials.setToken(new AlphanumericRandomStringService().random());
             return credentials;
         }
-        return host.getCredentials();
+        return CredentialsConfigurator.DISABLED.configure(host);
     }
 
     @Override

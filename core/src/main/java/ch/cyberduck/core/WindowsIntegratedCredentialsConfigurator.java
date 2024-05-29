@@ -55,7 +55,7 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
                 return credentials;
             }
         }
-        return host.getCredentials();
+        return CredentialsConfigurator.DISABLED.configure(host);
     }
 
     @Override
