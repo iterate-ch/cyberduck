@@ -103,17 +103,10 @@ public class FileBuffer implements Buffer {
     }
 
     @Override
-    public void truncate(final Long length) {
+    public void truncate(final Long length) throws IOException {
         this.length = length;
-        try {
-            if(length < file.length()) {
-                // Truncate current
-                file.setLength(length);
-            }
-        }
-        catch(IOException e) {
-            log.warn(String.format("Failure truncating file %s to %d", temporary, length));
-        }
+        // Truncate current
+        file.setLength(length);
     }
 
     @Override

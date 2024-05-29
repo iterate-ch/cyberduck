@@ -48,7 +48,7 @@ public interface Buffer {
     /**
      * Extend or decrease buffer size
      */
-    void truncate(Long length);
+    void truncate(Long length) throws IOException;
 
     interface Factory {
         Buffer create(Path file);
