@@ -1,7 +1,7 @@
-package ch.cyberduck.core.brick;
+package ch.cyberduck.core.dav;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,34 +15,30 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+public class DAVWindowsIntegratedCredentialsConfigurator implements CredentialsConfigurator {
 
-public class BrickCredentialsConfigurator implements CredentialsConfigurator {
-    private static final Logger log = LogManager.getLogger(BrickCredentialsConfigurator.class);
+    private final CredentialsConfigurator proxy;
+
+    public DAVWindowsIntegratedCredentialsConfigurator(final CredentialsConfigurator proxy) {
+        this.proxy = proxy;
+    }
 
     @Override
     public Credentials configure(final Host host) {
-        if(StringUtils.isBlank(host.getCredentials().getToken())) {
-            final Credentials credentials = new Credentials(host.getCredentials());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Set new random token for %s", host));
-            }
-            credentials.setToken(new AlphanumericRandomStringService().random());
-            return credentials;
+        if(new HostPreferences(host).getBoolean("webdav.ntlm.windows.authentication.enable")) {
+            return proxy.configure(host);
         }
         return CredentialsConfigurator.DISABLED.configure(host);
     }
 
     @Override
     public CredentialsConfigurator reload() throws LoginCanceledException {
-        return this;
+        return proxy.reload();
     }
 }

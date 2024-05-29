@@ -16,8 +16,10 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +58,15 @@ public class SMBProtocol extends AbstractProtocol {
 
     @Override
     public String getUsernamePlaceholder() {
-        return String.format("%s\\%s", PreferencesFactory.get().getProperty("smb.domain.default"), LocaleFactory.localizedString("Username", "Credentials"));
+        return String.format("%s\\%s", PreferencesFactory.get().getProperty("smb.domain.default"),
+                LocaleFactory.localizedString("Username", "Credentials"));
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == CredentialsConfigurator.class) {
+            return (T) new WindowsIntegratedCredentialsConfigurator(true);
+        }
+        return super.getFeature(type);
     }
 }

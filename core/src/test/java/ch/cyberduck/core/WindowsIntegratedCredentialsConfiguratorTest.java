@@ -17,13 +17,24 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class WindowsIntegratedCredentialsConfiguratorTest {
 
     @Test
-    public void testConfigure() throws Exception {
+    public void testConfigure() {
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux));
         final Host bookmark = new Host(new TestProtocol());
         assertSame(bookmark.getCredentials(), new WindowsIntegratedCredentialsConfigurator().configure(bookmark));
+    }
+
+    @Test
+    public void testConfigureWindows() {
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
+        final Host bookmark = new Host(new TestProtocol());
+        final Credentials configured = new WindowsIntegratedCredentialsConfigurator().configure(bookmark);
+        assertNotSame(bookmark.getCredentials(), configured);
+        assertFalse(configured.getUsername().isEmpty());
     }
 }

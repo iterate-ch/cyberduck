@@ -16,7 +16,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.auth.win.CurrentWindowsCredentials;
@@ -27,28 +26,36 @@ import org.apache.logging.log4j.Logger;
 public class WindowsIntegratedCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(WindowsIntegratedCredentialsConfigurator.class);
 
+    private final boolean includeDomain;
+
+    public WindowsIntegratedCredentialsConfigurator() {
+        this(false);
+    }
+
+    public WindowsIntegratedCredentialsConfigurator(final boolean includeDomain) {
+        this.includeDomain = includeDomain;
+    }
+
     @Override
     public Credentials configure(final Host host) {
-        if(new HostPreferences(host).getBoolean("webdav.ntlm.windows.authentication.enable")) {
-            if(WinHttpClients.isWinAuthAvailable()) {
-                if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
-                    final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
-                    final Credentials credentials = new Credentials(host.getCredentials())
-                            .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
-                    if(StringUtils.contains(nameSamCompatible, '\\')) {
-                        credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
-                    }
-                    else {
-                        credentials.setUsername(nameSamCompatible);
-                    }
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Configure %s with username %s", host, credentials));
-                    }
-                    return credentials;
+        if(WinHttpClients.isWinAuthAvailable()) {
+            if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+                final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
+                final Credentials credentials = new Credentials(host.getCredentials())
+                        .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
+                if(!includeDomain && StringUtils.contains(nameSamCompatible, '\\')) {
+                    credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
                 }
+                else {
+                    credentials.setUsername(nameSamCompatible);
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Configure %s with username %s", host, credentials));
+                }
+                return credentials;
             }
         }
-        return host.getCredentials();
+        return CredentialsConfigurator.DISABLED.configure(host);
     }
 
     @Override

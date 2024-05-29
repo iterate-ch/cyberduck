@@ -88,7 +88,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
             }
             return credentials;
         }
-        return host.getCredentials();
+        return CredentialsConfigurator.DISABLED.configure(host);
     }
 
     @Override
