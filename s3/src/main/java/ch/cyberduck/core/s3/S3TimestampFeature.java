@@ -23,6 +23,8 @@ import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Maps;
 
 public class S3TimestampFeature extends DefaultTimestampFeature {
+    private static final Logger log = LogManager.getLogger(S3TimestampFeature.class);
 
     // Interoperable with rclone
     public static final String METADATA_MODIFICATION_DATE = "Mtime";
@@ -44,6 +47,10 @@ public class S3TimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+        if(file.isVolume()) {
+            log.warn(String.format("Skip setting timestamp for %s", file));
+            return;
+        }
         final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
         final Map<String, String> metadata = feature.getMetadata(file);
         feature.setMetadata(file, status.withMetadata(metadata));
