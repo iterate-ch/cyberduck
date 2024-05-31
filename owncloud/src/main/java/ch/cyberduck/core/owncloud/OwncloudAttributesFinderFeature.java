@@ -17,7 +17,6 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.nextcloud.NextcloudAttributesFinderFeature;
@@ -34,9 +33,9 @@ import com.github.sardine.DavResource;
 
 public class OwncloudAttributesFinderFeature extends NextcloudAttributesFinderFeature {
 
-    private final DAVSession session;
+    private final OwncloudSession session;
 
-    public OwncloudAttributesFinderFeature(DAVSession session) {
+    public OwncloudAttributesFinderFeature(OwncloudSession session) {
         super(session);
         this.session = session;
     }

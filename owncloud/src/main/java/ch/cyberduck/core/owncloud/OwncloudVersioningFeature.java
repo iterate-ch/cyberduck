@@ -37,9 +37,9 @@ import com.github.sardine.model.Propfind;
 
 public class OwncloudVersioningFeature extends NextcloudVersioningFeature {
 
-    private final DAVSession session;
+    private final OwncloudSession session;
 
-    public OwncloudVersioningFeature(final DAVSession session) {
+    public OwncloudVersioningFeature(final OwncloudSession session) {
         super(session);
         this.session = session;
     }
