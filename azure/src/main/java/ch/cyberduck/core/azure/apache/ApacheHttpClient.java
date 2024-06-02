@@ -1,7 +1,7 @@
 package ch.cyberduck.core.azure.apache;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
