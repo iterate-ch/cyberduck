@@ -33,18 +33,20 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
+import com.azure.core.http.HttpPipeline;
 import com.azure.core.http.HttpPipelineBuilder;
 import com.azure.core.http.HttpPipelineCallContext;
 import com.azure.core.http.HttpPipelineNextPolicy;
@@ -54,9 +56,13 @@ import com.azure.core.http.policy.AddHeadersPolicy;
 import com.azure.core.http.policy.AzureSasCredentialPolicy;
 import com.azure.core.http.policy.HttpPipelinePolicy;
 import com.azure.core.http.policy.RequestIdPolicy;
+import com.azure.storage.blob.BlobServiceAsyncClient;
 import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.BlobServiceVersion;
+import com.azure.storage.blob.implementation.models.EncryptionScope;
 import com.azure.storage.blob.models.AccountKind;
+import com.azure.storage.blob.models.BlobContainerEncryptionScope;
+import com.azure.storage.blob.models.CpkInfo;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import com.azure.storage.common.implementation.Constants;
 import com.azure.storage.common.policy.MetadataValidationPolicy;
@@ -82,9 +88,6 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     @Override
     protected BlobServiceClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
-        final BlobServiceClientBuilder builder = new BlobServiceClientBuilder();
-        // Pseudo credentials to pass internal validation
-        builder.credential(new StorageSharedKeyCredential(StringUtils.EMPTY, StringUtils.EMPTY));
         final List<HttpPipelinePolicy> policies = new ArrayList<>();
         policies.add(new RequestIdPolicy());
         policies.add(new RequestRetryPolicy(new RequestRetryOptions()));
@@ -98,12 +101,22 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
                 .addOptionalEcho(Constants.HeaderConstants.CLIENT_REQUEST_ID)
                 .addOptionalEcho(Constants.HeaderConstants.ENCRYPTION_KEY_SHA256)
                 .build());
-        builder.pipeline(new HttpPipelineBuilder()
+        final HttpPipeline pipeline = new HttpPipelineBuilder()
                 .httpClient(new ApacheHttpClient(pool))
                 .policies(policies.toArray(new HttpPipelinePolicy[0]))
-                .build());
-        builder.endpoint(String.format("%s://%s", Scheme.https, host.getHostname()));
-        return builder.buildClient();
+                .build();
+        try {
+            final Constructor<BlobServiceAsyncClient> blobServiceAsyncClientConstructor = BlobServiceAsyncClient.class.getDeclaredConstructor(HttpPipeline.class, String.class, BlobServiceVersion.class, String.class, CpkInfo.class, EncryptionScope.class, BlobContainerEncryptionScope.class, boolean.class);
+            blobServiceAsyncClientConstructor.setAccessible(true);
+            final BlobServiceAsyncClient serviceAsyncClient = blobServiceAsyncClientConstructor.newInstance(pipeline, String.format("%s://%s", Scheme.https, host.getHostname()),
+                    BlobServiceVersion.getLatest(), null, null, null, null, false);
+            final Constructor<BlobServiceClient> blobServiceClientConstructor = BlobServiceClient.class.getDeclaredConstructor(BlobServiceAsyncClient.class);
+            blobServiceClientConstructor.setAccessible(true);
+            return blobServiceClientConstructor.newInstance(serviceAsyncClient);
+        }
+        catch(InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new BackgroundException(e);
+        }
     }
 
     private static final class CredentialsHttpPipelinePolicy implements HttpPipelinePolicy {
