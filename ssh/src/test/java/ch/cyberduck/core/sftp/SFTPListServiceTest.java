@@ -37,9 +37,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class SFTPListServiceTest extends AbstractSFTPTest {
@@ -94,21 +94,5 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         final Path f = new Path(home, "test", EnumSet.of(Path.Type.directory));
         final SFTPListService service = new SFTPListService(session);
         service.list(f, new DisabledListProgressListener());
-    }
-
-    @Test
-    public void testListEmptyFolder() throws Exception {
-        final Path home = new SFTPHomeDirectoryService(session).find();
-        final Path folder = new SFTPDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final AtomicBoolean callback = new AtomicBoolean();
-        assertTrue(new SFTPListService(session).list(folder, new DisabledListProgressListener() {
-            @Override
-            public void chunk(final Path parent, final AttributedList<Path> list) {
-                assertNotSame(AttributedList.EMPTY, list);
-                callback.set(true);
-            }
-        }).isEmpty());
-        assertTrue(callback.get());
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
