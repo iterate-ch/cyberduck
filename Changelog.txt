@@ -1,8 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
-8.9.0
+9.0.0
 - [Feature] Versioning of files edited in external application (#15137)
+
+8.9.0
 - [Feature] Resumable file uploads (ownCloud) (#15619)
 - [Feature] Support authentication using SSH certificates (SFTP) (#15183)
 - [Bugfix] Failure sharing file (ownCloud) (#15855, #15839)
