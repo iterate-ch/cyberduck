@@ -79,9 +79,6 @@ public class DAVListService implements ListService {
                     listener.chunk(directory, children);
                 }
             }
-            if(children.isEmpty()) {
-                listener.chunk(directory, children);
-            }
             return children;
         }
         catch(SardineException e) {

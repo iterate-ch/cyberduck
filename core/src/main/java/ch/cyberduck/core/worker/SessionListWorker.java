@@ -59,7 +59,11 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Run with feature %s", service));
             }
-            return service.list(directory, listener);
+            final AttributedList<Path> list = service.list(directory, listener);
+            if(list.isEmpty()) {
+                listener.chunk(directory, list);
+            }
+            return list;
         }
         catch(ListCanceledException e) {
             if(log.isWarnEnabled()) {

@@ -29,7 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.Objects;
 
 public class VersionsWorker extends Worker<AttributedList<Path>> {
@@ -50,7 +49,11 @@ public class VersionsWorker extends Worker<AttributedList<Path>> {
             log.debug(String.format("Run with feature %s", feature));
         }
         if(feature.getConfiguration(file).isEnabled()) {
-            return feature.list(file, listener);
+            final AttributedList<Path> list = feature.list(file, listener);
+            if(list.isEmpty()) {
+                listener.chunk(file.getParent(), list);
+            }
+            return list;
         }
         return AttributedList.emptyList();
     }
