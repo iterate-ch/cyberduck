@@ -47,6 +47,10 @@ public class GoogleStorageTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+        if(file.isVolume()) {
+            log.warn(String.format("Skip setting timestamp for %s", file));
+            return;
+        }
         try {
             if(null != status.getModified()) {
                 // The Custom-Time metadata is a user-specified date and time represented in the RFC 3339

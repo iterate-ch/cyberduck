@@ -23,6 +23,8 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.PatchOperation;
@@ -34,6 +36,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 
 public class GraphTimestampFeature extends DefaultTimestampFeature {
+    private static final Logger log = LogManager.getLogger(GraphTimestampFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -45,6 +48,10 @@ public class GraphTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+        if(file.isVolume()) {
+            log.warn(String.format("Skip setting timestamp for %s", file));
+            return;
+        }
         final PatchOperation patchOperation = new PatchOperation();
         final FileSystemInfo info = new FileSystemInfo();
         info.setCreatedDateTime(null != status.getCreated() ? Instant.ofEpochMilli(status.getCreated()).atOffset(ZoneOffset.UTC) : null);
