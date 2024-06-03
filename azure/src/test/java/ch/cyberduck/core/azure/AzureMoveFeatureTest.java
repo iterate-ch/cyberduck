@@ -25,22 +25,22 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
     @Test
     public void testMove() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new AzureTouchFeature(session, null).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new AzureFindFeature(session, null).find(test));
-        final Path target = new AzureMoveFeature(session, null).move(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new AzureFindFeature(session, null).find(test));
-        assertTrue(new AzureFindFeature(session, null).find(target));
-        final PathAttributes targetAttr = new AzureAttributesFinderFeature(session, null).find(target);
+        final Path test = new AzureTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new AzureFindFeature(session).find(test));
+        final Path target = new AzureMoveFeature(session).move(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new AzureFindFeature(session).find(test));
+        assertTrue(new AzureFindFeature(session).find(target));
+        final PathAttributes targetAttr = new AzureAttributesFinderFeature(session).find(target);
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), targetAttr));
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new AzureMoveFeature(session, null).isSupported(c, c));
+        assertFalse(new AzureMoveFeature(session).isSupported(c, c));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new AzureMoveFeature(session, null).isSupported(cf, cf));
+        assertTrue(new AzureMoveFeature(session).isSupported(cf, cf));
     }
 }

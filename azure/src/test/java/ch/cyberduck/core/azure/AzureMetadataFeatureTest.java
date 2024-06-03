@@ -23,27 +23,27 @@ public class AzureMetadataFeatureTest extends AbstractAzureTest {
     public void testSetMetadata() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
         final String v = new AlphanumericRandomStringService().random();
-        new AzureMetadataFeature(session, null).setMetadata(test, Collections.singletonMap("Test", v));
-        final Map<String, String> metadata = new AzureMetadataFeature(session, null).getMetadata(test);
+        new AzureMetadataFeature(session).setMetadata(test, Collections.singletonMap("Test", v));
+        final Map<String, String> metadata = new AzureMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testSetCacheControl() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        final AzureMetadataFeature service = new AzureMetadataFeature(session, null);
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        final AzureMetadataFeature service = new AzureMetadataFeature(session);
         service.setMetadata(test, Collections.singletonMap("Cache-Control", "public, max-age=0"));
         final Map<String, String> metadata = service.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Cache-Control"));
         assertEquals("public, max-age=0", metadata.get("Cache-Control"));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
