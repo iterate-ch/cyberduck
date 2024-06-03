@@ -20,7 +20,6 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVExceptionMappingService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
@@ -37,9 +36,9 @@ import com.github.sardine.model.Propfind;
 
 public class OwncloudVersioningFeature extends NextcloudVersioningFeature {
 
-    private final DAVSession session;
+    private final OwncloudSession session;
 
-    public OwncloudVersioningFeature(final DAVSession session) {
+    public OwncloudVersioningFeature(final OwncloudSession session) {
         super(session);
         this.session = session;
     }
@@ -48,7 +47,7 @@ public class OwncloudVersioningFeature extends NextcloudVersioningFeature {
     public void revert(final Path file) throws BackgroundException {
         try {
             session.getClient().copy(String.format("%s/%s/v/%s",
-                            new OwncloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
+                            new OwncloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.meta).getAbsolute(),
                             file.attributes().getFileId(), file.attributes().getVersionId()),
                     new DAVPathEncoder().encode(file));
         }
@@ -71,7 +70,7 @@ public class OwncloudVersioningFeature extends NextcloudVersioningFeature {
     @Override
     protected List<DavResource> propfind(final Path file, final Propfind body) throws IOException, BackgroundException {
         return session.getClient().propfind(URIEncoder.encode(String.format("%s/%s/v",
-                new OwncloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
+                new OwncloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.meta).getAbsolute(),
                 file.attributes().getFileId())), 1, body);
     }
 }

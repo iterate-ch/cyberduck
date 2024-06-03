@@ -18,7 +18,6 @@ package ch.cyberduck.core.owncloud;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVReadFeature;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,9 +29,9 @@ import java.net.URI;
 
 public class OwncloudReadFeature extends DAVReadFeature {
 
-    private final DAVSession session;
+    private final OwncloudSession session;
 
-    public OwncloudReadFeature(final DAVSession session) {
+    public OwncloudReadFeature(final OwncloudSession session) {
         super(session);
         this.session = session;
     }

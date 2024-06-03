@@ -71,7 +71,13 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
             }
         },
         versions,
-        meta;
+        meta {
+            @Override
+            public Home home(final Host bookmark) throws BackgroundException {
+                return () -> new Path(MessageFormat.format(
+                        new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.user"), this.name(), StringUtils.EMPTY), EnumSet.of(Path.Type.directory));
+            }
+        };
 
         public Home home(final Host bookmark) throws BackgroundException {
             return new UserDavRoot(bookmark, this);
