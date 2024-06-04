@@ -97,7 +97,7 @@ public class OwncloudSession extends DAVSession {
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final DAVClient client = super.connect(proxy, key, prompt, cancel);
         try {
-            client.execute(new TusCapabilitiesRequest(host), new TusCapabilitiesResponseHandler(tus));
+            client.execute(new TusCapabilitiesRequest(host, new OwncloudHomeFeature(host).find(OwncloudHomeFeature.Context.tus)), new TusCapabilitiesResponseHandler(tus));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);

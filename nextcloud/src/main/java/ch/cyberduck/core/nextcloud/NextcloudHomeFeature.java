@@ -52,6 +52,12 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
     }
 
     public enum Context {
+        tus {
+            @Override
+            public Home home(final Host bookmark) throws BackgroundException {
+                return new DefaultDavRoot(bookmark);
+            }
+        },
         ocs {
             @Override
             public Home home(final Host bookmark) {
