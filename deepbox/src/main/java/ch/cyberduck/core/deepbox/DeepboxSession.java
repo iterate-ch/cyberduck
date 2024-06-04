@@ -147,8 +147,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
             credentials.setUsername(me.getEmail());
         }
         catch(ApiException e) {
-            //todo API exception mapper
-            throw new BackgroundException(e);
+            throw new DeepboxExceptionMappingService(new DeepboxIdProvider(this)).map(e);
         }
     }
 
@@ -161,9 +160,8 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new DeepboxListService(this, null);
+            return (T) new DeepboxListService(this, new DeepboxIdProvider(this));
         }
-
         return super._getFeature(type);
     }
 }

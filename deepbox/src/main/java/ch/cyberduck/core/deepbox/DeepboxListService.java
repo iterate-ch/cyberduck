@@ -23,14 +23,22 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Box;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Boxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
 public class DeepboxListService implements ListService {
+    public static final String INBOX = "Inbox";
+    public static final String DOCUMENTS = "Documents";
+    public static final String TRASH = "Trash";
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
@@ -47,11 +55,107 @@ public class DeepboxListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
+        final int level = directory.getAbsolute().split(String.valueOf(Path.DELIMITER)).length;
+        final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
+        final String boxNodeId = fileid.getBoxId(directory);
+        final String thirdLevelId = fileid.getThirdLevelId(directory);
         try {
-            final DeepBoxes boxes = new BoxRestControllerApi(this.session.getClient()).listDeepBoxes(0, 50, "asc", null);
-            for(DeepBox box : boxes.getDeepBoxes()) {
-                list.add(new Path(directory, PathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                        new PathAttributes()));
+            final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+            if(directory.isRoot()) {
+                final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "asc", null);
+                for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
+                    list.add(new Path(directory, PathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                            new PathAttributes().withFileId(deepBox.getDeepBoxNodeId().toString())
+                    ));
+                }
+            }
+            else if(level == 2) { // in DeepBox
+                final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), 0, 50, "asc", null);
+                for(final Box box : boxes.getBoxes()) {
+                    list.add(new Path(directory, PathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                            new PathAttributes().withFileId(box.getBoxNodeId().toString())
+                    ));
+                }
+            }
+            else if(level == 3) { // in Box
+                list.add(new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, directory.getName()))
+                ));
+                list.add(new Path(directory, PathNormalizer.name(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, directory.getName()))
+                ));
+                list.add(new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, directory.getName()))
+                ));
+            }
+            else if(level == 4) { // in Inbox/Documents/Trash
+                if(thirdLevelId.endsWith(INBOX)) {
+                    final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
+                            UUID.fromString(boxNodeId),
+                            null,
+                            0, 50, "asc");
+                    for(Node node : inbox.getNodes()) {
+                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
+                                .withAttributes(new PathAttributes()
+                                        .withFileId(node.getNodeId().toString())
+                                ));
+                    }
+                }
+                else if(thirdLevelId.endsWith(DOCUMENTS)) {
+                    final NodeContent files = api.listFiles(
+                            UUID.fromString(deepBoxNodeId),
+                            UUID.fromString(boxNodeId),
+                            0, 50, "asc"
+                    );
+                    for(final Node node : files.getNodes()) {
+                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
+                                .withAttributes(new PathAttributes()
+                                        .withFileId(node.getNodeId().toString())
+                                ));
+                    }
+                }
+                else if(thirdLevelId.endsWith(TRASH)) {
+                    final NodeContent trashFiles = api.listTrash(
+                            UUID.fromString(deepBoxNodeId),
+                            UUID.fromString(boxNodeId),
+                            0, 50, "asc"
+                    );
+                    for(final Node node : trashFiles.getNodes()) {
+                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
+                                .withAttributes(new PathAttributes()
+                                        .withFileId(node.getNodeId().toString())
+                                ));
+                    }
+                }
+            }
+            else { // in subfolder in Documents/Trash (Inbox has no subfolders)
+                final String nodeId = fileid.getFileId(directory);
+                if(thirdLevelId.endsWith(DOCUMENTS)) {
+                    final NodeContent files = api.listFiles1(
+                            UUID.fromString(deepBoxNodeId),
+                            UUID.fromString(boxNodeId),
+                            UUID.fromString(nodeId),
+                            0, 50, "asc"
+                    );
+                    for(final Node node : files.getNodes()) {
+                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
+                                .withAttributes(new PathAttributes().withFileId(node.getNodeId().toString())
+                                ));
+                    }
+                }
+                else {
+                    final NodeContent files = api.listTrash1(
+                            UUID.fromString(deepBoxNodeId),
+                            UUID.fromString(boxNodeId),
+                            UUID.fromString(nodeId),
+                            0, 50, "asc"
+                    );
+                    for(final Node node : files.getNodes()) {
+                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
+                                .withAttributes(new PathAttributes().withFileId(node.getNodeId().toString())
+                                ));
+                    }
+                }
             }
         }
         catch(ApiException e) {
