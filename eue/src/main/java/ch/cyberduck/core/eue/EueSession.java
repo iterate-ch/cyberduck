@@ -73,13 +73,13 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Optional;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.migcomponents.migbase64.Base64;
 
 public class EueSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = LogManager.getLogger(EueSession.class);
@@ -105,7 +105,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
                 request.addHeader(HttpHeaders.AUTHORIZATION,
-                        String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
+                        String.format("Basic %s", Base64.getEncoder().encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8))));
             }
         }).build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()

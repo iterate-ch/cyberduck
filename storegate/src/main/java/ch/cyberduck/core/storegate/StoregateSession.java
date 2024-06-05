@@ -73,6 +73,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -80,7 +81,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.migcomponents.migbase64.Base64;
 
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
 import static com.google.api.client.json.Json.MEDIA_TYPE;
@@ -105,7 +105,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
                 request.addHeader(HttpHeaders.AUTHORIZATION,
-                        String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
+                        String.format("Basic %s", Base64.getEncoder().encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8))));
             }
         }).build(), host, prompt)
                 .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
