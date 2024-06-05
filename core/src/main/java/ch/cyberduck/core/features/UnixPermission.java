@@ -19,6 +19,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
@@ -38,15 +40,35 @@ public interface UnixPermission {
 
     void setUnixPermission(Path file, TransferStatus status) throws BackgroundException;
 
-    /**
-     * @param file File on local disk
-     * @return Default mask to set for file
-     */
-    Permission getDefault(Local file);
+    Preferences preferences = PreferencesFactory.get();
 
     /**
      * @param type File or folder
      * @return Default mask for new file or folder
      */
-    Permission getDefault(EnumSet<Path.Type> type);
+    default Permission getDefault(final EnumSet<Path.Type> type) {
+        if(preferences.getBoolean("queue.upload.permissions.default")) {
+            if(type.contains(Path.Type.file)) {
+                return new Permission(preferences.getInteger("queue.upload.permissions.file.default"));
+            }
+            else {
+                return new Permission(preferences.getInteger("queue.upload.permissions.folder.default"));
+            }
+        }
+        return Permission.EMPTY;
+    }
+
+    /**
+     * @param file File on local disk
+     * @return Default mask to set for file
+     */
+    default Permission getDefault(final Local file) {
+        if(preferences.getBoolean("queue.upload.permissions.default")) {
+            return this.getDefault(file.getType());
+        }
+        else {
+            // Read permissions from local file
+            return file.attributes().getPermission();
+        }
+    }
 }
