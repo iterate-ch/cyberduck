@@ -69,10 +69,6 @@ import com.migcomponents.migbase64.Base64;
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
 
-    public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
-    public static final int DEFAULT_CHUNKSIZE = 16;
-
-    public static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
 
     private OAuth2RequestInterceptor authorizationService;
 
