@@ -43,15 +43,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpException;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
@@ -61,10 +54,6 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import com.migcomponents.migbase64.Base64;
 
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
@@ -81,32 +70,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     @Override
     protected DeepboxApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                if(request instanceof HttpRequestWrapper) {
-                    final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                    if(null != wrapper.getTarget()) {
-                        if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                            request.addHeader(HttpHeaders.AUTHORIZATION,
-                                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
-                        }
-                    }
-                }
-            }
-        }).build(), host, prompt) {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                if(request instanceof HttpRequestWrapper) {
-                    final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                    if(null != wrapper.getTarget()) {
-                        if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                            super.process(request, context);
-                        }
-                    }
-                }
-            }
-        }
+        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host, prompt)
                 .withFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
