@@ -55,8 +55,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : list) {
             assertSame(directory, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
-            //assertTrue(f.attributes().getModificationDate() > 0);
-            //assertTrue(f.attributes().getCreationDate() > 0);
+            // no modification/creation date for DeepBoxes
+            assertTrue(f.attributes().getModificationDate() < 0);
+            assertTrue(f.attributes().getCreationDate() < 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             //assertEquals(f.attributes(), new DeepboxListService(session, nodeid).find(f));
         }
@@ -75,8 +76,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : list) {
             assertSame(deepBox, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
-            //assertTrue(f.attributes().getModificationDate() > 0);
-            //assertTrue(f.attributes().getCreationDate() > 0);
+            // no modification/creation date for Boxes
+            assertTrue(f.attributes().getModificationDate() < 0);
+            assertTrue(f.attributes().getCreationDate() < 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             //assertEquals(f.attributes(), new DeepboxListService(session, nodeid).find(f));
         }
@@ -97,8 +99,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : list) {
             assertSame(box, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
-            //assertTrue(f.attributes().getModificationDate() > 0);
-            //assertTrue(f.attributes().getCreationDate() > 0);
+            // no modification/creation date for Inbox/Documents/Trash virtual folder level
+            assertTrue(f.attributes().getModificationDate() < 0);
+            assertTrue(f.attributes().getCreationDate() < 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             //assertEquals(f.attributes(), new DeepboxListService(session, nodeid).find(f));
         }
@@ -117,8 +120,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : list) {
             assertSame(documents, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
-            //assertTrue(f.attributes().getModificationDate() > 0);
-            //assertTrue(f.attributes().getCreationDate() > 0);
+            assertTrue(f.attributes().getModificationDate() > 0);
+            assertTrue(f.attributes().getCreationDate() > 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             //assertEquals(f.attributes(), new DeepboxListService(session, nodeid).find(f));
         }
@@ -138,8 +141,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : list) {
             assertSame(auditing, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
-            //assertTrue(f.attributes().getModificationDate() > 0);
-            //assertTrue(f.attributes().getCreationDate() > 0);
+            assertTrue(f.attributes().getModificationDate() > 0);
+            assertTrue(f.attributes().getCreationDate() > 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             //assertEquals(f.attributes(), new DeepboxListService(session, nodeid).find(f));
         }
