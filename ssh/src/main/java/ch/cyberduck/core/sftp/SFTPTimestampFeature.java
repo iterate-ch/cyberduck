@@ -44,7 +44,7 @@ public class SFTPTimestampFeature extends DefaultTimestampFeature implements Tim
                 // All times are represented as seconds from Jan 1, 1970 in UTC.
                 final long atime = Timestamp.toSeconds(System.currentTimeMillis());
                 final long mtime = Timestamp.toSeconds(status.getModified() != null ? status.getModified() : System.currentTimeMillis());
-                final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(atime, mtime).build();
+                final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(atime / 1000, mtime / 1000).build();
                 session.sftp().setAttributes(file.getAbsolute(), attrs);
                 status.setResponse(new PathAttributes(status.getResponse()).withModificationDate(mtime));
             }
