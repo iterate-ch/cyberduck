@@ -16,6 +16,7 @@ package ch.cyberduck.core.tus;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -25,7 +26,10 @@ import org.apache.http.client.methods.HttpOptions;
 
 public class TusCapabilitiesRequest extends HttpOptions {
     public TusCapabilitiesRequest(final Host host) throws BackgroundException {
-        super(URIEncoder.encode(
-                new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find().getAbsolute()));
+        this(host, new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
+    }
+
+    public TusCapabilitiesRequest(final Host host, final Path home) {
+        super(URIEncoder.encode(home.getAbsolute()));
     }
 }
