@@ -15,7 +15,6 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.features.Timestamp;
 
 public abstract class DefaultTimestampFeature implements Timestamp {

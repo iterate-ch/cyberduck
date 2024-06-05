@@ -18,7 +18,7 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.util.concurrent.TimeUnit;
 
-public class LocalTimestampFeature extends DefaultTimestampFeature {
+public class LocalTimestampFeature implements Timestamp {
 
     private final LocalSession session;
 

@@ -19,7 +19,7 @@ import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Maps;
 
-public class S3TimestampFeature extends DefaultTimestampFeature {
+public class S3TimestampFeature implements Timestamp {
     private static final Logger log = LogManager.getLogger(S3TimestampFeature.class);
 
     // Interoperable with rclone

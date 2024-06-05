@@ -21,8 +21,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +34,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.StorageObject;
 
-public class GoogleStorageTimestampFeature extends DefaultTimestampFeature {
+public class GoogleStorageTimestampFeature implements Timestamp {
     private static final Logger log = LogManager.getLogger(GoogleStorageTimestampFeature.class);
 
     private final GoogleStorageSession session;
