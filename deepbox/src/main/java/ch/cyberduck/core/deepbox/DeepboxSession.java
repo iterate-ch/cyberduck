@@ -50,7 +50,6 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -85,7 +84,6 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
                 .property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true)
                 .register(new InputStreamProvider())
-                .register(MultiPartFeature.class)
                 .register(new JSON())
                 .register(JacksonFeature.class)
                 .connectorProvider(new HttpComponentsProvider(apache))));
