@@ -33,8 +33,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import static ch.cyberduck.core.deepbox.DeepboxListService.DOCUMENTS;
-import static ch.cyberduck.core.deepbox.DeepboxListService.INBOX;
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.DOCUMENTS;
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.INBOX;
 
 public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdProvider {
     private static final Logger log = LogManager.getLogger(DeepboxIdProvider.class);
@@ -123,8 +123,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     return boxNodeId;
                 }
                 else if(new DeepboxPathContainerService().isThirdLevel(file)) { // 3rd level: Inbox,Documents,Trash
-                    // TODO safe - i18n?
                     final String boxNodeId = getFileId(file.getParent());
+                    // TODO safe - i18n?
                     final String thirdLevelFileId = String.format("%s_%s", boxNodeId, file.getName());
                     this.cache(file, thirdLevelFileId);
                     return thirdLevelFileId;

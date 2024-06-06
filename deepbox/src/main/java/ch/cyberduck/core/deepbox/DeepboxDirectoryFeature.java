@@ -46,29 +46,37 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            final PathRestControllerApi api = new PathRestControllerApi(session.getClient());
+
             final Folder upload = new Folder();
             upload.setName(folder.getName());
             upload.setI18n(Collections.emptyMap());
-            List<Folder> body = Collections.singletonList(upload);
-
-            fileid.getFileId(folder.getParent()); // TODO bad code smell - should not be necessary to populate explicitly before calling getDeepBoxNodeId
+            final List<Folder> body = Collections.singletonList(upload);
             final UUID deepBoxNodeId = UUID.fromString(fileid.getDeepBoxNodeId(folder.getParent()));
-            final UUID boxNodeId = UUID.fromString(fileid.getBoxId(folder.getParent()));
-            final UUID nodeId = UUID.fromString(folder.getParent().attributes().getFileId());
-            final List<FolderAdded> created = api.addFolders(
-                    body,
-                    deepBoxNodeId,
-                    boxNodeId,
-                    nodeId
-            );
+            final UUID boxNodeId = UUID.fromString(fileid.getBoxNodeId(folder.getParent()));
 
+            final PathRestControllerApi pathApi = new PathRestControllerApi(session.getClient());
+            final List<FolderAdded> created;
+            if(new DeepboxPathContainerService().isDocuments(folder.getParent())) {
+                created = pathApi.addFolders1(
+                        body,
+                        deepBoxNodeId,
+                        boxNodeId
+                );
+            }
+            else {
+                final UUID nodeId = UUID.fromString(fileid.getFileId(folder.getParent()));
+                created = pathApi.addFolders(
+                        body,
+                        deepBoxNodeId,
+                        boxNodeId,
+                        nodeId
+                );
+            }
             final FolderAdded f = created.stream().findFirst().orElse(null);
             if(f != null) {
                 fileid.cache(folder, f.getNode().getNodeId().toString());
             }
-            return folder;
-//            return folder.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(f));
+            return folder.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(f.getNode()));
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);
@@ -82,7 +90,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(workdir.isRoot()) {
+        if(workdir.isRoot() || (new DeepboxPathContainerService().isContainer(workdir) && !new DeepboxPathContainerService().isDocuments(workdir))) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
     }

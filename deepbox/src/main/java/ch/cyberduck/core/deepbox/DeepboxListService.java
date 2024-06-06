@@ -35,11 +35,9 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import java.util.EnumSet;
 import java.util.UUID;
 
-public class DeepboxListService implements ListService {
-    public static final String INBOX = "Inbox";
-    public static final String DOCUMENTS = "Documents";
-    public static final String TRASH = "Trash";
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
 
+public class DeepboxListService implements ListService {
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
     private final int chunksize;

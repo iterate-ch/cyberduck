@@ -16,6 +16,8 @@ package ch.cyberduck.core.deepbox;/*
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
+
 public class DeepboxPathContainerService extends DefaultPathContainerService {
 
     @Override
@@ -45,5 +47,20 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
             return false;
         }
         return file.isDirectory() && !file.getParent().isRoot() && !file.getParent().getParent().isRoot() && file.getParent().getParent().getParent().isRoot();
+    }
+
+    public boolean isTrash(final Path file) {
+        // TODO i18n?
+        return isThirdLevel(file) && file.getName().equals(TRASH);
+    }
+
+    public boolean isInbox(final Path file) {
+        // TODO i18n?
+        return isThirdLevel(file) && file.getName().equals(INBOX);
+    }
+
+    public boolean isDocuments(final Path file) {
+        // TODO i18n?
+        return isThirdLevel(file) && file.getName().equals(DOCUMENTS);
     }
 }
