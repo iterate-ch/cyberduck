@@ -28,6 +28,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.JSON;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.UserRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Me;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.http.ChainedServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
@@ -56,7 +57,7 @@ import javax.ws.rs.client.ClientBuilder;
 
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
-
+    private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
 
     private OAuth2RequestInterceptor authorizationService;
 
@@ -118,7 +119,10 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new DeepboxListService(this, new DeepboxIdProvider(this));
+            return (T) new DeepboxListService(this, fileid);
+        }
+        if(type == Directory.class) {
+            return (T) new DeepboxDirectoryFeature(this, fileid);
         }
         return super._getFeature(type);
     }

@@ -1,0 +1,89 @@
+package ch.cyberduck.core.deepbox;
+
+/*
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
+import ch.cyberduck.core.deepbox.io.swagger.client.api.PathRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.FolderAdded;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+public class DeepboxDirectoryFeature implements Directory<VersionId> {
+
+    private final DeepboxSession session;
+    private final DeepboxIdProvider fileid;
+
+    public DeepboxDirectoryFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
+        this.session = session;
+        this.fileid = fileid;
+    }
+
+    @Override
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+        try {
+            final PathRestControllerApi api = new PathRestControllerApi(session.getClient());
+            final Folder upload = new Folder();
+            upload.setName(folder.getName());
+            upload.setI18n(Collections.emptyMap());
+            List<Folder> body = Collections.singletonList(upload);
+
+            fileid.getFileId(folder.getParent()); // TODO bad code smell - should not be necessary to populate explicitly before calling getDeepBoxNodeId
+            final UUID deepBoxNodeId = UUID.fromString(fileid.getDeepBoxNodeId(folder.getParent()));
+            final UUID boxNodeId = UUID.fromString(fileid.getBoxId(folder.getParent()));
+            final UUID nodeId = UUID.fromString(folder.getParent().attributes().getFileId());
+            final List<FolderAdded> created = api.addFolders(
+                    body,
+                    deepBoxNodeId,
+                    boxNodeId,
+                    nodeId
+            );
+
+            final FolderAdded f = created.stream().findFirst().orElse(null);
+            if(f != null) {
+                fileid.cache(folder, f.getNode().getNodeId().toString());
+            }
+            return folder;
+//            return folder.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(f));
+        }
+        catch(ApiException e) {
+            throw new DeepboxExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);
+        }
+    }
+
+    @Override
+    public Directory<VersionId> withWriter(final Write<VersionId> writer) {
+        return this;
+    }
+
+    @Override
+    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        if(workdir.isRoot()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
+        }
+    }
+}
