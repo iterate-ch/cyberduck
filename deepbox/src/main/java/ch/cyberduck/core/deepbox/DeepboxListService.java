@@ -55,7 +55,6 @@ public class DeepboxListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
-        final int level = directory.getAbsolute().split(String.valueOf(Path.DELIMITER)).length;
         final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
         final String boxNodeId = fileid.getBoxId(directory);
         final String thirdLevelId = fileid.getThirdLevelId(directory);
@@ -69,7 +68,7 @@ public class DeepboxListService implements ListService {
                     ));
                 }
             }
-            else if(level == 2) { // in DeepBox
+            else if(new DeepboxPathContainerService().isDeepbox(directory)) { // in DeepBox
                 final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), 0, 50, "asc", null);
                 for(final Box box : boxes.getBoxes()) {
                     list.add(new Path(directory, PathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
@@ -78,7 +77,7 @@ public class DeepboxListService implements ListService {
                     ));
                 }
             }
-            else if(level == 3) { // in Box
+            else if(new DeepboxPathContainerService().isBox(directory)) { // in Box
                 list.add(new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                         new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, directory.getName()))
                 ));
@@ -89,7 +88,7 @@ public class DeepboxListService implements ListService {
                         new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, directory.getName()))
                 ));
             }
-            else if(level == 4) { // in Inbox/Documents/Trash
+            else if(new DeepboxPathContainerService().isThirdLevel(directory)) { // in Inbox/Documents/Trash
                 if(thirdLevelId.endsWith(INBOX)) {
                     final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
                             UUID.fromString(boxNodeId),
