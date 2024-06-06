@@ -43,13 +43,13 @@ public class DeepboxListService implements ListService {
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
     private final int chunksize;
-//    private final DeepboxAttributesFinderFeature attributes;
+    private final DeepboxAttributesFinderFeature attributes;
 
     public DeepboxListService(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
         this.chunksize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
-//        this.attributes = new DeepboxAttributesFinderFeature(session, fileid);
+        this.attributes = new DeepboxAttributesFinderFeature(session, fileid);
     }
 
     @Override
@@ -64,17 +64,16 @@ public class DeepboxListService implements ListService {
                 final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "asc", null);
                 for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
                     list.add(new Path(directory, PathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            new PathAttributes().withFileId(deepBox.getDeepBoxNodeId().toString())
-                    ));
+                            attributes.toAttributes(deepBox))
+                    );
                 }
             }
             else if(new DeepboxPathContainerService().isDeepbox(directory)) { // in DeepBox
                 final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), 0, 50, "asc", null);
                 for(final Box box : boxes.getBoxes()) {
                     list.add(new Path(directory, PathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            new PathAttributes()
-                                    .withFileId(box.getBoxNodeId().toString())
-                    ));
+                            attributes.toAttributes(box))
+                    );
                 }
             }
             else if(new DeepboxPathContainerService().isBox(directory)) { // in Box
@@ -96,11 +95,7 @@ public class DeepboxListService implements ListService {
                             0, 50, "asc");
                     for(Node node : inbox.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(new PathAttributes()
-                                        .withFileId(node.getNodeId().toString())
-                                        .withCreationDate(node.getCreated().getTime().getMillis())
-                                        .withModificationDate(node.getModified().getTime().getMillis())
-                                ));
+                                .withAttributes(attributes.toAttributes(node)));
                     }
                 }
                 else if(thirdLevelId.endsWith(DOCUMENTS)) {
@@ -111,11 +106,7 @@ public class DeepboxListService implements ListService {
                     );
                     for(final Node node : files.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(new PathAttributes()
-                                        .withFileId(node.getNodeId().toString())
-                                        .withCreationDate(node.getCreated().getTime().getMillis())
-                                        .withModificationDate(node.getModified().getTime().getMillis())
-                                ));
+                                .withAttributes(attributes.toAttributes(node)));
                     }
                 }
                 else if(thirdLevelId.endsWith(TRASH)) {
@@ -126,11 +117,7 @@ public class DeepboxListService implements ListService {
                     );
                     for(final Node node : trashFiles.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(new PathAttributes()
-                                        .withFileId(node.getNodeId().toString())
-                                        .withCreationDate(node.getCreated().getTime().getMillis())
-                                        .withModificationDate(node.getModified().getTime().getMillis())
-                                ));
+                                .withAttributes(attributes.toAttributes(node)));
                     }
                 }
             }
@@ -145,11 +132,7 @@ public class DeepboxListService implements ListService {
                     );
                     for(final Node node : files.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(new PathAttributes()
-                                        .withFileId(node.getNodeId().toString())
-                                        .withCreationDate(node.getCreated().getTime().getMillis())
-                                        .withModificationDate(node.getModified().getTime().getMillis())
-                                ));
+                                .withAttributes(attributes.toAttributes(node)));
                     }
                 }
                 else {
@@ -161,11 +144,7 @@ public class DeepboxListService implements ListService {
                     );
                     for(final Node node : files.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(new PathAttributes()
-                                        .withFileId(node.getNodeId().toString())
-                                        .withCreationDate(node.getCreated().getTime().getMillis())
-                                        .withModificationDate(node.getModified().getTime().getMillis())
-                                ));
+                                .withAttributes(attributes.toAttributes(node)));
                     }
                 }
             }
