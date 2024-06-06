@@ -22,7 +22,6 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -177,7 +176,6 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             else {
                 session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
             }
-            status.setResponse(new PathAttributes(status.getResponse()).withAcl(status.getAcl()));
         }
         catch(ServiceException e) {
             final BackgroundException failure = new S3ExceptionMappingService().map("Cannot change permissions of {0}", e, file);

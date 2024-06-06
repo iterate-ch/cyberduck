@@ -16,7 +16,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
@@ -56,7 +55,6 @@ public class FTPMFMTTimestampFeature extends DefaultTimestampFeature implements 
                     throw failure = new FTPException(session.getClient().getReplyCode(),
                             session.getClient().getReplyString());
                 }
-                status.setResponse(new PathAttributes(status.getResponse()).withModificationDate(Timestamp.toSeconds(status.getModified())));
             }
         }
         catch(IOException e) {
