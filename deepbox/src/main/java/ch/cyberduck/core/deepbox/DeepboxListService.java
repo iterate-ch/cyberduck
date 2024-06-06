@@ -56,7 +56,7 @@ public class DeepboxListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
         final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
-        final String boxNodeId = fileid.getBoxId(directory);
+        final String boxNodeId = fileid.getBoxNodeId(directory);
         final String thirdLevelId = fileid.getThirdLevelId(directory);
         try {
             final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());

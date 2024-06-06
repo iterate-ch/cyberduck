@@ -43,8 +43,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        // TODO should not be necessary
-        fileid.getFileId(file);
+        // TODO add test
         try {
             if(file.isRoot()) {
                 return new PathAttributes();
@@ -56,7 +55,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
             }
             else if(new DeepboxPathContainerService().isBox(file)) {
                 final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
-                final Box box = boxApi.getBox(UUID.fromString(fileid.getDeepBoxNodeId(file)), UUID.fromString(fileid.getBoxId(file)));
+                final Box box = boxApi.getBox(UUID.fromString(fileid.getDeepBoxNodeId(file)), UUID.fromString(fileid.getBoxNodeId(file)));
                 return this.toAttributes(box);
             }
             else if(new DeepboxPathContainerService().isThirdLevel(file)) {

@@ -230,9 +230,12 @@ public class OAuth2AuthorizationService {
                 log.debug(String.format("Request tokens for authentication code %s", authorizationCode));
             }
             // Swap the given authorization token for access/refresh tokens
-            return flow.newTokenRequest(authorizationCode)
+            IdTokenResponse tokenResponse = flow.newTokenRequest(authorizationCode)
                     .setRedirectUri(URIEncoder.decode(redirectUri)).setScopes(scopes.isEmpty() ? null : scopes)
                     .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
+            //log.info("ACCESS_TOKEN="+tokenResponse.getAccessToken());
+            //log.info("REFRESH_TOKEN="+tokenResponse.getRefreshToken());
+            return tokenResponse;
         }
         catch(TokenResponseException e) {
             throw new OAuthExceptionMappingService().map(e);

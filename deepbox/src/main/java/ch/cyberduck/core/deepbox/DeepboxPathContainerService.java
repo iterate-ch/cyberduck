@@ -23,27 +23,27 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
         if(file.isRoot()) {
             return false;
         }
-        return file.isDirectory() && file.isVolume() && (file.getParent().isRoot() || file.getParent().getParent().isRoot() || file.getParent().getParent().isRoot() || file.getParent().getParent().getParent().isRoot());
+        return file.isDirectory() && (file.getParent().isRoot() || file.getParent().getParent().isRoot() || file.getParent().getParent().isRoot() || file.getParent().getParent().getParent().isRoot());
     }
 
     public boolean isDeepbox(final Path file) {
         if(file.isRoot()) {
             return false;
         }
-        return file.isDirectory() && file.isVolume() && (file.getParent().isRoot());
+        return file.isDirectory() && (file.getParent().isRoot());
     }
 
     public boolean isBox(final Path file) {
         if(file.isRoot()) {
             return false;
         }
-        return file.isDirectory() && file.isVolume() && !file.getParent().isRoot() && file.getParent().getParent().isRoot();
+        return file.isDirectory() && !file.getParent().isRoot() && file.getParent().getParent().isRoot();
     }
 
     public boolean isThirdLevel(final Path file) {
         if(file.isRoot()) {
             return false;
         }
-        return file.isDirectory() && file.isVolume() && !file.getParent().isRoot() && !file.getParent().getParent().isRoot() && file.getParent().getParent().getParent().isRoot();
+        return file.isDirectory() && !file.getParent().isRoot() && !file.getParent().getParent().isRoot() && file.getParent().getParent().getParent().isRoot();
     }
 }

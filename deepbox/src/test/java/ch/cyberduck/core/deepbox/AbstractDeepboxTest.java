@@ -15,6 +15,7 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -24,6 +25,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -36,11 +38,20 @@ import org.junit.After;
 import org.junit.Before;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
 public class AbstractDeepboxTest extends VaultTest {
+
+    protected final Path deepBox = new Path("/Mountainduck Buddies", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
+
+    protected final Path box = new Path(deepBox, "My Box", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
+
+    protected final Path documents = new Path(box, "Documents", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
+
+    protected final Path auditing = new Path(documents, "Auditing", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
 
     protected DeepboxSession session;
 

@@ -34,13 +34,7 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
-    private final Path deepBox = new Path("/Mountainduck Buddies", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
 
-    private final Path box = new Path(deepBox, "My Box", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-
-    private final Path documents = new Path(box, "Documents", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-
-    private final Path auditing = new Path(documents, "Auditing", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
 
     @Test
     public void testListDeepBoxes() throws Exception {
