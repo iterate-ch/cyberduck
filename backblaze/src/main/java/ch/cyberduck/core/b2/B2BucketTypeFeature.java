@@ -19,7 +19,6 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -39,6 +38,7 @@ import java.util.Set;
 
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2BucketResponse;
 
 public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermission, Location {
 
@@ -66,8 +66,8 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
         if(containerService.isContainer(file)) {
             try {
                 final BucketType bucketType = this.toBucketType(status.getAcl());
-                session.getClient().updateBucket(fileid.getVersionId(containerService.getContainer(file)), bucketType);
-                status.setResponse(new PathAttributes(status.getResponse()).withAcl(status.getAcl()));
+                final B2BucketResponse response = session.getClient().updateBucket(fileid.getVersionId(containerService.getContainer(file)), bucketType);
+                status.setResponse(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
             }
             catch(B2ApiException e) {
                 throw new B2ExceptionMappingService(fileid).map("Cannot change permissions of {0}", e, file);
