@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
@@ -79,6 +78,5 @@ public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature impl
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
-        status.setResponse(new PathAttributes(status.getResponse()).withPermission(status.getPermission()));
     }
 }

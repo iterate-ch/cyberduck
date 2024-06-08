@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
@@ -86,7 +85,6 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
                 throw new FTPException(session.getClient().getReplyCode(),
                         session.getClient().getReplyString());
             }
-            status.setResponse(new PathAttributes(status.getResponse()).withPermission(status.getPermission()));
         }
         catch(IOException e) {
             throw failure = new FTPExceptionMappingService().map("Cannot change permissions of {0}", e, file);

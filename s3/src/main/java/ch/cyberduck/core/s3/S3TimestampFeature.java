@@ -52,9 +52,18 @@ public class S3TimestampFeature extends DefaultTimestampFeature {
             return;
         }
         final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
-        final Map<String, String> metadata = feature.getMetadata(file);
+        // Copy existing metadata in addition to timestamp
+        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        final Map<String, String> metadata = attr.getMetadata();
+        if(status.getModified() != null) {
+            final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_MODIFICATION_DATE, status.getModified());
+            metadata.put(StringUtils.lowerCase(header.getName()), header.getValue());
+        }
+        if(status.getCreated() != null) {
+            final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_CREATION_DATE, status.getCreated());
+            metadata.put(StringUtils.lowerCase(header.getName()), header.getValue());
+        }
         feature.setMetadata(file, status.withMetadata(metadata));
-        status.setResponse(new PathAttributes(status.getResponse()).withModificationDate(status.getModified()));
     }
 
     public static Header toHeader(final String header, final Long millis) {

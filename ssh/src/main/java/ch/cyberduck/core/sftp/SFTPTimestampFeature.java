@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
@@ -46,7 +45,6 @@ public class SFTPTimestampFeature extends DefaultTimestampFeature implements Tim
                 final long mtime = Timestamp.toSeconds(status.getModified() != null ? status.getModified() : System.currentTimeMillis());
                 final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(atime / 1000, mtime / 1000).build();
                 session.sftp().setAttributes(file.getAbsolute(), attrs);
-                status.setResponse(new PathAttributes(status.getResponse()).withModificationDate(mtime));
             }
         }
         catch(IOException e) {
