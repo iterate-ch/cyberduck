@@ -27,17 +27,20 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.List;
 
-import com.hierynomus.sshj.sftp.RemoteResourceSelector;
 import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.FileMode;
 import net.schmizz.sshj.sftp.RemoteDirectory;
+import net.schmizz.sshj.sftp.RemoteResourceFilter;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPException;
 
@@ -54,38 +57,36 @@ public class SFTPListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> children = new AttributedList<>();
+        final AttributedList<Path> children = new AttributedList<Path>();
         try (RemoteDirectory handle = session.sftp().openDir(directory.getAbsolute())) {
-            handle.scan(new RemoteResourceSelector() {
-                @Override
-                public Result select(final RemoteResourceInfo f) {
-                    try {
-                        final PathAttributes attr = attributes.toAttributes(f.getAttributes());
-                        final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                        switch(f.getAttributes().getType()) {
-                            case DIRECTORY:
-                                type.add(Path.Type.directory);
-                                break;
-                            case SYMLINK:
-                                type.add(Path.Type.symboliclink);
-                                break;
-                            default:
-                                type.add(Path.Type.file);
-                                break;
+            for(List<RemoteResourceInfo> list : ListUtils.partition(handle.scan(new RemoteResourceFilter() {
+                        @Override
+                        public boolean accept(RemoteResourceInfo remoteResourceInfo) {
+                            return true;
                         }
-                        final Path file = new Path(directory, f.getName(), type, attr);
-                        if(post(file)) {
-                            children.add(file);
-                            listener.chunk(directory, children);
-                        }
+                    }),
+                    new HostPreferences(session.getHost()).getInteger("sftp.listing.chunksize"))) {
+                for(RemoteResourceInfo f : list) {
+                    final PathAttributes attr = attributes.toAttributes(f.getAttributes());
+                    final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
+                    switch(f.getAttributes().getType()) {
+                        case DIRECTORY:
+                            type.add(Path.Type.directory);
+                            break;
+                        case SYMLINK:
+                            type.add(Path.Type.symboliclink);
+                            break;
+                        default:
+                            type.add(Path.Type.file);
+                            break;
                     }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Ignore failure %s", e));
-                        return Result.CONTINUE;
+                    final Path file = new Path(directory, f.getName(), type, attr);
+                    if(this.post(file)) {
+                        children.add(file);
+                        listener.chunk(directory, children);
                     }
-                    return Result.ACCEPT;
                 }
-            });
+            }
             return children;
         }
         catch(IOException e) {
