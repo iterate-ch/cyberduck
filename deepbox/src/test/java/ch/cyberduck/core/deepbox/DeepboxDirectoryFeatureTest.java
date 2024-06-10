@@ -18,18 +18,20 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
@@ -89,8 +91,8 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         // TODO what about duplicate names with different nodeId?
         // Can create again regardless if exists
         //directory.mkdir(folder, new TransferStatus());
-        //new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        //assertFalse(new DefaultFindFeature(session).find(folder));
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
     }
 
     @Test
@@ -104,7 +106,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         // TODO what about duplicate names with different nodeId?
         // Can create again regardless if exists
         //directory.mkdir(folder, new TransferStatus());
-        //new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        //assertFalse(new DefaultFindFeature(session).find(folder));
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
     }
 }
