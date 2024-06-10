@@ -26,6 +26,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeInfo;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
@@ -53,19 +54,39 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
             }
             else if(new DeepboxPathContainerService().isDeepbox(file)) {
                 final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
-                final DeepBox deepBox = boxApi.getDeepBox(UUID.fromString(fileid.getDeepBoxNodeId(file)));
+                final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
+                if(deepBoxNodeId == null) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                final DeepBox deepBox = boxApi.getDeepBox(UUID.fromString(deepBoxNodeId));
                 return this.toAttributes(deepBox);
             }
             else if(new DeepboxPathContainerService().isBox(file)) {
                 final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
-                final Box box = boxApi.getBox(UUID.fromString(fileid.getDeepBoxNodeId(file)), UUID.fromString(fileid.getBoxNodeId(file)));
+                final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
+                if(deepBoxNodeId == null) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                final String boxNodeId = fileid.getBoxNodeId(file);
+                if(boxNodeId == null) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                final Box box = boxApi.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
                 return this.toAttributes(box);
             }
             else if(new DeepboxPathContainerService().isThirdLevel(file)) {
-                return new PathAttributes().withFileId(fileid.getFileId(file));
+                final String fileId = fileid.getFileId(file);
+                if(fileId == null) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                return new PathAttributes().withFileId(fileId);
             }
             else {
-                final UUID nodeId = UUID.fromString(fileid.getFileId(file));
+                final String fileId = fileid.getFileId(file);
+                if(fileId == null) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                final UUID nodeId = UUID.fromString(fileId);
                 final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
                 final NodeInfo nodeInfo = core.getNodeInfo(nodeId, null, null, null);
                 return this.toAttributes(nodeInfo.getNode());
@@ -108,7 +129,6 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         return attrs;
     }
 
-    @Override
     public PathAttributes toAttributes(final Node node) {
         final PathAttributes attrs = new PathAttributes();
         attrs.setFileId(node.getNodeId().toString());

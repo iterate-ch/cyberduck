@@ -28,7 +28,10 @@ import ch.cyberduck.core.deepbox.io.swagger.client.JSON;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.UserRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Me;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.ChainedServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
@@ -123,6 +126,15 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         }
         if(type == Directory.class) {
             return (T) new DeepboxDirectoryFeature(this, fileid);
+        }
+        if(type == Find.class) {
+            return (T) new DeepboxFindFeature(this, fileid);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new DeepboxAttributesFinderFeature(this, fileid);
+        }
+        if(type == Delete.class) {
+            return (T) new DeepboxDeleteFeature(this, fileid);
         }
         return super._getFeature(type);
     }
