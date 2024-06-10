@@ -78,6 +78,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
                 new ChainedServiceUnavailableRetryStrategy(new ExecutionCountServiceUnavailableRetryStrategy(
                         new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))))));
         configuration.addInterceptorLast(authorizationService);
