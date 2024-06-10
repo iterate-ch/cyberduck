@@ -75,14 +75,15 @@ public class DeepboxListService implements ListService {
                 }
             }
             else if(new DeepboxPathContainerService().isBox(directory)) { // in Box
+                // TODO i18n
                 list.add(new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, directory.getName()))
+                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, INBOX))
                 ));
                 list.add(new Path(directory, PathNormalizer.name(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, directory.getName()))
+                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, DOCUMENTS))
                 ));
                 list.add(new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, directory.getName()))
+                        new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, TRASH))
                 ));
             }
             else if(new DeepboxPathContainerService().isThirdLevel(directory)) { // in Inbox/Documents/Trash

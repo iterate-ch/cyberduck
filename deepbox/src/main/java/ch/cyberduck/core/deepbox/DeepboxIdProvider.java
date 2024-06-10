@@ -114,6 +114,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 else if(new DeepboxPathContainerService().isBox(file)) { // Box
                     final String deepBoxNodeId = getFileId(file.getParent());
                     final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+
                     final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), 0, 50, "asc", null);
                     final String boxName = file.getName();
                     final String boxNodeId = boxes.getBoxes().stream().filter(b -> b.getName().equals(boxName)).findFirst().map(b -> b.getBoxNodeId().toString()).orElse(null);
@@ -122,7 +123,6 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 }
                 else if(new DeepboxPathContainerService().isThirdLevel(file)) { // 3rd level: Inbox,Documents,Trash
                     final String boxNodeId = getFileId(file.getParent());
-                    // TODO safe - i18n?
                     final String thirdLevelFileId = String.format("%s_%s", boxNodeId, file.getName());
                     this.cache(file, thirdLevelFileId);
                     return thirdLevelFileId;
@@ -161,7 +161,6 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     }
                 }
                 else { // second+ level under Documents,Trash (Inbox has no hierarchy)
-                    final String thirdLevelId = getThirdLevelId(file.getParent());
                     final String deepBoxNodeId = getDeepBoxNodeId(file.getParent());
                     final String boxNodeId = getBoxNodeId(file.getParent());
 
