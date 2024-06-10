@@ -95,8 +95,6 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 }
                 return cached;
             }
-
-            final String id;
             if(file.isRoot()) {
                 return null;
             }
@@ -168,28 +166,16 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     final String boxNodeId = getBoxNodeId(file.getParent());
 
                     final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
-                    if(thirdLevelId.endsWith(DOCUMENTS)) {
-                        final NodeContent files = api.listFiles1(
-                                UUID.fromString(deepBoxNodeId),
-                                UUID.fromString(boxNodeId),
-                                UUID.fromString(parentNodeId),
-                                0, 50, "asc");
-                        final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
-                        this.cache(file, nodeId);
-                        return nodeId;
-                    }
-                    else {
-                        final NodeContent files = api.listTrash1(
-                                UUID.fromString(deepBoxNodeId),
-                                UUID.fromString(boxNodeId),
-                                UUID.fromString(parentNodeId),
-                                0, 50, "asc");
-                        final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
-                        this.cache(file, nodeId);
-                        return nodeId;
-                    }
-                }
 
+                    final NodeContent files = api.listTrash1(
+                            UUID.fromString(deepBoxNodeId),
+                            UUID.fromString(boxNodeId),
+                            UUID.fromString(parentNodeId),
+                            0, 50, "asc");
+                    final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
+                    this.cache(file, nodeId);
+                    return nodeId;
+                }
             }
         }
         catch(ApiException e) {
