@@ -25,12 +25,20 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.DownloadAdd;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.util.UUID;
 
 public class DeepboxReadFeature implements Read {
@@ -57,11 +65,7 @@ public class DeepboxReadFeature implements Read {
                 Thread.sleep(200);
                 download = boxApi.downloadStatus(download.getDownloadId(), null);
             }
-            return new URL(download.getDownloadUrl()).openStream();
-
-            // TODO fails with 400 due to authorization header from OAuth2requestinterceptor
-            /*final HttpUriRequest request = new HttpGet(URI.create(download.getDownloadUrl()));
-
+            final HttpUriRequest request = new HttpGet(URI.create(download.getDownloadUrl()));
 
             final HttpResponse response = session.getClient().getClient().execute(request);
             switch(response.getStatusLine().getStatusCode()) {
@@ -72,10 +76,9 @@ public class DeepboxReadFeature implements Read {
                     fileid.cache(file, null);
                     // Break through
                 default:
-                    System.out.println(download.getDownloadUrl());
                     throw new DefaultHttpResponseExceptionMappingService().map("Download {0} failed", new HttpResponseException(
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);
-            }*/
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
