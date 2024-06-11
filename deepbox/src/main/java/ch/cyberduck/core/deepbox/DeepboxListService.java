@@ -59,7 +59,7 @@ public class DeepboxListService implements ListService {
         try {
             final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
             if(directory.isRoot()) {
-                final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "asc", null);
+                final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "displayName asc", null);
                 for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
                     list.add(new Path(directory, PathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                             attributes.toAttributes(deepBox))
@@ -67,7 +67,7 @@ public class DeepboxListService implements ListService {
                 }
             }
             else if(new DeepboxPathContainerService().isDeepbox(directory)) { // in DeepBox
-                final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), 0, 50, "asc", null);
+                final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), 0, 50, "displayName asc", null);
                 for(final Box box : boxes.getBoxes()) {
                     list.add(new Path(directory, PathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                             attributes.toAttributes(box))
@@ -91,7 +91,7 @@ public class DeepboxListService implements ListService {
                     final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
                             UUID.fromString(boxNodeId),
                             null,
-                            0, 50, "asc");
+                            0, 50, "displayName asc");
                     for(Node node : inbox.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
                                 .withAttributes(attributes.toAttributes(node)));
@@ -101,7 +101,7 @@ public class DeepboxListService implements ListService {
                     final NodeContent files = api.listFiles(
                             UUID.fromString(deepBoxNodeId),
                             UUID.fromString(boxNodeId),
-                            0, 50, "asc"
+                            0, 50, "displayName asc"
                     );
                     for(final Node node : files.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
@@ -112,7 +112,7 @@ public class DeepboxListService implements ListService {
                     final NodeContent trashFiles = api.listTrash(
                             UUID.fromString(deepBoxNodeId),
                             UUID.fromString(boxNodeId),
-                            0, 50, "asc"
+                            0, 50, "displayName asc"
                     );
                     for(final Node node : trashFiles.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
@@ -127,7 +127,7 @@ public class DeepboxListService implements ListService {
                             UUID.fromString(deepBoxNodeId),
                             UUID.fromString(boxNodeId),
                             UUID.fromString(nodeId),
-                            0, 50, "asc"
+                            0, 50, "displayName asc"
                     );
                     for(final Node node : files.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
@@ -139,7 +139,7 @@ public class DeepboxListService implements ListService {
                             UUID.fromString(deepBoxNodeId),
                             UUID.fromString(boxNodeId),
                             UUID.fromString(nodeId),
-                            0, 50, "asc"
+                            0, 50, "displayName asc"
                     );
                     for(final Node node : files.getNodes()) {
                         list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))

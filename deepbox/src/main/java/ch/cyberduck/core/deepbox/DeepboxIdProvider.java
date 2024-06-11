@@ -105,7 +105,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 // lookup as now everything recursively cached and we are not in cache
                 if(new DeepboxPathContainerService().isDeepbox(file)) { // DeepBox
                     final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
-                    final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "asc", null);
+                    final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "displayName asc", null);
                     final String deepBoxName = file.getName();
                     final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> db.getName().equals(deepBoxName)).findFirst().map(db -> db.getDeepBoxNodeId().toString()).orElse(null);
                     this.cache(file, deepBoxNodeId);
@@ -115,7 +115,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     final String deepBoxNodeId = getFileId(file.getParent());
                     final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
 
-                    final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), 0, 50, "asc", null);
+                    final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), 0, 50, "displayName asc", null);
                     final String boxName = file.getName();
                     final String boxNodeId = boxes.getBoxes().stream().filter(b -> b.getName().equals(boxName)).findFirst().map(b -> b.getBoxNodeId().toString()).orElse(null);
                     this.cache(file, boxNodeId);
@@ -136,7 +136,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                         final NodeContent files = api.listFiles(
                                 UUID.fromString(deepBoxNodeId),
                                 UUID.fromString(boxNodeId),
-                                0, 50, "asc");
+                                0, 50, "displayName asc");
                         final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                         this.cache(file, nodeId);
                         return nodeId;
@@ -145,7 +145,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                         final NodeContent files = api.listQueue(
                                 UUID.fromString(deepBoxNodeId),
                                 UUID.fromString(boxNodeId),
-                                null, 0, 50, "asc");
+                                null, 0, 50, "displayName asc");
                         final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                         this.cache(file, nodeId);
                         return nodeId;
@@ -154,7 +154,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                         final NodeContent files = api.listTrash(
                                 UUID.fromString(deepBoxNodeId),
                                 UUID.fromString(boxNodeId),
-                                0, 50, "asc");
+                                0, 50, "displayName asc");
                         final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                         this.cache(file, nodeId);
                         return nodeId;
@@ -170,7 +170,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                             UUID.fromString(deepBoxNodeId),
                             UUID.fromString(boxNodeId),
                             UUID.fromString(parentNodeId),
-                            0, 50, "asc");
+                            0, 50, "displayName asc");
                     final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                     this.cache(file, nodeId);
                     return nodeId;
