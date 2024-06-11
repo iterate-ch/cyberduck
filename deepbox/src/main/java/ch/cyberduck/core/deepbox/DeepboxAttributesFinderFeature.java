@@ -135,6 +135,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         attrs.setFileId(node.getNodeId().toString());
         attrs.setCreationDate(node.getCreated().getTime().getMillis());
         attrs.setModificationDate(node.getModified().getTime().getMillis());
+        attrs.setSize(node.getSize());
         return attrs;
     }
 
