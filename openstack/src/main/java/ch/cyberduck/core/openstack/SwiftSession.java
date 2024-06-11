@@ -36,7 +36,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -73,7 +73,7 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
+    protected Client connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         pool.disableContentCompression();
@@ -91,7 +91,7 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final Set<? extends AuthenticationRequest> options = new SwiftAuthenticationService().getRequest(host, prompt);
             for(Iterator<? extends AuthenticationRequest> iter = options.iterator(); iter.hasNext(); ) {

@@ -26,6 +26,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,8 +56,8 @@ public class IRODSAttributesFinderFeatureTest extends VaultTest {
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         new IRODSAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -69,8 +70,8 @@ public class IRODSAttributesFinderFeatureTest extends VaultTest {
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path folder = new IRODSDirectoryFeature(session).mkdir(new Path(
                 new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());

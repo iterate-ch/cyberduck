@@ -31,7 +31,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPChallengeResponseAuthentication;
@@ -121,7 +121,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    protected SSHClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected SSHClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final DefaultConfig configuration = new DefaultConfig();
         if("zlib".equals(preferences.getProperty("ssh.compression"))) {
             configuration.setCompressionFactories(Arrays.asList(
@@ -263,7 +263,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         this.authenticate(client, host, prompt, cancel);
         try {
             sftp = new LoggingSFTPEngine(client, this).init();

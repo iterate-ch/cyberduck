@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.test.IntegrationTest;
@@ -78,7 +79,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
                 "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), StandardCharsets.UTF_8);
             // Reconnect
             session.disconnect();
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             assertTrue(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
@@ -148,7 +149,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
                 "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), StandardCharsets.UTF_8);
             // Reconnect
             session.disconnect();
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             final AtomicBoolean p = new AtomicBoolean();
             session.getHost().getCredentials().setIdentity(key);
             assertFalse(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
@@ -204,7 +205,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             final AtomicBoolean b = new AtomicBoolean();
             // Reconnect
             session.disconnect();
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.getHost().getCredentials().setIdentity(key);
             assertTrue(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override
@@ -229,7 +230,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false), StandardCharsets.UTF_8);
             // Reconnect
             session.disconnect();
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.getHost().getCredentials().setIdentity(key);
             assertTrue(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override

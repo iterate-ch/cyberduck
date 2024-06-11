@@ -24,7 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -54,10 +54,10 @@ public class CteraSessionTest extends AbstractCteraTest {
         ));
         host.setDefaultPath("/ServicesPortal/webdav");
         final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new CancelCallback() {
+        session.login(new DisabledLoginCallback(), new CancelCallback() {
             @Override
             public void verify() throws ConnectionCanceledException {
                 fail("OAuth tokens need to be refreshed");

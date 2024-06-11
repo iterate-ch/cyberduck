@@ -32,7 +32,7 @@ import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -53,7 +53,7 @@ public class FreenetSession extends DAVSession {
     }
 
     @Override
-    protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected DAVClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));

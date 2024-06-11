@@ -8,7 +8,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.threading.CancelCallback;
 
 public class NullSession extends Session<Void> implements ListService {
@@ -23,12 +23,12 @@ public class NullSession extends Session<Void> implements ListService {
     }
 
     @Override
-    public Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    public Void connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         return null;
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         throw new LoginCanceledException();
     }
 

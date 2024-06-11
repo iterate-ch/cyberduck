@@ -28,7 +28,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -77,8 +77,8 @@ public abstract class AbstractMantaTest extends VaultTest {
         final String user = PROPERTIES.get("manta.user");
         final Host host = new Host(profile, hostname, new Credentials(user).withIdentity(file));
         session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final String testRoot = "cyberduck-test-" + new AlphanumericRandomStringService().random();
         testPathPrefix = new Path(new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountPrivateRoot(), testRoot, EnumSet.of(Type.directory));
         session.getClient().putDirectory(testPathPrefix.getAbsolute());
@@ -93,15 +93,15 @@ public abstract class AbstractMantaTest extends VaultTest {
 
     protected Path randomFile() {
         return new Path(
-            testPathPrefix,
-            UUID.randomUUID().toString(),
-            EnumSet.of(Type.file));
+                testPathPrefix,
+                UUID.randomUUID().toString(),
+                EnumSet.of(Type.file));
     }
 
     protected Path randomDirectory() {
         return new Path(
-            testPathPrefix,
-            UUID.randomUUID().toString(),
-            EnumSet.of(Type.directory));
+                testPathPrefix,
+                UUID.randomUUID().toString(),
+                EnumSet.of(Type.directory));
     }
 }

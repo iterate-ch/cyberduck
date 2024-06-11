@@ -50,8 +50,7 @@ import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -185,9 +184,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authentication = this.configureCredentialsStrategy(configuration, prompt);
+        authentication = this.configureCredentialsStrategy(proxy, configuration, prompt);
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             final String header = HTTP.EXPECT_DIRECTIVE;
             if(log.isDebugEnabled()) {
@@ -267,11 +266,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         return client;
     }
 
-    protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
+    protected S3CredentialsStrategy configureCredentialsStrategy(final ProxyFinder proxy, final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt) throws LoginCanceledException {
         if(host.getProtocol().isOAuthConfigurable()) {
-            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, prompt)
+            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host, prompt)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
                 oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
@@ -315,7 +313,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = authentication.get();
         if(credentials.isAnonymousLogin()) {
             if(log.isDebugEnabled()) {

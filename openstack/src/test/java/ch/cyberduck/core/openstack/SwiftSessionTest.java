@@ -20,7 +20,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.test.IntegrationTest;
@@ -79,11 +79,11 @@ public class SwiftSessionTest extends AbstractSwiftTest {
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-            "a", "s"
+                "a", "s"
         ));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 }

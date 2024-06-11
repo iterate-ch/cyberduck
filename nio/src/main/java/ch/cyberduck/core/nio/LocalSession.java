@@ -38,7 +38,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -106,12 +106,12 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    protected FileSystem connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected FileSystem connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         return FileSystems.getDefault();
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Path home = new LocalHomeFinderFeature().find();
         try {
             lock = LocalFactory.get(this.toPath(home).toString()).lock(true);

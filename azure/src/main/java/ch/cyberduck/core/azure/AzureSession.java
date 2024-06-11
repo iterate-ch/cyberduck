@@ -26,7 +26,7 @@ import ch.cyberduck.core.azure.apache.ApacheHttpClient;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -75,7 +75,8 @@ import reactor.core.publisher.Mono;
 public class AzureSession extends HttpSession<BlobServiceClient> {
     private static final Logger log = LogManager.getLogger(AzureSession.class);
 
-    private final CredentialsHttpPipelinePolicy authenticator = new CredentialsHttpPipelinePolicy();
+    private final CredentialsHttpPipelinePolicy authenticator
+            = new CredentialsHttpPipelinePolicy();
 
     public AzureSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -86,7 +87,7 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     }
 
     @Override
-    protected BlobServiceClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected BlobServiceClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         final List<HttpPipelinePolicy> policies = new ArrayList<>();
         policies.add(new RequestIdPolicy());
@@ -138,7 +139,7 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         // Keep copy of credentials
         authenticator.setCredentials(new Credentials(host.getCredentials()));
         try {

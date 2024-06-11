@@ -43,7 +43,7 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -66,13 +66,13 @@ public class NextcloudSession extends DAVSession {
     }
 
     @Override
-    protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected DAVClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         return super.connect(proxy, key, prompt, cancel);
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        super.login(proxy, prompt, cancel);
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        super.login(prompt, cancel);
         try {
             client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
         }

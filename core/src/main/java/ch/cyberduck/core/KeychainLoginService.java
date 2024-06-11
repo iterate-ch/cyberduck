@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -169,7 +169,7 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public boolean authenticate(final Proxy proxy, final Session session, final ProgressListener listener,
+    public boolean authenticate(final ProxyFinder proxy, final Session session, final ProgressListener listener,
                                 final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         final Credentials credentials = bookmark.getCredentials();
@@ -179,7 +179,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", session));
             }
-            session.login(proxy, prompt, cancel);
+            session.login(prompt, cancel);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for %s", session));
             }

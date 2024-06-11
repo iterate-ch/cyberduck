@@ -23,7 +23,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -41,7 +41,7 @@ public class SpectraSession extends S3Session {
     }
 
     @Override
-    protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt, cancel);
         final Jets3tProperties configuration = client.getConfiguration();
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));

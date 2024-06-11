@@ -30,7 +30,6 @@ import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.ProxyFactory;
-import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -66,17 +65,16 @@ public class BrickPairingFeature implements Pairing {
             if(StringUtils.isNotBlank(token)) {
                 log.warn(String.format("Delete pairing for %s", bookmark));
                 final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
-                    new DefaultTrustManagerHostnameCallback(bookmark), CertificateStoreFactory.get());
+                        new DefaultTrustManagerHostnameCallback(bookmark), CertificateStoreFactory.get());
                 final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
-                    CertificateStoreFactory.get());
+                        CertificateStoreFactory.get());
                 final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(bookmark,
-                    new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, ProxyFactory.get());
-                final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(
-                    new ProxyHostUrlProvider().get(bookmark)), new DisabledTranscriptListener(), new DisabledLoginCallback());
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, ProxyFactory.get());
+                final HttpClientBuilder configuration = builder.build(ProxyFactory.get(), new DisabledTranscriptListener(), new DisabledLoginCallback());
                 configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create().build());
                 final CloseableHttpClient client = configuration.build();
                 final HttpRequestBase resource = new HttpDelete(
-                    String.format("%s/api/rest/v1/api_key", new HostUrlProvider().withUsername(false).withPath(false).get(bookmark)));
+                        String.format("%s/api/rest/v1/api_key", new HostUrlProvider().withUsername(false).withPath(false).get(bookmark)));
                 resource.setHeader("X-FilesAPI-Key", token);
                 resource.setHeader(HttpHeaders.ACCEPT, "application/json");
                 resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");

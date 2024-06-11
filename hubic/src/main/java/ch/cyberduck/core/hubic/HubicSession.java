@@ -29,7 +29,7 @@ import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
 import ch.cyberduck.core.openstack.SwiftSession;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -53,7 +53,7 @@ public class HubicSession extends SwiftSession {
     }
 
     @Override
-    protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
+    protected Client connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
@@ -64,7 +64,7 @@ public class HubicSession extends SwiftSession {
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = authorizationService.validate();
         try {
             if(log.isInfoEnabled()) {

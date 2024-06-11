@@ -33,6 +33,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.IntegrationTest;
@@ -127,8 +128,8 @@ public class S3LocationFeatureTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session, cache).getLocation(
                 new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))

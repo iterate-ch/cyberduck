@@ -81,7 +81,7 @@ public class HttpReachability implements Reachability {
                 store);
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(bookmark,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, Reachability.timeout, proxy);
-        final HttpClientBuilder configuration = builder.build(proxy.find(new HostUrlProvider().get(bookmark)),
+        final HttpClientBuilder configuration = builder.build(proxy,
                 new DisabledTranscriptListener(), new DisabledLoginCallback());
         try (CloseableHttpClient client = configuration.build()) {
             final HttpRequestBase resource = new HttpHead(new HostUrlProvider().withUsername(false).withPath(true).get(bookmark));

@@ -35,7 +35,6 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -110,7 +109,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
     public void testConnectMissingKey() throws Exception {
         session.close();
         session.getHost().getCredentials().setOauth(OAuthTokens.EMPTY);
-        session.login(Proxy.DIRECT, new DisabledLoginCallback() {
+        session.login(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username,
                                       final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -136,7 +135,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         session.getHost().setCredentials(
             new Credentials("duck-1432", "")
         );
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -144,7 +143,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         session.getHost().setCredentials(
             new Credentials("stellar-perigee-775", "")
         );
-        session.login(Proxy.DIRECT, new DisabledLoginCallback() {
+        session.login(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 // OAuth2

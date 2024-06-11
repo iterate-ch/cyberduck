@@ -30,7 +30,7 @@ import ch.cyberduck.core.ftp.FTPDirectoryFeature;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTouchFeature;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -56,8 +56,8 @@ public class CopyWorkerTest extends AbstractFTPTest {
         new FTPTouchFeature(session).touch(source, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(source));
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")));
-        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        copySession.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DefaultFindFeature(session).find(source));
@@ -77,8 +77,8 @@ public class CopyWorkerTest extends AbstractFTPTest {
         assertTrue(new DefaultFindFeature(session).find(targetFolder));
         // copy file into vault
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")));
-        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        copySession.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
@@ -99,8 +99,8 @@ public class CopyWorkerTest extends AbstractFTPTest {
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")));
-        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        copySession.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DefaultFindFeature(session).find(targetFolder));

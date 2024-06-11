@@ -34,7 +34,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -79,12 +79,12 @@ public class MantaSession extends HttpSession<MantaClient> {
     }
 
     @Override
-    protected MantaClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected MantaClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         return new MantaClient(config, new MantaConnectionFactoryConfigurator(builder.build(proxy, this, prompt)));
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             config.setMantaUser(host.getCredentials().getUsername());
             if(host.getCredentials().isPublicKeyAuthentication()) {

@@ -7,6 +7,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.junit.Test;
@@ -112,7 +113,7 @@ public class LoginConnectionServiceTest {
         }, new DisabledProgressListener());
         final Session session = new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
             @Override
-            public Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+            public Void connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
                 connected.set(true);
                 return null;
             }
@@ -123,7 +124,7 @@ public class LoginConnectionServiceTest {
             }
 
             @Override
-            public void login(final Proxy proxy, final LoginCallback l, final CancelCallback cancel) throws BackgroundException {
+            public void login(final LoginCallback l, final CancelCallback cancel) throws BackgroundException {
                 if(prompt.get()) {
                     assertEquals("b", host.getCredentials().getPassword());
                     throw new LoginCanceledException();

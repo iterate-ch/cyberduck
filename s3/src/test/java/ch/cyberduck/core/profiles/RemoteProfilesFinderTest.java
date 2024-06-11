@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
@@ -51,7 +52,7 @@ public class RemoteProfilesFinderTest {
             }
         }));
         final Session session = new S3Session(new HostParser(protocols).get("s3:/profiles.cyberduck.io"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final Set<ProfileDescription> stream = finder.find();
         assertFalse(stream.isEmpty());
