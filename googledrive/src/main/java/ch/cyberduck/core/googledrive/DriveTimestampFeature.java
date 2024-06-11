@@ -17,8 +17,8 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +29,7 @@ import java.io.IOException;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
 
-public class DriveTimestampFeature extends DefaultTimestampFeature {
+public class DriveTimestampFeature implements Timestamp {
     private static final Logger log = LogManager.getLogger(DriveTimestampFeature.class);
 
     private final DriveSession session;

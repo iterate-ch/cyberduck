@@ -17,7 +17,7 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.Directory;
 import com.hierynomus.smbj.share.File;
 
-public class SMBTimestampFeature extends DefaultTimestampFeature {
+public class SMBTimestampFeature implements Timestamp {
 
     private final SMBSession session;
 

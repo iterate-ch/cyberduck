@@ -17,7 +17,7 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateFilePropertiesRequest;
@@ -25,7 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.joda.time.DateTime;
 
-public class StoregateTimestampFeature extends DefaultTimestampFeature {
+public class StoregateTimestampFeature implements Timestamp {
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;

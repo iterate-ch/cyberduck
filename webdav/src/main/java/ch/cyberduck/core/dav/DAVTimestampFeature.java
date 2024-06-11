@@ -22,7 +22,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
@@ -42,7 +41,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.util.SardineUtil;
 
-public class DAVTimestampFeature extends DefaultTimestampFeature implements Timestamp {
+public class DAVTimestampFeature implements Timestamp {
 
     private final DAVSession session;
 

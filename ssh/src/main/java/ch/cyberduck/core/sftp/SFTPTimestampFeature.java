@@ -20,14 +20,13 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-public class SFTPTimestampFeature extends DefaultTimestampFeature implements Timestamp {
+public class SFTPTimestampFeature implements Timestamp {
 
     private final SFTPSession session;
 

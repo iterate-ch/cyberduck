@@ -21,13 +21,13 @@ import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
-public class BrickTimestampFeature extends DefaultTimestampFeature {
+public class BrickTimestampFeature implements Timestamp {
 
     private final BrickSession session;
 

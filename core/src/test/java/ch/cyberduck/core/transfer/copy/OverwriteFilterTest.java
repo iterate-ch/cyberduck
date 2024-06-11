@@ -13,7 +13,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
-import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
@@ -113,7 +112,7 @@ public class OverwriteFilterTest {
                     };
                 }
                 if(type.equals(UnixPermission.class)) {
-                    return (T) new DefaultUnixPermissionFeature() {
+                    return (T) new UnixPermission() {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
