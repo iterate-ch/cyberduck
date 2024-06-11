@@ -32,6 +32,10 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.ChainedServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
@@ -97,8 +101,8 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
-                new ChainedServiceUnavailableRetryStrategy(new ExecutionCountServiceUnavailableRetryStrategy(
-                        new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+        new ChainedServiceUnavailableRetryStrategy(new ExecutionCountServiceUnavailableRetryStrategy(
+                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
         final DeepboxApiClient client = new DeepboxApiClient(apache);
@@ -109,6 +113,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
                 .register(new InputStreamProvider())
                 .register(new JSON())
                 .register(JacksonFeature.class)
+                .register(MultipartWrite.class)
                 .connectorProvider(new HttpComponentsProvider(apache))));
         final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
@@ -154,6 +159,15 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         }
         if(type == Delete.class) {
             return (T) new DeepboxDeleteFeature(this, fileid);
+        }
+        if(type == Read.class) {
+            return (T) new DeepboxReadFeature(this, fileid);
+        }
+        if(type == Touch.class) {
+            return (T) new DeepboxTouchFeature(this, fileid);
+        }
+        if(type == Write.class) {
+            return (T) new DeepboxWriteFeature(this, fileid);
         }
         return super._getFeature(type);
     }

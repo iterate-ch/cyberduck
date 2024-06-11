@@ -30,9 +30,10 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
+import java.io.File;
 import java.util.UUID;
 
-public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Node> {
+public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
     public static final String INBOX = "Inbox";
     public static final String DOCUMENTS = "Documents";
     public static final String TRASH = "Trash";
@@ -135,6 +136,11 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         attrs.setCreationDate(node.getCreated().getTime().getMillis());
         attrs.setModificationDate(node.getModified().getTime().getMillis());
         return attrs;
+    }
+
+    @Override
+    public PathAttributes toAttributes(final File model) {
+        return null;
     }
 
 

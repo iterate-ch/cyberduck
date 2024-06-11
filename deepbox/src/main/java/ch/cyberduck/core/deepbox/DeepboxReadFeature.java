@@ -51,6 +51,11 @@ public class DeepboxReadFeature implements Read {
     }
 
     @Override
+    public boolean offset(Path file) throws BackgroundException {
+        return false;
+    }
+
+    @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DownloadRestControllerApi boxApi = new DownloadRestControllerApi(session.getClient());
