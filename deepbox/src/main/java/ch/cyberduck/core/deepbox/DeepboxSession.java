@@ -23,17 +23,20 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.JSON;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.UserRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Me;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.ChainedServiceUnavailableRetryStrategy;
@@ -168,6 +171,15 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         }
         if(type == Write.class) {
             return (T) new DeepboxWriteFeature(this, fileid);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new DeepboxUrlProvider(this);
+        }
+        if(type == Share.class) {
+            return (T) new DeepboxShareFeature(this, fileid);
+        }
+        if(type == Copy.class) {
+            return (T) new DeepboxCopyFeature(this, fileid);
         }
         return super._getFeature(type);
     }

@@ -15,6 +15,8 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -31,6 +33,7 @@ import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import java.io.File;
+import java.net.URI;
 import java.util.UUID;
 
 public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
@@ -130,12 +133,23 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         return attrs;
     }
 
-    public PathAttributes toAttributes(final Node node) {
+
+    public PathAttributes toAttributes(final Node node) throws ApiException {
         final PathAttributes attrs = new PathAttributes();
         attrs.setFileId(node.getNodeId().toString());
         attrs.setCreationDate(node.getCreated().getTime().getMillis());
         attrs.setModificationDate(node.getModified().getTime().getMillis());
         attrs.setSize(node.getSize());
+        // TODO check with DeepBox/yla: which URL to provide? only share link / resource url?
+        attrs.setLink(new DescriptiveUrl(URI.create(new HostUrlProvider()
+                .withPath(true).withUsername(false)
+                .get(session.getHost().getProtocol().getScheme(),
+                        session.getHost().getPort(),
+                        null,
+                        session.getHost().getHostname(),
+                        // TODO api / portal URL
+                        String.format("node/%s/preview", node.getNodeId().toString())
+                ))));
         return attrs;
     }
 

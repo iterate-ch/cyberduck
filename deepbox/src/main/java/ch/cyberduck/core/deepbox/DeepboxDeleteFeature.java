@@ -41,9 +41,10 @@ public class DeepboxDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Map.Entry<Path, TransferStatus> file : files.entrySet()) {
             try {
+                final UUID nodeId = UUID.fromString(fileid.getFileId(file.getKey()));
                 callback.delete(file.getKey());
                 final CoreRestControllerApi coreApi = new CoreRestControllerApi(session.getClient());
-                coreApi.deletePurgeNode(UUID.fromString(fileid.getFileId(file.getKey())), false);
+                coreApi.deletePurgeNode(nodeId, false);
                 fileid.cache(file.getKey(), null);
             }
             catch(ApiException e) {

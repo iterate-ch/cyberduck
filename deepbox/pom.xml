@@ -62,7 +62,10 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
+                                    <!--
                                     <inputSpec>https://api.deepbox.swiss/api-docs/deepbox-api</inputSpec>
+                                    -->
+                                    <inputSpec>${project.basedir}/src/main/resources/deepbox-api.json</inputSpec>
                                     <language>java</language>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.deepbox.io.swagger.client.model</modelPackage>

@@ -1,15 +1,11 @@
 package ch.cyberduck.core.deepbox.io.swagger.client.api;
 
-import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiClient;
+import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.Configuration;
 import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
-
-import javax.ws.rs.core.GenericType;
-
 import ch.cyberduck.core.deepbox.io.swagger.client.model.AnalyzeResponse;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Approve;
-import java.io.File;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeCopy;
@@ -18,12 +14,14 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeMove;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Path;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.PathContent;
-import java.util.UUID;
 
+import javax.ws.rs.core.GenericType;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class CoreRestControllerApi {
@@ -222,9 +220,10 @@ public class CoreRestControllerApi {
    * 
    * @param body  (required)
    * @param nodeId  (required)
+   * @return Node
    * @throws ApiException if fails to make API call
    */
-  public void copyNode(NodeCopy body, UUID nodeId) throws ApiException {
+  public Node copyNode(NodeCopy body, UUID nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -257,7 +256,9 @@ public class CoreRestControllerApi {
 
     String[] localVarAuthNames = new String[] { "token" };
 
-    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    GenericType<Node> localVarReturnType = new GenericType<Node>() {
+    };
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * 

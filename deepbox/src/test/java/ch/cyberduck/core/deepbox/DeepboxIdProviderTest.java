@@ -85,7 +85,7 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
     public void testFile() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path file = new Path(auditing, "nix4.txt", EnumSet.of(Path.Type.file));
-        assertEquals("911edb93-b017-4f3d-9d2a-42ce56064e1c", nodeid.getFileId(file));
+        assertEquals("3faf6efe-1ecc-47f9-9a6c-5efb9216b3dd", nodeid.getFileId(file));
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(file));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059", nodeid.getBoxNodeId(file));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059_Documents", nodeid.getThirdLevelId(file));
