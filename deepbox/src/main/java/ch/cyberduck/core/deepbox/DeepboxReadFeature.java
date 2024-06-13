@@ -23,10 +23,15 @@ import ch.cyberduck.core.deepbox.io.swagger.client.api.DownloadRestControllerApi
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Download;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DownloadAdd;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
+import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -35,15 +40,29 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class DeepboxReadFeature implements Read {
+
+    private static final Logger log = LogManager.getLogger(DeepboxReadFeature.class);
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
+    private final Preferences preferences = PreferencesFactory.get();
 
     public DeepboxReadFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
@@ -55,23 +74,82 @@ public class DeepboxReadFeature implements Read {
         return false;
     }
 
+
+    protected void poll(final UUID downloadId) throws BackgroundException {
+        final CountDownLatch signal = new CountDownLatch(1);
+        final AtomicReference<BackgroundException> failure = new AtomicReference<>();
+        final ScheduledThreadPool scheduler = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                super.uncaughtException(t, e);
+                failure.set(new BackgroundException(e));
+                signal.countDown();
+            }
+        }, "download");
+        final long timeout = preferences.getLong("deepbox.download.interrupt.ms");
+        final long start = System.currentTimeMillis();
+        try {
+            final ScheduledFuture<?> f = scheduler.repeat(() -> {
+                try {
+                    if(System.currentTimeMillis() - start > timeout) {
+                        failure.set(new ConnectionCanceledException(String.format("Interrupt polling for migration key after %d", timeout)));
+                        signal.countDown();
+                        return;
+                    }
+                    // Poll status
+                    final DownloadRestControllerApi boxApi = new DownloadRestControllerApi(session.getClient());
+
+                    final Download.StatusEnum status = boxApi.downloadStatus(downloadId, null).getStatus();
+                    switch(status) {
+                        case READY:
+                        case READY_WITH_ISSUES:
+                            signal.countDown();
+                            return;
+                        default:
+                            log.warn(String.format("Wait for download URL to become ready with current status %s", status));
+                            break;
+                    }
+                }
+                catch(ApiException e) {
+                    log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                    failure.set(new DeepboxExceptionMappingService(fileid).map(e));
+                    signal.countDown();
+                }
+            }, preferences.getLong("deepbox.download.interval.ms"), TimeUnit.MILLISECONDS);
+            while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
+                try {
+                    if(f.isDone()) {
+                        Uninterruptibles.getUninterruptibly(f);
+                    }
+                }
+                catch(ExecutionException e) {
+                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+                }
+            }
+            if(null != failure.get()) {
+                throw failure.get();
+            }
+        }
+        finally {
+            scheduler.shutdown();
+        }
+    }
+
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            // https://apidocs.deepcloud.swiss/deepbox-api-docs/index.html#download
             final DownloadRestControllerApi boxApi = new DownloadRestControllerApi(session.getClient());
             final String fileId = fileid.getFileId(file);
             if(fileId == null) {
                 throw new NotfoundException(file.getAbsolute());
             }
             final UUID boxNodeId = UUID.fromString(fileId);
-            Download download = boxApi.requestDownload(new DownloadAdd().addNodesItem(boxNodeId));
-            // TODO right way to wait for download to be ready?
-            while(download.getStatus() != Download.StatusEnum.READY) {
-                Thread.sleep(200);
-                download = boxApi.downloadStatus(download.getDownloadId(), null);
-            }
-            final HttpUriRequest request = new HttpGet(URI.create(download.getDownloadUrl()));
+            final Download download = boxApi.requestDownload(new DownloadAdd().addNodesItem(boxNodeId));
 
+            poll(download.getDownloadId());
+            final HttpUriRequest request = new HttpGet(URI.create(boxApi.downloadStatus(download.getDownloadId(), null).getDownloadUrl()));
             final HttpResponse response = session.getClient().getClient().execute(request);
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:
@@ -90,9 +168,6 @@ public class DeepboxReadFeature implements Read {
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map(e);
-        }
-        catch(InterruptedException e) {
-            throw new DefaultExceptionMappingService().map(e);
         }
     }
 }
