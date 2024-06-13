@@ -20,14 +20,26 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.File;
 import java.text.MessageFormat;
 
 public class DeepboxTouchFeature extends DefaultTouchFeature<File> {
 
+    private final DeepboxSession session;
+    private final DeepboxIdProvider fileid;
+
     public DeepboxTouchFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         super(new DeepboxWriteFeature(session, fileid));
+        this.session = session;
+        this.fileid = fileid;
+    }
+
+    @Override
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+        final Path result = super.touch(file, status);
+        return result.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(result));
     }
 
     @Override
