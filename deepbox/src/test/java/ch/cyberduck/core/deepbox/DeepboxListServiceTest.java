@@ -156,7 +156,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testChunksize() throws Exception {
+    public void testChunksizeExact() throws Exception {
         session.getHost().setProperty("deepbox.listing.chunksize", "5");
         final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
@@ -173,7 +173,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testChunksize2() throws Exception {
+    public void testChunksizeInexact() throws Exception {
         session.getHost().setProperty("deepbox.listing.chunksize", "5");
         final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
