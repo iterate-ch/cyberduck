@@ -15,35 +15,11 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVReadFeature;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.HttpRequestBase;
-
-import java.net.URI;
 
 public class OwncloudReadFeature extends DAVReadFeature {
 
-    private final OwncloudSession session;
-
     public OwncloudReadFeature(final OwncloudSession session) {
         super(session);
-        this.session = session;
-    }
-
-    @Override
-    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) throws BackgroundException {
-        final HttpRequestBase request = super.toRequest(file, status);
-        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            request.setURI(URI.create(URIEncoder.encode(String.format("%s/%s/v/%s",
-                    new OwncloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
-                    file.attributes().getFileId(), file.attributes().getVersionId()))));
-        }
-        return request;
     }
 }

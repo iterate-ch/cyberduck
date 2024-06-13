@@ -72,9 +72,7 @@ public class NextcloudVersioningFeature implements Versioning {
     public void revert(final Path file) throws BackgroundException {
         // To restore a version all that needs to be done is to move a version the special restore folder at /remote.php/dav/versions/USER/restore
         try {
-            session.getClient().move(URIEncoder.encode(String.format("%s/versions/%s/%s",
-                            new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
-                            file.attributes().getFileId(), file.attributes().getVersionId())),
+            session.getClient().move(URIEncoder.encode(file.getAbsolute()),
                     URIEncoder.encode(String.format("%s/restore/target",
                             new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute()))
             );
@@ -118,8 +116,8 @@ public class NextcloudVersioningFeature implements Versioning {
                 any.add(element);
             }
             body.setProp(prop);
-            final List<DavResource> list = this.propfind(file, body);
-            for(DavResource resource : list) {
+            final Path parent = this.versions(file);
+            for(DavResource resource : session.getClient().propfind(URIEncoder.encode(parent.getAbsolute()), 1, body)) {
                 if(!this.filter(file, resource)) {
                     continue;
                 }
@@ -127,7 +125,7 @@ public class NextcloudVersioningFeature implements Versioning {
                 attributes.setDuplicate(true);
                 attributes.setFileId(file.attributes().getFileId());
                 attributes.setVersionId(PathNormalizer.name(resource.getHref().getPath()));
-                versions.add(new Path(file.getParent(), file.getName(), file.getType(), attributes));
+                versions.add(new Path(parent, PathNormalizer.name(resource.getHref().getPath()), file.getType(), attributes));
                 listener.chunk(file.getParent(), versions);
             }
             return versions.filter(new TimestampComparator(false));
@@ -151,8 +149,8 @@ public class NextcloudVersioningFeature implements Versioning {
         return true;
     }
 
-    protected List<DavResource> propfind(final Path file, final Propfind body) throws IOException, BackgroundException {
-        return session.getClient().propfind(URIEncoder.encode(String.format("%s/versions/%s",
-                new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(), file.attributes().getFileId())), 1, body);
+    protected Path versions(final Path file) throws IOException, BackgroundException {
+        return new Path(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions),
+                String.format("versions/%s" , file.attributes().getFileId()), EnumSet.of(Path.Type.directory));
     }
 }
