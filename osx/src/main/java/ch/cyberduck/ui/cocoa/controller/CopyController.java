@@ -40,8 +40,7 @@ import java.util.Map;
 
 public class CopyController extends ProxyController {
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
 
     private final BrowserController parent;
     private final Cache<Path> cache;
@@ -72,18 +71,15 @@ public class CopyController extends ProxyController {
             @Override
             public void run() {
                 final SessionPool pool = parent.getSession();
-                parent.background(new WorkerBackgroundAction<Map<Path, Path>>(parent, parent.getSession(),
-                        new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(parent, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
-                            @Override
-                            public void cleanup(final Map<Path, Path> result) {
-                                final List<Path> changed = new ArrayList<>();
-                                changed.addAll(result.keySet());
-                                changed.addAll(result.values());
-                                parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
-                            }
-                        }
-                    )
-                );
+                parent.background(new WorkerBackgroundAction<>(parent, parent.getSession(), new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(parent, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
+                    @Override
+                    public void cleanup(final Map<Path, Path> result) {
+                        final List<Path> changed = new ArrayList<>();
+                        changed.addAll(result.keySet());
+                        changed.addAll(result.values());
+                        parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
+                    }
+                }));
             }
         };
         this.copy(selected, action);
@@ -98,8 +94,7 @@ public class CopyController extends ProxyController {
      */
     private void copy(final Map<Path, Path> selected, final DefaultMainAction action) {
         if(preferences.getBoolean("browser.copy.confirm")) {
-            StringBuilder alertText = new StringBuilder(
-                LocaleFactory.localizedString("Do you want to copy the selected files?", "Duplicate"));
+            StringBuilder alertText = new StringBuilder(LocaleFactory.localizedString("Do you want to copy the selected files?", "Duplicate"));
             int i = 0;
             Iterator<Map.Entry<Path, Path>> iter;
             for(iter = selected.entrySet().iterator(); i < 10 && iter.hasNext(); ) {
@@ -110,12 +105,10 @@ public class CopyController extends ProxyController {
             if(iter.hasNext()) {
                 alertText.append(String.format("\n%s …)", Character.toString('\u2022')));
             }
-            final NSAlert alert = NSAlert.alert(
-                LocaleFactory.localizedString("Copy", "Transfer"), //title
-                alertText.toString(),
-                LocaleFactory.localizedString("Copy", "Transfer"), // default button
-                LocaleFactory.localizedString("Cancel"), //alternative button
-                null //other button
+            final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Copy", "Transfer"), //title
+                    alertText.toString(), LocaleFactory.localizedString("Copy", "Transfer"), // default button
+                    LocaleFactory.localizedString("Cancel"), //alternative button
+                    null //other button
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));

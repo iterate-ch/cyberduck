@@ -40,8 +40,7 @@ import java.util.Map;
 
 public class MoveController extends ProxyController {
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
 
     private final BrowserController parent;
     private final Cache<Path> cache;
@@ -72,16 +71,16 @@ public class MoveController extends ProxyController {
             @Override
             public void run() {
                 final SessionPool pool = parent.getSession();
-                final MoveWorker move = new MoveWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(parent, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
-                    @Override
-                    public void cleanup(final Map<Path, Path> result) {
-                        final List<Path> changed = new ArrayList<>();
-                        changed.addAll(selected.keySet());
-                        changed.addAll(selected.values());
-                        parent.reload(parent.workdir(), changed, new ArrayList<>(selected.values()));
-                    }
-                };
-                parent.background(new WorkerBackgroundAction<Map<Path, Path>>(parent, parent.getSession(), move));
+                parent.background(new WorkerBackgroundAction<>(parent, parent.getSession(),
+                        new MoveWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(parent, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
+                            @Override
+                            public void cleanup(final Map<Path, Path> result) {
+                                final List<Path> changed = new ArrayList<>();
+                                changed.addAll(selected.keySet());
+                                changed.addAll(selected.values());
+                                parent.reload(parent.workdir(), changed, new ArrayList<>(selected.values()));
+                            }
+                        }));
             }
         };
         this.rename(selected, action);
@@ -96,8 +95,7 @@ public class MoveController extends ProxyController {
      */
     private void rename(final Map<Path, Path> selected, final DefaultMainAction action) {
         if(preferences.getBoolean("browser.move.confirm")) {
-            StringBuilder alertText = new StringBuilder(
-                LocaleFactory.localizedString("Do you want to move the selected files?", "Duplicate"));
+            StringBuilder alertText = new StringBuilder(LocaleFactory.localizedString("Do you want to move the selected files?", "Duplicate"));
             int i = 0;
             boolean rename = false;
             Iterator<Map.Entry<Path, Path>> iter;
@@ -112,12 +110,10 @@ public class MoveController extends ProxyController {
             if(iter.hasNext()) {
                 alertText.append(String.format("\n%s …)", Character.toString('\u2022')));
             }
-            final NSAlert alert = NSAlert.alert(
-                rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), //title
-                alertText.toString(),
-                rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), // default button
-                LocaleFactory.localizedString("Cancel"), //alternative button
-                null //other button
+            final NSAlert alert = NSAlert.alert(rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), //title
+                    alertText.toString(), rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), // default button
+                    LocaleFactory.localizedString("Cancel"), //alternative button
+                    null //other button
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
