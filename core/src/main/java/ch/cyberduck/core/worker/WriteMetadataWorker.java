@@ -22,6 +22,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -111,8 +112,14 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(!update.equals(file.attributes().getMetadata())) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 file.getName()));
-            feature.setMetadata(file, new TransferStatus().withMetadata(update).withLockId(this.getLockId(file)));
-            file.attributes().setMetadata(update);
+            final TransferStatus status = new TransferStatus();
+            feature.setMetadata(file, status.withMetadata(update).withLockId(this.getLockId(file)));
+            if(!PathAttributes.EMPTY.equals(status.getResponse())) {
+                file.withAttributes(status.getResponse());
+            }
+            else {
+                file.attributes().setMetadata(update);
+            }
         }
         if(file.isDirectory()) {
             if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
