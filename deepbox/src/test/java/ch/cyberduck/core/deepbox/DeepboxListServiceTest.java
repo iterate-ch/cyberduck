@@ -16,17 +16,33 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -137,5 +153,72 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
         }
+    }
+
+    @Test
+    public void testChunksize() throws Exception {
+        session.getHost().setProperty("deepbox.listing.chunksize", "5");
+        final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+
+        final int numFiles = chunkSize * 2;
+        for(int i = 0; i < numFiles; ++i) {
+            new DeepboxTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+        }
+        final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
+        assertEquals(numFiles, listing.size());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testChunksize2() throws Exception {
+        session.getHost().setProperty("deepbox.listing.chunksize", "5");
+        final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+
+        final int numFiles = (int) Math.floor(chunkSize * 2.5);
+        for(int i = 0; i < numFiles; ++i) {
+            new DeepboxTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+        }
+        final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
+        assertEquals(numFiles, listing.size());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testDuplicatesListing() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
+        for(int i = 0; i < 2; i++) {
+            final HttpEntityEnclosingRequestBase request = new HttpPost(String.format("%s/api/v1/deepBoxes/%s/boxes/%s/files/%s",
+                    session.getClient().getBasePath(),
+                    nodeid.getDeepBoxNodeId(folder),
+                    nodeid.getBoxNodeId(folder),
+                    nodeid.getFileId(folder)));
+
+            final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            out.write(new AlphanumericRandomStringService().random().getBytes(StandardCharsets.UTF_8));
+            multipart.addBinaryBody("files", out.toByteArray(), ContentType.APPLICATION_OCTET_STREAM, file.getName());
+            request.setEntity(multipart.build());
+            CloseableHttpResponse execute = session.getClient().getClient().execute(request);
+            assertEquals(201, execute.getStatusLine().getStatusCode());
+        }
+
+        final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
+        final NodeContent nodeContent = core.listNodeContent(UUID.fromString(nodeid.getFileId(folder)), null, null, "modifiedTime desc");
+        assertEquals(2, nodeContent.getNodes().size());
+        final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
+        assertEquals(1, listing.size());
+        assertEquals(nodeContent.getNodes().get(0).getNodeId().toString(), listing.get(0).attributes().getFileId());
+        assertEquals(nodeContent.getNodes().get(0).getNodeId().toString(), nodeid.getFileId(file));
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

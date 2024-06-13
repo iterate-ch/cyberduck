@@ -103,8 +103,11 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 final String parentNodeId = getFileId(file.getParent());
 
                 // lookup as now everything recursively cached and we are not in cache
+                // TODO alternatively, we could use https://apidocs.deepcloud.swiss/deepbox-api-docs/index.html#info - would that simplify the implementation?
+                // The node info endpoint can be used to obtain further details about a specified file or folder node. For example, if only the "{nodeId}" is known, the details of the "deepBoxNodeId" and "boxNodeId" can be obtained to assist with the file or folder navigation, or other queries requiring the "deepBoxNodeId" and "boxNodeId".
                 if(new DeepboxPathContainerService().isDeepbox(file)) { // DeepBox
                     final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+                    // TODO pagination? Bad code smell - duplication with list service?
                     final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "displayName asc", null);
                     final String deepBoxName = file.getName();
                     final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> db.getName().equals(deepBoxName)).findFirst().map(db -> db.getDeepBoxNodeId().toString()).orElse(null);

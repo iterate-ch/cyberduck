@@ -33,6 +33,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
@@ -56,23 +58,36 @@ public class DeepboxListService implements ListService {
         final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
         final String boxNodeId = fileid.getBoxNodeId(directory);
         final String thirdLevelId = fileid.getThirdLevelId(directory);
+        int offset = 0;
+        int size = 0;
+        final HashSet<String> closed = new HashSet<String>();
         try {
             final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
             if(directory.isRoot()) {
-                final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "displayName asc", null);
-                for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
-                    list.add(new Path(directory, PathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            attributes.toAttributes(deepBox))
-                    );
+                do {
+                    final DeepBoxes deepBoxes = api.listDeepBoxes(offset, this.chunksize, "displayName asc", null);
+                    for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
+                        list.add(new Path(directory, PathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                                attributes.toAttributes(deepBox))
+                        );
+                    }
+                    size = deepBoxes.getSize();
+                    offset += this.chunksize;
                 }
+                while(offset < size);
             }
             else if(new DeepboxPathContainerService().isDeepbox(directory)) { // in DeepBox
-                final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), 0, 50, "displayName asc", null);
-                for(final Box box : boxes.getBoxes()) {
-                    list.add(new Path(directory, PathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            attributes.toAttributes(box))
-                    );
+                do {
+                    final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), offset, this.chunksize, "displayName asc", null);
+                    for(final Box box : boxes.getBoxes()) {
+                        list.add(new Path(directory, PathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                                attributes.toAttributes(box))
+                        );
+                    }
+                    size = boxes.getSize();
+                    offset += this.chunksize;
                 }
+                while(offset < size);
             }
             else if(new DeepboxPathContainerService().isBox(directory)) { // in Box
                 // TODO i18n
@@ -88,63 +103,73 @@ public class DeepboxListService implements ListService {
             }
             else if(new DeepboxPathContainerService().isThirdLevel(directory)) { // in Inbox/Documents/Trash
                 if(thirdLevelId.endsWith(INBOX)) {
-                    final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
-                            UUID.fromString(boxNodeId),
-                            null,
-                            0, 50, "displayName asc");
-                    for(Node node : inbox.getNodes()) {
-                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(attributes.toAttributes(node)));
+                    do {
+                        final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
+                                UUID.fromString(boxNodeId),
+                                null,
+                                offset, this.chunksize, "modifiedTime desc");
+                        listChunk(directory, inbox, list, closed);
+                        size = inbox.getSize();
+                        offset += this.chunksize;
                     }
+                    while(offset < size);
                 }
                 else if(thirdLevelId.endsWith(DOCUMENTS)) {
-                    final NodeContent files = api.listFiles(
-                            UUID.fromString(deepBoxNodeId),
-                            UUID.fromString(boxNodeId),
-                            0, 50, "displayName asc"
-                    );
-                    for(final Node node : files.getNodes()) {
-                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(attributes.toAttributes(node)));
+                    do {
+                        final NodeContent files = api.listFiles(
+                                UUID.fromString(deepBoxNodeId),
+                                UUID.fromString(boxNodeId),
+                                offset, this.chunksize, "modifiedTime desc"
+                        );
+                        listChunk(directory, files, list, closed);
+                        size = files.getSize();
+                        offset += this.chunksize;
                     }
+                    while(offset < size);
                 }
                 else if(thirdLevelId.endsWith(TRASH)) {
-                    final NodeContent trashFiles = api.listTrash(
-                            UUID.fromString(deepBoxNodeId),
-                            UUID.fromString(boxNodeId),
-                            0, 50, "displayName asc"
-                    );
-                    for(final Node node : trashFiles.getNodes()) {
-                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(attributes.toAttributes(node)));
+                    do {
+                        final NodeContent trashFiles = api.listTrash(
+                                UUID.fromString(deepBoxNodeId),
+                                UUID.fromString(boxNodeId),
+                                offset, this.chunksize, "modifiedTime desc"
+                        );
+                        listChunk(directory, trashFiles, list, closed);
+                        size = trashFiles.getSize();
+                        offset += this.chunksize;
                     }
+                    while(offset < size);
                 }
             }
             else { // in subfolder in Documents/Trash (Inbox has no subfolders)
                 final String nodeId = fileid.getFileId(directory);
                 if(thirdLevelId.endsWith(DOCUMENTS)) {
-                    final NodeContent files = api.listFiles1(
-                            UUID.fromString(deepBoxNodeId),
-                            UUID.fromString(boxNodeId),
-                            UUID.fromString(nodeId),
-                            0, 50, "displayName asc"
-                    );
-                    for(final Node node : files.getNodes()) {
-                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(attributes.toAttributes(node)));
+                    do {
+                        final NodeContent files = api.listFiles1(
+                                UUID.fromString(deepBoxNodeId),
+                                UUID.fromString(boxNodeId),
+                                UUID.fromString(nodeId),
+                                offset, this.chunksize, "modifiedTime desc"
+                        );
+                        listChunk(directory, files, list, closed);
+                        size = files.getSize();
+                        offset += this.chunksize;
                     }
+                    while(offset < size);
                 }
                 else {
-                    final NodeContent files = api.listTrash1(
-                            UUID.fromString(deepBoxNodeId),
-                            UUID.fromString(boxNodeId),
-                            UUID.fromString(nodeId),
-                            0, 50, "displayName asc"
-                    );
-                    for(final Node node : files.getNodes()) {
-                        list.add(new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                                .withAttributes(attributes.toAttributes(node)));
+                    do {
+                        final NodeContent files = api.listTrash1(
+                                UUID.fromString(deepBoxNodeId),
+                                UUID.fromString(boxNodeId),
+                                UUID.fromString(nodeId),
+                                offset, this.chunksize, "modifiedTime desc"
+                        );
+                        listChunk(directory, files, list, closed);
+                        size = files.getSize();
+                        offset += this.chunksize;
                     }
+                    while(offset < size);
                 }
             }
         }
@@ -152,5 +177,20 @@ public class DeepboxListService implements ListService {
             throw new BackgroundException(e);
         }
         return list;
+    }
+
+    // list by modifiedTime desc to keep only most recent with the same name
+    private void listChunk(final Path directory, final NodeContent inbox, final AttributedList<Path> list, final Set<String> closed) throws ApiException {
+        for(Node node : inbox.getNodes()) {
+            // remove duplicates
+            if(!closed.contains(node.getName())) {
+                final Path path = new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
+                        .withAttributes(attributes.toAttributes(node));
+                list.add(path);
+                closed.add(node.getName());
+                // update fileid to latest nodeId for the name
+                this.fileid.cache(path, node.getNodeId().toString());
+            }
+        }
     }
 }
