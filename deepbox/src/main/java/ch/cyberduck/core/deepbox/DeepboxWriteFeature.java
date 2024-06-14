@@ -50,7 +50,6 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.EnumSet;
 
 public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
     private final DeepboxSession session;
@@ -60,11 +59,6 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
         super(new DeepboxAttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp);
     }
 
     @Override
