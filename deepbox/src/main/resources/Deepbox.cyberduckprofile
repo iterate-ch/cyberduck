@@ -23,7 +23,7 @@
         <key>Anonymous Configurable</key>
         <false/>
         <key>Path Configurable</key>
-        <false/>
+        <true/>
         <key>Certificate Configurable</key>
         <false/>
         <key>Authorization</key>
