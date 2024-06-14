@@ -23,6 +23,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -47,7 +48,11 @@ public class DeepboxDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Map.Entry<Path, TransferStatus> file : files.entrySet()) {
             try {
-                final UUID nodeId = UUID.fromString(fileid.getFileId(file.getKey()));
+                final String fileId = fileid.getFileId(file.getKey());
+                if(fileId == null) {
+                    throw new NotfoundException(String.format("Cannot delete %s", file));
+                }
+                final UUID nodeId = UUID.fromString(fileId);
                 callback.delete(file.getKey());
                 final CoreRestControllerApi coreApi = new CoreRestControllerApi(session.getClient());
                 coreApi.deletePurgeNode(nodeId, false);
