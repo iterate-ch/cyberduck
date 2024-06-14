@@ -32,11 +32,10 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
-import java.io.File;
 import java.net.URI;
 import java.util.UUID;
 
-public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
+public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Void> {
     public static final String INBOX = "Inbox";
     public static final String DOCUMENTS = "Documents";
     public static final String TRASH = "Trash";
@@ -99,26 +98,6 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         }
-
-//        try {
-//            final PathContainerService service = new DefaultPathContainerService();
-//            if(service.isContainer(file)) {
-////                for(RootFolder r : session.roots()) {
-////                    if(StringUtils.equalsIgnoreCase(file.getName(), PathNormalizer.name(r.getPath()))
-////                            || StringUtils.equalsIgnoreCase(file.getName(), PathNormalizer.name(r.getName()))) {
-////                        return this.toAttributes(r);
-////                    }
-////                }
-////                throw new NotfoundException(file.getAbsolute());
-////            }
-////            final FilesApi files = new FilesApi(session.getClient());
-//                //final AttributesRestControllerApi api = new AttributesRestControllerApi(this.session.getClient());
-//                return this.toAttributes(null);
-//            }
-//        }
-//        catch(ApiException e) {
-//            throw new DeepboxExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
-//        }
     }
 
     public PathAttributes toAttributes(final Box box) {
@@ -154,59 +133,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     }
 
     @Override
-    public PathAttributes toAttributes(final File model) {
+    public PathAttributes toAttributes(final Void model) {
         return null;
     }
-
-
-//    @Override
-//    public PathAttributes toAttributes(final File f) {
-//        final PathAttributes attrs = new PathAttributes();
-//        if(0 != f.getModified().getMillis()) {
-//            attrs.setModificationDate(f.getModified().getMillis());
-//        }
-//        else {
-//            attrs.setModificationDate(f.getUploaded().getMillis());
-//        }
-//        if(0 != f.getCreated().getMillis()) {
-//            attrs.setCreationDate(f.getCreated().getMillis());
-//        }
-//        else {
-//            attrs.setCreationDate(f.getUploaded().getMillis());
-//        }
-//        if(f.getSize() != null) {
-//            attrs.setSize(f.getSize());
-//        }
-//        if(f.getFlags() != null) {
-//            if((f.getFlags() & 4) == 4) {
-//                // This item is locked by some user
-//                attrs.setLockId(Boolean.TRUE.toString());
-//            }
-//            if((f.getFlags() & 512) == 512) {
-//                // This item is hidden
-//                attrs.setHidden(true);
-//            }
-//        }
-//        if(f.getPermission() != null) {
-//            // NoAccess	0
-//            // ReadOnly	 1
-//            // ReadWrite 2
-//            // Synchronize	4	Read, write access and permission to syncronize using desktop client.
-//            // FullControl 99
-//            final Permission permission;
-//            if((f.getPermission() & 2) == 2 || (f.getPermission() & 4) == 4) {
-//                permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
-//            }
-//            else {
-//                permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
-//            }
-//            if((f.getFlags() & 1) == 1) {
-//                // This item is a folder
-//                permission.setUser(permission.getUser().or(Permission.Action.execute));
-//            }
-//            attrs.setPermission(permission);
-//        }
-//        attrs.setFileId(f.getId());
-//        return attrs;
-//    }
 }

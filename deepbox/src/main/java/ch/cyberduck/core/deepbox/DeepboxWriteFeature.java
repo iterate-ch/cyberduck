@@ -49,11 +49,10 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
 
-public class DeepboxWriteFeature extends AbstractHttpWriteFeature<File> {
+public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
 
@@ -69,11 +68,11 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<File> {
     }
 
     @Override
-    public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
 
-        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>(file) {
+        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>(file) {
             @Override
-            public File call(final HttpEntity entity) throws BackgroundException {
+            public Void call(final HttpEntity entity) throws BackgroundException {
                 try {
                     final HttpEntityEnclosingRequestBase request;
                     final String nodeId = fileid.getFileId(file);

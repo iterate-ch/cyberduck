@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -47,7 +46,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         Path file = new Path(auditing, "nix4.txt", EnumSet.of(AbstractPath.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
-        final HttpResponseOutputStream<File> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -65,7 +64,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path file = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
-        final HttpResponseOutputStream<File> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();

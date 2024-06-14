@@ -22,10 +22,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.File;
 import java.text.MessageFormat;
 
-public class DeepboxTouchFeature extends DefaultTouchFeature<File> {
+public class DeepboxTouchFeature extends DefaultTouchFeature<Void> {
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
