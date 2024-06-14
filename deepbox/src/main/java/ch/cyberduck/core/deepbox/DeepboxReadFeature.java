@@ -167,7 +167,7 @@ public class DeepboxReadFeature implements Read {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(ApiException e) {
-            throw new DeepboxExceptionMappingService(fileid).map(e);
+            throw new DeepboxExceptionMappingService(fileid).map("Download {0} failed", e, file);
         }
     }
 }
