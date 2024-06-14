@@ -28,8 +28,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -62,11 +61,12 @@ public class DeepboxReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(DeepboxReadFeature.class);
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
-    private final Preferences preferences = PreferencesFactory.get();
+    private final HostPreferences preferences;
 
     public DeepboxReadFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.preferences = new HostPreferences(session.getHost());
     }
 
     @Override
