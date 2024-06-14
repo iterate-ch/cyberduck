@@ -71,6 +71,7 @@ public class DeepboxListService implements ListService {
                                 attributes.toAttributes(deepBox))
                         );
                     }
+                    listener.chunk(directory, list);
                     size = deepBoxes.getSize();
                     offset += this.chunksize;
                 }
@@ -84,6 +85,7 @@ public class DeepboxListService implements ListService {
                                 attributes.toAttributes(box))
                         );
                     }
+                    listener.chunk(directory, list);
                     size = boxes.getSize();
                     offset += this.chunksize;
                 }
@@ -100,6 +102,7 @@ public class DeepboxListService implements ListService {
                 list.add(new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                         new PathAttributes().withFileId(String.format("%s_%s", boxNodeId, TRASH))
                 ));
+                listener.chunk(directory, list);
             }
             else if(new DeepboxPathContainerService().isThirdLevel(directory)) { // in Inbox/Documents/Trash
                 if(thirdLevelId.endsWith(INBOX)) {
@@ -109,6 +112,7 @@ public class DeepboxListService implements ListService {
                                 null,
                                 offset, this.chunksize, "modifiedTime desc");
                         listChunk(directory, inbox, list, closed);
+                        listener.chunk(directory, list);
                         size = inbox.getSize();
                         offset += this.chunksize;
                     }
@@ -122,6 +126,7 @@ public class DeepboxListService implements ListService {
                                 offset, this.chunksize, "modifiedTime desc"
                         );
                         listChunk(directory, files, list, closed);
+                        listener.chunk(directory, list);
                         size = files.getSize();
                         offset += this.chunksize;
                     }
@@ -135,6 +140,7 @@ public class DeepboxListService implements ListService {
                                 offset, this.chunksize, "modifiedTime desc"
                         );
                         listChunk(directory, trashFiles, list, closed);
+                        listener.chunk(directory, list);
                         size = trashFiles.getSize();
                         offset += this.chunksize;
                     }
@@ -152,6 +158,7 @@ public class DeepboxListService implements ListService {
                                 offset, this.chunksize, "modifiedTime desc"
                         );
                         listChunk(directory, files, list, closed);
+                        listener.chunk(directory, list);
                         size = files.getSize();
                         offset += this.chunksize;
                     }
@@ -166,6 +173,7 @@ public class DeepboxListService implements ListService {
                                 offset, this.chunksize, "modifiedTime desc"
                         );
                         listChunk(directory, files, list, closed);
+                        listener.chunk(directory, list);
                         size = files.getSize();
                         offset += this.chunksize;
                     }
