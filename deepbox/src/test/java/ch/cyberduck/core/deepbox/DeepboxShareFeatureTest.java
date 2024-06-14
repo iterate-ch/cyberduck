@@ -49,7 +49,6 @@ public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
         finally {
             new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         }
-
     }
 
     @Test
@@ -67,5 +66,4 @@ public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
             new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         }
     }
-
 }
