@@ -24,6 +24,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.FolderAdded;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -51,25 +52,34 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             upload.setName(folder.getName());
             upload.setI18n(Collections.emptyMap());
             final List<Folder> body = Collections.singletonList(upload);
-            final UUID deepBoxNodeId = UUID.fromString(fileid.getDeepBoxNodeId(folder.getParent()));
-            final UUID boxNodeId = UUID.fromString(fileid.getBoxNodeId(folder.getParent()));
+            final String deepBoxNodeId = fileid.getDeepBoxNodeId(folder.getParent());
+            if(deepBoxNodeId == null) {
+                throw new NotfoundException(String.format("Cannot find deep box node id for parent %s", folder));
+            }
+            final String boxNodeId = fileid.getBoxNodeId(folder.getParent());
+            if(boxNodeId == null) {
+                throw new NotfoundException(String.format("Cannot find box node id for parent %s", folder));
+            }
 
             final PathRestControllerApi pathApi = new PathRestControllerApi(session.getClient());
             final List<FolderAdded> created;
             if(new DeepboxPathContainerService().isDocuments(folder.getParent())) {
                 created = pathApi.addFolders1(
                         body,
-                        deepBoxNodeId,
-                        boxNodeId
+                        UUID.fromString(deepBoxNodeId),
+                        UUID.fromString(boxNodeId)
                 );
             }
             else {
-                final UUID nodeId = UUID.fromString(fileid.getFileId(folder.getParent()));
+                final String nodeId = fileid.getFileId(folder.getParent());
+                if(nodeId == null) {
+                    throw new NotfoundException(String.format("Cannot find box node id for parent %s", folder));
+                }
                 created = pathApi.addFolders(
                         body,
-                        deepBoxNodeId,
-                        boxNodeId,
-                        nodeId
+                        UUID.fromString(deepBoxNodeId),
+                        UUID.fromString(boxNodeId),
+                        UUID.fromString(nodeId)
                 );
             }
             final FolderAdded f = created.stream().findFirst().orElse(null);
