@@ -183,6 +183,7 @@ public class DeepboxListService implements ListService {
     private void listChunk(final Path directory, final NodeContent inbox, final AttributedList<Path> list, final Set<String> closed) throws ApiException {
         for(Node node : inbox.getNodes()) {
             // remove duplicates
+            // TODO attr.setDuplicate(true); instead?
             if(!closed.contains(node.getName())) {
                 final Path path = new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
                         .withAttributes(attributes.toAttributes(node));
