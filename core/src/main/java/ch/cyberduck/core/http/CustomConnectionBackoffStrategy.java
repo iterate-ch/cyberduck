@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
-public class CustomConnectionBackoffStrategy extends CustomServiceUnavailableRetryStrategy implements ConnectionBackoffStrategy {
+public class CustomConnectionBackoffStrategy extends DefaultServiceUnavailableRetryStrategy implements ConnectionBackoffStrategy {
     private static final Logger log = LogManager.getLogger(CustomConnectionBackoffStrategy.class);
 
     public CustomConnectionBackoffStrategy(final Host host) {
