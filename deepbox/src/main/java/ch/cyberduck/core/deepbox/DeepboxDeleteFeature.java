@@ -15,17 +15,23 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
+
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANDELETE;
 
 public class DeepboxDeleteFeature implements Delete {
 
@@ -56,5 +62,16 @@ public class DeepboxDeleteFeature implements Delete {
     @Override
     public EnumSet<Flags> features() {
         return EnumSet.of(Flags.recursive);
+    }
+
+    @Override
+    public void preflight(Path file) throws BackgroundException {
+        final Acl acl = file.attributes().getAcl();
+        if(!acl.get(new Acl.CanonicalUser()).contains(CANDELETE)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANDELETE));
+            }
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName())).withFile(file);
+        }
     }
 }

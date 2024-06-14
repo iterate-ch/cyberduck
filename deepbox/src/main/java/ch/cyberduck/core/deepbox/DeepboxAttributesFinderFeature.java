@@ -15,6 +15,7 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListProgressListener;
@@ -42,6 +43,22 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
+
+    /**
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDelete(Boolean)
+     */
+    public static final Acl.Role CANDELETE = new Acl.Role("canDelete");
+
+    // TODO check direct download api
+    /**
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAddChildren(Boolean) (Boolean) (Boolean)
+     */
+    public static final Acl.Role CANADDCHILDREN = new Acl.Role("canAddChildren");
+
+    /**
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAddChildren(Boolean) (Boolean) (Boolean)
+     */
+    public static final Acl.Role CANLISTCHILDREN = new Acl.Role("canListChildren");
 
     public DeepboxAttributesFinderFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
@@ -129,6 +146,20 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                         // TODO api / portal URL
                         String.format("node/%s/preview", node.getNodeId().toString())
                 ))));
+
+        // TODO check with DeepBox: integration test setup? How can we change can*?
+        // TODO full list of cancan/preflight?
+        final Acl acl = new Acl(new Acl.CanonicalUser());
+        if(node.getPolicy().isCanDelete()) {
+            acl.addAll(new Acl.CanonicalUser(), CANDELETE);
+        }
+        if(node.getPolicy().isCanAddChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
+        }
+        if(node.getPolicy().isCanListChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
+        }
+        attrs.setAcl(acl);
         return attrs;
     }
 
