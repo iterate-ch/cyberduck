@@ -38,7 +38,6 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertNull(nodeid.getDeepBoxNodeId(directory));
         assertNull(nodeid.getBoxNodeId(directory));
         assertNull(nodeid.getThirdLevelId(directory));
-        assertNull(nodeid.getPrefixedPath(directory));
     }
 
     @Test
@@ -48,7 +47,6 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(deepBox));
         assertNull(nodeid.getBoxNodeId(deepBox));
         assertNull(nodeid.getThirdLevelId(deepBox));
-        assertNull(nodeid.getPrefixedPath(deepBox));
     }
 
     @Test
@@ -58,7 +56,6 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(box));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059", nodeid.getBoxNodeId(box));
         assertNull(nodeid.getThirdLevelId(box));
-        assertNull(nodeid.getPrefixedPath(box));
     }
 
     @Test
@@ -68,7 +65,6 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(documents));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059", nodeid.getBoxNodeId(documents));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059_Documents", nodeid.getThirdLevelId(documents));
-        assertNull(nodeid.getPrefixedPath(documents));
     }
 
     @Test
@@ -78,7 +74,6 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(auditing));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059", nodeid.getBoxNodeId(auditing));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059_Documents", nodeid.getThirdLevelId(auditing));
-        assertNull(nodeid.getPrefixedPath(auditing));
     }
 
     @Test
@@ -89,6 +84,5 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(file));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059", nodeid.getBoxNodeId(file));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059_Documents", nodeid.getThirdLevelId(file));
-        assertNull(nodeid.getPrefixedPath(file));
     }
 }

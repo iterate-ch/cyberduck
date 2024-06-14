@@ -184,26 +184,4 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             throw new DeepboxExceptionMappingService(this).map("Failure to read attributes of {0}", e, file);
         }
     }
-
-    /**
-     * Mapping of path "/Home/mduck" to "My files"
-     * Mapping of path "/Common" to "Common files"
-     */
-    protected String getPrefixedPath(final Path file) {
-        /*
-        final PathContainerService service = new DefaultPathContainerService();
-        final String name = new DefaultPathContainerService().getContainer(file).getName();
-        for(RootFolder r : session.roots()) {
-            if(StringUtils.equalsIgnoreCase(name, PathNormalizer.name(r.getPath()))
-                    || StringUtils.equalsIgnoreCase(name, PathNormalizer.name(r.getName()))) {
-                if(service.isContainer(file)) {
-                    return r.getPath();
-                }
-                return String.format("%s/%s", r.getPath(), PathRelativizer.relativize(name, file.getAbsolute()));
-            }
-        }
-        return file.getAbsolute();
-         */
-        return null;
-    }
 }
