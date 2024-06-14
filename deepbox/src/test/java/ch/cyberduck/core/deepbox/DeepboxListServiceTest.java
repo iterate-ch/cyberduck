@@ -174,6 +174,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testChunksizeInexact() throws Exception {
+        // TODO check this is effective
         session.getHost().setProperty("deepbox.listing.chunksize", "5");
         final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
