@@ -84,100 +84,109 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
 
     @Override
     public String getFileId(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return null;
+        }
+        if(StringUtils.isNotBlank(file.attributes().getFileId())) {
+            return file.attributes().getFileId();
+        }
+        final String cached = super.getFileId(file);
+        if(cached != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached fileid %s for file %s", cached, file));
+            }
+            return cached;
+        }
+
+        // iteratively add to cache
+        final List<Path> segs = pathToList(file);
+        for(final Path seg : segs) {
+            lookupFileId(seg);
+        }
+
+        // get from cache now
+        return super.getFileId(file);
+    }
+
+    private String lookupFileId(final Path file) throws BackgroundException {
         try {
-            if(StringUtils.isNotBlank(file.attributes().getFileId())) {
-                return file.attributes().getFileId();
+            // all parents can be looked up from cache now
+            final String parentNodeId = getFileId(file.getParent());
+
+            // lookup as now everything recursively cached and we are not in cache
+            // The node info endpoint can be used to obtain further details about a specified file or folder node. For example, if only the "{nodeId}" is known, the details of the "deepBoxNodeId" and "boxNodeId" can be obtained to assist with the file or folder navigation, or other queries requiring the "deepBoxNodeId" and "boxNodeId".
+            if(new DeepboxPathContainerService().isDeepbox(file)) { // DeepBox
+                final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+                // TODO pagination? Bad code smell - duplication with list service?
+                final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "displayName asc", null);
+                final String deepBoxName = file.getName();
+                final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> db.getName().equals(deepBoxName)).findFirst().map(db -> db.getDeepBoxNodeId().toString()).orElse(null);
+                this.cache(file, deepBoxNodeId);
+                return deepBoxNodeId;
             }
-            final String cached = super.getFileId(file);
-            if(cached != null) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Return cached fileid %s for file %s", cached, file));
-                }
-                return cached;
+            else if(new DeepboxPathContainerService().isBox(file)) { // Box
+                final String deepBoxNodeId = getFileId(file.getParent());
+                final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+
+                final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), 0, 50, "displayName asc", null);
+                final String boxName = file.getName();
+                final String boxNodeId = boxes.getBoxes().stream().filter(b -> b.getName().equals(boxName)).findFirst().map(b -> b.getBoxNodeId().toString()).orElse(null);
+                this.cache(file, boxNodeId);
+                return boxNodeId;
             }
-            if(file.isRoot()) {
-                return null;
+            else if(new DeepboxPathContainerService().isThirdLevel(file)) { // 3rd level: Inbox,Documents,Trash
+                final String boxNodeId = getFileId(file.getParent());
+                final String thirdLevelFileId = String.format("%s_%s", boxNodeId, file.getName());
+                this.cache(file, thirdLevelFileId);
+                return thirdLevelFileId;
             }
-            else {
-                // recursively cache file attributes
-                final String parentNodeId = getFileId(file.getParent());
-
-                // lookup as now everything recursively cached and we are not in cache
-                // TODO alternatively, we could use https://apidocs.deepcloud.swiss/deepbox-api-docs/index.html#info - would that simplify the implementation?
-                // The node info endpoint can be used to obtain further details about a specified file or folder node. For example, if only the "{nodeId}" is known, the details of the "deepBoxNodeId" and "boxNodeId" can be obtained to assist with the file or folder navigation, or other queries requiring the "deepBoxNodeId" and "boxNodeId".
-                if(new DeepboxPathContainerService().isDeepbox(file)) { // DeepBox
-                    final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
-                    // TODO pagination? Bad code smell - duplication with list service?
-                    final DeepBoxes deepBoxes = api.listDeepBoxes(0, 50, "displayName asc", null);
-                    final String deepBoxName = file.getName();
-                    final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> db.getName().equals(deepBoxName)).findFirst().map(db -> db.getDeepBoxNodeId().toString()).orElse(null);
-                    this.cache(file, deepBoxNodeId);
-                    return deepBoxNodeId;
-                }
-                else if(new DeepboxPathContainerService().isBox(file)) { // Box
-                    final String deepBoxNodeId = getFileId(file.getParent());
-                    final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
-
-                    final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), 0, 50, "displayName asc", null);
-                    final String boxName = file.getName();
-                    final String boxNodeId = boxes.getBoxes().stream().filter(b -> b.getName().equals(boxName)).findFirst().map(b -> b.getBoxNodeId().toString()).orElse(null);
-                    this.cache(file, boxNodeId);
-                    return boxNodeId;
-                }
-                else if(new DeepboxPathContainerService().isThirdLevel(file)) { // 3rd level: Inbox,Documents,Trash
-                    final String boxNodeId = getFileId(file.getParent());
-                    final String thirdLevelFileId = String.format("%s_%s", boxNodeId, file.getName());
-                    this.cache(file, thirdLevelFileId);
-                    return thirdLevelFileId;
-                }
-                else if(new DeepboxPathContainerService().isThirdLevel(file.getParent())) { // first level under Inbox,Documents,Trash
-                    final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
-                    final String thirdLevelId = getFileId(file.getParent());
-                    final String boxNodeId = getFileId(file.getParent().getParent());
-                    final String deepBoxNodeId = getFileId(file.getParent().getParent().getParent());
-                    if(thirdLevelId.endsWith(DOCUMENTS)) {
-                        final NodeContent files = api.listFiles(
-                                UUID.fromString(deepBoxNodeId),
-                                UUID.fromString(boxNodeId),
-                                0, 50, "displayName asc");
-                        final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
-                        this.cache(file, nodeId);
-                        return nodeId;
-                    }
-                    else if(thirdLevelId.endsWith(INBOX)) {
-                        final NodeContent files = api.listQueue(
-                                UUID.fromString(deepBoxNodeId),
-                                UUID.fromString(boxNodeId),
-                                null, 0, 50, "displayName asc");
-                        final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
-                        this.cache(file, nodeId);
-                        return nodeId;
-                    }
-                    else {
-                        final NodeContent files = api.listTrash(
-                                UUID.fromString(deepBoxNodeId),
-                                UUID.fromString(boxNodeId),
-                                0, 50, "displayName asc");
-                        final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
-                        this.cache(file, nodeId);
-                        return nodeId;
-                    }
-                }
-                else { // second+ level under Documents,Trash (Inbox has no hierarchy)
-                    final String deepBoxNodeId = getDeepBoxNodeId(file.getParent());
-                    final String boxNodeId = getBoxNodeId(file.getParent());
-
-                    final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
-
-                    final NodeContent files = api.listTrash1(
+            else if(new DeepboxPathContainerService().isThirdLevel(file.getParent())) { // first level under Inbox,Documents,Trash
+                final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+                final String thirdLevelId = getFileId(file.getParent());
+                final String boxNodeId = getFileId(file.getParent().getParent());
+                final String deepBoxNodeId = getFileId(file.getParent().getParent().getParent());
+                if(thirdLevelId.endsWith(DOCUMENTS)) {
+                    final NodeContent files = api.listFiles(
                             UUID.fromString(deepBoxNodeId),
                             UUID.fromString(boxNodeId),
-                            UUID.fromString(parentNodeId),
                             0, 50, "displayName asc");
                     final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                     this.cache(file, nodeId);
                     return nodeId;
                 }
+                else if(thirdLevelId.endsWith(INBOX)) {
+                    final NodeContent files = api.listQueue(
+                            UUID.fromString(deepBoxNodeId),
+                            UUID.fromString(boxNodeId),
+                            null, 0, 50, "displayName asc");
+                    final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
+                    this.cache(file, nodeId);
+                    return nodeId;
+                }
+                else {
+                    final NodeContent files = api.listTrash(
+                            UUID.fromString(deepBoxNodeId),
+                            UUID.fromString(boxNodeId),
+                            0, 50, "displayName asc");
+                    final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
+                    this.cache(file, nodeId);
+                    return nodeId;
+                }
+            }
+            else { // second+ level under Documents,Trash (Inbox has no hierarchy)
+                final String deepBoxNodeId = getDeepBoxNodeId(file.getParent());
+                final String boxNodeId = getBoxNodeId(file.getParent());
+
+                final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+
+                final NodeContent files = api.listTrash1(
+                        UUID.fromString(deepBoxNodeId),
+                        UUID.fromString(boxNodeId),
+                        UUID.fromString(parentNodeId),
+                        0, 50, "displayName asc");
+                final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
+                this.cache(file, nodeId);
+                return nodeId;
             }
         }
         catch(ApiException e) {
