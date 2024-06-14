@@ -67,7 +67,6 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        // TODO add test
         try {
             if(file.isRoot()) {
                 return new PathAttributes();
