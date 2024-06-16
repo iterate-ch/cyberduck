@@ -45,14 +45,18 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
     @Test
     public void testGetMetadataFile() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMime("text/plain"));
+        final TransferStatus status = new TransferStatus();
+        final Path test = new GoogleStorageTouchFeature(session).touch(
+                new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withMime("text/plain"));
         final GoogleStorageMetadataFeature feature = new GoogleStorageMetadataFeature(session);
         assertTrue(feature.getMetadata(test).isEmpty());
-        feature.setMetadata(test, Collections.singletonMap("k", "v"));
-        final Map<String, String> metadata = feature.getMetadata(test);
-        assertTrue(metadata.containsKey("k"));
-        assertEquals("v", metadata.get("k"));
+        final Map<String, String> set = Collections.singletonMap("k", "v");
+        feature.setMetadata(test, status.withMetadata(set));
+        assertEquals(set, status.getResponse().getMetadata());
+        assertEquals(test.attributes().getVersionId(), status.getResponse().getVersionId());
+        final Map<String, String> get = feature.getMetadata(test);
+        assertTrue(get.containsKey("k"));
+        assertEquals("v", get.get("k"));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
