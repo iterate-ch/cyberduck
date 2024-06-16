@@ -55,7 +55,6 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
                 .withMetadata(Collections.singletonMap("app", "cyberduck"))
                 .withMime("text/plain"));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("app"));
         assertEquals("cyberduck", metadata.get("app"));
@@ -64,6 +63,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertFalse(metadata.containsKey(Constants.KEY_FOR_USER_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_SERVICE_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_COMPLETE_METADATA));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -75,13 +75,22 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Map<String, String> metadata = feature.getMetadata(test);
 
         metadata.put("Content-Disposition", "attachment");
-        feature.setMetadata(test, metadata);
+        final TransferStatus status = new TransferStatus();
+        feature.setMetadata(test, status.withMetadata(metadata));
+        assertEquals(status.getMetadata(), status.getResponse().getMetadata());
+        test.withAttributes(status.getResponse());
         assertTrue(feature.getMetadata(test).containsKey("Content-Disposition"));
+
         metadata.put("Cache-Control", "public,max-age=1");
-        feature.setMetadata(test, metadata);
+        feature.setMetadata(test, status.withMetadata(metadata));
+        assertEquals(status.getMetadata(), status.getResponse().getMetadata());
+        test.withAttributes(status.getResponse());
         assertTrue(feature.getMetadata(test).containsKey("Cache-Control"));
+
         metadata.put("Content-Type", "text/html");
-        feature.setMetadata(test, metadata);
+        feature.setMetadata(test, status.withMetadata(metadata));
+        assertEquals(status.getMetadata(), status.getResponse().getMetadata());
+        test.withAttributes(status.getResponse());
         assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
 
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -114,7 +123,10 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
         assertEquals(reference, feature.getMetadata(test));
 
-        feature.setMetadata(test, Collections.singletonMap("Test", v));
+        final TransferStatus status = new TransferStatus();
+        feature.setMetadata(test, status.withMetadata(Collections.singletonMap("Test", v)));
+        test.withAttributes(status.getResponse());
+
         final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("test"));
