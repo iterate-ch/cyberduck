@@ -65,8 +65,9 @@ public class DriveMetadataFeature implements Metadata {
             final String fileid = this.fileid.getFileId(file);
             final File body = new File();
             body.setProperties(status.getMetadata());
-            session.getClient().files().update(fileid, body).setFields("properties").
-                setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+            final File properties = session.getClient().files().update(fileid, body).setFields("properties").
+                    setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+            status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(properties));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
