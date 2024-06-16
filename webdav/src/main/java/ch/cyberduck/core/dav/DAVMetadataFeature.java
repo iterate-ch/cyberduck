@@ -93,17 +93,19 @@ public class DAVMetadataFeature implements Headers {
         try {
             final List<Element> props = new ArrayList<>();
             for(Map.Entry<String, String> entry : status.getMetadata().entrySet()) {
-                Element element = SardineUtil.createElement(new QName(CUSTOM_NAMESPACE_URI, entry.getKey(), CUSTOM_NAMESPACE_PREFIX));
+                Element element = SardineUtil.createElement(
+                        SardineUtil.createQNameWithCustomNamespace(entry.getKey()));
                 element.setTextContent(entry.getValue());
                 props.add(element);
             }
+            final Map<String, String> headers;
             if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
-                session.getClient().patch(new DAVPathEncoder().encode(file), props, Collections.emptyList(),
-                    Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+                headers = Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
             }
             else {
-                session.getClient().patch(new DAVPathEncoder().encode(file), props, Collections.emptyList());
+                headers = Collections.emptyMap();
             }
+            session.getClient().patch(new DAVPathEncoder().encode(file), props, Collections.emptyList(), headers);
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
