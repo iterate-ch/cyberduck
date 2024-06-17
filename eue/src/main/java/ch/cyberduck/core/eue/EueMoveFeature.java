@@ -136,7 +136,7 @@ public class EueMoveFeature implements Move {
                 }
             }
             fileid.cache(file, null);
-            return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));
+            return target;
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map("Cannot rename {0}", e, file);
