@@ -40,7 +40,7 @@ public class LocalDirectoryFeature implements Directory<Void> {
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return folder.withAttributes(new LocalAttributesFinderFeature(session).find(folder));
+        return folder;
     }
 
     @Override

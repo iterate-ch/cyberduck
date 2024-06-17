@@ -53,7 +53,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
             if(containerService.isContainer(folder)) {
                 // Container name must be lower case.
                 session.getClient().getBlobContainerClient(containerService.getContainer(folder).getName()).create();
-                return new Path(folder.getParent(), folder.getName(), folder.getType(), new AzureAttributesFinderFeature(session).find(folder));
+                return new Path(folder.getParent(), folder.getName(), folder.getType());
             }
             else {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());

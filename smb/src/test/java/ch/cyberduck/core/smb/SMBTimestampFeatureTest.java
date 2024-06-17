@@ -83,7 +83,6 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path f = new SMBDirectoryFeature(session).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotEquals(-1L, f.attributes().getModificationDate());
         // make sure timestamps are different
         long oldTime = new SMBAttributesFinderFeature(session).find(f).getModificationDate();
         status.setModified(oldTime + 2000);

@@ -42,7 +42,7 @@ public class FTPDirectoryFeature implements Directory<Integer> {
             if(!session.getClient().makeDirectory(folder.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            return folder.withAttributes(new FTPAttributesFinderFeature(session).find(folder));
+            return folder;
         }
         catch(FTPException e) {
             switch(e.getCode()) {
