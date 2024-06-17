@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-11, macos-12, macos-13, macos-14, ubuntu-latest, windows-latest ]
+        os: [ macos-12, macos-13, macos-14, ubuntu-latest, windows-latest ]
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
