@@ -29,7 +29,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SDSTimestampFeatureTest extends AbstractSDSTest {
@@ -40,12 +40,15 @@ public class SDSTimestampFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Long revision = test.attributes().getRevision();
+        assertNotNull(revision);
         final TransferStatus status = new TransferStatus().withModified(1599047952805L);
         new SDSTimestampFeature(session, nodeid).setTimestamp(test, status);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         final PathAttributes attributes = f.find(test);
         assertEquals(1599047952805L, attributes.getModificationDate());
         assertEquals(status.getResponse(), attributes);
+        assertNotEquals(revision, attributes.getRevision());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
