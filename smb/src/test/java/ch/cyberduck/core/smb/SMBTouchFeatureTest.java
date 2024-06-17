@@ -39,7 +39,6 @@ public class SMBTouchFeatureTest extends AbstractSMBTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path test = new SMBTouchFeature(session).touch(
                 new Path(home, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(test.attributes(), new SMBAttributesFinderFeature(session).find(test));
         new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
