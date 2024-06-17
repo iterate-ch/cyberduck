@@ -97,7 +97,7 @@ public class NextcloudSession extends DAVSession {
             return (T) new DAVDirectoryFeature(this, new NextcloudAttributesFinderFeature(this));
         }
         if(type == Touch.class) {
-            return (T) new DAVTouchFeature(new NextcloudWriteFeature(this), new NextcloudAttributesFinderFeature(this));
+            return (T) new DAVTouchFeature(new NextcloudWriteFeature(this));
         }
         if(type == AttributesFinder.class) {
             return (T) new NextcloudAttributesFinderFeature(this);
