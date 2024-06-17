@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -24,10 +23,16 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
 
 import static org.junit.Assert.assertEquals;
 
@@ -60,6 +65,105 @@ public class OneDriveSessionTest {
             assertEquals(String.format("Non-Container access: for %s", path), testCase.isValid, session.isAccessible(path, false));
             assertEquals(String.format("Container access: for %s", path), testCase.isValidContainer, session.isAccessible(path, true));
         }
+    }
+
+    @Test
+    public void testParentReferenceFileId() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/ParentReferenceFileId.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("ParentDriveId/MyId", session.getFileId(metadata));
+    }
+
+    @Test
+    public void testParentReferenceFileIdUnknownId() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/ParentReferenceFileIdUnknownId.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("ParentDriveId/MyId", session.getFileId(metadata));
+    }
+
+    @Test
+    public void testRemoteItemId() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/RemoteItemId.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("RemoteParentDriveId/RemoteId", session.getFileId(metadata));
+    }
+
+    @Test
+    public void testRemoteItemParentReferenceWithId() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/RemoteItemParentReferenceWithId.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("RemoteParentDriveId/RemoteId", session.getFileId(metadata));
+    }
+
+    @Test
+    public void testSharedFolderIdInOwnDrive() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/SharedFolderIdInOwnDrive.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("ParentDriveId/MyId/RemoteParentDriveId/RemoteId", session.getFileId(metadata));
+    }
+
+    @Test
+    public void testSharedFolderIdInSharedWithMeDrive() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/SharedFolderIdInSharedWithMeDrive.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("ParentDriveId/MyId/RemoteParentDriveId/RemoteId", session.getFileId(metadata));
+    }
+
+    @Test
+    public void testRealConsumerFileIdResponseOwnDrive() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/RealConsumerFileIdResponseOwnDrive.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("A/A!0/B/B!2", session.getFileId(metadata));
+    }
+
+    @Test
+    public void testRealConsumerFileIdResponseSharedWithMe() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/RealConsumerFileIdResponseSharedWithMe.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("A/A!0/B/B!1", session.getFileId(metadata));
+    }
+
+    @Test
+    public void testRealBusinessFileIdResponseSharedWithMe() throws Exception {
+        final DriveItem.Metadata metadata;
+        try (final InputStream test = getClass().getResourceAsStream("/RealBusinessFileIdResponseSharedWithMe.json")) {
+            final InputStreamReader reader = new InputStreamReader(test);
+            metadata = DriveItem.parseJson(session.getClient(), (JsonObject) Json.parse(reader));
+        }
+
+        assertEquals("Id/A", session.getFileId(metadata));
     }
 
     static class TestCase {

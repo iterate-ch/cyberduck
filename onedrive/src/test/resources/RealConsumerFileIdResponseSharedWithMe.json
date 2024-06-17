@@ -1,0 +1,14 @@
+{
+    "id": "A!0",
+    "parentReference": {
+        "driveId": "A",
+        "driveType": "personal"
+    },
+    "remoteItem": {
+        "id": "B!1",
+        "parentReference": {
+            "driveId": "B",
+            "driveType": "personal"
+        }
+    }
+}

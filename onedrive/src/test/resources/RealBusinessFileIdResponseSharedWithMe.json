@@ -1,0 +1,11 @@
+{
+    "id": "A",
+    "remoteItem": {
+        "id": "A",
+        "parentReference": {
+            "driveType": "business",
+            "driveId": "Id",
+            "id": "B"
+        }
+    }
+}

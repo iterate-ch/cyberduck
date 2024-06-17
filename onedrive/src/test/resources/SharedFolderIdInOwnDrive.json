@@ -1,0 +1,14 @@
+{
+    "id": "MyId",
+    "parentReference": {
+        "driveId": "ParentDriveId",
+        "id": "ParentFolderId"
+    },
+    "remoteItem": {
+        "id": "RemoteId",
+        "parentReference": {
+            "driveId": "RemoteParentDriveId",
+            "id": "RemoteParentFolderId"
+        }
+    }
+}

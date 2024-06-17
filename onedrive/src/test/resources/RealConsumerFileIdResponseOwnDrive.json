@@ -1,0 +1,16 @@
+{
+    "id": "A!0",
+    "parentReference": {
+        "driveId": "A",
+        "driveType": "personal",
+        "id": "A!1",
+        "path": "/drive/root:"
+    },
+    "remoteItem": {
+        "id": "B!2",
+        "parentReference": {
+            "driveId": "B",
+            "driveType": "personal"
+        }
+    }
+}
