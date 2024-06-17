@@ -76,6 +76,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         final PathAttributes attributes = f.find(test);
+        assertNotNull(attributes.getRevision());
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertEquals(Checksum.NONE, attributes.getChecksum());
