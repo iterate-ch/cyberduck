@@ -121,7 +121,7 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
                                 throw new SocketTimeoutException();
                             }
                         }
-                    }, new S3AttributesAdapter(), status) {
+                    }, new S3AttributesAdapter(host), status) {
                         @Override
                         public StorageObject getStatus() throws BackgroundException {
                             return proxy.getStatus();

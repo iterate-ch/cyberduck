@@ -76,7 +76,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             PathAttributes attr;
             final Path bucket = containerService.getContainer(file);
             try {
-                attr = new S3AttributesAdapter().toAttributes(session.getClient().getVersionedObjectDetails(
+                attr = new S3AttributesAdapter(session.getHost()).toAttributes(session.getClient().getVersionedObjectDetails(
                         file.attributes().getVersionId(), bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
             catch(ServiceException e) {
@@ -99,7 +99,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 }
                 // Determine if latest version
                 try {
-                    final String latest = new S3AttributesAdapter().toAttributes(session.getClient().getObjectDetails(
+                    final String latest = new S3AttributesAdapter(session.getHost()).toAttributes(session.getClient().getObjectDetails(
                             bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file))).getVersionId();
                     if(null != latest) {
                         if(log.isDebugEnabled()) {

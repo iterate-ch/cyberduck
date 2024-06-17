@@ -96,7 +96,7 @@ public class S3MetadataFeature implements Headers {
             }
             final Path bucket = containerService.getContainer(file);
             final Map<String, Object> metadata = session.getClient().updateObjectMetadata(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), target);
-            final PathAttributes attributes = new S3AttributesAdapter().toAttributes(target);
+            final PathAttributes attributes = new S3AttributesAdapter(session.getHost()).toAttributes(target);
             if(metadata.containsKey("version-id")) {
                 attributes.setVersionId(metadata.get("version-id").toString());
             }

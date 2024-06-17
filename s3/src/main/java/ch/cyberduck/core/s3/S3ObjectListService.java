@@ -106,7 +106,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                     final EnumSet<Path.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
                             ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     final Path f;
-                    final PathAttributes attr = new S3AttributesAdapter().toAttributes(object);
+                    final PathAttributes attr = new S3AttributesAdapter(session.getHost()).toAttributes(object);
                     // Copy bucket location
                     attr.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {

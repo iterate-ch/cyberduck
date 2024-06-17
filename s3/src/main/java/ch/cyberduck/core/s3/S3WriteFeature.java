@@ -61,7 +61,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private final S3Session session;
 
     public S3WriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
-        super(new S3AttributesAdapter());
+        super(new S3AttributesAdapter(session.getHost()));
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
         this.acl = acl;

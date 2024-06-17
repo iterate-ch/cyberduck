@@ -101,8 +101,9 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     @Test
     public void testVersioningReadAttributesDeleteMarker() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path testWithVersionId = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(testWithVersionId);
+        final Path f = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path testWithVersionId = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(f, new TransferStatus());
+        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(f);
         final String versionId = attr.getVersionId();
         assertNotNull(versionId);
         assertEquals(testWithVersionId.attributes().getVersionId(), versionId);
