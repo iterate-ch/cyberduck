@@ -6,6 +6,7 @@ import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -61,7 +62,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        test.withAttributes(new S3AttributesAdapter().toAttributes(out.getStatus()));
+        test.withAttributes(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()));
         assertTrue(new S3FindFeature(session, acl).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
         assertEquals(1630305150000L, attributes.getModificationDate());

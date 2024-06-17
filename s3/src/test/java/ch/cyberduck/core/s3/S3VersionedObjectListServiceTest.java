@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -159,7 +160,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
             final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-            file.withAttributes(new S3AttributesAdapter().toAttributes(out.getStatus()));
+            file.withAttributes(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()));
             assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(file).getSize());
             final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(file);
             assertEquals(content.length, attr.getSize());
@@ -175,7 +176,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
             final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-            file.withAttributes(new S3AttributesAdapter().toAttributes(out.getStatus()));
+            file.withAttributes(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()));
             assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(file).getSize());
             final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(file);
             assertEquals(content.length, attr.getSize());

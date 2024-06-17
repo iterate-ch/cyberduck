@@ -76,7 +76,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
         return new HttpResponseOutputStream<StorageObject>(new MemorySegementingOutputStream(proxy,
                 new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.size")),
-                new S3AttributesAdapter(), status) {
+                new S3AttributesAdapter(session.getHost()), status) {
             @Override
             public StorageObject getStatus() {
                 if(proxy.getResponse() != null) {

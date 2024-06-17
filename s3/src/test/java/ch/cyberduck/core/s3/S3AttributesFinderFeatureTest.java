@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;

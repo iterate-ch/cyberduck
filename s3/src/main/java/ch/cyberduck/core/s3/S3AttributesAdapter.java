@@ -15,10 +15,12 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
@@ -33,6 +35,12 @@ import com.google.common.collect.Maps;
 import static org.jets3t.service.model.StorageObject.METADATA_HEADER_SERVER_SIDE_ENCRYPTION_KMS_KEY_ID;
 
 public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
+
+    private final Host host;
+
+    public S3AttributesAdapter(final Host host) {
+        this.host = host;
+    }
 
     @Override
     public PathAttributes toAttributes(final StorageObject object) {
@@ -56,7 +64,9 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
         // not the MD5 of the object data.
         attributes.setChecksum(Checksum.parse(object.getETag()));
         if(object instanceof S3Object) {
-            attributes.setVersionId(((S3Object) object).getVersionId());
+            if(new HostPreferences(host).getBoolean("s3.listing.versioning.enable")) {
+                attributes.setVersionId(((S3Object) object).getVersionId());
+            }
         }
         if(object.containsMetadata(METADATA_HEADER_SERVER_SIDE_ENCRYPTION_KMS_KEY_ID)) {
             attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),

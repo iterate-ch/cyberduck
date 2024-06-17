@@ -15,6 +15,8 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
+
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 
@@ -27,13 +29,13 @@ public class S3AttributesAdapterTest {
         final StorageObject object = new StorageObject();
         object.addMetadata("ETag", "a43c1b0aa53a0c908810c06ab1ff3967");
         object.addMetadata("Mtime", "1647683127.160620746");
-        assertEquals(1647683127000L, new S3AttributesAdapter().toAttributes(object).getModificationDate());
+        assertEquals(1647683127000L, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
     }
 
     @Test
     public void testMtimeInvalid() {
         final StorageObject object = new StorageObject();
         object.addMetadata("Mtime", "Invalid");
-        assertEquals(-1, new S3AttributesAdapter().toAttributes(object).getModificationDate());
+        assertEquals(-1, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
     }
 }
