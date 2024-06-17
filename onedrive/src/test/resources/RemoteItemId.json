@@ -1,0 +1,9 @@
+{
+    "id": "MyId",
+    "remoteItem": {
+        "id": "RemoteId",
+        "parentReference": {
+            "driveId": "RemoteParentDriveId"
+        }
+    }
+}
