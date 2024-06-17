@@ -54,23 +54,12 @@ public class OneDriveSession extends GraphSession {
             final ItemReference remoteParent = remoteMetadata.getParentReference();
             if(parent == null) {
                 return String.join(String.valueOf(Path.DELIMITER),
-                        remoteParent.getDriveId(), remoteParent.getId());
+                        remoteParent.getDriveId(), remoteMetadata.getId());
             }
             else {
-                // this is fix for OneDrive Business shared folders.
-                // These have an ID in their remoteMetadata, but
-                // there is an ID in parentReference as well.
-                // remoteMetadata-ID doesn't resolve in parentReference
-                // driveId, so … use that parentReference Item Id first,
-                // and if it is non-existent use the remotemetadata
-                // as fallback for regular OneDrive Consumer shared items.
-                String remoteItemId = remoteParent.getId();
-                if(StringUtils.isBlank(remoteItemId)) {
-                    remoteItemId = remoteMetadata.getId();
-                }
                 return String.join(String.valueOf(Path.DELIMITER),
                         parent.getDriveId(), metadata.getId(),
-                        remoteParent.getDriveId(), remoteItemId);
+                        remoteParent.getDriveId(), remoteMetadata.getId());
             }
         }
         else {
