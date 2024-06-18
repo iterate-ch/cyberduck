@@ -80,7 +80,7 @@ public class SMBCopyFeature implements Copy {
         finally {
             session.releaseShare(share);
         }
-        return target.withAttributes(new SMBAttributesFinderFeature(session).find(target));
+        return target;
     }
 
     @Override

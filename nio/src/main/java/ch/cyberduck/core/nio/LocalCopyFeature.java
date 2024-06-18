@@ -40,8 +40,7 @@ public class LocalCopyFeature implements Copy {
         try {
             Files.copy(session.toPath(source), session.toPath(target), StandardCopyOption.REPLACE_EXISTING);
             listener.sent(status.getLength());
-            // Copy attributes from original file
-            return target.withAttributes(new LocalAttributesFinderFeature(session).find(target));
+            return target;
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Cannot copy {0}", e, source);

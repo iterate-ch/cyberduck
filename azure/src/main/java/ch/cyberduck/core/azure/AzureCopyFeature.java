@@ -62,8 +62,7 @@ public class AzureCopyFeature implements Copy {
             }
             poller.waitForCompletion();
             listener.sent(status.getLength());
-            // Copy original file attributes
-            return copy.withAttributes(new AzureAttributesFinderFeature(session).find(copy));
+            return copy;
         }
         catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);
