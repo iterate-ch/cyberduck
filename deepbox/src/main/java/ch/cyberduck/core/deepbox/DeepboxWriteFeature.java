@@ -63,7 +63,6 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-
         final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>(file) {
             @Override
             public Void call(final HttpEntity entity) throws BackgroundException {
@@ -79,8 +78,7 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
                                 session.getClient().getBasePath(),
                                 fileid.getDeepBoxNodeId(file),
                                 fileid.getBoxNodeId(file),
-                                fileid.getFileId(file.getParent()),
-                                nodeId));
+                                fileid.getFileId(file.getParent())));
                     }
                     final Checksum checksum = status.getChecksum();
                     if(Checksum.NONE != checksum) {

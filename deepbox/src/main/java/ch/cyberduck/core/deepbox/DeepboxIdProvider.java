@@ -52,7 +52,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
 
     public String getDeepBoxNodeId(final Path file) throws BackgroundException {
         final List<Path> segs = pathToList(file);
-        if(segs.size() < 1) {
+        if(segs.isEmpty()) {
             return null;
         }
         return getFileId(segs.get(0));
@@ -142,7 +142,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), offset, this.chunksize, "displayName asc", null);
                     final String boxName = file.getName();
                     final String boxNodeId = boxes.getBoxes().stream().filter(b -> b.getName().equals(boxName)).findFirst().map(b -> b.getBoxNodeId().toString()).orElse(null);
-                    if(deepBoxNodeId != null) {
+                    if(boxNodeId != null) {
                         this.cache(file, boxNodeId);
                         return boxNodeId;
                     }
