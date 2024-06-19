@@ -34,7 +34,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(TestcontainerTest.class)
 public class SMBCopyFeatureTest extends AbstractSMBTest {
@@ -45,13 +46,11 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         final Path file = new SMBTouchFeature(session).touch(new Path(home,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new SMBAttributesFinderFeature(session).find(file);
-        assertEquals(file.attributes(), attr);
         final Path destinationFolder = new SMBDirectoryFeature(session).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path fileCopied = new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertNotEquals(fileCopied.attributes(), file.attributes());
-        assertEquals(fileCopied.attributes(), new SMBAttributesFinderFeature(session).find(copy));
+        assertNotEquals(attr, new SMBAttributesFinderFeature(session).find(fileCopied));
         ListService list = new SMBListService(session);
         assertTrue(list.list(home, new DisabledListProgressListener()).contains(file));
         assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));

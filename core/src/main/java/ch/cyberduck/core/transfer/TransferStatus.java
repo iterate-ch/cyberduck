@@ -556,12 +556,22 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.encryption = encryption;
     }
 
+    public TransferStatus withEncryption(final Encryption.Algorithm encryption) {
+        this.encryption = encryption;
+        return this;
+    }
+
     public String getStorageClass() {
         return storageClass;
     }
 
     public void setStorageClass(final String storageClass) {
         this.storageClass = storageClass;
+    }
+
+    public TransferStatus withStorageClass(final String storageClass) {
+        this.storageClass = storageClass;
+        return this;
     }
 
     public Long getModified() {

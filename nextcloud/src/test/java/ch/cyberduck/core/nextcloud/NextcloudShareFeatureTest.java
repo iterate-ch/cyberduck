@@ -54,7 +54,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
     @Test
     public void testToDownloadUrlNoPassword() throws Exception {
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
-        final Path file = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new NextcloudShareFeature(session).toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback());
         assertNotSame(DescriptiveUrl.EMPTY, url);
         new DAVDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
@@ -63,7 +63,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
     @Test
     public void testToDownloadUrlSharee() throws Exception {
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
-        final Path file = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final NextcloudShareFeature provider = new NextcloudShareFeature(session);
         final Set<Share.Sharee> sharees = provider.getSharees(Share.Type.download);
         assertFalse(sharees.isEmpty());
@@ -108,7 +108,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
     @Test
     public void testToDownloadUrlPassword() throws Exception {
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
-        final Path file = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new NextcloudShareFeature(session).toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

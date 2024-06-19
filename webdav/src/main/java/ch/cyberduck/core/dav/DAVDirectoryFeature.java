@@ -32,7 +32,6 @@ import com.github.sardine.impl.SardineException;
 public class DAVDirectoryFeature implements Directory<String> {
 
     private final DAVSession session;
-    private final AttributesFinder attributes;
 
     public DAVDirectoryFeature(final DAVSession session) {
         this(session, new DAVAttributesFinderFeature(session));
@@ -40,7 +39,6 @@ public class DAVDirectoryFeature implements Directory<String> {
 
     public DAVDirectoryFeature(final DAVSession session, final AttributesFinder attributes) {
         this.session = session;
-        this.attributes = attributes;
     }
 
     @Override
@@ -54,7 +52,7 @@ public class DAVDirectoryFeature implements Directory<String> {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, folder);
         }
-        return folder.withAttributes(attributes.find(folder));
+        return folder;
     }
 
     @Override

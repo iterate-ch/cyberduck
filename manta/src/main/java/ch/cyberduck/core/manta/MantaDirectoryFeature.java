@@ -42,7 +42,7 @@ public class MantaDirectoryFeature implements Directory {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             session.getClient().putDirectory(folder.getAbsolute());
-            return folder.withAttributes(new MantaAttributesFinderFeature(session).find(folder));
+            return folder;
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Cannot create folder {0}", e, folder);

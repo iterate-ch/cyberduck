@@ -43,7 +43,7 @@ public class SMBDirectoryFeature implements Directory<Integer> {
         finally {
             session.releaseShare(share);
         }
-        return folder.withAttributes(new SMBAttributesFinderFeature(session).find(folder));
+        return folder;
     }
 
     @Override

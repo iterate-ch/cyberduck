@@ -15,22 +15,11 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 public class SMBTouchFeature extends DefaultTouchFeature<Void> {
 
-    private final SMBSession session;
-
     public SMBTouchFeature(final SMBSession session) {
         super(new SMBWriteFeature(session));
-        this.session = session;
-    }
-
-    @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        return super.touch(file, status).withAttributes(new SMBAttributesFinderFeature(session).find(file));
     }
 }

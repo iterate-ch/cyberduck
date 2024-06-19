@@ -21,6 +21,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.ProgressListener;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -102,8 +104,14 @@ public class WritePermissionWorker extends Worker<Boolean> {
     protected void write(final Session<?> session, final UnixPermission feature, final Path file, final Permission permission) throws BackgroundException {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
             file.getName(), permission));
-        feature.setUnixPermission(file, permission);
-        file.attributes().setPermission(permission);
+        final TransferStatus status = new TransferStatus().withPermission(permission);
+        feature.setUnixPermission(file, status);
+        if(!PathAttributes.EMPTY.equals(status.getResponse())) {
+            file.withAttributes(status.getResponse());
+        }
+        else {
+            file.attributes().setPermission(permission);
+        }
         if(file.isDirectory()) {
             if(callback.recurse(file, permission)) {
                 for(Path child : session.getFeature(ListService.class).list(file, new WorkerListProgressListener(this, listener))) {

@@ -19,10 +19,12 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.UnixPermission;
@@ -70,7 +72,11 @@ public class CreateDirectoryWorker extends Worker<Path> {
             }
         }
         status.setRegion(region);
-        return feature.mkdir(folder, status);
+        final Path result = feature.mkdir(folder, status);
+        if(PathAttributes.EMPTY.equals(result.attributes())) {
+            return result.withAttributes(session.getFeature(AttributesFinder.class).find(result));
+        }
+        return result;
     }
 
     @Override

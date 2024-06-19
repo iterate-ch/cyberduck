@@ -41,7 +41,7 @@ public class IRODSDirectoryFeature implements Directory<Void> {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(folder.getAbsolute());
             fs.mkdir(f, false);
-            return folder.withAttributes(new IRODSAttributesFinderFeature(session).find(folder));
+            return folder;
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot create folder {0}", e, folder);

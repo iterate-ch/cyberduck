@@ -65,7 +65,7 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
                 // Create container at top level
                 session.getClient().createContainer(regionService.lookup(
                     new SwiftLocationFeature.SwiftRegion(status.getRegion())), folder.getName());
-                return folder.withAttributes(new SwiftAttributesFinderFeature(session, regionService).find(folder));
+                return folder;
             }
             else {
                 status.setMime(DIRECTORY_MIME_TYPE);

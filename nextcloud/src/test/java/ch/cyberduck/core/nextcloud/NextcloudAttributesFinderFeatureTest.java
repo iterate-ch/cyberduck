@@ -67,7 +67,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
     @Test
     public void testFindFile() throws Exception {
         final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(new NullInputStream(0L), new TransferStatus());
-        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withChecksum(checksum));
         assertNotNull(test.attributes().getFileId());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
@@ -191,7 +191,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test
     public void testFindLock() throws Exception {
-        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session), new NextcloudAttributesFinderFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         assertNull(f.find(test).getLockId());

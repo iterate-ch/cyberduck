@@ -120,6 +120,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         final TransferStatus status = new TransferStatus()
                                 .withLockId(this.getLockId(r.getKey()))
                                 .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                                .withAcl(r.getKey().attributes().getAcl())
+                                .withPermission(r.getKey().attributes().getPermission())
+                                .withEncryption(r.getKey().attributes().getEncryption())
+                                .withStorageClass(r.getKey().attributes().getStorageClass())
                                 .exists(new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
                                 .withLength(r.getKey().attributes().getSize());
                         if(status.isExists()) {

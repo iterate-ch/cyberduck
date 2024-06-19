@@ -75,7 +75,8 @@ public class GoogleStorageMetadataFeature implements Headers {
             if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
-            request.execute();
+            final StorageObject object = request.execute();
+            status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(object));
         }
         catch(IOException e) {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);

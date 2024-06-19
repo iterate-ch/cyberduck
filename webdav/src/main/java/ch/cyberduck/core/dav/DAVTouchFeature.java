@@ -15,28 +15,16 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 public class DAVTouchFeature extends DefaultTouchFeature<Void> {
 
-    private final AttributesFinder attributes;
-
     public DAVTouchFeature(final DAVSession session) {
-        this(new DAVWriteFeature(session), new DAVAttributesFinderFeature(session));
+        super(new DAVWriteFeature(session));
     }
 
-    public DAVTouchFeature(final Write<Void> writer, final AttributesFinder attributes) {
+    public DAVTouchFeature(final Write<Void> writer) {
         super(writer);
-        this.attributes = attributes;
-    }
-
-    @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        return super.touch(file, status).withAttributes(attributes.find(file));
     }
 }

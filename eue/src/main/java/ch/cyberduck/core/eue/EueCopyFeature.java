@@ -127,7 +127,7 @@ public class EueCopyFeature implements Copy {
                     }
                 }
             }
-            return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target));
+            return target;
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map("Cannot copy {0}", e, file);
