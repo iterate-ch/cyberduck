@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CteraTokens {
+public final class CteraTokens {
     private static final Logger log = LogManager.getLogger(CteraTokens.class);
 
     public static CteraTokens EMPTY = new CteraTokens(StringUtils.EMPTY, StringUtils.EMPTY);
@@ -40,6 +40,10 @@ public class CteraTokens {
 
     public String getSharedSecret() {
         return sharedSecret;
+    }
+
+    public boolean validate() {
+        return StringUtils.isNotEmpty(deviceId) && StringUtils.isNotEmpty(sharedSecret);
     }
 
     public static CteraTokens parse(final String token) throws BackgroundException {
