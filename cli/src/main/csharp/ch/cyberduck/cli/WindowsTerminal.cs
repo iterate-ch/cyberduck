@@ -17,8 +17,6 @@
 // 
 
 using ch.cyberduck.cli;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Preferences;
 using org.apache.commons.cli;
 using Console = System.Console;
 
@@ -37,7 +35,6 @@ namespace Ch.Cyberduck.Cli
             java.lang.System.setProperty("file.encoding", "UTF-8");
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            EnvironmentInfo.DataFolderName = "Cyberduck";
             open(args, new WindowsTerminalPreferences()); // This exits the application, nothing beyond will run.
         }
     }

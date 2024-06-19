@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Cli
     internal class WindowsTerminalPreferences() : TerminalPreferences(
         new ApplicationPreferences<WindowsTerminalPreferences>(
             new WindowsTerminalLocales(),
-            new PropertyStoreFactory<ApplicationSettingsPropertyStore>()))
+            new TerminalPropertyStoreFactory()))
     {
         public override void setProperty(string property, string v)
         {
@@ -94,6 +94,15 @@ namespace Ch.Cyberduck.Cli
             // which isn't used in duck. Thus crazy stuff happens, and we have to force-load Cyberduck.Cryptomator here.
             // ref https://github.com/iterate-ch/cyberduck/issues/12812
             this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
+        }
+
+        private class TerminalPropertyStoreFactory : IPropertyStoreFactory
+        {
+            public IPropertyStore New()
+            {
+                EnvironmentInfo.DataFolderName = "Cyberduck";
+                return new ApplicationSettingsPropertyStore();
+            }
         }
     }
 }
