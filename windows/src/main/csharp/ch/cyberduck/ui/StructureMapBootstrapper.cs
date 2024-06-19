@@ -77,6 +77,7 @@ namespace Ch.Cyberduck.Ui
                 x.For<IDuplicateFilePromptView>().Use<DuplicateFilePromptForm>();
                 x.For<ICommandView>().Use<CommandForm>();
                 x.For<IDonationController>().Use<DonationController>();
+                x.For<IPropertyStoreFactory>().Use<PropertyStoreFactory<ApplicationSettingsPropertyStore>>();
                 x.For<PeriodicProfilesUpdater>().Use(ctx => new PeriodicProfilesUpdater(ctx.GetInstance<ch.cyberduck.core.Controller>()));
 
                 x.ForSingletonOf<IIconProviderImageSource>().Use<CyberduckImageSource>();
@@ -102,9 +103,6 @@ namespace Ch.Cyberduck.Ui
                 x.ForConcreteSingleton<ApplicationPreferences>();
 
                 x.Forward<ApplicationPreferences, Preferences>();
-                x.ForConcreteSingleton<AppRuntime>();
-                // StructureMap doesn't like multiple constructors
-                x.ForSingletonOf<IRuntime>().Use(() => new AppRuntime());
             });
         }
 

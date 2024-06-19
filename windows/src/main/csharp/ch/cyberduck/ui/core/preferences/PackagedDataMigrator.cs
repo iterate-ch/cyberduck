@@ -81,7 +81,7 @@ internal static class PackagedDataMigrator
             return null;
         }
 
-        path = Path.Combine(path, Runtime.DataFolderName);
+        path = Path.Combine(path, EnvironmentInfo.DataFolderName);
         if (!Directory.Exists(path))
         {
             if (logger.isDebugEnabled())

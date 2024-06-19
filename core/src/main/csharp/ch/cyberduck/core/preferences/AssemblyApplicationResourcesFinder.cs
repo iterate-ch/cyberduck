@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
         static AssemblyApplicationResourcesFinder()
         {
-            local = new(Runtime.ResourcesLocation);
+            local = new(EnvironmentInfo.ResourcesLocation);
         }
 
         public Local find() => new SystemLocal(local);

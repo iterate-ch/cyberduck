@@ -20,23 +20,18 @@ public class LocalSharedFileSettingsProvider : SettingsProvider
     private const string USERSETTINGS_ELEMENT_NAME = "userSettings";
     private const string VALUE_ELEMENT_NAME = "value";
     private readonly FileInfo userConfig;
-    private string applicationName;
 
-    public override string ApplicationName
-    {
-        get => applicationName;
-        set => applicationName = value;
-    }
+    public override string ApplicationName { get; set; }
 
     public LocalSharedFileSettingsProvider()
     {
         // store in Packaged cache folder (to ensure clearing after uninstall)
         // store in roaming app data, if not packaged
-        var configDirectory = Runtime.Packaged.Value
+        var configDirectory = EnvironmentInfo.Packaged
             ? ApplicationData.Current.LocalCacheFolder.Path
-            : Path.Combine(EnvironmentInfo.AppDataPath, Runtime.DataFolderName);
-
-        userConfig = new(Path.Combine(configDirectory, $"{Runtime.ProductName}.user.config"));
+            : Path.Combine(EnvironmentInfo.AppDataPath, EnvironmentInfo.DataFolderName);
+        
+        userConfig = new(Path.Combine(configDirectory, $"{EnvironmentInfo.ProductName}.user.config"));
     }
 
     public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)

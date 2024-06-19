@@ -113,7 +113,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 this.setDefault("factory.notification.class", typeof(DesktopNotificationService).AssemblyQualifiedName);
             }
 
-            if (Runtime.Packaged.GetValueOrDefault())
+            if (EnvironmentInfo.Packaged)
             {
                 this.setDefault("factory.rendezvous.class", typeof(DisabledRendezvous).AssemblyQualifiedName);
                 this.setDefault("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);

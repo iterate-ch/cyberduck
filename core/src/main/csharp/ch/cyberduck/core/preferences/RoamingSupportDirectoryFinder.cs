@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             get
             {
-                return local ??= new(Path.Combine(EnvironmentInfo.AppDataPath, Runtime.DataFolderName));
+                return local ??= new(Path.Combine(EnvironmentInfo.AppDataPath, EnvironmentInfo.DataFolderName));
             }
         }
 
