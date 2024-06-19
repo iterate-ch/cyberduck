@@ -43,6 +43,9 @@ public class CteraTokens {
     }
 
     public static CteraTokens parse(final String token) throws BackgroundException {
+        if(null == token) {
+            return EMPTY;
+        }
         return new CteraTokens(StringUtils.substringBefore(token, ':'), StringUtils.substringAfter(token, ':'));
     }
 
