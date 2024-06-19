@@ -30,12 +30,11 @@ using sun.security.mscapi;
 
 namespace Ch.Cyberduck.Cli
 {
-    internal class WindowsTerminalPreferences : TerminalPreferences
+    internal class WindowsTerminalPreferences() : TerminalPreferences(
+        new ApplicationPreferences(
+            new WindowsTerminalLocales(),
+            new PropertyStoreFactory<ApplicationSettingsPropertyStore>()))
     {
-        public WindowsTerminalPreferences() : base(new ApplicationPreferences(new WindowsTerminalLocales(), new TerminalRuntime()))
-        {
-        }
-
         public override void setProperty(string property, string v)
         {
             base.setProperty(property, v);

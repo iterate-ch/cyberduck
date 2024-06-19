@@ -40,13 +40,9 @@ using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
-    public class ApplicationPreferences : CoreApplicationPreferences
+    public class ApplicationPreferences(IPropertyStoreFactory propertyStoreFactory) : CoreApplicationPreferences(new DefaultLocales(), propertyStoreFactory)
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
-
-        public ApplicationPreferences(IRuntime runtime) : base(new DefaultLocales(), runtime)
-        {
-        }
 
         protected override void setDefaults()
         {
