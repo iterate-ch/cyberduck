@@ -31,10 +31,11 @@ using JavaSystem = java.lang.System;
 
 namespace Ch.Cyberduck.Core.Preferences;
 
-public class ApplicationPreferences : DefaultPreferences
+public class ApplicationPreferences<T> : DefaultPreferences
 {
+    protected static readonly Logger Log = LogManager.getLogger(typeof(T).FullName);
+
     private static readonly char[] CultureSeparator = new[] { '_', '-' };
-    private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
     private readonly Locales locales;
     private readonly IPropertyStore propertyStore;
 
@@ -119,7 +120,9 @@ public class ApplicationPreferences : DefaultPreferences
     }
 
     protected virtual void SetEnvironmentInfo()
-    { }
+    {
+        EnvironmentInfo.AssemblyInfo<T>();
+    }
 
     public override void setProperty(string property, string value)
     {

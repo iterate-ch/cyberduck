@@ -54,22 +54,8 @@ namespace Ch.Cyberduck.Core
 
         static EnvironmentInfo()
         {
-            var executingAssembly = Assembly.GetEntryAssembly();
-            (ProductName, Version) = executingAssembly.GetName() switch
-            {
-                { } name => (name.Name, name.Version),
-                _ => (Process.GetCurrentProcess().ProcessName, new())
-            };
-
-            CompanyName = executingAssembly.GetCustomAttribute<AssemblyCompanyAttribute>() switch
-            {
-                { } company => company.Company,
-                _ => ProductName
-            };
-
             AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             CommonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-            DataFolderName = ProductName;
             LocalAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             ResourcesLocation = Packaged ? PackagePath() : AppContext.BaseDirectory;
             UserProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -82,9 +68,26 @@ namespace Ch.Cyberduck.Core
                 DownloadsPath = Path.Combine(UserProfilePath, "Downloads");
             }
 
-
             [MethodImpl(MethodImplOptions.NoInlining)]
             static string PackagePath() => Package.Current.InstalledPath;
+        }
+
+        public static void AssemblyInfo<T>()
+        {
+            var assembly = typeof(T).Assembly;
+            (ProductName, Version) = assembly.GetName() switch
+            {
+                { } name => (name.Name, name.Version),
+                _ => (Process.GetCurrentProcess().ProcessName, new())
+            };
+
+            CompanyName = assembly.GetCustomAttribute<AssemblyCompanyAttribute>() switch
+            {
+                { } company => company.Company,
+                _ => ProductName
+            };
+
+            DataFolderName = ProductName;
         }
     }
 }

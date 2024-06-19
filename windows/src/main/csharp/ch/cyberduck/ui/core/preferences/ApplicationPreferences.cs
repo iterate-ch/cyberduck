@@ -34,16 +34,13 @@ using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using org.apache.logging.log4j;
-using CoreApplicationPreferences = Ch.Cyberduck.Core.Preferences.ApplicationPreferences;
+using CoreApplicationPreferences = Ch.Cyberduck.Core.Preferences.ApplicationPreferences<Ch.Cyberduck.Ui.Core.Preferences.ApplicationPreferences>;
 using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
     public class ApplicationPreferences(IPropertyStoreFactory propertyStoreFactory) : CoreApplicationPreferences(new DefaultLocales(), propertyStoreFactory)
     {
-        private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
-
         protected override void setDefaults()
         {
             base.setDefaults();

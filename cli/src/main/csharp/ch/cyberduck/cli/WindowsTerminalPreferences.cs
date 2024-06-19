@@ -31,7 +31,7 @@ using sun.security.mscapi;
 namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminalPreferences() : TerminalPreferences(
-        new ApplicationPreferences(
+        new ApplicationPreferences<WindowsTerminalPreferences>(
             new WindowsTerminalLocales(),
             new PropertyStoreFactory<ApplicationSettingsPropertyStore>()))
     {
