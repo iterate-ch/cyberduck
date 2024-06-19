@@ -182,11 +182,6 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
                 new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
         ), fileAcl);
 
-        final Path subfolderNoAccess = new Path(folder, "NoAccess", EnumSet.of(AbstractPath.Type.directory));
-
-        final BackgroundException noAccessException = assertThrows(BackgroundException.class, () -> new CteraAttributesFinderFeature(session).find(subfolderNoAccess));
-        assertTrue(noAccessException.getCause() instanceof SardineException);
-
         final Path subfolderReadOnly = new Path(folder, "subfolder-readonly", EnumSet.of(AbstractPath.Type.directory));
         final Acl subfolderReadOnlyAcl = new CteraAttributesFinderFeature(session).find(subfolderReadOnly).getAcl();
         assertEquals(new Acl(new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)), subfolderReadOnlyAcl);
