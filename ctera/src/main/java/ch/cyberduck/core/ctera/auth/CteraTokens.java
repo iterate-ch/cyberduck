@@ -48,6 +48,6 @@ public class CteraTokens {
 
     @Override
     public String toString() {
-        return String.format("%s:%s", deviceId, sharedSecret);
+        return String.format("%s:%s", deviceId, StringUtils.repeat("*", Integer.min(8, StringUtils.length(sharedSecret))));
     }
 }
