@@ -15,13 +15,16 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.DownloadRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Download;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DownloadAdd;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -45,6 +48,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -55,6 +59,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
+
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANDOWNLOAD;
 
 public class DeepboxReadFeature implements Read {
 
@@ -168,6 +174,17 @@ public class DeepboxReadFeature implements Read {
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Download {0} failed", e, file);
+        }
+    }
+
+    @Override
+    public void preflight(final Path file) throws BackgroundException {
+        final Acl acl = file.attributes().getAcl();
+        if(!acl.get(new Acl.CanonicalUser()).contains(CANDOWNLOAD)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANDOWNLOAD));
+            }
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot download {0}", "Error"), file.getName())).withFile(file);
         }
     }
 }

@@ -15,13 +15,16 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeMove;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -30,9 +33,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
 
 public class DeepboxMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(DeepboxMoveFeature.class);
@@ -81,6 +87,38 @@ public class DeepboxMoveFeature implements Move {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        // TODO cancan
+        // TODO (0) do we need to check target file name exists - otherwise file may disappear because of duplicate file names?
+        if(source.isRoot() || (new DeepboxPathContainerService().isContainer(source) && !new DeepboxPathContainerService().isDocuments(source))) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+        }
+        if(target.isRoot() || (new DeepboxPathContainerService().isContainer(target) && !new DeepboxPathContainerService().isDocuments(target))) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+        }
+        final Acl acl = source.attributes().getAcl();
+        // TODO (15) offen: do we need to check canRename only when the filename changes whithin the same folder and not on moves?
+        if(!acl.get(new Acl.CanonicalUser()).contains(CANRENAME)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("ACL %s for %s does not include %s", acl, source, CANRENAME));
+            }
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+        }
+        if(!fileid.getFileId(source.getParent()).equals(fileid.getFileId(target.getParent()))) {
+            if(fileid.getBoxNodeId(source.getParent()).equals(fileid.getBoxNodeId(target.getParent()))) {
+                if(!acl.get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX)) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("ACL %s for %s does not include %s", acl, source, CANMOVEWITHINBOX));
+                    }
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                }
+            }
+            else {
+                if(!acl.get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX)) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("ACL %s for %s does not include %s", acl, source, CANMOVEOUTOFBOX));
+                    }
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                }
+            }
+        }
     }
 }

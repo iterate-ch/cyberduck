@@ -36,7 +36,27 @@ import ch.cyberduck.core.features.AttributesFinder;
 import java.net.URI;
 import java.util.UUID;
 
+/**
+ * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy
+ * The following attributes are currently unused:
+ * <ul>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canListChildren(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRevert(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDirectDownload(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAnalyze(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canSign(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canReadNodeInfo(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAdminAccess(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canComment(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canTag(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canI18n(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRevision(Boolean)</li>
+ *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canWatch(Boolean)</li>
+ *  </ul>
+ */
 public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Void> {
+
+    // TODO (7) i18n?
     public static final String INBOX = "Inbox";
     public static final String DOCUMENTS = "Documents";
     public static final String TRASH = "Trash";
@@ -44,21 +64,59 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
 
-    /**
-     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDelete(Boolean)
-     */
-    public static final Acl.Role CANDELETE = new Acl.Role("canDelete");
 
-    // TODO check direct download api
     /**
-     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAddChildren(Boolean) (Boolean) (Boolean)
+     * Used for preflight checks in {@link DeepboxTouchFeature} and {@link DeepboxDirectoryFeature}.
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAddChildren(Boolean)
      */
     public static final Acl.Role CANADDCHILDREN = new Acl.Role("canAddChildren");
 
     /**
-     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAddChildren(Boolean) (Boolean) (Boolean)
+     * Used for preflight checks in {@link DeepboxMoveFeature}.
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canMoveWithinBox(Boolean)
      */
-    public static final Acl.Role CANLISTCHILDREN = new Acl.Role("canListChildren");
+    public static final Acl.Role CANMOVEWITHINBOX = new Acl.Role("canMoveWithinBox");
+
+    /**
+     * Used for preflight checks in {@link DeepboxMoveFeature}.
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canMoveOutOfBox(Boolean)
+     */
+    public static final Acl.Role CANMOVEOUTOFBOX = new Acl.Role("canMoveOutOfBox");
+
+    /**
+     * Used for preflight checks in {@link DeepboxDeleteFeature} (non-trash).
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDelete(Boolean)
+     */
+    public static final Acl.Role CANDELETE = new Acl.Role("canDelete");
+
+    // TODO (6) check implementation: first delete (move to trash), then purge (delete permanently).
+    /**
+     * Used for preflight checks in {@link DeepboxDeleteFeature} (trash).
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canPurge(Boolean)
+     */
+    public static final Acl.Role CANPURGE = new Acl.Role("canPurge");
+
+
+    /**
+     * Used for preflight checks in {@link DeepboxReadFeature}.
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDownload(Boolean)
+     */
+    public static final Acl.Role CANDOWNLOAD = new Acl.Role("canDownload");
+
+
+    /**
+     * Used for preflight checks in {@link DeepboxMoveFeature}.
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRename(Boolean)
+     */
+    public static final Acl.Role CANRENAME = new Acl.Role("canRename");
+
 
     public DeepboxAttributesFinderFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
@@ -128,7 +186,6 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         return attrs;
     }
 
-
     public PathAttributes toAttributes(final Node node) throws ApiException {
         final PathAttributes attrs = new PathAttributes();
         attrs.setFileId(node.getNodeId().toString());
@@ -144,18 +201,27 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                         String.format("%sdeepbox.swiss", session.getStage()),
                         String.format("/node/%s/preview", node.getNodeId().toString())
                 ))));
-
-        // TODO check with DeepBox: integration test setup? How can we change can*?
-        // TODO full list of cancan/preflight?
         final Acl acl = new Acl(new Acl.CanonicalUser());
         if(node.getPolicy().isCanDelete()) {
-            acl.addAll(new Acl.CanonicalUser(), CANDELETE);
-        }
-        if(node.getPolicy().isCanAddChildren()) {
             acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
         }
+        if(node.getPolicy().isCanAddChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANMOVEWITHINBOX);
+        }
         if(node.getPolicy().isCanListChildren()) {
-            acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
+            acl.addAll(new Acl.CanonicalUser(), CANMOVEOUTOFBOX);
+        }
+        if(node.getPolicy().isCanListChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANDELETE);
+        }
+        if(node.getPolicy().isCanListChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANPURGE);
+        }
+        if(node.getPolicy().isCanListChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANDOWNLOAD);
+        }
+        if(node.getPolicy().isCanListChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANRENAME);
         }
         attrs.setAcl(acl);
         return attrs;

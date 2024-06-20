@@ -15,6 +15,7 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -29,12 +30,19 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
+
 public class DeepboxDirectoryFeature implements Directory<VersionId> {
+
+    private static final Logger log = LogManager.getLogger(DeepboxDirectoryFeature.class);
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
@@ -100,8 +108,18 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
+        // TODO (8) do we need to support creating DeepBoxes and Boxes?
         if(workdir.isRoot() || (new DeepboxPathContainerService().isContainer(workdir) && !new DeepboxPathContainerService().isDocuments(workdir))) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
+        }
+        final Acl acl = workdir.attributes().getAcl();
+        if(!acl.get(new Acl.CanonicalUser()).contains(CANADDCHILDREN)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("ACL %s for %s does not include %s", acl, workdir, CANADDCHILDREN));
+            }
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }
+
+

@@ -88,7 +88,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(folder, new TransferStatus());
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
-        // TODO what about duplicate names with different nodeId?
+        // TODO (-1) what about duplicate names with different nodeId?
         // Can create again regardless if exists
         //directory.mkdir(folder, new TransferStatus());
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -103,7 +103,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(folder, new TransferStatus());
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
-        // TODO what about duplicate names with different nodeId?
+        // TODO (-1) what about duplicate names with different nodeId?
         // Can create again regardless if exists
         //directory.mkdir(folder, new TransferStatus());
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
