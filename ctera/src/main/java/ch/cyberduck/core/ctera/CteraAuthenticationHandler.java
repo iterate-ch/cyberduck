@@ -67,6 +67,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -300,17 +301,6 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
                             final XmlMapper mapper = new XmlMapper();
                             try {
                                 error.set(mapper.readValue(response.getEntity().getContent(), Attachment.class));
-                                for(Attachment.Attribute attr : error.get().getAttributes()) {
-                                    if("msg".equals(attr.getId())) {
-                                        if("Invalid username or password".equals(attr.getVal())) {
-                                            log.error(attr.getVal());
-                                        }
-                                        else {
-                                            log.error(String.format("Failure attaching the device %s", attr.getVal()));
-                                            error.set(null);
-                                        }
-                                    }
-                                }
                             }
                             catch(IOException e) {
                                 log.error("Error parsing response", e);
@@ -328,7 +318,12 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
         }
         catch(HttpResponseException e) {
             if(error.get() != null) {
-                throw new LoginFailureException("Invalid username or password");
+                final Optional<String> message = error.get().getAttributes().stream()
+                        .filter(attr -> "msg".equals(attr.getId()))
+                        .map(Attachment.Attribute::getVal).findFirst();
+                if(message.isPresent()) {
+                    throw new LoginFailureException(message.get(), e);
+                }
             }
             throw new DefaultHttpResponseExceptionMappingService().map(e);
         }
