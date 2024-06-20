@@ -183,4 +183,11 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         }
         return super._getFeature(type);
     }
+
+    public String getStage() {
+        // For now, required for descriptive URL, API forthcoming
+        // api.[<stage>.]deepbox.swiss
+        String hostname = this.getHost().getHostname();
+        return hostname.replaceAll("^api\\.", "").replaceAll("deepbox\\.swiss$", "");
+    }
 }

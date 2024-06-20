@@ -135,15 +135,14 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         attrs.setCreationDate(node.getCreated().getTime().getMillis());
         attrs.setModificationDate(node.getModified().getTime().getMillis());
         attrs.setSize(node.getSize());
-        // TODO check with DeepBox/yla: which URL to provide? only share link / resource url?
+        // For now, use pattern https://{env}.deepbox.swiss/node/{nodeId}/preview, API forthcoming
         attrs.setLink(new DescriptiveUrl(URI.create(new HostUrlProvider()
                 .withPath(true).withUsername(false)
                 .get(session.getHost().getProtocol().getScheme(),
                         session.getHost().getPort(),
                         null,
-                        session.getHost().getHostname(),
-                        // TODO api / portal URL
-                        String.format("node/%s/preview", node.getNodeId().toString())
+                        String.format("%sdeepbox.swiss", session.getStage()),
+                        String.format("/node/%s/preview", node.getNodeId().toString())
                 ))));
 
         // TODO check with DeepBox: integration test setup? How can we change can*?
