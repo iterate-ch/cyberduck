@@ -35,7 +35,7 @@ public class CteraCustomActionVersioningTest extends AbstractCteraTest {
         final CteraCustomActionVersioning action = new CteraCustomActionVersioning(session, file) {
             @Override
             protected String getCteraTokens() {
-                return System.getProperty("ctera.token");
+                return PROPERTIES.get("ctera.token");
             }
         };
         action.run();
