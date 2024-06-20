@@ -56,10 +56,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(directory, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
-
         assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         assertEquals(1, list.size());
-        for(Path f : list) {
+        for(final Path f : list) {
             assertSame(directory, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             // no modification/creation date for DeepBoxes
@@ -73,14 +72,12 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     @Test
     public void testListBoxes() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(deepBox, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
-
         assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         assertEquals(1, list.size());
-        for(Path f : list) {
+        for(final Path f : list) {
             assertSame(deepBox, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             // no modification/creation date for Boxes
@@ -94,16 +91,14 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     @Test
     public void testListMyBox() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(box, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
-
         assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Inbox", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         assertEquals(3, list.size());
-        for(Path f : list) {
+        for(final Path f : list) {
             assertSame(box, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             // no modification/creation date for Inbox/Documents/Trash virtual folder level
@@ -117,14 +112,12 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     @Test
     public void testListDocuments() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(documents, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
-
         assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Documents/Auditing", EnumSet.of(Path.Type.directory)))));
         assertEquals(13, list.size());
-        for(Path f : list) {
+        for(final Path f : list) {
             assertSame(documents, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             assertTrue(f.attributes().getModificationDate() > 0);
@@ -133,6 +126,41 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
         }
     }
+
+    @Test
+    public void testListInbox() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path queue = new Path("/Mountainduck Buddies/My Box/Inbox", EnumSet.of(Path.Type.directory));
+        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(queue, new DisabledListProgressListener());
+        assertNotEquals(AttributedList.emptyList(), list);
+        assertFalse(list.isEmpty());
+        for(final Path f : list) {
+            assertSame(queue, f.getParent());
+            assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
+            assertTrue(f.attributes().getModificationDate() > 0);
+            assertTrue(f.attributes().getCreationDate() > 0);
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
+        }
+    }
+
+    @Test
+    public void testListTrash() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path trash = new Path("/Mountainduck Buddies/My Box/Trash", EnumSet.of(Path.Type.directory));
+        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(trash, new DisabledListProgressListener());
+        assertNotEquals(AttributedList.emptyList(), list);
+        assertFalse(list.isEmpty());
+        for(final Path f : list) {
+            assertSame(trash, f.getParent());
+            assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
+            assertTrue(f.attributes().getModificationDate() > 0);
+            assertTrue(f.attributes().getCreationDate() > 0);
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
+            //assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
+        }
+    }
+
 
     @Test
     public void testListAuditing() throws Exception {
@@ -145,7 +173,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
         assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Documents/Auditing/nix4.txt", EnumSet.of(Path.Type.file)))));
         assertEquals(1, list.size());
-        for(Path f : list) {
+        for(final Path f : list) {
             assertSame(auditing, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             assertTrue(f.attributes().getModificationDate() > 0);
