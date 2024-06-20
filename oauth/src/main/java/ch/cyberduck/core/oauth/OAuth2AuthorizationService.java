@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -183,7 +184,7 @@ public class OAuth2AuthorizationService {
     }
 
     private IdTokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
-        if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
+        if(new HostPreferences(bookmark).getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     new StringAppender()
