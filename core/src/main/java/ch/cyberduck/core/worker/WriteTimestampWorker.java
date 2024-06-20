@@ -61,8 +61,12 @@ public class WriteTimestampWorker extends Worker<Boolean> {
             file.withAttributes(status.getResponse());
         }
         else {
-            file.attributes().setCreationDate(created);
-            file.attributes().setModificationDate(modified);
+            if(created != null) {
+                file.attributes().setCreationDate(created);
+            }
+            if(modified != null) {
+                file.attributes().setModificationDate(modified);
+            }
         }
         return true;
     }
