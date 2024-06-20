@@ -30,12 +30,11 @@ using sun.security.mscapi;
 
 namespace Ch.Cyberduck.Cli
 {
-    internal class WindowsTerminalPreferences : TerminalPreferences
+    internal class WindowsTerminalPreferences() : TerminalPreferences(
+        new ApplicationPreferences<WindowsTerminalPreferences>(
+            new WindowsTerminalLocales(),
+            new TerminalPropertyStoreFactory()))
     {
-        public WindowsTerminalPreferences() : base(new ApplicationPreferences(new WindowsTerminalLocales(), new TerminalRuntime()))
-        {
-        }
-
         public override void setProperty(string property, string v)
         {
             base.setProperty(property, v);
@@ -95,6 +94,15 @@ namespace Ch.Cyberduck.Cli
             // which isn't used in duck. Thus crazy stuff happens, and we have to force-load Cyberduck.Cryptomator here.
             // ref https://github.com/iterate-ch/cyberduck/issues/12812
             this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
+        }
+
+        private class TerminalPropertyStoreFactory : IPropertyStoreFactory
+        {
+            public IPropertyStore New()
+            {
+                EnvironmentInfo.DataFolderName = "Cyberduck";
+                return new ApplicationSettingsPropertyStore();
+            }
         }
     }
 }

@@ -14,7 +14,11 @@
 // 
 
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using Windows.ApplicationModel;
 using Windows.Win32.UI.Shell;
 using static Windows.Win32.CorePInvoke;
 
@@ -26,17 +30,34 @@ namespace Ch.Cyberduck.Core
 
         public static string CommonAppDataPath { get; }
 
+        public static string CompanyName { get; set; }
+
+        public static string DataFolderName { get; set; }
+
         public static string DownloadsPath { get; }
 
         public static string LocalAppDataPath { get; }
 
+        public static bool Packaged { get; } = Utils.IsRunningAsUWP;
+
+        public static string ProductName { get; set; }
+
+        public static string Revision => $"{Version.Revision}";
+
+        public static string ResourcesLocation { get; }
+
         public static string UserProfilePath { get; }
+
+        public static Version Version { get; set; }
+
+        public static string VersionString => Version.ToString(3);
 
         static EnvironmentInfo()
         {
             AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             CommonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
             LocalAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            ResourcesLocation = Packaged ? PackagePath() : AppContext.BaseDirectory;
             UserProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             try
             {
@@ -46,6 +67,27 @@ namespace Ch.Cyberduck.Core
             {
                 DownloadsPath = Path.Combine(UserProfilePath, "Downloads");
             }
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static string PackagePath() => Package.Current.InstalledPath;
+        }
+
+        public static void AssemblyInfo<T>()
+        {
+            var assembly = typeof(T).Assembly;
+            (ProductName, Version) = assembly.GetName() switch
+            {
+                { } name => (name.Name, name.Version),
+                _ => (Process.GetCurrentProcess().ProcessName, new())
+            };
+
+            CompanyName = assembly.GetCustomAttribute<AssemblyCompanyAttribute>() switch
+            {
+                { } company => company.Company,
+                _ => ProductName
+            };
+
+            DataFolderName = ProductName;
         }
     }
 }

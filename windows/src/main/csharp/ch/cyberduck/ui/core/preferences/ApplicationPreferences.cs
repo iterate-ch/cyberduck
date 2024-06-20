@@ -34,20 +34,13 @@ using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using org.apache.logging.log4j;
-using CoreApplicationPreferences = Ch.Cyberduck.Core.Preferences.ApplicationPreferences;
+using CoreApplicationPreferences = Ch.Cyberduck.Core.Preferences.ApplicationPreferences<Ch.Cyberduck.Ui.Core.Preferences.ApplicationPreferences>;
 using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
-    public class ApplicationPreferences : CoreApplicationPreferences
+    public class ApplicationPreferences(IPropertyStoreFactory propertyStoreFactory) : CoreApplicationPreferences(new DefaultLocales(), propertyStoreFactory)
     {
-        private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
-
-        public ApplicationPreferences(IRuntime runtime) : base(new DefaultLocales(), runtime)
-        {
-        }
-
         protected override void setDefaults()
         {
             base.setDefaults();
@@ -113,7 +106,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 this.setDefault("factory.notification.class", typeof(DesktopNotificationService).AssemblyQualifiedName);
             }
 
-            if (Runtime.Packaged.GetValueOrDefault())
+            if (EnvironmentInfo.Packaged)
             {
                 this.setDefault("factory.rendezvous.class", typeof(DisabledRendezvous).AssemblyQualifiedName);
                 this.setDefault("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
