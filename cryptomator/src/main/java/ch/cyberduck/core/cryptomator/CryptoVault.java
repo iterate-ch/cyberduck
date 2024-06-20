@@ -498,11 +498,13 @@ public class CryptoVault implements Vault {
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
-                    final Permission permission = new Permission(attributes.getPermission());
-                    permission.setUser(permission.getUser().or(Permission.Action.execute));
-                    permission.setGroup(permission.getGroup().or(Permission.Action.execute));
-                    permission.setOther(permission.getOther().or(Permission.Action.execute));
-                    attributes.setPermission(permission);
+                    if(Permission.EMPTY != attributes.getPermission()) {
+                        final Permission permission = new Permission(attributes.getPermission());
+                        permission.setUser(permission.getUser().or(Permission.Action.execute));
+                        permission.setGroup(permission.getGroup().or(Permission.Action.execute));
+                        permission.setOther(permission.getOther().or(Permission.Action.execute));
+                        attributes.setPermission(permission);
+                    }
                     // Reset size for folders
                     attributes.setSize(-1L);
                     attributes.setVersionId(null);
