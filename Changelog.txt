@@ -3,6 +3,12 @@ https://cyberduck.io/
 
 9.0.0
 - [Feature] Versioning of files edited in external application (#15137)
+- [Feature] Custom icons for protocols (Nextcloud, ownCloud)
+- [Feature] Detect proxy configuration change for already open connections (#13274)
+- [Feature] Rewrite protocol implementation (Azure Storage) (#15967)
+- [Feature] Rewrite implementation of Transfers window (Windows) (#15885)
+- [Bugfix] Failure retrieving previous versions of file (ownCloud)
+- [Bugfix] Missing shared folders (OneDrive Business) (#16036)
 
 8.9.0
 - [Feature] Resumable file uploads (ownCloud) (#15619)
