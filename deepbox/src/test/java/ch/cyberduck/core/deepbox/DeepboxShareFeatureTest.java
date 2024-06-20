@@ -32,7 +32,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-// TODO check with DeepBox: "status":403,"error":"Forbidden","message":"Not Authorized Party"}'}; portal uses /api/v1/directlinks/resource API ?
+// TODO (1) check with DeepBox: "status":403,"error":"Forbidden","message":"Not Authorized Party"}'}; portal uses /api/v1/directlinks/resource API ?
 public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
 
     @Test

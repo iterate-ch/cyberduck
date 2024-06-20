@@ -80,7 +80,7 @@ public class AbstractDeepboxTest extends VaultTest {
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
-        // TODO check with DeepBox: separate test user account
+        // TODO (16) check with DeepBox: separate test user account
         @Override
         public String getPassword(final String serviceName, final String accountName) {
             if(accountName.equals("deepbox-desktop-app-int (christian@iterate.ch) OAuth2 Token Expiry")) {

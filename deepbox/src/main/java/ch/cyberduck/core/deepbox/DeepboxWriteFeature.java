@@ -70,7 +70,7 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
                     final HttpEntityEnclosingRequestBase request;
                     final String nodeId = fileid.getFileId(file);
                     if(nodeId != null) {
-                        // TODO do we have the latest nodeId for the file name?
+                        // TODO (-1)  do we have the latest nodeId for the file name?
                         request = new HttpPut(String.format("%s/api/v1/nodes/%s/revisions", session.getClient().getBasePath(), nodeId));
                     }
                     else {

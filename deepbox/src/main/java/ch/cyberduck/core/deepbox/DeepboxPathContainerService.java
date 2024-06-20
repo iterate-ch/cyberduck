@@ -50,17 +50,17 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     public boolean isTrash(final Path file) {
-        // TODO i18n?
+        // TODO (7) i18n?
         return isThirdLevel(file) && file.getName().equals(TRASH);
     }
 
     public boolean isInbox(final Path file) {
-        // TODO i18n?
+        // TODO (7) i18n?
         return isThirdLevel(file) && file.getName().equals(INBOX);
     }
 
     public boolean isDocuments(final Path file) {
-        // TODO i18n?
+        // TODO (7) i18n?
         return isThirdLevel(file) && file.getName().equals(DOCUMENTS);
     }
 }
