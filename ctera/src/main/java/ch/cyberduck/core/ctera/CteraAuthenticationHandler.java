@@ -18,9 +18,11 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.MacUniqueIdService;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.ctera.model.AttachDeviceResponse;
@@ -203,6 +205,16 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
      * @return Activation code
      */
     private String startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
+        if(new HostPreferences(session.getHost()).getBoolean("oauth.browser.open.warn")) {
+            prompt.warn(session.getHost(),
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    new StringAppender()
+                            .append(LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"))
+                            .append(LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")).toString(),
+                    LocaleFactory.localizedString("Continue", "Credentials"),
+                    LocaleFactory.localizedString("Cancel"), "oauth.browser.open.warn"
+            );
+        }
         final AtomicReference<String> activationCode = new AtomicReference<>();
         final CountDownLatch signal = new CountDownLatch(1);
         final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
