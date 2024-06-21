@@ -24,6 +24,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.deepbox.DeepboxIdProvider.FILES_ID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -63,10 +64,10 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
     public void testDocuments() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path directory = new Path("/Mountainduck Buddies/My Box/Documents/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-        assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059_Documents", nodeid.getFileId(directory));
+        assertEquals(FILES_ID, nodeid.getFileId(directory));
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(directory));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059", nodeid.getBoxNodeId(directory));
-        assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059_Documents", nodeid.getThirdLevelId(directory));
+        assertEquals(FILES_ID, nodeid.getThirdLevelId(directory));
     }
 
     @Test
@@ -76,7 +77,7 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals("423ab938-57b0-4b28-ad84-d27dd41aa7c4", nodeid.getFileId(directory));
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(directory));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059", nodeid.getBoxNodeId(directory));
-        assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059_Documents", nodeid.getThirdLevelId(directory));
+        assertEquals(FILES_ID, nodeid.getThirdLevelId(directory));
     }
 
     @Test
@@ -86,6 +87,6 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals("3faf6efe-1ecc-47f9-9a6c-5efb9216b3dd", nodeid.getFileId(file));
         assertEquals("8e0b546e-fe1b-47ba-b82d-c11682b9360b", nodeid.getDeepBoxNodeId(file));
         assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059", nodeid.getBoxNodeId(file));
-        assertEquals("5402aff1-0f0b-416b-a225-4f55d3812059_Documents", nodeid.getThirdLevelId(file));
+        assertEquals(FILES_ID, nodeid.getThirdLevelId(file));
     }
 }

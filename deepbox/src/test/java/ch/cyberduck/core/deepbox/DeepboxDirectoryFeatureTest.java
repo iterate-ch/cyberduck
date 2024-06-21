@@ -20,7 +20,9 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -36,7 +38,7 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
     @Test
-    public void testRootFolder() throws Exception {
+    public void testRootFolder() {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/", EnumSet.of(AbstractPath.Type.directory));
@@ -45,7 +47,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testDeepBox() throws Exception {
+    public void testDeepBox() {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/Mountainduck Buddies/", EnumSet.of(AbstractPath.Type.directory));
@@ -54,7 +56,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testBox() throws Exception {
+    public void testBox() {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/Mountainduck Buddies/My Box", EnumSet.of(AbstractPath.Type.directory));
@@ -63,7 +65,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testInbox() throws Exception {
+    public void testInbox() {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/Mountainduck Buddies/My Box/Inbox", EnumSet.of(AbstractPath.Type.directory));
@@ -72,7 +74,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testTrash() throws Exception {
+    public void testTrash() {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/Mountainduck Buddies/My Box/Trash", EnumSet.of(AbstractPath.Type.directory));
@@ -92,11 +94,12 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         // Can create again regardless if exists
         //directory.mkdir(folder, new TransferStatus());
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
+        assertNull(nodeid.getFileId(folder.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes())));
     }
 
     @Test
-    public void testBookkeeping() throws Exception {
+    public void testBookkeeping() throws BackgroundException {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/Mountainduck Buddies/My Box/Documents/Bookkeeping", EnumSet.of(AbstractPath.Type.directory));

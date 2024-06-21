@@ -34,15 +34,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.DOCUMENTS;
-import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.INBOX;
-
 public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdProvider {
     private static final Logger log = LogManager.getLogger(DeepboxIdProvider.class);
 
     private final DeepboxSession session;
     private final int chunksize;
 
+    public static final String QUEUE_ID = "85965dc2-92f7-4fe5-8273-079b69ea3fb6";
+    public static final String FILES_ID = "9288dd70-8f80-44d4-b829-df1ffb6205e6";
+    public static final String TRASH_ID = "403dd6b3-89fe-4dbb-bc1a-2ea00518ba9b";
 
     public DeepboxIdProvider(final DeepboxSession session) {
         super(session.getCaseSensitivity());
@@ -157,16 +157,23 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 return this.cache(file, null);
             }
             else if(new DeepboxPathContainerService().isThirdLevel(file)) { // 3rd level: Inbox,Documents,Trash
-                final String boxNodeId = getFileId(file.getParent());
-                final String thirdLevelFileId = String.format("%s_%s", boxNodeId, file.getName());
-                return this.cache(file, thirdLevelFileId);
+                if(new DeepboxPathContainerService().isDocuments(file)) {
+                    return this.cache(file, FILES_ID);
+                }
+                if(new DeepboxPathContainerService().isInbox(file)) {
+                    return this.cache(file, QUEUE_ID);
+                }
+                if(new DeepboxPathContainerService().isTrash(file)) {
+                    return this.cache(file, TRASH_ID);
+                }
+                return null;
             }
             else if(new DeepboxPathContainerService().isThirdLevel(file.getParent())) { // first level under Inbox,Documents,Trash
                 final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
                 final String thirdLevelId = getFileId(file.getParent());
                 final String boxNodeId = getFileId(file.getParent().getParent());
                 final String deepBoxNodeId = getFileId(file.getParent().getParent().getParent());
-                if(thirdLevelId.endsWith(DOCUMENTS)) {
+                if(thirdLevelId.equals(FILES_ID)) {
                     do {
                         final NodeContent files = api.listFiles(
                                 UUID.fromString(deepBoxNodeId),
@@ -183,7 +190,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     while(offset < size);
                     return this.cache(file, null);
                 }
-                else if(thirdLevelId.endsWith(INBOX)) {
+                else if(thirdLevelId.equals(QUEUE_ID)) {
                     do {
                         final NodeContent files = api.listQueue(
                                 UUID.fromString(deepBoxNodeId),

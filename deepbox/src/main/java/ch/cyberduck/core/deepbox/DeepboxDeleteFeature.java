@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
+import static ch.cyberduck.core.deepbox.DeepboxIdProvider.TRASH_ID;
 
 public class DeepboxDeleteFeature implements Delete {
 
@@ -56,7 +57,7 @@ public class DeepboxDeleteFeature implements Delete {
                 final UUID nodeId = UUID.fromString(fileId);
                 callback.delete(file);
                 final CoreRestControllerApi coreApi = new CoreRestControllerApi(session.getClient());
-                final boolean inTrash = fileid.getThirdLevelId(file).endsWith(TRASH);
+                final boolean inTrash = fileid.getThirdLevelId(file).equals(TRASH_ID);
                 // purge if in trash
                 coreApi.deletePurgeNode(nodeId, inTrash);
                 fileid.cache(file, null);
