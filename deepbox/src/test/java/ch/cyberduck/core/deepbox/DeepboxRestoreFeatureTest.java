@@ -24,7 +24,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -47,19 +46,19 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
         final Path testInTrash = new Path(trash, test.getName(), test.getType());
 
         final String nodeId = new DeepboxTouchFeature(session, fileid).touch(test, new TransferStatus()).attributes().getFileId();
-        assertTrue(new DefaultFindFeature(session).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DefaultFindFeature(session).find(testInTrash.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())));
 
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(test.withAttributes(new PathAttributes())));
-        assertTrue(new DefaultFindFeature(session).find(testInTrash.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())));
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())).getFileId());
         assertThrows(NotfoundException.class, () -> new DeepboxAttributesFinderFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())).getFileId());
 
         new DeepboxRestoreFeature(session, fileid).restore(testInTrash, new DisabledLoginCallback());
-        assertTrue(new DefaultFindFeature(session).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DefaultFindFeature(session).find(testInTrash.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())));
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, fileid).find(test.withAttributes(new PathAttributes())).getFileId());
         assertThrows(NotfoundException.class, () -> new DeepboxAttributesFinderFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())));
 
@@ -80,19 +79,19 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
 
 
         final String folderId = new DeepboxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus()).attributes().getFileId();
-        assertTrue(new DefaultFindFeature(session).find(folder));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(folder));
         new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(folderId), null, null, null); // assert no fail
 
         final String subFolderId = new DeepboxDirectoryFeature(session, fileid).mkdir(subfolderWithContent, new TransferStatus()).attributes().getFileId();
-        assertTrue(new DefaultFindFeature(session).find(subfolderWithContent));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(subfolderWithContent));
 
         final String nodeId = new DeepboxTouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getFileId();
-        assertTrue(new DefaultFindFeature(session).find(folder.withAttributes(new PathAttributes())));
-        assertTrue(new DefaultFindFeature(session).find(subfolderWithContent.withAttributes(new PathAttributes())));
-        assertTrue(new DefaultFindFeature(session).find(file));
-        assertFalse(new DefaultFindFeature(session).find(folderInTrash.withAttributes(new PathAttributes())));
-        assertFalse(new DefaultFindFeature(session).find(subfolderWithContentInTrash.withAttributes(new PathAttributes())));
-        assertFalse(new DefaultFindFeature(session).find(fileInTrash.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(folder.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(subfolderWithContent.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(file));
+        assertFalse(new DeepboxFindFeature(session, fileid).find(folderInTrash.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, fileid).find(subfolderWithContentInTrash.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, fileid).find(fileInTrash.withAttributes(new PathAttributes())));
 
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
 
