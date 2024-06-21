@@ -15,7 +15,6 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.test.IntegrationTest;
@@ -39,12 +38,7 @@ public class CteraAuthenticationHandlerTest extends AbstractCteraTest {
     public void retryRequest() {
         final ServiceUnavailableRetryStrategy handler =
                 new CustomServiceUnavailableRetryStrategy(session.getHost(), 2,
-                        new ExecutionCountServiceUnavailableRetryStrategy(1, new CteraAuthenticationHandler(session) {
-                            @Override
-                            public void authenticate() throws BackgroundException {
-                                //
-                            }
-                        }));
+                        new ExecutionCountServiceUnavailableRetryStrategy(1, session.authentication));
         assertTrue(handler.retryRequest(
                 new BasicHttpResponse(new BasicStatusLine(HTTP_1_1, HttpStatus.SC_SERVICE_UNAVAILABLE, "Service Unavailable")),
                 1, new BasicHttpContext()));
