@@ -95,12 +95,13 @@ public class DeepboxMoveFeature implements Move {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
         }
         final Acl acl = source.attributes().getAcl();
-        // TODO (15) offen: do we need to check canRename only when the filename changes whithin the same folder and not on moves?
-        if(!acl.get(new Acl.CanonicalUser()).contains(CANRENAME)) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("ACL %s for %s does not include %s", acl, source, CANRENAME));
+        if(!source.getName().equals(target.getName())) {
+            if(!acl.get(new Acl.CanonicalUser()).contains(CANRENAME)) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("ACL %s for %s does not include %s", acl, source, CANRENAME));
+                }
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if(!fileid.getFileId(source.getParent()).equals(fileid.getFileId(target.getParent()))) {
             if(fileid.getBoxNodeId(source.getParent()).equals(fileid.getBoxNodeId(target.getParent()))) {
