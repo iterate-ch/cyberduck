@@ -15,9 +15,11 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
@@ -29,9 +31,14 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,6 +47,8 @@ import java.util.UUID;
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
 
 public class DeepboxListService implements ListService {
+
+    private static final Logger log = LogManager.getLogger(DeepboxListService.class);
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
     private final int chunksize;
@@ -200,6 +209,17 @@ public class DeepboxListService implements ListService {
                 // update fileid to latest nodeId for the name
                 this.fileid.cache(path, node.getNodeId().toString());
             }
+        }
+    }
+
+    @Override
+    public void preflight(final Path directory) throws BackgroundException {
+        final Acl acl = directory.attributes().getAcl();
+        if(!acl.get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("ACL %s for %s does not include %s", acl, directory, CANLISTCHILDREN));
+            }
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot download {0}", "Error"), directory.getName())).withFile(directory);
         }
     }
 }

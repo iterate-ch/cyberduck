@@ -40,7 +40,6 @@ import java.util.UUID;
  * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy
  * The following attributes are currently unused:
  * <ul>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canListChildren(Boolean)</li>
  *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRevert(Boolean)</li>
  *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDirectDownload(Boolean)</li>
  *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAnalyze(Boolean)</li>
@@ -64,6 +63,12 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
 
+    /**
+     * Used for preflight checks in {@link DeepboxListService} and {@link DeepboxDirectoryFeature}.
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canListChildren(Boolean) (Boolean)
+     */
+    public static final Acl.Role CANLISTCHILDREN = new Acl.Role("canListChildren");
 
     /**
      * Used for preflight checks in {@link DeepboxTouchFeature} and {@link DeepboxDirectoryFeature}.
