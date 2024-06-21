@@ -98,7 +98,6 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
      */
     public static final Acl.Role CANDELETE = new Acl.Role("canDelete");
 
-    // TODO (6) check implementation: first delete (move to trash), then purge (delete permanently).
     /**
      * Used for preflight checks in {@link DeepboxDeleteFeature} (trash).
      *

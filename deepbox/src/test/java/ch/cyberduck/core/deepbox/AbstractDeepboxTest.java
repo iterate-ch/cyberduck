@@ -59,6 +59,8 @@ public class AbstractDeepboxTest extends VaultTest {
 
     protected final Path documents = new Path(box, "Documents", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
 
+    protected final Path trash = new Path(box, "Trash", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
+
     protected final Path auditing = new Path(documents, "Auditing", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
 
     protected DeepboxSession session;

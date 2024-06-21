@@ -103,7 +103,11 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         // iteratively add to cache
         final List<Path> segs = pathToList(file);
         for(final Path seg : segs) {
-            lookupFileId(seg);
+            final String ret = lookupFileId(seg);
+            // fail if one of the segments cannot be found
+            if(StringUtils.isEmpty(ret)) {
+                return null;
+            }
         }
 
         // get from cache now

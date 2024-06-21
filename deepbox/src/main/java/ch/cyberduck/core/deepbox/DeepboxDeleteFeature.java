@@ -32,7 +32,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
-import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANDELETE;
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
 
 public class DeepboxDeleteFeature implements Delete {
 
@@ -46,17 +46,20 @@ public class DeepboxDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Map.Entry<Path, TransferStatus> file : files.entrySet()) {
+        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             try {
-                final String fileId = fileid.getFileId(file.getKey());
+                final Path file = entry.getKey();
+                final String fileId = fileid.getFileId(file);
                 if(fileId == null) {
-                    throw new NotfoundException(String.format("Cannot delete %s", file));
+                    throw new NotfoundException(String.format("Cannot delete %s", entry));
                 }
                 final UUID nodeId = UUID.fromString(fileId);
-                callback.delete(file.getKey());
+                callback.delete(file);
                 final CoreRestControllerApi coreApi = new CoreRestControllerApi(session.getClient());
-                coreApi.deletePurgeNode(nodeId, false);
-                fileid.cache(file.getKey(), null);
+                final boolean inTrash = fileid.getThirdLevelId(file).endsWith(TRASH);
+                // purge if in trash
+                coreApi.deletePurgeNode(nodeId, inTrash);
+                fileid.cache(file, null);
             }
             catch(ApiException e) {
                 throw new DeepboxExceptionMappingService(fileid).map(e);
@@ -71,12 +74,23 @@ public class DeepboxDeleteFeature implements Delete {
 
     @Override
     public void preflight(Path file) throws BackgroundException {
+        if(file.isRoot() || new DeepboxPathContainerService().isContainer(file)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
+        }
         final Acl acl = file.attributes().getAcl();
-        if(!acl.get(new Acl.CanonicalUser()).contains(CANDELETE)) {
+        if(fileid.getThirdLevelId(file).endsWith(TRASH)) {
+            if(!acl.get(new Acl.CanonicalUser()).contains(CANPURGE)) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANPURGE));
+                }
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
+            }
+        }
+        else if(!acl.get(new Acl.CanonicalUser()).contains(CANDELETE)) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANDELETE));
             }
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName())).withFile(file);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
     }
 }

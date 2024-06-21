@@ -158,6 +158,10 @@ public class DeepboxListService implements ListService {
             }
             else { // in subfolder in Documents/Trash (Inbox has no subfolders)
                 final String nodeId = fileid.getFileId(directory);
+                if(nodeId == null) {
+                    // happens e.g. if file is moved from Documents to Trash
+                    return list;
+                }
                 if(thirdLevelId.endsWith(DOCUMENTS)) {
                     do {
                         final NodeContent files = api.listFiles1(
