@@ -40,7 +40,6 @@ import java.util.UUID;
  * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy
  * The following attributes are currently unused:
  * <ul>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRevert(Boolean)</li>
  *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDirectDownload(Boolean)</li>
  *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAnalyze(Boolean)</li>
  *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canSign(Boolean)</li>
@@ -105,6 +104,12 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
      */
     public static final Acl.Role CANPURGE = new Acl.Role("canPurge");
 
+    /**
+     * Used for preflight checks in {@link DeepboxRestoreFeature} (restore from trash).
+     *
+     * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRevert(Boolean)
+     */
+    public static final Acl.Role CANREVERT = new Acl.Role("canRevert");
 
     /**
      * Used for preflight checks in {@link DeepboxReadFeature}.
@@ -113,14 +118,12 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
      */
     public static final Acl.Role CANDOWNLOAD = new Acl.Role("canDownload");
 
-
     /**
      * Used for preflight checks in {@link DeepboxMoveFeature}.
      *
      * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRename(Boolean)
      */
     public static final Acl.Role CANRENAME = new Acl.Role("canRename");
-
 
     public DeepboxAttributesFinderFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
