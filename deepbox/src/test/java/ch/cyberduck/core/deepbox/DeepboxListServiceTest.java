@@ -172,6 +172,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         assertFalse(list.isEmpty());
 
         assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Documents/Auditing/nix4.txt", EnumSet.of(Path.Type.file)))));
+        // TODO (16) not robust if test cleanup fails.
         assertEquals(1, list.size());
         for(final Path f : list) {
             assertSame(auditing, f.getParent());
