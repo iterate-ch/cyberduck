@@ -83,6 +83,8 @@ public class HttpReachability implements Reachability {
                 new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, Reachability.timeout, proxy);
         final HttpClientBuilder configuration = builder.build(proxy,
                 new DisabledTranscriptListener(), new DisabledLoginCallback());
+        configuration.disableRedirectHandling();
+        configuration.disableAutomaticRetries();
         try (CloseableHttpClient client = configuration.build()) {
             final HttpRequestBase resource = new HttpHead(new HostUrlProvider().withUsername(false).withPath(true).get(bookmark));
             final CloseableHttpResponse response = client.execute(resource);
