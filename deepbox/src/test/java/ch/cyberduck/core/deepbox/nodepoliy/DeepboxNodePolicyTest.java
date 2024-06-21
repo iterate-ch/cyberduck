@@ -30,7 +30,6 @@ package ch.cyberduck.core.deepbox.nodepoliy;/*
 
 import ch.cyberduck.core.deepbox.AbstractDeepboxTest;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
-import ch.cyberduck.core.deepbox.io.swagger.client.api.AdminRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Box;
@@ -81,8 +80,6 @@ public class DeepboxNodePolicyTest extends AbstractDeepboxTest {
     @Ignore
     public void recurse() throws ApiException {
         final BoxRestControllerApi boxApi = new BoxRestControllerApi(this.session.getClient());
-        final CoreRestControllerApi coreApi = new CoreRestControllerApi(session.getClient());
-        AdminRestControllerApi adminApi = new AdminRestControllerApi(session.getClient());
 
         final DeepBoxes deepBoxes = boxApi.listDeepBoxes(0, 50, null, null);
         final HashSet<Pair<String, NodePolicy>> policies = new HashSet<Pair<String, NodePolicy>>();
@@ -92,9 +89,6 @@ public class DeepboxNodePolicyTest extends AbstractDeepboxTest {
             final UUID deepBoxNodeId = deepBox.getDeepBoxNodeId();
 
             log.info(String.format("%s (%s, %s)", deepBox.getName(), deepBoxNodeId, deepBox.getBoxType()));
-//            List<Permission> permissions = adminApi.listDeepBoxAvailablePermissions(deepBoxNodeId, null);
-
-//            coreApi.getNodeInfo(deepBoxNodeId, null,null,null);
             final Boxes boxes = boxApi.listBoxes(deepBoxNodeId, 0, 50, null, null);
             for(final Box box : boxes.getBoxes()) {
                 final UUID boxNodeId = box.getBoxNodeId();

@@ -41,6 +41,7 @@ import static org.junit.Assert.assertTrue;
 public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
 
     @Test
+    // TODO flapping!
     public void testCopyFile() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path test = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
