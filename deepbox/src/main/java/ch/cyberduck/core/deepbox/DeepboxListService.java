@@ -116,42 +116,69 @@ public class DeepboxListService implements ListService {
             else if(new DeepboxPathContainerService().isThirdLevel(directory)) { // in Inbox/Documents/Trash
                 if(thirdLevelId.endsWith(INBOX)) {
                     do {
-                        final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
-                                UUID.fromString(boxNodeId),
-                                null,
-                                offset, this.chunksize, "modifiedTime desc");
-                        listChunk(directory, inbox, list, closed);
-                        listener.chunk(directory, list);
-                        size = inbox.getSize();
-                        offset += this.chunksize;
+                        try {
+                            final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
+                                    UUID.fromString(boxNodeId),
+                                    null,
+                                    offset, this.chunksize, "modifiedTime desc");
+                            listChunk(directory, inbox, list, closed);
+                            listener.chunk(directory, list);
+                            size = inbox.getSize();
+                            offset += this.chunksize;
+                        }
+                        catch(final ApiException e) {
+                            if(e.getCode() != 403) {
+                                throw e;
+                            }
+                            // TODO (12) add test
+                            // inbox not visible if 403
+                        }
                     }
                     while(offset < size);
                 }
                 else if(thirdLevelId.endsWith(DOCUMENTS)) {
                     do {
-                        final NodeContent files = api.listFiles(
-                                UUID.fromString(deepBoxNodeId),
-                                UUID.fromString(boxNodeId),
-                                offset, this.chunksize, "modifiedTime desc"
-                        );
-                        listChunk(directory, files, list, closed);
-                        listener.chunk(directory, list);
-                        size = files.getSize();
-                        offset += this.chunksize;
+                        try {
+                            final NodeContent files = api.listFiles(
+                                    UUID.fromString(deepBoxNodeId),
+                                    UUID.fromString(boxNodeId),
+                                    offset, this.chunksize, "modifiedTime desc"
+                            );
+                            listChunk(directory, files, list, closed);
+                            listener.chunk(directory, list);
+                            size = files.getSize();
+                            offset += this.chunksize;
+                        }
+                        catch(final ApiException e) {
+                            if(e.getCode() != 403) {
+                                throw e;
+                            }
+                            // TODO (12) add test
+                            // documents not visible if 403
+                        }
                     }
                     while(offset < size);
                 }
                 else if(thirdLevelId.endsWith(TRASH)) {
                     do {
-                        final NodeContent trashFiles = api.listTrash(
-                                UUID.fromString(deepBoxNodeId),
-                                UUID.fromString(boxNodeId),
-                                offset, this.chunksize, "modifiedTime desc"
-                        );
-                        listChunk(directory, trashFiles, list, closed);
-                        listener.chunk(directory, list);
-                        size = trashFiles.getSize();
-                        offset += this.chunksize;
+                        try {
+                            final NodeContent trashFiles = api.listTrash(
+                                    UUID.fromString(deepBoxNodeId),
+                                    UUID.fromString(boxNodeId),
+                                    offset, this.chunksize, "modifiedTime desc"
+                            );
+                            listChunk(directory, trashFiles, list, closed);
+                            listener.chunk(directory, list);
+                            size = trashFiles.getSize();
+                            offset += this.chunksize;
+                        }
+                        catch(final ApiException e) {
+                            if(e.getCode() != 403) {
+                                throw e;
+                            }
+                            // TODO (12) add test
+                            // trash not visible if 403
+                        }
                     }
                     while(offset < size);
                 }
