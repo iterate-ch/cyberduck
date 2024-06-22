@@ -17,6 +17,7 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Boxes;
@@ -127,7 +128,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 do {
                     final DeepBoxes deepBoxes = api.listDeepBoxes(offset, this.chunksize, "displayName asc", null);
                     final String deepBoxName = file.getName();
-                    final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> db.getName().equals(deepBoxName)).findFirst().map(db -> db.getDeepBoxNodeId().toString()).orElse(null);
+                    final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> PathNormalizer.name(db.getName()).equals(deepBoxName)).findFirst().map(db -> db.getDeepBoxNodeId().toString()).orElse(null);
                     if(deepBoxNodeId != null) {
                         this.cache(file, deepBoxNodeId);
                         return deepBoxNodeId;
@@ -145,7 +146,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 do {
                     final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), offset, this.chunksize, "displayName asc", null);
                     final String boxName = file.getName();
-                    final String boxNodeId = boxes.getBoxes().stream().filter(b -> b.getName().equals(boxName)).findFirst().map(b -> b.getBoxNodeId().toString()).orElse(null);
+                    final String boxNodeId = boxes.getBoxes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(boxName)).findFirst().map(b -> b.getBoxNodeId().toString()).orElse(null);
                     if(boxNodeId != null) {
                         this.cache(file, boxNodeId);
                         return boxNodeId;
@@ -179,7 +180,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                                 UUID.fromString(deepBoxNodeId),
                                 UUID.fromString(boxNodeId),
                                 offset, this.chunksize, "displayName asc");
-                        final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
+                        final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                         if(nodeId != null) {
                             this.cache(file, nodeId);
                             return nodeId;
@@ -196,7 +197,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                                 UUID.fromString(deepBoxNodeId),
                                 UUID.fromString(boxNodeId),
                                 null, offset, this.chunksize, "displayName asc");
-                        final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
+                        final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                         if(nodeId != null) {
                             this.cache(file, nodeId);
                             return nodeId;
@@ -213,7 +214,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                                 UUID.fromString(deepBoxNodeId),
                                 UUID.fromString(boxNodeId),
                                 offset, this.chunksize, "displayName asc");
-                        final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
+                        final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                         if(nodeId != null) {
                             this.cache(file, nodeId);
                             return nodeId;
@@ -236,7 +237,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                             UUID.fromString(boxNodeId),
                             UUID.fromString(parentNodeId),
                             offset, this.chunksize, "displayName asc");
-                    final String nodeId = files.getNodes().stream().filter(b -> b.getName().equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
+                    final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
                     if(nodeId != null) {
                         this.cache(file, nodeId);
                         return nodeId;

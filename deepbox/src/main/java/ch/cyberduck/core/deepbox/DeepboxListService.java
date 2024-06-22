@@ -103,15 +103,22 @@ public class DeepboxListService implements ListService {
             }
             else if(new DeepboxPathContainerService().isBox(directory)) { // in Box
                 // TODO (7) i18n
-                list.add(new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                        new PathAttributes().withFileId(QUEUE_ID)
-                ));
-                list.add(new Path(directory, PathNormalizer.name(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                        new PathAttributes().withFileId(FILES_ID)
-                ));
-                list.add(new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                        new PathAttributes().withFileId(TRASH_ID)
-                ));
+                final Box box = api.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
+                if(box.getBoxPolicy().isCanListQueue()) {
+                    list.add(new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(QUEUE_ID)
+                    ));
+                }
+                if(box.getBoxPolicy().isCanListFilesRoot()) {
+                    list.add(new Path(directory, PathNormalizer.name(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(FILES_ID)
+                    ));
+                }
+                if(box.getBoxPolicy().isCanAccessTrash()) {
+                    list.add(new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(TRASH_ID)
+                    ));
+                }
                 listener.chunk(directory, list);
             }
             else if(new DeepboxPathContainerService().isThirdLevel(directory)) { // in Inbox/Documents/Trash
