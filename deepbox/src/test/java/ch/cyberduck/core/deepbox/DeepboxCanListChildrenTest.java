@@ -24,9 +24,11 @@ import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -34,6 +36,7 @@ import java.util.UUID;
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCHILDREN;
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class DeepboxCanListChildrenTest extends AbstractDeepboxTest {
     @Before
     public void setup() throws Exception {
