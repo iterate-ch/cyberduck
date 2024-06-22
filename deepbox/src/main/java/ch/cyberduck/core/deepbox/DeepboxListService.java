@@ -105,19 +105,22 @@ public class DeepboxListService implements ListService {
                 // TODO (7) i18n
                 final Box box = api.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
                 if(box.getBoxPolicy().isCanListQueue()) {
-                    list.add(new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                    final Path inbox = new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                             new PathAttributes().withFileId(QUEUE_ID)
-                    ));
+                    );
+                    list.add(inbox.withAttributes(attributes.toAttributesThirdLevel(inbox)));
                 }
                 if(box.getBoxPolicy().isCanListFilesRoot()) {
-                    list.add(new Path(directory, PathNormalizer.name(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                    final Path documents = new Path(directory, PathNormalizer.name(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                             new PathAttributes().withFileId(FILES_ID)
-                    ));
+                    );
+                    list.add(documents.withAttributes(attributes.toAttributesThirdLevel(documents)));
                 }
                 if(box.getBoxPolicy().isCanAccessTrash()) {
-                    list.add(new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                    final Path trash = new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                             new PathAttributes().withFileId(TRASH_ID)
-                    ));
+                    );
+                    list.add(trash.withAttributes(attributes.toAttributesThirdLevel(trash)));
                 }
                 listener.chunk(directory, list);
             }
@@ -139,7 +142,6 @@ public class DeepboxListService implements ListService {
                                 if(e.getCode() != 403) {
                                     throw e;
                                 }
-                                // TODO (12) add test
                                 // inbox not visible if 403
                             }
                         }

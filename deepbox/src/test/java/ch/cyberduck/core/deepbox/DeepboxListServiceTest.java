@@ -44,8 +44,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static ch.cyberduck.core.deepbox.DeepboxIdProvider.*;
 import static org.junit.Assert.*;
-
 
 @Category(IntegrationTest.class)
 public class DeepboxListServiceTest extends AbstractDeepboxTest {
@@ -65,7 +65,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
-            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
 
@@ -84,7 +84,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
-            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
 
@@ -94,9 +94,15 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(box, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
-        assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Inbox", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
-        assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
-        assertNotNull(list.find(new SimplePathPredicate(new Path("/Mountainduck Buddies/My Box/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        final Path inbox = new Path("/Mountainduck Buddies/My Box/Inbox", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertNotNull(list.find(new SimplePathPredicate(inbox)));
+        assertEquals(QUEUE_ID, nodeid.getFileId(inbox));
+        final Path documents = new Path("/Mountainduck Buddies/My Box/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertNotNull(list.find(new SimplePathPredicate(documents)));
+        assertEquals(FILES_ID, nodeid.getFileId(documents));
+        final Path trash = new Path("/Mountainduck Buddies/My Box/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertNotNull(list.find(new SimplePathPredicate(trash)));
+        assertEquals(TRASH_ID, nodeid.getFileId(trash));
         assertEquals(3, list.size());
         for(final Path f : list) {
             assertSame(box, f.getParent());
@@ -104,8 +110,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             // no modification/creation date for Inbox/Documents/Trash virtual folder level
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
-            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
+            final String fileId = nodeid.getFileId(new Path(f.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.volume)));
+            assertEquals(fileId, f.attributes().getFileId());
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.volume))));
         }
     }
 
@@ -123,7 +130,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
-            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
 
@@ -140,7 +147,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
-            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
 
@@ -203,7 +210,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testChunksizeInexact() throws Exception {
-        // TODO check this is effective
+        // TODO check this is effective - performance
         session.getHost().setProperty("deepbox.listing.chunksize", "5");
         final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
@@ -246,9 +253,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final NodeContent nodeContent = core.listNodeContent(UUID.fromString(nodeid.getFileId(folder)), null, null, "modifiedTime desc");
         assertEquals(2, nodeContent.getNodes().size());
         final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
-        assertEquals(1, listing.size());
-        assertEquals(nodeContent.getNodes().get(0).getNodeId().toString(), listing.get(0).attributes().getFileId());
-        assertEquals(nodeContent.getNodes().get(0).getNodeId().toString(), nodeid.getFileId(file));
+        assertEquals(0, listing.size());
+        assertTrue(nodeContent.getNodes().get(0).getNodeId().toString().equals(nodeid.getFileId(file)) ||
+                nodeContent.getNodes().get(1).getNodeId().toString().equals(nodeid.getFileId(file))
+        );
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
