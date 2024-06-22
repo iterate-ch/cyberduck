@@ -37,12 +37,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public String findLoginPassword(final Host bookmark) {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
-            log.warn("No hostname given");
+            log.warn(String.format("Missing hostname in %s", bookmark));
             return null;
         }
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn("No username given");
+            log.warn(String.format("Missing hostname in %s", bookmark));
             return null;
         }
         if(log.isInfoEnabled()) {
@@ -68,7 +68,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public String findLoginToken(final Host bookmark) {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
-            log.warn("No hostname given");
+            log.warn(String.format("Missing hostname in %s", bookmark));
             return null;
         }
         if(log.isInfoEnabled()) {
@@ -103,12 +103,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public String findPrivateKeyPassphrase(final Host bookmark) {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
-            log.warn("No hostname given");
+            log.warn(String.format("Missing hostname in %s", bookmark));
             return null;
         }
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn("No username given");
+            log.warn(String.format("Missing username in %s", bookmark));
             return null;
         }
         if(log.isInfoEnabled()) {
