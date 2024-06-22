@@ -238,15 +238,17 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         attrs.setCreationDate(node.getCreated().getTime().getMillis());
         attrs.setModificationDate(node.getModified().getTime().getMillis());
         attrs.setSize(node.getSize());
-        // For now, use pattern https://{env}.deepbox.swiss/node/{nodeId}/preview, API forthcoming
-        attrs.setLink(new DescriptiveUrl(URI.create(new HostUrlProvider()
-                .withPath(true).withUsername(false)
-                .get(session.getHost().getProtocol().getScheme(),
-                        session.getHost().getPort(),
-                        null,
-                        String.format("%sdeepbox.swiss", session.getStage()),
-                        String.format("/node/%s/preview", node.getNodeId().toString())
-                ))));
+        if(Node.TypeEnum.FILE.equals(node.getType())) {
+            // For now, use pattern https://{env}.deepbox.swiss/node/{nodeId}/preview, API forthcoming
+            attrs.setLink(new DescriptiveUrl(URI.create(new HostUrlProvider()
+                    .withPath(true).withUsername(false)
+                    .get(session.getHost().getProtocol().getScheme(),
+                            session.getHost().getPort(),
+                            null,
+                            String.format("%sdeepbox.swiss", session.getStage()),
+                            String.format("/node/%s/preview", node.getNodeId().toString())
+                    ))));
+        }
         final Acl acl = new Acl(new Acl.CanonicalUser());
         if(node.getPolicy().isCanListChildren()) {
             acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);

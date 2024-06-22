@@ -32,24 +32,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-// TODO (1) check with DeepBox: "status":403,"error":"Forbidden","message":"Not Authorized Party"}'}; portal uses /api/v1/directlinks/resource API ?
 public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
-
-    @Test
-    public void testFolder() throws Exception {
-        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path directory = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(auditing, new AlphanumericRandomStringService().random(),
-                EnumSet.of(Path.Type.directory)), new TransferStatus());
-        try {
-            final DeepboxShareFeature feature = new DeepboxShareFeature(session, fileid);
-            assertTrue(feature.isSupported(directory, Share.Type.download));
-            assertFalse(feature.isSupported(directory, Share.Type.upload));
-            assertNotNull(feature.toDownloadUrl(directory, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
-        }
-        finally {
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        }
-    }
 
     @Test
     public void testFile() throws Exception {

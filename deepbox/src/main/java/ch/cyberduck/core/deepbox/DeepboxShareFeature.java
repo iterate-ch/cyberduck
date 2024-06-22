@@ -15,6 +15,7 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -29,7 +30,7 @@ import ch.cyberduck.core.features.Share;
 import java.net.URI;
 import java.util.UUID;
 
-public class DeepboxShareFeature implements Share {
+public class DeepboxShareFeature implements Share<Object, Object> {
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
@@ -41,9 +42,8 @@ public class DeepboxShareFeature implements Share {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
-        switch(type) {
-            case download:
-                return true;
+        if(type == Type.download) {
+            return file.getType().contains(AbstractPath.Type.file);
         }
         return false;
     }
