@@ -56,8 +56,7 @@ public class DeepboxNodePolicyTest extends AbstractDeepboxTest {
 
     @Before
     public void setup() throws Exception {
-        // TODO (16) remove personal account for integration testing
-        setup("deepbox.user");
+        setup("deepbox.deepboxapp3.user");
     }
 
     private static final Logger log = LogManager.getLogger(DeepboxNodePolicyTest.class);
@@ -82,7 +81,7 @@ public class DeepboxNodePolicyTest extends AbstractDeepboxTest {
         final BoxRestControllerApi boxApi = new BoxRestControllerApi(this.session.getClient());
 
         final DeepBoxes deepBoxes = boxApi.listDeepBoxes(0, 50, null, null);
-        final HashSet<Pair<String, NodePolicy>> policies = new HashSet<Pair<String, NodePolicy>>();
+        final HashSet<Pair<String, NodePolicy>> policies = new HashSet<>();
         log.info("=====================================================");
         log.info(session.getHost().getCredentials().getUsername());
         for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {

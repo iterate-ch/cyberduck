@@ -25,6 +25,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Box;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.BoxAccessPolicy;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeInfo;
@@ -160,10 +161,39 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
             }
             else if(new DeepboxPathContainerService().isThirdLevel(file)) {
                 final String fileId = fileid.getFileId(file);
+                final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
                 if(fileId == null) {
                     throw new NotfoundException(file.getAbsolute());
                 }
-                return new PathAttributes().withFileId(fileId);
+                final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
+                if(deepBoxNodeId == null) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                final String boxNodeId = fileid.getBoxNodeId(file);
+                if(boxNodeId == null) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+                // map BoxAccessPolicy to CANLISTCHILDREN and CANADDCHILDREN for third level
+                final Box box = boxApi.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
+                final Acl acl = new Acl(new Acl.CanonicalUser());
+                final BoxAccessPolicy boxPolicy = box.getBoxPolicy();
+                if(new DeepboxPathContainerService().isInbox(file)) {
+                    if(boxPolicy.isCanListQueue()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
+                    }
+                    if(boxPolicy.isCanAddQueue()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
+                    }
+                }
+                else if(new DeepboxPathContainerService().isDocuments(file)) {
+                    if(boxPolicy.isCanListFilesRoot()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
+                    }
+                    if(boxPolicy.isCanAddFilesRoot()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
+                    }
+                }
+                return new PathAttributes().withFileId(fileId).withAcl(acl);
             }
             else {
                 final String fileId = fileid.getFileId(file);
@@ -209,26 +239,32 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                         String.format("/node/%s/preview", node.getNodeId().toString())
                 ))));
         final Acl acl = new Acl(new Acl.CanonicalUser());
-        if(node.getPolicy().isCanDelete()) {
-            acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
+        if(node.getPolicy().isCanListChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
         }
         if(node.getPolicy().isCanAddChildren()) {
+            acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
+        }
+        if(node.getPolicy().isCanMoveWithinBox()) {
             acl.addAll(new Acl.CanonicalUser(), CANMOVEWITHINBOX);
         }
-        if(node.getPolicy().isCanListChildren()) {
+        if(node.getPolicy().isCanMoveOutOfBox()) {
             acl.addAll(new Acl.CanonicalUser(), CANMOVEOUTOFBOX);
         }
-        if(node.getPolicy().isCanListChildren()) {
+        if(node.getPolicy().isCanDelete()) {
             acl.addAll(new Acl.CanonicalUser(), CANDELETE);
         }
-        if(node.getPolicy().isCanListChildren()) {
+        if(node.getPolicy().isCanPurge()) {
             acl.addAll(new Acl.CanonicalUser(), CANPURGE);
         }
-        if(node.getPolicy().isCanListChildren()) {
+        if(node.getPolicy().isCanDownload()) {
             acl.addAll(new Acl.CanonicalUser(), CANDOWNLOAD);
         }
-        if(node.getPolicy().isCanListChildren()) {
+        if(node.getPolicy().isCanRename()) {
             acl.addAll(new Acl.CanonicalUser(), CANRENAME);
+        }
+        if(node.getPolicy().isCanRevert()) {
+            acl.addAll(new Acl.CanonicalUser(), CANREVERT);
         }
         attrs.setAcl(acl);
         return attrs;

@@ -108,7 +108,6 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        // TODO (8) do we need to support creating DeepBoxes and Boxes?
         if(workdir.isRoot() || (new DeepboxPathContainerService().isContainer(workdir) && !new DeepboxPathContainerService().isDocuments(workdir))) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
