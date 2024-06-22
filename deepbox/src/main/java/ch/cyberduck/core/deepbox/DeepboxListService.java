@@ -240,16 +240,34 @@ public class DeepboxListService implements ListService {
     // list by modifiedTime desc to keep only most recent with the same name
     private void listChunk(final Path directory, final NodeContent inbox, final AttributedList<Path> list, final Set<String> closed) throws ApiException {
         for(final Node node : inbox.getNodes()) {
+            final String name = PathNormalizer.name(node.getDisplayName());
+            final Path path = new Path(directory, name, EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
+                    .withAttributes(attributes.toAttributes(node));
             // remove duplicates
-            // TODO (-1) attr.setDuplicate(true); instead?
-            if(!closed.contains(node.getDisplayName())) {
-                final Path path = new Path(directory, PathNormalizer.name(node.getDisplayName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                        .withAttributes(attributes.toAttributes(node));
+            if(!closed.contains(name)) {
                 list.add(path);
-                closed.add(node.getDisplayName());
                 // update fileid to latest nodeId for the name
                 this.fileid.cache(path, node.getNodeId().toString());
             }
+            else {
+                // remove from list and cache
+                final Path last = list.get(list.size() - 1);
+                if(last.getName().equals(name)) {
+                    // Usually, the last element in the list should be the duplicate due to listing by file name.
+                    list.remove(last);
+                    this.fileid.cache(last, null);
+                }
+                else {
+                    // Due to path normalization, the path to remove might not be the last one in the listing.
+                    // Should be very rare, so searching the list O(n) should be fine.
+                    final Path previous = list.find(p -> p.getName().equals(name));
+                    if(previous != null) {
+                        list.remove(previous);
+                        this.fileid.cache(previous, null);
+                    }
+                }
+            }
+            closed.add(name);
         }
     }
 
