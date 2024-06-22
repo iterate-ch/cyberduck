@@ -44,6 +44,7 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Void> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+        // TODO (-1)  do we have the latest nodeId for the file name?
         final Path result = super.touch(file, status);
         return result.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(result));
     }

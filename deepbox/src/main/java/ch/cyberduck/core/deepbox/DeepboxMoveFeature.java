@@ -87,7 +87,7 @@ public class DeepboxMoveFeature implements Move {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        // TODO (0) do we need to check target file name exists - otherwise file may disappear because of duplicate file names?
+        // TODO (-1) do we need to check target file name exists - otherwise file may disappear because of duplicate file names?
         if(source.isRoot() || (new DeepboxPathContainerService().isContainer(source) && !new DeepboxPathContainerService().isDocuments(source))) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }

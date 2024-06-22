@@ -102,6 +102,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         }
 
         // iteratively add to cache
+        // TODO (16) assume path separator is not in segments
         final List<Path> segs = pathToList(file);
         for(final Path seg : segs) {
             final String ret = lookupFileId(seg);
