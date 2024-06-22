@@ -32,7 +32,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
-import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANDELETE;
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANPURGE;
 import static ch.cyberduck.core.deepbox.DeepboxIdProvider.TRASH_ID;
 
 public class DeepboxDeleteFeature implements Delete {
@@ -79,7 +80,7 @@ public class DeepboxDeleteFeature implements Delete {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
         final Acl acl = file.attributes().getAcl();
-        if(fileid.getThirdLevelId(file).endsWith(TRASH)) {
+        if(fileid.getThirdLevelId(file).equals(TRASH_ID)) {
             if(!acl.get(new Acl.CanonicalUser()).contains(CANPURGE)) {
                 if(log.isWarnEnabled()) {
                     log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANPURGE));
