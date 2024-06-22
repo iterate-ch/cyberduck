@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Restore;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -180,6 +181,9 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         }
         if(type == Copy.class) {
             return (T) new DeepboxCopyFeature(this, fileid);
+        }
+        if(type == Restore.class) {
+            return (T) new DeepboxRestoreFeature(this, fileid);
         }
         return super._getFeature(type);
     }
