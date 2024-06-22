@@ -75,7 +75,7 @@ public class DeepboxListService implements ListService {
             final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
             if(directory.isRoot()) {
                 do {
-                    final DeepBoxes deepBoxes = api.listDeepBoxes(offset, this.chunksize, "displayName asc", null);
+                    final DeepBoxes deepBoxes = api.listDeepBoxes(offset, this.chunksize, "name asc", null);
                     for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
                         list.add(new Path(directory, PathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                                 attributes.toAttributes(deepBox))
@@ -89,7 +89,7 @@ public class DeepboxListService implements ListService {
             }
             else if(new DeepboxPathContainerService().isDeepbox(directory)) { // in DeepBox
                 do {
-                    final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), offset, this.chunksize, "displayName asc", null);
+                    final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), offset, this.chunksize, "name asc", null);
                     for(final Box box : boxes.getBoxes()) {
                         list.add(new Path(directory, PathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                                 attributes.toAttributes(box))
@@ -122,7 +122,7 @@ public class DeepboxListService implements ListService {
                                 final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
                                         UUID.fromString(boxNodeId),
                                         null,
-                                        offset, this.chunksize, "modifiedTime desc");
+                                        offset, this.chunksize, "displayName asc");
                                 listChunk(directory, inbox, list, closed);
                                 listener.chunk(directory, list);
                                 size = inbox.getSize();
@@ -144,7 +144,7 @@ public class DeepboxListService implements ListService {
                                 final NodeContent files = api.listFiles(
                                         UUID.fromString(deepBoxNodeId),
                                         UUID.fromString(boxNodeId),
-                                        offset, this.chunksize, "modifiedTime desc"
+                                        offset, this.chunksize, "displayName asc"
                                 );
                                 listChunk(directory, files, list, closed);
                                 listener.chunk(directory, list);
@@ -167,7 +167,7 @@ public class DeepboxListService implements ListService {
                                 final NodeContent trashFiles = api.listTrash(
                                         UUID.fromString(deepBoxNodeId),
                                         UUID.fromString(boxNodeId),
-                                        offset, this.chunksize, "modifiedTime desc"
+                                        offset, this.chunksize, "displayName asc"
                                 );
                                 listChunk(directory, trashFiles, list, closed);
                                 listener.chunk(directory, list);
@@ -198,7 +198,7 @@ public class DeepboxListService implements ListService {
                                 UUID.fromString(deepBoxNodeId),
                                 UUID.fromString(boxNodeId),
                                 UUID.fromString(nodeId),
-                                offset, this.chunksize, "modifiedTime desc"
+                                offset, this.chunksize, "displayName asc"
                         );
                         listChunk(directory, files, list, closed);
                         listener.chunk(directory, list);
@@ -213,7 +213,7 @@ public class DeepboxListService implements ListService {
                                 UUID.fromString(deepBoxNodeId),
                                 UUID.fromString(boxNodeId),
                                 UUID.fromString(nodeId),
-                                offset, this.chunksize, "modifiedTime desc"
+                                offset, this.chunksize, "displayName asc"
                         );
                         listChunk(directory, files, list, closed);
                         listener.chunk(directory, list);
@@ -232,14 +232,14 @@ public class DeepboxListService implements ListService {
 
     // list by modifiedTime desc to keep only most recent with the same name
     private void listChunk(final Path directory, final NodeContent inbox, final AttributedList<Path> list, final Set<String> closed) throws ApiException {
-        for(Node node : inbox.getNodes()) {
+        for(final Node node : inbox.getNodes()) {
             // remove duplicates
             // TODO (-1) attr.setDuplicate(true); instead?
-            if(!closed.contains(node.getName())) {
-                final Path path = new Path(directory, PathNormalizer.name(node.getName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
+            if(!closed.contains(node.getDisplayName())) {
+                final Path path = new Path(directory, PathNormalizer.name(node.getDisplayName()), EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
                         .withAttributes(attributes.toAttributes(node));
                 list.add(path);
-                closed.add(node.getName());
+                closed.add(node.getDisplayName());
                 // update fileid to latest nodeId for the name
                 this.fileid.cache(path, node.getNodeId().toString());
             }
