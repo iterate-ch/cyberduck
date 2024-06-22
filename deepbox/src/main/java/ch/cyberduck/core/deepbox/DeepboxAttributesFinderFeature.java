@@ -64,7 +64,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     private final DeepboxIdProvider fileid;
 
     /**
-     * Used for preflight checks in {@link DeepboxListService} and {@link DeepboxDirectoryFeature}.
+     * Used for preflight checks in {@link DeepboxListService}.
      *
      * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canListChildren(Boolean) (Boolean)
      */
@@ -210,6 +210,11 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
             }
             if(boxPolicy.isCanAddFilesRoot()) {
                 acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
+            }
+        }
+        else {
+            if(boxPolicy.isCanAccessTrash()) {
+                acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
             }
         }
         return new PathAttributes().withFileId(fileId).withAcl(acl);

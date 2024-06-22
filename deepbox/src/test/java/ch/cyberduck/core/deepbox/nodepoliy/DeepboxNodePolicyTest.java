@@ -92,7 +92,7 @@ public class DeepboxNodePolicyTest extends AbstractDeepboxTest {
             for(final Box box : boxes.getBoxes()) {
                 final UUID boxNodeId = box.getBoxNodeId();
                 final String where = box.getName();
-                log.info(String.format("%s (%s, %s)", box.getName(), boxNodeId, box.getBoxType()));
+                log.info(String.format("%s (%s, %s)", box.getName(), boxNodeId, box.getBoxPolicy()));
 
                 depthFirst(boxApi.listFiles(deepBoxNodeId, boxNodeId, 0, 50, null), where, policies);
                 try {
@@ -118,9 +118,9 @@ public class DeepboxNodePolicyTest extends AbstractDeepboxTest {
         System.out.println("canListChildren;canAddChildren;canMoveWithinBox;canMoveOutOfBox;canDelete;canPurge;canRevert;canDownload;canDirectDownload;canAnalyze;canSign;canReadNodeInfo;canRename;canAdminAccess;canComment;canTag;canI18n;canRevision;canWatch;username;deepboxNodeId");
         for(Pair<String, NodePolicy> pair : policies) {
             final NodePolicy policy = pair.getRight();
-            System.out.println(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s", policy.isCanListChildren(), policy.isCanAddChildren(), policy.isCanMoveWithinBox(), policy.isCanMoveOutOfBox(), policy.isCanDelete(), policy.isCanPurge(), policy.isCanRevert(), policy.isCanDownload(), policy.isCanDirectDownload(), policy.isCanAnalyze(), policy.isCanSign(), policy.isCanReadNodeInfo(), policy.isCanRename(), policy.isCanAdminAccess(), policy.isCanComment(), policy.isCanTag(), policy.isCanI18n(), policy.isCanRevision(), policy.isCanWatch(),
+            System.out.printf("%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s%n", policy.isCanListChildren(), policy.isCanAddChildren(), policy.isCanMoveWithinBox(), policy.isCanMoveOutOfBox(), policy.isCanDelete(), policy.isCanPurge(), policy.isCanRevert(), policy.isCanDownload(), policy.isCanDirectDownload(), policy.isCanAnalyze(), policy.isCanSign(), policy.isCanReadNodeInfo(), policy.isCanRename(), policy.isCanAdminAccess(), policy.isCanComment(), policy.isCanTag(), policy.isCanI18n(), policy.isCanRevision(), policy.isCanWatch(),
                     session.getHost().getCredentials().getUsername(), pair.getLeft()
-            ));
+            );
         }
         log.info("=====================================================");
     }

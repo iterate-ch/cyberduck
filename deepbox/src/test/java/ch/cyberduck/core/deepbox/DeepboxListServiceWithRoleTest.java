@@ -17,10 +17,8 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.PathRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
@@ -37,7 +35,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
 @Category(IntegrationTest.class)
@@ -46,16 +44,6 @@ public class DeepboxListServiceWithRoleTest extends AbstractDeepboxTest {
     @Before
     public void setup() throws Exception {
         setup("deepbox.deepboxapp3.user");
-    }
-
-    @Test
-    public void testListTrashInboxHidden() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path box = new Path("/ORG 1 - DeepBox Desktop App/Box2", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(box, new DisabledListProgressListener());
-        assertNotNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App/Box2/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
-        assertNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App/Box2/Inbox", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
-        assertNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App/Box2/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
     }
 
     @Test
