@@ -50,6 +50,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
     @Override
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         try {
+            listener.reset();
             if(this.isCached()) {
                 final AttributedList<Path> list = cache.get(directory);
                 listener.chunk(directory, list);
