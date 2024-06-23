@@ -63,4 +63,50 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
         // TODO (7) i18n?
         return isThirdLevel(file) && file.getName().equals(DOCUMENTS);
     }
+
+    public boolean isInDocuments(Path file) {
+        // TODO can we use if("application/vnd.deepbox-system.files".equals(mimeType)) {
+        file = getThirdLevelPath(file);
+        if(file == null) {
+            return false;
+        }
+        // TODO (7) i18n?
+        return file.getName().equals(DOCUMENTS);
+    }
+
+    public boolean isInTrash(Path file) {
+        // TODO can we use if("application/vnd.deepbox-system.trash".equals(mimeType)) {
+        file = getThirdLevelPath(file);
+        if(file == null) {
+            return false;
+        }
+        // TODO (7) i18n?
+        return file.getName().equals(TRASH);
+    }
+
+    public boolean isInInbox(Path file) {
+        // TODO can we use if("application/vnd.deepbox-system.queue".equals(mimeType)) { from final String mimeType = coreApi.getNodeInfo(UUID.fromString(thirdLevelId), null, null, null).getNode().getMimeType();
+        file = getThirdLevelPath(file);
+        if(file == null) {
+            return false;
+        }
+        // TODO (7) i18n?
+        return file.getName().equals(INBOX);
+    }
+
+    private Path getThirdLevelPath(Path file) {
+        if(file.isRoot()) {
+            return null;
+        }
+        if(isDeepbox(file)) {
+            return null;
+        }
+        if(isBox(file)) {
+            return null;
+        }
+        while(!isThirdLevel(file)) {
+            file = file.getParent();
+        }
+        return file;
+    }
 }

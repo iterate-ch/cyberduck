@@ -34,7 +34,6 @@ import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANDELETE;
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANPURGE;
-import static ch.cyberduck.core.deepbox.DeepboxIdProvider.TRASH_ID;
 
 public class DeepboxDeleteFeature implements Delete {
 
@@ -58,7 +57,7 @@ public class DeepboxDeleteFeature implements Delete {
                 final UUID nodeId = UUID.fromString(fileId);
                 callback.delete(file);
                 final CoreRestControllerApi coreApi = new CoreRestControllerApi(session.getClient());
-                final boolean inTrash = fileid.getThirdLevelId(file).equals(TRASH_ID);
+                final boolean inTrash = new DeepboxPathContainerService().isInTrash(file);
                 // purge if in trash
                 coreApi.deletePurgeNode(nodeId, inTrash);
                 fileid.cache(file, null);
@@ -80,7 +79,7 @@ public class DeepboxDeleteFeature implements Delete {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
         final Acl acl = file.attributes().getAcl();
-        if(fileid.getThirdLevelId(file).equals(TRASH_ID)) {
+        if(new DeepboxPathContainerService().isInTrash(file)) {
             if(!acl.get(new Acl.CanonicalUser()).contains(CANPURGE)) {
                 if(log.isWarnEnabled()) {
                     log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANPURGE));

@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static ch.cyberduck.core.deepbox.DeepboxIdProvider.*;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -96,13 +95,13 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         assertFalse(list.isEmpty());
         final Path inbox = new Path("/Mountainduck Buddies/My Box/Inbox", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertNotNull(list.find(new SimplePathPredicate(inbox)));
-        assertEquals(QUEUE_ID, nodeid.getFileId(inbox));
+        assertEquals("cb8177f3-b89c-40ac-85d1-6030bffd1d5d", nodeid.getFileId(inbox));
         final Path documents = new Path("/Mountainduck Buddies/My Box/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertNotNull(list.find(new SimplePathPredicate(documents)));
-        assertEquals(FILES_ID, nodeid.getFileId(documents));
+        assertEquals("0a14b24a-62ef-455f-bd25-65e5d497d0cb", nodeid.getFileId(documents));
         final Path trash = new Path("/Mountainduck Buddies/My Box/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertNotNull(list.find(new SimplePathPredicate(trash)));
-        assertEquals(TRASH_ID, nodeid.getFileId(trash));
+        assertEquals("a2849915-4366-448b-bf9c-26c2e3e434b9", nodeid.getFileId(trash));
         assertEquals(3, list.size());
         for(final Path f : list) {
             assertSame(box, f.getParent());

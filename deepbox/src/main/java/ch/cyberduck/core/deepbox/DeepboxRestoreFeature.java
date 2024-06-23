@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANREVERT;
-import static ch.cyberduck.core.deepbox.DeepboxIdProvider.TRASH_ID;
 
 public class DeepboxRestoreFeature implements Restore {
 
@@ -62,8 +61,7 @@ public class DeepboxRestoreFeature implements Restore {
     @Override
     public boolean isRestorable(final Path file) {
         try {
-            String thirdLevelId = fileid.getThirdLevelId(file);
-            if(thirdLevelId.equals(TRASH_ID)) {
+            if(new DeepboxPathContainerService().isInTrash(file)) {
                 final Acl acl = file.attributes().getAcl();
                 return acl.get(new Acl.CanonicalUser()).contains(CANREVERT);
             }
