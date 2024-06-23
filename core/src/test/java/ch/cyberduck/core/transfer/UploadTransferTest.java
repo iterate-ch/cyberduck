@@ -378,7 +378,7 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public void preflight(final Path source, final Path target) throws BackgroundException {
+                        public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
                             //
                         }
 

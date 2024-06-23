@@ -17,7 +17,6 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -144,15 +143,15 @@ public class EueMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
         if(StringUtils.equals(EueResourceIdProvider.TRASH, source.attributes().getFileId())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if(StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), source.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(!EueTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+        if(!EueTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
     }
 

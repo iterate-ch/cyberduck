@@ -87,9 +87,9 @@ public class BoxCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!BoxTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(!BoxTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
     }
 }

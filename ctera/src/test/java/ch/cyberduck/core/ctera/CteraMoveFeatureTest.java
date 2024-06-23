@@ -123,7 +123,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         source.setAttributes(source.attributes().withAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         target.setAttributes(target.attributes().withAcl(Acl.EMPTY));
-        new CteraMoveFeature(session).preflight(source, target);
+        new CteraMoveFeature(session).preflight(source, target.getParent(), target.getName());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         source.setAttributes(source.attributes().withAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         target.setAttributes(target.attributes().withAcl(Acl.EMPTY));
-        new CteraMoveFeature(session).preflight(source, target);
+        new CteraMoveFeature(session).preflight(source, target.getParent(), target.getName());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         target.getParent().setAttributes(target.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session).preflight(source, target));
+        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session).preflight(source, target.getParent(), target.getName()));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), source.getName())));
     }
 
@@ -153,7 +153,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         // target's parent without createdirectories permission
         target.getParent().setAttributes(target.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session).preflight(source, target));
+        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session).preflight(source, target.getParent(), target.getName()));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), target.getName())));
     }
 
@@ -167,7 +167,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         final CteraAttributesFinderFeature mock = mock(CteraAttributesFinderFeature.class);
         // target exists and not writable
         when(mock.find(eq(target))).thenReturn(new PathAttributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session, mock).preflight(source, target));
+        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session, mock).preflight(source, target.getParent(), target.getName()));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), target.getName())));
     }
 
@@ -178,7 +178,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         target.getParent().setAttributes(target.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session).preflight(source, target));
+        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session).preflight(source, target.getParent(), target.getName()));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), source.getName())));
     }
 
@@ -193,7 +193,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         final CteraAttributesFinderFeature mock = mock(CteraAttributesFinderFeature.class);
         // target exists and not writable
         when(mock.find(eq(target))).thenReturn(new PathAttributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session, mock).preflight(source, target));
+        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraMoveFeature(session, mock).preflight(source, target.getParent(), target.getName()));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), target.getName())));
     }
 
@@ -204,7 +204,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         target.setAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.WRITEPERMISSION)));
         source.getParent().setAttributes(source.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)));
-        new CteraMoveFeature(session).preflight(source, target);
+        new CteraMoveFeature(session).preflight(source, target.getParent(), target.getName());
         // assert no fail
     }
 
@@ -214,7 +214,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         target.setAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.WRITEPERMISSION)));
-        new CteraMoveFeature(session).preflight(source, target);
+        new CteraMoveFeature(session).preflight(source, target.getParent(), target.getName());
         // assert no fail
     }
 }

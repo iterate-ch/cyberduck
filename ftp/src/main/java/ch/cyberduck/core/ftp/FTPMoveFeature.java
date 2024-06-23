@@ -62,7 +62,7 @@ public class FTPMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) {
+    public void preflight(final Path source, final Path directory, final String filename) {
         // Skip checking permission mask
     }
 }

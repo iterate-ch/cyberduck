@@ -85,17 +85,17 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
         try {
-            if(registry.find(session, source, false).equals(registry.find(session, target, false))) {
-                registry.find(session, source, false).getFeature(session, Move.class, proxy).preflight(source, target);
+            if(registry.find(session, source, false).equals(registry.find(session, directory, false))) {
+                registry.find(session, source, false).getFeature(session, Move.class, proxy).preflight(source, directory, filename);
             }
             else {
-                session.getFeature(Copy.class).preflight(source, target);
+                session.getFeature(Copy.class).preflight(source, directory, filename);
             }
         }
         catch(VaultUnlockCancelException e) {
-            proxy.preflight(source, target);
+            proxy.preflight(source, directory, filename);
         }
     }
 

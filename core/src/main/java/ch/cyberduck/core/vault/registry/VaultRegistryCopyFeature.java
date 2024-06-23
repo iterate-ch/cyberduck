@@ -74,20 +74,20 @@ public class VaultRegistryCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path copy) throws BackgroundException {
+    public void preflight(final Path source, final Path copy, final String filename) throws BackgroundException {
         try {
             if(registry.find(session, source, false).equals(Vault.DISABLED)) {
-                registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy);
+                registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy, filename);
             }
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
-                registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy);
+                registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy, filename);
             }
             else {
-                registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy);
+                registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy, filename);
             }
         }
         catch(VaultUnlockCancelException e) {
-            proxy.preflight(source, copy);
+            proxy.preflight(source, copy, filename);
         }
     }
 

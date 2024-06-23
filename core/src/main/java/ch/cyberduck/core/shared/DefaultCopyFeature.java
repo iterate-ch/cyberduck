@@ -72,7 +72,7 @@ public class DefaultCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
         switch(from.getHost().getProtocol().getType()) {
             case ftp:
             case irods:

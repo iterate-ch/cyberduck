@@ -55,12 +55,13 @@ public interface Copy {
 
     /**
      * @param source Source file or folder
-     * @param target Target file or folder
+     * @param folder Target folder
+     * @param filename Target filename
      * @return False if not supported for given files
      */
-    default boolean isSupported(final Path source, final Path target) {
+    default boolean isSupported(final Path source, final Path folder, final String filename) {
         try {
-            this.preflight(source, target);
+            this.preflight(source, folder, filename);
             return true;
         }
         catch(BackgroundException e) {
@@ -77,12 +78,15 @@ public interface Copy {
     }
 
     /**
+     * @param source    Existing file or folder
+     * @param directory Target directory
+     * @param filename  Target filename
      * @throws AccessDeniedException    Permission failure to create target directory
      * @throws UnsupportedException     Copy operation not supported for source
      * @throws InvalidFilenameException Target filename not supported
      */
-    default void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!target.getParent().attributes().getPermission().isWritable()) {
+    default void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(!directory.getParent().attributes().getPermission().isWritable()) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
                     source.getName())).withFile(source);
         }

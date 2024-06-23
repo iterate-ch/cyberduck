@@ -69,11 +69,11 @@ public class CryptoMoveV7Feature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!vault.getFilenameProvider().isValid(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(!vault.getFilenameProvider().isValid(filename)) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
-        proxy.preflight(source, target);
+        proxy.preflight(source, directory, filename);
     }
 
     @Override

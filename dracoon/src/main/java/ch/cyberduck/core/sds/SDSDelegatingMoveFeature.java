@@ -88,12 +88,12 @@ public class SDSDelegatingMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
-            session.getFeature(Copy.class).preflight(source, target);
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(directory).attributes())) {
+            session.getFeature(Copy.class).preflight(source, directory, filename);
         }
         else {
-            proxy.preflight(source, target);
+            proxy.preflight(source, directory, filename);
         }
     }
 

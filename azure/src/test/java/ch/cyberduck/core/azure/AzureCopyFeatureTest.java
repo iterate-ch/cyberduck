@@ -43,9 +43,9 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         final Path test = new AzureTouchFeature(session).touch(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final AzureCopyFeature feature = new AzureCopyFeature(session);
-        assertThrows(UnsupportedException.class, () -> feature.preflight(container, test));
+        assertThrows(UnsupportedException.class, () -> feature.preflight(container, container, test.getName()));
         try {
-            feature.preflight(container, test);
+            feature.preflight(container, container, test.getName());
         }
         catch(UnsupportedException e) {
             assertEquals("Unsupported", e.getMessage());

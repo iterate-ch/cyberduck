@@ -43,8 +43,8 @@ public class GoogleStorageMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        proxy.preflight(source, target);
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        proxy.preflight(source, directory, filename);
         delete.preflight(source);
     }
 }

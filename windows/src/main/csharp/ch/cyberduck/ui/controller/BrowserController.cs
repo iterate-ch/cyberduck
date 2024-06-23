@@ -1056,7 +1056,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         Move move = (Move)Session.getFeature(typeof(Move));
                         foreach (Path sourcePath in args.SourceModels)
                         {
-                            if (!move.isSupported(sourcePath, destination))
+                            if (!move.isSupported(sourcePath, destination.getParent(), destination.getName()))
                             {
                                 args.Effect = DragDropEffects.None;
                                 args.DropTargetLocation = DropTargetLocation.None;
@@ -2032,7 +2032,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return false;
                 }
-                return ((Move)Session.getFeature(typeof(Move))).isSupported(SelectedPath, SelectedPath);
+                return ((Move)Session.getFeature(typeof(Move))).isSupported(SelectedPath, SelectedPath.getParent(), String.Empty);
             }
             return false;
         }

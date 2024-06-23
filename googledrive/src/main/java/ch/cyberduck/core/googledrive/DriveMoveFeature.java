@@ -104,9 +104,9 @@ public class DriveMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(target.getParent().isRoot()) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(target);
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(directory.isRoot()) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(directory);
         }
         if(source.isPlaceholder()) {
             // Disable for application/vnd.google-apps

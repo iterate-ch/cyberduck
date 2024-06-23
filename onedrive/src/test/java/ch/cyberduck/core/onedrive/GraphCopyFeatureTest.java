@@ -70,7 +70,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         assertNotNull(new GraphAttributesFinderFeature(session, fileid).find(file));
         Path rename = new Path(directory, file.getName(), EnumSet.of(Path.Type.file));
         final GraphCopyFeature copy = new GraphCopyFeature(session, fileid);
-        assertTrue(copy.isSupported(file, rename));
+        assertTrue(copy.isSupported(file, rename.getParent(), rename.getName()));
         final Path target = copy.copy(file, rename, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(file.attributes().getFileId(), target.attributes().getFileId());
         assertEquals(target.attributes().getFileId(), new GraphAttributesFinderFeature(session, fileid).find(rename).getFileId());

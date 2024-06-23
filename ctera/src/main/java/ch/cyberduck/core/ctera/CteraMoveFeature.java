@@ -40,16 +40,16 @@ public class CteraMoveFeature extends DAVMoveFeature {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!CteraTouchFeature.validate(target.getName())) {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(!CteraTouchFeature.validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         assumeRole(source, DELETEPERMISSION);
         // defaults to Acl.EMPTY (disabling role checking) if target does not exist
-        assumeRole(target, WRITEPERMISSION);
+        assumeRole(directory, WRITEPERMISSION);
         // no createfilespermission required for now
         if(source.isDirectory()) {
-            assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+            assumeRole(directory, filename, CREATEDIRECTORIESPERMISSION);
         }
     }
 }

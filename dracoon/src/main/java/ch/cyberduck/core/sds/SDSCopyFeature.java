@@ -81,25 +81,25 @@ public class SDSCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
         if(containerService.isContainer(source)) {
             // Rooms cannot be copied
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
+        if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(directory).attributes())) {
             // If source xor target is encrypted data room we cannot use server side copy
             log.warn(String.format("Cannot use server side copy with source container %s and target container %s",
-                    containerService.getContainer(source), containerService.getContainer(target)));
+                    containerService.getContainer(source), containerService.getContainer(directory)));
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(!StringUtils.equals(source.getName(), target.getName())) {
+        if(!StringUtils.equals(source.getName(), filename)) {
             // Cannot rename node to be copied at the same time
-            log.warn(String.format("Deny copy of %s for changed name %s", source, target.getName()));
+            log.warn(String.format("Deny copy of %s for changed name %s", source, filename));
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(Objects.equals(source.getParent(), target.getParent())) {
+        if(Objects.equals(source.getParent(), directory)) {
             // Nodes must not have the same parent
-            log.warn(String.format("Deny copy of %s to %s", source, target));
+            log.warn(String.format("Deny copy of %s to %s", source, directory));
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
     }

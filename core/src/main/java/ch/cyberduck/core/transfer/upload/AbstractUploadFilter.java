@@ -157,15 +157,14 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             if(options.temporary) {
                 final Move feature = session.getFeature(Move.class);
-                final Path renamed = new Path(file.getParent(),
-                        MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
-                                file.getName(), new AlphanumericRandomStringService().random()), file.getType());
-                if(feature.isSupported(file, renamed)) {
+                final String renamed = MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
+                        file.getName(), new AlphanumericRandomStringService().random());
+                if(feature.isSupported(file, file.getParent(), renamed)) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Set temporary filename %s", renamed));
                     }
                     // Set target name after transfer
-                    status.withRename(renamed).withDisplayname(file);
+                    status.withRename(new Path(file.getParent(), renamed, file.getType())).withDisplayname(file);
                     // Remember status of target file for later rename
                     status.getDisplayname().exists(status.isExists());
                     // Keep exist flag for subclasses to determine additional rename strategy

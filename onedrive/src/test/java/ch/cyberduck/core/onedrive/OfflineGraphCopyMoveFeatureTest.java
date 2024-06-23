@@ -147,11 +147,11 @@ public class OfflineGraphCopyMoveFeatureTest {
 
             if(feature instanceof Move) {
                 final Move move = (Move) feature;
-                assertEquals(String.format("Move \"%s\" to \"%s\".", from, to), testCase.isValid, move.isSupported(from, to));
+                assertEquals(String.format("Move \"%s\" to \"%s\".", from, to), testCase.isValid, move.isSupported(from, to.getParent(), to.getName()));
             }
             else if(feature instanceof Copy) {
                 final Copy copy = (Copy) feature;
-                assertEquals(String.format("Copy \"%s\" to \"%s\".", from, to), testCase.isValid, copy.isSupported(from, to));
+                assertEquals(String.format("Copy \"%s\" to \"%s\".", from, to), testCase.isValid, copy.isSupported(from, to.getParent(), to.getName()));
             }
             else {
                 fail();

@@ -1614,7 +1614,7 @@ public class InfoController extends ToolbarWindowController {
             filenameField.setStringValue(this.getName());
             final Path file = this.getSelected();
             filenameField.setEnabled(1 == count
-                    && session.getFeature(Move.class).isSupported(file, file));
+                    && session.getFeature(Move.class).isSupported(file, file.getParent(), StringUtils.EMPTY));
             // Where
             String path;
             if(file.isSymbolicLink()) {
