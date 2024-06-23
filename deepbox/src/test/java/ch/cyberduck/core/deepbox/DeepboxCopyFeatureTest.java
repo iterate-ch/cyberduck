@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
@@ -41,17 +40,16 @@ import static org.junit.Assert.assertTrue;
 public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
 
     @Test
-    // TODO flapping!
     public void testCopyFile() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path test = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxTouchFeature(session, fileid).touch(test, new TransferStatus());
         final Path copy = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        // TODO flapping: 403 on the following line
         assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(PathAttributes.EMPTY)));
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
