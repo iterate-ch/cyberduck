@@ -69,7 +69,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path
-            final SessionListWorker worker = new SessionListWorker(cache, home, listener);
+            final ListWorker worker = new ListWorker(cache, home, listener);
             listener.message(worker.getActivity());
             cache.put(home, worker.run(session));
             return home;
@@ -90,7 +90,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of working directory
-            final SessionListWorker worker = new SessionListWorker(cache, home, listener);
+            final ListWorker worker = new ListWorker(cache, home, listener);
             listener.message(worker.getActivity());
             cache.put(home, worker.run(session));
             return home;

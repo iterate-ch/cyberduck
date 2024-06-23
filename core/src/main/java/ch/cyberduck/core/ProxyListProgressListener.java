@@ -15,7 +15,10 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+
+import java.util.Optional;
 
 public class ProxyListProgressListener implements ListProgressListener {
 
@@ -33,14 +36,24 @@ public class ProxyListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
+    public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
         for(ListProgressListener listener : proxy) {
-            listener.chunk(folder, list);
+            listener.chunk(directory, list);
+        }
+    }
+
+    @Override
+    public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) throws ConnectionCanceledException {
+        for(ListProgressListener listener : proxy) {
+            listener.finish(directory, list, e);
         }
     }
 
     @Override
     public ListProgressListener reset() throws ConnectionCanceledException {
+        for(ListProgressListener listener : proxy) {
+            listener.reset();
+        }
         return this;
     }
 }

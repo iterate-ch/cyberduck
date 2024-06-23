@@ -20,7 +20,7 @@ import ch.cyberduck.core.exception.ListCanceledException;
 public class CancellingListProgressListener extends DisabledListProgressListener {
 
     @Override
-    public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+    public void chunk(final Path directory, final AttributedList<Path> list) throws ListCanceledException {
         if(!list.isEmpty()) {
             throw new ListCanceledException(list);
         }

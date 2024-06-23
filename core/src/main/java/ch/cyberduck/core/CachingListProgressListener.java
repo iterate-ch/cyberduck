@@ -32,8 +32,8 @@ public class CachingListProgressListener extends DisabledListProgressListener {
     }
 
     @Override
-    public void chunk(final Path folder, final AttributedList<Path> list) {
-        contents.put(folder, list);
+    public void chunk(final Path directory, final AttributedList<Path> list) {
+        contents.put(directory, list);
     }
 
     /**

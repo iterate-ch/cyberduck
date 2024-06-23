@@ -35,15 +35,10 @@ public class WorkerListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public void chunk(final Path parent, AttributedList<Path> list) throws ConnectionCanceledException {
+    public void chunk(final Path directory, AttributedList<Path> list) throws ConnectionCanceledException {
         if(worker.isCanceled()) {
             throw new ListCanceledException(list);
         }
-    }
-
-    @Override
-    public ListProgressListener reset() throws ConnectionCanceledException {
-        return this;
     }
 
     @Override

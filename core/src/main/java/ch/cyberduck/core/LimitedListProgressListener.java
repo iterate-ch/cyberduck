@@ -17,7 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -51,24 +50,19 @@ public class LimitedListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public void chunk(final Path folder, final AttributedList<Path> list) throws ListCanceledException {
-        if(folder.isRoot()) {
+    public void chunk(final Path directory, final AttributedList<Path> list) throws ListCanceledException {
+        if(directory.isRoot()) {
             if(list.size() >= container) {
                 // Allow another chunk until limit is reached again
                 container += preferences.getInteger("browser.list.limit.container");
                 throw new ListCanceledException(list);
             }
         }
-        if(list.size() >= directory) {
+        if(list.size() >= this.directory) {
             // Allow another chunk until limit is reached again
-            directory += preferences.getInteger("browser.list.limit.directory");
+            this.directory += preferences.getInteger("browser.list.limit.directory");
             throw new ListCanceledException(list);
         }
-    }
-
-    @Override
-    public ListProgressListener reset() throws ConnectionCanceledException {
-        return this;
     }
 
     protected void disable() {

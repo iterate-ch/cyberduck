@@ -20,6 +20,7 @@ import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
     private static final Logger log = LogManager.getLogger(VaultFinderListProgressListener.class);
@@ -71,5 +73,10 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     @Override
     public void message(final String message) {
         progress.message(message);
+    }
+
+    @Override
+    public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) throws ConnectionCanceledException {
+        progress.finish(directory, list, e);
     }
 }

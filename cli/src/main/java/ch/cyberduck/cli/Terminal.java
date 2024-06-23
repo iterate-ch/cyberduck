@@ -82,9 +82,9 @@ import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.DistributionPurgeWorker;
 import ch.cyberduck.core.worker.HomeFinderWorker;
+import ch.cyberduck.core.worker.ListWorker;
 import ch.cyberduck.core.worker.LoadVaultWorker;
 import ch.cyberduck.core.worker.MoveWorker;
-import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
 
 import org.apache.commons.cli.CommandLine;
@@ -478,7 +478,7 @@ public class Terminal {
     }
 
     protected Exit list(final SessionPool session, final Path remote, final boolean verbose) {
-        final SessionListWorker worker = new SessionListWorker(cache, remote,
+        final ListWorker worker = new ListWorker(cache, remote,
                 new TerminalListProgressListener(verbose));
         final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<>(
                 controller,

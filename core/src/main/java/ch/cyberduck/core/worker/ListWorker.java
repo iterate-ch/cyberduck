@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProxyListProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -33,15 +34,16 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Objects;
+import java.util.Optional;
 
-public class SessionListWorker extends Worker<AttributedList<Path>> {
-    private static final Logger log = LogManager.getLogger(SessionListWorker.class);
+public class ListWorker extends Worker<AttributedList<Path>> {
+    private static final Logger log = LogManager.getLogger(ListWorker.class);
 
     private final Cache<Path> cache;
     private final Path directory;
     private final ListProgressListener listener;
 
-    public SessionListWorker(final Cache<Path> cache, final Path directory, final ListProgressListener listener) {
+    public ListWorker(final Cache<Path> cache, final Path directory, final ListProgressListener listener) {
         this.cache = cache;
         this.directory = directory;
         this.listener = new ConnectionCancelListProgressListener(this, directory, listener);
@@ -50,27 +52,41 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
     @Override
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         try {
+            final AttributedList<Path> list;
             listener.reset();
             if(this.isCached()) {
-                final AttributedList<Path> list = cache.get(directory);
-                listener.chunk(directory, list);
-                return list;
-            }
-            final ListService service = session.getFeature(ListService.class);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Run with feature %s", service));
-            }
-            final AttributedList<Path> list = service.list(directory, listener);
-            if(list.isEmpty()) {
+                list = cache.get(directory);
                 listener.chunk(directory, list);
             }
+            else {
+                final ListService service = session.getFeature(ListService.class);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Run with feature %s", service));
+                }
+                list = service.list(directory, listener);
+                if(list.isEmpty()) {
+                    listener.chunk(directory, list);
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Notify listener %s", listener));
+                }
+            }
+            listener.finish(directory, list, Optional.empty());
             return list;
         }
         catch(ListCanceledException e) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Return partial directory listing for %s", directory));
             }
+            listener.finish(directory, e.getChunk(), Optional.of(e));
             return e.getChunk();
+        }
+        catch(BackgroundException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Notify listener for %s with error %s", directory, e));
+            }
+            listener.finish(directory, AttributedList.emptyList(), Optional.of(e));
+            throw e;
         }
     }
 
@@ -106,7 +122,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        final SessionListWorker that = (SessionListWorker) o;
+        final ListWorker that = (ListWorker) o;
         if(!Objects.equals(directory, that.directory)) {
             return false;
         }
@@ -126,36 +142,25 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
         return sb.toString();
     }
 
-    private static final class ConnectionCancelListProgressListener implements ListProgressListener {
+    private static final class ConnectionCancelListProgressListener extends ProxyListProgressListener {
         private final Worker worker;
         private final Path directory;
-        private final ListProgressListener proxy;
 
         public ConnectionCancelListProgressListener(final Worker worker, final Path directory, final ListProgressListener proxy) {
+            super(proxy);
             this.worker = worker;
             this.directory = directory;
-            this.proxy = proxy;
         }
 
         @Override
-        public void chunk(final Path parent, final AttributedList<Path> list) throws ConnectionCanceledException {
+        public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
+                log.info(String.format("Retrieved chunk of %d items in %s", list.size(), this.directory));
             }
             if(worker.isCanceled()) {
                 throw new ListCanceledException(list);
             }
-            proxy.chunk(directory, list);
-        }
-
-        @Override
-        public ListProgressListener reset() throws ConnectionCanceledException {
-            return proxy.reset();
-        }
-
-        @Override
-        public void message(final String message) {
-            proxy.message(message);
+            super.chunk(this.directory, list);
         }
     }
 }

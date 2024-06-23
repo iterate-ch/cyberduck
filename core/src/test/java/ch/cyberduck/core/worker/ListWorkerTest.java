@@ -16,7 +16,7 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 
-public class SessionListWorkerTest {
+public class ListWorkerTest {
 
     @Test
     public void testRun() throws Exception {
@@ -28,7 +28,7 @@ public class SessionListWorkerTest {
             }
         };
         final PathCache cache = new PathCache(1);
-        final SessionListWorker worker = new SessionListWorker(cache,
+        final ListWorker worker = new ListWorker(cache,
                 new Path("/home/jenkins", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         final AttributedList<Path> list = worker.run(session);
@@ -43,7 +43,7 @@ public class SessionListWorkerTest {
         final Host host = new Host(new TestProtocol(), "localhost");
         final Session<?> session = new NullTransferSession(host);
         final PathCache cache = new PathCache(1);
-        final SessionListWorker worker = new SessionListWorker(cache,
+        final ListWorker worker = new ListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         final Controller c = new AbstractController() {
@@ -70,7 +70,7 @@ public class SessionListWorkerTest {
         final PathCache cache = new PathCache(1);
         final Path directory = new Path("/home/notfound", EnumSet.of(Path.Type.directory));
         cache.put(directory, new AttributedList<>(Collections.singletonList(new Path(directory, "f", EnumSet.of(Path.Type.file)))));
-        final SessionListWorker worker = new SessionListWorker(cache,
+        final ListWorker worker = new ListWorker(cache,
                 directory,
                 new DisabledListProgressListener());
         final Controller c = new AbstractController() {
@@ -89,7 +89,7 @@ public class SessionListWorkerTest {
 
     @Test
     public void testInitialValueOnFailure() {
-        final SessionListWorker worker = new SessionListWorker(PathCache.empty(),
+        final ListWorker worker = new ListWorker(PathCache.empty(),
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         assertSame(AttributedList.emptyList(), worker.initialize());

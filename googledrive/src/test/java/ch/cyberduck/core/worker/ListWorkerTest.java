@@ -64,7 +64,7 @@ public class ListWorkerTest extends AbstractDriveTest {
             session.getClient().files().update(fileid, body).execute();
             folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, new TransferStatus());
             final PathCache cache = new PathCache(10);
-            final SessionListWorker worker = new SessionListWorker(cache, parent, new DisabledListProgressListener());
+            final ListWorker worker = new ListWorker(cache, parent, new DisabledListProgressListener());
             final AttributedList<Path> list = worker.run(session);
             assertEquals(2, list.size());
             worker.cleanup(list);
@@ -80,7 +80,7 @@ public class ListWorkerTest extends AbstractDriveTest {
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();
             final PathCache cache = new PathCache(10);
-            final SessionListWorker worker = new SessionListWorker(cache, parent, new DisabledListProgressListener());
+            final ListWorker worker = new ListWorker(cache, parent, new DisabledListProgressListener());
             final AttributedList<Path> list = worker.run(session);
             assertEquals(2, list.size());
             worker.cleanup(list);
