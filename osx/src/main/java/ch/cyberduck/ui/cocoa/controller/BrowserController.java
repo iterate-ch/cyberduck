@@ -95,11 +95,11 @@ import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
 import ch.cyberduck.core.worker.DownloadShareWorker;
+import ch.cyberduck.core.worker.ListWorker;
 import ch.cyberduck.core.worker.LoadVaultWorker;
 import ch.cyberduck.core.worker.LockVaultWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
-import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.TouchWorker;
 import ch.cyberduck.core.worker.UploadShareWorker;
 import ch.cyberduck.ui.browser.BookmarkColumn;
@@ -526,7 +526,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<>(this, pool,
-                                new SessionListWorker(cache, folder, listener) {
+                        new ListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache

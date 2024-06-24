@@ -3307,7 +3307,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
             }
 
-            private class InnerListWorker : SessionListWorker
+            private class InnerListWorker : ListWorker
             {
                 private readonly BrowserController _controller;
                 private readonly Path _folder;

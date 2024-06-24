@@ -29,6 +29,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class DecryptingListProgressListener extends IndexedListProgressListener {
@@ -70,10 +71,15 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     }
 
     @Override
-    public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
-        super.chunk(folder, list);
-        delegate.chunk(folder, list);
-        super.chunk(folder, list);
+    public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
+        super.chunk(directory, list);
+        delegate.chunk(directory, list);
+        super.chunk(directory, list);
+    }
+
+    @Override
+    public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) throws ConnectionCanceledException {
+        delegate.finish(directory, list, e);
     }
 
     @Override

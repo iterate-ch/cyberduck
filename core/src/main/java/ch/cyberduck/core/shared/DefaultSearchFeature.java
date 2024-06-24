@@ -25,6 +25,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
+import java.util.Optional;
+
 public class DefaultSearchFeature implements Search {
 
     private final Session<?> session;
@@ -48,8 +50,13 @@ public class DefaultSearchFeature implements Search {
         }
 
         @Override
-        public void chunk(final Path parent, final AttributedList<Path> list) throws ConnectionCanceledException {
-            delegate.chunk(parent, list.filter(filter));
+        public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
+            delegate.chunk(directory, list.filter(filter));
+        }
+
+        @Override
+        public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) throws ConnectionCanceledException {
+            delegate.finish(directory, list, e);
         }
 
         @Override

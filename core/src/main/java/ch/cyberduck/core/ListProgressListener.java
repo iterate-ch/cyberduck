@@ -17,17 +17,31 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+
+import java.util.Optional;
 
 public interface ListProgressListener extends ProgressListener {
     /**
      * Notify with latest chunk added to list received from server
      *
-     * @param folder Directory
-     * @param list   Index of files received from server
+     * @param directory Directory
+     * @param list      Index of files received from server
      * @throws ConnectionCanceledException Interrupt reading from server if possible
      */
-    void chunk(Path folder, AttributedList<Path> list) throws ConnectionCanceledException;
+    void chunk(Path directory, AttributedList<Path> list) throws ConnectionCanceledException;
+
+    /**
+     * Done with directory listing
+     *
+     * @param directory Directory
+     * @param list      Directory contents retrieved
+     * @param e         Exception if any
+     */
+    default void finish(Path directory, AttributedList<Path> list, Optional<BackgroundException> e) throws ConnectionCanceledException {
+        //
+    }
 
     /**
      * Reset listener status for reuse
@@ -35,5 +49,7 @@ public interface ListProgressListener extends ProgressListener {
      * @return Self
      * @throws ConnectionCanceledException Interrupt reading from server if possible
      */
-    ListProgressListener reset() throws ConnectionCanceledException;
+    default ListProgressListener reset() throws ConnectionCanceledException {
+        return this;
+    }
 }
