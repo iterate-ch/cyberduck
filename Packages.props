@@ -24,10 +24,10 @@
     <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
     <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.647-beta" />
     <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.22000.196" />
-    <PackageReference Update="NUnit" Version="3.13.3" />
-    <PackageReference Update="NUnit.Console" Version="3.16.0" />
+    <PackageReference Update="NUnit" Version="3.14.0" />
+    <PackageReference Update="NUnit.Console" Version="3.17.0" />
     <PackageReference Update="NUnit.ConsoleRunner" Version="3.16.0" GeneratePathProperty="true" />
-    <PackageReference Update="NUnit3TestAdapter" Version="4.3.1" />
+    <PackageReference Update="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Update="ObjectListView.Official" Version="2.9.1" />
     <PackageReference Update="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.2.3" />
     <PackageReference Update="ReactiveUI" Version="17.1.50" />
