@@ -23,8 +23,8 @@ import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeMove;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -60,19 +60,23 @@ public class DeepboxMoveFeature implements Move {
                 }
                 new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
-            final String id = fileid.getFileId(file);
-            if(id == null) {
+            final String sourceId = fileid.getFileId(file);
+            if(sourceId == null) {
                 throw new NotfoundException(String.format("Cannot move %s", file));
             }
             final NodeMove nodeMove = new NodeMove();
-            nodeMove.setTargetParentNodeId(UUID.fromString(fileid.getFileId(renamed.getParent())));
+            final String targetId = fileid.getFileId(renamed.getParent());
+            if(targetId == null) {
+                throw new NotfoundException(String.format("Cannot move %s", file));
+            }
+            nodeMove.setTargetParentNodeId(UUID.fromString(targetId));
             final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
-            core.moveNode(nodeMove, UUID.fromString(id));
+            core.moveNode(nodeMove, UUID.fromString(sourceId));
             final NodeUpdate nodeUpdate = new NodeUpdate();
             nodeUpdate.setName(renamed.getName());
-            core.updateNode(nodeUpdate, UUID.fromString(id));
+            core.updateNode(nodeUpdate, UUID.fromString(sourceId));
             fileid.cache(file, null);
-            fileid.cache(renamed, id);
+            fileid.cache(renamed, sourceId);
             return renamed.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(renamed));
         }
         catch(ApiException e) {
@@ -88,11 +92,11 @@ public class DeepboxMoveFeature implements Move {
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
         // TODO (-1) do we need to check target file name exists - otherwise file may disappear because of duplicate file names?
-        if(source.isRoot() || (new DeepboxPathContainerService().isContainer(source) && !new DeepboxPathContainerService().isDocuments(source))) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+        if(source.isRoot() || new DeepboxPathContainerService().isContainer(source) || new DeepboxPathContainerService().isInTrash(source)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(target.isRoot() || (new DeepboxPathContainerService().isContainer(target) && !new DeepboxPathContainerService().isDocuments(target))) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+        if(target.isRoot() || new DeepboxPathContainerService().isContainer(target) || new DeepboxPathContainerService().isInTrash(target)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
         }
         final Acl acl = source.attributes().getAcl();
         if(!source.getName().equals(target.getName())) {
@@ -100,7 +104,7 @@ public class DeepboxMoveFeature implements Move {
                 if(log.isWarnEnabled()) {
                     log.warn(String.format("ACL %s for %s does not include %s", acl, source, CANRENAME));
                 }
-                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
         }
         if(!fileid.getFileId(source.getParent()).equals(fileid.getFileId(target.getParent()))) {
@@ -109,7 +113,7 @@ public class DeepboxMoveFeature implements Move {
                     if(log.isWarnEnabled()) {
                         log.warn(String.format("ACL %s for %s does not include %s", acl, source, CANMOVEWITHINBOX));
                     }
-                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
                 }
             }
             else {
@@ -117,7 +121,7 @@ public class DeepboxMoveFeature implements Move {
                     if(log.isWarnEnabled()) {
                         log.warn(String.format("ACL %s for %s does not include %s", acl, source, CANMOVEOUTOFBOX));
                     }
-                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
                 }
             }
         }
