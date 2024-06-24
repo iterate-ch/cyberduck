@@ -119,7 +119,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             else if (filename.LastIndexOf('.') is int index && index != -1)
             {
                 key = filename.Substring(index + 1);
-                fileInfo = key;
+                fileInfo = filename.Substring(index);
             }
 
             if (IconCache.TryGetIcon("ext", large ? 32 : 16, out T image, key))
