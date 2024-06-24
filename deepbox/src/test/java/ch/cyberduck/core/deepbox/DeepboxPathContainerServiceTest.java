@@ -18,11 +18,14 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class DeepboxPathContainerServiceTest {
 
@@ -74,10 +77,11 @@ public class DeepboxPathContainerServiceTest {
         assertNull(container.getKey(folder));
     }
 
-    @Test
-    public void TestInbox() {
+    @ParameterizedTest
+    @ValueSource(strings = {"Inbox"})
+    public void TestInbox(final String name) {
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path("/Mountainduck Buddies/My Box/Inbox", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -90,10 +94,11 @@ public class DeepboxPathContainerServiceTest {
         assertNull(container.getKey(folder));
     }
 
-    @Test
-    public void TestDocuments() {
+    @ParameterizedTest
+    @ValueSource(strings = {"Documents", "Dokumente"})
+    public void TestDocuments(final String name) {
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path("/Mountainduck Buddies/My Box/Documents", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -106,10 +111,11 @@ public class DeepboxPathContainerServiceTest {
         assertNull(container.getKey(folder));
     }
 
-    @Test
-    public void TestTrash() {
+    @ParameterizedTest
+    @ValueSource(strings = {"Trash", "Papierkorb", "Corbeille", "Cestino"})
+    public void TestTrash(final String name) {
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path("/Mountainduck Buddies/My Box/Trash", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -122,10 +128,11 @@ public class DeepboxPathContainerServiceTest {
         assertNull(container.getKey(folder));
     }
 
-    @Test
-    public void TestAuditing() {
+    @ParameterizedTest
+    @ValueSource(strings = {"Documents", "Dokumente"})
+    public void TestAuditing(final String name) {
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path("/Mountainduck Buddies/My Box/Documents/Auditing", EnumSet.of(AbstractPath.Type.directory));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s/Auditing", name), EnumSet.of(AbstractPath.Type.directory));
         assertFalse(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -138,10 +145,11 @@ public class DeepboxPathContainerServiceTest {
         assertEquals("Auditing", container.getKey(folder));
     }
 
-    @Test
-    public void TestFile() {
+    @ParameterizedTest
+    @ValueSource(strings = {"Documents", "Dokumente"})
+    public void TestFile(final String name) {
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path file = new Path("/Mountainduck Buddies/My Box/Documents/Auditing/nix4.txt", EnumSet.of(AbstractPath.Type.file));
+        final Path file = new Path(String.format("/Mountainduck Buddies/My Box/%s/Auditing/nix4.txt", name), EnumSet.of(AbstractPath.Type.file));
         assertFalse(container.isContainer(file));
         assertFalse(container.isDeepbox(file));
         assertFalse(container.isBox(file));

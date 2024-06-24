@@ -45,7 +45,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
+import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCHILDREN;
 
 public class DeepboxListService implements ListService {
 
@@ -67,7 +67,6 @@ public class DeepboxListService implements ListService {
         final AttributedList<Path> list = new AttributedList<>();
         final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
         final String boxNodeId = fileid.getBoxNodeId(directory);
-        final String thirdLevelId = fileid.getThirdLevelId(directory);
         int offset = 0;
         int size = 0;
         final HashSet<String> closed = new HashSet<>();
@@ -105,20 +104,23 @@ public class DeepboxListService implements ListService {
                 // TODO (7) i18n
                 final Box box = api.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
                 if(box.getBoxPolicy().isCanListQueue()) {
-                    final Path inbox = new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, PathNormalizer.name(INBOX), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
+                    final String inboxName = new DeepboxI18nService(session).getInboxName();
+                    final Path inbox = new Path(directory, PathNormalizer.name(inboxName), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, PathNormalizer.name(inboxName), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
                     );
                     list.add(inbox.withAttributes(attributes.toAttributesThirdLevel(inbox)));
                 }
                 if(box.getBoxPolicy().isCanListFilesRoot()) {
-                    final Path documents = new Path(directory, PathNormalizer.name(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, PathNormalizer.name(DOCUMENTS), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
+                    final String documentsName = new DeepboxI18nService(session).getDocumentsName();
+                    final Path documents = new Path(directory, PathNormalizer.name(documentsName), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, PathNormalizer.name(documentsName), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
                     );
                     list.add(documents.withAttributes(attributes.toAttributesThirdLevel(documents)));
                 }
                 if(box.getBoxPolicy().isCanAccessTrash()) {
-                    final Path trash = new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, PathNormalizer.name(TRASH), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
+                    final String trashName = new DeepboxI18nService(session).getTrashName();
+                    final Path trash = new Path(directory, PathNormalizer.name(trashName), EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, PathNormalizer.name(trashName), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
                     );
                     list.add(trash.withAttributes(attributes.toAttributesThirdLevel(trash)));
                 }

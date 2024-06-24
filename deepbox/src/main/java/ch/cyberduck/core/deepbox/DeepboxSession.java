@@ -194,4 +194,9 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         String hostname = this.getHost().getHostname();
         return hostname.replaceAll("^api\\.", "").replaceAll("deepbox\\.swiss$", "");
     }
+
+    public String getSelectedLanguage() {
+        // TODO (7) API call to backend
+        return "en-UK";
+    }
 }

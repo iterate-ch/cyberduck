@@ -16,7 +16,7 @@ package ch.cyberduck.core.deepbox;/*
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 
-import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
+import static ch.cyberduck.core.deepbox.DeepboxI18nService.*;
 
 public class DeepboxPathContainerService extends DefaultPathContainerService {
 
@@ -50,48 +50,39 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     public boolean isTrash(final Path file) {
-        // TODO (7) i18n?
-        return isThirdLevel(file) && file.getName().equals(TRASH);
+        return isThirdLevel(file) && TRASH_NAMES.contains(file.getName());
     }
 
     public boolean isInbox(final Path file) {
-        // TODO (7) i18n?
-        return isThirdLevel(file) && file.getName().equals(INBOX);
+        return isThirdLevel(file) && INBOX_NAMES.contains(file.getName());
     }
 
     public boolean isDocuments(final Path file) {
-        // TODO (7) i18n?
-        return isThirdLevel(file) && file.getName().equals(DOCUMENTS);
+        return isThirdLevel(file) && DOCUMENTS_NAMES.contains(file.getName());
     }
 
     public boolean isInDocuments(Path file) {
-        // TODO can we use if("application/vnd.deepbox-system.files".equals(mimeType)) {
         file = getThirdLevelPath(file);
         if(file == null) {
             return false;
         }
-        // TODO (7) i18n?
-        return file.getName().equals(DOCUMENTS);
+        return DOCUMENTS_NAMES.contains(file.getName());
     }
 
     public boolean isInTrash(Path file) {
-        // TODO can we use if("application/vnd.deepbox-system.trash".equals(mimeType)) {
         file = getThirdLevelPath(file);
         if(file == null) {
             return false;
         }
-        // TODO (7) i18n?
-        return file.getName().equals(TRASH);
+        return TRASH_NAMES.contains(file.getName());
     }
 
     public boolean isInInbox(Path file) {
-        // TODO can we use if("application/vnd.deepbox-system.queue".equals(mimeType)) { from final String mimeType = coreApi.getNodeInfo(UUID.fromString(thirdLevelId), null, null, null).getNode().getMimeType();
         file = getThirdLevelPath(file);
         if(file == null) {
             return false;
         }
-        // TODO (7) i18n?
-        return file.getName().equals(INBOX);
+        return INBOX_NAMES.contains(file.getName());
     }
 
     private Path getThirdLevelPath(Path file) {

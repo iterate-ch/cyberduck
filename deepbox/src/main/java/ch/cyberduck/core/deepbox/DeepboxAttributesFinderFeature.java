@@ -55,11 +55,6 @@ import java.util.UUID;
  */
 public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Void> {
 
-    // TODO (7) i18n?
-    public static final String INBOX = "Inbox";
-    public static final String DOCUMENTS = "Documents";
-    public static final String TRASH = "Trash";
-
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
 
