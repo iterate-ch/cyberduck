@@ -2,6 +2,8 @@
 using java.nio.file;
 using java.util;
 using NUnit.Framework;
+using System.IO;
+using System.Text;
 using CoreLocal = ch.cyberduck.core.Local;
 using CorePath = ch.cyberduck.core.Path;
 using Path = System.IO.Path;
@@ -113,6 +115,38 @@ namespace Ch.Cyberduck.Core.Local
             CoreLocal root = new SystemLocal(@"C:\");
             CoreLocal compound = new SystemLocal(root, @"C:\");
             Assert.AreEqual(@"C:\C$", compound.getAbsolute());
+        }
+
+        [Test]
+        public void TestLongPath()
+        {
+            var invalidPath = $"""{TestContext.CurrentContext.WorkDirectory}\{nameof(TestLongPath)}\{LongPath(1024, Path.GetRandomFileName())}""";
+            var testPath = $"""\\?\{invalidPath}""";
+
+            var unprefixedPath = new SystemLocal(invalidPath);
+            var testLocal = new SystemLocal(testPath);
+
+            _ = Directory.CreateDirectory(testPath);
+            Assert.False(unprefixedPath.exists());
+            Assert.True(testLocal.exists());
+            Assert.False(Files.exists(Paths.get(invalidPath)));
+            Assert.Throws<InvalidPathException>(() => Files.exists(Paths.get(testPath)));
+
+            static string LongPath(int length, string pattern)
+            {
+                StringBuilder builder = new() { Length = length };
+                for (int m = 0, i = 0; i < length; i++)
+                {
+                    if (m == pattern.Length)
+                    {
+                        m = 0;
+                        builder[i] = '\\';
+                    }
+                    else builder[i] = pattern[m++];
+                }
+
+                return builder.ToString();
+            }
         }
 
         [Test]
