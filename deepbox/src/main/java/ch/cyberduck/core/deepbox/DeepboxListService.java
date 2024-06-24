@@ -101,7 +101,6 @@ public class DeepboxListService implements ListService {
                 while(offset < size);
             }
             else if(new DeepboxPathContainerService().isBox(directory)) { // in Box
-                // TODO (7) i18n
                 final Box box = api.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
                 if(box.getBoxPolicy().isCanListQueue()) {
                     final String inboxName = new DeepboxI18nService(session).getInboxName();
