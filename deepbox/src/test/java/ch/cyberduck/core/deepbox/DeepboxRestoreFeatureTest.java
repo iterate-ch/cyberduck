@@ -67,7 +67,6 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void restoreDirectory() throws BackgroundException, ApiException {
-        // TODO
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
 
