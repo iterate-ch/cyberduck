@@ -42,16 +42,17 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private final String masterkey;
     private final byte[] pepper;
     // Number of files to wait for until proxy is notified of files
-    private final int retain = 5;
+    private final int filecount;
     private final AtomicBoolean canceled = new AtomicBoolean();
 
-    public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener lookup, final ListProgressListener proxy) {
+    public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener lookup, final ListProgressListener proxy, final int filecount) {
         this.session = session;
         this.lookup = lookup;
         this.proxy = proxy;
         this.config = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename");
         this.masterkey = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename");
         this.pepper = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
+        this.filecount = filecount;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     @Override
     public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
         // Defer notification until we can be sure no vault is found
-        if(!canceled.get() && list.size() < retain) {
+        if(!canceled.get() && list.size() < filecount) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Delay chunk notification for file listing of folder %s", folder));
             }
@@ -104,9 +105,6 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
 
     @Override
     public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) throws ConnectionCanceledException {
-        if(list.size() < retain) {
-            proxy.chunk(directory, list);
-        }
         proxy.finish(directory, list, e);
     }
 }
