@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,17 +33,23 @@ public class VaultFinderListService implements ListService {
     private final Session<?> session;
     private final ListService delegate;
     private final VaultLookupListener loader;
+    private final int filecount;
 
     public VaultFinderListService(final Session<?> session, final ListService delegate, final VaultLookupListener loader, final ListProgressListener listener) {
         this.session = session;
         this.delegate = delegate;
         this.loader = loader;
+        this.filecount = new HostPreferences(session.getHost()).getInteger("cryptomator.vault.autodetect.filecount");
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            return delegate.list(directory, new VaultFinderListProgressListener(session, loader, listener));
+            final AttributedList<Path> list = delegate.list(directory, new VaultFinderListProgressListener(session, loader, listener, filecount));
+            if(list.size() < filecount) {
+                listener.chunk(directory, list);
+            }
+            return list;
         }
         catch(VaultFoundListCanceledException finder) {
             final Vault cryptomator = finder.getVault();
