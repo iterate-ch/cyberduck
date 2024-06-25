@@ -216,7 +216,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             return (T) new StoregateReadFeature(this, fileid);
         }
         if(type == Write.class) {
-            return (T) new StoregateWriteFeature(this, fileid);
+            return (T) new StoregateThresholdWriteFeature(this, fileid);
         }
         if(type == MultipartWrite.class) {
             return (T) new StoregateMultipartWriteFeature(this, fileid);

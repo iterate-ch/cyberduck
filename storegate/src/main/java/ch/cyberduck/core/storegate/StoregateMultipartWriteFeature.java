@@ -49,6 +49,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -61,6 +62,11 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
     public StoregateMultipartWriteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.timestamp);
     }
 
     @Override
