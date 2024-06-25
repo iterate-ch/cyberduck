@@ -35,19 +35,43 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private static final Logger log = LogManager.getLogger(VaultFinderListProgressListener.class);
 
     private final Session<?> session;
-    private final VaultLookupListener listener;
-    private final ListProgressListener progress;
+    private final VaultLookupListener lookup;
+    private final ListProgressListener proxy;
     private final String config;
     private final String masterkey;
     private final byte[] pepper;
+    // Number of files to wait for until proxy is notified of files
+    private final int retain = 5;
 
-    public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener listener, final ListProgressListener progress) {
+    public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener lookup, final ListProgressListener proxy) {
         this.session = session;
-        this.listener = listener;
-        this.progress = progress;
+        this.lookup = lookup;
+        this.proxy = proxy;
         this.config = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename");
         this.masterkey = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename");
         this.pepper = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public VaultFinderListProgressListener reset() throws ConnectionCanceledException {
+        super.reset();
+        proxy.reset();
+        return this;
+    }
+
+    @Override
+    public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
+        // Defer notification until we can be sure no vault is found
+        if(list.size() < retain) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Delay chunk notification for file listing of folder %s", folder));
+            }
+            super.chunk(folder, list);
+        }
+        else {
+            // Delegate
+            proxy.chunk(folder, list);
+        }
     }
 
     @Override
@@ -58,7 +82,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
                 log.info(String.format("Found vault config or masterkey file %s", file));
             }
             try {
-                final Vault vault = listener.load(session, directory, masterkey, config, pepper);
+                final Vault vault = lookup.load(session, directory, masterkey, config, pepper);
                 if(vault.equals(Vault.DISABLED)) {
                     return;
                 }
@@ -72,11 +96,14 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
 
     @Override
     public void message(final String message) {
-        progress.message(message);
+        proxy.message(message);
     }
 
     @Override
     public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) throws ConnectionCanceledException {
-        progress.finish(directory, list, e);
+        if(list.size() < retain) {
+            proxy.chunk(directory, list);
+        }
+        proxy.finish(directory, list, e);
     }
 }

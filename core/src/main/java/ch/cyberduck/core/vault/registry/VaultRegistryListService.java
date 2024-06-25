@@ -23,7 +23,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.vault.VaultFinderListProgressListener;
 import ch.cyberduck.core.vault.VaultFinderListService;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -39,8 +38,7 @@ public class VaultRegistryListService implements ListService {
     private final VaultLookupListener lookup;
     private final Session<?> session;
     private final ListService proxy;
-
-    private boolean autodetect;
+    private final boolean autodetect;
 
     public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
         this.session = session;
@@ -65,7 +63,7 @@ public class VaultRegistryListService implements ListService {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Look for vault in %s", directory));
                 }
-                return new VaultFinderListService(session, proxy, new VaultFinderListProgressListener(session, lookup, listener)).list(directory, listener);
+                return new VaultFinderListService(session, proxy, lookup, listener).list(directory, listener);
             }
             return proxy.list(directory, listener);
         }
@@ -75,11 +73,6 @@ public class VaultRegistryListService implements ListService {
             }
             return proxy.list(directory, listener);
         }
-    }
-
-    public VaultRegistryListService withAutodetect(final boolean autodetect) {
-        this.autodetect = autodetect && new HostPreferences(session.getHost()).getBoolean("cryptomator.enable");
-        return this;
     }
 
     @Override

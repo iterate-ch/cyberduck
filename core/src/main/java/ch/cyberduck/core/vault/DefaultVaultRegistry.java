@@ -144,15 +144,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     protected <T> T _getFeature(final Session<?> session, final Class<T> type, final T proxy) {
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                    new LoadingVaultLookupListener(this, prompt))
-                    .withAutodetect(new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
-                    );
+                    new LoadingVaultLookupListener(this, prompt));
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                    new LoadingVaultLookupListener(this, prompt))
-                    .withAutodetect(new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
-                    );
+                    new LoadingVaultLookupListener(this, prompt));
         }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);
