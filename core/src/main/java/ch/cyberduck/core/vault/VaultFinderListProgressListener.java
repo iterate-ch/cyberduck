@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
     private static final Logger log = LogManager.getLogger(VaultFinderListProgressListener.class);
@@ -42,6 +43,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private final byte[] pepper;
     // Number of files to wait for until proxy is notified of files
     private final int retain = 5;
+    private final AtomicBoolean canceled = new AtomicBoolean();
 
     public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener lookup, final ListProgressListener proxy) {
         this.session = session;
@@ -62,11 +64,17 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     @Override
     public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
         // Defer notification until we can be sure no vault is found
-        if(list.size() < retain) {
+        if(!canceled.get() && list.size() < retain) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Delay chunk notification for file listing of folder %s", folder));
             }
-            super.chunk(folder, list);
+            try {
+                super.chunk(folder, list);
+            }
+            catch(VaultUnlockCancelException e) {
+                // No longer prompt
+                canceled.set(true);
+            }
         }
         else {
             // Delegate
@@ -81,16 +89,11 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found vault config or masterkey file %s", file));
             }
-            try {
-                final Vault vault = lookup.load(session, directory, masterkey, config, pepper);
-                if(vault.equals(Vault.DISABLED)) {
-                    return;
-                }
-                throw new VaultFoundListCanceledException(vault, list);
+            final Vault vault = lookup.load(session, directory, masterkey, config, pepper);
+            if(vault.equals(Vault.DISABLED)) {
+                return;
             }
-            catch(VaultUnlockCancelException e) {
-                // Continue
-            }
+            throw new VaultFoundListCanceledException(vault, list);
         }
     }
 
