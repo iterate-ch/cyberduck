@@ -16,11 +16,16 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.i18n.RegexLocale;
+import ch.cyberduck.core.local.WorkdirPrefixer;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.EnumSet;
 
@@ -78,8 +83,19 @@ public class DeepboxPathContainerServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Inbox"})
-    public void TestInbox(final String name) {
+    @CsvSource(value = {
+            "Inbox,en",
+            "Inbox,de",
+            "Inbox,fr",
+            "Inbox,it",
+            "Inbox,other"
+    })
+    public void TestInbox(final String name, final String lang) {
+        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
+        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
+        LocaleFactory.set(locale);
+        LocaleFactory.get().setDefault(lang);
+
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
         final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
@@ -95,8 +111,19 @@ public class DeepboxPathContainerServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Documents", "Dokumente"})
-    public void TestDocuments(final String name) {
+    @CsvSource(value = {
+            "Documents,en",
+            "Dokumente,de",
+            "Documents,fr",
+            "Documenti,it",
+            "Documents,other"
+    })
+    public void TestDocuments(final String name, final String lang) {
+        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
+        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
+        LocaleFactory.set(locale);
+        LocaleFactory.get().setDefault(lang);
+
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
         final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
@@ -112,8 +139,19 @@ public class DeepboxPathContainerServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Trash", "Papierkorb", "Corbeille", "Cestino"})
-    public void TestTrash(final String name) {
+    @CsvSource(value = {
+            "Trash,en",
+            "Papierkorb,de",
+            "Corbeille,fr",
+            "Cestino,it",
+            "Trash,other"
+    })
+    public void TestTrash(final String name, final String lang) {
+        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
+        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
+        LocaleFactory.set(locale);
+        LocaleFactory.get().setDefault(lang);
+
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
         final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
@@ -129,8 +167,19 @@ public class DeepboxPathContainerServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Documents", "Dokumente"})
-    public void TestAuditing(final String name) {
+    @CsvSource(value = {
+            "Documents,en",
+            "Dokumente,de",
+            "Documents,fr",
+            "Documenti,it",
+            "Documents,other"
+    })
+    public void TestAuditing(final String name, final String lang) {
+        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
+        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
+        LocaleFactory.set(locale);
+        LocaleFactory.get().setDefault(lang);
+
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
         final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s/Auditing", name), EnumSet.of(AbstractPath.Type.directory));
         assertFalse(container.isContainer(folder));
@@ -146,8 +195,19 @@ public class DeepboxPathContainerServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Documents", "Dokumente"})
-    public void TestFile(final String name) {
+    @CsvSource(value = {
+            "Documents,en",
+            "Dokumente,de",
+            "Documents,fr",
+            "Documenti,it",
+            "Documents,other"
+    })
+    public void TestFile(final String name, final String lang) {
+        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
+        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
+        LocaleFactory.set(locale);
+        LocaleFactory.get().setDefault(lang);
+
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
         final Path file = new Path(String.format("/Mountainduck Buddies/My Box/%s/Auditing/nix4.txt", name), EnumSet.of(AbstractPath.Type.file));
         assertFalse(container.isContainer(file));
