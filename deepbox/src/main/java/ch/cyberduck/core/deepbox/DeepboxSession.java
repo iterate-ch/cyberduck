@@ -78,7 +78,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     private OAuth2RequestInterceptor authorizationService;
 
-    private final PreferencesReader preferences = new HostPreferences(host);
+    private PreferencesReader preferences = new HostPreferences(host);
 
     public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -193,10 +193,5 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         // api.[<stage>.]deepbox.swiss
         String hostname = this.getHost().getHostname();
         return hostname.replaceAll("^api\\.", "").replaceAll("deepbox\\.swiss$", "");
-    }
-
-    public String getSelectedLanguage() {
-        // TODO (7) API call to backend
-        return "en-UK";
     }
 }
