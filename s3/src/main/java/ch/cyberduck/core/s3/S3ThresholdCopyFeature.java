@@ -58,12 +58,12 @@ public class S3ThresholdCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(containerService.isContainer(target)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
+        if(directory.isRoot()) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(directory);
         }
     }
 }

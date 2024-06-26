@@ -33,8 +33,8 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Restore;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
@@ -268,7 +268,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 if(null == selected) {
                     return false;
                 }
-                return controller.getSession().getFeature(Move.class).isSupported(selected, selected);
+                return controller.getSession().getFeature(Move.class).isSupported(selected, selected.getParent(), selected.getName());
             }
             return false;
         }

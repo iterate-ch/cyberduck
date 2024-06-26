@@ -101,14 +101,14 @@ public class GraphMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!session.isAccessible(target, true)) {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(!session.isAccessible(directory, true)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if(!session.isAccessible(source, false)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(!session.getContainer(source).equals(session.getContainer(target))) {
+        if(!session.getContainer(source).equals(session.getContainer(directory))) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if(source.getType().contains(Path.Type.shared)) {

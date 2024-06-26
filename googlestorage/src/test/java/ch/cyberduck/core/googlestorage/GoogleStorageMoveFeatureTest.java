@@ -79,9 +79,9 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new GoogleStorageMoveFeature(session).isSupported(c, c));
+        assertFalse(new GoogleStorageMoveFeature(session).isSupported(c, c.getParent(), c.getName()));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new GoogleStorageMoveFeature(session).isSupported(cf, cf));
+        assertTrue(new GoogleStorageMoveFeature(session).isSupported(cf, cf.getParent(), cf.getName()));
     }
 
     @Test

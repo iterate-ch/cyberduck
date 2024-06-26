@@ -43,7 +43,7 @@ public class SDSDelegatingCopyFeature implements Copy {
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
-        if(proxy.isSupported(source, target)) {
+        if(proxy.isSupported(source, target.getParent(), target.getName())) {
             return proxy.copy(source, target, status, callback, listener);
         }
         // Copy between encrypted and unencrypted data room
@@ -57,10 +57,10 @@ public class SDSDelegatingCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(proxy.isSupported(source, target)) {
-            proxy.preflight(source, target);
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(proxy.isSupported(source, directory, filename)) {
+            proxy.preflight(source, directory, filename);
         }
-        copy.preflight(source, target);
+        copy.preflight(source, directory, filename);
     }
 }

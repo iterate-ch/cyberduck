@@ -53,13 +53,14 @@ public interface Move {
     }
 
     /**
-     * @param source Source file or folder
-     * @param target Target file or folder
+     * @param source    Source file or folder
+     * @param directory Target directory
+     * @param filename  Target filename
      * @return False if not supported for given files
      */
-    default boolean isSupported(final Path source, final Path target) {
+    default boolean isSupported(final Path source, final Path directory, final String filename) {
         try {
-            this.preflight(source, target);
+            this.preflight(source, directory, filename);
             return true;
         }
         catch(BackgroundException e) {
@@ -76,12 +77,15 @@ public interface Move {
     }
 
     /**
+     * @param source    Existing file or folder
+     * @param directory Target directory
+     * @param filename  Target filename
      * @throws AccessDeniedException    Permission failure for target parent directory
      * @throws UnsupportedException     Move operation not supported for source
      * @throws InvalidFilenameException Target filename not supported
      */
-    default void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!target.getParent().attributes().getPermission().isWritable()) {
+    default void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(!directory.getParent().attributes().getPermission().isWritable()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"),
                     source.getName())).withFile(source);
         }
@@ -91,9 +95,9 @@ public interface Move {
     /**
      * @return Supported features
      */
-   default EnumSet<Flags> features(Path source, Path target) {
-       return EnumSet.noneOf(Flags.class);
-   }
+    default EnumSet<Flags> features(Path source, Path target) {
+        return EnumSet.noneOf(Flags.class);
+    }
 
     /**
      * Feature flags

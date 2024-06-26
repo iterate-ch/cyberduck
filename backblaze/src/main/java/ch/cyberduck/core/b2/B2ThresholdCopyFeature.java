@@ -56,8 +56,8 @@ public class B2ThresholdCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        new B2CopyFeature(session, fileid).preflight(source, target);
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        new B2CopyFeature(session, fileid).preflight(source, directory, filename);
     }
 
     @Override

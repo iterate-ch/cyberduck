@@ -48,7 +48,7 @@ public class DefaultCopyFeatureTest extends AbstractSFTPTest {
     public void testSupported() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertTrue(new DefaultCopyFeature(session).isSupported(source, target));
+        assertTrue(new DefaultCopyFeature(session).isSupported(source, target.getParent(), target.getName()));
     }
 
     @Test

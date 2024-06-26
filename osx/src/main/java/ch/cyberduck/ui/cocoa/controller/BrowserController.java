@@ -3809,7 +3809,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     if(null == file) {
                         return false;
                     }
-                    return pool.getFeature(Move.class).isSupported(file, file);
+                    return pool.getFeature(Move.class).isSupported(file, file.getParent(), file.getName());
 
                 }
             }

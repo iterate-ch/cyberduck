@@ -90,12 +90,12 @@ public class CryptoCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path copy) throws BackgroundException {
+    public void preflight(final Path source, final Path copy, final String filename) throws BackgroundException {
         if(vault.contains(source) && vault.contains(copy)) {
-            proxy.withTarget(target).preflight(source, copy);
+            proxy.withTarget(target).preflight(source, copy, filename);
         }
         else {
-            new DefaultCopyFeature(session).withTarget(target).preflight(source, copy);
+            new DefaultCopyFeature(session).withTarget(target).preflight(source, copy, filename);
         }
     }
 

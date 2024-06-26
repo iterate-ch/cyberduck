@@ -98,7 +98,7 @@ public class DefaultVersioningFeature implements Versioning {
     public boolean save(final Path file) throws BackgroundException {
         final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
         final Move feature = session.getFeature(Move.class);
-        if(!feature.isSupported(file, version)) {
+        if(!feature.isSupported(file, version.getParent(), version.getName())) {
             log.warn(String.format("Skip saving version for %s", file));
             return false;
         }

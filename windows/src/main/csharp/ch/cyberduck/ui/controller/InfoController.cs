@@ -820,7 +820,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Path file = _files[0];
                 
                 View.FilenameEnabled = (1 == count &&
-                                        ((Move)_controller.Session.getFeature(typeof(Move))).isSupported(file, file));
+                                        ((Move)_controller.Session.getFeature(typeof(Move))).isSupported(file, file.getParent(), String.Empty));
                 string path;
                 if (file.isSymbolicLink())
                 {

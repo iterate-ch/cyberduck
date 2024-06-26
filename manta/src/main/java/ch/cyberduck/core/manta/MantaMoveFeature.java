@@ -65,8 +65,8 @@ public class MantaMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!session.isUserWritable(target)) {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(!session.isUserWritable(directory)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
     }

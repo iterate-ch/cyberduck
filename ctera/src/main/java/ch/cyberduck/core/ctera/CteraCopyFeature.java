@@ -36,12 +36,12 @@ public class CteraCopyFeature extends DAVCopyFeature {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
         // defaults to Acl.EMPTY (disabling role checking) if target does not exist
-        assumeRole(target, WRITEPERMISSION);
+        assumeRole(directory, WRITEPERMISSION);
         // no createfilespermission required for now
         if(source.isDirectory()) {
-            assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+            assumeRole(directory.getParent(), directory.getName(), CREATEDIRECTORIESPERMISSION);
         }
     }
 }

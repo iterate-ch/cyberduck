@@ -119,7 +119,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path file = new DropboxTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(home, "~$f", EnumSet.of(Path.Type.file));
-        assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, target));
+        assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, target.getParent(), target.getName()));
         assertThrows(AccessDeniedException.class, () -> feature.move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

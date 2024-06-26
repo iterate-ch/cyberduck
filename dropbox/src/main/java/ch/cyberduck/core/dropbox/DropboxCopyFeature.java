@@ -73,9 +73,9 @@ public class DropboxCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!DropboxTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
+        if(!DropboxTouchFeature.validate(filename)) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
     }
 }

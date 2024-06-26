@@ -21,7 +21,7 @@ import ch.cyberduck.core.shared.DisabledMoveFeature;
 public class NullMoveFeature extends DisabledMoveFeature {
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
         //
     }
 }

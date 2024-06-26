@@ -84,13 +84,13 @@ public class SMBCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Path directory, final String filename) throws BackgroundException {
         if(source.isVolume()) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         final SMBPathContainerService containerService = new SMBPathContainerService(session);
         // Remote copy is only possible between files on the same server
-        if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
+        if(!containerService.getContainer(source).equals(containerService.getContainer(directory))) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
     }

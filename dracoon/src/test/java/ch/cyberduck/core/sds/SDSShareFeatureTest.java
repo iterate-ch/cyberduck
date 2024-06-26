@@ -21,12 +21,15 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Share;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ObjectExpiration;
@@ -34,12 +37,16 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -66,6 +73,39 @@ public class SDSShareFeatureTest extends AbstractSDSTest {
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testverwriteKeepSharedLink() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DescriptiveUrl url = new SDSShareFeature(session, nodeid).toDownloadUrl(test,
+                Share.Sharee.world, new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxDownloads(null), new DisabledPasswordCallback());
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.signed, url.getType());
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] random = RandomUtils.nextBytes(7352);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        out.close();
+        final TransferStatus status = new TransferStatus().exists(true).withLength(random.length);
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)));
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
     }
 
     @Test
