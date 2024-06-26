@@ -84,7 +84,6 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testDocuments() throws Exception {
-        // TODO do this everywhere
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final DeepboxDirectoryFeature directory = (DeepboxDirectoryFeature) session.getFeature(Directory.class);
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents", EnumSet.of(AbstractPath.Type.directory));
