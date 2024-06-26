@@ -178,7 +178,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testListAuditing() throws Exception {
+    public void testListReceipts() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path receipts = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/ Receipts/", EnumSet.of(AbstractPath.Type.directory));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(receipts, new DisabledListProgressListener());
@@ -204,17 +204,20 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
 
-        final Path auditing = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/ Receipts/", EnumSet.of(AbstractPath.Type.directory));
-        final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        final Path receipts = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/ Receipts/", EnumSet.of(AbstractPath.Type.directory));
+        final Path folder = new Path(receipts, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
-
-        final int numFiles = chunkSize * 2;
-        for(int i = 0; i < numFiles; ++i) {
-            new DeepboxTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+        try {
+            final int numFiles = chunkSize * 2;
+            for(int i = 0; i < numFiles; ++i) {
+                new DeepboxTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+            }
+            final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
+            assertEquals(numFiles, listing.size());
         }
-        final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
-        assertEquals(numFiles, listing.size());
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        finally {
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        }
     }
 
     @Test
@@ -224,17 +227,20 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
 
-        final Path auditing = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/ Receipts/", EnumSet.of(AbstractPath.Type.directory));
-        final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        final Path receipts = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/ Receipts/", EnumSet.of(AbstractPath.Type.directory));
+        final Path folder = new Path(receipts, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
-
-        final int numFiles = (int) Math.floor(chunkSize * 2.5);
-        for(int i = 0; i < numFiles; ++i) {
-            new DeepboxTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+        try {
+            final int numFiles = (int) Math.floor(chunkSize * 2.5);
+            for(int i = 0; i < numFiles; ++i) {
+                new DeepboxTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+            }
+            final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
+            assertEquals(numFiles, listing.size());
         }
-        final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
-        assertEquals(numFiles, listing.size());
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        finally {
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        }
     }
 
     @Test

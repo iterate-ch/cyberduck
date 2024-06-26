@@ -46,10 +46,14 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         new DeepboxTouchFeature(session, fileid).touch(test, new TransferStatus());
         final Path copy = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-        // TODO flapping: 403 on the following line
-        assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
-        assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(PathAttributes.EMPTY)));
-        new DeepboxDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            // TODO flapping when all tests are executed: 403 on the following line
+            assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
+            assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(PathAttributes.EMPTY)));
+        }
+        finally {
+            new DeepboxDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
     }
 
     @Test

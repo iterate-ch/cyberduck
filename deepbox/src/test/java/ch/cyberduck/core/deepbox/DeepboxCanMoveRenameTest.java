@@ -127,6 +127,7 @@ public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
         assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(file, fileInTrash));
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test

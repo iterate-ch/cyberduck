@@ -62,6 +62,7 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, fileid).find(test.withAttributes(new PathAttributes())).getFileId());
         assertThrows(NotfoundException.class, () -> new DeepboxAttributesFinderFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())));
 
+        // TODO delete and purge - otherwise trash is growing and tests take longer and longer...
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
