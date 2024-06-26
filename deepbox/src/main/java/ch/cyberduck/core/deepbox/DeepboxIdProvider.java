@@ -136,13 +136,13 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 final String deepBoxNodeId = getFileId(file.getParent().getParent());
 
                 if(new DeepboxPathContainerService().isDocuments(file)) {
-                    return lookupDocuments(file, deepBoxNodeId, boxNodeId);
+                    return lookupDocumentsNodeId(file, deepBoxNodeId, boxNodeId);
                 }
                 if(new DeepboxPathContainerService().isInbox(file)) {
-                    return lookupInbox(file, deepBoxNodeId, boxNodeId);
+                    return lookupInboxNodeId(file, deepBoxNodeId, boxNodeId);
                 }
                 if(new DeepboxPathContainerService().isTrash(file)) {
-                    return lookupTrash(file, deepBoxNodeId, boxNodeId);
+                    return lookupTrashNodeId(file, deepBoxNodeId, boxNodeId);
                 }
                 return null;
             }
@@ -222,19 +222,20 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         return this.cache(file, null);
     }
 
-    private String lookupDocuments(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
+    // N.B. we can get node id of documents - however, we might not get its nodeinfo or do listfiles from the documents root node, even if boxPolicy.isCanListFilesRoot()==true!
+    private String lookupDocumentsNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
         final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
         final String documentsId = api.listFiles(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null).getPath().getSegments().get(0).getNodeId().toString();
         return this.cache(file, documentsId);
     }
 
-    private String lookupInbox(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
+    private String lookupInboxNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
         final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
         final String inboxId = api.listQueue(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null, null).getPath().getSegments().get(0).getNodeId().toString();
         return this.cache(file, inboxId);
     }
 
-    private String lookupTrash(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
+    private String lookupTrashNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
         final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
         final String trashId = api.listTrash(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null).getPath().getSegments().get(0).getNodeId().toString();
         return this.cache(file, trashId);
