@@ -19,13 +19,11 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
-import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -49,25 +47,36 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testOverwrite() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        Path file = new Path(auditing, "nix4.txt", EnumSet.of(AbstractPath.Type.file));
-        final byte[] content = RandomUtils.nextBytes(2047);
-        final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
-        final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        final TransferStatus progress = new TransferStatus();
-        final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(progress, progress).withListener(count).transfer(in, out);
-        assertEquals(content.length, count.getSent());
-        in.close();
-        out.close();
-        assertTrue(new DefaultFindFeature(session).find(file));
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+
+        final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
+        new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        try {
+
+            final byte[] content = RandomUtils.nextBytes(2047);
+            final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
+            final ByteArrayInputStream in = new ByteArrayInputStream(content);
+            final TransferStatus progress = new TransferStatus();
+            final BytecountStreamListener count = new BytecountStreamListener();
+            new StreamCopier(progress, progress).withListener(count).transfer(in, out);
+            assertEquals(content.length, count.getSent());
+            in.close();
+            out.close();
+            assertTrue(new DefaultFindFeature(session).find(file));
+            assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
+        }
+        finally {
+            deleteAndPurge(file);
+        }
+
     }
 
     @Test
     public void testNewFile() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path file = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
         final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -79,14 +88,15 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        deleteAndPurge(file);
     }
 
     @Test
     public void testReadWrite() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
-                new Path(auditing,
+                new Path(documents,
                         new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long folderTimestamp = new DeepboxAttributesFinderFeature(session, nodeid).find(room).getModificationDate();
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -127,15 +137,16 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(nodeId, new DeepboxIdProvider(session).getFileId(test));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        deleteAndPurge(room);
     }
 
     @Test
     public void testWriteSingleByte() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final DeepboxWriteFeature feature = new DeepboxWriteFeature(session, nodeid);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
-                new Path(auditing, new AlphanumericRandomStringService().random(),
+                new Path(documents, new AlphanumericRandomStringService().random(),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1);
         final TransferStatus status = new TransferStatus();
@@ -152,15 +163,16 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        deleteAndPurge(file);
+        deleteAndPurge(room);
     }
 
     @Test(expected = TransferStatusCanceledException.class)
     public void testWriteCancel() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
-                new Path(auditing, new AlphanumericRandomStringService().random(),
+                new Path(documents, new AlphanumericRandomStringService().random(),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
 
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -185,7 +197,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             out.getStatus();
         }
         finally {
-            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+            deleteAndPurge(room);
         }
     }
 }

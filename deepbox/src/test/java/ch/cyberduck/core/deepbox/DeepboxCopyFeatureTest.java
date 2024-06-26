@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,13 +40,13 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testCopyFile() throws Exception {
-        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path test = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxTouchFeature(session, fileid).touch(test, new TransferStatus());
-        final Path copy = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         try {
-            // TODO flapping when all tests are executed: 403 on the following line
             assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
             assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(new PathAttributes())));
         }
@@ -57,8 +58,9 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testCopyOverride() throws Exception {
-        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DeepboxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxTouchFeature(session, fileid).touch(test, new TransferStatus());
@@ -76,10 +78,11 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
 
     @Test(expected = UnsupportedException.class)
     public void testCopyDirectory() throws Exception {
-        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path directory = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(auditing,
+        final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(documents,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path copy = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         try {
             new DeepboxCopyFeature(session, fileid).preflight(directory, copy);
         }
@@ -90,9 +93,16 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
 
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
-        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path test = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxCopyFeature(session, fileid).copy(test, new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
-                new DisabledLoginCallback(), new DisabledStreamListener());
+        final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        try {
+            new DeepboxCopyFeature(session, fileid).copy(test, new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
+                    new DisabledLoginCallback(), new DisabledStreamListener());
+        }
+        finally {
+            deleteAndPurge(test);
+        }
+
     }
 }

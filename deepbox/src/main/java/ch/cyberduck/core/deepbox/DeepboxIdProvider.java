@@ -99,7 +99,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         }
 
         // iteratively add to cache
-        // TODO (16) assume path separator is not in segments
+        // N.B. as we use PathNormalizer.name(), we can safely assume path separator is not in segments!
         final List<Path> segs = pathToList(file);
         for(final Path seg : segs) {
             if(StringUtils.isNotBlank(seg.attributes().getFileId())) {

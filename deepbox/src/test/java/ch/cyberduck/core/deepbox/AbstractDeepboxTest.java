@@ -39,25 +39,12 @@ import static org.junit.Assert.fail;
 
 public class AbstractDeepboxTest extends VaultTest {
 
-    // deepbox.deepboxapp3.user
-    // ORG1/Box1 (view): /deepBoxes/71fdd537-17db-4a8a-b959-64a1ab07774a/boxes/40062559-c1a3-4229-9b1b-77320821d0d5
-    // ORG4/Box1 (organize): /deepBoxes/a548e68e-5584-42c1-b2bc-9e051dc78e5e/boxes/366a7117-0ad3-4dcb-9e79-a4270c3f6fb5
 
     protected final UUID ORG4 = UUID.fromString("a548e68e-5584-42c1-b2bc-9e051dc78e5e");
     protected final UUID ORG4_BOX1 = UUID.fromString("366a7117-0ad3-4dcb-9e79-a4270c3f6fb5");
     protected final UUID ORG1 = UUID.fromString("71fdd537-17db-4a8a-b959-64a1ab07774a");
     protected final UUID ORG1_BOX1 = UUID.fromString("40062559-c1a3-4229-9b1b-77320821d0d5");
 
-
-    protected final Path deepBox = new Path("/Mountainduck Buddies", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-
-    protected final Path box = new Path(deepBox, "My Box", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-
-    protected final Path documents = new Path(box, "Documents", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-
-    protected final Path trash = new Path(box, "Trash", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-
-    protected final Path auditing = new Path(documents, "Auditing", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
 
     protected DeepboxSession session;
 
@@ -68,26 +55,18 @@ public class AbstractDeepboxTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        // TODO (16) remove personal account for integration testing
-        setup("deepbox.user");
+        setup("deepbox.deepboxapp3.user");
+        // deepbox.deepboxapp3.user
+        // ORG1/Box1 (view): /deepBoxes/71fdd537-17db-4a8a-b959-64a1ab07774a/boxes/40062559-c1a3-4229-9b1b-77320821d0d5
+        // ORG4/Box1 (organize): /deepBoxes/a548e68e-5584-42c1-b2bc-9e051dc78e5e/boxes/366a7117-0ad3-4dcb-9e79-a4270c3f6fb5
+
     }
 
     protected void setup(final String vaultUserKey) throws BackgroundException {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DeepboxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Deepbox.cyberduckprofile"));
-        // deepbox-desktop-app-int (christian@iterate.ch) OAuth2 Access Token
-        // deepbox-desktop-app-int (deepboxpeninna+deepboxapp1@gmail.com)  OAuth2 Access Token
-
-        // TODO (16) remove personal account for integration testing
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get(vaultUserKey)));
-//        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("deepbox.deepboxapp1.user")));
-//        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("deepbox.deepboxapp2.user")));
-//        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("deepbox.deepboxapp3.user")));
-//        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("deepbox.deepboxapp4.user")));
-//        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("deepbox.deepboxappshare.user")));
-
-
         session = new DeepboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -102,8 +81,6 @@ public class AbstractDeepboxTest extends VaultTest {
 
     public static class TestPasswordStore extends DisabledPasswordStore {
         Map<String, String> map = Stream.of(
-                        // TODO (16) remove personal account for integration testing
-                        new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (christian@iterate.ch)", "deepbox"),
                         new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp1@gmail.com)", "deepbox.deepboxapp1"),
                         new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp2@gmail.com)", "deepbox.deepboxapp2"),
                         new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp3@gmail.com)", "deepbox.deepboxapp3"),
@@ -154,17 +131,15 @@ public class AbstractDeepboxTest extends VaultTest {
         }
     }
 
-    // TODO delete and purge - otherwise trash is growing and tests take longer and longer...
     protected void deleteAndPurge(final Path file) throws BackgroundException {
-        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         if(new DeepboxPathContainerService().isInTrash(file)) {
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            session.getFeature(Delete.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         else {
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            session.getFeature(Delete.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
             final Path trash = new Path(new DeepboxPathContainerService().getBoxPath(file).withAttributes(new PathAttributes()), PathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox")), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
-            final Path fileInTrash = new Path(trash, file.getName(), EnumSet.of(Path.Type.file));
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            final Path fileInTrash = new Path(trash, file.getName(), file.getType());
+            session.getFeature(Delete.class).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 }

@@ -151,7 +151,7 @@ public class DeepboxListService implements ListService {
                 }
                 else if(new DeepboxPathContainerService().isInDocuments(directory)) {
                     do {
-                        try {
+//                        try {
                             final NodeContent files = api.listFiles(
                                     UUID.fromString(deepBoxNodeId),
                                     UUID.fromString(boxNodeId),
@@ -161,20 +161,20 @@ public class DeepboxListService implements ListService {
                             listener.chunk(directory, list);
                             size = files.getSize();
                             offset += this.chunksize;
-                        }
-                        catch(final ApiException e) {
-                            if(e.getCode() != 403) {
-                                throw e;
-                            }
-                            // TODO (12) add test
-                            // documents not visible if 403
-                        }
+//                        }
+//                        catch(final ApiException e) {
+//                            if(e.getCode() != 403) {
+//                                throw e;
+//                            }
+//                            // TODO (12) add test
+//                            // documents not visible if 403
+//                        }
                     }
                     while(offset < size);
                 }
                 else if(new DeepboxPathContainerService().isInTrash(directory)) {
                     do {
-                        try {
+                        //try {
                             final NodeContent trashFiles = api.listTrash(
                                     UUID.fromString(deepBoxNodeId),
                                     UUID.fromString(boxNodeId),
@@ -184,14 +184,14 @@ public class DeepboxListService implements ListService {
                             listener.chunk(directory, list);
                             size = trashFiles.getSize();
                             offset += this.chunksize;
-                        }
-                        catch(final ApiException e) {
-                            if(e.getCode() != 403) {
-                                throw e;
-                            }
-                            // TODO (12) add test
-                            // trash not visible if 403
-                        }
+//                        }
+//                        catch(final ApiException e) {
+//                            if(e.getCode() != 403) {
+//                                throw e;
+//                            }
+//                            // TODO (12) add test
+//                            // trash not visible if 403
+//                        }
                     }
                     while(offset < size);
                 }

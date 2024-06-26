@@ -24,10 +24,10 @@ import ch.cyberduck.core.deepbox.io.swagger.client.api.PathRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeCopy;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -41,14 +41,9 @@ import static org.junit.Assert.assertEquals;
 @Category(IntegrationTest.class)
 public class DeepboxListServiceWithRoleTest extends AbstractDeepboxTest {
 
-    @Before
-    public void setup() throws Exception {
-        setup("deepbox.deepboxapp3.user");
-    }
-
     @Test
     public void testDuplicateFiles() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
@@ -70,7 +65,7 @@ public class DeepboxListServiceWithRoleTest extends AbstractDeepboxTest {
 
     @Test
     public void testDuplicateFolders() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());

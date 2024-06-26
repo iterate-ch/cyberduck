@@ -23,6 +23,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -39,8 +40,10 @@ import static org.junit.Assert.*;
 public class DeepboxDeleteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testDeleteFile() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path file = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String nodeId = new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus()).attributes().getFileId();
         new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(nodeId), null, null, null); // assert no fail
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
@@ -64,8 +67,10 @@ public class DeepboxDeleteFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testDeleteFolder() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new DeepboxDirectoryFeature(session, nodeid).mkdir(new Path(auditing, String.format(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new DeepboxDirectoryFeature(session, nodeid).mkdir(new Path(documents, String.format(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String nodeId = new DeepboxTouchFeature(session, nodeid).touch(folder, new TransferStatus()).attributes().getFileId();
         new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(nodeId), null, null, null); // assert no fail
         final Path subfolderWithContent = new DeepboxDirectoryFeature(session, nodeid).mkdir(new Path(folder, new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -96,7 +101,9 @@ public class DeepboxDeleteFeatureTest extends AbstractDeepboxTest {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
-        final Path test = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxDeleteFeature(session, new DeepboxIdProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+
+        deleteAndPurge(test);
     }
 }

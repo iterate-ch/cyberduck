@@ -46,7 +46,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -55,11 +54,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class DeepboxNodePolicyTest extends AbstractDeepboxTest {
-
-    @Before
-    public void setup() throws Exception {
-        setup("deepbox.deepboxapp3.user");
-    }
 
     private static final Logger log = LogManager.getLogger(DeepboxNodePolicyTest.class);
 

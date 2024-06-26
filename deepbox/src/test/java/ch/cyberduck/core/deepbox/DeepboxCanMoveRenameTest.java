@@ -21,10 +21,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -36,14 +36,10 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
-    @Before
-    public void setup() throws Exception {
-        setup("deepbox.deepboxapp3.user");
-    }
 
     @Test
     public void testNoMoveRenameDeepbox() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path deepBox = new Path("/ORG 1 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(deepBox);
         assertEquals(Acl.EMPTY, attributes.getAcl());
@@ -52,7 +48,7 @@ public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
 
     @Test
     public void testNoMoveRenameBox() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path box = new Path("/ORG 1 - DeepBox Desktop App/Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(box);
         assertEquals(Acl.EMPTY, attributes.getAcl());
@@ -62,7 +58,7 @@ public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
 
     @Test
     public void testNoMoveRenameInbox() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path inbox = new Path("/ORG 1 - DeepBox Desktop App/Box1/Inbox", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(inbox);
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
@@ -74,7 +70,7 @@ public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
 
     @Test
     public void testNoMoveRenameDocuments() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 1 - DeepBox Desktop App/Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(documents);
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
@@ -86,7 +82,7 @@ public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
 
     @Test
     public void testNoMoveRenameTrash() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/Box1/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(trash);
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
@@ -98,7 +94,7 @@ public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
 
     @Test
     public void testNoMoveRenameFileFromTrash() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new DeepboxTouchFeature(session, nodeid).touch(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
@@ -117,7 +113,7 @@ public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
 
     @Test
     public void testNoMoveFileToTrash() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new DeepboxTouchFeature(session, nodeid).touch(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/Box1/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -133,7 +129,7 @@ public class DeepboxCanMoveRenameTest extends AbstractDeepboxTest {
 
     @Test
     public void testNoMoveRenameFileAndFolderDocuments() throws Exception {
-        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path folder = new Path("/ORG 1 - DeepBox Desktop App/Box1/Documents/ Receipts", EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, "RE-IN 0.pdf", EnumSet.of(AbstractPath.Type.file));
         final Path fileRenamed = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));

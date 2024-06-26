@@ -18,7 +18,6 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -26,7 +25,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -37,8 +35,9 @@ public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testFile() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(
-                new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DeepboxShareFeature feature = new DeepboxShareFeature(session, fileid);
             assertTrue(feature.isSupported(test, Share.Type.download));
@@ -46,7 +45,7 @@ public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
             assertNotNull(feature.toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         }
         finally {
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+            deleteAndPurge(test);
         }
     }
 }

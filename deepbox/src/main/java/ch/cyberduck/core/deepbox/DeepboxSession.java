@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
@@ -78,7 +79,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     private OAuth2RequestInterceptor authorizationService;
 
-    private PreferencesReader preferences = new HostPreferences(host);
+    private final PreferencesReader preferences = new HostPreferences(host);
 
     public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -137,7 +138,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
             credentials.setUsername(me.getEmail());
         }
         catch(ApiException e) {
-            throw new DeepboxExceptionMappingService(new DeepboxIdProvider(this)).map(e);
+            throw new DeepboxExceptionMappingService(fileid).map(e);
         }
     }
 
@@ -149,6 +150,9 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == FileIdProvider.class) {
+            return (T) fileid;
+        }
         if(type == ListService.class) {
             return (T) new DeepboxListService(this, fileid);
         }
