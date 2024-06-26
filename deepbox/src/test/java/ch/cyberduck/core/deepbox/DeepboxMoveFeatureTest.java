@@ -83,7 +83,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new DeepboxTouchFeature(session, fileid).touch(
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        // TODO?
+        // TODO does not work yet
         new DeepboxMoveFeature(session, fileid).move(test, target,
                 new TransferStatus().exists(true).withRemote(target.attributes()), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
