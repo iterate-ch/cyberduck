@@ -71,6 +71,6 @@ public class DeepboxProtocol extends AbstractProtocol {
 
     @Override
     public Case getCaseSensitivity() {
-        return Case.insensitive;
+        return Case.sensitive;
     }
 }
