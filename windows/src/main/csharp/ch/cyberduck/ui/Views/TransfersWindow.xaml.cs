@@ -11,6 +11,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+using ch.cyberduck.ui.ViewModels;
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Windows;
 
@@ -21,6 +23,12 @@ namespace ch.cyberduck.ui.Views
         public TransfersWindow()
         {
             InitializeComponent();
+            WeakReferenceMessenger.Default.Register<TransfersViewModel.BringIntoViewMessage>(this, OnBringIntoView);
+        }
+
+        private void OnBringIntoView(object recipient, TransfersViewModel.BringIntoViewMessage message)
+        {
+            transferList.ScrollIntoView(message.Value);
         }
 
         protected override Size MeasureOverride(Size availableSize)
