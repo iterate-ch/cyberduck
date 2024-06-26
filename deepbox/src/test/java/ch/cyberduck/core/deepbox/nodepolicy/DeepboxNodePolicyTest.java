@@ -1,4 +1,6 @@
-package ch.cyberduck.core.deepbox.nodepoliy;/*
+package ch.cyberduck.core.deepbox.nodepolicy;
+
+/*
  * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
