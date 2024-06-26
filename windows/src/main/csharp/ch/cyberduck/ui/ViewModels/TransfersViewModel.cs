@@ -20,6 +20,8 @@ using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Ui.Controller;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
@@ -501,6 +503,7 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         if (SelectedTransfers.Count is 0 && transferViewModel.ProgressState is not null)
         {
             transferViewModel.IsSelected = true;
+            WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(transferViewModel));
         }
     }
 
@@ -627,6 +630,8 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     {
         return SelectedTransfer is not null;
     }
+
+    public class BringIntoViewMessage(TransferViewModel transfer) : ValueChangedMessage<TransferViewModel>(transfer);
 
     private readonly record struct ProgressState(bool Running, int Count, double Progress);
 }

@@ -353,7 +353,8 @@
             </Grid>
         </Border>
 
-        <ListBox ItemsSource="{Binding Transfers}"
+        <ListBox Name="transferList"
+                 ItemsSource="{Binding Transfers}"
                  SelectedItem="{Binding SelectedTransfer}"
                  IsSynchronizedWithCurrentItem="True"
                  HorizontalContentAlignment="Stretch"
@@ -369,7 +370,7 @@
                 <KeyBinding Gesture="Return"
                             Command="{Binding ReloadCommand}" />
             </ListBox.InputBindings>
-            
+
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="AutomationProperties.HelpText"
