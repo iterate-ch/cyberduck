@@ -170,11 +170,6 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 if(tokens.validate()) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Return tokens %s for %s", tokens, bookmark));
-                        final String identifier = bookmark.getProtocol().getIdentifier();
-                        log.debug(String.format("%s.user=%s", identifier, bookmark.getCredentials().getUsername()));
-                        log.debug(String.format("%s.accesstoken=%s", identifier, tokens.getAccessToken()));
-                        log.debug(String.format("%s.refreshtoken=%s", identifier, tokens.getRefreshToken()));
-                        log.debug(String.format("%s.tokenexpiry=%s", identifier, tokens.getExpiryInMilliseconds()));
                     }
                     return tokens;
                 }
