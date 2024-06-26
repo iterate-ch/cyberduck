@@ -49,10 +49,10 @@ public class DeepboxListServiceWithRoleTest extends AbstractDeepboxTest {
     @Test
     public void testDuplicateFiles() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path virtualFolder = new Path("/ORG 1 - DeepBox Desktop App/Box2/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
-        final Path file = new Path(folder, new AlphanumericRandomStringService().random() + ".txt", EnumSet.of(AbstractPath.Type.file));
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
 
         final NodeCopy body = new NodeCopy();
@@ -64,14 +64,14 @@ public class DeepboxListServiceWithRoleTest extends AbstractDeepboxTest {
             assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
         }
         finally {
-            new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+            deleteAndPurge(folder);
         }
     }
 
     @Test
     public void testDuplicateFolders() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path virtualFolder = new Path("/ORG 1 - DeepBox Desktop App/Box2/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
@@ -93,7 +93,7 @@ public class DeepboxListServiceWithRoleTest extends AbstractDeepboxTest {
             assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
         }
         finally {
-            new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+            deleteAndPurge(folder);
         }
     }
 }

@@ -85,7 +85,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
         return file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox")));
     }
 
-    private Path getThirdLevelPath(Path file) {
+    public Path getThirdLevelPath(Path file) {
         if(file.isRoot()) {
             return null;
         }
@@ -96,6 +96,29 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
             return null;
         }
         while(!isThirdLevel(file)) {
+            file = file.getParent();
+        }
+        return file;
+    }
+
+    public Path getBoxPath(Path file) {
+        if(file.isRoot()) {
+            return null;
+        }
+        if(isDeepbox(file)) {
+            return null;
+        }
+        while(!isBox(file)) {
+            file = file.getParent();
+        }
+        return file;
+    }
+
+    public Path getDeepboxPath(Path file) {
+        if(file.isRoot()) {
+            return null;
+        }
+        while(!isDeepbox(file)) {
             file = file.getParent();
         }
         return file;

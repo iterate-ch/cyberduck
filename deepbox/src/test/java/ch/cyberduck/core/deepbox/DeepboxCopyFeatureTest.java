@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,7 +30,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
@@ -48,11 +46,12 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         try {
             // TODO flapping when all tests are executed: 403 on the following line
-            assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
-            assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(PathAttributes.EMPTY)));
+            assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
+            assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(new PathAttributes())));
         }
         finally {
-            new DeepboxDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            deleteAndPurge(test.withAttributes(new PathAttributes()));
+            deleteAndPurge(copy.withAttributes(new PathAttributes()));
         }
     }
 
@@ -69,8 +68,10 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final Find find = new DeepboxFindFeature(session, fileid);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new DeepboxDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DeepboxDeleteFeature(session, fileid).delete(Arrays.asList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+
+        deleteAndPurge(test);
+        deleteAndPurge(copy);
+        deleteAndPurge(folder);
     }
 
     @Test(expected = UnsupportedException.class)
@@ -83,7 +84,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
             new DeepboxCopyFeature(session, fileid).preflight(directory, copy);
         }
         finally {
-            new DeepboxDeleteFeature(session, fileid).delete(Arrays.asList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            deleteAndPurge(directory);
         }
     }
 

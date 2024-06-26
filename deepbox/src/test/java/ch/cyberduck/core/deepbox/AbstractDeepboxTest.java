@@ -15,21 +15,9 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -163,6 +151,20 @@ public class AbstractDeepboxTest extends VaultTest {
                 final String prefix = user.replace(" OAuth2 Refresh Token", "");
                 VaultTest.add(String.format("%s.refreshtoken", map.get(prefix)), password);
             }
+        }
+    }
+
+    // TODO delete and purge - otherwise trash is growing and tests take longer and longer...
+    protected void deleteAndPurge(final Path file) throws BackgroundException {
+        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
+        if(new DeepboxPathContainerService().isInTrash(file)) {
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        else {
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            final Path trash = new Path(new DeepboxPathContainerService().getBoxPath(file).withAttributes(new PathAttributes()), PathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox")), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+            final Path fileInTrash = new Path(trash, file.getName(), EnumSet.of(Path.Type.file));
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 }

@@ -48,6 +48,9 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getContainer(folder));
         assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
         assertNull(container.getKey(folder));
+        assertNull(container.getDeepboxPath(folder));
+        assertNull(container.getBoxPath(folder));
+        assertNull(container.getThirdLevelPath(folder));
     }
 
     @Test
@@ -64,6 +67,9 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getContainer(folder));
         assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
         assertNull(container.getKey(folder));
+        assertEquals(folder, container.getDeepboxPath(folder));
+        assertNull(container.getBoxPath(folder));
+        assertNull(container.getThirdLevelPath(folder));
     }
 
     @Test
@@ -80,6 +86,9 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getContainer(folder));
         assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
         assertNull(container.getKey(folder));
+        assertEquals(folder.getParent(), container.getDeepboxPath(folder));
+        assertEquals(folder, container.getBoxPath(folder));
+        assertNull(container.getThirdLevelPath(folder));
     }
 
     @ParameterizedTest
@@ -108,6 +117,9 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getContainer(folder));
         assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
         assertNull(container.getKey(folder));
+        assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
+        assertEquals(folder.getParent(), container.getBoxPath(folder));
+        assertEquals(folder, container.getThirdLevelPath(folder));
     }
 
     @ParameterizedTest
@@ -136,6 +148,9 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getContainer(folder));
         assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
         assertNull(container.getKey(folder));
+        assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
+        assertEquals(folder.getParent(), container.getBoxPath(folder));
+        assertEquals(folder, container.getThirdLevelPath(folder));
     }
 
     @ParameterizedTest
@@ -164,6 +179,9 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getContainer(folder));
         assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
         assertNull(container.getKey(folder));
+        assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
+        assertEquals(folder.getParent(), container.getBoxPath(folder));
+        assertEquals(folder, container.getThirdLevelPath(folder));
     }
 
     @ParameterizedTest
@@ -192,6 +210,9 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder.getParent(), container.getContainer(folder));
         assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
         assertEquals("Auditing", container.getKey(folder));
+        assertEquals(folder.getParent().getParent().getParent(), container.getDeepboxPath(folder));
+        assertEquals(folder.getParent().getParent(), container.getBoxPath(folder));
+        assertEquals(folder.getParent(), container.getThirdLevelPath(folder));
     }
 
     @ParameterizedTest
@@ -220,5 +241,8 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(file.getParent().getParent(), container.getContainer(file));
         assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(file));
         assertEquals("Auditing/nix4.txt", container.getKey(file));
+        assertEquals(file.getParent().getParent().getParent().getParent(), container.getDeepboxPath(file));
+        assertEquals(file.getParent().getParent().getParent(), container.getBoxPath(file));
+        assertEquals(file.getParent().getParent(), container.getThirdLevelPath(file));
     }
 }
