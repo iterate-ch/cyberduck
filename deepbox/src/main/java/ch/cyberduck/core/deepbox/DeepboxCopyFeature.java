@@ -69,7 +69,7 @@ public class DeepboxCopyFeature implements Copy {
             if(nodeId == null) {
                 throw new NotfoundException(String.format("Cannot copy %s", file));
             }
-            // TODO (4) check with DeepBox: needed to patch openapi.json - fix on their side?
+            // manually patched deepbox-api.json, return code 200 missing in theirs
             final Node copied = core.copyNode(nodeCopy, UUID.fromString(nodeId));
             final NodeUpdate nodeUpdate = new NodeUpdate();
             nodeUpdate.setName(target.getName());
