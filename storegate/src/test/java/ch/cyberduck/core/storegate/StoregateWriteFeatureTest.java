@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -144,10 +145,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
         try {
             final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+            out.close();
             fail();
         }
-        catch(LockedException e) {
-            //
+        catch(IOException e) {
+            assertTrue(e.getCause() instanceof LockedException);
         }
         status.setLockId(lockId);
         final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
