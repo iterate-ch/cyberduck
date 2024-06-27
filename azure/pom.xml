@@ -23,7 +23,7 @@
     </parent>
     <artifactId>azure</artifactId>
     <properties>
-        <azure-storage-version>12.26.1</azure-storage-version>
+        <azure-storage-version>8.6.6</azure-storage-version>
     </properties>
 
     <dependencies>
@@ -40,8 +40,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-storage-blob</artifactId>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-storage</artifactId>
             <version>${azure-storage-version}</version>
             <exclusions>
                 <exclusion>

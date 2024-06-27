@@ -1,7 +1,7 @@
 package ch.cyberduck.core.azure;
 
 /*
- * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,21 +21,25 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import com.microsoft.azure.storage.OperationContext;
+
 public class AzureListService implements ListService {
 
     private final AzureSession session;
+    private final OperationContext context;
 
-    public AzureListService(final AzureSession session) {
+    public AzureListService(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new AzureContainerListService(session).list(directory, listener);
+            return new AzureContainerListService(session, context).list(directory, listener);
         }
         else {
-            return new AzureObjectListService(session).list(directory, listener);
+            return new AzureObjectListService(session, context).list(directory, listener);
         }
     }
 }

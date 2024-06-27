@@ -1,18 +1,21 @@
 package ch.cyberduck.core.azure;
 
 /*
- * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.AbstractProtocol;
@@ -24,9 +27,9 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
-import org.apache.commons.codec.binary.Base64;
-
 import java.util.Comparator;
+
+import com.microsoft.azure.storage.core.Base64;
 
 public class AzureProtocol extends AbstractProtocol {
 
@@ -74,10 +77,7 @@ public class AzureProtocol extends AbstractProtocol {
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         if(super.validate(credentials, options)) {
             if(options.password) {
-                if(credentials.getPassword().length() % 4 != 0) {
-                    return false;
-                }
-                return Base64.isBase64(credentials.getPassword());
+                return Base64.validateIsBase64String(credentials.getPassword());
             }
             return true;
         }

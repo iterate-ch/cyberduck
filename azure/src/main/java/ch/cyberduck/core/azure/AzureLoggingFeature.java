@@ -1,18 +1,21 @@
 package ch.cyberduck.core.azure;
 
 /*
- * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Path;
@@ -23,25 +26,29 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import com.azure.core.exception.HttpResponseException;
-import com.azure.storage.blob.models.BlobAnalyticsLogging;
-import com.azure.storage.blob.models.BlobRetentionPolicy;
-import com.azure.storage.blob.models.BlobServiceProperties;
+import com.microsoft.azure.storage.LoggingOperations;
+import com.microsoft.azure.storage.LoggingProperties;
+import com.microsoft.azure.storage.OperationContext;
+import com.microsoft.azure.storage.ServiceProperties;
+import com.microsoft.azure.storage.StorageException;
 
 public class AzureLoggingFeature implements Logging {
 
     private final AzureSession session;
 
-    public AzureLoggingFeature(final AzureSession session) {
+    private final OperationContext context;
+
+    public AzureLoggingFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.context = context;
     }
 
     @Override
     public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
         try {
-            final BlobServiceProperties properties = session.getClient().getProperties();
+            final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
             final LoggingConfiguration configuration = new LoggingConfiguration(
-                    properties.getLogging().isRead() || properties.getLogging().isWrite() || properties.getLogging().isDelete(),
+                    !properties.getLogging().getLogOperationTypes().isEmpty(),
                     "$logs"
             );
             // When you have configured Storage Logging to log request data from your storage account, it saves the log data
@@ -51,7 +58,7 @@ public class AzureLoggingFeature implements Logging {
             );
             return configuration;
         }
-        catch(HttpResponseException e) {
+        catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
@@ -59,17 +66,18 @@ public class AzureLoggingFeature implements Logging {
     @Override
     public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         try {
-            final BlobServiceProperties properties = session.getClient().getProperties();
-            properties.setLogging(new BlobAnalyticsLogging()
-                    .setVersion("2.0")
-                    .setRetentionPolicy(new BlobRetentionPolicy().setEnabled(false))
-                    .setDelete(configuration.isEnabled())
-                    .setRead(configuration.isEnabled())
-                    .setWrite(configuration.isEnabled())
-            );
-            session.getClient().setProperties(properties);
+            final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
+            final LoggingProperties l = new LoggingProperties();
+            if(configuration.isEnabled()) {
+                l.setLogOperationTypes(EnumSet.allOf(LoggingOperations.class));
+            }
+            else {
+                l.setLogOperationTypes(EnumSet.noneOf(LoggingOperations.class));
+            }
+            properties.setLogging(l);
+            session.getClient().uploadServiceProperties(properties, null, context);
         }
-        catch(HttpResponseException e) {
+        catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }
