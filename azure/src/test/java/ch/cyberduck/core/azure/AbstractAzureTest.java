@@ -24,10 +24,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.VaultTest;
@@ -36,15 +33,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runners.Parameterized;
 
-import java.util.Collections;
-import java.util.HashSet;
-
 import static org.junit.Assert.fail;
 
 public class AbstractAzureTest extends VaultTest {
 
     protected AzureSession session;
-    protected AzureSession sas;
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
@@ -60,27 +53,7 @@ public class AbstractAzureTest extends VaultTest {
     }
 
     @Before
-    public void setupSharedAccessSignature() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
-        final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                PROPERTIES.get("azure.user"), null, PROPERTIES.get("azure.token")
-        ));
-        sas = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                fail(reason);
-                return null;
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(sas, new DisabledCancelCallback());
-    }
-
-    @Before
-    public void setupTokenAuthentication() throws Exception {
+    public void setup() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
                 PROPERTIES.get("azure.user"), PROPERTIES.get("azure.password")
         ));

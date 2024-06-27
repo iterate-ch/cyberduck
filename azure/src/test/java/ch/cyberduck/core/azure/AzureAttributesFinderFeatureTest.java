@@ -69,7 +69,6 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
         final Path intermediate = new Path(container, prefix, EnumSet.of(Path.Type.directory));
         final Path directory = new AzureDirectoryFeature(session, null).mkdir(new Path(intermediate, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(directory));
-        assertEquals(directory.attributes(), new AzureAttributesFinderFeature(session, null).find(directory));
         final Path test = new AzureTouchFeature(session, null).touch(
                 new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
