@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,5 +58,13 @@ public class BrickTimestampFeatureTest extends AbstractBrickTest {
         assertEquals(5000L, new BrickAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetTimestampRoot() throws Exception {
+        final Path file = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final long ts = System.currentTimeMillis();
+        new BrickTimestampFeature(session).setTimestamp(file, ts);
+        assertEquals(Timestamp.toSeconds(ts), new BrickAttributesFinderFeature(session).find(file).getModificationDate());
     }
 }

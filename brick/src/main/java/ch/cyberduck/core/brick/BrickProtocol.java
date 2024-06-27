@@ -46,7 +46,7 @@ public class BrickProtocol extends AbstractProtocol {
 
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
-        return DirectoryTimestamp.implicit;
+        return DirectoryTimestamp.explicit;
     }
 
     @Override

@@ -63,7 +63,7 @@ public class BrickWriteFeatureTest extends AbstractBrickTest {
         assertNull(out.getStatus());
         assertTrue(new BrickFindFeature(session).find(file));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
-        assertNotEquals(containerTimestamp, new BrickAttributesFinderFeature(session).find(container).getModificationDate());
+        assertEquals(containerTimestamp, new BrickAttributesFinderFeature(session).find(container).getModificationDate());
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
