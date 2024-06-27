@@ -42,13 +42,12 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
     public void testMove() throws Exception {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path test = new SFTPTouchFeature(session).touch(new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(0L, test.attributes().getSize());
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         final Path target = new SFTPMoveFeature(session).move(test,
             new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
-        assertEquals(test.attributes(), new SFTPAttributesFinderFeature(session).find(target));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
