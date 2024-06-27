@@ -15,6 +15,7 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -35,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -117,6 +119,13 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, workdir, CANADDCHILDREN));
             }
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
+        }
+        // prevent duplicates
+        if(fileid.getFileId(new Path(workdir, filename, EnumSet.of(AbstractPath.Type.directory))) != null) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Target already exists %s/%s", workdir, filename));
+            }
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

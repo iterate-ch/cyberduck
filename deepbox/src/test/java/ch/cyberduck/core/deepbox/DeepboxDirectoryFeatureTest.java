@@ -91,9 +91,6 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         directory.mkdir(folder, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes()), new DisabledListProgressListener()));
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
-        // TODO (-1) what about duplicate names with different nodeId?
-        // Can create again regardless if exists
-        //directory.mkdir(folder, new TransferStatus());
         deleteAndPurge(folder);
         assertNull(nodeid.getFileId(folder.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes())));
@@ -107,10 +104,20 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(folder, new TransferStatus());
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
-        // TODO (-1) what about duplicate names with different nodeId?
-        // Can create again regardless if exists
-        //directory.mkdir(folder, new TransferStatus());
         deleteAndPurge(folder);
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
+    }
+
+    @Test
+    public void testNoDuplicates() throws Exception {
+        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        try {
+            assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), test.getName()));
+        }
+        finally {
+            deleteAndPurge(test);
+        }
     }
 }

@@ -18,6 +18,7 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
@@ -56,6 +57,9 @@ public class DeepboxCopyFeature implements Copy {
                 if(log.isWarnEnabled()) {
                     log.warn(String.format("Delete file %s to be replaced with %s", target, file));
                 }
+                new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
+            }
+            if(fileid.getFileId(target.withAttributes(new PathAttributes())) != null) {
                 new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
             final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());

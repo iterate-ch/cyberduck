@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeMove;
@@ -60,16 +61,20 @@ public class DeepboxMoveFeature implements Move {
                 }
                 new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
+            if(fileid.getFileId(renamed.withAttributes(new PathAttributes())) != null) {
+                new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
+            }
+
             final String sourceId = fileid.getFileId(file);
             if(sourceId == null) {
                 throw new NotfoundException(String.format("Cannot move %s", file));
             }
             final NodeMove nodeMove = new NodeMove();
-            final String targetId = fileid.getFileId(renamed.getParent());
-            if(targetId == null) {
+            final String targetParentId = fileid.getFileId(renamed.getParent());
+            if(targetParentId == null) {
                 throw new NotfoundException(String.format("Cannot move %s", file));
             }
-            nodeMove.setTargetParentNodeId(UUID.fromString(targetId));
+            nodeMove.setTargetParentNodeId(UUID.fromString(targetParentId));
             final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
             core.moveNode(nodeMove, UUID.fromString(sourceId));
             final NodeUpdate nodeUpdate = new NodeUpdate();
@@ -91,7 +96,6 @@ public class DeepboxMoveFeature implements Move {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        // TODO (-1) do we need to check target file name exists - otherwise file may disappear because of duplicate file names?
         if(source.isRoot() || new DeepboxPathContainerService().isContainer(source) || new DeepboxPathContainerService().isInTrash(source)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
@@ -124,6 +128,13 @@ public class DeepboxMoveFeature implements Move {
                     throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
                 }
             }
+        }
+        // prevent duplicates
+        if(fileid.getFileId(target.withAttributes(new PathAttributes())) != null) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Target already exists %s", target));
+            }
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
     }
 }

@@ -15,6 +15,7 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
 
@@ -44,7 +46,6 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Void> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        // TODO (-1)  do we have the latest nodeId for the file name?
         final Path result = super.touch(file, status);
         return result.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(result));
     }
@@ -58,6 +59,13 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Void> {
         if(!acl.get(new Acl.CanonicalUser()).contains(CANADDCHILDREN)) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, workdir, CANADDCHILDREN));
+            }
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
+        }
+        // prevent duplicates
+        if(fileid.getFileId(new Path(workdir, filename, EnumSet.of(AbstractPath.Type.file))) != null) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Target already exists %s/%s", workdir, filename));
             }
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }

@@ -15,6 +15,7 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -23,18 +24,16 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.FileIdProvider;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
@@ -55,28 +54,6 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
             deleteAndPurge(test.withAttributes(new PathAttributes()));
             deleteAndPurge(copy.withAttributes(new PathAttributes()));
         }
-    }
-
-    @Test
-    @Ignore
-    // TODO does not work yet
-    public void testCopyOverride() throws Exception {
-        final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DeepboxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
-        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxTouchFeature(session, fileid).touch(test, new TransferStatus());
-        final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path existing = new DeepboxTouchFeature(session, fileid).touch(copy, new TransferStatus());
-        new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true).withRemote(existing.attributes()), new DisabledConnectionCallback(), new DisabledStreamListener());
-        final Find find = new DeepboxFindFeature(session, fileid);
-        assertTrue(find.find(test));
-        assertTrue(find.find(copy));
-
-        deleteAndPurge(test);
-        deleteAndPurge(copy);
-        deleteAndPurge(folder);
     }
 
     @Test(expected = UnsupportedException.class)
@@ -106,6 +83,41 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         finally {
             deleteAndPurge(test);
         }
+    }
 
+    @Test
+    public void testCopyOverrideFile() throws Exception {
+        final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
+
+        final Path test = new DeepboxTouchFeature(session, fileid).touch(
+                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path target = new DeepboxTouchFeature(session, fileid).touch(
+                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path targetInTrash = new Path(trash, target.getName(), target.getType());
+
+        final PathAttributes originalTestAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(test);
+        final PathAttributes originalTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target);
+
+        new DeepboxCopyFeature(session, fileid).copy(test, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(target.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(targetInTrash));
+
+        final PathAttributes overriddenTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target.withAttributes(new PathAttributes()));
+        assertNotNull(originalTestAttributes.getFileId());
+        assertNotEquals(originalTestAttributes.getFileId(), overriddenTargetAttributes.getFileId());
+        assertNotEquals(originalTestAttributes.getModificationDate(), overriddenTargetAttributes.getModificationDate());
+        assertEquals(originalTestAttributes.getChecksum(), overriddenTargetAttributes.getChecksum());
+
+        final PathAttributes trashedTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(targetInTrash.withAttributes(new PathAttributes()));
+        assertNotNull(originalTargetAttributes.getFileId());
+        assertEquals(originalTargetAttributes.getFileId(), trashedTargetAttributes.getFileId());
+        assertEquals(originalTargetAttributes.getModificationDate(), trashedTargetAttributes.getModificationDate());
+        assertEquals(originalTargetAttributes.getChecksum(), trashedTargetAttributes.getChecksum());
+
+        deleteAndPurge(targetInTrash);
+        deleteAndPurge(target);
     }
 }
