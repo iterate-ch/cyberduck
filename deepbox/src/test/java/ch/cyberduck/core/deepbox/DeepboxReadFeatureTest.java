@@ -30,6 +30,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 @Category(IntegrationTest.class)
 public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
@@ -43,18 +44,14 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
         assertNotNull(s);
     }
 
-    @Test(expected = NotfoundException.class)
+    @Test
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        try {
-            new DeepboxReadFeature(session, nodeid).read(new Path(test, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
-        }
-        finally {
-            deleteAndPurge(test);
-        }
+        assertThrows(NotfoundException.class, () -> new DeepboxReadFeature(session, nodeid).read(new Path(test, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
+        deleteAndPurge(test);
     }
 }

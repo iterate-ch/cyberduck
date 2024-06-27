@@ -17,6 +17,7 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
@@ -99,11 +100,11 @@ public class DeepboxDeleteFeatureTest extends AbstractDeepboxTest {
         }
     }
 
-    @Test(expected = NotfoundException.class)
-    public void testDeleteNotFound() throws Exception {
+    @Test
+    public void testDeleteNotFound() {
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-
-        deleteAndPurge(test);
+        assertThrows(NotfoundException.class, () -> new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback()));
     }
 }

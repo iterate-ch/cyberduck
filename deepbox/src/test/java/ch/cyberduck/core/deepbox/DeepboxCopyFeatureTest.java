@@ -56,33 +56,25 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         }
     }
 
-    @Test(expected = UnsupportedException.class)
+    @Test
     public void testCopyDirectory() throws Exception {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(documents,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        try {
-            new DeepboxCopyFeature(session, fileid).preflight(directory, copy);
-        }
-        finally {
-            deleteAndPurge(directory);
-        }
+        assertThrows(UnsupportedException.class, () -> new DeepboxCopyFeature(session, fileid).preflight(directory, copy));
+        deleteAndPurge(directory);
     }
 
-    @Test(expected = NotfoundException.class)
-    public void testMoveNotFound() throws Exception {
+    @Test
+    public void testMoveNotFound() {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        try {
-            new DeepboxCopyFeature(session, fileid).copy(test, new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
-                    new DisabledLoginCallback(), new DisabledStreamListener());
-        }
-        finally {
-            deleteAndPurge(test);
-        }
+        assertThrows(NotfoundException.class, () ->
+                new DeepboxCopyFeature(session, fileid).copy(test, new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
+                        new DisabledLoginCallback(), new DisabledStreamListener()));
     }
 
     @Test

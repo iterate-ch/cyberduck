@@ -167,7 +167,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         deleteAndPurge(room);
     }
 
-    @Test(expected = TransferStatusCanceledException.class)
+    @Test
     public void testWriteCancel() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -191,13 +191,9 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         final DeepboxWriteFeature writer = new DeepboxWriteFeature(session, nodeid);
         final HttpResponseOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
-        try {
-            new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out);
-            assertFalse(new DefaultFindFeature(session).find(test));
-            out.getStatus();
-        }
-        finally {
-            deleteAndPurge(room);
-        }
+        assertThrows(TransferStatusCanceledException.class, () -> new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out));
+        assertFalse(new DefaultFindFeature(session).find(test));
+        assertThrows(TransferStatusCanceledException.class, () -> out.getStatus());
+        deleteAndPurge(room);
     }
 }
