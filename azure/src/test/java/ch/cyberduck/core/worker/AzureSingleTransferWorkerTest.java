@@ -67,13 +67,14 @@ public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream out = new AzureWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream out = new AzureWriteFeature(session, null).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
+            out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
-        final TransferStatus writeStatus = new TransferStatus().exists(true).withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<Void> out = new AzureWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+        final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+        final StatusOutputStream<Void> out = new AzureWriteFeature(session, null).write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -84,9 +85,11 @@ public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()).run(session));
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
+
+        }.run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile.delete();
     }
 }

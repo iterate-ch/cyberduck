@@ -55,6 +55,8 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.microsoft.azure.storage.OperationContext;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -71,7 +73,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, new AzureWriteFeature(session), cryptomator);
+        final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, new AzureWriteFeature(session, null), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
@@ -81,13 +83,14 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(test));
-        final PathAttributes attributes = new CryptoListService(session, new AzureListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        final OperationContext context = new OperationContext();
+        assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session, null)).find(test));
+        final PathAttributes attributes = new CryptoListService(session, new AzureListService(session, context), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session, context), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, context)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

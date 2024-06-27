@@ -1,26 +1,27 @@
 package ch.cyberduck.core.azure;
 
 /*
- * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
@@ -29,39 +30,29 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 import java.text.MessageFormat;
-import java.time.Duration;
-import java.time.OffsetDateTime;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import com.azure.storage.blob.implementation.util.BlobSasImplUtil;
-import com.azure.storage.blob.sas.BlobSasPermission;
-import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
-import com.azure.storage.common.StorageSharedKeyCredential;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlob;
+import com.microsoft.azure.storage.blob.SharedAccessBlobPermissions;
+import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 
 public class AzureUrlProvider implements UrlProvider {
-    private static final Logger log = LogManager.getLogger(AzureUrlProvider.class);
 
     private final PathContainerService containerService
             = new DirectoryDelimiterPathContainerService();
 
     private final AzureSession session;
-    private final HostPasswordStore store;
 
     public AzureUrlProvider(final AzureSession session) {
-        this(session, PasswordStoreFactory.get());
-    }
-
-    public AzureUrlProvider(final AzureSession session, final HostPasswordStore store) {
         this.session = session;
-        this.store = store;
     }
 
     @Override
@@ -85,17 +76,17 @@ public class AzureUrlProvider implements UrlProvider {
         return new SharedAccessSignatureUrl(file, this.getExpiry(seconds));
     }
 
-    protected Long getExpiry(final int seconds) {
+    protected Calendar getExpiry(final int seconds) {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
-        return expiry.getTimeInMillis();
+        return expiry;
     }
 
     private final class SharedAccessSignatureUrl extends DescriptiveUrl {
         private final Path file;
-        private final Long expiry;
+        private final Calendar expiry;
 
-        public SharedAccessSignatureUrl(final Path file, final Long expiry) {
+        public SharedAccessSignatureUrl(final Path file, final Calendar expiry) {
             super(EMPTY);
             this.file = file;
             this.expiry = expiry;
@@ -103,25 +94,34 @@ public class AzureUrlProvider implements UrlProvider {
 
         @Override
         public String getUrl() {
-            final String secret = store.findLoginPassword(session.getHost());
-            if(StringUtils.isBlank(secret)) {
-                if(log.isWarnEnabled()) {
-                    log.warn("No secret found in password store required to sign temporary URL");
+            final CloudBlob blob;
+            try {
+                if(!session.isConnected()) {
+                    return DescriptiveUrl.EMPTY.getUrl();
                 }
+                blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                        .getBlobReferenceFromServer(containerService.getKey(file));
+                final String token;
+                token = blob.generateSharedAccessSignature(this.getPolicy(expiry), null);
+                return String.format("%s://%s%s?%s",
+                        Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token);
+            }
+            catch(InvalidKeyException | URISyntaxException | StorageException e) {
                 return DescriptiveUrl.EMPTY.getUrl();
             }
-            final String token = new BlobSasImplUtil(new BlobServiceSasSignatureValues(
-                    OffsetDateTime.now().plus(Duration.ofMillis(expiry)), new BlobSasPermission().setReadPermission(true)), containerService.getContainer(file).getName())
-                    .generateSas(new StorageSharedKeyCredential(session.getHost().getCredentials().getUsername(),
-                            secret), null);
-            return String.format("%s://%s%s?%s",
-                    Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token);
+        }
+
+        private SharedAccessBlobPolicy getPolicy(final Calendar expiry) {
+            final SharedAccessBlobPolicy policy = new SharedAccessBlobPolicy();
+            policy.setSharedAccessExpiryTime(expiry.getTime());
+            policy.setPermissions(EnumSet.of(SharedAccessBlobPermissions.READ));
+            return policy;
         }
 
         @Override
         public String getHelp() {
             return MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3"),
-                    UserDateFormatterFactory.get().getMediumFormat(expiry));
+                    UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()));
         }
 
         @Override

@@ -9,24 +9,16 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -43,37 +35,56 @@ public class AzureSessionTest extends AbstractAzureTest {
     }
 
     @Test
-    public void testConnect() {
+    public void testConnect() throws Exception {
         assertTrue(session.isConnected());
     }
 
     @Test
     public void testConnectSharedAccessSignature() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
-        final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                PROPERTIES.get("azure.user"), null, PROPERTIES.get("azure.token")
-        ));
-        AzureSession session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
+        final Host host = new Host(new AzureProtocol() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                fail(reason);
-                return null;
+            public boolean isUsernameConfigurable() {
+                return false;
             }
-        }, new DisabledHostKeyCallback(),
+
+            @Override
+            public boolean isPasswordConfigurable() {
+                return false;
+            }
+
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        }, "kahy9boj3eib.blob.core.windows.net", new Credentials(
+                null, null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=bMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D"));
+        final AzureSession session = new AzureSession(host);
+        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
-        login.connect(session, new DisabledCancelCallback());
-        session.close();
+        connect.connect(session, new DisabledCancelCallback());
+        assertTrue(session.isConnected());
+        connect.close(session);
+        assertFalse(session.isConnected());
     }
 
     @Test
     public void testConnectSharedAccessSignaturePrompt() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
-        final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(new AzureProtocol() {
+            @Override
+            public boolean isUsernameConfigurable() {
+                return false;
+            }
+
+            @Override
+            public boolean isPasswordConfigurable() {
+                return false;
+            }
+
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        }, "kahy9boj3eib.blob.core.windows.net", new Credentials(
                 null, null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=invalidbMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D"));
         final AzureSession session = new AzureSession(host);
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -84,7 +95,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                     throw new LoginCanceledException();
                 }
                 try {
-                    return new Credentials(StringUtils.EMPTY, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=bMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D");
+                    return new Credentials(null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=bMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D");
                 }
                 finally {
                     prompt.set(true);
@@ -108,6 +119,7 @@ public class AzureSessionTest extends AbstractAzureTest {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
+                assertEquals("Forbidden. Please contact your web hosting service provider for assistance.", reason);
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
@@ -124,6 +136,7 @@ public class AzureSessionTest extends AbstractAzureTest {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
+                assertEquals("Forbidden. Please contact your web hosting service provider for assistance.", reason);
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
