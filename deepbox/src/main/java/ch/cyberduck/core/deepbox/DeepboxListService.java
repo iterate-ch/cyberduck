@@ -274,7 +274,8 @@ public class DeepboxListService implements ListService {
         while(offset < size);
     }
 
-    // list by modifiedTime desc to keep only most recent with the same name
+    // Hide duplicates in listing.
+    // Due to path normalization, paths might not come in order despite remote listinc by name asc
     private void listChunk(final Path directory, final NodeContent inbox, final AttributedList<Path> list, final Set<String> closed) throws ApiException {
         for(final Node node : inbox.getNodes()) {
             final String name = PathNormalizer.name(node.getDisplayName());
@@ -283,14 +284,13 @@ public class DeepboxListService implements ListService {
             // remove duplicates
             if(!closed.contains(name)) {
                 list.add(path);
-                // update fileid to latest nodeId for the name
                 this.fileid.cache(path, node.getNodeId().toString());
             }
             else {
                 // remove from list and cache
                 final Path last = list.get(list.size() - 1);
                 if(last.getName().equals(name)) {
-                    // Usually, the last element in the list should be the duplicate due to listing by file name.
+                    // Usually even after path normalization, the last element in the list should be the duplicate due to listing by file name.
                     list.remove(last);
                     this.fileid.cache(last, null);
                 }
