@@ -56,7 +56,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
     @Test
     public void testMove() throws Exception {
         final Path test = new CteraTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(0L, test.attributes().getSize());
+        assertEquals(PathAttributes.EMPTY, test.attributes());
         final TransferStatus status = new TransferStatus();
         new DAVTimestampFeature(session).setTimestamp(test, status.withModified(5000L));
         final PathAttributes attr = new CteraAttributesFinderFeature(session).find(test);

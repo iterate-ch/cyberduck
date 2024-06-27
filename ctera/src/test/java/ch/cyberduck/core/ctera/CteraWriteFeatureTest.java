@@ -101,6 +101,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
                     new DisabledStreamListener(), status, new DisabledConnectionCallback());
         }
         final PathAttributes attr1 = new CteraAttributesFinderFeature(session).find(test);
+        Thread.sleep(1000L);
         {
             final byte[] content = RandomUtils.nextBytes(101);
             final OutputStream out = local.getOutputStream(false);

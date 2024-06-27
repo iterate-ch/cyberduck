@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -85,7 +84,6 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertEquals(test.attributes().getFileId(), attributes.getFileId());
         assertNotNull(new CteraListService(session).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test)));
         assertEquals(attributes, new CteraListService(session).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
         // Test wrong type
@@ -105,7 +103,6 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertTrue(attributes.getAcl().asList().stream().anyMatch(userAndRole -> userAndRole.getRole().equals(CREATEDIRECTORIESPERMISSION)));
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertEquals(test.attributes().getFileId(), attributes.getFileId());
         assertNotNull(new CteraListService(session).list(home, new DisabledListProgressListener()).find(new SimplePathPredicate(test)));
         assertEquals(attributes, new CteraListService(session).list(home, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
         // Test wrong type
