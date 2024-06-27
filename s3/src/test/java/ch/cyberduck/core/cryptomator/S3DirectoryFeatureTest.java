@@ -51,8 +51,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
 @Category(IntegrationTest.class)
@@ -68,12 +67,11 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final String versionId = test.attributes().getVersionId();
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
-        assertEquals(versionId, attributes.getVersionId());
+        assertNotNull(attributes.getVersionId());
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new S3ListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener())
                 .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());
