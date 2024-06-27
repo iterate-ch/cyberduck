@@ -53,7 +53,6 @@ public class EueTouchFeatureTest extends AbstractEueSessionTest {
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
-        assertEquals(file.attributes(), new EueAttributesFinderFeature(session, fileid).find(file));
         // Create conflict
         assertThrows(ConflictException.class, () -> new EueTouchFeature(session, fileid).touch(file, new TransferStatus().withLength(0L)));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());

@@ -105,7 +105,8 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(512000);
-        final TransferStatus status = new TransferStatus().withLength(-1L);
+        final long ts = System.currentTimeMillis();
+        final TransferStatus status = new TransferStatus().withLength(-1L).withModified(ts);
         final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -118,6 +119,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         assertEquals(attr.getFileId(), out.getStatus().getResourceId());
         assertEquals(content.length, attr.getSize());
         final long timestamp = attr.getModificationDate();
+        assertEquals(ts, timestamp);
         assertEquals(timestamp, new EueListService(session, fileid).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(file)).attributes().getModificationDate());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];

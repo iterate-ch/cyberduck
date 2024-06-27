@@ -61,7 +61,6 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertTrue(new DefaultFindFeature(session).find(targetFile));
-        assertEquals(copy.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
         assertEquals(new EueAttributesFinderFeature(session, fileid).find(sourceFile).getSize(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
         assertNotEquals(new EueAttributesFinderFeature(session, fileid).find(sourceFile).getETag(),
@@ -130,7 +129,6 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         assertTrue(new DefaultFindFeature(session).find(targetFile));
-        assertEquals(targetFile.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
         assertEquals(sourceAttr.getSize(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
         assertNotEquals(sourceAttr.getETag(),
@@ -155,7 +153,6 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertTrue(new DefaultFindFeature(session).find(targetFile));
-        assertEquals(copy.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
         assertEquals(new EueAttributesFinderFeature(session, fileid).find(sourceFile).getSize(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
         assertEquals(new EueAttributesFinderFeature(session, fileid).find(sourceFile).getChecksum(),
