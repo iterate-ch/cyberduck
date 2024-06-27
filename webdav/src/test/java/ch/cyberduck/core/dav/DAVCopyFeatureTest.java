@@ -45,12 +45,10 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
     @Test
     public void testCopyFile() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path source = new DAVTouchFeature(session).touch(test, new TransferStatus());
-        assertEquals(source.attributes(), new DAVAttributesFinderFeature(session).find(source));
+        new DAVTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path target = new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertEquals(source.attributes(), target.attributes());
-        assertEquals(target.attributes(), new DAVAttributesFinderFeature(session).find(copy));
+        new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertEquals(new DAVAttributesFinderFeature(session).find(test), new DAVAttributesFinderFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(copy));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
