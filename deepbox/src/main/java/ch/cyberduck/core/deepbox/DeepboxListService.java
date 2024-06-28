@@ -310,6 +310,11 @@ public class DeepboxListService implements ListService {
     @Override
     public void preflight(final Path directory) throws BackgroundException {
         final Acl acl = directory.attributes().getAcl();
+        if(Acl.EMPTY == acl) {
+            // Missing initialization
+            log.warn(String.format("Unknown ACLs on %s", directory));
+            return;
+        }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN)) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, directory, CANLISTCHILDREN));

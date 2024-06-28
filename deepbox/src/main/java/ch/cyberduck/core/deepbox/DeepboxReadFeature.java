@@ -180,6 +180,11 @@ public class DeepboxReadFeature implements Read {
     @Override
     public void preflight(final Path file) throws BackgroundException {
         final Acl acl = file.attributes().getAcl();
+        if(Acl.EMPTY == acl) {
+            // Missing initialization
+            log.warn(String.format("Unknown ACLs on %s", file));
+            return;
+        }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANDOWNLOAD)) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANDOWNLOAD));

@@ -57,13 +57,18 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Void> {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
         final Acl acl = workdir.attributes().getAcl();
+        if(Acl.EMPTY == acl) {
+            // Missing initialization
+            log.warn(String.format("Unknown ACLs on %s", workdir));
+            return;
+        }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANADDCHILDREN)) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, workdir, CANADDCHILDREN));
             }
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
-        // prevent duplicates
+        // prevent duplicates (we should be safe if initialization is missing, i.e. if the workdir is not uploaded yet)
         if(fileid.getFileId(new Path(workdir, filename, EnumSet.of(AbstractPath.Type.file))) != null) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Target already exists %s/%s", workdir, filename));

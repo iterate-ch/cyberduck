@@ -79,6 +79,11 @@ public class DeepboxDeleteFeature implements Delete {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
         final Acl acl = file.attributes().getAcl();
+        if(Acl.EMPTY == acl) {
+            // Missing initialization
+            log.warn(String.format("Unknown ACLs on %s", file));
+            return;
+        }
         if(new DeepboxPathContainerService().isInTrash(file)) {
             if(!acl.get(new Acl.CanonicalUser()).contains(CANPURGE)) {
                 if(log.isWarnEnabled()) {

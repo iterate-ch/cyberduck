@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,12 +56,6 @@ public class DeepboxMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
-            if(file.getAbsolute().equals(renamed.getAbsolute())) {
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Source %s and target %s are the same file - ignoring", file, renamed));
-                }
-                return file;
-            }
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
                     log.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
@@ -104,9 +97,6 @@ public class DeepboxMoveFeature implements Move {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(source.getAbsolute().equals(target.getAbsolute())) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
-        }
         if(source.isRoot() || new DeepboxPathContainerService().isContainer(source) || new DeepboxPathContainerService().isInTrash(source)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
@@ -114,6 +104,11 @@ public class DeepboxMoveFeature implements Move {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
         }
         final Acl acl = source.attributes().getAcl();
+        if(Acl.EMPTY == acl) {
+            // Missing initialization
+            log.warn(String.format("Unknown ACLs on %s", source));
+            return;
+        }
         if(!source.getName().equals(target.getName())) {
             if(!acl.get(new Acl.CanonicalUser()).contains(CANRENAME)) {
                 if(log.isWarnEnabled()) {
@@ -140,8 +135,8 @@ public class DeepboxMoveFeature implements Move {
                 }
             }
         }
-        // prevent duplicates
-        if(fileid.getFileId(target.withAttributes(new PathAttributes())) != null) {
+        // prevent duplicates (we must allow moving to same file as called from isSupported; also, we should be safe if initialization is missing i.e. if the file is not uploaded yet)
+        if(!source.getAbsolute().equals(target.getAbsolute()) && fileid.getFileId(target.withAttributes(new PathAttributes())) != null) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Target already exists %s", target));
             }
