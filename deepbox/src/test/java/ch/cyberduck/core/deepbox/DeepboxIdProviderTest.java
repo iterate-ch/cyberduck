@@ -105,7 +105,7 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
     public void testFile() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path file = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/ Receipts/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
-        assertEquals("62a0d967-41b5-4cb4-bc06-3b7cac6d0c11", nodeid.getFileId(file));
+        assertEquals("34989be2-6367-43f9-82e8-2a0068f63c98", nodeid.getFileId(file));
         assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(file));
         assertEquals(ORG4_BOX1.toString(), nodeid.getBoxNodeId(file));
         assertEquals("ec5f9666-f99e-47ad-bc8c-41da9f1324e2", nodeid.getThirdLevelId(file));
