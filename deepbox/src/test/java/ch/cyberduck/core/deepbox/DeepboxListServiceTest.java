@@ -23,7 +23,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.api.PathRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeCopy;
 import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,6 +42,7 @@ import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -258,5 +262,56 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
                 nodeContent.getNodes().get(1).getNodeId().toString().equals(nodeid.getFileId(file))
         );
         deleteAndPurge(folder);
+    }
+
+    @Test
+    public void testDuplicateFiles() throws Exception {
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
+        new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
+
+        final NodeCopy body = new NodeCopy();
+        body.setTargetParentNodeId(UUID.fromString(nodeid.getFileId(folder)));
+        new CoreRestControllerApi(session.getClient()).copyNode(body, UUID.fromString(nodeid.getFileId(file)));
+        final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(UUID.fromString(nodeid.getFileId(folder)), 0, 50, null);
+        assertEquals(2, remote.getNodes().size());
+        try {
+            assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
+        }
+        finally {
+            deleteAndPurge(folder);
+        }
+    }
+
+    @Test
+    public void testDuplicateFolders() throws Exception {
+        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(test, new TransferStatus());
+
+        // /api/v1/nodes/{nodeId}/copy does not work for folders
+        final Folder body = new Folder();
+        body.setName(test.getName());
+        new PathRestControllerApi(session.getClient()).addFolders(
+                Collections.singletonList(body),
+                UUID.fromString(nodeid.getDeepBoxNodeId(test)),
+                UUID.fromString(nodeid.getBoxNodeId(test)),
+                UUID.fromString(nodeid.getFileId(test.getParent()))
+        );
+
+        final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(UUID.fromString(nodeid.getFileId(folder)), 0, 50, null);
+        assertEquals(2, remote.getNodes().size());
+        try {
+            assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
+        }
+        finally {
+            deleteAndPurge(folder);
+        }
     }
 }
