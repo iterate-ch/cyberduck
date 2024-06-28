@@ -221,7 +221,6 @@ public class DeepboxListService implements ListService {
             list.add(inbox.withAttributes(attributes.toAttributesThirdLevel(inbox)));
         }
         if(box.getBoxPolicy().isCanListFilesRoot()) {
-            // TODO check i18n under MountainDuck windows
             final String documentsName = PathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox"));
             final Path documents = new Path(directory, documentsName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new PathAttributes().withFileId(fileid.getFileId(new Path(directory, documentsName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
