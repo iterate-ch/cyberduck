@@ -35,11 +35,9 @@ import net.schmizz.sshj.sftp.RenameFlags;
 public class SFTPMoveFeature implements Move {
 
     private final SFTPSession session;
-    private final Delete delete;
 
     public SFTPMoveFeature(final SFTPSession session) {
         this.session = session;
-        this.delete = new SFTPDeleteFeature(session);
     }
 
     @Override
