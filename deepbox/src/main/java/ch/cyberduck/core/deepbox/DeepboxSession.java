@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Restore;
@@ -185,6 +186,9 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         }
         if(type == Copy.class) {
             return (T) new DeepboxCopyFeature(this, fileid);
+        }
+        if(type == Move.class) {
+            return (T) new DeepboxMoveFeature(this, fileid);
         }
         if(type == Restore.class) {
             return (T) new DeepboxRestoreFeature(this, fileid);
