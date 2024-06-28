@@ -25,6 +25,7 @@ using ch.cyberduck.core.box;
 using ch.cyberduck.core.brick;
 using ch.cyberduck.core.ctera;
 using ch.cyberduck.core.dav;
+using ch.cyberduck.core.deepbox;
 using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.eue;
 using ch.cyberduck.core.exception;
