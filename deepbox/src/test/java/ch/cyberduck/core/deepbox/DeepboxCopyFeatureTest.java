@@ -111,5 +111,6 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
 
         deleteAndPurge(targetInTrash);
         deleteAndPurge(target);
+        deleteAndPurge(test);
     }
 }
