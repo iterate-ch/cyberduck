@@ -27,6 +27,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,6 +56,12 @@ public class DeepboxMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(file.getAbsolute().equals(renamed.getAbsolute())) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Source %s and target %s are the same file - ignoring", file, renamed));
+                }
+                return file;
+            }
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
                     log.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
@@ -96,6 +103,9 @@ public class DeepboxMoveFeature implements Move {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(source.getAbsolute().equals(target.getAbsolute())) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+        }
         if(source.isRoot() || new DeepboxPathContainerService().isContainer(source) || new DeepboxPathContainerService().isInTrash(source)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }

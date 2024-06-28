@@ -53,6 +53,12 @@ public class DeepboxCopyFeature implements Copy {
     @Override
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
+            if(file.getAbsolute().equals(target.getAbsolute())) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Source %s and target %s are the same file - ignoreing", file, target));
+                }
+                return file;
+            }
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
                     log.warn(String.format("Delete file %s to be replaced with %s", target, file));
@@ -83,8 +89,11 @@ public class DeepboxCopyFeature implements Copy {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
+        if(source.getAbsolute().equals(target.getAbsolute())) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+        }
         if(source.isDirectory()) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy directory {0}", "Error"), source.getName())).withFile(source);
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
     }
 }
