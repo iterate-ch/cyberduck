@@ -26,6 +26,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.FolderAdded;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -125,7 +126,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Target already exists %s/%s", workdir, filename));
             }
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
+            throw new ConflictException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

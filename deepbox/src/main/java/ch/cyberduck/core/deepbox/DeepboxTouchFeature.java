@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -67,7 +68,7 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Void> {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Target already exists %s/%s", workdir, filename));
             }
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
+            throw new ConflictException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

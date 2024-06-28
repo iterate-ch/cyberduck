@@ -26,6 +26,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeMove;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
@@ -144,7 +145,7 @@ public class DeepboxMoveFeature implements Move {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Target already exists %s", target));
             }
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+            throw new ConflictException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
     }
 }
