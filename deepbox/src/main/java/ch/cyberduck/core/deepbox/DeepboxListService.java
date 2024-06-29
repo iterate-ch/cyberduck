@@ -35,6 +35,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.logging.log4j.LogManager;
@@ -95,6 +96,9 @@ public class DeepboxListService implements ListService {
             else { // in subfolder of  Documents/Trash (Inbox has no subfolders)
 
                 final String nodeId = fileid.getFileId(directory);
+                if(nodeId == null) {
+                    throw new NotfoundException(directory.getAbsolute());
+                }
                 if(new DeepboxPathContainerService().isInDocuments(directory)) {
                     listFiles(directory, listener, deepBoxNodeId, boxNodeId, nodeId, list, closed);
                 }
