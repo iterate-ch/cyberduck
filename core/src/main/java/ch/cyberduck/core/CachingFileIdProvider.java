@@ -23,7 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class CachingFileIdProvider implements FileIdProvider {
+public class CachingFileIdProvider implements FileIdProvider {
     private static final Logger log = LogManager.getLogger(CachingFileIdProvider.class);
 
     private final LRUCache<SimplePathPredicate, String> cache

@@ -64,7 +64,7 @@ public class SDSListService implements ListService {
                     final PathAttributes attributes = feature.toAttributes(node);
                     final EnumSet<Path.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
-                    nodeid.cache(file, String.valueOf(node.getId()));
+                    nodeid.cache(file, String.valueOf(node.getId()), String.valueOf(node.getReferenceId()));
                     children.add(file);
                 }
                 offset += chunksize;

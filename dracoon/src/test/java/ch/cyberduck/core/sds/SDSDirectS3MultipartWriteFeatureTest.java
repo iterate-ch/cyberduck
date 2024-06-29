@@ -91,6 +91,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertEquals(content.length, out.getStatus().getSize(), 0L);
         }
+        assertNotNull(test.attributes().getFileId());
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
