@@ -15,13 +15,11 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -29,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.EnumSet;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
 
@@ -67,13 +64,6 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Void> {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, workdir, CANADDCHILDREN));
             }
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
-        }
-        // prevent duplicates (we should be safe if initialization is missing, i.e. if the workdir is not uploaded yet)
-        if(fileid.getFileId(new Path(workdir, filename, EnumSet.of(AbstractPath.Type.file))) != null) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Target already exists %s/%s", workdir, filename));
-            }
-            throw new ConflictException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

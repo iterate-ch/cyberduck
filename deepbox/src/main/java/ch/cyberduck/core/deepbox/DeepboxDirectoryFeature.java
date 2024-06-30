@@ -15,7 +15,6 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -26,7 +25,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.FolderAdded;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -37,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,6 +68,10 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             if(boxNodeId == null) {
                 throw new NotfoundException(String.format("Cannot find box node id for parent %s", folder));
             }
+            final String nodeId = fileid.getFileId(folder);
+            if(nodeId != null) {
+                return folder;
+            }
 
             final PathRestControllerApi pathApi = new PathRestControllerApi(session.getClient());
             final List<FolderAdded> created;
@@ -82,15 +83,15 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
                 );
             }
             else {
-                final String nodeId = fileid.getFileId(folder.getParent());
-                if(nodeId == null) {
+                final String parentNodeId = fileid.getFileId(folder.getParent());
+                if(parentNodeId == null) {
                     throw new NotfoundException(String.format("Cannot find box node id for parent %s", folder));
                 }
                 created = pathApi.addFolders(
                         body,
                         UUID.fromString(deepBoxNodeId),
                         UUID.fromString(boxNodeId),
-                        UUID.fromString(nodeId)
+                        UUID.fromString(parentNodeId)
                 );
             }
             final FolderAdded f = created.stream().findFirst().orElse(null);
@@ -125,13 +126,6 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
                 log.warn(String.format("ACL %s for %s does not include %s", acl, workdir, CANADDCHILDREN));
             }
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
-        }
-        // prevent duplicates  (we should be safe if initialization is missing, i.e. if the file is not uploaded yet)
-        if(fileid.getFileId(new Path(workdir, filename, EnumSet.of(AbstractPath.Type.directory))) != null) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Target already exists %s/%s", workdir, filename));
-            }
-            throw new ConflictException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }
 }

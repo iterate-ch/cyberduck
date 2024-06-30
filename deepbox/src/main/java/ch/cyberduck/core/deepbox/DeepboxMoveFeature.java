@@ -26,7 +26,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeMove;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -134,13 +133,6 @@ public class DeepboxMoveFeature implements Move {
                     throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
                 }
             }
-        }
-        // prevent duplicates (we must allow moving to same file as called from isSupported; also, we should be safe if initialization is missing i.e. if the file is not uploaded yet)
-        if(!source.getAbsolute().equals(target.getAbsolute()) && fileid.getFileId(target.withAttributes(new PathAttributes())) != null) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Target already exists %s", target));
-            }
-            throw new ConflictException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
     }
 }
