@@ -46,10 +46,12 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
     private final DeepboxSession session;
@@ -89,8 +91,16 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
                     final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
                     final ByteArrayOutputStream out = new ByteArrayOutputStream();
                     entity.writeTo(out);
-                    multipart.addBinaryBody(nodeId != null ? "file" : "files", out.toByteArray(),
-                            null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
+                    if(nodeId != null) {
+                        multipart.addBinaryBody("file", out.toByteArray(),
+                                null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
+                    }
+                    else {
+                        multipart.addBinaryBody("files", out.toByteArray(),
+                                null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
+                    }
+                    multipart.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+                    multipart.setCharset(StandardCharsets.UTF_8);
                     request.setEntity(multipart.build());
                     session.getClient().getClient().execute(request);
                     return null;

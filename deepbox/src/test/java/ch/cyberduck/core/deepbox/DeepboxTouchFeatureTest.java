@@ -27,6 +27,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
@@ -42,5 +43,14 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         finally {
             deleteAndPurge(test);
         }
+    }
+
+    @Test
+    public void testAccents() throws Exception {
+        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/Insurance", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random() + "éf", EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new DeepboxFindFeature(session, fileid).find(documents));
+        deleteAndPurge(test);
     }
 }
