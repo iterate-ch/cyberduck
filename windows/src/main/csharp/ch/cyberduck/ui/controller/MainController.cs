@@ -109,14 +109,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly SynchronizationContext mainThreadSync;
         private readonly GeneratedApplication wpfHelper;
 
-        /// <summary>
-        /// Saved browsers
-        /// </summary>
-        private readonly AbstractHostCollection _sessions =
-            new BookmarkCollection(
-                LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Sessions"),
-                "session");
-
         private readonly CountdownEvent transfersSemaphore = new CountdownEvent(1);
 
         /// <summary>
@@ -205,6 +197,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return false;
             }
 
+            AbstractHostCollection sessions = SessionsCollection.defaultCollection();
             // Determine if there are any open connections
             foreach (BrowserController controller in new List<BrowserController>(Browsers))
             {
@@ -217,7 +210,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             new HostDictionary().deserialize(
                                 controller.Session.getHost().serialize(SerializerFactory.get()));
                         serialized.setWorkdir(controller.Workdir);
-                        Application._sessions.add(serialized);
+                        sessions.add(serialized);
                     }
                 }
             }
@@ -351,7 +344,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 {
                                     case -1: // Cancel
                                              // Quit has been interrupted. Delete any saved sessions so far.
-                                        Application._sessions.clear();
+                                        SessionsCollection.defaultCollection().clear();
                                         readyToExit = false;
                                         break;
 
@@ -821,14 +814,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 HistoryCollection.defaultCollection().load();
                 if (PreferencesFactory.get().getBoolean("browser.serialize"))
                 {
-                    _sessions.load();
+                    SessionsCollection.defaultCollection().load();
                 }
                 AbstractHostCollection c = BookmarkCollection.defaultCollection();
                 c.load();
                 bookmarksSemaphore.Signal();
             }, () =>
             {
-                foreach (Host host in _sessions)
+                AbstractHostCollection sessions = SessionsCollection.defaultCollection();
+                foreach (Host host in sessions)
                 {
                     Host h = host;
                     _bc.Invoke(delegate
@@ -838,7 +832,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     });
                 }
 
-                if (_sessions.isEmpty())
+                if (sessions.isEmpty())
                 {
                     if (PreferencesFactory.get().getBoolean("browser.open.untitled"))
                     {
@@ -852,7 +846,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                 }
-                _sessions.clear();
+                sessions.clear();
             });
             HistoryCollection.defaultCollection().addListener(this);
         }
