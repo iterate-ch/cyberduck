@@ -19,6 +19,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.watchservice.WatchServiceFactory;
 import ch.cyberduck.core.local.FileWatcher;
+import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -30,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.Comparator;
 
-public class MonitorFolderHostCollection extends AbstractFolderHostCollection {
+public class MonitorFolderHostCollection extends AbstractFolderHostCollection implements FileWatcherListener {
     private static final Logger log = LogManager.getLogger(MonitorFolderHostCollection.class);
 
     private final Preferences preferences = PreferencesFactory.get();

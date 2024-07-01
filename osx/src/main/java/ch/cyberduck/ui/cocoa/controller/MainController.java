@@ -161,12 +161,6 @@ public class MainController extends BundleController implements NSApplication.De
     private static final List<BrowserController> browsers
         = new ArrayList<BrowserController>();
 
-    /**
-     * Saved browsers
-     */
-    private final AbstractHostCollection sessions = new BookmarkCollection(
-        LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Sessions"), "session");
-
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
     /**
@@ -921,6 +915,7 @@ public class MainController extends BundleController implements NSApplication.De
             c.window().makeKeyAndOrderFront(null);
         }
         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
+        final AbstractHostCollection sessions = SessionsCollection.defaultCollection();
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public Void run() throws BackgroundException {
@@ -1110,6 +1105,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(!result.equals(NSApplication.NSTerminateNow)) {
             return result;
         }
+        final SessionsCollection sessions = SessionsCollection.defaultCollection();
         // Determine if there are any open connections
         for(BrowserController browser : MainController.getBrowsers()) {
             if(preferences.getBoolean("browser.serialize")) {

@@ -22,7 +22,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
-import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
@@ -32,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Comparator;
 import java.util.regex.Pattern;
 
-public abstract class AbstractFolderHostCollection extends AbstractHostCollection implements FileWatcherListener {
+public abstract class AbstractFolderHostCollection extends AbstractHostCollection {
     private static final Logger log = LogManager.getLogger(AbstractFolderHostCollection.class);
 
     private final Writer<Host> writer = HostWriterFactory.get();
