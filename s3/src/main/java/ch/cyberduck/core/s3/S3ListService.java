@@ -60,11 +60,23 @@ public class S3ListService implements ListService {
                 }
                 catch(InteroperabilityException e) {
                     // Bucket set in hostname that leads to parser failure for XML reply
-                    log.warn(String.format("Ignore failure %s listing buckets.", e));
+                    log.warn(String.format("Failure %s listing buckets", e));
+                    try {
+                        return this.listObjects(directory, listener);
+                    }
+                    catch(BackgroundException ignored) {
+                        log.warn(String.format("Ignore failure %s listing objects", ignored));
+                        // Throw original failure
+                        throw e;
+                    }
                 }
             }
             // If bucket is specified in hostname, try to connect to this particular bucket only.
         }
+        return this.listObjects(directory, listener);
+    }
+
+    private AttributedList<Path> listObjects(final Path directory, final ListProgressListener listener) throws BackgroundException {
         AttributedList<Path> objects;
         final VersioningConfiguration versioning = new HostPreferences(session.getHost()).getBoolean("s3.listing.versioning.enable")
                 && null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class)
