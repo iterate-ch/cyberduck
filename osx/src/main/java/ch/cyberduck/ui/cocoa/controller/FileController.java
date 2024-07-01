@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
@@ -73,10 +74,10 @@ public abstract class FileController extends AlertController {
             return false;
         }
         if(StringUtils.isNotBlank(input)) {
-            if(cache.get(workdir).contains(new Path(workdir, input, EnumSet.of(Path.Type.file)))) {
+            if(cache.get(workdir).toStream().filter(new SimplePathPredicate(new Path(workdir, input, EnumSet.of(Path.Type.file)))).findAny().isPresent()) {
                 return false;
             }
-            if(cache.get(workdir).contains(new Path(workdir, input, EnumSet.of(Path.Type.directory)))) {
+            if(cache.get(workdir).toStream().filter(new SimplePathPredicate(new Path(workdir, input, EnumSet.of(Path.Type.directory)))).findAny().isPresent()) {
                 return false;
             }
             return true;
