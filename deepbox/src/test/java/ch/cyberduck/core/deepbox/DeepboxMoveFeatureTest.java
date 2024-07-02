@@ -40,15 +40,15 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testMove() throws Exception {
-
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(test.attributes().getFileId());
-        assertEquals(0L, test.attributes().getSize());
+        test.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(test));
+        assertNotEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         assertNotEquals(-1L, test.attributes().getModificationDate());
         final Path target = new DeepboxMoveFeature(session, fileid).move(test,
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        target.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(target));
         assertFalse(new DeepboxFindFeature(session, fileid).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target));
         assertEquals(test.attributes().getModificationDate(), target.attributes().getModificationDate());

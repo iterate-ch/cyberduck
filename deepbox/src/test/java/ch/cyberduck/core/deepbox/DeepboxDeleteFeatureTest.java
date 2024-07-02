@@ -46,7 +46,8 @@ public class DeepboxDeleteFeatureTest extends AbstractDeepboxTest {
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final String nodeId = new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus()).attributes().getFileId();
+        new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        final String nodeId = new DeepboxAttributesFinderFeature(session, nodeid).find(file).getFileId();
         new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(nodeId), null, null, null); // assert no fail
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
