@@ -126,19 +126,9 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         login.check(session, new DisabledCancelCallback());
         final String name = String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path bucket = new S3PathStyleFallbackAdapter<>(session.getClient(), new BackgroundExceptionCallable<Path>() {
-            @Override
-            public Path call() throws BackgroundException {
-                return new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
-                        new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-            }
-        }).call();
-        final Path test = new S3PathStyleFallbackAdapter<>(session.getClient(), new BackgroundExceptionCallable<Path>() {
-            @Override
-            public Path call() throws BackgroundException {
-                return new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
-            }
-        }).call();
+        final Path bucket = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
+                new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertNotNull(new S3AttributesFinderFeature(session, acl).find(test));

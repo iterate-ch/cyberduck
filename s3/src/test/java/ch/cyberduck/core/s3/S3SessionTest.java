@@ -158,6 +158,7 @@ public class S3SessionTest extends AbstractS3Test {
         }
         catch(BackgroundException e) {
             assertTrue(e.getCause() instanceof UnknownHostException);
+            assertFalse(session.getClient().getDisableDnsBuckets());
             throw e;
         }
     }
@@ -215,7 +216,8 @@ public class S3SessionTest extends AbstractS3Test {
     @Test
     public void testBucketVirtualHostStyleCustomHost() throws Exception {
         final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck");
-        assertFalse(new S3Session(host).connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
+        final S3Session session = new S3Session(host);
+        assertFalse(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
                 .getDisableDnsBuckets());
     }
 

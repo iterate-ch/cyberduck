@@ -44,7 +44,6 @@ public class SpectraSession extends S3Session {
     protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt, cancel);
         final Jets3tProperties configuration = client.getConfiguration();
-        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         return client;
     }

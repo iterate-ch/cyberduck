@@ -168,18 +168,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
                 new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
-            final S3ObjectListService proxy = new S3ObjectListService(session, acl);
-            new ListService() {
-                @Override
-                public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-                    return new S3PathStyleFallbackAdapter<>(session.getClient(), new BackgroundExceptionCallable<AttributedList<Path>>() {
-                        @Override
-                        public AttributedList<Path> call() throws BackgroundException {
-                            return proxy.list(directory, listener);
-                        }
-                    }).call();
-                }
-            }.list(new Path(directory, new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            new S3ObjectListService(session, acl).list(new Path(directory, new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         }
         finally {
             new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -266,18 +255,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final S3ObjectListService proxy = new S3ObjectListService(session, new S3AccessControlListFeature(session));
-        new ListService() {
-            @Override
-            public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-                return new S3PathStyleFallbackAdapter<>(session.getClient(), new BackgroundExceptionCallable<AttributedList<Path>>() {
-                    @Override
-                    public AttributedList<Path> call() throws BackgroundException {
-                        return proxy.list(directory, listener);
-                    }
-                }).call();
-            }
-        }.list(container, new DisabledListProgressListener());
+        new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
     }
 
     @Test
@@ -357,18 +335,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals("eu-central-1", cache.getRegionForBucketName(bucket.getName()));
         cache.putRegionForBucketName(bucket.getName(), "eu-west-1");
-        final S3ObjectListService proxy = new S3ObjectListService(session, acl);
-        assertNotSame(AttributedList.emptyList(), new ListService() {
-            @Override
-            public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-                return new S3PathStyleFallbackAdapter<>(session.getClient(), new BackgroundExceptionCallable<AttributedList<Path>>() {
-                    @Override
-                    public AttributedList<Path> call() throws BackgroundException {
-                        return proxy.list(directory, listener);
-                    }
-                }).call();
-            }
-        }.list(bucket, new DisabledListProgressListener()));
+        assertNotSame(AttributedList.emptyList(), new S3ObjectListService(session, acl).list(bucket, new DisabledListProgressListener()));
         assertEquals("eu-central-1", cache.getRegionForBucketName(bucket.getName()));
         assertFalse(session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
