@@ -35,19 +35,20 @@ import ch.cyberduck.core.features.AttributesFinder;
 import java.util.UUID;
 
 /**
- * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy
+ * See {@link ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy} for full of attributes. list
+ * <p>
  * The following attributes are currently unused:
  * <ul>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDirectDownload(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAnalyze(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canSign(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canReadNodeInfo(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAdminAccess(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canComment(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canTag(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canI18n(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRevision(Boolean)</li>
- *     <li>@see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canWatch(Boolean)</li>
+ *     <li>{@link ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canDirectDownload(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAnalyze(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canSign(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canReadNodeInfo(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canAdminAccess(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canComment(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canTag(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canI18n(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRevision(Boolean)}</li>
+ *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canWatch(Boolean)}</li>
  *  </ul>
  */
 public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Void> {
