@@ -225,7 +225,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         return attrs;
     }
 
-    public PathAttributes toAttributes(final Node node) throws ApiException {
+    public PathAttributes toAttributes(final Node node) {
         final PathAttributes attrs = new PathAttributes();
         attrs.setFileId(node.getNodeId().toString());
         attrs.setCreationDate(node.getCreated().getTime().getMillis());
