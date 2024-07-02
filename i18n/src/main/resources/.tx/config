@@ -97,6 +97,14 @@ type          = STRINGS
 minimum_perc  = 0
 resource_name = Cryptomator
 
+[o:cyberduck:p:cyberduck:r:Deepbox]
+file_filter   = <lang>.lproj/Deepbox.strings
+source_file   = en.lproj/Deepbox.strings
+source_lang   = en
+type          = STRINGS
+minimum_perc  = 0
+resource_name = Deepbox
+
 [o:cyberduck:p:cyberduck:r:Disk]
 file_filter   = <lang>.lproj/Disk.strings
 source_file   = en.lproj/Disk.strings

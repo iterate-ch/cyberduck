@@ -57,6 +57,7 @@
         <module>ctera</module>
         <module>eue</module>
         <module>freenet</module>
+        <module>deepbox</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
