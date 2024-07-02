@@ -160,6 +160,25 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     }
 
     @Test
+    public void testNoCreateFolderAcl() throws Exception {
+        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Path folder = new Path(home, "NoCreateFolderPermission", EnumSet.of(AbstractPath.Type.directory));
+        final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
+        assertEquals(new Acl(
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), WRITEPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
+        ), folderAcl);
+
+        final Path file = new Path(folder, "test1.txt", EnumSet.of(AbstractPath.Type.file));
+        final Acl fileAcl = new CteraAttributesFinderFeature(session).find(file).getAcl();
+        assertEquals(new Acl(
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), DELETEPERMISSION)
+        ), fileAcl);
+    }
+
+    @Test
     public void testReadWriteAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "ReadWrite", EnumSet.of(AbstractPath.Type.directory));
@@ -212,6 +231,13 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(new Acl(
                 new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)
         ), fileAcl);
+
+        final Path emptySubfolder = new Path(folder, "Empty WORM folder", EnumSet.of(AbstractPath.Type.directory));
+        final Acl emptySubfolderAcl = new CteraAttributesFinderFeature(session).find(emptySubfolder).getAcl();
+        assertEquals(new Acl(
+                new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
+                new Acl.UserAndRole(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)
+        ), emptySubfolderAcl);
     }
 
     @Test
