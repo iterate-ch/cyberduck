@@ -274,6 +274,7 @@
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="hash" value="${git.revision}" />
                                         <property name="skipNotarize" value="${skipNotarize}" />
+                                        <property name="skipSign" value="${skipSign}"/>
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </target>
                                 </configuration>
