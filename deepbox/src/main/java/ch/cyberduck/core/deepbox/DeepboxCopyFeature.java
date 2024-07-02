@@ -74,7 +74,7 @@ public class DeepboxCopyFeature implements Copy {
             final NodeUpdate nodeUpdate = new NodeUpdate();
             nodeUpdate.setName(target.getName());
             core.updateNode(nodeUpdate, copied.getNodeId());
-            return target.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(target));
+            return target;
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Cannot copy {0}", e, file);
