@@ -41,7 +41,6 @@ import java.util.UUID;
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
 
 public class DeepboxDirectoryFeature implements Directory<VersionId> {
-
     private static final Logger log = LogManager.getLogger(DeepboxDirectoryFeature.class);
 
     private final DeepboxSession session;
@@ -55,7 +54,6 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-
             final Folder upload = new Folder();
             upload.setName(folder.getName());
             upload.setI18n(Collections.emptyMap());
@@ -72,7 +70,6 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             if(nodeId != null) {
                 return folder;
             }
-
             final PathRestControllerApi pathApi = new PathRestControllerApi(session.getClient());
             final List<FolderAdded> created;
             if(new DeepboxPathContainerService().isDocuments(folder.getParent())) {

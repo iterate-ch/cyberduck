@@ -39,6 +39,7 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DeepboxDeleteFeatureTest extends AbstractDeepboxTest {
+
     @Test
     public void testDeleteFile() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);

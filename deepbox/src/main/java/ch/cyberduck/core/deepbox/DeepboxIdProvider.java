@@ -40,7 +40,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
 
     private final DeepboxSession session;
     private final int chunksize;
-
+    private final DeepboxPathContainerService containerService = new DeepboxPathContainerService();
 
     public DeepboxIdProvider(final DeepboxSession session) {
         super(session.getCaseSensitivity());
@@ -49,27 +49,27 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     }
 
     public String getDeepBoxNodeId(final Path file) throws BackgroundException {
-        final List<Path> segs = pathToList(file);
+        final List<Path> segs = this.pathToList(file);
         if(segs.isEmpty()) {
             return null;
         }
-        return getFileId(segs.get(0));
+        return this.getFileId(segs.get(0));
     }
 
     public String getBoxNodeId(final Path file) throws BackgroundException {
-        final List<Path> segs = pathToList(file);
+        final List<Path> segs = this.pathToList(file);
         if(segs.size() < 2) {
             return null;
         }
-        return getFileId(segs.get(1));
+        return this.getFileId(segs.get(1));
     }
 
     public String getThirdLevelId(final Path file) throws BackgroundException {
-        final List<Path> segs = pathToList(file);
+        final List<Path> segs = this.pathToList(file);
         if(segs.size() < 3) {
             return null;
         }
-        return getFileId(segs.get(2));
+        return this.getFileId(segs.get(2));
     }
 
     private List<Path> pathToList(final Path path) {
@@ -97,10 +97,9 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             }
             return cached;
         }
-
         // iteratively add to cache
         // N.B. as we use PathNormalizer.name(), we can safely assume path separator is not in segments!
-        final List<Path> segs = pathToList(file);
+        final List<Path> segs = this.pathToList(file);
         for(final Path seg : segs) {
             if(StringUtils.isNotBlank(seg.attributes().getFileId())) {
                 continue;
@@ -109,7 +108,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             if(cachedSeg != null) {
                 continue;
             }
-            final String ret = lookupFileId(seg);
+            final String ret = this.lookupFileId(seg);
             // fail if one of the segments cannot be found
             if(StringUtils.isEmpty(ret)) {
                 return null;
@@ -123,56 +122,51 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     private String lookupFileId(final Path file) throws BackgroundException {
         // pre-condition: all parents can be looked up from cache
         try {
-            if(new DeepboxPathContainerService().isDeepbox(file)) { // DeepBox
-                return lookupDeepboxNodeId(file);
-
+            if(containerService.isDeepbox(file)) { // DeepBox
+                return this.lookupDeepboxNodeId(file);
             }
-            else if(new DeepboxPathContainerService().isBox(file)) { // Box
-                final String deepBoxNodeId = getFileId(file.getParent());
-                return lookupBoxNodeId(file, deepBoxNodeId);
+            else if(containerService.isBox(file)) { // Box
+                final String deepBoxNodeId = this.getFileId(file.getParent());
+                return this.lookupBoxNodeId(file, deepBoxNodeId);
             }
-            else if(new DeepboxPathContainerService().isThirdLevel(file)) { // 3rd level: Inbox,Documents,Trash
-                final String boxNodeId = getFileId(file.getParent());
-                final String deepBoxNodeId = getFileId(file.getParent().getParent());
-
-                if(new DeepboxPathContainerService().isDocuments(file)) {
-                    return lookupDocumentsNodeId(file, deepBoxNodeId, boxNodeId);
+            else if(containerService.isThirdLevel(file)) { // 3rd level: Inbox,Documents,Trash
+                final String boxNodeId = this.getFileId(file.getParent());
+                final String deepBoxNodeId = this.getFileId(file.getParent().getParent());
+                if(containerService.isDocuments(file)) {
+                    return this.lookupDocumentsNodeId(file, deepBoxNodeId, boxNodeId);
                 }
-                if(new DeepboxPathContainerService().isInbox(file)) {
-                    return lookupInboxNodeId(file, deepBoxNodeId, boxNodeId);
+                if(containerService.isInbox(file)) {
+                    return this.lookupInboxNodeId(file, deepBoxNodeId, boxNodeId);
                 }
-                if(new DeepboxPathContainerService().isTrash(file)) {
-                    return lookupTrashNodeId(file, deepBoxNodeId, boxNodeId);
+                if(containerService.isTrash(file)) {
+                    return this.lookupTrashNodeId(file, deepBoxNodeId, boxNodeId);
                 }
                 return null;
             }
-            else if(new DeepboxPathContainerService().isThirdLevel(file.getParent())) { // Inbox,Documents,Trash
+            else if(containerService.isThirdLevel(file.getParent())) { // Inbox,Documents,Trash
                 // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with parentNode fails!
-                final String boxNodeId = getFileId(file.getParent().getParent());
-                final String deepBoxNodeId = getFileId(file.getParent().getParent().getParent());
-
-                if(new DeepboxPathContainerService().isInDocuments(file)) {
-                    return lookupFileInDocumentsNodeId(file, deepBoxNodeId, boxNodeId);
+                final String boxNodeId = this.getFileId(file.getParent().getParent());
+                final String deepBoxNodeId = this.getFileId(file.getParent().getParent().getParent());
+                if(containerService.isInDocuments(file)) {
+                    return this.lookupFileInDocumentsNodeId(file, deepBoxNodeId, boxNodeId);
                 }
-                else if(new DeepboxPathContainerService().isInInbox(file)) {
-                    return lookupFileInInboxNodeId(file, deepBoxNodeId, boxNodeId);
+                else if(containerService.isInInbox(file)) {
+                    return this.lookupFileInInboxNodeId(file, deepBoxNodeId, boxNodeId);
                 }
-                else if(new DeepboxPathContainerService().isInTrash(file)) {
-                    return lookupFileInTrashNodeId(file, deepBoxNodeId, boxNodeId);
+                else if(containerService.isInTrash(file)) {
+                    return this.lookupFileInTrashNodeId(file, deepBoxNodeId, boxNodeId);
                 }
                 return null;
             }
             else { // second+ level under Documents,Trash (Inbox has no hierarchy)
-                final String deepBoxNodeId = getDeepBoxNodeId(file.getParent());
-                final String boxNodeId = getBoxNodeId(file.getParent());
-                final String parentNodeId = getFileId(file.getParent());
-
-
-                if(new DeepboxPathContainerService().isInDocuments(file)) {
-                    return lookupFileInDocumentsNodeId(file, deepBoxNodeId, boxNodeId, parentNodeId);
+                final String deepBoxNodeId = this.getDeepBoxNodeId(file.getParent());
+                final String boxNodeId = this.getBoxNodeId(file.getParent());
+                final String parentNodeId = this.getFileId(file.getParent());
+                if(containerService.isInDocuments(file)) {
+                    return this.lookupFileInDocumentsNodeId(file, deepBoxNodeId, boxNodeId, parentNodeId);
                 }
-                else if(new DeepboxPathContainerService().isInTrash(file)) {
-                    return lookupFileInTrashNodeId(file, deepBoxNodeId, boxNodeId, parentNodeId);
+                else if(containerService.isInTrash(file)) {
+                    return this.lookupFileInTrashNodeId(file, deepBoxNodeId, boxNodeId, parentNodeId);
                 }
                 return null;
             }
@@ -183,12 +177,12 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     }
 
     private String lookupDeepboxNodeId(final Path file) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
 
         int size;
         int offset = 0;
         do {
-            final DeepBoxes deepBoxes = api.listDeepBoxes(offset, this.chunksize, "displayName asc", null);
+            final DeepBoxes deepBoxes = api.listDeepBoxes(offset, chunksize, "displayName asc", null);
             final String deepBoxName = file.getName();
             final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> PathNormalizer.name(db.getName()).equals(deepBoxName)).findFirst().map(db -> db.getDeepBoxNodeId().toString()).orElse(null);
             if(deepBoxNodeId != null) {
@@ -196,19 +190,19 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 return deepBoxNodeId;
             }
             size = deepBoxes.getSize();
-            offset += this.chunksize;
+            offset += chunksize;
         }
         while(offset < size);
         return this.cache(file, null);
     }
 
     private String lookupBoxNodeId(final Path file, final String deepBoxNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
 
         int size;
         int offset = 0;
         do {
-            final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), offset, this.chunksize, "displayName asc", null);
+            final Boxes boxes = api.listBoxes(UUID.fromString(deepBoxNodeId), offset, chunksize, "displayName asc", null);
             final String boxName = file.getName();
             final String boxNodeId = boxes.getBoxes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(boxName)).findFirst().map(b -> b.getBoxNodeId().toString()).orElse(null);
             if(boxNodeId != null) {
@@ -216,7 +210,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 return boxNodeId;
             }
             size = boxes.getSize();
-            offset += this.chunksize;
+            offset += chunksize;
         }
         while(offset < size);
         return this.cache(file, null);
@@ -224,25 +218,25 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
 
     // N.B. we can get node id of documents - however, we might not get its nodeinfo or do listfiles from the documents root node, even if boxPolicy.isCanListFilesRoot()==true!
     private String lookupDocumentsNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
         final String documentsId = api.listFiles(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null).getPath().getSegments().get(0).getNodeId().toString();
         return this.cache(file, documentsId);
     }
 
     private String lookupInboxNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
         final String inboxId = api.listQueue(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null, null).getPath().getSegments().get(0).getNodeId().toString();
         return this.cache(file, inboxId);
     }
 
     private String lookupTrashNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
         final String trashId = api.listTrash(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null).getPath().getSegments().get(0).getNodeId().toString();
         return this.cache(file, trashId);
     }
 
     private String lookupFileInDocumentsNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
 
         int size;
         int offset = 0;
@@ -250,21 +244,21 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             final NodeContent files = api.listFiles(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
-                    offset, this.chunksize, "displayName asc");
+                    offset, chunksize, "displayName asc");
             final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
             if(nodeId != null) {
                 this.cache(file, nodeId);
                 return nodeId;
             }
             size = files.getSize();
-            offset += this.chunksize;
+            offset += chunksize;
         }
         while(offset < size);
         return this.cache(file, null);
     }
 
     private String lookupFileInInboxNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
 
         int size;
         int offset = 0;
@@ -272,21 +266,21 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             final NodeContent files = api.listQueue(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
-                    null, offset, this.chunksize, "displayName asc");
+                    null, offset, chunksize, "displayName asc");
             final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
             if(nodeId != null) {
                 this.cache(file, nodeId);
                 return nodeId;
             }
             size = files.getSize();
-            offset += this.chunksize;
+            offset += chunksize;
         }
         while(offset < size);
         return this.cache(file, null);
     }
 
     private String lookupFileInTrashNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
 
         int size;
         int offset = 0;
@@ -294,21 +288,21 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             final NodeContent files = api.listTrash(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
-                    offset, this.chunksize, "displayName asc");
+                    offset, chunksize, "displayName asc");
             final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
             if(nodeId != null) {
                 this.cache(file, nodeId);
                 return nodeId;
             }
             size = files.getSize();
-            offset += this.chunksize;
+            offset += chunksize;
         }
         while(offset < size);
         return this.cache(file, null);
     }
 
     private String lookupFileInDocumentsNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId, final String parentNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
 
         int size;
         int offset = 0;
@@ -317,21 +311,21 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
                     UUID.fromString(parentNodeId),
-                    offset, this.chunksize, "displayName asc");
+                    offset, chunksize, "displayName asc");
             final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
             if(nodeId != null) {
                 this.cache(file, nodeId);
                 return nodeId;
             }
             size = files.getSize();
-            offset += this.chunksize;
+            offset += chunksize;
         }
         while(offset < size);
         return this.cache(file, null);
     }
 
     private String lookupFileInTrashNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId, final String parentNodeId) throws ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(this.session.getClient());
+        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
 
         int size;
         int offset = 0;
@@ -340,14 +334,14 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
                     UUID.fromString(parentNodeId),
-                    offset, this.chunksize, "displayName asc");
+                    offset, chunksize, "displayName asc");
             final String nodeId = files.getNodes().stream().filter(b -> PathNormalizer.name(b.getName()).equals(file.getName())).findFirst().map(b -> b.getNodeId().toString()).orElse(null);
             if(nodeId != null) {
                 this.cache(file, nodeId);
                 return nodeId;
             }
             size = files.getSize();
-            offset += this.chunksize;
+            offset += chunksize;
         }
         while(offset < size);
         return this.cache(file, null);

@@ -29,8 +29,8 @@ import java.util.UUID;
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANREVERT;
 
 public class DeepboxRestoreFeature implements Restore {
-
     private static final Logger log = LogManager.getLogger(DeepboxRestoreFeature.class);
+
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
 

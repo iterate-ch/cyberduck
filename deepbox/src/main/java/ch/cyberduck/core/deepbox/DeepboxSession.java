@@ -76,11 +76,11 @@ import java.io.IOException;
 
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
+
+    private final PreferencesReader preferences = new HostPreferences(host);
     private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
 
     private OAuth2RequestInterceptor authorizationService;
-
-    private final PreferencesReader preferences = new HostPreferences(host);
 
     public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);

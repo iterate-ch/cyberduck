@@ -45,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
+
     @Test
     public void testOverwrite() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);

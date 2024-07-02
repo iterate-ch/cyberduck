@@ -37,6 +37,7 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
+
     @Test
     public void testMove() throws Exception {
 

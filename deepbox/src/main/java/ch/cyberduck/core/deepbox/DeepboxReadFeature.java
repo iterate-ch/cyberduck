@@ -63,16 +63,14 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANDOWNLOAD;
 
 public class DeepboxReadFeature implements Read {
-
     private static final Logger log = LogManager.getLogger(DeepboxReadFeature.class);
+
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
-    private final HostPreferences preferences;
 
     public DeepboxReadFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-        this.preferences = new HostPreferences(session.getHost());
     }
 
     @Override
@@ -92,7 +90,7 @@ public class DeepboxReadFeature implements Read {
                 signal.countDown();
             }
         }, "download");
-        final long timeout = preferences.getLong("deepbox.download.interrupt.ms");
+        final long timeout = new HostPreferences(session.getHost()).getLong("deepbox.download.interrupt.ms");
         final long start = System.currentTimeMillis();
         try {
             final ScheduledFuture<?> f = scheduler.repeat(() -> {
@@ -121,7 +119,7 @@ public class DeepboxReadFeature implements Read {
                     failure.set(new DeepboxExceptionMappingService(fileid).map(e));
                     signal.countDown();
                 }
-            }, preferences.getLong("deepbox.download.interval.ms"), TimeUnit.MILLISECONDS);
+            }, new HostPreferences(session.getHost()).getLong("deepbox.download.interval.ms"), TimeUnit.MILLISECONDS);
             while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
                 try {
                     if(f.isDone()) {
