@@ -48,8 +48,8 @@ public class DeepboxDeleteFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
+            final Path file = entry.getKey();
             try {
-                final Path file = entry.getKey();
                 final String fileId = fileid.getFileId(file);
                 if(fileId == null) {
                     throw new NotfoundException(String.format("Cannot find node id for %s", file.getName()));
@@ -63,7 +63,7 @@ public class DeepboxDeleteFeature implements Delete {
                 fileid.cache(file, null);
             }
             catch(ApiException e) {
-                throw new DeepboxExceptionMappingService(fileid).map(e);
+                throw new DeepboxExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
             }
         }
     }
