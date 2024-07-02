@@ -67,12 +67,12 @@ public class DeepboxMoveFeature implements Move {
 
             final String sourceId = fileid.getFileId(file);
             if(sourceId == null) {
-                throw new NotfoundException(String.format("Cannot move %s", file));
+                throw new NotfoundException(String.format("Cannot find node id for %s", file.getName()));
             }
             final NodeMove nodeMove = new NodeMove();
             final String targetParentId = fileid.getFileId(renamed.getParent());
             if(targetParentId == null) {
-                throw new NotfoundException(String.format("Cannot move %s", file));
+                throw new NotfoundException(String.format("Cannot find node id for %s", renamed.getParent().getName()));
             }
             nodeMove.setTargetParentNodeId(UUID.fromString(targetParentId));
             final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());

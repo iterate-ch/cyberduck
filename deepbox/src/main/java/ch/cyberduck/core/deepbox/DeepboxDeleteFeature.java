@@ -52,7 +52,7 @@ public class DeepboxDeleteFeature implements Delete {
                 final Path file = entry.getKey();
                 final String fileId = fileid.getFileId(file);
                 if(fileId == null) {
-                    throw new NotfoundException(String.format("Cannot delete %s", entry));
+                    throw new NotfoundException(String.format("Cannot find node id for %s", file.getName()));
                 }
                 final UUID nodeId = UUID.fromString(fileId);
                 callback.delete(file);

@@ -60,11 +60,11 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             final List<Folder> body = Collections.singletonList(upload);
             final String deepBoxNodeId = fileid.getDeepBoxNodeId(folder.getParent());
             if(deepBoxNodeId == null) {
-                throw new NotfoundException(String.format("Cannot find deep box node id for parent %s", folder));
+                throw new NotfoundException(String.format("Cannot find deep box node id for parent %s", folder.getName()));
             }
             final String boxNodeId = fileid.getBoxNodeId(folder.getParent());
             if(boxNodeId == null) {
-                throw new NotfoundException(String.format("Cannot find box node id for parent %s", folder));
+                throw new NotfoundException(String.format("Cannot find box node id for parent %s", folder.getName()));
             }
             final String nodeId = fileid.getFileId(folder);
             if(nodeId != null) {
@@ -82,7 +82,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             else {
                 final String parentNodeId = fileid.getFileId(folder.getParent());
                 if(parentNodeId == null) {
-                    throw new NotfoundException(String.format("Cannot find box node id for parent %s", folder));
+                    throw new NotfoundException(String.format("Cannot find box node id for parent %s", folder.getName()));
                 }
                 created = pathApi.addFolders(
                         body,

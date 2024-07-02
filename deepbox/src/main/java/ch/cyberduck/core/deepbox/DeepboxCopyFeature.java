@@ -67,7 +67,7 @@ public class DeepboxCopyFeature implements Copy {
             nodeCopy.setTargetParentNodeId(UUID.fromString(fileid.getFileId(target.getParent())));
             final String nodeId = fileid.getFileId(file);
             if(nodeId == null) {
-                throw new NotfoundException(String.format("Cannot copy %s", file));
+                throw new NotfoundException(String.format("Cannot find node id for %s", file.getName()));
             }
             // manually patched deepbox-api.json, return code 200 missing in theirs
             final Node copied = core.copyNode(nodeCopy, UUID.fromString(nodeId));
