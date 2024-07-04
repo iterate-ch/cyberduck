@@ -46,9 +46,9 @@ In other words:
 
 N.B. no need to check `readpermission` upon mv/cp.
 
-## Filesystem Mapping Mountain Duck 5+
+## Static Mapping of ACLs (CTERA) to Filesystem Permission Models (Mountain Duck 5+)
 
-| ACL (CTERA)                                                                            | POSIX (Folder)                                          | POSIX (File))                            | Windows `FileSystemRights` (Folder)                       | Windows `FileSystemRights` (File) | Example (Folder)                                                   | Example (File))                                                 |
+| ACL (CTERA)                                                                            | POSIX (Folder)                                          | POSIX (File)                             | Windows `FileSystemRights` (Folder)                       | Windows `FileSystemRights` (File) | Example (Folder)                                                   | Example (File)                                                  |
 |----------------------------------------------------------------------------------------|---------------------------------------------------------|------------------------------------------|-----------------------------------------------------------|-----------------------------------|--------------------------------------------------------------------|-----------------------------------------------------------------|
 | -                                                                                      | `---`                                                   | -                                        | empty                                                     | -                                 | `/ACL test (Alex Berman)/NoAccess/`                                | -                                                               |
 | `readpermission`                                                                       | `r-x`                                                   | `r--`                                    | `ReadAndExecute`                                          | `Read`                            | `/ACL test (Alex Berman)/ReadOnly/`                                | `/ACL test (Alex Berman)/ReadOnly/ReadOnly.txt`                 |
