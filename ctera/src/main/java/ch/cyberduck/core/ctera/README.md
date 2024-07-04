@@ -1,4 +1,4 @@
-# Custom Properties in namespace `http://www.ctera.com/ns` in DAV Resources to Support NT-ACL and WORM Data
+# Custom Properties in Namespace `http://www.ctera.com/ns` in DAV Resources to Support Windows NT ACLs and Write Once Read Many (WORM) Data
 
 ## Introduction
 
