@@ -59,14 +59,14 @@ N.B. no need to check `readpermission` upon mv/cp.
 
 (§) i.e. synchronously for NFS and asynchronously for file provider (sync flag)
 
-### macOS NFS POSIX (mode online/sync) and File Provider API flags (_Integrated_ connect mode) Mountain Duck 5+
+### Preflight Checks Required for Filesystem Operations (Mountain Duck 4+)
 
-| Folder | File | NFS (POSIX) | Filesystem Operation                                         | Implementation                                                                                                                                                                  |
-|--------|------|-------------|--------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | x    | `r`         | read                                                         | `r` <-- `Read.preflight` <-- `readpermission`                                                                                                                                   |
-| x      |      | `rx`        | ls                                                           | `rx` <-- `ListService.preflight` <-- `readpermission`                                                                                                                           |                      
-|        | x    | `w`         | write, rm, mv source file, mv target file (if exists)        | `w` <--  (`Write.preflight` OR `Delete.preflight`  <-- (`writepermission` OR `deletepermission`)                                                                                |
-| x      |      | `w`         | rmdir, mkdir, mv source folder, mv target folder (if exists) | `w` <--  (`Write.preflight` OR `Delete.preflight` OR `Directory.preflight` OR `Touch.preflight`) <-- (`writepermission` OR `deletepermission` OR `createdirectoriespermission`) |
+| Folder | File | Filesystem Operation                                         | Implementation                                                                        |
+|--------|------|--------------------------------------------------------------|---------------------------------------------------------------------------------------|
+|        | x    | read                                                         | `Read.preflight`                                                                      |
+| x      |      | ls                                                           | `ListService.preflight`                                                               |                      
+|        | x    | write, rm, mv source file, mv target file (if exists)        | `Write.preflight` OR `Delete.preflight`                                               |
+| x      |      | rmdir, mkdir, mv source folder, mv target folder (if exists) | `Write.preflight` OR `Delete.preflight` OR `Directory.preflight` OR `Touch.preflight` |
 
 N.B. `x` on files is only set for POSIX backends, i.e. never for CTERA.
 N.B. File Provider sets the `x` flag on all folders independent of `NSFileProviderFileSystemUserExecutable`.
