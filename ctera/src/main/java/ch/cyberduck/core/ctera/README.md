@@ -45,18 +45,7 @@ In other words:
 
 N.B. no need to check `readpermission` upon mv/cp.
 
-## Sample Mapping of ACLs (CTERA) to Filesystem Permission Models (Mountain Duck 5+)
-
-| ACL (CTERA)                                                                            | POSIX (Folder)                                      | POSIX (File)                         | Windows `FileSystemRights` (Folder)                       | Windows `FileSystemRights` (File) | Example (Folder)                                                   | Example (File)                                                  |
-|----------------------------------------------------------------------------------------|-----------------------------------------------------|--------------------------------------|-----------------------------------------------------------|-----------------------------------|--------------------------------------------------------------------|-----------------------------------------------------------------|
-| -                                                                                      | `---`                                               | -                                    | empty                                                     | -                                 | `/ACL test (Alex Berman)/NoAccess/`                                | -                                                               |
-| `readpermission`                                                                       | `r-x`                                               | `r--`                                | `ReadAndExecute`                                          | `Read`                            | `/ACL test (Alex Berman)/ReadOnly/`                                | `/ACL test (Alex Berman)/ReadOnly/ReadOnly.txt`                 |
-| `readpermission`, `createdirectoriespermission`                                        | `rwx` (delete prevented in preflight)               | -                                    | `ReadAndExecute`, `CreateDirectories`, `CreateFiles` (!), | -                                 | `/WORM test (Alex Berman)/Retention Folder (no write, no delete)/` | -                                                               |
-| `readpermission`, `deletepermission`                                                   | `rwx` (folder/file creation prevented in preflight) | `rw-` (write prevented in preflight) | `ReadAndExecute`,  `Delete`                               | `Read`, `Delete`                  | `/ACL test (Alex Berman)/NoCreateFolderPermission`                 | `/ACL test (Alex Berman)/NoCreateFolderPermission/trayIcon.png` |
-| `readpermission`, `deletepermission`, `writepermission`                                | -                                                   | `rwx`                                | -                                                         | `Read`, `Delete`, `Write`         | -                                                                  | `/ACL test (Alex Berman)/ReadWrite/Free Access.txt`             |
-| `readpermission`, `deletepermission`, `writepermission`, `createdirectoriespermission` | `rwx`                                               | -                                    | `ReadAndExecute`, `Delete`, `Write`                       | -                                 | `/ACL test (Alex Berman)/ReadWrite/`                               | -                                                               |
-
-### Required Preflight Checks for Filesystem Operations (Mountain Duck 4+)
+## Required Preflight Checks for Filesystem Operations (Mountain Duck 4+)
 
 | Filesystem Operation | Feature Preflight |
 |----------------------|-------------------|
@@ -68,7 +57,7 @@ N.B. no need to check `readpermission` upon mv/cp.
 | touch                | `Touch`           |
 | mkdir                | `Directory`       |
 
-### Mapping of Preflight Checks to POSIX Permissions and Windows FileSystemRights (Mountain Duck 5+)
+## Mapping of Preflight Checks to POSIX Permissions and Windows FileSystemRights (Mountain Duck 5+)
 
 | Folder | File | Feature Preflight | Windows `FileSystemRights` | POSIX Permissions |
 |--------|------|-------------------|----------------------------|-------------------|
@@ -80,6 +69,17 @@ N.B. no need to check `readpermission` upon mv/cp.
 | x      |      | `Directory`       | `CreateDirectories`        | -w-               |
 
 N.B. `Write` on folders implies `CreateFiles` (=`WriteData` on files) and `CreateDirectories` (=`AppendData` on files).
+
+### Sample Mapping of ACLs (CTERA) to Filesystem Permission Models (Mountain Duck 5+)
+
+| ACL (CTERA)                                                                            | POSIX (Folder)                                      | POSIX (File)                         | Windows `FileSystemRights` (Folder)                       | Windows `FileSystemRights` (File) | Example (Folder)                                                   | Example (File)                                                  |
+|----------------------------------------------------------------------------------------|-----------------------------------------------------|--------------------------------------|-----------------------------------------------------------|-----------------------------------|--------------------------------------------------------------------|-----------------------------------------------------------------|
+| -                                                                                      | `---`                                               | -                                    | empty                                                     | -                                 | `/ACL test (Alex Berman)/NoAccess/`                                | -                                                               |
+| `readpermission`                                                                       | `r-x`                                               | `r--`                                | `ReadAndExecute`                                          | `Read`                            | `/ACL test (Alex Berman)/ReadOnly/`                                | `/ACL test (Alex Berman)/ReadOnly/ReadOnly.txt`                 |
+| `readpermission`, `createdirectoriespermission`                                        | `rwx` (delete prevented in preflight)               | -                                    | `ReadAndExecute`, `CreateDirectories`, `CreateFiles` (!), | -                                 | `/WORM test (Alex Berman)/Retention Folder (no write, no delete)/` | -                                                               |
+| `readpermission`, `deletepermission`                                                   | `rwx` (folder/file creation prevented in preflight) | `rw-` (write prevented in preflight) | `ReadAndExecute`,  `Delete`                               | `Read`, `Delete`                  | `/ACL test (Alex Berman)/NoCreateFolderPermission`                 | `/ACL test (Alex Berman)/NoCreateFolderPermission/trayIcon.png` |
+| `readpermission`, `deletepermission`, `writepermission`                                | -                                                   | `rwx`                                | -                                                         | `Read`, `Delete`, `Write`         | -                                                                  | `/ACL test (Alex Berman)/ReadWrite/Free Access.txt`             |
+| `readpermission`, `deletepermission`, `writepermission`, `createdirectoriespermission` | `rwx`                                               | -                                    | `ReadAndExecute`, `Delete`, `Write`                       | -                                 | `/ACL test (Alex Berman)/ReadWrite/`                               | -                                                               |
 
 #### References
 
