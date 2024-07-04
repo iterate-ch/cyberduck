@@ -30,19 +30,19 @@ In other words:
 
 ## Preflight Checks Mountain Duck 4.15.7+
 
-| Filesystem Operation | Feature     | Folder | File | Required Permissions (CTERA ACLs)                                                                                                               | Preflight Check |
-|----------------------|-------------|--------|------|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| ls                   | ListService | x      |      | `readpermission`                                                                                                                                | x               |
-| read                 | Read        |        | x    | `readpermission`                                                                                                                                | x               |                      
-| write                | Write       |        | x    | `writepermission`                                                                                                                               | x               |
-| mv                   | Move        | x      |      | source:`deletepermission` AND target:`writepermission` (if directory exists, i.e. overwrite) AND target's parent: `createdirectoriespermission` | x               |
-| mv                   | Move        |        | x    | source:`deletepermission` AND target:`writepermission` (if file exists, i.e. overwrite) AND (future: target's parent: `createfilepermission`)   | x               |
-| cp                   | Copy        | x      |      | target:`writepermission` (if directory exists, i.e. overwrite) AND target's parent: `createdirectoriespermission`                               | x               |
-| cp                   | Copy        |        | x    | target:`writepermission` (if file exists, i.e. overwrite) AND (future: target's parent: `createfilepermission`)                                 | x               |
-| touch                | Touch       |        | x    | `createdirectoriespermission` or `writepermission` (future: target's parent `createfilepermission`)                                             | x               |
-| mkdir                | Directory   | x      |      | `createdirectoriespermission`                                                                                                                   | x               |
-| rm / rmdir           | Delete      | x      | x    | `deletepermission`                                                                                                                              | x               |
-| exec                 | --          |        | x    | --                                                                                                                                              | --              |
+| Filesystem Operation | Feature       | Folder | File | Required Permissions (CTERA ACLs)                                                                                                               | Preflight Check |
+|----------------------|---------------|--------|------|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| ls                   | `ListService` | x      |      | `readpermission`                                                                                                                                | x               |
+| read                 | `Read`        |        | x    | `readpermission`                                                                                                                                | x               |                      
+| write                | `Write`       |        | x    | `writepermission`                                                                                                                               | x               |
+| mv                   | `Move`        | x      |      | source:`deletepermission` AND target:`writepermission` (if directory exists, i.e. overwrite) AND target's parent: `createdirectoriespermission` | x               |
+| mv                   | `Move`        |        | x    | source:`deletepermission` AND target:`writepermission` (if file exists, i.e. overwrite) AND (future: target's parent: `createfilepermission`)   | x               |
+| cp                   | `Copy`        | x      |      | target:`writepermission` (if directory exists, i.e. overwrite) AND target's parent: `createdirectoriespermission`                               | x               |
+| cp                   | `Copy`        |        | x    | target:`writepermission` (if file exists, i.e. overwrite) AND (future: target's parent: `createfilepermission`)                                 | x               |
+| touch                | `Touch`       |        | x    | `createdirectoriespermission` or `writepermission` (future: target's parent `createfilepermission`)                                             | x               |
+| mkdir                | `Directory`   | x      |      | `createdirectoriespermission`                                                                                                                   | x               |
+| rm / rmdir           | `Delete`      | x      | x    | `deletepermission`                                                                                                                              | x               |
+| exec                 | --            |        | x    | --                                                                                                                                              | --              |
 
 N.B. no need to check `readpermission` upon mv/cp.
 
