@@ -28,7 +28,7 @@ In other words:
 - File creation is allowed if either `createdirectoriespermission` or `writepermission` is set or both are set
 - Directory creation is allowed if `createdirectoriespermission` is set.
 
-## Preflight Checks Mountain Duck 4.15.7+
+## Implemented Preflight Checks
 
 | Filesystem Operation | Feature       | Folder | File | Required Permissions (CTERA ACLs)                                                                                                               | Preflight Check |
 |----------------------|---------------|--------|------|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
