@@ -27,7 +27,7 @@ In other words:
 - File creation is allowed if either `createdirectoriespermission` or `writepermission` is set or both are set
 - Directory creation is allowed if `createdirectoriespermission` is set.
 
-## Implemented Preflight Checks
+## Required ACLs for Preflight Checks (Mountain Duck 4+)
 
 | Folder | File | Filesystem Operation | Feature       | Required Permissions (CTERA ACLs)                                                                                                               |
 |--------|------|----------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -45,7 +45,7 @@ In other words:
 
 N.B. no need to check `readpermission` upon mv/cp.
 
-## Static Mapping of ACLs (CTERA) to Filesystem Permission Models (Mountain Duck 5+)
+## Sample Mapping of ACLs (CTERA) to Filesystem Permission Models (Mountain Duck 5+)
 
 | ACL (CTERA)                                                                            | POSIX (Folder)                                      | POSIX (File)                         | Windows `FileSystemRights` (Folder)                       | Windows `FileSystemRights` (File) | Example (Folder)                                                   | Example (File)                                                  |
 |----------------------------------------------------------------------------------------|-----------------------------------------------------|--------------------------------------|-----------------------------------------------------------|-----------------------------------|--------------------------------------------------------------------|-----------------------------------------------------------------|
@@ -56,39 +56,33 @@ N.B. no need to check `readpermission` upon mv/cp.
 | `readpermission`, `deletepermission`, `writepermission`                                | -                                                   | `rwx`                                | -                                                         | `Read`, `Delete`, `Write`         | -                                                                  | `/ACL test (Alex Berman)/ReadWrite/Free Access.txt`             |
 | `readpermission`, `deletepermission`, `writepermission`, `createdirectoriespermission` | `rwx`                                               | -                                    | `ReadAndExecute`, `Delete`, `Write`                       | -                                 | `/ACL test (Alex Berman)/ReadWrite/`                               | -                                                               |
 
-(§) i.e. synchronously for NFS and asynchronously for file provider (sync flag)
+### Required Preflight Checks for Filesystem Operations (Mountain Duck 4+)
 
-### Preflight Checks Required for Filesystem Operations (Mountain Duck 4+)
+| Filesystem Operation | Feature Preflight |
+|----------------------|-------------------|
+| read                 | `Read`            |
+| ls                   | `ListService`     |                      
+| write                | `Write`           |
+| rm                   | `Delete`          |
+| mv                   | `Move`            |
+| touch                | `Touch`           |
+| mkdir                | `Directory`       |
 
-| Folder | File | Filesystem Operation                                         | Implementation                                                                        |
-|--------|------|--------------------------------------------------------------|---------------------------------------------------------------------------------------|
-|        | x    | read                                                         | `Read.preflight`                                                                      |
-| x      |      | ls                                                           | `ListService.preflight`                                                               |                      
-|        | x    | write, rm, mv source file, mv target file (if exists)        | `Write.preflight` OR `Delete.preflight`                                               |
-| x      |      | rmdir, mkdir, mv source folder, mv target folder (if exists) | `Write.preflight` OR `Delete.preflight` OR `Directory.preflight` OR `Touch.preflight` |
+### Mapping of Preflight Checks to POSIX Permissions and Windows FileSystemRights (Mountain Duck 5+)
 
-N.B. `x` on files is only set for POSIX backends, i.e. never for CTERA.
-N.B. File Provider sets the `x` flag on all folders independent of `NSFileProviderFileSystemUserExecutable`.
-
-#### Documentation
-
-* https://developer.apple.com/documentation/fileprovider/nsfileproviderfilesystemflags
-* https://developer.apple.com/documentation/fileprovider/nsfileprovideritemcapabilities
-
-### Windows Cloud Files API (_Integrated_ connect mode) Mountain Duck 5+
-
-| Folder | File | Widows `FileSystemRights` | Filesystem Operation                                                | Implementation (`WindowsAcl.Translate`)                                  |
-|--------|------|---------------------------|---------------------------------------------------------------------|--------------------------------------------------------------------------|
-|        | x    | `Read`                    | read, exec                                                          | `Read.preflight` <-- `readpermission`                                    |                      
-| x      |      | `ReadAndExecute`          | ls                                                                  | `ListService.preflight` <-- `readpermission`                             |                      
-| x      | x    | `Write`                   | write, touch, mkdir, mv source file, mv target file (if exists)     | `Write.preflight` <-- `writepermission`                                  |
-| x      | x    | `Delete`                  | rm, rmdir, mv source file/folder, mv target file/folder (if exists) | `Delete.preflight` <-- `deletepermission`                                |
-| x      |      | `CreateDirectories`       | mkdir, mv target folder (if target folder does not exist)           | `Directory.preflight` <-- `createdirectoriespermission`                  |
-| x      |      | `CreateFiles`             | touch                                                               | `Touch.preflight` <-- `createdirectoriespermission` or `writepermission` |
+| Folder | File | Feature Preflight | Windows `FileSystemRights` | POSIX Permissions |
+|--------|------|-------------------|----------------------------|-------------------|
+|        | x    | `Read`            | `Read`                     | r--               |                      
+| x      |      | `ListService`     | `ReadAndExecute`           | r-x               |                      
+| x      | x    | `Write`           | `Write`                    | -w-               |
+| x      | x    | `Delete`          | `Delete`                   | -w-               |
+| x      |      | `Touch`           | `CreateFiles`              | -w-               |
+| x      |      | `Directory`       | `CreateDirectories`        | -w-               |
 
 N.B. `Write` on folders implies `CreateFiles` (=`WriteData` on files) and `CreateDirectories` (=`AppendData` on files).
 
-#### Documentation
+#### References
 
 * https://learn.microsoft.com/en-us/dotnet/api/system.security.accesscontrol.filesystemrights?view=net-8.0
-
+* https://developer.apple.com/documentation/fileprovider/nsfileproviderfilesystemflags
+* https://developer.apple.com/documentation/fileprovider/nsfileprovideritemcapabilities
