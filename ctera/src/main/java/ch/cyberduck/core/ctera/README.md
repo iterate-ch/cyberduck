@@ -2,18 +2,17 @@
 
 ## Introduction
 
-Lines of defense, i.e. are actions intercepted:
+Cascading permission checks for file system operations:
 
-* **1st line of defense**: already at filesystem/OS/mount level (i.e. POSIX (NFS and File Provider API macOS) and
-  Windows ACL (Cloud Files API Windows) permissions checked by OS).
-  Only Cloud Files API under Windows allows to intercept all disallowed operations at this level.
-  All other modes have some gaps, i.e. permissions wide enough to pass through and intercept later.
-  _User experience:_ operation not allowed.
-* **2nd line of defense**: preflight checks before upload (in fail fast nfs, Cyberduck client, cbfs api
-  Windows). _User experience:_ operation allowed with error feedback.
-* **3rd line of defense**: fail in the CTERA backend ("portal"). This only happens when permissions are changed in the
-  backend/portal (e.g. by retention policy).
-  _User experience:_ operation allowed with error feedback.
+* **Filesystem permission model**: i.e. POSIX (NFS and File Provider API macOS) and
+  Windows ACL (Cloud Files API Windows) with permissions checked by the operating system. Not all ACLs can
+  be mapped to the filesystem permission model. _User experience:_ Filesystem operation not allowed with
+  non-customizable error message.
+* **Preflight checks**: Preflight checks before file system operation to fail fast prior server API invocation. _User
+  experience:_ Filesystem operation not allowed with additional custom error notification.
+* **API Failure**: Fail in the CTERA backend ("portal"). This only happens when permissions are changed in the
+  backend/portal (e.g. by retention policy). _User experience:_ Filesystem operation allowed with later error
+  notification on synchronization.
 
 ### File/Directory Permission Setup
 
