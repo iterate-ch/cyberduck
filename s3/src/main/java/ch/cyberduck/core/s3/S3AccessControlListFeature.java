@@ -287,6 +287,10 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         if(AccessControlList.REST_CANNED_BUCKET_OWNER_READ == list) {
             return Acl.CANNED_BUCKET_OWNER_READ;
         }
+        if(null == list.getOwner()) {
+            log.warn(new StringBuilder().append("Missing owner in ACL ").append(list).toString());
+            return Acl.EMPTY;
+        }
         final Acl.Owner owner = new Acl.Owner(list.getOwner().getId(), list.getOwner().getDisplayName());
         if(!owner.isValid()) {
             log.warn(String.format("Invalid owner %s in ACL", list.getOwner()));
