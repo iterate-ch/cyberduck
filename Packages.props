@@ -15,6 +15,10 @@
   -->
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IKVMVersion>8.9.0-pre.1</IKVMVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Update="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Update="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
@@ -25,6 +29,7 @@
     <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.647-beta" />
     <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.22000.196" />
     <PackageReference Update="NUnit" Version="3.13.3" />
+    <PackageReference Update="IKVM" Version="$(IKVMVersion)" />
     <PackageReference Update="NUnit.Console" Version="3.16.0" />
     <PackageReference Update="NUnit.ConsoleRunner" Version="3.16.0" GeneratePathProperty="true" />
     <PackageReference Update="NUnit3TestAdapter" Version="4.3.1" />

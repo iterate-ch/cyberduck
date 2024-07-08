@@ -38,10 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="@(IKVMReferences)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.Memory" />
   </ItemGroup>
 

@@ -1,0 +1,14 @@
+<Project Sdk="IKVM.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <LangVersion>1.8</LangVersion>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <CyberduckReference Include="Core" />
+        
+        <Convert Include="$(TargetBuildDir)ch.cyberduck.bonjour.jar" />
+        <Convert Include="$(TargetBuildDir)com.apple.dnssd.jar" />
+    </ItemGroup>
+</Project>

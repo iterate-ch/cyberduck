@@ -17,11 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(TargetBuildDir)ikvm/bin/ikvm-native-win32-*.dll">
-      <Link>$(Filename)$(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(TargetBuildDir)sunmscapi.dll;$(TargetBuildDir)jnidispatch.dll;$(TargetBuildDir)msvcr120.dll;$(TargetBuildDir)sunec.dll;$(TargetBuildDir)winsparkle.dll">
+    <Content Include="$(TargetBuildDir)jnidispatch.dll;$(TargetBuildDir)winsparkle.dll">
       <Link>$(Filename)$(Extension)</Link>
     </Content>
   </ItemGroup>
@@ -31,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="@(IKVMReferences)" />
     <Reference Include="CustomOpenFileFolderDialog">
       <HintPath>$(TargetBuildDir)CustomOpenFileFolderDialog.dll</HintPath>
     </Reference>
@@ -46,6 +41,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
     <PackageReference Include="ExceptionReporter" />
+    <PackageReference Include="IKVM" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
     <PackageReference Include="Microsoft.Windows.CsWin32">
       <PrivateAssets>all</PrivateAssets>

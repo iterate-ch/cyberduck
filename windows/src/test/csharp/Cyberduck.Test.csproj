@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="@(IKVMReferences)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="../../main/csharp/Cyberduck.csproj" />
   </ItemGroup>
 
