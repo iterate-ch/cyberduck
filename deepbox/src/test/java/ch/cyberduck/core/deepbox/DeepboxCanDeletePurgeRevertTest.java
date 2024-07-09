@@ -173,7 +173,7 @@ public class DeepboxCanDeletePurgeRevertTest extends AbstractDeepboxTest {
     // Trash not listable
     public void testDeleteNoRevertFile() throws BackgroundException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path parentFolder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path parentFolder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Documents/Bookkeeping", EnumSet.of(Path.Type.directory));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(AbstractPath.Type.file));
@@ -194,7 +194,7 @@ public class DeepboxCanDeletePurgeRevertTest extends AbstractDeepboxTest {
     // Trash not listable
     public void testDeleteNoRevertFolder() throws BackgroundException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path parentFolder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path parentFolder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Documents/Bookkeeping", EnumSet.of(Path.Type.directory));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(AbstractPath.Type.directory));
