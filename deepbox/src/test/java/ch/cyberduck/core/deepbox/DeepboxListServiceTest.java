@@ -114,9 +114,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             // no modification/creation date for Inbox/Documents/Trash virtual folder level
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
-            final String fileId = nodeid.getFileId(new Path(f.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.volume)));
+            final String fileId = nodeid.getFileId(f);
             assertEquals(fileId, f.attributes().getFileId());
-            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.volume))));
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
         }
     }
 
