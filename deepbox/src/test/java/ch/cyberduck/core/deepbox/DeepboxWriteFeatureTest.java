@@ -56,7 +56,8 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         assertTrue(new DefaultFindFeature(session).find(file));
         try {
             final byte[] content = RandomUtils.nextBytes(2047);
-            final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file,
+                    new TransferStatus().exists(true), new DisabledConnectionCallback());
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
             final BytecountStreamListener count = new BytecountStreamListener();
