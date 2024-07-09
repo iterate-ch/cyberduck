@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.unicode.NFCNormalizer;
-import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,8 +28,6 @@ public final class PathNormalizer {
 
     private static final boolean IS_ENABLED = PreferencesFactory.get().getBoolean("path.normalize");
 
-    private static final UnicodeNormalizer UNICODE_NORMALIZER = PreferencesFactory.get().getBoolean("path.normalize.unicode") ? new NFCNormalizer() : UnicodeNormalizer.DISABLED;
-
     private PathNormalizer() {
         //
     }
@@ -41,12 +37,12 @@ public final class PathNormalizer {
             return path;
         }
         if(!StringUtils.contains(path, Path.DELIMITER)) {
-            return UNICODE_NORMALIZER.normalize(path).toString();
+            return path;
         }
         if(StringUtils.endsWith(path, String.valueOf(Path.DELIMITER))) {
-            return UNICODE_NORMALIZER.normalize(StringUtils.substringAfterLast(normalize(path), String.valueOf(Path.DELIMITER))).toString();
+            return StringUtils.substringAfterLast(normalize(path), String.valueOf(Path.DELIMITER));
         }
-        return UNICODE_NORMALIZER.normalize(StringUtils.substringAfterLast(path, String.valueOf(Path.DELIMITER))).toString();
+        return StringUtils.substringAfterLast(path, String.valueOf(Path.DELIMITER));
     }
 
     public static String parent(final String absolute, final char delimiter) {
@@ -61,7 +57,7 @@ public final class PathNormalizer {
         }
         int cut = absolute.lastIndexOf(delimiter, index);
         if(cut > 0) {
-            return UNICODE_NORMALIZER.normalize(absolute.substring(0, cut)).toString();
+            return absolute.substring(0, cut);
         }
         //if (index == 0) parent is root
         return String.valueOf(delimiter);
@@ -147,7 +143,7 @@ public final class PathNormalizer {
             }
         }
         // Return the normalized path that we have completed
-        return UNICODE_NORMALIZER.normalize(normalized).toString();
+        return normalized;
     }
 
     /**
