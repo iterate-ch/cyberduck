@@ -16,23 +16,23 @@
 // feedback@cyberduck.io
 // 
 
-using System;
 using ch.cyberduck.core;
 using ch.cyberduck.core.worker;
+using ch.cyberduck.ui.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
-using Ch.Cyberduck.Ui.Controller;
-using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
+using System;
+using UiUtils = Ch.Cyberduck.Ui.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
     public class DialogRecursiveCallback : Worker.RecursiveCallback
     {
-        private readonly WindowController _controller;
+        private readonly IWindowController _controller;
         private bool _option;
         private bool _supressed;
 
-        public DialogRecursiveCallback(WindowController controller)
+        public DialogRecursiveCallback(IWindowController controller)
         {
             _controller = controller;
         }
@@ -48,23 +48,29 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                 AtomicBoolean c = new AtomicBoolean(false);
                 _controller.Invoke(delegate
                 {
-                    TaskDialogResult result =
-                        _controller.View.CommandBox(LocaleFactory.localizedString("Apply changes recursively"),
-                            LocaleFactory.localizedString("Apply changes recursively"),
-                            String.Format(
-                                LocaleFactory.localizedString(
-                                    "Do you want to set {0} on {1} recursively for all contained files?"), value,
-                                directory.getName()), null, null, LocaleFactory.localizedString("Always"),
-                            LocaleFactory.localizedString("Continue", "Credentials"), true, TaskDialogIcon.Warning,
-                            TaskDialogIcon.Information, delegate(int opt, bool verificationChecked)
+                    if (UiUtils.CommandBox(
+                        owner: _controller.Window,
+                        title: LocaleFactory.localizedString("Apply changes recursively"),
+                        mainInstruction: LocaleFactory.localizedString("Apply changes recursively"),
+                        content: string.Format(
+                            LocaleFactory.localizedString(
+                                "Do you want to set {0} on {1} recursively for all contained files?"),
+                            value, directory.getName()),
+                        expandedInfo: null,
+                        help: null,
+                        verificationText: LocaleFactory.localizedString("Always"),
+                        commandButtons: LocaleFactory.localizedString("Continue", "Credentials"),
+                        showCancelButton: true,
+                        mainIcon: TaskDialogIcon.Warning,
+                        footerIcon: TaskDialogIcon.Information,
+                        handler: (opt, verificationChecked) =>
+                        {
+                            if (verificationChecked)
                             {
-                                if (verificationChecked)
-                                {
-                                    _supressed = true;
-                                    _option = c.Value;
-                                }
-                            });
-                    if (result.Button == 0)
+                                _supressed = true;
+                                _option = c.Value;
+                            }
+                        }) is { Button: 0 })
                     {
                         c.SetValue(true);
                     }

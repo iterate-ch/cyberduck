@@ -18,6 +18,8 @@ namespace ch.cyberduck.ui.core;
 
 public interface IWindowController
 {
+    bool Visible { get; }
+
     IWin32Window Window { get; }
 
     void Invoke(AsyncController.AsyncDelegate action);

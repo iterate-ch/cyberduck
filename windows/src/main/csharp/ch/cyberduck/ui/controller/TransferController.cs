@@ -72,6 +72,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public IWin32Window WindowInterop => nativeTransfersWindow;
 
+        bool IWindowController.Visible => Window?.IsVisible ?? false;
+
         IWin32Window IWindowController.Window => nativeTransfersWindow;
 
         public TransferController(TransfersStore store)
