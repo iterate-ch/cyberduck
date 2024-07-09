@@ -92,7 +92,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final PathAttributes originalTestAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(test);
         final PathAttributes originalTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target);
 
-        new DeepboxCopyFeature(session, fileid).copy(test, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new DeepboxCopyFeature(session, fileid).copy(test, target, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target.withAttributes(new PathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(targetInTrash));
