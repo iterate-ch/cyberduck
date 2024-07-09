@@ -55,6 +55,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
+    private final DeepboxPathContainerService containerService = new DeepboxPathContainerService();
 
     /**
      * Used for preflight checks in {@link DeepboxListService}.
@@ -130,7 +131,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
             if(file.isRoot()) {
                 return new PathAttributes();
             }
-            else if(new DeepboxPathContainerService().isDeepbox(file)) {
+            else if(containerService.isDeepbox(file)) {
                 final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
                 if(deepBoxNodeId == null) {
@@ -139,7 +140,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 final DeepBox deepBox = boxApi.getDeepBox(UUID.fromString(deepBoxNodeId));
                 return this.toAttributes(deepBox);
             }
-            else if(new DeepboxPathContainerService().isBox(file)) {
+            else if(containerService.isBox(file)) {
                 final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
                 if(deepBoxNodeId == null) {
@@ -152,7 +153,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 final Box box = boxApi.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
                 return this.toAttributes(box);
             }
-            else if(new DeepboxPathContainerService().isThirdLevel(file)) {
+            else if(containerService.isThirdLevel(file)) {
                 return toAttributesThirdLevel(file);
             }
             else {
@@ -189,7 +190,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         final Box box = boxApi.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
         final Acl acl = new Acl(new Acl.CanonicalUser());
         final BoxAccessPolicy boxPolicy = box.getBoxPolicy();
-        if(new DeepboxPathContainerService().isInbox(file)) {
+        if(containerService.isInbox(file)) {
             if(boxPolicy.isCanListQueue()) {
                 acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
             }
@@ -197,7 +198,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
             }
         }
-        else if(new DeepboxPathContainerService().isDocuments(file)) {
+        else if(containerService.isDocuments(file)) {
             if(boxPolicy.isCanListFilesRoot()) {
                 acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
             }
