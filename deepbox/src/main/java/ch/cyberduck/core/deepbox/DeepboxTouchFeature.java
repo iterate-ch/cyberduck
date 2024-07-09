@@ -18,6 +18,7 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -29,7 +30,7 @@ import java.text.MessageFormat;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
 
-public class DeepboxTouchFeature extends DefaultTouchFeature<Void> {
+public class DeepboxTouchFeature extends DefaultTouchFeature<Node> {
     private static final Logger log = LogManager.getLogger(DeepboxTouchFeature.class);
 
     public DeepboxTouchFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {

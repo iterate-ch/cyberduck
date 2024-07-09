@@ -50,7 +50,7 @@ import java.util.UUID;
  *     <li>{@link  ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canWatch(Boolean)}</li>
  *  </ul>
  */
-public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Void> {
+public class DeepboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Node> {
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
@@ -196,6 +196,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         return attrs;
     }
 
+    @Override
     public PathAttributes toAttributes(final Node node) {
         final PathAttributes attrs = new PathAttributes();
         attrs.setFileId(node.getNodeId().toString());
@@ -232,10 +233,5 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         }
         attrs.setAcl(acl);
         return attrs;
-    }
-
-    @Override
-    public PathAttributes toAttributes(final Void model) {
-        return null;
     }
 }

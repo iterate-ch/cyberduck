@@ -21,6 +21,7 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.FileIdProvider;
@@ -56,7 +57,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         assertTrue(new DefaultFindFeature(session).find(file));
         try {
             final byte[] content = RandomUtils.nextBytes(2047);
-            final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file,
+            final HttpResponseOutputStream<Node> out = new DeepboxWriteFeature(session, nodeid).write(file,
                     new TransferStatus().exists(true), new DisabledConnectionCallback());
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
@@ -67,6 +68,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             out.close();
             assertTrue(new DefaultFindFeature(session).find(file));
             assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
+            assertEquals(content.length, new DeepboxAttributesFinderFeature(session, nodeid).find(file).getSize());
         }
         finally {
             deleteAndPurge(file);
@@ -79,7 +81,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
-        final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -106,7 +108,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             final DeepboxWriteFeature writer = new DeepboxWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
@@ -129,7 +131,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final DeepboxWriteFeature writer = new DeepboxWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<Void> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<Node> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, nodeid).find(test).getFileId());
@@ -153,7 +155,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -190,7 +192,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         };
         status.setLength(content.length);
         final DeepboxWriteFeature writer = new DeepboxWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         assertThrows(TransferStatusCanceledException.class, () -> new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out));
         assertFalse(new DefaultFindFeature(session).find(test));

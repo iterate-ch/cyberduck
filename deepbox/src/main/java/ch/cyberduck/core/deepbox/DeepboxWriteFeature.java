@@ -33,6 +33,8 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.deepbox.io.swagger.client.JSON;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -50,12 +52,15 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.AbstractResponseHandler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
+import com.fasterxml.jackson.databind.ObjectReader;
+
+public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
 
@@ -66,10 +71,10 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>(file) {
+    public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<Node> command = new DelayedHttpEntityCallable<Node>(file) {
             @Override
-            public Void call(final HttpEntity entity) throws BackgroundException {
+            public Node call(final HttpEntity entity) throws BackgroundException {
                 try {
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
@@ -90,21 +95,35 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
                         }
                     }
                     final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
+                    multipart.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+                    multipart.setCharset(StandardCharsets.UTF_8);
                     final ByteArrayOutputStream out = new ByteArrayOutputStream();
                     entity.writeTo(out);
                     if(status.isExists()) {
                         multipart.addBinaryBody("file", out.toByteArray(),
                                 null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
+                        request.setEntity(multipart.build());
+                        return session.getClient().getClient().execute(request, new AbstractResponseHandler<Node>() {
+                            @Override
+                            public Node handleEntity(final HttpEntity entity) throws IOException {
+                                final ObjectReader reader = new JSON().getContext(null).reader(Node.class);
+                                return reader.readValue(entity.getContent());
+                            }
+                        });
                     }
                     else {
                         multipart.addBinaryBody("files", out.toByteArray(),
                                 null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
+                        request.setEntity(multipart.build());
+                        return session.getClient().getClient().execute(request, new AbstractResponseHandler<Node>() {
+                            @Override
+                            public Node handleEntity(final HttpEntity entity) throws IOException {
+                                final ObjectReader reader = new JSON().getContext(null).readerForArrayOf(Node.class);
+                                final Node[] node = reader.readValue(entity.getContent());
+                                return node[0];
+                            }
+                        });
                     }
-                    multipart.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                    multipart.setCharset(StandardCharsets.UTF_8);
-                    request.setEntity(multipart.build());
-                    session.getClient().getClient().execute(request);
-                    return null;
                 }
                 catch(HttpResponseException e) {
                     throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
