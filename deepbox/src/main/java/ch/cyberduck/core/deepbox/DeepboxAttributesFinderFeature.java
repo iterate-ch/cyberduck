@@ -28,6 +28,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeInfo;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
@@ -176,6 +177,16 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 final String fileId = fileid.getFileId(file);
                 final UUID nodeId = UUID.fromString(fileId);
                 final NodeInfo nodeInfo = new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null);
+                if(nodeInfo.getNode().getType() == Node.TypeEnum.FILE) {
+                    if(file.isDirectory()) {
+                        throw new NotfoundException(file.getAbsolute());
+                    }
+                }
+                if(nodeInfo.getNode().getType() == Node.TypeEnum.FOLDER) {
+                    if(file.isFile()) {
+                        throw new NotfoundException(file.getAbsolute());
+                    }
+                }
                 return this.toAttributes(nodeInfo.getNode());
             }
         }
