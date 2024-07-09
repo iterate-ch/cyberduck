@@ -33,21 +33,20 @@ Cascading permission checks for file system operations in Mountain Duck:
 
 ### Mapping of Preflight Checks to POSIX Permissions and Windows FileSystemRights (Mountain Duck 5+)
 
-| Folder | File | Feature Preflight | Windows `FileSystemRights` | POSIX Permissions |
-|--------|------|-------------------|----------------------------|-------------------|
-|        | x    | `Read`            | `Read`                     | r--               |                      
-| x      |      | `ListService`     | `ReadAndExecute`           | r-x               |                      
-| x      | x    | `Write`           | `Write`                    | -w-               |
-| x      | x    | `Delete`          | `Delete`                   | -w-               |
-| x      |      | `Touch`           | `CreateFiles`              | -w-               |
-| x      |      | `Directory`       | `CreateDirectories`        | -w-               |
+| Folder | File | Feature Preflight | Windows `FileSystemRights` <sup>2</sup> | POSIX Permissions |
+|--------|------|-------------------|-----------------------------------------|-------------------|
+|        | x    | `Read`            | `Read`                                  | r--               |                      
+| x      |      | `ListService`     | `ReadAndExecute`                        | r-x               |                      
+| x      | x    | `Write`           | `Write` <sup>1</sup>                    | -w-               |
+| x      | x    | `Delete`          | `Delete`                                | -w-               |
+| x      |      | `Touch`           | `CreateFiles`                           | -w-               |
+| x      |      | `Directory`       | `CreateDirectories`                     | -w-               |
 
-N.B. `Write` on folders implies `CreateFiles` (=`WriteData` on files) and `CreateDirectories` (=`AppendData` on files).
+<sup>1</sup> `Write` on folders implies `CreateFiles` (=`WriteData` on files) and `CreateDirectories` (=`AppendData` on
+files). For directories, `WriteAttributes` and `WriteExtendedAttributes` are also set in addition to `Write`.
 
-The following `FileSystemRights` are always set under Windows:
+<sup>2</sup> The following `FileSystemRights` are always set under Windows:
 `TakeOwnership`, `ChangePermissions`, `Synchronize`, `ReadAttributes`, `ReadExtendedAttributes`.
-
-For directories, `WriteAttributes` and `WriteExtendedAttributes` are also set in addition to `Write`.
 
 ## CTERA Setup
 
