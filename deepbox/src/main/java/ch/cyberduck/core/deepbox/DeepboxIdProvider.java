@@ -92,7 +92,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         // There is currently no API to reverse-lookup the fileId (DeepBox nodeId) of a file in a folder by its name,
         // let alone to directly lookup the fileId (DeepBox nodeId) by the full path (which is even language-dependent).
         final Deque<Path> segs = this.decompose(file);
-        while(segs.size() > 0) {
+        while(!segs.isEmpty()) {
             final Path seg = segs.pop();
             if(StringUtils.isNotBlank(seg.attributes().getFileId())) {
                 continue;
