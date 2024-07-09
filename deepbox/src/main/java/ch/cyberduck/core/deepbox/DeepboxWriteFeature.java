@@ -72,9 +72,8 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
             public Void call(final HttpEntity entity) throws BackgroundException {
                 try {
                     final HttpEntityEnclosingRequestBase request;
-                    final String nodeId = fileid.getFileId(file);
-                    if(nodeId != null) {
-                        request = new HttpPut(String.format("%s/api/v1/nodes/%s/revisions", session.getClient().getBasePath(), nodeId));
+                    if(status.isExists()) {
+                        request = new HttpPut(String.format("%s/api/v1/nodes/%s/revisions", session.getClient().getBasePath(), fileid.getFileId(file)));
                     }
                     else {
                         request = new HttpPost(String.format("%s/api/v1/deepBoxes/%s/boxes/%s/files/%s",

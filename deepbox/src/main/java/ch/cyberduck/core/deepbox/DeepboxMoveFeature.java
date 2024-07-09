@@ -61,7 +61,7 @@ public class DeepboxMoveFeature implements Move {
                 }
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
-            if(fileid.getFileId(renamed.withAttributes(new PathAttributes())) != null) {
+            if(status.isExists()) {
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
 

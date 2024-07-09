@@ -59,7 +59,7 @@ public class DeepboxCopyFeature implements Copy {
                 }
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
-            if(fileid.getFileId(target.withAttributes(new PathAttributes())) != null) {
+            if(status.isExists()) {
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
             final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
