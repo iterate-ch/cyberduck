@@ -59,9 +59,6 @@ public class DeepboxMoveFeature implements Move {
                 }
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
-            if(status.isExists()) {
-                new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
-            }
             final String sourceId = fileid.getFileId(file);
             final NodeMove nodeMove = new NodeMove();
             final String targetParentId = fileid.getFileId(renamed.getParent());
