@@ -22,7 +22,6 @@ import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.WorkdirPrefixer;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.DefaultProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -68,7 +67,6 @@ public class AbstractDeepboxTest extends VaultTest {
      * - ORG4/Box2 (no access to Trash/Inbox, Documents partially)
      */
     protected void setup(final String locale) throws BackgroundException {
-        PreferencesFactory.get().setDefault("factory.proxy.class", DefaultProxyFinder.class.getName());
         PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
         LocaleFactory.set(new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources"))));
         LocaleFactory.get().setDefault(locale);
