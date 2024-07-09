@@ -57,9 +57,6 @@ public class DeepboxCopyFeature implements Copy {
                 }
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
-            if(status.isExists()) {
-                new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
-            }
             final NodeCopy nodeCopy = new NodeCopy();
             nodeCopy.setTargetParentNodeId(UUID.fromString(fileid.getFileId(target.getParent())));
             final String nodeId = fileid.getFileId(file);
