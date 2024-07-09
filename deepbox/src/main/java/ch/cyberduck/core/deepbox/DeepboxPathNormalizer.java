@@ -15,13 +15,14 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.PathNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Normalize paths for Deepbox:
- * - replace forward slash "/" by dash "-"
+ * - replace forward slash "/" by dash "-" for Windows and ":" for macOS (shown as "/" in Finder)
  * Furthermore, duplicate file names are filtered out (after normalization) in the listing.
  * Finally, apart from forward slashes, the standard filtering is applied in Mountain Duck as described in <a href="https://docs.mountainduck.io/mountainduck/issues/#files-and-folders-not-synced-from-server">...</a>.
  */
@@ -31,6 +32,7 @@ public final class DeepboxPathNormalizer {
     }
 
     public static String name(final String path) {
-        return StringUtils.replace(PathNormalizer.normalize(path), "/", "-");
+        return StringUtils.replace(PathNormalizer.normalize(path), "/",
+                Factory.Platform.getDefault() == Factory.Platform.Name.windows ? "-" : ":");
     }
 }
