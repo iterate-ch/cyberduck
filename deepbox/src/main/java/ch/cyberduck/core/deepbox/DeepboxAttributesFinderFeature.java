@@ -142,7 +142,35 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 return this.toAttributes(box);
             }
             else if(containerService.isThirdLevel(file)) {
-                return this.toAttributesThirdLevel(file);
+                final String fileId = fileid.getFileId(file);
+                final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
+                final String boxNodeId = fileid.getBoxNodeId(file);
+                // map BoxAccessPolicy to CANLISTCHILDREN and CANADDCHILDREN for third level
+                final Box box = new BoxRestControllerApi(session.getClient()).getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
+                final Acl acl = new Acl(new Acl.CanonicalUser());
+                final BoxAccessPolicy boxPolicy = box.getBoxPolicy();
+                if(containerService.isInbox(file)) {
+                    if(boxPolicy.isCanListQueue()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
+                    }
+                    if(boxPolicy.isCanAddQueue()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
+                    }
+                }
+                else if(containerService.isDocuments(file)) {
+                    if(boxPolicy.isCanListFilesRoot()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
+                    }
+                    if(boxPolicy.isCanAddFilesRoot()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
+                    }
+                }
+                else {
+                    if(boxPolicy.isCanAccessTrash()) {
+                        acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
+                    }
+                }
+                return new PathAttributes().withFileId(fileId).withAcl(acl);
             }
             else {
                 final String fileId = fileid.getFileId(file);
@@ -154,38 +182,6 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         }
-    }
-
-    public PathAttributes toAttributesThirdLevel(final Path file) throws BackgroundException, ApiException {
-        final String fileId = fileid.getFileId(file);
-        final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
-        final String boxNodeId = fileid.getBoxNodeId(file);
-        // map BoxAccessPolicy to CANLISTCHILDREN and CANADDCHILDREN for third level
-        final Box box = new BoxRestControllerApi(session.getClient()).getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
-        final Acl acl = new Acl(new Acl.CanonicalUser());
-        final BoxAccessPolicy boxPolicy = box.getBoxPolicy();
-        if(containerService.isInbox(file)) {
-            if(boxPolicy.isCanListQueue()) {
-                acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
-            }
-            if(boxPolicy.isCanAddQueue()) {
-                acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
-            }
-        }
-        else if(containerService.isDocuments(file)) {
-            if(boxPolicy.isCanListFilesRoot()) {
-                acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
-            }
-            if(boxPolicy.isCanAddFilesRoot()) {
-                acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
-            }
-        }
-        else {
-            if(boxPolicy.isCanAccessTrash()) {
-                acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
-            }
-        }
-        return new PathAttributes().withFileId(fileId).withAcl(acl);
     }
 
     public PathAttributes toAttributes(final Box box) {

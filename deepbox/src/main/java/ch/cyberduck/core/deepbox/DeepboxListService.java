@@ -216,21 +216,21 @@ public class DeepboxListService implements ListService {
             final Path inbox = new Path(directory, inboxName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new PathAttributes().withFileId(fileid.getFileId(new Path(directory, inboxName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
             );
-            list.add(inbox.withAttributes(attributes.toAttributesThirdLevel(inbox)));
+            list.add(inbox.withAttributes(attributes.find(inbox)));
         }
         if(box.getBoxPolicy().isCanListFilesRoot()) {
             final String documentsName = DeepboxPathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox"));
             final Path documents = new Path(directory, documentsName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new PathAttributes().withFileId(fileid.getFileId(new Path(directory, documentsName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
             );
-            list.add(documents.withAttributes(attributes.toAttributesThirdLevel(documents)));
+            list.add(documents.withAttributes(attributes.find(documents)));
         }
         if(box.getBoxPolicy().isCanAccessTrash()) {
             final String trashName = DeepboxPathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox"));
             final Path trash = new Path(directory, trashName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new PathAttributes().withFileId(fileid.getFileId(new Path(directory, trashName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
             );
-            list.add(trash.withAttributes(attributes.toAttributesThirdLevel(trash)));
+            list.add(trash.withAttributes(attributes.find(trash)));
         }
         listener.chunk(directory, list);
     }
