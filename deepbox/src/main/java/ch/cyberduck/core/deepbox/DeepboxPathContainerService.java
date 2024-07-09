@@ -34,7 +34,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
         if(file.isRoot()) {
             return false;
         }
-        return file.isDirectory() && (file.getParent().isRoot());
+        return file.isDirectory() && file.getParent().isRoot();
     }
 
     public boolean isBox(final Path file) {
@@ -52,77 +52,80 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     public boolean isTrash(final Path file) {
-        return isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox")));
+        return this.isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox")));
     }
 
     public boolean isInbox(final Path file) {
-        return isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox")));
+        return this.isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox")));
     }
 
     public boolean isDocuments(final Path file) {
-        return isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox")));
+        return this.isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox")));
     }
 
-    public boolean isInDocuments(Path file) {
-        file = getThirdLevelPath(file);
-        if(file == null) {
+    public boolean isInDocuments(final Path file) {
+        final Path documents = this.getThirdLevelPath(file);
+        if(null == documents) {
             return false;
         }
-        return file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox")));
+        return documents.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox")));
     }
 
-    public boolean isInTrash(Path file) {
-        file = getThirdLevelPath(file);
-        if(file == null) {
+    public boolean isInTrash(final Path file) {
+        final Path trash = this.getThirdLevelPath(file);
+        if(null == trash) {
             return false;
         }
-        return file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox")));
+        return trash.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox")));
     }
 
-    public boolean isInInbox(Path file) {
-        file = getThirdLevelPath(file);
-        if(file == null) {
+    public boolean isInInbox(final Path file) {
+        final Path inbox = this.getThirdLevelPath(file);
+        if(null == inbox) {
             return false;
         }
-        return file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox")));
+        return inbox.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox")));
     }
 
-    public Path getThirdLevelPath(Path file) {
+    public Path getThirdLevelPath(final Path file) {
         if(file.isRoot()) {
             return null;
         }
-        if(isDeepbox(file)) {
+        if(this.isDeepbox(file)) {
             return null;
         }
-        if(isBox(file)) {
+        if(this.isBox(file)) {
             return null;
         }
-        while(!isThirdLevel(file)) {
-            file = file.getParent();
+        Path thirdLevel = file;
+        while(!this.isThirdLevel(thirdLevel)) {
+            thirdLevel = thirdLevel.getParent();
         }
-        return file;
+        return thirdLevel;
     }
 
-    public Path getBoxPath(Path file) {
+    public Path getBoxPath(final Path file) {
         if(file.isRoot()) {
             return null;
         }
-        if(isDeepbox(file)) {
+        if(this.isDeepbox(file)) {
             return null;
         }
-        while(!isBox(file)) {
-            file = file.getParent();
+        Path box = file;
+        while(!this.isBox(box)) {
+            box = box.getParent();
         }
-        return file;
+        return box;
     }
 
-    public Path getDeepboxPath(Path file) {
+    public Path getDeepboxPath(final Path file) {
         if(file.isRoot()) {
             return null;
         }
-        while(!isDeepbox(file)) {
-            file = file.getParent();
+        Path deepbox = file;
+        while(!this.isDeepbox(deepbox)) {
+            deepbox = deepbox.getParent();
         }
-        return file;
+        return deepbox;
     }
 }
