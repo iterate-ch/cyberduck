@@ -15,6 +15,8 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.PathNormalizer;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -29,6 +31,6 @@ public final class DeepboxPathNormalizer {
     }
 
     public static String name(final String path) {
-        return StringUtils.replace(path, "/", "-");
+        return StringUtils.replace(PathNormalizer.normalize(path), "/", "-");
     }
 }
