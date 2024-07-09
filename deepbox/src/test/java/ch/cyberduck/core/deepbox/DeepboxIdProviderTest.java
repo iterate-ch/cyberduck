@@ -17,6 +17,7 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -25,8 +26,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DeepboxIdProviderTest extends AbstractDeepboxTest {
@@ -58,7 +58,7 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals(ORG4_BOX1.toString(), nodeid.getFileId(directory));
         assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(directory));
         assertEquals(ORG4_BOX1.toString(), nodeid.getBoxNodeId(directory));
-        assertNull(nodeid.getThirdLevelId(directory));
+        assertThrows(NotfoundException.class, () -> nodeid.getThirdLevelId(directory));
     }
 
     @Test

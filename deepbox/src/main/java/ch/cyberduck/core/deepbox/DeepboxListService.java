@@ -34,7 +34,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.logging.log4j.LogManager;
@@ -68,8 +67,6 @@ public class DeepboxListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
         final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
-        final String boxNodeId = fileid.getBoxNodeId(directory);
-
         final HashSet<String> closed = new HashSet<>();
         try {
             if(directory.isRoot()) {
@@ -79,9 +76,11 @@ public class DeepboxListService implements ListService {
                 this.listBoxes(directory, listener, list);
             }
             else if(containerService.isBox(directory)) { // in Box
+                final String boxNodeId = fileid.getBoxNodeId(directory);
                 this.listBox(directory, listener, deepBoxNodeId, boxNodeId, list);
             }
             else if(containerService.isThirdLevel(directory)) { // in Inbox/Documents/Trash
+                final String boxNodeId = fileid.getBoxNodeId(directory);
                 // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with parentNode fails!
                 if(containerService.isInInbox(directory)) {
                     this.listQueue(directory, listener, deepBoxNodeId, boxNodeId, list, closed);
@@ -94,10 +93,8 @@ public class DeepboxListService implements ListService {
                 }
             }
             else { // in subfolder of  Documents/Trash (Inbox has no subfolders)
+                final String boxNodeId = fileid.getBoxNodeId(directory);
                 final String nodeId = fileid.getFileId(directory);
-                if(nodeId == null) {
-                    throw new NotfoundException(directory.getAbsolute());
-                }
                 if(containerService.isInDocuments(directory)) {
                     this.listFiles(directory, listener, deepBoxNodeId, boxNodeId, nodeId, list, closed);
                 }
@@ -113,12 +110,11 @@ public class DeepboxListService implements ListService {
     }
 
     private void listTrash(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId, final String nodeId, final AttributedList<Path> list, final HashSet<String> closed) throws ApiException, ConnectionCanceledException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
-
+        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final NodeContent files = api.listTrash1(
+            final NodeContent files = rest.listTrash1(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
                     UUID.fromString(nodeId),
@@ -133,12 +129,11 @@ public class DeepboxListService implements ListService {
     }
 
     private void listFiles(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId, final String nodeId, final AttributedList<Path> list, final HashSet<String> closed) throws ApiException, ConnectionCanceledException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
-
+        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final NodeContent files = api.listFiles1(
+            final NodeContent files = rest.listFiles1(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
                     UUID.fromString(nodeId),
@@ -153,11 +148,11 @@ public class DeepboxListService implements ListService {
     }
 
     private void listTrash(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId, final AttributedList<Path> list, final HashSet<String> closed) throws ApiException, ConnectionCanceledException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
+        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final NodeContent trashFiles = api.listTrash(
+            final NodeContent trashFiles = rest.listTrash(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
                     offset, this.chunksize, "displayName asc"
@@ -171,11 +166,11 @@ public class DeepboxListService implements ListService {
     }
 
     private void listFiles(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId, final AttributedList<Path> list, final HashSet<String> closed) throws ApiException, ConnectionCanceledException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
+        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final NodeContent files = api.listFiles(
+            final NodeContent files = rest.listFiles(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
                     offset, this.chunksize, "displayName asc"
@@ -189,12 +184,12 @@ public class DeepboxListService implements ListService {
     }
 
     private void listQueue(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId, final AttributedList<Path> list, final HashSet<String> closed) throws ConnectionCanceledException, ApiException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
+        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size = 0;
         do {
             try {
-                final NodeContent inbox = api.listQueue(UUID.fromString(deepBoxNodeId),
+                final NodeContent inbox = rest.listQueue(UUID.fromString(deepBoxNodeId),
                         UUID.fromString(boxNodeId),
                         null,
                         offset, this.chunksize, "displayName asc");
@@ -203,7 +198,7 @@ public class DeepboxListService implements ListService {
                 size = inbox.getSize();
                 offset += this.chunksize;
             }
-            catch(final ApiException e) {
+            catch(ApiException e) {
                 if(e.getCode() != 403) {
                     throw e;
                 }
@@ -214,8 +209,8 @@ public class DeepboxListService implements ListService {
     }
 
     private void listBox(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId, final AttributedList<Path> list) throws ApiException, BackgroundException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
-        final Box box = api.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
+        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
+        final Box box = rest.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
         if(box.getBoxPolicy().isCanListQueue()) {
             final String inboxName = DeepboxPathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox"));
             final Path inbox = new Path(directory, inboxName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
@@ -241,11 +236,11 @@ public class DeepboxListService implements ListService {
     }
 
     private void listBoxes(final Path directory, final ListProgressListener listener, final AttributedList<Path> list) throws ApiException, ConnectionCanceledException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
+        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final Boxes boxes = api.listBoxes(UUID.fromString(directory.attributes().getFileId()), offset, this.chunksize, "name asc", null);
+            final Boxes boxes = rest.listBoxes(UUID.fromString(directory.attributes().getFileId()), offset, this.chunksize, "name asc", null);
             for(final Box box : boxes.getBoxes()) {
                 list.add(new Path(directory, DeepboxPathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                         attributes.toAttributes(box))
@@ -259,11 +254,11 @@ public class DeepboxListService implements ListService {
     }
 
     private void listDeepBoxes(final Path directory, final ListProgressListener listener, final AttributedList<Path> list) throws ApiException, ConnectionCanceledException {
-        final BoxRestControllerApi api = new BoxRestControllerApi(session.getClient());
+        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final DeepBoxes deepBoxes = api.listDeepBoxes(offset, this.chunksize, "name asc", null);
+            final DeepBoxes deepBoxes = rest.listDeepBoxes(offset, this.chunksize, "name asc", null);
             for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
                 list.add(new Path(directory, DeepboxPathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                         attributes.toAttributes(deepBox))

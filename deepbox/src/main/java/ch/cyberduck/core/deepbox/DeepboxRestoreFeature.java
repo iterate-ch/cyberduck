@@ -43,16 +43,9 @@ public class DeepboxRestoreFeature implements Restore {
 
     @Override
     public void restore(final Path file, final LoginCallback prompt) throws BackgroundException {
-        final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
         final String nodeId = fileid.getFileId(file);
-        if(nodeId == null) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Could not restore %s", file));
-            }
-            return;
-        }
         try {
-            core.revertNode(UUID.fromString(nodeId));
+            new CoreRestControllerApi(session.getClient()).revertNode(UUID.fromString(nodeId));
             this.fileid.cache(file, null);
         }
         catch(ApiException e) {

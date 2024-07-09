@@ -28,7 +28,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeInfo;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
@@ -132,38 +131,23 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 return new PathAttributes();
             }
             else if(containerService.isDeepbox(file)) {
-                final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
-                if(deepBoxNodeId == null) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
-                final DeepBox deepBox = boxApi.getDeepBox(UUID.fromString(deepBoxNodeId));
+                final DeepBox deepBox = new BoxRestControllerApi(session.getClient()).getDeepBox(UUID.fromString(deepBoxNodeId));
                 return this.toAttributes(deepBox);
             }
             else if(containerService.isBox(file)) {
-                final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
-                if(deepBoxNodeId == null) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
                 final String boxNodeId = fileid.getBoxNodeId(file);
-                if(boxNodeId == null) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
-                final Box box = boxApi.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
+                final Box box = new BoxRestControllerApi(session.getClient()).getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
                 return this.toAttributes(box);
             }
             else if(containerService.isThirdLevel(file)) {
-                return toAttributesThirdLevel(file);
+                return this.toAttributesThirdLevel(file);
             }
             else {
                 final String fileId = fileid.getFileId(file);
-                if(fileId == null) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
                 final UUID nodeId = UUID.fromString(fileId);
-                final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
-                final NodeInfo nodeInfo = core.getNodeInfo(nodeId, null, null, null);
+                final NodeInfo nodeInfo = new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null);
                 return this.toAttributes(nodeInfo.getNode());
             }
         }
@@ -174,20 +158,10 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
 
     public PathAttributes toAttributesThirdLevel(final Path file) throws BackgroundException, ApiException {
         final String fileId = fileid.getFileId(file);
-        final BoxRestControllerApi boxApi = new BoxRestControllerApi(session.getClient());
-        if(fileId == null) {
-            throw new NotfoundException(file.getAbsolute());
-        }
         final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
-        if(deepBoxNodeId == null) {
-            throw new NotfoundException(file.getAbsolute());
-        }
         final String boxNodeId = fileid.getBoxNodeId(file);
-        if(boxNodeId == null) {
-            throw new NotfoundException(file.getAbsolute());
-        }
         // map BoxAccessPolicy to CANLISTCHILDREN and CANADDCHILDREN for third level
-        final Box box = boxApi.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
+        final Box box = new BoxRestControllerApi(session.getClient()).getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
         final Acl acl = new Acl(new Acl.CanonicalUser());
         final BoxAccessPolicy boxPolicy = box.getBoxPolicy();
         if(containerService.isInbox(file)) {

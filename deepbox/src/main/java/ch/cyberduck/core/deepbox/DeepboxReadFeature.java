@@ -27,7 +27,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.DownloadAdd;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
@@ -101,9 +100,8 @@ public class DeepboxReadFeature implements Read {
                         return;
                     }
                     // Poll status
-                    final DownloadRestControllerApi boxApi = new DownloadRestControllerApi(session.getClient());
-
-                    final Download.StatusEnum status = boxApi.downloadStatus(downloadId, null).getStatus();
+                    final DownloadRestControllerApi rest = new DownloadRestControllerApi(session.getClient());
+                    final Download.StatusEnum status = rest.downloadStatus(downloadId, null).getStatus();
                     switch(status) {
                         case READY:
                         case READY_WITH_ISSUES:
@@ -144,16 +142,12 @@ public class DeepboxReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             // https://apidocs.deepcloud.swiss/deepbox-api-docs/index.html#download
-            final DownloadRestControllerApi boxApi = new DownloadRestControllerApi(session.getClient());
+            final DownloadRestControllerApi rest = new DownloadRestControllerApi(session.getClient());
             final String fileId = fileid.getFileId(file);
-            if(fileId == null) {
-                throw new NotfoundException(file.getAbsolute());
-            }
             final UUID boxNodeId = UUID.fromString(fileId);
-            final Download download = boxApi.requestDownload(new DownloadAdd().addNodesItem(boxNodeId));
-
-            poll(download.getDownloadId());
-            final HttpUriRequest request = new HttpGet(URI.create(boxApi.downloadStatus(download.getDownloadId(), null).getDownloadUrl()));
+            final Download download = rest.requestDownload(new DownloadAdd().addNodesItem(boxNodeId));
+            this.poll(download.getDownloadId());
+            final HttpUriRequest request = new HttpGet(URI.create(rest.downloadStatus(download.getDownloadId(), null).getDownloadUrl()));
             final HttpResponse response = session.getClient().getClient().execute(request);
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:

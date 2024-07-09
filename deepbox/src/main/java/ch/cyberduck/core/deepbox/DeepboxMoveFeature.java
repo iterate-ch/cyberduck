@@ -19,14 +19,12 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeMove;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -64,22 +62,14 @@ public class DeepboxMoveFeature implements Move {
             if(status.isExists()) {
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
-
             final String sourceId = fileid.getFileId(file);
-            if(sourceId == null) {
-                throw new NotfoundException(String.format("Cannot find node id for %s", file.getName()));
-            }
             final NodeMove nodeMove = new NodeMove();
             final String targetParentId = fileid.getFileId(renamed.getParent());
-            if(targetParentId == null) {
-                throw new NotfoundException(String.format("Cannot find node id for %s", renamed.getParent().getName()));
-            }
             nodeMove.setTargetParentNodeId(UUID.fromString(targetParentId));
-            final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
-            core.moveNode(nodeMove, UUID.fromString(sourceId));
+            new CoreRestControllerApi(session.getClient()).moveNode(nodeMove, UUID.fromString(sourceId));
             final NodeUpdate nodeUpdate = new NodeUpdate();
             nodeUpdate.setName(renamed.getName());
-            core.updateNode(nodeUpdate, UUID.fromString(sourceId));
+            new CoreRestControllerApi(session.getClient()).updateNode(nodeUpdate, UUID.fromString(sourceId));
             fileid.cache(file, null);
             fileid.cache(renamed, sourceId);
             return renamed;

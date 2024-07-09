@@ -104,9 +104,9 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
 
         new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
 
-        assertNull(fileid.getFileId(folder.withAttributes(new PathAttributes())));
-        assertNull(fileid.getFileId(subfolderWithContent.withAttributes(new PathAttributes())));
-        assertNull(fileid.getFileId(file.withAttributes(new PathAttributes())));
+        assertThrows(NotfoundException.class, () -> fileid.getFileId(folder.withAttributes(new PathAttributes())));
+        assertThrows(NotfoundException.class, () -> fileid.getFileId(subfolderWithContent.withAttributes(new PathAttributes())));
+        assertThrows(NotfoundException.class, () -> fileid.getFileId(file.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, fileid).find(folder.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, fileid).find(subfolderWithContent.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, fileid).find(file.withAttributes(new PathAttributes())));

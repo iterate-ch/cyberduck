@@ -18,14 +18,12 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeCopy;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -62,18 +60,14 @@ public class DeepboxCopyFeature implements Copy {
             if(status.isExists()) {
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
-            final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
             final NodeCopy nodeCopy = new NodeCopy();
             nodeCopy.setTargetParentNodeId(UUID.fromString(fileid.getFileId(target.getParent())));
             final String nodeId = fileid.getFileId(file);
-            if(nodeId == null) {
-                throw new NotfoundException(String.format("Cannot find node id for %s", file.getName()));
-            }
             // manually patched deepbox-api.json, return code 200 missing in theirs
-            final Node copied = core.copyNode(nodeCopy, UUID.fromString(nodeId));
+            final Node copied = new CoreRestControllerApi(session.getClient()).copyNode(nodeCopy, UUID.fromString(nodeId));
             final NodeUpdate nodeUpdate = new NodeUpdate();
             nodeUpdate.setName(target.getName());
-            core.updateNode(nodeUpdate, copied.getNodeId());
+            new CoreRestControllerApi(session.getClient()).updateNode(nodeUpdate, copied.getNodeId());
             return target;
         }
         catch(ApiException e) {

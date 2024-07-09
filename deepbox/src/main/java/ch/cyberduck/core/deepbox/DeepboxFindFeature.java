@@ -37,7 +37,7 @@ public class DeepboxFindFeature implements Find {
             new DeepboxAttributesFinderFeature(session, fileid).find(file, listener);
             return true;
         }
-        catch(final NotfoundException e) {
+        catch(NotfoundException e) {
             return false;
         }
     }

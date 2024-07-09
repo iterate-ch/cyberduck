@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -92,7 +93,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         assertTrue(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes()), new DisabledListProgressListener()));
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
         deleteAndPurge(folder);
-        assertNull(nodeid.getFileId(folder.withAttributes(new PathAttributes())));
+        assertThrows(NotfoundException.class, () -> nodeid.getFileId(folder.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes())));
     }
 

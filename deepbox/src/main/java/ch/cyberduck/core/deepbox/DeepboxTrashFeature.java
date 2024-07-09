@@ -23,7 +23,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -56,15 +55,11 @@ public class DeepboxTrashFeature implements Trash {
             final Path file = entry.getKey();
             try {
                 final String fileId = fileid.getFileId(file);
-                if(fileId == null) {
-                    throw new NotfoundException(String.format("Cannot find node id for %s", file.getName()));
-                }
                 final UUID nodeId = UUID.fromString(fileId);
                 callback.delete(file);
-                final CoreRestControllerApi coreApi = new CoreRestControllerApi(session.getClient());
                 final boolean inTrash = new DeepboxPathContainerService().isInTrash(file);
                 // purge if in trash
-                coreApi.deletePurgeNode(nodeId, inTrash || forcePurge);
+                new CoreRestControllerApi(session.getClient()).deletePurgeNode(nodeId, inTrash || forcePurge);
                 fileid.cache(file, null);
             }
             catch(ApiException e) {
