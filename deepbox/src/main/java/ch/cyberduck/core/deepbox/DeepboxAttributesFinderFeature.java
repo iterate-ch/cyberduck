@@ -128,7 +128,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             if(file.isRoot()) {
-                return new PathAttributes();
+                return PathAttributes.EMPTY;
             }
             else if(containerService.isDeepbox(file)) {
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
