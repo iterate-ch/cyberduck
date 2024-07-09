@@ -11,9 +11,8 @@ Cascading permission checks for file system operations in Mountain Duck:
 * **Preflight checks**: Preflight checks before file system operation to fail fast prior server API invocation. <br/>
   _User experience:_ Filesystem operation not allowed with additional custom error notification.
   * Cyberduck: before user interaction (dropdown, drag-and-drop)
-  * Mountain Duck 4+: synchronously for macOS NFS and Windows cbfs (_online_/_sync_ connect modes)
-  * Mountain Duck 5+: asynchronously for Windows Cloud Files API (_Integrated_ connect mode) and File Provider API
-    flags (_Integrated_ connect mode) Mountain Duck 5+
+  * Mountain Duck 4+: synchronously for _Online_ & _Smart Synchronization_ connect modes (macOS NFS and Windows CBFS)
+  * Mountain Duck 5+: asynchronously for _Integrated_ connect mode (Windows Cloud Files API and File Provider API)
 * **API Failure**: Fail in the CTERA backend ("portal"). This only happens when permissions are changed in the
   backend/portal (e.g. by retention policy).
   <br/>_User experience:_ Filesystem operation allowed with later error
