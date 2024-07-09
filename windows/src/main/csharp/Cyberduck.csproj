@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
+    <RuntimeIdentifiers>win7-x64</RuntimeIdentifiers>
+    <Platforms>x64</Platforms>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
 
@@ -41,7 +43,9 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
     <PackageReference Include="ExceptionReporter" />
-    <PackageReference Include="IKVM" />
+    <PackageReference Include="IKVM">
+      <PrivateAssets>contentfiles;analyzers;build;buildTransitive</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
     <PackageReference Include="Microsoft.Windows.CsWin32">
       <PrivateAssets>all</PrivateAssets>

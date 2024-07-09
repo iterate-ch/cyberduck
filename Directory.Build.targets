@@ -25,6 +25,9 @@
         <CyberduckReference Update="Bonjour.Native">
             <ProjectPath>$(CyberduckDir)bonjour\src\main\csharp\Cyberduck.Bonjour.Native.csproj</ProjectPath>
         </CyberduckReference>
+        <CyberduckReference Update="Cli">
+            <ProjectPath>$(CyberduckDir)cli\dll\Cyberduck.Cli.msbuildproj</ProjectPath>
+        </CyberduckReference>
         <CyberduckReference Update="Core">
             <ProjectPath>$(CyberduckDir)core\dll\Cyberduck.Core.msbuildproj</ProjectPath>
         </CyberduckReference>

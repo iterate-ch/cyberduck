@@ -121,14 +121,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcr120</artifactId>
-            <classifier>x86_64</classifier>
-            <type>dll</type>
-            <version>12.00.40649.5</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>nunit</groupId>
             <artifactId>nunit.framework</artifactId>
             <classifier>native</classifier>

@@ -36,6 +36,7 @@
 
     <PropertyGroup Label="IKVM">
         <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+        <AppxSymbolPackageEnabled>false</AppxSymbolPackageEnabled>
     </PropertyGroup>
 
     <ItemDefinitionGroup>

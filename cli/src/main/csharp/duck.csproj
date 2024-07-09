@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net472</TargetFramework>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifiers>win7-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,10 +17,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
-      <Link>$(Filename)$(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(TargetBuildDir)ikvm/bin/ikvm-native-win32-*.dll">
       <Link>$(Filename)$(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -38,6 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="IKVM">
+      <PrivateAssets>contentfiles;analyzers;build;buildTransitive</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="System.Memory" />
   </ItemGroup>
 
