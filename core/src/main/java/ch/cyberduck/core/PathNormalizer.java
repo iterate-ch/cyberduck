@@ -17,16 +17,12 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 import java.util.List;
 
 public final class PathNormalizer {
-
-    private static final boolean IS_ENABLED = PreferencesFactory.get().getBoolean("path.normalize");
 
     private PathNormalizer() {
         //
@@ -81,66 +77,64 @@ public final class PathNormalizer {
             return String.valueOf(Path.DELIMITER);
         }
         String normalized = path;
-        if(IS_ENABLED) {
-            if(absolute) {
-                while(!normalized.startsWith(String.valueOf(Path.DELIMITER))) {
-                    normalized = Path.DELIMITER + normalized;
-                }
+        if(absolute) {
+            while(!normalized.startsWith(String.valueOf(Path.DELIMITER))) {
+                normalized = Path.DELIMITER + normalized;
             }
-            while(!normalized.endsWith(String.valueOf(Path.DELIMITER))) {
-                normalized += Path.DELIMITER;
+        }
+        while(!normalized.endsWith(String.valueOf(Path.DELIMITER))) {
+            normalized += Path.DELIMITER;
+        }
+        // Resolve occurrences of "/./" in the normalized path
+        while(true) {
+            int index = normalized.indexOf("/./");
+            if(index < 0) {
+                break;
             }
-            // Resolve occurrences of "/./" in the normalized path
-            while(true) {
-                int index = normalized.indexOf("/./");
-                if(index < 0) {
-                    break;
-                }
-                normalized = normalized.substring(0, index) +
-                        normalized.substring(index + 2);
+            normalized = normalized.substring(0, index) +
+                    normalized.substring(index + 2);
+        }
+        // Resolve occurrences of "/../" in the normalized path
+        while(true) {
+            int index = normalized.indexOf("/../");
+            if(index < 0) {
+                break;
             }
-            // Resolve occurrences of "/../" in the normalized path
-            while(true) {
-                int index = normalized.indexOf("/../");
-                if(index < 0) {
-                    break;
-                }
-                if(index == 0) {
-                    // The only left path is the root.
-                    return String.valueOf(Path.DELIMITER);
-                }
-                normalized = normalized.substring(0, normalized.lastIndexOf(Path.DELIMITER, index - 1)) +
-                        normalized.substring(index + 3);
+            if(index == 0) {
+                // The only left path is the root.
+                return String.valueOf(Path.DELIMITER);
             }
-            StringBuilder n = new StringBuilder();
-            if(normalized.startsWith("//")) {
-                // see #972. Omit leading delimiter
-                n.append(Path.DELIMITER);
-                n.append(Path.DELIMITER);
-            }
-            else if(absolute) {
-                // convert to absolute path
-                n.append(Path.DELIMITER);
-            }
-            else if(normalized.startsWith(String.valueOf(Path.DELIMITER))) {
-                // Keep absolute path
-                n.append(Path.DELIMITER);
-            }
-            // Remove duplicated Path.DELIMITERs
+            normalized = normalized.substring(0, normalized.lastIndexOf(Path.DELIMITER, index - 1)) +
+                    normalized.substring(index + 3);
+        }
+        StringBuilder n = new StringBuilder();
+        if(normalized.startsWith("//")) {
+            // see #972. Omit leading delimiter
+            n.append(Path.DELIMITER);
+            n.append(Path.DELIMITER);
+        }
+        else if(absolute) {
+            // convert to absolute path
+            n.append(Path.DELIMITER);
+        }
+        else if(normalized.startsWith(String.valueOf(Path.DELIMITER))) {
+            // Keep absolute path
+            n.append(Path.DELIMITER);
+        }
+        // Remove duplicated Path.DELIMITERs
 
-            final String[] segments = StringUtils.split(normalized, String.valueOf(Path.DELIMITER));
-            for(String segment : segments) {
-                if(segment.equals(StringUtils.EMPTY)) {
-                    continue;
-                }
-                n.append(segment);
-                n.append(Path.DELIMITER);
+        final String[] segments = StringUtils.split(normalized, String.valueOf(Path.DELIMITER));
+        for(String segment : segments) {
+            if(segment.equals(StringUtils.EMPTY)) {
+                continue;
             }
-            normalized = n.toString();
-            while(normalized.endsWith(String.valueOf(Path.DELIMITER)) && normalized.length() > 1) {
-                //Strip any redundant delimiter at the end of the path
-                normalized = normalized.substring(0, normalized.length() - 1);
-            }
+            n.append(segment);
+            n.append(Path.DELIMITER);
+        }
+        normalized = n.toString();
+        while(normalized.endsWith(String.valueOf(Path.DELIMITER)) && normalized.length() > 1) {
+            //Strip any redundant delimiter at the end of the path
+            normalized = normalized.substring(0, normalized.length() - 1);
         }
         // Return the normalized path that we have completed
         return normalized;
