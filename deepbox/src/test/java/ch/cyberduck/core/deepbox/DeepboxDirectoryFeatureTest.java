@@ -45,6 +45,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
+        assertThrows(NotfoundException.class, () -> directory.mkdir(folder, new TransferStatus()));
     }
 
     @Test
@@ -54,6 +55,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
+        assertThrows(NotfoundException.class, () -> directory.mkdir(folder, new TransferStatus()));
     }
 
     @Test
@@ -63,6 +65,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
+        assertThrows(AccessDeniedException.class, () -> directory.mkdir(folder, new TransferStatus()));
     }
 
     @Test
@@ -72,6 +75,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
+        assertThrows(AccessDeniedException.class, () -> directory.mkdir(folder, new TransferStatus()));
     }
 
     @Test
@@ -81,6 +85,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
+        assertThrows(AccessDeniedException.class, () -> directory.mkdir(folder, new TransferStatus()));
     }
 
     @Test

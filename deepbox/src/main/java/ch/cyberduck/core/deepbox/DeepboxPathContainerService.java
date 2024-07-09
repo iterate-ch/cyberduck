@@ -88,9 +88,6 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     protected Path getThirdLevelPath(final Path file) {
-        if(file.isRoot()) {
-            return null;
-        }
         if(this.isDeepbox(file)) {
             return null;
         }
@@ -98,33 +95,36 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
             return null;
         }
         Path thirdLevel = file;
-        while(!this.isThirdLevel(thirdLevel)) {
+        while(!thirdLevel.isRoot() && !this.isThirdLevel(thirdLevel)) {
             thirdLevel = thirdLevel.getParent();
+        }
+        if(thirdLevel.isRoot()) {
+            return null;
         }
         return thirdLevel;
     }
 
     protected Path getBoxPath(final Path file) {
-        if(file.isRoot()) {
-            return null;
-        }
         if(this.isDeepbox(file)) {
             return null;
         }
         Path box = file;
-        while(!this.isBox(box)) {
+        while(!box.isRoot() && !this.isBox(box)) {
             box = box.getParent();
+        }
+        if(box.isRoot()) {
+            return null;
         }
         return box;
     }
 
     protected Path getDeepboxPath(final Path file) {
-        if(file.isRoot()) {
-            return null;
-        }
         Path deepbox = file;
-        while(!this.isDeepbox(deepbox)) {
+        while(!deepbox.isRoot() && !this.isDeepbox(deepbox)) {
             deepbox = deepbox.getParent();
+        }
+        if(deepbox.isRoot()) {
+            return null;
         }
         return deepbox;
     }

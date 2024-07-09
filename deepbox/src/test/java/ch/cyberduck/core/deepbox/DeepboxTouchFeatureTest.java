@@ -17,6 +17,9 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -25,10 +28,18 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
+
+    @Test
+    public void testTouchRoot() throws Exception {
+        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, fileid).preflight(Home.ROOT, new AlphanumericRandomStringService().random()));
+        assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, fileid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus()));
+    }
 
     @Test
     public void testNoDuplicates() throws Exception {
