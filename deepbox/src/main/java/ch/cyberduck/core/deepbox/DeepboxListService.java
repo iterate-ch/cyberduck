@@ -107,7 +107,7 @@ public class DeepboxListService implements ListService {
             }
         }
         catch(ApiException e) {
-            throw new BackgroundException(e);
+            throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
         }
         return list;
     }
