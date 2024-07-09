@@ -44,12 +44,10 @@ import static org.junit.Assert.fail;
 
 public class AbstractDeepboxTest extends VaultTest {
 
-
     protected final UUID ORG4 = UUID.fromString("a548e68e-5584-42c1-b2bc-9e051dc78e5e");
     protected final UUID ORG4_BOX1 = UUID.fromString("366a7117-0ad3-4dcb-9e79-a4270c3f6fb5");
     protected final UUID ORG1 = UUID.fromString("71fdd537-17db-4a8a-b959-64a1ab07774a");
     protected final UUID ORG1_BOX1 = UUID.fromString("40062559-c1a3-4229-9b1b-77320821d0d5");
-
 
     protected DeepboxSession session;
 
@@ -60,14 +58,16 @@ public class AbstractDeepboxTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        setup("deepbox.deepboxapp3.user", "en");
-        // deepbox.deepboxapp3.user
-        // ORG1/Box1 (view): /deepBoxes/71fdd537-17db-4a8a-b959-64a1ab07774a/boxes/40062559-c1a3-4229-9b1b-77320821d0d5
-        // ORG4/Box1 (organize): /deepBoxes/a548e68e-5584-42c1-b2bc-9e051dc78e5e/boxes/366a7117-0ad3-4dcb-9e79-a4270c3f6fb5
-        // ORG4/Box2 (no access to Trash/Inbox, Documents partially)
+        setup("en");
     }
 
-    protected void setup(final String vaultUserKey, final String locale) throws BackgroundException {
+    /**
+     * deepbox.deepboxapp3.user
+     * - ORG1/Box1 (view): /deepBoxes/71fdd537-17db-4a8a-b959-64a1ab07774a/boxes/40062559-c1a3-4229-9b1b-77320821d0d5
+     * - ORG4/Box1 (organize): /deepBoxes/a548e68e-5584-42c1-b2bc-9e051dc78e5e/boxes/366a7117-0ad3-4dcb-9e79-a4270c3f6fb5
+     * - ORG4/Box2 (no access to Trash/Inbox, Documents partially)
+     */
+    protected void setup(final String locale) throws BackgroundException {
         PreferencesFactory.get().setDefault("factory.proxy.class", DefaultProxyFinder.class.getName());
         PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
         LocaleFactory.set(new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources"))));
@@ -76,7 +76,7 @@ public class AbstractDeepboxTest extends VaultTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DeepboxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Deepbox.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get(vaultUserKey)));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("deepbox.deepboxapp3.user")));
         session = new DeepboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager(), locale);
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -90,7 +90,7 @@ public class AbstractDeepboxTest extends VaultTest {
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
-        Map<String, String> map = Stream.of(
+        final Map<String, String> map = Stream.of(
                         new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp1@gmail.com)", "deepbox.deepboxapp1"),
                         new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp2@gmail.com)", "deepbox.deepboxapp2"),
                         new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp3@gmail.com)", "deepbox.deepboxapp3"),
@@ -108,7 +108,7 @@ public class AbstractDeepboxTest extends VaultTest {
         }
 
         @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+        public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
             if(user.endsWith("OAuth2 Access Token")) {
                 final String prefix = user.replace(" OAuth2 Access Token", "");
                 return PROPERTIES.get(String.format("%s.accesstoken", map.get(prefix)));

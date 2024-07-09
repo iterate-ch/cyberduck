@@ -32,9 +32,10 @@ import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class DeepboxLanguageListServiceTest extends AbstractDeepboxTest {
+
     @Before
     public void setup() throws Exception {
-        setup("deepbox.deepboxapp3.user", "de");
+        setup("de");
     }
 
     @Test
@@ -43,7 +44,7 @@ public class DeepboxLanguageListServiceTest extends AbstractDeepboxTest {
         final String trips = "Reisen";
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path folder = new Path(String.format("/ORG 4 - DeepBox Desktop App/ORG3-Box1/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
-        AttributedList<Path> list = new DeepboxListService(session, fileid).list(folder, new DisabledListProgressListener());
+        final AttributedList<Path> list = new DeepboxListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(list.toStream().anyMatch(p -> p.getAbsolute().equals(String.format("/ORG 4 - DeepBox Desktop App/ORG3-Box1/%s/%s", name, trips))));
     }
 }
