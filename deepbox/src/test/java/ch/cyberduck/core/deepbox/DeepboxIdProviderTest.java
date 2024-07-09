@@ -36,9 +36,9 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path directory = new Path("/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         assertNull(nodeid.getFileId(directory));
-        assertNull(nodeid.getDeepBoxNodeId(directory));
-        assertNull(nodeid.getBoxNodeId(directory));
-        assertNull(nodeid.getThirdLevelId(directory));
+        assertThrows(NotfoundException.class, () -> nodeid.getDeepBoxNodeId(directory));
+        assertThrows(NotfoundException.class, () -> nodeid.getBoxNodeId(directory));
+        assertThrows(NotfoundException.class, () -> nodeid.getThirdLevelId(directory));
     }
 
     @Test
@@ -47,8 +47,8 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         final Path directory = new Path("/ORG 4 - DeepBox Desktop App/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         assertEquals(ORG4.toString(), nodeid.getFileId(directory));
         assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(directory));
-        assertNull(nodeid.getBoxNodeId(directory));
-        assertNull(nodeid.getThirdLevelId(directory));
+        assertThrows(NotfoundException.class, () -> nodeid.getBoxNodeId(directory));
+        assertThrows(NotfoundException.class, () -> nodeid.getThirdLevelId(directory));
     }
 
     @Test
