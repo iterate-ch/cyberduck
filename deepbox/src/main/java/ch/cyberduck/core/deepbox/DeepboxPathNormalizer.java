@@ -32,7 +32,7 @@ public final class DeepboxPathNormalizer {
     }
 
     public static String name(final String path) {
-        return StringUtils.replace(PathNormalizer.normalize(path), "/",
-                Factory.Platform.getDefault() == Factory.Platform.Name.windows ? "-" : ":");
+        return StringUtils.replaceChars(PathNormalizer.normalize(path), '/',
+                Factory.Platform.getDefault() == Factory.Platform.Name.windows ? '-' : ':');
     }
 }
