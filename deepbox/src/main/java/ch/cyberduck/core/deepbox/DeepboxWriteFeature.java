@@ -92,7 +92,7 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Void> {
                     final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
                     final ByteArrayOutputStream out = new ByteArrayOutputStream();
                     entity.writeTo(out);
-                    if(nodeId != null) {
+                    if(status.isExists()) {
                         multipart.addBinaryBody("file", out.toByteArray(),
                                 null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
                     }
