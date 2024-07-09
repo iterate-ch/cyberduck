@@ -66,40 +66,42 @@ public class DeepboxListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
-        final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
         final HashSet<String> closed = new HashSet<>();
         try {
             if(directory.isRoot()) {
                 this.listDeepBoxes(directory, listener, list);
             }
-            else if(containerService.isDeepbox(directory)) { // in DeepBox
-                this.listBoxes(directory, listener, list);
-            }
-            else if(containerService.isBox(directory)) { // in Box
-                final String boxNodeId = fileid.getBoxNodeId(directory);
-                this.listBox(directory, listener, deepBoxNodeId, boxNodeId, list);
-            }
-            else if(containerService.isThirdLevel(directory)) { // in Inbox/Documents/Trash
-                final String boxNodeId = fileid.getBoxNodeId(directory);
-                // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with parentNode fails!
-                if(containerService.isInInbox(directory)) {
-                    this.listQueue(directory, listener, deepBoxNodeId, boxNodeId, list, closed);
+            else {
+                final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
+                if(containerService.isDeepbox(directory)) { // in DeepBox
+                    this.listBoxes(directory, listener, list);
                 }
-                else if(containerService.isInDocuments(directory)) {
-                    this.listFiles(directory, listener, deepBoxNodeId, boxNodeId, list, closed);
-                }
-                else if(containerService.isInTrash(directory)) {
-                    this.listTrash(directory, listener, deepBoxNodeId, boxNodeId, list, closed);
-                }
-            }
-            else { // in subfolder of  Documents/Trash (Inbox has no subfolders)
-                final String boxNodeId = fileid.getBoxNodeId(directory);
-                final String nodeId = fileid.getFileId(directory);
-                if(containerService.isInDocuments(directory)) {
-                    this.listFiles(directory, listener, deepBoxNodeId, boxNodeId, nodeId, list, closed);
-                }
-                else if(containerService.isInTrash(directory)) {
-                    this.listTrash(directory, listener, deepBoxNodeId, boxNodeId, nodeId, list, closed);
+                else {
+                    final String boxNodeId = fileid.getBoxNodeId(directory);
+                    if(containerService.isBox(directory)) { // in Box
+                        this.listBox(directory, listener, deepBoxNodeId, boxNodeId, list);
+                    }
+                    else if(containerService.isThirdLevel(directory)) { // in Inbox/Documents/Trash
+                        // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with parentNode fails!
+                        if(containerService.isInInbox(directory)) {
+                            this.listQueue(directory, listener, deepBoxNodeId, boxNodeId, list, closed);
+                        }
+                        else if(containerService.isInDocuments(directory)) {
+                            this.listFiles(directory, listener, deepBoxNodeId, boxNodeId, list, closed);
+                        }
+                        else if(containerService.isInTrash(directory)) {
+                            this.listTrash(directory, listener, deepBoxNodeId, boxNodeId, list, closed);
+                        }
+                    }
+                    else { // in subfolder of  Documents/Trash (Inbox has no subfolders)
+                        final String nodeId = fileid.getFileId(directory);
+                        if(containerService.isInDocuments(directory)) {
+                            this.listFiles(directory, listener, deepBoxNodeId, boxNodeId, nodeId, list, closed);
+                        }
+                        else if(containerService.isInTrash(directory)) {
+                            this.listTrash(directory, listener, deepBoxNodeId, boxNodeId, nodeId, list, closed);
+                        }
+                    }
                 }
             }
         }
