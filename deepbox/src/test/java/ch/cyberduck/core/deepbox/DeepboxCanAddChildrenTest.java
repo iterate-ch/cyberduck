@@ -51,7 +51,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenBox() throws BackgroundException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
@@ -60,7 +60,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testAddChildrenInbox() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddQueue());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
@@ -73,7 +73,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenInbox() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1-Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new BoxRestControllerApi(session.getClient()).getBox(ORG1, ORG1_BOX1).getBoxPolicy().isCanAddQueue());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
@@ -84,7 +84,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testAddChildrenDocuments() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
@@ -97,7 +97,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenDocuments() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new BoxRestControllerApi(session.getClient()).getBox(ORG1, ORG1_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
@@ -108,7 +108,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenTrash() throws BackgroundException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1-Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
@@ -118,7 +118,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testAddChildrenFolder() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/Auditing", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Auditing", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(attributes.getFileId()), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
@@ -131,7 +131,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenFolder() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1-Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(attributes.getFileId()), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
@@ -142,7 +142,7 @@ public class DeepboxCanAddChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenFile() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(attributes.getFileId()), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));

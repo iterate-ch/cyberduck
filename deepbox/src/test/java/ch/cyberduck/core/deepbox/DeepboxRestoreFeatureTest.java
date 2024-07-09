@@ -44,8 +44,8 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
     @Test
     public void restoreFile() throws BackgroundException {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path testInTrash = new Path(trash, test.getName(), test.getType());
 
@@ -75,8 +75,8 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
     @Test
     public void restoreDirectory() throws BackgroundException, ApiException {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
 
         final Path subfolderWithContent = new Path(folder, new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory));

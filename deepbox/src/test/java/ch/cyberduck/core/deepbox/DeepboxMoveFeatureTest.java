@@ -41,7 +41,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testMove() throws Exception {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(test));
         assertNotEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
@@ -61,7 +61,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testMoveDirectory() throws Exception {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DeepboxDirectoryFeature(session, fileid).mkdir(test, new TransferStatus());
         new DeepboxTouchFeature(session, fileid).touch(new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
@@ -76,8 +76,8 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testMoveOverrideFile() throws Exception {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
 
         final Path test = new DeepboxTouchFeature(session, fileid).touch(
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -112,8 +112,8 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testMoveOverrideFolder() throws Exception {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
 
         final Path test = new DeepboxDirectoryFeature(session, fileid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -148,7 +148,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testMoveNotFound() {
         final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path renamed = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertThrows(NotfoundException.class, () -> new DeepboxMoveFeature(session, fileid).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));

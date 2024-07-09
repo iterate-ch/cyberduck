@@ -43,8 +43,8 @@ public class DeepboxLanguageListServiceTest extends AbstractDeepboxTest {
         final String name = "Dokumente";
         final String trips = "Reisen";
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path folder = new Path(String.format("/ORG 4 - DeepBox Desktop App/ORG3-Box1/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+        final Path folder = new Path(String.format("/ORG 4 - DeepBox Desktop App/ORG3:Box1/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         final AttributedList<Path> list = new DeepboxListService(session, fileid).list(folder, new DisabledListProgressListener());
-        assertTrue(list.toStream().anyMatch(p -> p.getAbsolute().equals(String.format("/ORG 4 - DeepBox Desktop App/ORG3-Box1/%s/%s", name, trips))));
+        assertTrue(list.toStream().anyMatch(p -> p.getAbsolute().equals(String.format("/ORG 4 - DeepBox Desktop App/ORG3:Box1/%s/%s", name, trips))));
     }
 }

@@ -46,7 +46,7 @@ public class DeepboxCanListChildrenTest extends AbstractDeepboxTest {
     // Subfolders of documents may be visible, despite 403 on listing files from that node/getting NodeInfo for that node and despite canListFilesRoot==true!
     public void testNoListChildrenTrashInbox() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path box = new Path("/ORG 1 - DeepBox Desktop App/ORG1-Box2", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path box = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(box, new DisabledListProgressListener());
         final UUID deepBoxNodeId = UUID.fromString(nodeid.getDeepBoxNodeId(box));
         final UUID boxNodeId = UUID.fromString(nodeid.getBoxNodeId(box));
@@ -56,7 +56,7 @@ public class DeepboxCanListChildrenTest extends AbstractDeepboxTest {
         assertFalse(boxPolicy.isCanAccessTrash());
         assertFalse(boxPolicy.isCanListQueue());
 
-        final Path documents = new Path("/ORG 1 - DeepBox Desktop App/ORG1-Box2/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final UUID documentsNodeId = UUID.fromString(nodeid.getFileId(documents));
         final ApiException apiExceptionGetNodeInfo = assertThrows(ApiException.class, () -> new CoreRestControllerApi(session.getClient()).getNodeInfo(documentsNodeId, null, null, null));
         assertEquals(403, apiExceptionGetNodeInfo.getCode());
@@ -64,14 +64,14 @@ public class DeepboxCanListChildrenTest extends AbstractDeepboxTest {
         assertEquals(403, apiExceptionListFilestWithDocumentsNodeId.getCode());
 
         assertNotNull(list.find(new SimplePathPredicate(documents)));
-        assertNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App/ORG1-Box2/Inbox", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
-        assertNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App/ORG1-Box2/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Inbox", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
     }
 
     @Test
     public void testListChildrenInbox() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddQueue());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN));
@@ -82,7 +82,7 @@ public class DeepboxCanListChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testListChildrenDocuments() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN));
@@ -93,7 +93,7 @@ public class DeepboxCanListChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testListChildrenTrash() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN));
@@ -105,7 +105,7 @@ public class DeepboxCanListChildrenTest extends AbstractDeepboxTest {
     // N.B. all folders always seem to have canListChildren
     public void testListChildrenFolder() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/Auditing", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Auditing", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(attributes.getFileId()), null, null, null).getNode().getPolicy().isCanListChildren());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN));
@@ -117,7 +117,7 @@ public class DeepboxCanListChildrenTest extends AbstractDeepboxTest {
     @Test
     public void testNoListChildrenFile() throws BackgroundException, ApiException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(attributes.getFileId()), null, null, null).getNode().getPolicy().isCanListChildren());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN));

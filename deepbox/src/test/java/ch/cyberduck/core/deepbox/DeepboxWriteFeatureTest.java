@@ -49,7 +49,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testOverwrite() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
 
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
@@ -75,7 +75,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testNewFile() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
         final HttpResponseOutputStream<Void> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
@@ -94,7 +94,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testReadWrite() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents,
                         new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -144,7 +144,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     public void testWriteSingleByte() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final DeepboxWriteFeature feature = new DeepboxWriteFeature(session, nodeid);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
@@ -170,7 +170,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testWriteCancel() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());

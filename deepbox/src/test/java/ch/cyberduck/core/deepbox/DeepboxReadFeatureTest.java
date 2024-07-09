@@ -39,7 +39,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
     public void testRead() throws Exception {
         final TransferStatus status = new TransferStatus();
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path file = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/Invoices - Receipts/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
+        final Path file = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
         final String s = IOUtils.toString(new DeepboxReadFeature(session, nodeid).read(file, status, new DisabledConnectionCallback()));
         assertNotNull(s);
     }
@@ -48,7 +48,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3-Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertThrows(NotfoundException.class, () -> new DeepboxReadFeature(session, nodeid).read(new Path(test, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
