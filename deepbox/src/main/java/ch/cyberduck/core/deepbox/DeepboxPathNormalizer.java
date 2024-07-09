@@ -16,7 +16,6 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.PathNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,7 +31,7 @@ public final class DeepboxPathNormalizer {
     }
 
     public static String name(final String path) {
-        return StringUtils.replaceChars(PathNormalizer.normalize(path), '/',
+        return StringUtils.replaceChars(path, '/',
                 Factory.Platform.getDefault() == Factory.Platform.Name.windows ? '-' : ':');
     }
 }
