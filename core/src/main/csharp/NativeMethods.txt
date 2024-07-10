@@ -3,6 +3,7 @@ ASSOCF_NOTRUNCATE
 BHID_DataObject
 CLSID_QueryAssociations
 CoTaskMemFree
+CreateBindCtx
 CRED_FLAGS
 CRED_PERSIST
 CRED_TYPE
@@ -23,7 +24,7 @@ IAssocHandler
 IAssocHandlerInvoker
 IDataObject
 IExtractIconW
-ILCreateFromPath
+IParentAndItem
 IQueryAssociations
 IShellItem
 KNOWN_FOLDER_FLAG
@@ -42,10 +43,13 @@ SendMessage
 SetWindowLong
 SetWindowPos
 SetWindowText
+SFGAO_FILESYSTEM
+SFGAO_VALIDATE
 SHAssocEnumHandlers
 SHCreateAssociationRegistration
 SHCreateFileExtractIcon
 SHCreateItemFromIDList
+SHCreateItemFromParsingName
 Shell_GetCachedImageIndex
 ShellExecuteEx
 SHGetFileInfo
@@ -55,6 +59,8 @@ SHLoadIndirectString
 SHOpenFolderAndSelectItems
 SHOpenWithDialog
 SHParseDisplayName
+STR_PARSE_DONT_REQUIRE_VALIDATED_URLS
+STR_PARSE_PREFER_FOLDER_BROWSING
 STRSAFE_E_INSUFFICIENT_BUFFER
 TASKDIALOG_COMMON_BUTTON_FLAGS
 TASKDIALOG_ELEMENTS

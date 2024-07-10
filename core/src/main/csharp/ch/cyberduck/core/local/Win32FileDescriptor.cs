@@ -21,39 +21,26 @@ using ch.cyberduck.core.local;
 using Windows.Win32.UI.Shell;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Shell.SHGFI_FLAGS;
+using Path = System.IO.Path;
+
 namespace Ch.Cyberduck.Core.Local
 {
     public sealed class Win32FileDescriptor : AbstractFileDescriptor
     {
         public override string getKind(string filename)
         {
-            var extension = AbstractPath.getExtension(filename);
-            string kind = null;
-            if (Utils.IsBlank(extension))
+            if (Path.GetExtension(filename) is { } extension && !string.IsNullOrWhiteSpace(extension))
             {
-                kind = this.kind(filename);
-                if (Utils.IsBlank(kind))
-                {
-                    return LocaleFactory.localizedString("Unknown");
-                }
-                return kind;
+                filename = extension;
             }
-            kind = this.kind(AbstractPath.getExtension(filename));
-            if (Utils.IsBlank(kind))
-            {
-                return LocaleFactory.localizedString("Unknown");
-            }
-            return kind;
-        }
 
-        private unsafe string kind(string extension)
-        {
             SHFILEINFOW fileInfo = new();
-            if (SHGetFileInfo(extension, 0, fileInfo, SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES) != 0)
+            if (SHGetFileInfo(filename, 0, fileInfo, SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES) != 0)
             {
                 return fileInfo.szTypeName.ToString();
             }
-            return null;
+
+            return LocaleFactory.localizedString("Unknown");
         }
     }
 }

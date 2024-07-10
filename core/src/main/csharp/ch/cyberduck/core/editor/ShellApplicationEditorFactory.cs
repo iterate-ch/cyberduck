@@ -20,15 +20,15 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using Ch.Cyberduck.Core.Local;
 using java.util;
-using System.Linq;
+using CoreEditor = ch.cyberduck.core.editor.Editor;
 
 namespace Ch.Cyberduck.Core.Editor
 {
-    public class SystemWatchEditorFactory : EditorFactory
+    public class ShellApplicationEditorFactory : EditorFactory
     {
-        public override ch.cyberduck.core.editor.Editor create(Host host, Path file, ProgressListener listener)
+        public override CoreEditor create(Host host, Path file, ProgressListener listener)
         {
-            return new SystemWatchEditor(host, file, listener);
+            return new DefaultWatchEditor(host, file, listener);
         }
 
         protected override List getConfigured() => ShellApplicationFinder.findAll();

@@ -17,7 +17,6 @@
 //
 
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core.Local;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -25,13 +24,13 @@ namespace Ch.Cyberduck.Core.Preferences
 
     public class AssemblyApplicationResourcesFinder : ApplicationResourcesFinder
     {
-        private static readonly SystemLocal local;
+        private static readonly Local local;
 
         static AssemblyApplicationResourcesFinder()
         {
             local = new(EnvironmentInfo.ResourcesLocation);
         }
 
-        public Local find() => new SystemLocal(local);
+        public Local find() => local;
     }
 }

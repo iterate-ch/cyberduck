@@ -22,16 +22,6 @@ namespace Windows.Win32
             }
         }
 
-        /// <inheritdoc cref="ILCreateFromPath(PCWSTR)"/>
-        public static unsafe ref winmdroot.UI.Shell.Common.ITEMIDLIST ILCreateFromPath2(string pszPath)
-        {
-            fixed (char* pszPathLocal = pszPath)
-            {
-                winmdroot.UI.Shell.Common.ITEMIDLIST* __result = ILCreateFromPath(pszPathLocal);
-                return ref *__result;
-            }
-        }
-
         /// <inheritdoc cref="SHCreateAssociationRegistration(global::System.Guid*, void**)"/>
         public static unsafe winmdroot.Foundation.HRESULT SHCreateAssociationRegistration<T>(out T ppv)
         {
@@ -55,6 +45,18 @@ namespace Windows.Win32
             }
         }
 
+        /// <inheritdoc cref="SHCreateItemFromParsingName(winmdroot.Foundation.PCWSTR, winmdroot.System.Com.IBindCtx, global::System.Guid*, out object)">
+        public static unsafe winmdroot.Foundation.HRESULT SHCreateItemFromParsingName<T>(string pszFile, winmdroot.System.Com.IBindCtx pbc, out T ppv)
+        {
+            Guid riid = typeof(T).GUID;
+            fixed (char* pszFileLocal = pszFile)
+            {
+                winmdroot.Foundation.HRESULT __result = SHCreateItemFromParsingName(pszFileLocal, pbc, &riid, out var ppvLocal);
+                ppv = (T)ppvLocal;
+                return __result;
+            }
+        }
+
         /// <inheritdoc cref="SHCreateItemFromIDList(winmdroot.UI.Shell.Common.ITEMIDLIST*, global::System.Guid*, void**)"/>
         public static unsafe winmdroot.Foundation.HRESULT SHCreateItemFromIDList<T>(in winmdroot.UI.Shell.Common.ITEMIDLIST pidl, out T ppv)
         {
@@ -68,7 +70,7 @@ namespace Windows.Win32
             }
         }
 
-		/// <inheritdoc cref="SHGetFileInfo(winmdroot.Foundation.PCWSTR, winmdroot.Storage.FileSystem.FILE_FLAGS_AND_ATTRIBUTES, winmdroot.UI.Shell.SHFILEINFOW*, uint, winmdroot.UI.Shell.SHGFI_FLAGS)"/>
+        /// <inheritdoc cref="SHGetFileInfo(winmdroot.Foundation.PCWSTR, winmdroot.Storage.FileSystem.FILE_FLAGS_AND_ATTRIBUTES, winmdroot.UI.Shell.SHFILEINFOW*, uint, winmdroot.UI.Shell.SHGFI_FLAGS)"/>
         public static unsafe nuint SHGetFileInfo(string pszPath, winmdroot.Storage.FileSystem.FILE_FLAGS_AND_ATTRIBUTES dwFileAttributes, in winmdroot.UI.Shell.SHFILEINFOW sfi, winmdroot.UI.Shell.SHGFI_FLAGS uFlags)
         {
             fixed (winmdroot.UI.Shell.SHFILEINFOW* psfiLocal = &sfi)
@@ -94,17 +96,6 @@ namespace Windows.Win32
                 {
                     CoTaskMemFree(pszPath);
                 }
-            }
-        }
-
-        /// <inheritdoc cref="SHParseDisplayName(string, winmdroot.System.Com.IBindCtx, out winmdroot.UI.Shell.Common.ITEMIDLIST*, uint, uint*)"/>
-        public static unsafe winmdroot.Foundation.HRESULT SHParseDisplayName(string pszName, winmdroot.System.Com.IBindCtx pbc, out winmdroot.UI.Shell.Common.ITEMIDLIST ppidl, uint sfgaoIn, out uint psfgaOut)
-        {
-            fixed (winmdroot.UI.Shell.Common.ITEMIDLIST* ppidlLocal = &ppidl)
-            fixed (uint* psfgaOutLocal = &psfgaOut)
-            fixed (char* pszNameLocal = pszName)
-            {
-                return SHParseDisplayName(pszNameLocal, pbc, (winmdroot.UI.Shell.Common.ITEMIDLIST**)ppidlLocal, sfgaoIn, psfgaOutLocal);
             }
         }
     }

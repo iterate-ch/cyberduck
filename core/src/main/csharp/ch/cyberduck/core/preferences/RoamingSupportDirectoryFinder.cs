@@ -17,8 +17,6 @@
 //
 
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core.Local;
-using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -26,20 +24,17 @@ namespace Ch.Cyberduck.Core.Preferences
 
     public class RoamingSupportDirectoryFinder : SupportDirectoryFinder
     {
-        private static SystemLocal local;
+        private static Local local;
 
-        public static SystemLocal Local
+        public static Local Local
         {
             get
             {
-                return local ??= new(Path.Combine(EnvironmentInfo.AppDataPath, EnvironmentInfo.DataFolderName));
+                return local ??= new(EnvironmentInfo.AppDataPath, EnvironmentInfo.DataFolderName);
             }
         }
 
-        public Local find()
-        {
-            return new SystemLocal(Local);
-        }
+        public Local find() => Local;
 
         public SupportDirectoryFinder setup()
         {

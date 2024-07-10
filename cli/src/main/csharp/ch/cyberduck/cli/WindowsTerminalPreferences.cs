@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Cli
                 typeof(LocalSupportDirectoryFinder).AssemblyQualifiedName);
             this.setDefault("factory.applicationresourcesfinder.class",
                 typeof(AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
-            this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
+            this.setDefault("factory.editorfactory.class", typeof(ShellApplicationEditorFactory).AssemblyQualifiedName);
             this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
             this.setDefault("factory.applicationfinder.class", typeof(ShellApplicationFinder).AssemblyQualifiedName);
             this.setDefault("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);

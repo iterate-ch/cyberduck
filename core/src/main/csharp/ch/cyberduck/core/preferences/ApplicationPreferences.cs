@@ -322,6 +322,13 @@ public class ApplicationPreferences<T> : DefaultPreferences
         }
     }
 
+    protected override void setFactories()
+    {
+        base.setFactories();
+
+        setDefault("factory.local.class", typeof(ch.cyberduck.core.Local).FullName);
+    }
+
     private static string TryToMatchLocale(string sysLocale, List appLocales)
     {
         for (int i = 0; i < appLocales.size(); i++)

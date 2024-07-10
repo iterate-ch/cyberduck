@@ -17,9 +17,6 @@
 //
 
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core.Local;
-using Windows.Storage;
-using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -27,20 +24,22 @@ namespace Ch.Cyberduck.Core.Preferences
 
     public class LocalSupportDirectoryFinder : SupportDirectoryFinder
     {
-        private static SystemLocal local;
+        private static Local local;
 
-        public static SystemLocal Local
+        public static Local Local
         {
             get
             {
-                return local ??= new(Path.Combine(EnvironmentInfo.LocalAppDataPath, EnvironmentInfo.DataFolderName));
+                if (local is null)
+                {
+                    local ??= new(EnvironmentInfo.LocalAppDataPath, EnvironmentInfo.DataFolderName);
+                }
+
+                return local;
             }
         }
 
-        public Local find()
-        {
-            return new SystemLocal(Local);
-        }
+        public Local find() => Local;
 
         public SupportDirectoryFinder setup()
         {

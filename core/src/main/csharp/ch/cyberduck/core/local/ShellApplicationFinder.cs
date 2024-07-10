@@ -281,19 +281,24 @@ namespace Ch.Cyberduck.Core.Local
             {
                 if (SynchronizationContext.Current == null)
                 {
-                    sync.Send(d => Launch(local), null);
+                    sync.Send(d => Launch((ch.cyberduck.core.Local)d), local);
                     return;
                 }
 
-                using PIDLIST_ABSOLUTEHandle pidl = ILCreateFromPath2(local.getAbsolute());
-                if (!pidl)
+                if (SHCreateItemFromParsingName<IShellItem>(local.getAbsolute(), null, out var ppv) is { Failed: true, Value: { } hr })
                 {
                     return;
                 }
 
-                SHCreateItemFromIDList(pidl.Value, out IShellItem ppv);
-                ppv.BindToHandler(null, BHID_DataObject, out IDataObject pdo);
-                handler.Invoke(pdo);
+                try
+                {
+                    ppv.BindToHandler(null, BHID_DataObject, out IDataObject pdo);
+                    handler.Invoke(pdo);
+                }
+                catch
+                {
+                    // Catch Silently
+                }
             }
         }
 

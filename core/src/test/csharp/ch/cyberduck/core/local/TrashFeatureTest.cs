@@ -1,17 +1,16 @@
 ﻿using ch.cyberduck.core.exception;
 using ch.cyberduck.core.local;
-using NUnit.Framework;
+using ch.cyberduck.core.local.features;
 using java.nio.file;
+using NUnit.Framework;
+using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {
     using Local = ch.cyberduck.core.Local;
-    using Path = System.IO.Path;
-    using Touch = ch.cyberduck.core.local.features.Touch;
-    using Trash = ch.cyberduck.core.local.features.Trash;
 
     [TestFixture]
-    public class RecycleTrashFeatureTest
+    public class TrashFeatureTest
     {
         private Local temp;
         private Touch touch;
@@ -22,13 +21,13 @@ namespace Ch.Cyberduck.Core.Local
         {
             temp = new Local(Path.GetTempPath());
             touch = new DefaultLocalTouchFeature();
-            trash = new RecycleLocalTrashFeature();
+            trash = new NativeLocalTrashFeature();
         }
 
         [Test]
         public void TestTrash()
         {
-            Local trashee = new Local(temp, Path.GetRandomFileName());
+            Local trashee = new(temp, Path.GetRandomFileName());
             trashee.mkdir();
 
             trash.trash(trashee);
@@ -37,11 +36,11 @@ namespace Ch.Cyberduck.Core.Local
         [Test]
         public void testTrashNonEmpty()
         {
-            Local trashee = new Local(temp, Path.GetRandomFileName());
+            Local trashee = new(temp, Path.GetRandomFileName());
             trashee.mkdir();
-            Local sub = new Local(trashee, Path.GetRandomFileName());
+            Local sub = new(trashee, Path.GetRandomFileName());
             sub.mkdir();
-            Local file = new Local(trashee, Path.GetRandomFileName());
+            Local file = new(trashee, Path.GetRandomFileName());
             touch.touch(file);
 
             trash.trash(trashee);
@@ -50,11 +49,11 @@ namespace Ch.Cyberduck.Core.Local
         [Test]
         public void testTrashOpenFile()
         {
-            Local trashee = new Local(temp, Path.GetRandomFileName());
+            Local trashee = new(temp, Path.GetRandomFileName());
             trashee.mkdir();
-            Local sub = new Local(trashee, Path.GetRandomFileName());
+            Local sub = new(trashee, Path.GetRandomFileName());
             sub.mkdir();
-            Local file = new Local(trashee, Path.GetRandomFileName());
+            Local file = new(trashee, Path.GetRandomFileName());
             touch.touch(file);
 
             using (file.getOutputStream(false))
@@ -66,11 +65,11 @@ namespace Ch.Cyberduck.Core.Local
         [Ignore("Unknown."), Test]
         public void testTrashOpenDirectoryEnumeration()
         {
-            Local trashee = new Local(temp, Path.GetRandomFileName());
+            Local trashee = new(temp, Path.GetRandomFileName());
             trashee.mkdir();
-            Local sub = new Local(trashee, Path.GetRandomFileName());
+            Local sub = new(trashee, Path.GetRandomFileName());
             sub.mkdir();
-            Local file = new Local(trashee, Path.GetRandomFileName());
+            Local file = new(trashee, Path.GetRandomFileName());
             touch.touch(file);
 
             using (Files.newDirectoryStream(Paths.get(file.getAbsolute())))

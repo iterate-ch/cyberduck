@@ -17,46 +17,84 @@
 // 
 
 using ch.cyberduck.core.local;
+using org.apache.logging.log4j;
+using System;
+using System.Runtime.InteropServices;
+using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
 using static Windows.Win32.CorePInvoke;
+using CoreLocal = ch.cyberduck.core.Local;
 
 namespace Ch.Cyberduck.Core.Local
 {
     public sealed class ExplorerRevealService : RevealService
     {
-        public unsafe bool reveal(ch.cyberduck.core.Local l, bool select)
+        private static readonly Logger Log = LogManager.getLogger(typeof(ExplorerRevealService).FullName);
+
+        public bool reveal(CoreLocal file) => RevealService.__DefaultMethods.reveal(this, file);
+
+        public unsafe bool reveal(CoreLocal l, bool select)
         {
             if (!select)
             {
                 return ApplicationLauncherFactory.get().open(l);
             }
 
-            using PIDLIST_ABSOLUTEHandle nativeFolder = ILCreateFromPath2(l.getParent().getAbsolute());
-            if (!nativeFolder)
+
+            if (SHCreateItemFromParsingName(l.getAbsolute(), null, typeof(IShellItem).GUID, out var ppv) is { Failed: true, Value: { } parseErrorCode })
             {
                 return false;
             }
 
-            using PIDLIST_ABSOLUTEHandle nativeFile = ILCreateFromPath2(l.getAbsolute());
-            if (!nativeFile)
+            IParentAndItem pai;
+            try
             {
+                pai = (IParentAndItem)ppv;
+            }
+            catch (Exception e)
+            {
+                if (Log.isDebugEnabled())
+                {
+                    Log.debug("Cast IShellitem to IParentAndItem", e);
+                }
+
                 return false;
             }
 
-            uint count = 0;
-            ITEMIDLIST* target = default;
-            if (nativeFile)
+            ITEMIDLIST* parent = null, self = null;
+            try
             {
-                count = 1;
-                target = nativeFile.Pointer;
+                pai.GetParentAndItem(&parent, out _, &self);
             }
-            SHOpenFolderAndSelectItems(nativeFolder.Value, count, &target, 0);
-            return true;
-        }
+            catch (Exception e)
+            {
+                if (Log.isDebugEnabled())
+                {
+                    Log.debug("Get Parent And Item", e);
+                }
 
-        public bool reveal(ch.cyberduck.core.Local file)
-        {
-            return reveal(file, true);
+                return false;
+            }
+
+            try
+            {
+                if (SHOpenFolderAndSelectItems(*parent, 1, &self, 0) is { Failed: true, Value: { } hr })
+                {
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.debug("OpenFolderAndSelectItems", Marshal.GetExceptionForHR(hr));
+                    }
+
+                    return false;
+                }
+
+                return true;
+            }
+            finally
+            {
+                Marshal.FreeCoTaskMem((nint)self);
+                Marshal.FreeCoTaskMem((nint)parent);
+            }
         }
     }
 }

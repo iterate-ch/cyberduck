@@ -50,9 +50,9 @@ namespace Ch.Cyberduck.Core
         /// <returns>Crash report as string</returns>
         public void Write(Exception e)
         {
-            ExceptionReportInfo info = new ExceptionReportInfo {MainException = e};
-            ExceptionReportGenerator reportGenerator = new ExceptionReportGenerator(info);
-            ExceptionReport report = reportGenerator.CreateExceptionReport();
+            ExceptionReportInfo info = new() { MainException = e };
+            ExceptionReportGenerator reportGenerator = new(info);
+            var report = reportGenerator.CreateExceptionReport();
 
             string crashDir = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
                 "CrashReporter");
@@ -81,7 +81,7 @@ namespace Ch.Cyberduck.Core
 
         public void Post(string report)
         {
-            Dictionary<string, object> postParameters = new Dictionary<string, object> {{"crashlog", report}};
+            Dictionary<string, object> postParameters = new Dictionary<string, object> { { "crashlog", report } };
             string revision = PreferencesFactory.get().getProperty("application.revision");
 
             //this might take some time as the WebRequest tries to detect the proxy settings first

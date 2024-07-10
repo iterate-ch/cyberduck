@@ -45,22 +45,4 @@
         </CyberduckReference>
     </ItemDefinitionGroup>
 
-    <ItemGroup>
-        <IKVM Include="IKVM.OpenJDK.Beans" />
-        <IKVM Include="IKVM.OpenJDK.Charsets" />
-        <IKVM Include="IKVM.OpenJDK.Core" />
-        <IKVM Include="IKVM.OpenJDK.Jdbc" />
-        <IKVM Include="IKVM.OpenJDK.Localedata" />
-        <IKVM Include="IKVM.OpenJDK.Security" />
-        <IKVM Include="IKVM.OpenJDK.Text" />
-        <IKVM Include="IKVM.OpenJDK.XML.API" />
-        <IKVM Include="IKVM.OpenJDK.XML.Bind" />
-        <IKVM Include="IKVM.OpenJDK.XML.Parse" />
-        <IKVM Include="IKVM.OpenJDK.XML.Transform" />
-        <IKVM Include="IKVM.OpenJDK.XML.XPath" />
-        <IKVM Include="IKVM.Runtime" />
-        <IKVM Include="IKVM.Runtime.JNI" />
-
-        <IKVMReferences Include="@(IKVM)" HintPath="$(TargetBuildDir)ikvm\bin\%(Identity).dll" />
-    </ItemGroup>
 </Project>

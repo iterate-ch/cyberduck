@@ -62,7 +62,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 typeof(LocalSupportDirectoryFinder).AssemblyQualifiedName);
             this.setDefault("factory.applicationresourcesfinder.class",
                 typeof(AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
-            this.setDefault("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);
             this.setDefault("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
             this.setDefault("factory.dateformatter.class", typeof(UserDefaultsDateFormatter).AssemblyQualifiedName);
             this.setDefault("factory.passwordstore.class", typeof(PasswordStoreFacade).AssemblyQualifiedName);
@@ -92,10 +91,9 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
             this.setDefault("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
             this.setDefault("factory.reveal.class", typeof(ExplorerRevealService).AssemblyQualifiedName);
-            this.setDefault("factory.trash.class", typeof(RecycleLocalTrashFeature).AssemblyQualifiedName);
             this.setDefault("factory.symlink.class", typeof(NullLocalSymlinkFeature).AssemblyQualifiedName);
             this.setDefault("factory.terminalservice.class", typeof(SshTerminalService).AssemblyQualifiedName);
-            this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
+            this.setDefault("factory.editorfactory.class", typeof(ShellApplicationEditorFactory).AssemblyQualifiedName);
             this.setDefault("factory.badgelabeler.class", typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             this.setDefault("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
             this.setDefault("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
