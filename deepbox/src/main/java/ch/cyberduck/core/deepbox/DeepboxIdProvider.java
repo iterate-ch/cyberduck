@@ -40,12 +40,13 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
 
     private final DeepboxSession session;
     private final int chunksize;
-    private final DeepboxPathContainerService containerService = new DeepboxPathContainerService();
+    private final DeepboxPathContainerService containerService;
 
     public DeepboxIdProvider(final DeepboxSession session) {
         super(session.getCaseSensitivity());
         this.session = session;
         this.chunksize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
+        this.containerService = new DeepboxPathContainerService(session);
     }
 
     public String getDeepBoxNodeId(final Path file) throws BackgroundException {

@@ -16,11 +16,15 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
 
 public class DeepboxPathContainerService extends DefaultPathContainerService {
+
+    private final DeepboxSession session;
+
+    public DeepboxPathContainerService(final DeepboxSession session) {
+        this.session = session;
+    }
 
     @Override
     public boolean isContainer(final Path file) {
@@ -52,15 +56,15 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     public boolean isTrash(final Path file) {
-        return this.isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox")));
+        return this.isThirdLevel(file) && file.getName().equals(session.getPinnedLocalization(DeepboxListService.TRASH));
     }
 
     public boolean isInbox(final Path file) {
-        return this.isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox")));
+        return this.isThirdLevel(file) && file.getName().equals(session.getPinnedLocalization(DeepboxListService.INBOX));
     }
 
     public boolean isDocuments(final Path file) {
-        return this.isThirdLevel(file) && file.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox")));
+        return this.isThirdLevel(file) && file.getName().equals(session.getPinnedLocalization(DeepboxListService.DOCUMENTS));
     }
 
     public boolean isInDocuments(final Path file) {
@@ -68,7 +72,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
         if(null == documents) {
             return false;
         }
-        return documents.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox")));
+        return documents.getName().equals(session.getPinnedLocalization(DeepboxListService.DOCUMENTS));
     }
 
     public boolean isInTrash(final Path file) {
@@ -76,7 +80,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
         if(null == trash) {
             return false;
         }
-        return trash.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox")));
+        return trash.getName().equals(session.getPinnedLocalization(DeepboxListService.TRASH));
     }
 
     public boolean isInInbox(final Path file) {
@@ -84,7 +88,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
         if(null == inbox) {
             return false;
         }
-        return inbox.getName().equals(PathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox")));
+        return inbox.getName().equals(session.getPinnedLocalization(DeepboxListService.INBOX));
     }
 
     protected Path getThirdLevelPath(final Path file) {

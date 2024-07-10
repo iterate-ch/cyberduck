@@ -55,7 +55,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
-    private final DeepboxPathContainerService containerService = new DeepboxPathContainerService();
+    private final DeepboxPathContainerService containerService;
 
     /**
      * Used for preflight checks in {@link DeepboxListService}.
@@ -123,6 +123,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     public DeepboxAttributesFinderFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.containerService = new DeepboxPathContainerService(session);
     }
 
     @Override

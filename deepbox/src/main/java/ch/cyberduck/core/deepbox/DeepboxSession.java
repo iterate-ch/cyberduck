@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
@@ -82,17 +83,11 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     private final PreferencesReader preferences = new HostPreferences(host);
     private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
-    private final String locale;
 
     private OAuth2RequestInterceptor authorizationService;
 
-    public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final String locale) {
-        super(host, trust, key);
-        this.locale = locale;
-    }
-
     public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        this(host, trust, key, PreferencesFactory.get().locale());
+        super(host, trust, key);
     }
 
     @Override
@@ -119,7 +114,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         new ChainedServiceUnavailableRetryStrategy(new ExecutionCountServiceUnavailableRetryStrategy(
                 new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
         configuration.addInterceptorLast(authorizationService);
-        configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request.addHeader("Accept-Language", locale));
+        configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request.addHeader("Accept-Language", this.getPinnedLocale()));
 
         final CloseableHttpClient apache = configuration.build();
         final DeepboxApiClient client = new DeepboxApiClient(apache);
@@ -152,6 +147,36 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map(e);
         }
+    }
+
+    public String getPinnedLocale() {
+        final String locale = PreferencesFactory.get().getProperty(toPinnedLocalePropertyKey(host));
+        if(locale == null) {
+            PreferencesFactory.get().setProperty(toPinnedLocalePropertyKey(host), PreferencesFactory.get().locale());
+        }
+        return PreferencesFactory.get().getProperty(toPinnedLocalePropertyKey(host));
+    }
+
+    public String getPinnedLocalization(final String name) {
+        final String localized = PreferencesFactory.get().getProperty(toPinnedLocalizationPropertyKey(host, name));
+        if(localized == null) {
+            PreferencesFactory.get().setProperty(toPinnedLocalizationPropertyKey(host, name), LocaleFactory.localizedString(name, "Deepbox"));
+        }
+        return DeepboxPathNormalizer.name(PreferencesFactory.get().getProperty(toPinnedLocalizationPropertyKey(host, name)));
+    }
+
+    /**
+     * Key to use in preferences to save the pinned locale.
+     */
+    private static String toPinnedLocalizationPropertyKey(final Host host, final String name) {
+        return String.format("deepbox.localization.%s.%s", name, host.getUuid());
+    }
+
+    /**
+     * Key to use in preferences to save the pinned localization for virtual folders.
+     */
+    private static String toPinnedLocalePropertyKey(final Host host) {
+        return String.format("deepbox.locale.%s", host.getUuid());
     }
 
     @Override

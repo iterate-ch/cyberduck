@@ -16,17 +16,14 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.i18n.RegexLocale;
-import ch.cyberduck.core.local.WorkdirPrefixer;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.EnumSet;
 
@@ -37,7 +34,7 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void TestRoot() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService();
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
         final Path folder = Home.ROOT;
         assertFalse(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
@@ -56,7 +53,7 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void TestDeepBox() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService();
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
         final Path folder = new Path("/Mountainduck Buddies", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
         assertTrue(container.isDeepbox(folder));
@@ -75,7 +72,7 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void TestBox() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService();
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
         final Path folder = new Path("/Mountainduck Buddies/My Box", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
@@ -92,22 +89,10 @@ public class DeepboxPathContainerServiceTest {
         assertNull(container.getThirdLevelPath(folder));
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "Inbox,en",
-            "Inbox,de",
-            "Inbox,fr",
-            "Inbox,it",
-            "Inbox,other"
-    })
-    public void TestInbox(final String name, final String lang) {
-        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
-        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
-        LocaleFactory.set(locale);
-        LocaleFactory.get().setDefault(lang);
-
-        final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+    @Test
+    public void TestInbox() {
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", DeepboxListService.INBOX), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -123,22 +108,10 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getThirdLevelPath(folder));
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "Documents,en",
-            "Dokumente,de",
-            "Documents,fr",
-            "Documenti,it",
-            "Documents,other"
-    })
-    public void TestDocuments(final String name, final String lang) {
-        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
-        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
-        LocaleFactory.set(locale);
-        LocaleFactory.get().setDefault(lang);
-
-        final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+    @Test
+    public void TestDocuments() {
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", DeepboxListService.DOCUMENTS), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -154,22 +127,10 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getThirdLevelPath(folder));
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "Trash,en",
-            "Papierkorb,de",
-            "Corbeille,fr",
-            "Cestino,it",
-            "Trash,other"
-    })
-    public void TestTrash(final String name, final String lang) {
-        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
-        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
-        LocaleFactory.set(locale);
-        LocaleFactory.get().setDefault(lang);
-
-        final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", name), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+    @Test
+    public void TestTrash() {
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s", DeepboxListService.TRASH), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -185,22 +146,10 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder, container.getThirdLevelPath(folder));
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "Documents,en",
-            "Dokumente,de",
-            "Documents,fr",
-            "Documenti,it",
-            "Documents,other"
-    })
-    public void TestAuditing(final String name, final String lang) {
-        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
-        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
-        LocaleFactory.set(locale);
-        LocaleFactory.get().setDefault(lang);
-
-        final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s/Auditing", name), EnumSet.of(AbstractPath.Type.directory));
+    @Test
+    public void TestAuditing() {
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/My Box/%s/Auditing", DeepboxListService.DOCUMENTS), EnumSet.of(AbstractPath.Type.directory));
         assertFalse(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -216,22 +165,10 @@ public class DeepboxPathContainerServiceTest {
         assertEquals(folder.getParent(), container.getThirdLevelPath(folder));
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "Documents,en",
-            "Dokumente,de",
-            "Documents,fr",
-            "Documenti,it",
-            "Documents,other"
-    })
-    public void TestFile(final String name, final String lang) {
-        PreferencesFactory.get().setDefault("factory.locale.class", RegexLocale.class.getName());
-        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
-        LocaleFactory.set(locale);
-        LocaleFactory.get().setDefault(lang);
-
-        final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path file = new Path(String.format("/Mountainduck Buddies/My Box/%s/Auditing/nix4.txt", name), EnumSet.of(AbstractPath.Type.file));
+    @Test
+    public void TestFile() {
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final Path file = new Path(String.format("/Mountainduck Buddies/My Box/%s/Auditing/nix4.txt", DeepboxListService.DOCUMENTS), EnumSet.of(AbstractPath.Type.file));
         assertFalse(container.isContainer(file));
         assertFalse(container.isDeepbox(file));
         assertFalse(container.isBox(file));

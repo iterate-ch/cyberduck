@@ -50,17 +50,22 @@ import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCH
 public class DeepboxListService implements ListService {
     private static final Logger log = LogManager.getLogger(DeepboxListService.class);
 
+    public static final String INBOX = "Inbox";
+    public static final String DOCUMENTS = "Documents";
+    public static final String TRASH = "Trash";
+
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
     private final DeepboxAttributesFinderFeature attributes;
     private final int chunksize;
-    private final DeepboxPathContainerService containerService = new DeepboxPathContainerService();
+    private final DeepboxPathContainerService containerService;
 
     public DeepboxListService(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
         this.attributes = new DeepboxAttributesFinderFeature(session, fileid);
         this.chunksize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
+        this.containerService = new DeepboxPathContainerService(session);
     }
 
     @Override
@@ -214,21 +219,21 @@ public class DeepboxListService implements ListService {
         final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         final Box box = rest.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
         if(box.getBoxPolicy().isCanListQueue()) {
-            final String inboxName = DeepboxPathNormalizer.name(LocaleFactory.localizedString("Inbox", "Deepbox"));
+            final String inboxName = session.getPinnedLocalization(INBOX);
             final Path inbox = new Path(directory, inboxName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new PathAttributes().withFileId(fileid.getFileId(new Path(directory, inboxName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
             );
             list.add(inbox.withAttributes(attributes.find(inbox)));
         }
         if(box.getBoxPolicy().isCanListFilesRoot()) {
-            final String documentsName = DeepboxPathNormalizer.name(LocaleFactory.localizedString("Documents", "Deepbox"));
+            final String documentsName = session.getPinnedLocalization(DOCUMENTS);
             final Path documents = new Path(directory, documentsName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new PathAttributes().withFileId(fileid.getFileId(new Path(directory, documentsName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
             );
             list.add(documents.withAttributes(attributes.find(documents)));
         }
         if(box.getBoxPolicy().isCanAccessTrash()) {
-            final String trashName = DeepboxPathNormalizer.name(LocaleFactory.localizedString("Trash", "Deepbox"));
+            final String trashName = session.getPinnedLocalization(TRASH);
             final Path trash = new Path(directory, trashName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new PathAttributes().withFileId(fileid.getFileId(new Path(directory, trashName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
             );

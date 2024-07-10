@@ -56,7 +56,7 @@ public class DeepboxRestoreFeature implements Restore {
     @Override
     public boolean isRestorable(final Path file) {
         try {
-            if(new DeepboxPathContainerService().isInTrash(file)) {
+            if(new DeepboxPathContainerService(session).isInTrash(file)) {
                 final Acl acl = file.attributes().getAcl();
                 if(Acl.EMPTY == acl) {
                     // Missing initialization

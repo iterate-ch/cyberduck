@@ -60,7 +60,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             final String deepBoxNodeId = fileid.getDeepBoxNodeId(folder.getParent());
             final String boxNodeId = fileid.getBoxNodeId(folder.getParent());
             final List<FolderAdded> created;
-            if(new DeepboxPathContainerService().isDocuments(folder.getParent())) {
+            if(new DeepboxPathContainerService(session).isDocuments(folder.getParent())) {
                 created = new PathRestControllerApi(session.getClient()).addFolders1(
                         body,
                         UUID.fromString(deepBoxNodeId),
@@ -94,7 +94,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(workdir.isRoot() || (new DeepboxPathContainerService().isContainer(workdir) && !new DeepboxPathContainerService().isDocuments(workdir))) {
+        if(workdir.isRoot() || (new DeepboxPathContainerService(session).isContainer(workdir) && !new DeepboxPathContainerService(session).isDocuments(workdir))) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
         final Acl acl = workdir.attributes().getAcl();

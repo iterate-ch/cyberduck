@@ -33,13 +33,16 @@ import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHI
 public class DeepboxTouchFeature extends DefaultTouchFeature<Node> {
     private static final Logger log = LogManager.getLogger(DeepboxTouchFeature.class);
 
+    private final DeepboxSession session;
+
     public DeepboxTouchFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         super(new DeepboxWriteFeature(session, fileid));
+        this.session = session;
     }
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(workdir.isRoot() || new DeepboxPathContainerService().isDeepbox(workdir) || new DeepboxPathContainerService().isBox(workdir)) {
+        if(workdir.isRoot() || new DeepboxPathContainerService(session).isDeepbox(workdir) || new DeepboxPathContainerService(session).isBox(workdir)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
         final Acl acl = workdir.attributes().getAcl();
