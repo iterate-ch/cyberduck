@@ -57,6 +57,8 @@ public class DeepboxCanDeletePurgeRevertTest extends AbstractDeepboxTest {
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
         assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).preflight(folder.withAttributes(attributes)));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).delete(
+                Collections.singletonList(folder.withAttributes(attributes)), new DisabledPasswordCallback(), new Delete.DisabledCallback()));
     }
 
     @Test
@@ -66,6 +68,8 @@ public class DeepboxCanDeletePurgeRevertTest extends AbstractDeepboxTest {
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
         assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).preflight(folder.withAttributes(attributes)));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).delete(
+                Collections.singletonList(folder.withAttributes(attributes)), new DisabledPasswordCallback(), new Delete.DisabledCallback()));
     }
 
     @Test
@@ -73,17 +77,23 @@ public class DeepboxCanDeletePurgeRevertTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path file = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/Property/RE-IN - Copy2.pdf", EnumSet.of(Path.Type.file));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(file);
-        assertFalse(attributes.getAcl().containsKey(CANDELETE));
+        assertTrue(attributes.getAcl().containsKey(new Acl.CanonicalUser()));
+        assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).preflight(file.withAttributes(attributes)));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).delete(
+                Collections.singletonList(file.withAttributes(attributes)), new DisabledPasswordCallback(), new Delete.DisabledCallback()));
     }
 
     @Test
     public void testNoDeleteFolder() throws BackgroundException {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
-        final Path file = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/Property/", EnumSet.of(Path.Type.directory));
-        final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(file);
-        assertFalse(attributes.getAcl().containsKey(CANDELETE));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).preflight(file.withAttributes(attributes)));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/Property/", EnumSet.of(Path.Type.directory));
+        final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
+        assertTrue(attributes.getAcl().containsKey(new Acl.CanonicalUser()));
+        assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).preflight(folder.withAttributes(attributes)));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).delete(
+                Collections.singletonList(folder.withAttributes(attributes)), new DisabledPasswordCallback(), new Delete.DisabledCallback()));
     }
 
     @Test
