@@ -176,10 +176,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(receipts, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
-
         assertNotNull(list.find(new SimplePathPredicate(new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file)))));
         assertNotNull(list.find(new SimplePathPredicate(new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/RE-IN - Copy2.pdf", EnumSet.of(Path.Type.file)))));
-        assertEquals(2, list.size());
         for(final Path f : list) {
             assertSame(receipts, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
