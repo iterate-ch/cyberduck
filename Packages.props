@@ -16,7 +16,7 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <IKVMVersion>8.9.0-pre.1</IKVMVersion>
+    <IKVMVersion>8.9.0-PullRequest0550.454</IKVMVersion>
   </PropertyGroup>
 
   <ItemGroup>
