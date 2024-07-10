@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Box;
@@ -41,8 +42,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCHILDREN;
@@ -86,30 +85,34 @@ public class DeepboxListService implements ListService {
                 // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with
                 // parentNode may fail!
                 if(containerService.isInInbox(directory)) {
-                    return this.listQueue(directory, listener, deepBoxNodeId, boxNodeId);
+                    return duplicates(this.listQueue(directory, listener, deepBoxNodeId, boxNodeId));
                 }
                 if(containerService.isInDocuments(directory)) {
-                    return this.listFiles(directory, listener, deepBoxNodeId, boxNodeId);
+                    return duplicates(this.listFiles(directory, listener, deepBoxNodeId, boxNodeId));
                 }
                 if(containerService.isInTrash(directory)) {
-                    return this.listTrash(directory, listener, deepBoxNodeId, boxNodeId);
+                    return duplicates(this.listTrash(directory, listener, deepBoxNodeId, boxNodeId));
                 }
             }
             // in subfolder of  Documents/Trash (Inbox has no subfolders)
             final String nodeId = fileid.getFileId(directory);
             if(containerService.isInTrash(directory)) {
-                return this.listTrash(directory, listener, deepBoxNodeId, boxNodeId, nodeId);
+                return duplicates(this.listTrash(directory, listener, deepBoxNodeId, boxNodeId, nodeId));
             }
-            return this.listFiles(directory, listener, deepBoxNodeId, boxNodeId, nodeId);
+            return duplicates(this.listFiles(directory, listener, deepBoxNodeId, boxNodeId, nodeId));
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
         }
     }
 
+    private static AttributedList<Path> duplicates(final AttributedList<Path> list) {
+        list.toStream().forEach(f -> f.attributes().setDuplicate(list.findAll(new SimplePathPredicate(f)).size() != 1));
+        return list;
+    }
+
     private AttributedList<Path> listTrash(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId, final String nodeId) throws ApiException, ConnectionCanceledException {
         final AttributedList<Path> list = new AttributedList<>();
-        final HashSet<String> closed = new HashSet<>();
         final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
@@ -120,7 +123,10 @@ public class DeepboxListService implements ListService {
                     UUID.fromString(nodeId),
                     offset, this.chunksize, "displayName asc"
             );
-            this.listChunk(directory, files, list, closed);
+            for(final Node node : files.getNodes()) {
+                list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
+                        EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
+            }
             listener.chunk(directory, list);
             size = files.getSize();
             offset += this.chunksize;
@@ -131,7 +137,6 @@ public class DeepboxListService implements ListService {
 
     private AttributedList<Path> listFiles(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId, final String nodeId) throws ApiException, ConnectionCanceledException {
         final AttributedList<Path> list = new AttributedList<>();
-        final HashSet<String> closed = new HashSet<>();
         final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
@@ -142,7 +147,10 @@ public class DeepboxListService implements ListService {
                     UUID.fromString(nodeId),
                     offset, this.chunksize, "displayName asc"
             );
-            this.listChunk(directory, files, list, closed);
+            for(final Node node : files.getNodes()) {
+                list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
+                        EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
+            }
             listener.chunk(directory, list);
             size = files.getSize();
             offset += this.chunksize;
@@ -153,19 +161,21 @@ public class DeepboxListService implements ListService {
 
     private AttributedList<Path> listTrash(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId) throws ApiException, ConnectionCanceledException {
         final AttributedList<Path> list = new AttributedList<>();
-        final HashSet<String> closed = new HashSet<>();
         final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final NodeContent trashFiles = rest.listTrash(
+            final NodeContent nodes = rest.listTrash(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
                     offset, this.chunksize, "displayName asc"
             );
-            this.listChunk(directory, trashFiles, list, closed);
+            for(final Node node : nodes.getNodes()) {
+                list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
+                        EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
+            }
             listener.chunk(directory, list);
-            size = trashFiles.getSize();
+            size = nodes.getSize();
             offset += this.chunksize;
         }
         while(offset < size);
@@ -174,19 +184,21 @@ public class DeepboxListService implements ListService {
 
     private AttributedList<Path> listFiles(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId) throws ApiException, ConnectionCanceledException {
         final AttributedList<Path> list = new AttributedList<>();
-        final HashSet<String> closed = new HashSet<>();
         final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final NodeContent files = rest.listFiles(
+            final NodeContent nodes = rest.listFiles(
                     UUID.fromString(deepBoxNodeId),
                     UUID.fromString(boxNodeId),
                     offset, this.chunksize, "displayName asc"
             );
-            this.listChunk(directory, files, list, closed);
+            for(final Node node : nodes.getNodes()) {
+                list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
+                        EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
+            }
             listener.chunk(directory, list);
-            size = files.getSize();
+            size = nodes.getSize();
             offset += this.chunksize;
         }
         while(offset < size);
@@ -195,19 +207,21 @@ public class DeepboxListService implements ListService {
 
     private AttributedList<Path> listQueue(final Path directory, final ListProgressListener listener, final String deepBoxNodeId, final String boxNodeId) throws ConnectionCanceledException, ApiException {
         final AttributedList<Path> list = new AttributedList<>();
-        final HashSet<String> closed = new HashSet<>();
         final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size = 0;
         do {
             try {
-                final NodeContent inbox = rest.listQueue(UUID.fromString(deepBoxNodeId),
+                final NodeContent nodes = rest.listQueue(UUID.fromString(deepBoxNodeId),
                         UUID.fromString(boxNodeId),
                         null,
                         offset, this.chunksize, "displayName asc");
-                this.listChunk(directory, inbox, list, closed);
+                for(final Node node : nodes.getNodes()) {
+                    list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
+                            EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
+                }
                 listener.chunk(directory, list);
-                size = inbox.getSize();
+                size = nodes.getSize();
                 offset += this.chunksize;
             }
             catch(ApiException e) {
@@ -288,40 +302,6 @@ public class DeepboxListService implements ListService {
         }
         while(offset < size);
         return list;
-    }
-
-    // Hide duplicates in listing.
-    // Due to path normalization, paths might not come in order despite remote listing by "name asc"
-    private void listChunk(final Path directory, final NodeContent nodes, final AttributedList<Path> list, final Set<String> closed) throws ApiException {
-        for(final Node node : nodes.getNodes()) {
-            final String name = DeepboxPathNormalizer.name(node.getDisplayName());
-            final Path path = new Path(directory, name, EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory))
-                    .withAttributes(attributes.toAttributes(node));
-            // remove duplicates
-            if(!closed.contains(name)) {
-                list.add(path);
-                fileid.cache(path, node.getNodeId().toString());
-            }
-            else {
-                // remove from list and cache
-                final Path last = list.get(list.size() - 1);
-                if(last.getName().equals(name)) {
-                    // Usually even after path normalization, the last element in the list should be the duplicate due to listing by file name.
-                    list.remove(last);
-                    fileid.cache(last, null);
-                }
-                else {
-                    // Due to path normalization, the path to remove might not be the last one in the listing.
-                    // Should be very rare, so searching the list O(n) should be fine.
-                    final Path previous = list.find(p -> p.getName().equals(name));
-                    if(previous != null) {
-                        list.remove(previous);
-                        fileid.cache(previous, null);
-                    }
-                }
-            }
-            closed.add(name);
-        }
     }
 
     @Override

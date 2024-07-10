@@ -261,7 +261,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final NodeContent nodeContent = core.listNodeContent(UUID.fromString(nodeid.getFileId(folder)), null, null, "modifiedTime desc");
         assertEquals(2, nodeContent.getNodes().size());
         final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
-        assertEquals(0, listing.size());
+        assertEquals(2, listing.size());
+        for(Path f : listing) {
+            assertTrue(f.attributes().isDuplicate());
+        }
         assertTrue(nodeContent.getNodes().get(0).getNodeId().toString().equals(nodeid.getFileId(file)) ||
                 nodeContent.getNodes().get(1).getNodeId().toString().equals(nodeid.getFileId(file))
         );
@@ -282,12 +285,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         new CoreRestControllerApi(session.getClient()).copyNode(body, UUID.fromString(nodeid.getFileId(file)));
         final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(UUID.fromString(nodeid.getFileId(folder)), 0, 50, null);
         assertEquals(2, remote.getNodes().size());
-        try {
-            assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
+        for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
+            assertTrue(f.attributes().isDuplicate());
         }
-        finally {
-            deleteAndPurge(folder);
-        }
+        deleteAndPurge(folder);
     }
 
     @Test
@@ -311,12 +312,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
         final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(UUID.fromString(nodeid.getFileId(folder)), 0, 50, null);
         assertEquals(2, remote.getNodes().size());
-        try {
-            assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
+        for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
+            assertTrue(f.attributes().isDuplicate());
         }
-        finally {
-            deleteAndPurge(folder);
-        }
+        deleteAndPurge(folder);
     }
 
     @Test
