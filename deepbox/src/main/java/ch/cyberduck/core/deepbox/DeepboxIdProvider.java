@@ -147,7 +147,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 return null;
             }
             else if(containerService.isThirdLevel(file.getParent())) { // Inbox,Documents,Trash
-                // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with parentNode fails!
+                // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with
+                // parentNode may fail!
                 final String boxNodeId = this.getFileId(file.getParent().getParent());
                 final String deepBoxNodeId = this.getFileId(file.getParent().getParent().getParent());
                 if(containerService.isInDocuments(file)) {
@@ -217,8 +218,10 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         return this.cache(file, null);
     }
 
-    // N.B. we can get node id of documents - however, we might not get its nodeinfo or do listfiles from the documents root node, even if boxPolicy.isCanListFilesRoot()==true!
     private String lookupDocumentsNodeId(final Path file, final String deepBoxNodeId, final String boxNodeId) throws ApiException {
+        // N.B. we can get node id of documents - however, in some cases, we might not get its nodeinfo or do listfiles from
+        // the documents root node, even if boxPolicy.isCanListFilesRoot()==true! In such cases, it may be possible to delete
+        // a file (aka. move to trash) but be unable to list/find the file in the trash afterward.
         final String documentsId = new BoxRestControllerApi(session.getClient())
                 .listFiles(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null)
                 .getPath().getSegments().get(0).getNodeId().toString();

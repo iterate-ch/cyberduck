@@ -83,7 +83,8 @@ public class DeepboxListService implements ListService {
                 return this.listBox(directory, listener, deepBoxNodeId, boxNodeId);
             }
             if(containerService.isThirdLevel(directory)) { // in Inbox/Documents/Trash
-                // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with parentNode fails!
+                // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with
+                // parentNode may fail!
                 if(containerService.isInInbox(directory)) {
                     return this.listQueue(directory, listener, deepBoxNodeId, boxNodeId);
                 }

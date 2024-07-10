@@ -322,7 +322,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     }
 
     @Test
-    // Subfolders of documents may be visible, despite 403 on listing files from that node/getting NodeInfo for that node and despite canListFilesRoot==true!
+    // In this test setting, we get a NodeId from Box REST API and have canListFilesRoot==true for the documents folder. 
+    // When listing the files for this nodId or when we try to get its NodeInfo, we get 403. 
+    // Still, subfolders of documents are accessible (by listing the boxes files, but without passing the nodeId).
+    // See also comment at {@link DeepboxIdProvider#lookupDocumentsNodeId}.
     public void testNoListChildrenTrashInbox() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path box = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2", EnumSet.of(Path.Type.directory, Path.Type.volume));
