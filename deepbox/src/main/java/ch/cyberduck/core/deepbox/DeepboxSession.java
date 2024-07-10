@@ -150,33 +150,26 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     }
 
     public String getPinnedLocale() {
-        final String locale = PreferencesFactory.get().getProperty(toPinnedLocalePropertyKey(host));
-        if(locale == null) {
-            PreferencesFactory.get().setProperty(toPinnedLocalePropertyKey(host), PreferencesFactory.get().locale());
+        final String locale = preferences.getProperty("deepbox.locale");
+        if(null == locale) {
+            host.setProperty("deepbox.locale", PreferencesFactory.get().locale());
         }
-        return PreferencesFactory.get().getProperty(toPinnedLocalePropertyKey(host));
+        return preferences.getProperty("deepbox.locale");
     }
 
     public String getPinnedLocalization(final String name) {
-        final String localized = PreferencesFactory.get().getProperty(toPinnedLocalizationPropertyKey(host, name));
-        if(localized == null) {
-            PreferencesFactory.get().setProperty(toPinnedLocalizationPropertyKey(host, name), LocaleFactory.localizedString(name, "Deepbox"));
+        final String localized = preferences.getProperty(toPinnedLocalizationPropertyKey(name));
+        if(null == localized) {
+            host.setProperty(toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
         }
-        return DeepboxPathNormalizer.name(PreferencesFactory.get().getProperty(toPinnedLocalizationPropertyKey(host, name)));
+        return DeepboxPathNormalizer.name(preferences.getProperty(toPinnedLocalizationPropertyKey(name)));
     }
 
     /**
      * Key to use in preferences to save the pinned locale.
      */
-    private static String toPinnedLocalizationPropertyKey(final Host host, final String name) {
-        return String.format("deepbox.localization.%s.%s", name, host.getUuid());
-    }
-
-    /**
-     * Key to use in preferences to save the pinned localization for virtual folders.
-     */
-    private static String toPinnedLocalePropertyKey(final Host host) {
-        return String.format("deepbox.locale.%s", host.getUuid());
+    private static String toPinnedLocalizationPropertyKey(final String name) {
+        return String.format("deepbox.localization.%s", name);
     }
 
     @Override
