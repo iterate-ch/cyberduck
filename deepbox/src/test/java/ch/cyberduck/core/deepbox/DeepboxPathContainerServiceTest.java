@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.WorkdirPrefixer;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -37,7 +38,7 @@ public class DeepboxPathContainerServiceTest {
     @Test
     public void TestRoot() {
         final DeepboxPathContainerService container = new DeepboxPathContainerService();
-        final Path folder = new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+        final Path folder = Home.ROOT;
         assertFalse(container.isContainer(folder));
         assertFalse(container.isDeepbox(folder));
         assertFalse(container.isBox(folder));
@@ -46,7 +47,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
+        assertEquals(Home.ROOT, container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertNull(container.getDeepboxPath(folder));
         assertNull(container.getBoxPath(folder));
@@ -65,7 +66,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
+        assertEquals(Home.ROOT, container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder, container.getDeepboxPath(folder));
         assertNull(container.getBoxPath(folder));
@@ -84,7 +85,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
+        assertEquals(Home.ROOT, container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent(), container.getDeepboxPath(folder));
         assertEquals(folder, container.getBoxPath(folder));
@@ -115,7 +116,7 @@ public class DeepboxPathContainerServiceTest {
         assertTrue(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
+        assertEquals(Home.ROOT, container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
         assertEquals(folder.getParent(), container.getBoxPath(folder));
@@ -146,7 +147,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
+        assertEquals(Home.ROOT, container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
         assertEquals(folder.getParent(), container.getBoxPath(folder));
@@ -177,7 +178,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertTrue(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
+        assertEquals(Home.ROOT, container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
         assertEquals(folder.getParent(), container.getBoxPath(folder));
@@ -208,7 +209,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder.getParent(), container.getContainer(folder));
-        assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(folder));
+        assertEquals(Home.ROOT, container.getRoot(folder));
         assertEquals("Auditing", container.getKey(folder));
         assertEquals(folder.getParent().getParent().getParent(), container.getDeepboxPath(folder));
         assertEquals(folder.getParent().getParent(), container.getBoxPath(folder));
@@ -239,7 +240,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(file));
         assertFalse(container.isTrash(file));
         assertEquals(file.getParent().getParent(), container.getContainer(file));
-        assertEquals(new Path("/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume)), container.getRoot(file));
+        assertEquals(Home.ROOT, container.getRoot(file));
         assertEquals("Auditing/nix4.txt", container.getKey(file));
         assertEquals(file.getParent().getParent().getParent().getParent(), container.getDeepboxPath(file));
         assertEquals(file.getParent().getParent().getParent(), container.getBoxPath(file));
