@@ -142,7 +142,7 @@ public class DeepboxListService implements ListService {
         }).list(directory, listener);
     }
 
-    private interface Contents {
+    protected interface Contents {
         NodeContent getNodes(int offset) throws ApiException;
     }
 
