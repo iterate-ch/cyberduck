@@ -260,11 +260,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
         final NodeContent nodeContent = core.listNodeContent(UUID.fromString(nodeid.getFileId(folder)), null, null, "modifiedTime desc");
         assertEquals(2, nodeContent.getNodes().size());
-        final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
-        assertEquals(2, listing.size());
-        for(Path f : listing) {
-            assertTrue(f.attributes().isDuplicate());
-        }
+        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertFalse(list.get(0).attributes().isDuplicate());
+        assertTrue(list.get(1).attributes().isDuplicate());
         assertTrue(nodeContent.getNodes().get(0).getNodeId().toString().equals(nodeid.getFileId(file)) ||
                 nodeContent.getNodes().get(1).getNodeId().toString().equals(nodeid.getFileId(file))
         );
@@ -285,9 +284,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         new CoreRestControllerApi(session.getClient()).copyNode(body, UUID.fromString(nodeid.getFileId(file)));
         final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(UUID.fromString(nodeid.getFileId(folder)), 0, 50, null);
         assertEquals(2, remote.getNodes().size());
-        for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
-            assertTrue(f.attributes().isDuplicate());
-        }
+        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertFalse(list.get(0).attributes().isDuplicate());
+        assertTrue(list.get(1).attributes().isDuplicate());
         deleteAndPurge(folder);
     }
 
@@ -312,9 +312,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
         final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(UUID.fromString(nodeid.getFileId(folder)), 0, 50, null);
         assertEquals(2, remote.getNodes().size());
-        for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
-            assertTrue(f.attributes().isDuplicate());
-        }
+        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertFalse(list.get(0).attributes().isDuplicate());
+        assertTrue(list.get(1).attributes().isDuplicate());
         deleteAndPurge(folder);
     }
 
