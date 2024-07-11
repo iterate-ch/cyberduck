@@ -71,13 +71,13 @@ public class DeepboxListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             if(directory.isRoot()) {
-                return this.listDeepBoxes(directory, listener);
+                return new DeepBoxesListService().list(directory, listener);
             }
             if(containerService.isDeepbox(directory)) { // in DeepBox
-                return this.listBoxes(directory, listener);
+                return new BoxesListService().list(directory, listener);
             }
             if(containerService.isBox(directory)) { // in Box
-                return this.listBox(directory, listener);
+                return new BoxListService().list(directory, listener);
             }
             final UUID deepBoxNodeId = UUID.fromString(fileid.getDeepBoxNodeId(directory));
             final UUID boxNodeId = UUID.fromString(fileid.getBoxNodeId(directory));
@@ -175,75 +175,98 @@ public class DeepboxListService implements ListService {
         return list;
     }
 
-    private AttributedList<Path> listBox(final Path directory, final ListProgressListener listener) throws ApiException, BackgroundException {
-        final AttributedList<Path> list = new AttributedList<>();
-        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
-        final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
-        final String boxNodeId = fileid.getBoxNodeId(directory);
-        final Box box = rest.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
-        if(box.getBoxPolicy().isCanListQueue()) {
-            final String inboxName = session.getPinnedLocalization(INBOX);
-            final Path inbox = new Path(directory, inboxName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                    new PathAttributes().withFileId(fileid.getFileId(new Path(directory, inboxName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
-            );
-            list.add(inbox.withAttributes(attributes.find(inbox)));
+    private final class BoxListService implements ListService {
+        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+            try {
+                final AttributedList<Path> list = new AttributedList<>();
+                final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
+                final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
+                final String boxNodeId = fileid.getBoxNodeId(directory);
+                final Box box = rest.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
+                if(box.getBoxPolicy().isCanListQueue()) {
+                    final String inboxName = session.getPinnedLocalization(INBOX);
+                    final Path inbox = new Path(directory, inboxName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, inboxName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
+                    );
+                    list.add(inbox.withAttributes(attributes.find(inbox)));
+                }
+                if(box.getBoxPolicy().isCanListFilesRoot()) {
+                    final String documentsName = session.getPinnedLocalization(DOCUMENTS);
+                    final Path documents = new Path(directory, documentsName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, documentsName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
+                    );
+                    list.add(documents.withAttributes(attributes.find(documents)));
+                }
+                if(box.getBoxPolicy().isCanAccessTrash()) {
+                    final String trashName = session.getPinnedLocalization(TRASH);
+                    final Path trash = new Path(directory, trashName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, trashName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
+                    );
+                    list.add(trash.withAttributes(attributes.find(trash)));
+                }
+                listener.chunk(directory, list);
+                return list;
+            }
+            catch(ApiException e) {
+                throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
+            }
         }
-        if(box.getBoxPolicy().isCanListFilesRoot()) {
-            final String documentsName = session.getPinnedLocalization(DOCUMENTS);
-            final Path documents = new Path(directory, documentsName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                    new PathAttributes().withFileId(fileid.getFileId(new Path(directory, documentsName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
-            );
-            list.add(documents.withAttributes(attributes.find(documents)));
-        }
-        if(box.getBoxPolicy().isCanAccessTrash()) {
-            final String trashName = session.getPinnedLocalization(TRASH);
-            final Path trash = new Path(directory, trashName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                    new PathAttributes().withFileId(fileid.getFileId(new Path(directory, trashName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
-            );
-            list.add(trash.withAttributes(attributes.find(trash)));
-        }
-        listener.chunk(directory, list);
-        return list;
     }
 
-    private AttributedList<Path> listBoxes(final Path directory, final ListProgressListener listener) throws ApiException, BackgroundException {
-        final AttributedList<Path> list = new AttributedList<>();
-        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
-        int offset = 0;
-        int size;
-        do {
-            final Boxes boxes = rest.listBoxes(UUID.fromString(fileid.getFileId(directory)), offset, chunksize, "name asc", null);
-            for(final Box box : boxes.getBoxes()) {
-                list.add(new Path(directory, DeepboxPathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                        attributes.toAttributes(box))
-                );
+    private final class BoxesListService implements ListService {
+        @Override
+        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+            try {
+                final AttributedList<Path> list = new AttributedList<>();
+                final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
+                int offset = 0;
+                int size;
+                do {
+                    final Boxes boxes = rest.listBoxes(UUID.fromString(fileid.getFileId(directory)), offset, chunksize, "name asc", null);
+                    for(final Box box : boxes.getBoxes()) {
+                        list.add(new Path(directory, DeepboxPathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                                attributes.toAttributes(box))
+                        );
+                    }
+                    listener.chunk(directory, list);
+                    size = boxes.getSize();
+                    offset += chunksize;
+                }
+                while(offset < size);
+                return list;
             }
-            listener.chunk(directory, list);
-            size = boxes.getSize();
-            offset += chunksize;
+            catch(ApiException e) {
+                throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
+            }
         }
-        while(offset < size);
-        return list;
     }
 
-    private AttributedList<Path> listDeepBoxes(final Path directory, final ListProgressListener listener) throws ApiException, ConnectionCanceledException {
-        final AttributedList<Path> list = new AttributedList<>();
-        final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
-        int offset = 0;
-        int size;
-        do {
-            final DeepBoxes deepBoxes = rest.listDeepBoxes(offset, chunksize, "name asc", null);
-            for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
-                list.add(new Path(directory, DeepboxPathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                        attributes.toAttributes(deepBox))
-                );
+    private final class DeepBoxesListService implements ListService {
+        @Override
+        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+            try {
+                final AttributedList<Path> list = new AttributedList<>();
+                final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
+                int offset = 0;
+                int size;
+                do {
+                    final DeepBoxes deepBoxes = rest.listDeepBoxes(offset, chunksize, "name asc", null);
+                    for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
+                        list.add(new Path(directory, DeepboxPathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                                attributes.toAttributes(deepBox))
+                        );
+                    }
+                    listener.chunk(directory, list);
+                    size = deepBoxes.getSize();
+                    offset += chunksize;
+                }
+                while(offset < size);
+                return list;
             }
-            listener.chunk(directory, list);
-            size = deepBoxes.getSize();
-            offset += chunksize;
+            catch(ApiException e) {
+                throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
+            }
         }
-        while(offset < size);
-        return list;
     }
 
     @Override
