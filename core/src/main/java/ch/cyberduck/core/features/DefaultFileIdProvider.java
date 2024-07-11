@@ -24,9 +24,4 @@ public class DefaultFileIdProvider implements FileIdProvider {
     public String getFileId(final Path file) throws BackgroundException {
         return file.attributes().getFileId();
     }
-
-    @Override
-    public void clear() {
-        // No-op
-    }
 }
