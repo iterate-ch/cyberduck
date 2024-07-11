@@ -22,6 +22,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Boxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.PathSegment;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
@@ -33,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Optional;
 import java.util.UUID;
 
 public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdProvider {
@@ -139,22 +141,22 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     // N.B. we can get node id of documents - however, in some cases, we might not get its nodeinfo or do listfiles from
                     // the documents root node, even if boxPolicy.isCanListFilesRoot()==true! In such cases, it may be possible to delete
                     // a file (aka. move to trash) but be unable to list/find the file in the trash afterward.
-                    final String documentsId = new BoxRestControllerApi(session.getClient())
+                    final Optional<PathSegment> documentsId = new BoxRestControllerApi(session.getClient())
                             .listFiles(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null)
-                            .getPath().getSegments().get(0).getNodeId().toString();
-                    return this.cache(file, documentsId);
+                            .getPath().getSegments().stream().findFirst();
+                    return documentsId.map(pathSegment -> this.cache(file, pathSegment.getNodeId().toString())).orElse(null);
                 }
                 if(containerService.isInbox(file)) {
-                    final String inboxId = new BoxRestControllerApi(session.getClient())
+                    final Optional<PathSegment> inboxId = new BoxRestControllerApi(session.getClient())
                             .listQueue(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null, null)
-                            .getPath().getSegments().get(0).getNodeId().toString();
-                    return this.cache(file, inboxId);
+                            .getPath().getSegments().stream().findFirst();
+                    return inboxId.map(pathSegment -> this.cache(file, pathSegment.getNodeId().toString())).orElse(null);
                 }
                 if(containerService.isTrash(file)) {
-                    final String trashId = new BoxRestControllerApi(session.getClient())
+                    final Optional<PathSegment> trashId = new BoxRestControllerApi(session.getClient())
                             .listTrash(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId), null, null, null)
-                            .getPath().getSegments().get(0).getNodeId().toString();
-                    return this.cache(file, trashId);
+                            .getPath().getSegments().stream().findFirst();
+                    return trashId.map(pathSegment -> this.cache(file, pathSegment.getNodeId().toString())).orElse(null);
                 }
                 return null;
             }
