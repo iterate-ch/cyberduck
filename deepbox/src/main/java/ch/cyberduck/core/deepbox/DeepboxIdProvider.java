@@ -112,9 +112,9 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             if(cachedSeg != null) {
                 continue;
             }
-            final String ret = this.lookupFileId(seg);
+            final String nodeid = this.lookupFileId(seg);
             // fail if one of the segments cannot be found
-            if(StringUtils.isEmpty(ret)) {
+            if(null == nodeid) {
                 throw new NotfoundException(String.format("Cannot find file id for %s", seg.getName()));
             }
         }
