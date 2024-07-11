@@ -34,7 +34,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.logging.log4j.LogManager;
@@ -69,110 +68,116 @@ public class DeepboxListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        try {
-            if(directory.isRoot()) {
-                return new DeepBoxesListService().list(directory, listener);
-            }
-            if(containerService.isDeepbox(directory)) { // in DeepBox
-                return new BoxesListService().list(directory, listener);
-            }
-            if(containerService.isBox(directory)) { // in Box
-                return new BoxListService().list(directory, listener);
-            }
-            final UUID deepBoxNodeId = UUID.fromString(fileid.getDeepBoxNodeId(directory));
-            final UUID boxNodeId = UUID.fromString(fileid.getBoxNodeId(directory));
-            if(containerService.isThirdLevel(directory)) { // in Inbox/Documents/Trash
-                // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with
-                // parentNode may fail!
-                if(containerService.isInInbox(directory)) {
-                    return duplicates(this.list(directory, listener, new Contents() {
-                        @Override
-                        public NodeContent getNodes(final int offset) throws ApiException {
-                            return new BoxRestControllerApi(session.getClient()).listQueue(deepBoxNodeId,
-                                    boxNodeId,
-                                    null,
-                                    offset, chunksize, "displayName asc");
-                        }
-                    }));
-                }
-                if(containerService.isInDocuments(directory)) {
-                    return duplicates(this.list(directory, listener, new Contents() {
-                        @Override
-                        public NodeContent getNodes(final int offset) throws ApiException {
-                            return new BoxRestControllerApi(session.getClient()).listFiles(
-                                    deepBoxNodeId,
-                                    boxNodeId,
-                                    offset, chunksize, "displayName asc");
-                        }
-                    }));
-                }
-                if(containerService.isInTrash(directory)) {
-                    return duplicates(this.list(directory, listener, new Contents() {
-                        @Override
-                        public NodeContent getNodes(final int offset) throws ApiException {
-                            return new BoxRestControllerApi(session.getClient()).listTrash(
-                                    deepBoxNodeId,
-                                    boxNodeId,
-                                    offset, chunksize, "displayName asc");
-                        }
-                    }));
-                }
-            }
-            // in subfolder of  Documents/Trash (Inbox has no subfolders)
-            final String nodeId = fileid.getFileId(directory);
-            if(containerService.isInTrash(directory)) {
-                return duplicates(this.list(directory, listener, new Contents() {
+        if(directory.isRoot()) {
+            return new DeepBoxesListService().list(directory, listener);
+        }
+        if(containerService.isDeepbox(directory)) { // in DeepBox
+            return new BoxesListService().list(directory, listener);
+        }
+        if(containerService.isBox(directory)) { // in Box
+            return new BoxListService().list(directory, listener);
+        }
+        final UUID deepBoxNodeId = UUID.fromString(fileid.getDeepBoxNodeId(directory));
+        final UUID boxNodeId = UUID.fromString(fileid.getBoxNodeId(directory));
+        if(containerService.isThirdLevel(directory)) { // in Inbox/Documents/Trash
+            // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with
+            // parentNode may fail!
+            if(containerService.isInInbox(directory)) {
+                return new NodeListService(new Contents() {
                     @Override
                     public NodeContent getNodes(final int offset) throws ApiException {
-                        return new BoxRestControllerApi(session.getClient()).listTrash1(
-                                deepBoxNodeId,
+                        return new BoxRestControllerApi(session.getClient()).listQueue(deepBoxNodeId,
                                 boxNodeId,
-                                UUID.fromString(nodeId),
+                                null,
                                 offset, chunksize, "displayName asc");
                     }
-                }));
+                }).list(directory, listener);
             }
-            return duplicates(this.list(directory, listener, new Contents() {
+            if(containerService.isInDocuments(directory)) {
+                return new NodeListService(new Contents() {
+                    @Override
+                    public NodeContent getNodes(final int offset) throws ApiException {
+                        return new BoxRestControllerApi(session.getClient()).listFiles(
+                                deepBoxNodeId,
+                                boxNodeId,
+                                offset, chunksize, "displayName asc");
+                    }
+                }).list(directory, listener);
+            }
+            if(containerService.isInTrash(directory)) {
+                return new NodeListService(new Contents() {
+                    @Override
+                    public NodeContent getNodes(final int offset) throws ApiException {
+                        return new BoxRestControllerApi(session.getClient()).listTrash(
+                                deepBoxNodeId,
+                                boxNodeId,
+                                offset, chunksize, "displayName asc");
+                    }
+                }).list(directory, listener);
+            }
+        }
+        // in subfolder of  Documents/Trash (Inbox has no subfolders)
+        final String nodeId = fileid.getFileId(directory);
+        if(containerService.isInTrash(directory)) {
+            return new NodeListService(new Contents() {
                 @Override
                 public NodeContent getNodes(final int offset) throws ApiException {
-                    return new BoxRestControllerApi(session.getClient()).listFiles1(
+                    return new BoxRestControllerApi(session.getClient()).listTrash1(
                             deepBoxNodeId,
                             boxNodeId,
                             UUID.fromString(nodeId),
                             offset, chunksize, "displayName asc");
                 }
-            }));
+            }).list(directory, listener);
         }
-        catch(ApiException e) {
-            throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
-        }
+        return new NodeListService(new Contents() {
+            @Override
+            public NodeContent getNodes(final int offset) throws ApiException {
+                return new BoxRestControllerApi(session.getClient()).listFiles1(
+                        deepBoxNodeId,
+                        boxNodeId,
+                        UUID.fromString(nodeId),
+                        offset, chunksize, "displayName asc");
+            }
+        }).list(directory, listener);
     }
 
     private interface Contents {
         NodeContent getNodes(int offset) throws ApiException;
     }
 
-    private static AttributedList<Path> duplicates(final AttributedList<Path> list) {
-        list.toStream().forEach(f -> f.attributes().setDuplicate(list.findAll(new SimplePathPredicate(f)).size() != 1));
-        return list;
-    }
+    private final class NodeListService implements ListService {
+        private final Contents supplier;
 
-    private AttributedList<Path> list(final Path directory, final ListProgressListener listener, final Contents supplier) throws ApiException, ConnectionCanceledException {
-        final AttributedList<Path> list = new AttributedList<>();
-        int offset = 0;
-        int size;
-        do {
-            final NodeContent files = supplier.getNodes(offset);
-            for(final Node node : files.getNodes()) {
-                list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
-                        EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
-            }
-            listener.chunk(directory, list);
-            size = files.getSize();
-            offset += chunksize;
+        public NodeListService(final Contents supplier) {
+            this.supplier = supplier;
         }
-        while(offset < size);
-        return list;
+
+        @Override
+        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+            try {
+                final AttributedList<Path> list = new AttributedList<>();
+                int offset = 0;
+                int size;
+                do {
+                    final NodeContent files = supplier.getNodes(offset);
+                    for(final Node node : files.getNodes()) {
+                        list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
+                                EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
+                    }
+                    size = files.getSize();
+                    offset += chunksize;
+                }
+                while(offset < size);
+                // Mark duplicates
+                list.toStream().forEach(f -> f.attributes().setDuplicate(list.findAll(new SimplePathPredicate(f)).size() != 1));
+                listener.chunk(directory, list);
+                return list;
+            }
+            catch(ApiException e) {
+                throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
+            }
+        }
     }
 
     private final class BoxListService implements ListService {
