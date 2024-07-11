@@ -206,13 +206,13 @@ public class DeepboxListService implements ListService {
         return list;
     }
 
-    private AttributedList<Path> listBoxes(final Path directory, final ListProgressListener listener) throws ApiException, ConnectionCanceledException {
+    private AttributedList<Path> listBoxes(final Path directory, final ListProgressListener listener) throws ApiException, BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
         final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
         int offset = 0;
         int size;
         do {
-            final Boxes boxes = rest.listBoxes(UUID.fromString(directory.attributes().getFileId()), offset, chunksize, "name asc", null);
+            final Boxes boxes = rest.listBoxes(UUID.fromString(fileid.getFileId(directory)), offset, chunksize, "name asc", null);
             for(final Box box : boxes.getBoxes()) {
                 list.add(new Path(directory, DeepboxPathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                         attributes.toAttributes(box))
