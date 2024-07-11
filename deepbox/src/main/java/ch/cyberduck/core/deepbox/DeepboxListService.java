@@ -89,7 +89,7 @@ public class DeepboxListService implements ListService {
                         return new BoxRestControllerApi(session.getClient()).listQueue(deepBoxNodeId,
                                 boxNodeId,
                                 null,
-                                offset, chunksize, "modifiedTime desc");
+                                offset, chunksize, "displayName asc");
                     }
                 }).list(directory, listener);
             }
@@ -100,7 +100,7 @@ public class DeepboxListService implements ListService {
                         return new BoxRestControllerApi(session.getClient()).listFiles(
                                 deepBoxNodeId,
                                 boxNodeId,
-                                offset, chunksize, "modifiedTime desc");
+                                offset, chunksize, "displayName asc");
                     }
                 }).list(directory, listener);
             }
@@ -111,7 +111,7 @@ public class DeepboxListService implements ListService {
                         return new BoxRestControllerApi(session.getClient()).listTrash(
                                 deepBoxNodeId,
                                 boxNodeId,
-                                offset, chunksize, "modifiedTime desc");
+                                offset, chunksize, "displayName asc");
                     }
                 }).list(directory, listener);
             }
@@ -126,7 +126,7 @@ public class DeepboxListService implements ListService {
                             deepBoxNodeId,
                             boxNodeId,
                             UUID.fromString(nodeId),
-                            offset, chunksize, "modifiedTime desc");
+                            offset, chunksize, "displayName asc");
                 }
             }).list(directory, listener);
         }
@@ -137,7 +137,7 @@ public class DeepboxListService implements ListService {
                         deepBoxNodeId,
                         boxNodeId,
                         UUID.fromString(nodeId),
-                        offset, chunksize, "modifiedTime desc");
+                        offset, chunksize, "displayName asc");
             }
         }).list(directory, listener);
     }
@@ -162,20 +162,16 @@ public class DeepboxListService implements ListService {
                 do {
                     final NodeContent files = supplier.getNodes(offset);
                     for(final Node node : files.getNodes()) {
-                        final Path f = new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
-                                EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory));
-                        final PathAttributes attr = attributes.toAttributes(node);
-                        if(list.find(new SimplePathPredicate(f)) != null) {
-                            log.warn(String.format("Duplicate filename %s", f.getName()));
-                            attr.setDuplicate(true);
-                        }
-                        list.add(f.withAttributes(attr));
+                        list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
+                                EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
                     }
-                    listener.chunk(directory, list);
                     size = files.getSize();
                     offset += chunksize;
                 }
                 while(offset < size);
+                // Mark duplicates
+                list.toStream().forEach(f -> f.attributes().setDuplicate(list.findAll(new SimplePathPredicate(f)).size() != 1));
+                listener.chunk(directory, list);
                 return list;
             }
             catch(ApiException e) {
