@@ -73,10 +73,9 @@ public class DeepboxReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(Path file) throws BackgroundException {
+    public boolean offset(final Path file) throws BackgroundException {
         return false;
     }
-
 
     protected void poll(final UUID downloadId) throws BackgroundException {
         final CountDownLatch signal = new CountDownLatch(1);
