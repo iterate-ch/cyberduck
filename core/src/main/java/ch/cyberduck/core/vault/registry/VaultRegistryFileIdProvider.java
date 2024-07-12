@@ -39,11 +39,6 @@ public class VaultRegistryFileIdProvider implements FileIdProvider {
     }
 
     @Override
-    public void clear() {
-        //
-    }
-
-    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("VaultRegistryFileIdProvider{");
         sb.append("proxy=").append(proxy);

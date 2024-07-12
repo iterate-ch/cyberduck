@@ -176,6 +176,7 @@
 		479626AF1C98057C00CEBEC0 /* googledrive.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479626AE1C98057C00CEBEC0 /* googledrive.tiff */; };
 		47990FD2195C63AE009EBB7C /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
 		47993F7811699F12000271A8 /* Transfer.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47993F5711699F12000271A8 /* Transfer.strings */; };
+		4799A6492C3BC93A00563133 /* Deepbox.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4799A6472C3BC93A00563133 /* Deepbox.strings */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479C63B022A167EA002CAA60 /* folderplus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479C63AF22A167EA002CAA60 /* folderplus.tiff */; };
 		47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A082B0167A169D004458C7 /* cyberduck-application.icns */; };
@@ -1261,6 +1262,10 @@
 		47993F7511699F12000271A8 /* fi */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fi; path = i18n/src/main/resources/fi.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47993F7611699F12000271A8 /* sk */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = i18n/src/main/resources/sk.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47993F7711699F12000271A8 /* de */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = i18n/src/main/resources/de.lproj/Transfer.strings; sourceTree = "<group>"; };
+		4799A6482C3BC93A00563133 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = i18n/src/main/resources/it.lproj/Deepbox.strings; sourceTree = "<group>"; };
+		4799A64A2C3BC94000563133 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = i18n/src/main/resources/fr.lproj/Deepbox.strings; sourceTree = "<group>"; };
+		4799A64B2C3BC94800563133 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = i18n/src/main/resources/en.lproj/Deepbox.strings; sourceTree = "<group>"; };
+		4799A64C2C3BC94D00563133 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = i18n/src/main/resources/de.lproj/Deepbox.strings; sourceTree = "<group>"; };
 		479BF77D1725A68C006854BF /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		479C63AF22A167EA002CAA60 /* folderplus.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = folderplus.tiff; sourceTree = "<group>"; };
@@ -1947,6 +1952,7 @@
 				474D86191DEF6017002D101F /* Cryptomator.strings */,
 				475EBE7212DA462C00E5C3A2 /* ServicesMenu.strings */,
 				47911A170B84C4E8001A29AE /* Acknowledgments.rtf */,
+				4799A6472C3BC93A00563133 /* Deepbox.strings */,
 				471F5C0C12AD1B6B0005D323 /* Alert.strings */,
 				47652CE91202BED200745031 /* Azure.strings */,
 				47993F5711699F12000271A8 /* Transfer.strings */,
@@ -2447,6 +2453,7 @@
 				47AE90DF1CE61ECF00A85D7B /* actions.pdf in Resources */,
 				476730DF16108E1300B28D35 /* general.tiff in Resources */,
 				47DE47A02598F2D400B18BCB /* preferences-general.pdf in Resources */,
+				4799A6492C3BC93A00563133 /* Deepbox.strings in Resources */,
 				476730E116108E1300B28D35 /* history.tiff in Resources */,
 				474960771CD75C9700B020C9 /* open.pdf in Resources */,
 				47B2EA011E2CF5E1007BE83D /* Task.xib in Resources */,
@@ -3660,6 +3667,17 @@
 				473623E52B77BE34007DA099 /* ta_IN */,
 			);
 			name = Transfer.strings;
+			sourceTree = "<group>";
+		};
+		4799A6472C3BC93A00563133 /* Deepbox.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4799A6482C3BC93A00563133 /* it */,
+				4799A64A2C3BC94000563133 /* fr */,
+				4799A64B2C3BC94800563133 /* en */,
+				4799A64C2C3BC94D00563133 /* de */,
+			);
+			name = Deepbox.strings;
 			sourceTree = "<group>";
 		};
 		47A88FB90B931D9C00DB9D87 /* Configuration.strings */ = {

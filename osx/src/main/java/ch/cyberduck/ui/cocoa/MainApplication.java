@@ -27,6 +27,7 @@ import ch.cyberduck.core.brick.BrickProtocol;
 import ch.cyberduck.core.ctera.CteraProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.deepbox.DeepboxProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.eue.EueProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
@@ -111,7 +112,8 @@ public final class MainApplication {
                     new OwncloudProtocol(),
                     new CteraProtocol(),
                     new BoxProtocol(),
-                    new EueProtocol()
+                    new EueProtocol(),
+                    new DeepboxProtocol()
             );
             protocols.load();
             final MainController c = new MainController();

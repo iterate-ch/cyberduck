@@ -24,6 +24,7 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.ctera.CteraProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.deepbox.DeepboxProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
@@ -163,7 +164,8 @@ public class Terminal {
                 new NextcloudProtocol(),
                 new OwncloudProtocol(),
                 new CteraProtocol(),
-                new BoxProtocol()
+                new BoxProtocol(),
+                new DeepboxProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {

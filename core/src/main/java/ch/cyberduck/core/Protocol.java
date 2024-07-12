@@ -318,6 +318,7 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
         freenet,
         ctera,
         box,
+        deepbox,
         none
     }
 
