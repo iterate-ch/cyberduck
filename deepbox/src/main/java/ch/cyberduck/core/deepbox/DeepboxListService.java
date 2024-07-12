@@ -47,7 +47,6 @@ import java.util.List;
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCHILDREN;
 
 public class DeepboxListService implements ListService {
-
     private static final Logger log = LogManager.getLogger(DeepboxListService.class);
 
     public static final String INBOX = "Inbox";
@@ -58,15 +57,15 @@ public class DeepboxListService implements ListService {
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
     private final DeepboxAttributesFinderFeature attributes;
-    private final int chunksize;
     private final DeepboxPathContainerService containerService;
+    private final int chunksize;
 
     public DeepboxListService(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
         this.attributes = new DeepboxAttributesFinderFeature(session, fileid);
-        this.chunksize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
         this.containerService = new DeepboxPathContainerService(session);
+        this.chunksize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
     }
 
     @Override
