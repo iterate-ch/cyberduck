@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * Comment
  */
@@ -29,7 +28,7 @@ import java.util.UUID;
 
 public class Comment {
   @JsonProperty("commentId")
-  private UUID commentId = null;
+  private String commentId = null;
 
   @JsonProperty("created")
   private TimeUserContext created = null;
@@ -46,7 +45,7 @@ public class Comment {
   @JsonProperty("hasMore")
   private Boolean hasMore = null;
 
-  public Comment commentId(UUID commentId) {
+  public Comment commentId(String commentId) {
     this.commentId = commentId;
     return this;
   }
@@ -56,11 +55,11 @@ public class Comment {
    * @return commentId
   **/
   @Schema(description = "")
-  public UUID getCommentId() {
+  public String getCommentId() {
     return commentId;
   }
 
-  public void setCommentId(UUID commentId) {
+  public void setCommentId(String commentId) {
     this.commentId = commentId;
   }
 

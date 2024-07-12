@@ -29,7 +29,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.ShareAccessAdd;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.ShareInvite;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.ShareInviteResult;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.SharedNode;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +62,7 @@ public class AdminRestControllerApi {
    * @param shareId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void acceptShare(ShareAccept body, UUID shareId) throws ApiException {
+  public void acceptShare(ShareAccept body, String shareId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -105,7 +104,7 @@ public class AdminRestControllerApi {
    * @param shareId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void addInSharesAccesses(ShareAccessAdd body, UUID shareId) throws ApiException {
+  public void addInSharesAccesses(ShareAccessAdd body, String shareId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -149,7 +148,7 @@ public class AdminRestControllerApi {
    * @param shareId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void addOutShareNode(SharedNode body, UUID deepBoxNodeId, UUID boxNodeId, UUID shareId) throws ApiException {
+  public void addOutShareNode(SharedNode body, String deepBoxNodeId, String boxNodeId, String shareId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -202,7 +201,7 @@ public class AdminRestControllerApi {
    * @return AdminBox
    * @throws ApiException if fails to make API call
    */
-  public AdminBox createBox(BoxAdd body, UUID deepBoxNodeId) throws ApiException {
+  public AdminBox createBox(BoxAdd body, String deepBoxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -246,7 +245,7 @@ public class AdminRestControllerApi {
    * @return AdminBoxRelation
    * @throws ApiException if fails to make API call
    */
-  public AdminBoxRelation createBoxRelation(CreateAdminBoxRelation body, UUID boxNodeId) throws ApiException {
+  public AdminBoxRelation createBoxRelation(CreateAdminBoxRelation body, String boxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -328,7 +327,7 @@ public class AdminRestControllerApi {
    * @param iAmAwareThatThisIsIrreversible  (optional, default to false)
    * @throws ApiException if fails to make API call
    */
-  public void deleteBox(UUID deepBoxNodeId, UUID boxNodeId, Boolean iAmAwareThatThisIsIrreversible) throws ApiException {
+  public void deleteBox(String deepBoxNodeId, String boxNodeId, Boolean iAmAwareThatThisIsIrreversible) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -373,7 +372,7 @@ public class AdminRestControllerApi {
    * @param metaName  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteBoxMeta(UUID deepBoxNodeId, UUID boxNodeId, String metaName) throws ApiException {
+  public void deleteBoxMeta(String deepBoxNodeId, String boxNodeId, String metaName) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -421,7 +420,7 @@ public class AdminRestControllerApi {
    * @param relationId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteBoxRelation(UUID boxNodeId, UUID relationId) throws ApiException {
+  public void deleteBoxRelation(String boxNodeId, String relationId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'boxNodeId' is set
     if (boxNodeId == null) {
@@ -464,7 +463,7 @@ public class AdminRestControllerApi {
    * @param iAmAwareThatThisIsIrreversible  (optional, default to false)
    * @throws ApiException if fails to make API call
    */
-  public void deleteDeepBox(UUID deepBoxNodeId, Boolean iAmAwareThatThisIsIrreversible) throws ApiException {
+  public void deleteDeepBox(String deepBoxNodeId, Boolean iAmAwareThatThisIsIrreversible) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -502,7 +501,7 @@ public class AdminRestControllerApi {
    * @param shareId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteInShare(UUID shareId) throws ApiException {
+  public void deleteInShare(String shareId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -540,7 +539,7 @@ public class AdminRestControllerApi {
    * @param accessId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteInShareAccess(UUID shareId, UUID accessId) throws ApiException {
+  public void deleteInShareAccess(String shareId, String accessId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -584,7 +583,7 @@ public class AdminRestControllerApi {
    * @param shareId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteOutShare(UUID deepBoxNodeId, UUID boxNodeId, UUID shareId) throws ApiException {
+  public void deleteOutShare(String deepBoxNodeId, String boxNodeId, String shareId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -634,7 +633,7 @@ public class AdminRestControllerApi {
    * @param nodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteOutShareNode(UUID deepBoxNodeId, UUID boxNodeId, UUID shareId, UUID nodeId) throws ApiException {
+  public void deleteOutShareNode(String deepBoxNodeId, String boxNodeId, String shareId, String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -687,7 +686,7 @@ public class AdminRestControllerApi {
    * @return AdminDeepBox
    * @throws ApiException if fails to make API call
    */
-  public AdminDeepBox getAdminDeepBox(UUID deepBoxNodeId) throws ApiException {
+  public AdminDeepBox getAdminDeepBox(String deepBoxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -728,7 +727,7 @@ public class AdminRestControllerApi {
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String getBoxMeta(UUID deepBoxNodeId, UUID boxNodeId, String metaName) throws ApiException {
+  public String getBoxMeta(String deepBoxNodeId, String boxNodeId, String metaName) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -777,7 +776,7 @@ public class AdminRestControllerApi {
    * @return InShare
    * @throws ApiException if fails to make API call
    */
-  public InShare getInShare(UUID shareId) throws ApiException {
+  public InShare getInShare(String shareId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -818,7 +817,7 @@ public class AdminRestControllerApi {
    * @return OutShare
    * @throws ApiException if fails to make API call
    */
-  public OutShare getOutShare(UUID deepBoxNodeId, UUID boxNodeId, UUID shareId) throws ApiException {
+  public OutShare getOutShare(String deepBoxNodeId, String boxNodeId, String shareId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -869,7 +868,7 @@ public class AdminRestControllerApi {
    * @return ShareInviteResult
    * @throws ApiException if fails to make API call
    */
-  public ShareInviteResult invite(ShareInvite body, UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public ShareInviteResult invite(ShareInvite body, String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -921,7 +920,7 @@ public class AdminRestControllerApi {
    * @return AdminBoxes
    * @throws ApiException if fails to make API call
    */
-  public AdminBoxes listAdminBoxes(UUID deepBoxNodeId, Integer offset, Integer limit, String order, String q) throws ApiException {
+  public AdminBoxes listAdminBoxes(String deepBoxNodeId, Integer offset, Integer limit, String order, String q) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -965,7 +964,7 @@ public class AdminRestControllerApi {
    * @return AdminBox
    * @throws ApiException if fails to make API call
    */
-  public AdminBox listAdminBoxes1(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public AdminBox listAdminBoxes1(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -1011,7 +1010,7 @@ public class AdminRestControllerApi {
    * @return AdminDeepBoxes
    * @throws ApiException if fails to make API call
    */
-  public AdminDeepBoxes listAdminDeepBoxes(Integer offset, UUID filterCompanyId, String filterBoxType) throws ApiException {
+  public AdminDeepBoxes listAdminDeepBoxes(Integer offset, String filterCompanyId, String filterBoxType) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/api/v1/admin/deepBoxes";
@@ -1048,7 +1047,7 @@ public class AdminRestControllerApi {
    * @return List&lt;AdminBoxRelation&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<AdminBoxRelation> listBoxRelations(UUID boxNodeId) throws ApiException {
+  public List<AdminBoxRelation> listBoxRelations(String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'boxNodeId' is set
     if (boxNodeId == null) {
@@ -1088,7 +1087,7 @@ public class AdminRestControllerApi {
    * @return List&lt;Permission&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Permission> listDeepBoxAvailablePermissions(UUID deepBoxNodeId, String filter) throws ApiException {
+  public List<Permission> listDeepBoxAvailablePermissions(String deepBoxNodeId, String filter) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -1128,7 +1127,7 @@ public class AdminRestControllerApi {
    * @return List&lt;InShareAccess&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<InShareAccess> listInShareAccesses(UUID shareId) throws ApiException {
+  public List<InShareAccess> listInShareAccesses(String shareId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -1167,7 +1166,7 @@ public class AdminRestControllerApi {
    * @return List&lt;InShare&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<InShare> listInShares(UUID filterCompanyId) throws ApiException {
+  public List<InShare> listInShares(String filterCompanyId) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/api/v1/admin/inShares";
@@ -1203,7 +1202,7 @@ public class AdminRestControllerApi {
    * @return List&lt;OutShare&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<OutShare> listOutShares(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public List<OutShare> listOutShares(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -1248,7 +1247,7 @@ public class AdminRestControllerApi {
    * @param shareId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void resendInvite(UUID deepBoxNodeId, UUID boxNodeId, UUID shareId) throws ApiException {
+  public void resendInvite(String deepBoxNodeId, String boxNodeId, String shareId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -1297,7 +1296,7 @@ public class AdminRestControllerApi {
    * @param boxNodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateBox(BoxUpdate body, UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public void updateBox(BoxUpdate body, String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -1346,7 +1345,7 @@ public class AdminRestControllerApi {
    * @param body  (optional)
    * @throws ApiException if fails to make API call
    */
-  public void updateBoxMeta(UUID deepBoxNodeId, UUID boxNodeId, String metaName, String body) throws ApiException {
+  public void updateBoxMeta(String deepBoxNodeId, String boxNodeId, String metaName, String body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -1394,7 +1393,7 @@ public class AdminRestControllerApi {
    * @param deepBoxNodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateDeepBox(DeepBoxUpdate body, UUID deepBoxNodeId) throws ApiException {
+  public void updateDeepBox(DeepBoxUpdate body, String deepBoxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -1436,7 +1435,7 @@ public class AdminRestControllerApi {
    * @param shareId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateInShare(InShareUpdate body, UUID shareId) throws ApiException {
+  public void updateInShare(InShareUpdate body, String shareId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -1479,7 +1478,7 @@ public class AdminRestControllerApi {
    * @param accessId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateInShareAccess(InShareAccessUpdate body, UUID shareId, UUID accessId) throws ApiException {
+  public void updateInShareAccess(InShareAccessUpdate body, String shareId, String accessId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -1529,7 +1528,7 @@ public class AdminRestControllerApi {
    * @param nodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateOutShareNode(OutShareNodeUpdate body, UUID deepBoxNodeId, UUID boxNodeId, UUID shareId, UUID nodeId) throws ApiException {
+  public void updateOutShareNode(OutShareNodeUpdate body, String deepBoxNodeId, String boxNodeId, String shareId, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

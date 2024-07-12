@@ -29,7 +29,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANDELETE;
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANPURGE;
@@ -55,11 +54,10 @@ public class DeepboxTrashFeature implements Trash {
             final Path file = entry.getKey();
             try {
                 final String fileId = fileid.getFileId(file);
-                final UUID nodeId = UUID.fromString(fileId);
                 callback.delete(file);
                 final boolean inTrash = new DeepboxPathContainerService(session).isInTrash(file);
                 // Purge if in trash
-                new CoreRestControllerApi(session.getClient()).deletePurgeNode(nodeId, inTrash || forcePurge);
+                new CoreRestControllerApi(session.getClient()).deletePurgeNode(fileId, inTrash || forcePurge);
                 fileid.cache(file, null);
             }
             catch(ApiException e) {

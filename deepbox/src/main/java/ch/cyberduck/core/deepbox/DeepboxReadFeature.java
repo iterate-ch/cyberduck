@@ -49,7 +49,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.time.Duration;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -77,7 +76,7 @@ public class DeepboxReadFeature implements Read {
         return false;
     }
 
-    protected void poll(final UUID downloadId) throws BackgroundException {
+    protected void poll(final String downloadId) throws BackgroundException {
         final CountDownLatch signal = new CountDownLatch(1);
         final AtomicReference<BackgroundException> failure = new AtomicReference<>();
         final ScheduledThreadPool scheduler = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
@@ -142,8 +141,7 @@ public class DeepboxReadFeature implements Read {
         try {
             // https://apidocs.deepcloud.swiss/deepbox-api-docs/index.html#download
             final DownloadRestControllerApi rest = new DownloadRestControllerApi(session.getClient());
-            final String fileId = fileid.getFileId(file);
-            final UUID boxNodeId = UUID.fromString(fileId);
+            final String boxNodeId = fileid.getFileId(file);
             final Download download = rest.requestDownload(new DownloadAdd().addNodesItem(boxNodeId));
             this.poll(download.getDownloadId());
             final HttpUriRequest request = new HttpGet(URI.create(rest.downloadStatus(download.getDownloadId(), null).getDownloadUrl()));

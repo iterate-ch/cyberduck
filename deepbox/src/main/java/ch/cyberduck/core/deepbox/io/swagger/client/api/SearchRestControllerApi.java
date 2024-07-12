@@ -8,7 +8,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
 import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.deepbox.io.swagger.client.model.SearchData;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public class SearchRestControllerApi {
    * @return SearchData
    * @throws ApiException if fails to make API call
    */
-  public SearchData search(UUID parentNodeId, String q, List<String> t, Integer offset, Integer limit) throws ApiException {
+  public SearchData search(String parentNodeId, String q, List<String> t, Integer offset, Integer limit) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'parentNodeId' is set
     if (parentNodeId == null) {

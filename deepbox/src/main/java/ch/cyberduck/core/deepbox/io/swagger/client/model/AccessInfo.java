@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * AccessInfo
  */
@@ -28,12 +27,12 @@ import java.util.UUID;
 
 public class AccessInfo {
   @JsonProperty("userId")
-  private UUID userId = null;
+  private String userId = null;
 
   @JsonProperty("permission")
   private Permission permission = null;
 
-  public AccessInfo userId(UUID userId) {
+  public AccessInfo userId(String userId) {
     this.userId = userId;
     return this;
   }
@@ -43,11 +42,11 @@ public class AccessInfo {
    * @return userId
   **/
   @Schema(description = "")
-  public UUID getUserId() {
+  public String getUserId() {
     return userId;
   }
 
-  public void setUserId(UUID userId) {
+  public void setUserId(String userId) {
     this.userId = userId;
   }
 

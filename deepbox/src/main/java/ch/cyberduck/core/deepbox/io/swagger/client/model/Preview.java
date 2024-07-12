@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * Preview
  */
@@ -27,7 +26,7 @@ import java.util.UUID;
 
 public class Preview {
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   @JsonProperty("name")
   private String name = null;
@@ -44,7 +43,7 @@ public class Preview {
   @JsonProperty("previewFileMimeType")
   private String previewFileMimeType = null;
 
-  public Preview nodeId(UUID nodeId) {
+  public Preview nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -54,11 +53,11 @@ public class Preview {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

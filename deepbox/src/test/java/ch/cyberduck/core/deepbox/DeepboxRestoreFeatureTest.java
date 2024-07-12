@@ -34,7 +34,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -88,7 +87,7 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
         new DeepboxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
         final String folderId = new DeepboxAttributesFinderFeature(session, fileid).find(folder).getFileId();
         assertTrue(new DeepboxFindFeature(session, fileid).find(folder));
-        new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(folderId), null, null, null); // assert no fail
+        new CoreRestControllerApi(session.getClient()).getNodeInfo(folderId, null, null, null); // assert no fail
 
         final String subFolderId = new DeepboxDirectoryFeature(session, fileid).mkdir(subfolderWithContent, new TransferStatus()).attributes().getFileId();
         assertTrue(new DeepboxFindFeature(session, fileid).find(subfolderWithContent));

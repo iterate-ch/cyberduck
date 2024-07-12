@@ -8,7 +8,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
 import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Edit;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +41,7 @@ public class EditRestControllerApi {
    * @return Edit
    * @throws ApiException if fails to make API call
    */
-  public Edit createEdit(UUID nodeId) throws ApiException {
+  public Edit createEdit(String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {

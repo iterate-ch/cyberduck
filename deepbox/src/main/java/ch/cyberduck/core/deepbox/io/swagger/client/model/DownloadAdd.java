@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * DownloadAdd
  */
@@ -29,14 +28,14 @@ import java.util.UUID;
 
 public class DownloadAdd {
   @JsonProperty("nodes")
-  private List<UUID> nodes = new ArrayList<>();
+  private List<String> nodes = new ArrayList<>();
 
-  public DownloadAdd nodes(List<UUID> nodes) {
+  public DownloadAdd nodes(List<String> nodes) {
     this.nodes = nodes;
     return this;
   }
 
-  public DownloadAdd addNodesItem(UUID nodesItem) {
+  public DownloadAdd addNodesItem(String nodesItem) {
     this.nodes.add(nodesItem);
     return this;
   }
@@ -46,11 +45,11 @@ public class DownloadAdd {
    * @return nodes
   **/
   @Schema(required = true, description = "")
-  public List<UUID> getNodes() {
+  public List<String> getNodes() {
     return nodes;
   }
 
-  public void setNodes(List<UUID> nodes) {
+  public void setNodes(List<String> nodes) {
     this.nodes = nodes;
   }
 

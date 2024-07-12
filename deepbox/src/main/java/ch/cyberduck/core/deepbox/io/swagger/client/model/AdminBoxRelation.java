@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * AdminBoxRelation
  */
@@ -27,24 +26,24 @@ import java.util.UUID;
 
 public class AdminBoxRelation {
   @JsonProperty("relationId")
-  private UUID relationId = null;
+  private String relationId = null;
 
   @JsonProperty("sourceBoxNodeId")
-  private UUID sourceBoxNodeId = null;
+  private String sourceBoxNodeId = null;
 
   @JsonProperty("targetDeepBoxNodeId")
-  private UUID targetDeepBoxNodeId = null;
+  private String targetDeepBoxNodeId = null;
 
   @JsonProperty("targetDeepBoxName")
   private String targetDeepBoxName = null;
 
   @JsonProperty("targetBoxNodeId")
-  private UUID targetBoxNodeId = null;
+  private String targetBoxNodeId = null;
 
   @JsonProperty("targetBoxName")
   private String targetBoxName = null;
 
-  public AdminBoxRelation relationId(UUID relationId) {
+  public AdminBoxRelation relationId(String relationId) {
     this.relationId = relationId;
     return this;
   }
@@ -54,15 +53,15 @@ public class AdminBoxRelation {
    * @return relationId
   **/
   @Schema(description = "")
-  public UUID getRelationId() {
+  public String getRelationId() {
     return relationId;
   }
 
-  public void setRelationId(UUID relationId) {
+  public void setRelationId(String relationId) {
     this.relationId = relationId;
   }
 
-  public AdminBoxRelation sourceBoxNodeId(UUID sourceBoxNodeId) {
+  public AdminBoxRelation sourceBoxNodeId(String sourceBoxNodeId) {
     this.sourceBoxNodeId = sourceBoxNodeId;
     return this;
   }
@@ -72,15 +71,15 @@ public class AdminBoxRelation {
    * @return sourceBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getSourceBoxNodeId() {
+  public String getSourceBoxNodeId() {
     return sourceBoxNodeId;
   }
 
-  public void setSourceBoxNodeId(UUID sourceBoxNodeId) {
+  public void setSourceBoxNodeId(String sourceBoxNodeId) {
     this.sourceBoxNodeId = sourceBoxNodeId;
   }
 
-  public AdminBoxRelation targetDeepBoxNodeId(UUID targetDeepBoxNodeId) {
+  public AdminBoxRelation targetDeepBoxNodeId(String targetDeepBoxNodeId) {
     this.targetDeepBoxNodeId = targetDeepBoxNodeId;
     return this;
   }
@@ -90,11 +89,11 @@ public class AdminBoxRelation {
    * @return targetDeepBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getTargetDeepBoxNodeId() {
+  public String getTargetDeepBoxNodeId() {
     return targetDeepBoxNodeId;
   }
 
-  public void setTargetDeepBoxNodeId(UUID targetDeepBoxNodeId) {
+  public void setTargetDeepBoxNodeId(String targetDeepBoxNodeId) {
     this.targetDeepBoxNodeId = targetDeepBoxNodeId;
   }
 
@@ -116,7 +115,7 @@ public class AdminBoxRelation {
     this.targetDeepBoxName = targetDeepBoxName;
   }
 
-  public AdminBoxRelation targetBoxNodeId(UUID targetBoxNodeId) {
+  public AdminBoxRelation targetBoxNodeId(String targetBoxNodeId) {
     this.targetBoxNodeId = targetBoxNodeId;
     return this;
   }
@@ -126,11 +125,11 @@ public class AdminBoxRelation {
    * @return targetBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getTargetBoxNodeId() {
+  public String getTargetBoxNodeId() {
     return targetBoxNodeId;
   }
 
-  public void setTargetBoxNodeId(UUID targetBoxNodeId) {
+  public void setTargetBoxNodeId(String targetBoxNodeId) {
     this.targetBoxNodeId = targetBoxNodeId;
   }
 

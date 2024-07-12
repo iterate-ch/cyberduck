@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * Event
  */
@@ -66,7 +65,7 @@ public class Event {
   private EventTypeEnum eventType = null;
 
   @JsonProperty("parentNodeId")
-  private UUID parentNodeId = null;
+  private String parentNodeId = null;
 
   @JsonProperty("details")
   private List<DetailNode> details = null;
@@ -89,7 +88,7 @@ public class Event {
     this.eventType = eventType;
   }
 
-  public Event parentNodeId(UUID parentNodeId) {
+  public Event parentNodeId(String parentNodeId) {
     this.parentNodeId = parentNodeId;
     return this;
   }
@@ -99,11 +98,11 @@ public class Event {
    * @return parentNodeId
   **/
   @Schema(description = "")
-  public UUID getParentNodeId() {
+  public String getParentNodeId() {
     return parentNodeId;
   }
 
-  public void setParentNodeId(UUID parentNodeId) {
+  public void setParentNodeId(String parentNodeId) {
     this.parentNodeId = parentNodeId;
   }
 

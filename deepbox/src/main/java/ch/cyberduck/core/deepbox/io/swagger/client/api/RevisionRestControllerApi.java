@@ -9,7 +9,6 @@ import javax.ws.rs.core.GenericType;
 
 import java.io.File;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ public class RevisionRestControllerApi {
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node replaceCurrentRevision(UUID nodeId, File file) throws ApiException {
+  public Node replaceCurrentRevision(String nodeId, File file) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {

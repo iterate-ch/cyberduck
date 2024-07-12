@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * CompanyEntry
  */
@@ -27,7 +26,7 @@ import java.util.UUID;
 
 public class CompanyEntry {
   @JsonProperty("companyId")
-  private UUID companyId = null;
+  private String companyId = null;
 
   @JsonProperty("displayName")
   private String displayName = null;
@@ -66,7 +65,7 @@ public class CompanyEntry {
   }  @JsonProperty("type")
   private TypeEnum type = null;
 
-  public CompanyEntry companyId(UUID companyId) {
+  public CompanyEntry companyId(String companyId) {
     this.companyId = companyId;
     return this;
   }
@@ -76,11 +75,11 @@ public class CompanyEntry {
    * @return companyId
   **/
   @Schema(description = "")
-  public UUID getCompanyId() {
+  public String getCompanyId() {
     return companyId;
   }
 
-  public void setCompanyId(UUID companyId) {
+  public void setCompanyId(String companyId) {
     this.companyId = companyId;
   }
 

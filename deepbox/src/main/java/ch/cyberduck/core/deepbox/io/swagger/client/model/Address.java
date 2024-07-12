@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 import org.joda.time.DateTime;
 /**
  * Address
@@ -29,7 +28,7 @@ import org.joda.time.DateTime;
 
 public class Address {
   @JsonProperty("addressId")
-  private UUID addressId = null;
+  private String addressId = null;
 
   @JsonProperty("emailAvailable")
   private Boolean emailAvailable = null;
@@ -73,7 +72,7 @@ public class Address {
   @JsonProperty("description")
   private String description = null;
 
-  public Address addressId(UUID addressId) {
+  public Address addressId(String addressId) {
     this.addressId = addressId;
     return this;
   }
@@ -83,11 +82,11 @@ public class Address {
    * @return addressId
   **/
   @Schema(description = "")
-  public UUID getAddressId() {
+  public String getAddressId() {
     return addressId;
   }
 
-  public void setAddressId(UUID addressId) {
+  public void setAddressId(String addressId) {
     this.addressId = addressId;
   }
 

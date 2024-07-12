@@ -22,7 +22,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 /**
  * Box
  */
@@ -31,10 +30,10 @@ import java.util.UUID;
 
 public class Box {
   @JsonProperty("deepBoxNodeId")
-  private UUID deepBoxNodeId = null;
+  private String deepBoxNodeId = null;
 
   @JsonProperty("boxNodeId")
-  private UUID boxNodeId = null;
+  private String boxNodeId = null;
 
   @JsonProperty("name")
   private String name = null;
@@ -43,7 +42,7 @@ public class Box {
   private BoxAccessPolicy boxPolicy = null;
 
   @JsonProperty("companyId")
-  private UUID companyId = null;
+  private String companyId = null;
 
   @JsonProperty("boxType")
   private String boxType = null;
@@ -52,9 +51,9 @@ public class Box {
   private String boxVariant = null;
 
   @JsonProperty("roots")
-  private Map<String, UUID> roots = null;
+  private Map<String, String> roots = null;
 
-  public Box deepBoxNodeId(UUID deepBoxNodeId) {
+  public Box deepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
     return this;
   }
@@ -64,15 +63,15 @@ public class Box {
    * @return deepBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getDeepBoxNodeId() {
+  public String getDeepBoxNodeId() {
     return deepBoxNodeId;
   }
 
-  public void setDeepBoxNodeId(UUID deepBoxNodeId) {
+  public void setDeepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
   }
 
-  public Box boxNodeId(UUID boxNodeId) {
+  public Box boxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
     return this;
   }
@@ -82,11 +81,11 @@ public class Box {
    * @return boxNodeId
   **/
   @Schema(description = "")
-  public UUID getBoxNodeId() {
+  public String getBoxNodeId() {
     return boxNodeId;
   }
 
-  public void setBoxNodeId(UUID boxNodeId) {
+  public void setBoxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
   }
 
@@ -126,7 +125,7 @@ public class Box {
     this.boxPolicy = boxPolicy;
   }
 
-  public Box companyId(UUID companyId) {
+  public Box companyId(String companyId) {
     this.companyId = companyId;
     return this;
   }
@@ -136,11 +135,11 @@ public class Box {
    * @return companyId
   **/
   @Schema(description = "")
-  public UUID getCompanyId() {
+  public String getCompanyId() {
     return companyId;
   }
 
-  public void setCompanyId(UUID companyId) {
+  public void setCompanyId(String companyId) {
     this.companyId = companyId;
   }
 
@@ -180,12 +179,12 @@ public class Box {
     this.boxVariant = boxVariant;
   }
 
-  public Box roots(Map<String, UUID> roots) {
+  public Box roots(Map<String, String> roots) {
     this.roots = roots;
     return this;
   }
 
-  public Box putRootsItem(String key, UUID rootsItem) {
+  public Box putRootsItem(String key, String rootsItem) {
     if (this.roots == null) {
       this.roots = new HashMap<>();
     }
@@ -198,11 +197,11 @@ public class Box {
    * @return roots
   **/
   @Schema(description = "")
-  public Map<String, UUID> getRoots() {
+  public Map<String, String> getRoots() {
     return roots;
   }
 
-  public void setRoots(Map<String, UUID> roots) {
+  public void setRoots(Map<String, String> roots) {
     this.roots = roots;
   }
 

@@ -12,7 +12,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.OnboardData;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.OnboardResult;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.RemoveUser;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.TransformToUser;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,7 +155,7 @@ public class SystemRestControllerApi {
    * @param deepBoxNodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateDeepBoxSystem(DeepBoxUpdateSystem body, UUID deepBoxNodeId) throws ApiException {
+  public void updateDeepBoxSystem(DeepBoxUpdateSystem body, String deepBoxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

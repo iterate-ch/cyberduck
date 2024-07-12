@@ -8,7 +8,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
 import javax.ws.rs.core.GenericType;
 
 import java.io.File;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public class MetaRestControllerApi {
    * @deprecated
    */
   @Deprecated
-  public File deprecatedReadNodeBin(UUID deepBoxAppKey, UUID nodeId, String name) throws ApiException {
+  public File deprecatedReadNodeBin(String deepBoxAppKey, String nodeId, String name) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxAppKey' is set
     if (deepBoxAppKey == null) {
@@ -98,7 +97,7 @@ public class MetaRestControllerApi {
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String readNodeBin(UUID deepBoxAppKey, UUID nodeId, String name) throws ApiException {
+  public String readNodeBin(String deepBoxAppKey, String nodeId, String name) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxAppKey' is set
     if (deepBoxAppKey == null) {
@@ -150,7 +149,7 @@ public class MetaRestControllerApi {
    * @return Map&lt;String, String&gt;
    * @throws ApiException if fails to make API call
    */
-  public Map<String, String> readNodeMeta(UUID deepBoxAppKey, UUID nodeId, List<String> keys) throws ApiException {
+  public Map<String, String> readNodeMeta(String deepBoxAppKey, String nodeId, List<String> keys) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxAppKey' is set
     if (deepBoxAppKey == null) {
@@ -201,7 +200,7 @@ public class MetaRestControllerApi {
    * @param files  (required)
    * @throws ApiException if fails to make API call
    */
-  public void writeNodeBin(UUID deepBoxAppKey, UUID nodeId, List<File> files) throws ApiException {
+  public void writeNodeBin(String deepBoxAppKey, String nodeId, List<File> files) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxAppKey' is set
     if (deepBoxAppKey == null) {
@@ -251,7 +250,7 @@ public class MetaRestControllerApi {
    * @param nodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void writeNodeMeta(Map<String, String> body, UUID deepBoxAppKey, UUID nodeId) throws ApiException {
+  public void writeNodeMeta(Map<String, String> body, String deepBoxAppKey, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

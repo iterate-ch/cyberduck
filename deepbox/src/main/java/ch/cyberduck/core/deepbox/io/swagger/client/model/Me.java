@@ -21,7 +21,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 /**
  * Me
  */
@@ -42,7 +41,7 @@ public class Me {
   private String email = null;
 
   @JsonProperty("userId")
-  private UUID userId = null;
+  private String userId = null;
 
   @JsonProperty("initials")
   private String initials = null;
@@ -125,7 +124,7 @@ public class Me {
     this.email = email;
   }
 
-  public Me userId(UUID userId) {
+  public Me userId(String userId) {
     this.userId = userId;
     return this;
   }
@@ -135,11 +134,11 @@ public class Me {
    * @return userId
   **/
   @Schema(description = "")
-  public UUID getUserId() {
+  public String getUserId() {
     return userId;
   }
 
-  public void setUserId(UUID userId) {
+  public void setUserId(String userId) {
     this.userId = userId;
   }
 

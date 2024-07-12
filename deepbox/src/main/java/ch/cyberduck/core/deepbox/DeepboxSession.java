@@ -90,6 +90,13 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         super(host, trust, key);
     }
 
+    /**
+     * Key to use in preferences to save the pinned locale.
+     */
+    private static String toPinnedLocalizationPropertyKey(final String name) {
+        return String.format("deepbox.localization.%s", name);
+    }
+
     @Override
     protected DeepboxApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
@@ -163,13 +170,6 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
             host.setProperty(toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
         }
         return DeepboxPathNormalizer.name(preferences.getProperty(toPinnedLocalizationPropertyKey(name)));
-    }
-
-    /**
-     * Key to use in preferences to save the pinned locale.
-     */
-    private static String toPinnedLocalizationPropertyKey(final String name) {
-        return String.format("deepbox.localization.%s", name);
     }
 
     @Override

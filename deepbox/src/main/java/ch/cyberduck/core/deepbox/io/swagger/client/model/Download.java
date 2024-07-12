@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * Download
  */
@@ -30,7 +29,7 @@ import java.util.UUID;
 
 public class Download {
   @JsonProperty("downloadId")
-  private UUID downloadId = null;
+  private String downloadId = null;
 
   /**
    * Gets or Sets status
@@ -78,7 +77,7 @@ public class Download {
   @JsonProperty("logEntries")
   private List<LogEntry> logEntries = null;
 
-  public Download downloadId(UUID downloadId) {
+  public Download downloadId(String downloadId) {
     this.downloadId = downloadId;
     return this;
   }
@@ -88,11 +87,11 @@ public class Download {
    * @return downloadId
   **/
   @Schema(description = "")
-  public UUID getDownloadId() {
+  public String getDownloadId() {
     return downloadId;
   }
 
-  public void setDownloadId(UUID downloadId) {
+  public void setDownloadId(String downloadId) {
     this.downloadId = downloadId;
   }
 

@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 import org.joda.time.DateTime;
 /**
  * CallbackInfo
@@ -61,7 +60,7 @@ public class CallbackInfo {
   private EventTypeEnum eventType = null;
 
   @JsonProperty("shareId")
-  private UUID shareId = null;
+  private String shareId = null;
 
   @JsonProperty("timestamp")
   private DateTime timestamp = null;
@@ -84,7 +83,7 @@ public class CallbackInfo {
     this.eventType = eventType;
   }
 
-  public CallbackInfo shareId(UUID shareId) {
+  public CallbackInfo shareId(String shareId) {
     this.shareId = shareId;
     return this;
   }
@@ -94,11 +93,11 @@ public class CallbackInfo {
    * @return shareId
   **/
   @Schema(description = "")
-  public UUID getShareId() {
+  public String getShareId() {
     return shareId;
   }
 
-  public void setShareId(UUID shareId) {
+  public void setShareId(String shareId) {
     this.shareId = shareId;
   }
 

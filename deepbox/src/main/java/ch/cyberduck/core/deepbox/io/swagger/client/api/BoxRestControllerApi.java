@@ -16,7 +16,6 @@ import java.io.File;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.FilesNodeIdBody;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +51,7 @@ public class BoxRestControllerApi {
    * @return List&lt;Node&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Node> addContent(UUID deepBoxNodeId, UUID boxNodeId, BoxNodeIdFilesBody body) throws ApiException {
+  public List<Node> addContent(String deepBoxNodeId, String boxNodeId, BoxNodeIdFilesBody body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -99,7 +98,7 @@ public class BoxRestControllerApi {
    * @return List&lt;Node&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Node> addContent1(UUID deepBoxNodeId, UUID boxNodeId, UUID nodeId, FilesNodeIdBody body) throws ApiException {
+  public List<Node> addContent1(String deepBoxNodeId, String boxNodeId, String nodeId, FilesNodeIdBody body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -153,7 +152,7 @@ public class BoxRestControllerApi {
    * @return List&lt;Node&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Node> addQueue(List<File> files, String fileAttributes, String fileTags, List<File> additionalAnalyzeData, UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public List<Node> addQueue(List<File> files, String fileAttributes, String fileTags, List<File> additionalAnalyzeData, String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'files' is set
     if (files == null) {
@@ -221,7 +220,7 @@ public class BoxRestControllerApi {
    * @param boxNodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void emptyTrash(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public void emptyTrash(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -265,7 +264,7 @@ public class BoxRestControllerApi {
    * @return Box
    * @throws ApiException if fails to make API call
    */
-  public Box getBox(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public Box getBox(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -309,7 +308,7 @@ public class BoxRestControllerApi {
    * @return DeepBox
    * @throws ApiException if fails to make API call
    */
-  public DeepBox getDeepBox(UUID deepBoxNodeId) throws ApiException {
+  public DeepBox getDeepBox(String deepBoxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -352,7 +351,7 @@ public class BoxRestControllerApi {
    * @return Boxes
    * @throws ApiException if fails to make API call
    */
-  public Boxes listBoxes(UUID deepBoxNodeId, Integer offset, Integer limit, String order, String q) throws ApiException {
+  public Boxes listBoxes(String deepBoxNodeId, Integer offset, Integer limit, String order, String q) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -440,7 +439,7 @@ public class BoxRestControllerApi {
    * @return NodeContent
    * @throws ApiException if fails to make API call
    */
-  public NodeContent listFiles(UUID deepBoxNodeId, UUID boxNodeId, Integer offset, Integer limit, String order) throws ApiException {
+  public NodeContent listFiles(String deepBoxNodeId, String boxNodeId, Integer offset, Integer limit, String order) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -492,7 +491,7 @@ public class BoxRestControllerApi {
    * @return NodeContent
    * @throws ApiException if fails to make API call
    */
-  public NodeContent listFiles1(UUID deepBoxNodeId, UUID boxNodeId, UUID nodeId, Integer offset, Integer limit, String order) throws ApiException {
+  public NodeContent listFiles1(String deepBoxNodeId, String boxNodeId, String nodeId, Integer offset, Integer limit, String order) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -549,7 +548,7 @@ public class BoxRestControllerApi {
    * @return NodeContent
    * @throws ApiException if fails to make API call
    */
-  public NodeContent listQueue(UUID deepBoxNodeId, UUID boxNodeId, List<String> t, Integer offset, Integer limit, String order) throws ApiException {
+  public NodeContent listQueue(String deepBoxNodeId, String boxNodeId, List<String> t, Integer offset, Integer limit, String order) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -601,7 +600,7 @@ public class BoxRestControllerApi {
    * @return NodeContent
    * @throws ApiException if fails to make API call
    */
-  public NodeContent listTrash(UUID deepBoxNodeId, UUID boxNodeId, Integer offset, Integer limit, String order) throws ApiException {
+  public NodeContent listTrash(String deepBoxNodeId, String boxNodeId, Integer offset, Integer limit, String order) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -653,7 +652,7 @@ public class BoxRestControllerApi {
    * @return NodeContent
    * @throws ApiException if fails to make API call
    */
-  public NodeContent listTrash1(UUID deepBoxNodeId, UUID boxNodeId, UUID nodeId, Integer offset, Integer limit, String order) throws ApiException {
+  public NodeContent listTrash1(String deepBoxNodeId, String boxNodeId, String nodeId, Integer offset, Integer limit, String order) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {

@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * OutSharedNode
  */
@@ -31,7 +30,7 @@ import java.util.UUID;
 
 public class OutSharedNode {
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   @JsonProperty("permission")
   private Permission permission = null;
@@ -39,7 +38,7 @@ public class OutSharedNode {
   @JsonProperty("sharedPath")
   private List<OutSharedPathSegment> sharedPath = null;
 
-  public OutSharedNode nodeId(UUID nodeId) {
+  public OutSharedNode nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -49,11 +48,11 @@ public class OutSharedNode {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

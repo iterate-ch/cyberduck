@@ -9,7 +9,6 @@ import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Comment;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Comments;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ public class CommentRestControllerApi {
    * @return Comment
    * @throws ApiException if fails to make API call
    */
-  public Comment addComment(String body, UUID nodeId) throws ApiException {
+  public Comment addComment(String body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -87,7 +86,7 @@ public class CommentRestControllerApi {
    * @param commentId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteComment(UUID nodeId, UUID commentId) throws ApiException {
+  public void deleteComment(String nodeId, String commentId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -131,7 +130,7 @@ public class CommentRestControllerApi {
    * @return Comment
    * @throws ApiException if fails to make API call
    */
-  public Comment getComment(UUID nodeId, UUID commentId) throws ApiException {
+  public Comment getComment(String nodeId, String commentId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -178,7 +177,7 @@ public class CommentRestControllerApi {
    * @return Comments
    * @throws ApiException if fails to make API call
    */
-  public Comments listComments(UUID nodeId, Integer offset, Integer limit, String order) throws ApiException {
+  public Comments listComments(String nodeId, Integer offset, Integer limit, String order) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -222,7 +221,7 @@ public class CommentRestControllerApi {
    * @return Comment
    * @throws ApiException if fails to make API call
    */
-  public Comment updateComment(String body, UUID nodeId, UUID commentId) throws ApiException {
+  public Comment updateComment(String body, String nodeId, String commentId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

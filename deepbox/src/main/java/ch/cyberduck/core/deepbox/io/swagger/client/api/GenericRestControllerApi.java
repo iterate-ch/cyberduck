@@ -12,7 +12,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.GenericFolderConnect;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.GenericsGenericIdBody;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +48,7 @@ public class GenericRestControllerApi {
    * @return List&lt;Node&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Node> addContentGenerics(UUID deepBoxNodeId, UUID boxNodeId, String genericId, GenericsGenericIdBody body) throws ApiException {
+  public List<Node> addContentGenerics(String deepBoxNodeId, String boxNodeId, String genericId, GenericsGenericIdBody body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -99,7 +98,7 @@ public class GenericRestControllerApi {
    * @param boxNodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void connectGenericFolders(GenericFolderConnect body, UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public void connectGenericFolders(GenericFolderConnect body, String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -147,7 +146,7 @@ public class GenericRestControllerApi {
    * @param genericId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void disconnectGenericFolder(UUID deepBoxNodeId, UUID boxNodeId, String genericId) throws ApiException {
+  public void disconnectGenericFolder(String deepBoxNodeId, String boxNodeId, String genericId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -196,7 +195,7 @@ public class GenericRestControllerApi {
    * @return List&lt;GenericFolder&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<GenericFolder> getGenericFolders(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public List<GenericFolder> getGenericFolders(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -245,7 +244,7 @@ public class GenericRestControllerApi {
    * @return NodeContent
    * @throws ApiException if fails to make API call
    */
-  public NodeContent listFilesGenerics(UUID deepBoxNodeId, UUID boxNodeId, String genericId, Integer offset, Integer limit, String order) throws ApiException {
+  public NodeContent listFilesGenerics(String deepBoxNodeId, String boxNodeId, String genericId, Integer offset, Integer limit, String order) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -298,7 +297,7 @@ public class GenericRestControllerApi {
    * @return List&lt;GenericFolder&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<GenericFolder> listGenericFolders(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public List<GenericFolder> listGenericFolders(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {

@@ -10,7 +10,6 @@ import javax.ws.rs.core.GenericType;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.FolderAdded;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.PathContent;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +46,7 @@ public class PathRestControllerApi {
    * @return List&lt;FolderAdded&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<FolderAdded> addFolders(List<Folder> body, UUID deepBoxNodeId, UUID boxNodeId, UUID nodeId) throws ApiException {
+  public List<FolderAdded> addFolders(List<Folder> body, String deepBoxNodeId, String boxNodeId, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -102,7 +101,7 @@ public class PathRestControllerApi {
    * @return List&lt;FolderAdded&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<FolderAdded> addFolders1(List<Folder> body, UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public List<FolderAdded> addFolders1(List<Folder> body, String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -152,7 +151,7 @@ public class PathRestControllerApi {
    * @return PathContent
    * @throws ApiException if fails to make API call
    */
-  public PathContent listFiles2(UUID deepBoxNodeId, UUID boxNodeId, UUID nodeId) throws ApiException {
+  public PathContent listFiles2(String deepBoxNodeId, String boxNodeId, String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -202,7 +201,7 @@ public class PathRestControllerApi {
    * @return PathContent
    * @throws ApiException if fails to make API call
    */
-  public PathContent listFiles3(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public PathContent listFiles3(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {

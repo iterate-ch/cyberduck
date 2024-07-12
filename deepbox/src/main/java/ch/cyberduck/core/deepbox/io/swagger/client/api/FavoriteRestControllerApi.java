@@ -7,7 +7,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +40,7 @@ public class FavoriteRestControllerApi {
    * @param boxNodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void createBoxFavorite(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public void createBoxFavorite(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -84,7 +83,7 @@ public class FavoriteRestControllerApi {
    * @param boxNodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteBoxFavorite(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public void deleteBoxFavorite(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {

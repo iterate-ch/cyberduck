@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * Only available with list content (NodeContent.path)
  */
@@ -27,12 +26,12 @@ import java.util.UUID;
 
 public class NodeWatch {
   @JsonProperty("watchId")
-  private UUID watchId = null;
+  private String watchId = null;
 
   @JsonProperty("recursive")
   private Boolean recursive = null;
 
-  public NodeWatch watchId(UUID watchId) {
+  public NodeWatch watchId(String watchId) {
     this.watchId = watchId;
     return this;
   }
@@ -42,11 +41,11 @@ public class NodeWatch {
    * @return watchId
   **/
   @Schema(description = "")
-  public UUID getWatchId() {
+  public String getWatchId() {
     return watchId;
   }
 
-  public void setWatchId(UUID watchId) {
+  public void setWatchId(String watchId) {
     this.watchId = watchId;
   }
 

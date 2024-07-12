@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 import org.joda.time.LocalDate;
 /**
  * DateBoxEntry
@@ -32,13 +31,13 @@ public class DateBoxEntry {
   private CompanyEntry company = null;
 
   @JsonProperty("deepBoxNodeId")
-  private UUID deepBoxNodeId = null;
+  private String deepBoxNodeId = null;
 
   @JsonProperty("deepBoxName")
   private String deepBoxName = null;
 
   @JsonProperty("boxNodeId")
-  private UUID boxNodeId = null;
+  private String boxNodeId = null;
 
   @JsonProperty("boxName")
   private String boxName = null;
@@ -67,7 +66,7 @@ public class DateBoxEntry {
     this.company = company;
   }
 
-  public DateBoxEntry deepBoxNodeId(UUID deepBoxNodeId) {
+  public DateBoxEntry deepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
     return this;
   }
@@ -77,11 +76,11 @@ public class DateBoxEntry {
    * @return deepBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getDeepBoxNodeId() {
+  public String getDeepBoxNodeId() {
     return deepBoxNodeId;
   }
 
-  public void setDeepBoxNodeId(UUID deepBoxNodeId) {
+  public void setDeepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
   }
 
@@ -103,7 +102,7 @@ public class DateBoxEntry {
     this.deepBoxName = deepBoxName;
   }
 
-  public DateBoxEntry boxNodeId(UUID boxNodeId) {
+  public DateBoxEntry boxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
     return this;
   }
@@ -113,11 +112,11 @@ public class DateBoxEntry {
    * @return boxNodeId
   **/
   @Schema(description = "")
-  public UUID getBoxNodeId() {
+  public String getBoxNodeId() {
     return boxNodeId;
   }
 
-  public void setBoxNodeId(UUID boxNodeId) {
+  public void setBoxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
   }
 

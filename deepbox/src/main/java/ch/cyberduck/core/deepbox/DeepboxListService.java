@@ -41,17 +41,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCHILDREN;
 
 public class DeepboxListService implements ListService {
-    private static final Logger log = LogManager.getLogger(DeepboxListService.class);
-
     public static final String INBOX = "Inbox";
     public static final String DOCUMENTS = "Documents";
     public static final String TRASH = "Trash";
-
+    private static final Logger log = LogManager.getLogger(DeepboxListService.class);
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
     private final DeepboxAttributesFinderFeature attributes;
@@ -77,8 +74,8 @@ public class DeepboxListService implements ListService {
         if(containerService.isBox(directory)) { // in Box
             return new BoxListService().list(directory, listener);
         }
-        final UUID deepBoxNodeId = UUID.fromString(fileid.getDeepBoxNodeId(directory));
-        final UUID boxNodeId = UUID.fromString(fileid.getBoxNodeId(directory));
+        final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
+        final String boxNodeId = fileid.getBoxNodeId(directory);
         if(containerService.isThirdLevel(directory)) { // in Inbox/Documents/Trash
             // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with
             // parentNode may fail!
@@ -125,7 +122,7 @@ public class DeepboxListService implements ListService {
                     return new BoxRestControllerApi(session.getClient()).listTrash1(
                             deepBoxNodeId,
                             boxNodeId,
-                            UUID.fromString(nodeId),
+                            nodeId,
                             offset, chunksize, "displayName asc");
                 }
             }).list(directory, listener);
@@ -136,10 +133,26 @@ public class DeepboxListService implements ListService {
                 return new BoxRestControllerApi(session.getClient()).listFiles1(
                         deepBoxNodeId,
                         boxNodeId,
-                        UUID.fromString(nodeId),
+                        nodeId,
                         offset, chunksize, "displayName asc");
             }
         }).list(directory, listener);
+    }
+
+    @Override
+    public void preflight(final Path directory) throws BackgroundException {
+        final Acl acl = directory.attributes().getAcl();
+        if(Acl.EMPTY == acl) {
+            // Missing initialization
+            log.warn(String.format("Unknown ACLs on %s", directory));
+            return;
+        }
+        if(!acl.get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("ACL %s for %s does not include %s", acl, directory, CANLISTCHILDREN));
+            }
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot download {0}", "Error"), directory.getName())).withFile(directory);
+        }
     }
 
     protected interface Contents {
@@ -187,7 +200,7 @@ public class DeepboxListService implements ListService {
                 final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
                 final String boxNodeId = fileid.getBoxNodeId(directory);
-                final Box box = rest.getBox(UUID.fromString(deepBoxNodeId), UUID.fromString(boxNodeId));
+                final Box box = rest.getBox(deepBoxNodeId, boxNodeId);
                 if(box.getBoxPolicy().isCanListQueue()) {
                     final String inboxName = session.getPinnedLocalization(INBOX);
                     final Path inbox = new Path(directory, inboxName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
@@ -227,7 +240,7 @@ public class DeepboxListService implements ListService {
                 int offset = 0;
                 int size;
                 do {
-                    final Boxes boxes = rest.listBoxes(UUID.fromString(fileid.getFileId(directory)), offset, chunksize, "name asc", null);
+                    final Boxes boxes = rest.listBoxes(fileid.getFileId(directory), offset, chunksize, "name asc", null);
                     for(final Box box : boxes.getBoxes()) {
                         list.add(new Path(directory, DeepboxPathNormalizer.name(box.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                                 attributes.toAttributes(box))
@@ -271,22 +284,6 @@ public class DeepboxListService implements ListService {
             catch(ApiException e) {
                 throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
             }
-        }
-    }
-
-    @Override
-    public void preflight(final Path directory) throws BackgroundException {
-        final Acl acl = directory.attributes().getAcl();
-        if(Acl.EMPTY == acl) {
-            // Missing initialization
-            log.warn(String.format("Unknown ACLs on %s", directory));
-            return;
-        }
-        if(!acl.get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN)) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("ACL %s for %s does not include %s", acl, directory, CANLISTCHILDREN));
-            }
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot download {0}", "Error"), directory.getName())).withFile(directory);
         }
     }
 }

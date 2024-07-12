@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * Watch
  */
@@ -27,19 +26,19 @@ import java.util.UUID;
 
 public class Watch {
   @JsonProperty("watchId")
-  private UUID watchId = null;
+  private String watchId = null;
 
   @JsonProperty("deepBoxNodeId")
-  private UUID deepBoxNodeId = null;
+  private String deepBoxNodeId = null;
 
   @JsonProperty("boxNodeId")
-  private UUID boxNodeId = null;
+  private String boxNodeId = null;
 
   @JsonProperty("boxName")
   private String boxName = null;
 
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   @JsonProperty("name")
   private String name = null;
@@ -47,7 +46,7 @@ public class Watch {
   @JsonProperty("recursive")
   private Boolean recursive = null;
 
-  public Watch watchId(UUID watchId) {
+  public Watch watchId(String watchId) {
     this.watchId = watchId;
     return this;
   }
@@ -57,15 +56,15 @@ public class Watch {
    * @return watchId
   **/
   @Schema(description = "")
-  public UUID getWatchId() {
+  public String getWatchId() {
     return watchId;
   }
 
-  public void setWatchId(UUID watchId) {
+  public void setWatchId(String watchId) {
     this.watchId = watchId;
   }
 
-  public Watch deepBoxNodeId(UUID deepBoxNodeId) {
+  public Watch deepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
     return this;
   }
@@ -75,15 +74,15 @@ public class Watch {
    * @return deepBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getDeepBoxNodeId() {
+  public String getDeepBoxNodeId() {
     return deepBoxNodeId;
   }
 
-  public void setDeepBoxNodeId(UUID deepBoxNodeId) {
+  public void setDeepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
   }
 
-  public Watch boxNodeId(UUID boxNodeId) {
+  public Watch boxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
     return this;
   }
@@ -93,11 +92,11 @@ public class Watch {
    * @return boxNodeId
   **/
   @Schema(description = "")
-  public UUID getBoxNodeId() {
+  public String getBoxNodeId() {
     return boxNodeId;
   }
 
-  public void setBoxNodeId(UUID boxNodeId) {
+  public void setBoxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
   }
 
@@ -119,7 +118,7 @@ public class Watch {
     this.boxName = boxName;
   }
 
-  public Watch nodeId(UUID nodeId) {
+  public Watch nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -129,11 +128,11 @@ public class Watch {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

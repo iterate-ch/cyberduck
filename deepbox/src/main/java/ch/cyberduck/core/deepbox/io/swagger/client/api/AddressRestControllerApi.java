@@ -10,7 +10,6 @@ import javax.ws.rs.core.GenericType;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Address;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.AddressAdd;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.AddressUpdate;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class AddressRestControllerApi {
    * @return Address
    * @throws ApiException if fails to make API call
    */
-  public Address createAddress(UUID nodeId, AddressAdd body) throws ApiException {
+  public Address createAddress(String nodeId, AddressAdd body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -83,7 +82,7 @@ public class AddressRestControllerApi {
    * @param addressId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteAddress(UUID addressId) throws ApiException {
+  public void deleteAddress(String addressId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'addressId' is set
     if (addressId == null) {
@@ -121,7 +120,7 @@ public class AddressRestControllerApi {
    * @return Address
    * @throws ApiException if fails to make API call
    */
-  public Address getAddress(UUID addressId) throws ApiException {
+  public Address getAddress(String addressId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'addressId' is set
     if (addressId == null) {
@@ -160,7 +159,7 @@ public class AddressRestControllerApi {
    * @return List&lt;Address&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Address> listAllBoxAddresses(UUID boxNodeId) throws ApiException {
+  public List<Address> listAllBoxAddresses(String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'boxNodeId' is set
     if (boxNodeId == null) {
@@ -200,7 +199,7 @@ public class AddressRestControllerApi {
    * @return Address
    * @throws ApiException if fails to make API call
    */
-  public Address updateAddress(AddressUpdate body, UUID addressId) throws ApiException {
+  public Address updateAddress(AddressUpdate body, String addressId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

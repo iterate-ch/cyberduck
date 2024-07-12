@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * BoxEntry
  */
@@ -31,13 +30,13 @@ public class BoxEntry {
   private CompanyEntry company = null;
 
   @JsonProperty("deepBoxNodeId")
-  private UUID deepBoxNodeId = null;
+  private String deepBoxNodeId = null;
 
   @JsonProperty("deepBoxName")
   private String deepBoxName = null;
 
   @JsonProperty("boxNodeId")
-  private UUID boxNodeId = null;
+  private String boxNodeId = null;
 
   @JsonProperty("boxName")
   private String boxName = null;
@@ -69,7 +68,7 @@ public class BoxEntry {
     this.company = company;
   }
 
-  public BoxEntry deepBoxNodeId(UUID deepBoxNodeId) {
+  public BoxEntry deepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
     return this;
   }
@@ -79,11 +78,11 @@ public class BoxEntry {
    * @return deepBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getDeepBoxNodeId() {
+  public String getDeepBoxNodeId() {
     return deepBoxNodeId;
   }
 
-  public void setDeepBoxNodeId(UUID deepBoxNodeId) {
+  public void setDeepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
   }
 
@@ -105,7 +104,7 @@ public class BoxEntry {
     this.deepBoxName = deepBoxName;
   }
 
-  public BoxEntry boxNodeId(UUID boxNodeId) {
+  public BoxEntry boxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
     return this;
   }
@@ -115,11 +114,11 @@ public class BoxEntry {
    * @return boxNodeId
   **/
   @Schema(description = "")
-  public UUID getBoxNodeId() {
+  public String getBoxNodeId() {
     return boxNodeId;
   }
 
-  public void setBoxNodeId(UUID boxNodeId) {
+  public void setBoxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
   }
 

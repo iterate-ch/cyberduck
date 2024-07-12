@@ -10,7 +10,6 @@ import javax.ws.rs.core.GenericType;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.BoxInfo;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxOverview;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Overview;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ public class OverviewRestControllerApi {
    * @return BoxInfo
    * @throws ApiException if fails to make API call
    */
-  public BoxInfo getBoxInfo(UUID boxNodeId) throws ApiException {
+  public BoxInfo getBoxInfo(String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'boxNodeId' is set
     if (boxNodeId == null) {
@@ -86,7 +85,7 @@ public class OverviewRestControllerApi {
    * @return DeepBoxOverview
    * @throws ApiException if fails to make API call
    */
-  public DeepBoxOverview getDeepBoxOverview(UUID deepBoxNodeId, Integer offset, Integer limit, String q) throws ApiException {
+  public DeepBoxOverview getDeepBoxOverview(String deepBoxNodeId, Integer offset, Integer limit, String q) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -130,7 +129,7 @@ public class OverviewRestControllerApi {
    * @return Overview
    * @throws ApiException if fails to make API call
    */
-  public Overview getOverview(UUID companyId, Integer deepBoxesBoxesLimit, String q) throws ApiException {
+  public Overview getOverview(String companyId, Integer deepBoxesBoxesLimit, String q) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/api/v1/overview";

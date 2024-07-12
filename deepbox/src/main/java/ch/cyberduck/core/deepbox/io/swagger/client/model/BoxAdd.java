@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * BoxAdd
  */
@@ -33,7 +32,7 @@ public class BoxAdd {
   private String name = null;
 
   @JsonProperty("organizers")
-  private List<UUID> organizers = null;
+  private List<String> organizers = null;
 
   @JsonProperty("addOwnersAsOrganizers")
   private Boolean addOwnersAsOrganizers = null;
@@ -93,12 +92,12 @@ public class BoxAdd {
     this.name = name;
   }
 
-  public BoxAdd organizers(List<UUID> organizers) {
+  public BoxAdd organizers(List<String> organizers) {
     this.organizers = organizers;
     return this;
   }
 
-  public BoxAdd addOrganizersItem(UUID organizersItem) {
+  public BoxAdd addOrganizersItem(String organizersItem) {
     if (this.organizers == null) {
       this.organizers = new ArrayList<>();
     }
@@ -111,11 +110,11 @@ public class BoxAdd {
    * @return organizers
   **/
   @Schema(description = "")
-  public List<UUID> getOrganizers() {
+  public List<String> getOrganizers() {
     return organizers;
   }
 
-  public void setOrganizers(List<UUID> organizers) {
+  public void setOrganizers(List<String> organizers) {
     this.organizers = organizers;
   }
 

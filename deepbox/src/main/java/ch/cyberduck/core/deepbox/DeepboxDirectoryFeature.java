@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
 
@@ -63,22 +62,22 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             if(new DeepboxPathContainerService(session).isDocuments(folder.getParent())) {
                 created = new PathRestControllerApi(session.getClient()).addFolders1(
                         body,
-                        UUID.fromString(deepBoxNodeId),
-                        UUID.fromString(boxNodeId)
+                        deepBoxNodeId,
+                        boxNodeId
                 );
             }
             else {
                 final String parentNodeId = fileid.getFileId(folder.getParent());
                 created = new PathRestControllerApi(session.getClient()).addFolders(
                         body,
-                        UUID.fromString(deepBoxNodeId),
-                        UUID.fromString(boxNodeId),
-                        UUID.fromString(parentNodeId)
+                        deepBoxNodeId,
+                        boxNodeId,
+                        parentNodeId
                 );
             }
             final FolderAdded f = created.stream().findFirst().orElse(null);
             if(f != null) {
-                fileid.cache(folder, f.getNode().getNodeId().toString());
+                fileid.cache(folder, f.getNode().getNodeId());
             }
             return folder.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(f.getNode()));
         }

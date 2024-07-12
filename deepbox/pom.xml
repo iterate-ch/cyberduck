@@ -67,6 +67,9 @@
                                     -->
                                     <inputSpec>${project.basedir}/src/main/resources/deepbox-api.json</inputSpec>
                                     <language>java</language>
+                                    <typeMappings>
+                                        <typeMapping>UUID=String</typeMapping>
+                                    </typeMappings>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.deepbox.io.swagger.client.model</modelPackage>
                                     <apiPackage>ch.cyberduck.core.deepbox.io.swagger.client.api</apiPackage>

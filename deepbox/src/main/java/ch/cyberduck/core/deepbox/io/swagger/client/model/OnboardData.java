@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * OnboardData
  */
@@ -30,7 +29,7 @@ public class OnboardData {
   private String email = null;
 
   @JsonProperty("userId")
-  private UUID userId = null;
+  private String userId = null;
 
   @JsonProperty("firstname")
   private String firstname = null;
@@ -42,7 +41,7 @@ public class OnboardData {
   private String deepBoxName = null;
 
   @JsonProperty("companyId")
-  private UUID companyId = null;
+  private String companyId = null;
 
   public OnboardData email(String email) {
     this.email = email;
@@ -62,7 +61,7 @@ public class OnboardData {
     this.email = email;
   }
 
-  public OnboardData userId(UUID userId) {
+  public OnboardData userId(String userId) {
     this.userId = userId;
     return this;
   }
@@ -72,11 +71,11 @@ public class OnboardData {
    * @return userId
   **/
   @Schema(required = true, description = "")
-  public UUID getUserId() {
+  public String getUserId() {
     return userId;
   }
 
-  public void setUserId(UUID userId) {
+  public void setUserId(String userId) {
     this.userId = userId;
   }
 
@@ -134,7 +133,7 @@ public class OnboardData {
     this.deepBoxName = deepBoxName;
   }
 
-  public OnboardData companyId(UUID companyId) {
+  public OnboardData companyId(String companyId) {
     this.companyId = companyId;
     return this;
   }
@@ -144,11 +143,11 @@ public class OnboardData {
    * @return companyId
   **/
   @Schema(description = "")
-  public UUID getCompanyId() {
+  public String getCompanyId() {
     return companyId;
   }
 
-  public void setCompanyId(UUID companyId) {
+  public void setCompanyId(String companyId) {
     this.companyId = companyId;
   }
 

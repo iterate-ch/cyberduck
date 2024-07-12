@@ -7,7 +7,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import java.util.UUID;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Webhook;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.WebhookAdd;
 
@@ -44,7 +43,7 @@ public class WebhookRestControllerApi {
    * @return Webhook
    * @throws ApiException if fails to make API call
    */
-  public Webhook addWebhook(WebhookAdd body, UUID nodeId) throws ApiException {
+  public Webhook addWebhook(WebhookAdd body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -86,7 +85,7 @@ public class WebhookRestControllerApi {
    * @param webhookId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteWebhook(UUID webhookId) throws ApiException {
+  public void deleteWebhook(String webhookId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'webhookId' is set
     if (webhookId == null) {
@@ -125,7 +124,7 @@ public class WebhookRestControllerApi {
    * @return List&lt;Webhook&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Webhook> listAllBoxWebhooks(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public List<Webhook> listAllBoxWebhooks(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {

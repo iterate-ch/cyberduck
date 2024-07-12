@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * InShareUpdate
  */
@@ -27,12 +26,12 @@ import java.util.UUID;
 
 public class InShareUpdate {
   @JsonProperty("withCompanyId")
-  private UUID withCompanyId = null;
+  private String withCompanyId = null;
 
   @JsonProperty("accessOwnerUserId")
-  private UUID accessOwnerUserId = null;
+  private String accessOwnerUserId = null;
 
-  public InShareUpdate withCompanyId(UUID withCompanyId) {
+  public InShareUpdate withCompanyId(String withCompanyId) {
     this.withCompanyId = withCompanyId;
     return this;
   }
@@ -42,15 +41,15 @@ public class InShareUpdate {
    * @return withCompanyId
   **/
   @Schema(description = "")
-  public UUID getWithCompanyId() {
+  public String getWithCompanyId() {
     return withCompanyId;
   }
 
-  public void setWithCompanyId(UUID withCompanyId) {
+  public void setWithCompanyId(String withCompanyId) {
     this.withCompanyId = withCompanyId;
   }
 
-  public InShareUpdate accessOwnerUserId(UUID accessOwnerUserId) {
+  public InShareUpdate accessOwnerUserId(String accessOwnerUserId) {
     this.accessOwnerUserId = accessOwnerUserId;
     return this;
   }
@@ -60,11 +59,11 @@ public class InShareUpdate {
    * @return accessOwnerUserId
   **/
   @Schema(description = "")
-  public UUID getAccessOwnerUserId() {
+  public String getAccessOwnerUserId() {
     return accessOwnerUserId;
   }
 
-  public void setAccessOwnerUserId(UUID accessOwnerUserId) {
+  public void setAccessOwnerUserId(String accessOwnerUserId) {
     this.accessOwnerUserId = accessOwnerUserId;
   }
 

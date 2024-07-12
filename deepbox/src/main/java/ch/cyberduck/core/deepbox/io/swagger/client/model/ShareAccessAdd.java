@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * ShareAccessAdd
  */
@@ -30,17 +29,17 @@ import java.util.UUID;
 
 public class ShareAccessAdd {
   @JsonProperty("users")
-  private List<UUID> users = new ArrayList<>();
+  private List<String> users = new ArrayList<>();
 
   @JsonProperty("accessNodes")
   private List<ShareAccessNodeAdd> accessNodes = new ArrayList<>();
 
-  public ShareAccessAdd users(List<UUID> users) {
+  public ShareAccessAdd users(List<String> users) {
     this.users = users;
     return this;
   }
 
-  public ShareAccessAdd addUsersItem(UUID usersItem) {
+  public ShareAccessAdd addUsersItem(String usersItem) {
     this.users.add(usersItem);
     return this;
   }
@@ -50,11 +49,11 @@ public class ShareAccessAdd {
    * @return users
   **/
   @Schema(required = true, description = "")
-  public List<UUID> getUsers() {
+  public List<String> getUsers() {
     return users;
   }
 
-  public void setUsers(List<UUID> users) {
+  public void setUsers(List<String> users) {
     this.users = users;
   }
 

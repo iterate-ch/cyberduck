@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * Approve
  */
@@ -29,7 +28,7 @@ import java.util.UUID;
 
 public class Approve {
   @JsonProperty("targetParentNodeId")
-  private UUID targetParentNodeId = null;
+  private String targetParentNodeId = null;
 
   @JsonProperty("documentType")
   private String documentType = null;
@@ -40,7 +39,7 @@ public class Approve {
   @JsonProperty("cleanupMetaBinsExceptOf")
   private List<String> cleanupMetaBinsExceptOf = null;
 
-  public Approve targetParentNodeId(UUID targetParentNodeId) {
+  public Approve targetParentNodeId(String targetParentNodeId) {
     this.targetParentNodeId = targetParentNodeId;
     return this;
   }
@@ -50,11 +49,11 @@ public class Approve {
    * @return targetParentNodeId
   **/
   @Schema(description = "")
-  public UUID getTargetParentNodeId() {
+  public String getTargetParentNodeId() {
     return targetParentNodeId;
   }
 
-  public void setTargetParentNodeId(UUID targetParentNodeId) {
+  public void setTargetParentNodeId(String targetParentNodeId) {
     this.targetParentNodeId = targetParentNodeId;
   }
 

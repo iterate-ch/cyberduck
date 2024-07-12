@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import org.joda.time.DateTime;
 /**
  * WebhookInfo
@@ -31,7 +30,7 @@ import org.joda.time.DateTime;
 
 public class WebhookInfo {
   @JsonProperty("webhookId")
-  private UUID webhookId = null;
+  private String webhookId = null;
 
   @JsonProperty("timestamp")
   private DateTime timestamp = null;
@@ -39,7 +38,7 @@ public class WebhookInfo {
   @JsonProperty("events")
   private List<Event> events = null;
 
-  public WebhookInfo webhookId(UUID webhookId) {
+  public WebhookInfo webhookId(String webhookId) {
     this.webhookId = webhookId;
     return this;
   }
@@ -49,11 +48,11 @@ public class WebhookInfo {
    * @return webhookId
   **/
   @Schema(description = "")
-  public UUID getWebhookId() {
+  public String getWebhookId() {
     return webhookId;
   }
 
-  public void setWebhookId(UUID webhookId) {
+  public void setWebhookId(String webhookId) {
     this.webhookId = webhookId;
   }
 

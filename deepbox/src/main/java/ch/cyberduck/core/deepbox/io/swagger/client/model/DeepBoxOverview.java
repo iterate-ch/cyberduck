@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * DeepBoxOverview
  */
@@ -35,7 +34,7 @@ public class DeepBoxOverview {
   private CompanyEntry company = null;
 
   @JsonProperty("deepBoxNodeId")
-  private UUID deepBoxNodeId = null;
+  private String deepBoxNodeId = null;
 
   @JsonProperty("deepBoxName")
   private String deepBoxName = null;
@@ -70,7 +69,7 @@ public class DeepBoxOverview {
     this.company = company;
   }
 
-  public DeepBoxOverview deepBoxNodeId(UUID deepBoxNodeId) {
+  public DeepBoxOverview deepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
     return this;
   }
@@ -80,11 +79,11 @@ public class DeepBoxOverview {
    * @return deepBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getDeepBoxNodeId() {
+  public String getDeepBoxNodeId() {
     return deepBoxNodeId;
   }
 
-  public void setDeepBoxNodeId(UUID deepBoxNodeId) {
+  public void setDeepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
   }
 

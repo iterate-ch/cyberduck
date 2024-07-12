@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * DetailNode
  */
@@ -27,7 +26,7 @@ import java.util.UUID;
 
 public class DetailNode {
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   @JsonProperty("mimeType")
   private String mimeType = null;
@@ -35,7 +34,7 @@ public class DetailNode {
   @JsonProperty("size")
   private Long size = null;
 
-  public DetailNode nodeId(UUID nodeId) {
+  public DetailNode nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -45,11 +44,11 @@ public class DetailNode {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

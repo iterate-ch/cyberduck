@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * Webhook
  */
@@ -30,10 +29,10 @@ import java.util.UUID;
 
 public class Webhook {
   @JsonProperty("webhookId")
-  private UUID webhookId = null;
+  private String webhookId = null;
 
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   /**
    * Gets or Sets eventTypes
@@ -86,7 +85,7 @@ public class Webhook {
   @JsonProperty("webhookPath")
   private WebhookPath webhookPath = null;
 
-  public Webhook webhookId(UUID webhookId) {
+  public Webhook webhookId(String webhookId) {
     this.webhookId = webhookId;
     return this;
   }
@@ -96,15 +95,15 @@ public class Webhook {
    * @return webhookId
   **/
   @Schema(description = "")
-  public UUID getWebhookId() {
+  public String getWebhookId() {
     return webhookId;
   }
 
-  public void setWebhookId(UUID webhookId) {
+  public void setWebhookId(String webhookId) {
     this.webhookId = webhookId;
   }
 
-  public Webhook nodeId(UUID nodeId) {
+  public Webhook nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -114,11 +113,11 @@ public class Webhook {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * PathSegment
  */
@@ -29,7 +28,7 @@ import java.util.UUID;
 
 public class PathSegment {
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   @JsonProperty("name")
   private String name = null;
@@ -83,7 +82,7 @@ public class PathSegment {
   @JsonProperty("watch")
   private NodeWatch watch = null;
 
-  public PathSegment nodeId(UUID nodeId) {
+  public PathSegment nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -93,11 +92,11 @@ public class PathSegment {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

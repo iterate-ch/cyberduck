@@ -1,11 +1,15 @@
 package ch.cyberduck.core.deepbox.io.swagger.client.api;
 
-import ch.cyberduck.core.deepbox.io.swagger.client.ApiClient;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
+import ch.cyberduck.core.deepbox.io.swagger.client.ApiClient;
 import ch.cyberduck.core.deepbox.io.swagger.client.Configuration;
 import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.deepbox.io.swagger.client.model.AnalyzeResponse;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Approve;
+import java.io.File;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeCopy;
@@ -15,13 +19,10 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeUpdate;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Path;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.PathContent;
 
-import javax.ws.rs.core.GenericType;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
 public class CoreRestControllerApi {
@@ -51,7 +52,7 @@ public class CoreRestControllerApi {
    * @return List&lt;Node&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Node> addNodeContent(UUID nodeId, List<File> files) throws ApiException {
+  public List<Node> addNodeContent(String nodeId, List<File> files) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -93,7 +94,7 @@ public class CoreRestControllerApi {
    * @return AnalyzeResponse
    * @throws ApiException if fails to make API call
    */
-  public AnalyzeResponse analyze(UUID nodeId, String waitForResult, Boolean force) throws ApiException {
+  public AnalyzeResponse analyze(String nodeId, String waitForResult, Boolean force) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -135,7 +136,7 @@ public class CoreRestControllerApi {
    * @param nodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void approve(Approve body, UUID deepBoxAppKey, UUID nodeId) throws ApiException {
+  public void approve(Approve body, String deepBoxAppKey, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -183,7 +184,7 @@ public class CoreRestControllerApi {
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node convertAndSaveNode(UUID nodeId) throws ApiException {
+  public Node convertAndSaveNode(String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -223,7 +224,7 @@ public class CoreRestControllerApi {
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node copyNode(NodeCopy body, UUID nodeId) throws ApiException {
+  public Node copyNode(NodeCopy body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -256,8 +257,7 @@ public class CoreRestControllerApi {
 
     String[] localVarAuthNames = new String[] { "token" };
 
-    GenericType<Node> localVarReturnType = new GenericType<Node>() {
-    };
+    GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -267,7 +267,7 @@ public class CoreRestControllerApi {
    * @param purge  (optional, default to false)
    * @throws ApiException if fails to make API call
    */
-  public void deletePurgeNode(UUID nodeId, Boolean purge) throws ApiException {
+  public void deletePurgeNode(String nodeId, Boolean purge) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -307,7 +307,7 @@ public class CoreRestControllerApi {
    * @return AnalyzeResponse
    * @throws ApiException if fails to make API call
    */
-  public AnalyzeResponse getAnalyze(UUID nodeId, String waitForResult) throws ApiException {
+  public AnalyzeResponse getAnalyze(String nodeId, String waitForResult) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -350,7 +350,7 @@ public class CoreRestControllerApi {
    * @return NodeInfo
    * @throws ApiException if fails to make API call
    */
-  public NodeInfo getNodeInfo(UUID nodeId, UUID deepBoxAppKey, List<String> metaKeys, Boolean thumbnailUrl) throws ApiException {
+  public NodeInfo getNodeInfo(String nodeId, String deepBoxAppKey, List<String> metaKeys, Boolean thumbnailUrl) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -393,7 +393,7 @@ public class CoreRestControllerApi {
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String getThumbnailUrl(UUID nodeId) throws ApiException {
+  public String getThumbnailUrl(String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -435,7 +435,7 @@ public class CoreRestControllerApi {
    * @return NodeContent
    * @throws ApiException if fails to make API call
    */
-  public NodeContent listNodeContent(UUID nodeId, Integer offset, Integer limit, String order) throws ApiException {
+  public NodeContent listNodeContent(String nodeId, Integer offset, Integer limit, String order) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -477,7 +477,7 @@ public class CoreRestControllerApi {
    * @return PathContent
    * @throws ApiException if fails to make API call
    */
-  public PathContent listPath(UUID nodeId) throws ApiException {
+  public PathContent listPath(String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -516,7 +516,7 @@ public class CoreRestControllerApi {
    * @param nodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void moveNode(NodeMove body, UUID nodeId) throws ApiException {
+  public void moveNode(NodeMove body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -558,7 +558,7 @@ public class CoreRestControllerApi {
    * @return Path
    * @throws ApiException if fails to make API call
    */
-  public Path revertNode(UUID nodeId) throws ApiException {
+  public Path revertNode(String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -597,7 +597,7 @@ public class CoreRestControllerApi {
    * @param nodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateNode(NodeUpdate body, UUID nodeId) throws ApiException {
+  public void updateNode(NodeUpdate body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

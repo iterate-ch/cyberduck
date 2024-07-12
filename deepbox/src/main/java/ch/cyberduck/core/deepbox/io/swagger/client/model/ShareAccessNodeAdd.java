@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * ShareAccessNodeAdd
  */
@@ -27,12 +26,12 @@ import java.util.UUID;
 
 public class ShareAccessNodeAdd {
   @JsonProperty("permissionId")
-  private UUID permissionId = null;
+  private String permissionId = null;
 
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
-  public ShareAccessNodeAdd permissionId(UUID permissionId) {
+  public ShareAccessNodeAdd permissionId(String permissionId) {
     this.permissionId = permissionId;
     return this;
   }
@@ -42,15 +41,15 @@ public class ShareAccessNodeAdd {
    * @return permissionId
   **/
   @Schema(required = true, description = "")
-  public UUID getPermissionId() {
+  public String getPermissionId() {
     return permissionId;
   }
 
-  public void setPermissionId(UUID permissionId) {
+  public void setPermissionId(String permissionId) {
     this.permissionId = permissionId;
   }
 
-  public ShareAccessNodeAdd nodeId(UUID nodeId) {
+  public ShareAccessNodeAdd nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -60,11 +59,11 @@ public class ShareAccessNodeAdd {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

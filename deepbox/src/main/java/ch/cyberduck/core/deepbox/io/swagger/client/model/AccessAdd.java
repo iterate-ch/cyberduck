@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * AccessAdd
  */
@@ -29,12 +28,12 @@ import java.util.UUID;
 
 public class AccessAdd {
   @JsonProperty("permissionId")
-  private UUID permissionId = null;
+  private String permissionId = null;
 
   @JsonProperty("users")
-  private List<UUID> users = new ArrayList<>();
+  private List<String> users = new ArrayList<>();
 
-  public AccessAdd permissionId(UUID permissionId) {
+  public AccessAdd permissionId(String permissionId) {
     this.permissionId = permissionId;
     return this;
   }
@@ -44,20 +43,20 @@ public class AccessAdd {
    * @return permissionId
   **/
   @Schema(required = true, description = "")
-  public UUID getPermissionId() {
+  public String getPermissionId() {
     return permissionId;
   }
 
-  public void setPermissionId(UUID permissionId) {
+  public void setPermissionId(String permissionId) {
     this.permissionId = permissionId;
   }
 
-  public AccessAdd users(List<UUID> users) {
+  public AccessAdd users(List<String> users) {
     this.users = users;
     return this;
   }
 
-  public AccessAdd addUsersItem(UUID usersItem) {
+  public AccessAdd addUsersItem(String usersItem) {
     this.users.add(usersItem);
     return this;
   }
@@ -67,11 +66,11 @@ public class AccessAdd {
    * @return users
   **/
   @Schema(required = true, description = "")
-  public List<UUID> getUsers() {
+  public List<String> getUsers() {
     return users;
   }
 
-  public void setUsers(List<UUID> users) {
+  public void setUsers(List<String> users) {
     this.users = users;
   }
 

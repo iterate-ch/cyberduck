@@ -15,7 +15,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeTagsUpdate;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Tag;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.TagColorPaletteItem;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Tags;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +49,7 @@ public class TagRestControllerApi {
    * @return AdminTag
    * @throws ApiException if fails to make API call
    */
-  public AdminTag addAdminDeepBoxTag(AdminTagAdd body, UUID deepBoxNodeId) throws ApiException {
+  public AdminTag addAdminDeepBoxTag(AdminTagAdd body, String deepBoxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -92,7 +91,7 @@ public class TagRestControllerApi {
    * @param tagId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteAdminDeepBoxTag(UUID tagId) throws ApiException {
+  public void deleteAdminDeepBoxTag(String tagId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'tagId' is set
     if (tagId == null) {
@@ -132,7 +131,7 @@ public class TagRestControllerApi {
    * @deprecated
    */
   @Deprecated
-  public void deprectedUpdateNodeTags(NodeTagsUpdate body, UUID nodeId) throws ApiException {
+  public void deprectedUpdateNodeTags(NodeTagsUpdate body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -174,7 +173,7 @@ public class TagRestControllerApi {
    * @return AdminTag
    * @throws ApiException if fails to make API call
    */
-  public AdminTag getAdminDeepBoxTag(UUID tagId) throws ApiException {
+  public AdminTag getAdminDeepBoxTag(String tagId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'tagId' is set
     if (tagId == null) {
@@ -216,7 +215,7 @@ public class TagRestControllerApi {
    * @return AdminTags
    * @throws ApiException if fails to make API call
    */
-  public AdminTags listAdminDeepBoxTags(UUID deepBoxNodeId, Integer offset, Integer limit, String q) throws ApiException {
+  public AdminTags listAdminDeepBoxTags(String deepBoxNodeId, Integer offset, Integer limit, String q) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -263,7 +262,7 @@ public class TagRestControllerApi {
    * @return Tags
    * @throws ApiException if fails to make API call
    */
-  public Tags listBoxTags(UUID deepBoxNodeId, UUID boxNodeId, Integer offset, Integer limit, List<String> k, String q) throws ApiException {
+  public Tags listBoxTags(String deepBoxNodeId, String boxNodeId, Integer offset, Integer limit, List<String> k, String q) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -311,7 +310,7 @@ public class TagRestControllerApi {
    * @return List&lt;Tag&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Tag> listNodeTags(UUID nodeId) throws ApiException {
+  public List<Tag> listNodeTags(String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -383,7 +382,7 @@ public class TagRestControllerApi {
    * @param nodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void setNodeTags(List<String> body, UUID nodeId) throws ApiException {
+  public void setNodeTags(List<String> body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -425,7 +424,7 @@ public class TagRestControllerApi {
    * @param tagId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateAdminDeepBoxTag(AdminTagUpdate body, UUID tagId) throws ApiException {
+  public void updateAdminDeepBoxTag(AdminTagUpdate body, String tagId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -468,7 +467,7 @@ public class TagRestControllerApi {
    * @return List&lt;Tag&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Tag> updateNodeTags(NodeTagsUpdate body, UUID nodeId) throws ApiException {
+  public List<Tag> updateNodeTags(NodeTagsUpdate body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

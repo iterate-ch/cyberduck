@@ -50,7 +50,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCHILDREN;
 import static org.junit.Assert.*;
@@ -258,15 +257,15 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         }
 
         final CoreRestControllerApi core = new CoreRestControllerApi(session.getClient());
-        final NodeContent nodeContent = core.listNodeContent(UUID.fromString(nodeid.getFileId(folder)), null, null, "modifiedTime desc");
+        final NodeContent nodeContent = core.listNodeContent(nodeid.getFileId(folder), null, null, "modifiedTime desc");
         assertEquals(2, nodeContent.getNodes().size());
         final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
         assertEquals(2, listing.size());
         for(Path f : listing) {
             assertTrue(f.attributes().isDuplicate());
         }
-        assertTrue(nodeContent.getNodes().get(0).getNodeId().toString().equals(nodeid.getFileId(file)) ||
-                nodeContent.getNodes().get(1).getNodeId().toString().equals(nodeid.getFileId(file))
+        assertTrue(nodeContent.getNodes().get(0).getNodeId().equals(nodeid.getFileId(file)) ||
+                nodeContent.getNodes().get(1).getNodeId().equals(nodeid.getFileId(file))
         );
         deleteAndPurge(folder);
     }
@@ -281,9 +280,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
 
         final NodeCopy body = new NodeCopy();
-        body.setTargetParentNodeId(UUID.fromString(nodeid.getFileId(folder)));
-        new CoreRestControllerApi(session.getClient()).copyNode(body, UUID.fromString(nodeid.getFileId(file)));
-        final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(UUID.fromString(nodeid.getFileId(folder)), 0, 50, null);
+        body.setTargetParentNodeId(nodeid.getFileId(folder));
+        new CoreRestControllerApi(session.getClient()).copyNode(body, nodeid.getFileId(file));
+        final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(nodeid.getFileId(folder), 0, 50, null);
         assertEquals(2, remote.getNodes().size());
         for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
             assertTrue(f.attributes().isDuplicate());
@@ -305,12 +304,12 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         body.setName(test.getName());
         new PathRestControllerApi(session.getClient()).addFolders(
                 Collections.singletonList(body),
-                UUID.fromString(nodeid.getDeepBoxNodeId(test)),
-                UUID.fromString(nodeid.getBoxNodeId(test)),
-                UUID.fromString(nodeid.getFileId(test.getParent()))
+                nodeid.getDeepBoxNodeId(test),
+                nodeid.getBoxNodeId(test),
+                nodeid.getFileId(test.getParent())
         );
 
-        final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(UUID.fromString(nodeid.getFileId(folder)), 0, 50, null);
+        final NodeContent remote = new CoreRestControllerApi(session.getClient()).listNodeContent(nodeid.getFileId(folder), 0, 50, null);
         assertEquals(2, remote.getNodes().size());
         for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
             assertTrue(f.attributes().isDuplicate());
@@ -327,8 +326,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path box = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(box, new DisabledListProgressListener());
-        final UUID deepBoxNodeId = UUID.fromString(nodeid.getDeepBoxNodeId(box));
-        final UUID boxNodeId = UUID.fromString(nodeid.getBoxNodeId(box));
+        final String deepBoxNodeId = nodeid.getDeepBoxNodeId(box);
+        final String boxNodeId = nodeid.getBoxNodeId(box);
         final BoxAccessPolicy boxPolicy = new BoxRestControllerApi(session.getClient()).getBox(deepBoxNodeId, boxNodeId).getBoxPolicy();
 
         assertTrue(boxPolicy.isCanListFilesRoot());
@@ -336,7 +335,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         assertFalse(boxPolicy.isCanListQueue());
 
         final Path documents = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final UUID documentsNodeId = UUID.fromString(nodeid.getFileId(documents));
+        final String documentsNodeId = nodeid.getFileId(documents);
         final ApiException apiExceptionGetNodeInfo = assertThrows(ApiException.class, () -> new CoreRestControllerApi(session.getClient()).getNodeInfo(documentsNodeId, null, null, null));
         assertEquals(403, apiExceptionGetNodeInfo.getCode());
         final ApiException apiExceptionListFilestWithDocumentsNodeId = assertThrows(ApiException.class, () -> new BoxRestControllerApi(session.getClient()).listFiles1(deepBoxNodeId, boxNodeId, documentsNodeId, null, null, null));
@@ -386,7 +385,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Auditing", EnumSet.of(Path.Type.directory));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
-        assertTrue(new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(attributes.getFileId()), null, null, null).getNode().getPolicy().isCanListChildren());
+        assertTrue(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanListChildren());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN));
         // assert no fail
         new DeepboxListService(session, nodeid).preflight(folder.withAttributes(attributes));
@@ -398,7 +397,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
-        assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(attributes.getFileId()), null, null, null).getNode().getPolicy().isCanListChildren());
+        assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanListChildren());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN));
         assertThrows(AccessDeniedException.class, () -> new DeepboxListService(session, nodeid).preflight(folder.withAttributes(attributes)));
     }

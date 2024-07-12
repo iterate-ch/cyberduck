@@ -8,7 +8,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
 import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Me;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +42,7 @@ public class UserRestControllerApi {
    * @return Map&lt;String, String&gt;
    * @throws ApiException if fails to make API call
    */
-  public Map<String, String> readUserMeta(UUID deepBoxAppKey, List<String> keys) throws ApiException {
+  public Map<String, String> readUserMeta(String deepBoxAppKey, List<String> keys) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxAppKey' is set
     if (deepBoxAppKey == null) {
@@ -89,7 +88,7 @@ public class UserRestControllerApi {
    * @return Me
    * @throws ApiException if fails to make API call
    */
-  public Me usersMe(UUID deepBoxAppKey, List<String> metaKeys) throws ApiException {
+  public Me usersMe(String deepBoxAppKey, List<String> metaKeys) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/api/v1/users/me";
@@ -126,7 +125,7 @@ public class UserRestControllerApi {
    * @param deepBoxAppKey  (required)
    * @throws ApiException if fails to make API call
    */
-  public void writeUserMeta(Map<String, String> body, UUID deepBoxAppKey) throws ApiException {
+  public void writeUserMeta(Map<String, String> body, String deepBoxAppKey) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * ShareAccept
  */
@@ -28,18 +27,18 @@ import java.util.UUID;
 
 public class ShareAccept {
   @JsonProperty("companyId")
-  private UUID companyId = null;
+  private String companyId = null;
 
   @JsonProperty("transformToUser")
   private TransformToUser transformToUser = null;
 
   @JsonProperty("accessOwnerUserId")
-  private UUID accessOwnerUserId = null;
+  private String accessOwnerUserId = null;
 
   @JsonProperty("createInitialWatch")
   private Boolean createInitialWatch = null;
 
-  public ShareAccept companyId(UUID companyId) {
+  public ShareAccept companyId(String companyId) {
     this.companyId = companyId;
     return this;
   }
@@ -49,11 +48,11 @@ public class ShareAccept {
    * @return companyId
   **/
   @Schema(required = true, description = "")
-  public UUID getCompanyId() {
+  public String getCompanyId() {
     return companyId;
   }
 
-  public void setCompanyId(UUID companyId) {
+  public void setCompanyId(String companyId) {
     this.companyId = companyId;
   }
 
@@ -75,7 +74,7 @@ public class ShareAccept {
     this.transformToUser = transformToUser;
   }
 
-  public ShareAccept accessOwnerUserId(UUID accessOwnerUserId) {
+  public ShareAccept accessOwnerUserId(String accessOwnerUserId) {
     this.accessOwnerUserId = accessOwnerUserId;
     return this;
   }
@@ -85,11 +84,11 @@ public class ShareAccept {
    * @return accessOwnerUserId
   **/
   @Schema(required = true, description = "")
-  public UUID getAccessOwnerUserId() {
+  public String getAccessOwnerUserId() {
     return accessOwnerUserId;
   }
 
-  public void setAccessOwnerUserId(UUID accessOwnerUserId) {
+  public void setAccessOwnerUserId(String accessOwnerUserId) {
     this.accessOwnerUserId = accessOwnerUserId;
   }
 

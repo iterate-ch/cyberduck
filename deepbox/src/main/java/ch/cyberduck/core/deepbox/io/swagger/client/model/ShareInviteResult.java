@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * ShareInviteResult
  */
@@ -27,9 +26,9 @@ import java.util.UUID;
 
 public class ShareInviteResult {
   @JsonProperty("shareId")
-  private UUID shareId = null;
+  private String shareId = null;
 
-  public ShareInviteResult shareId(UUID shareId) {
+  public ShareInviteResult shareId(String shareId) {
     this.shareId = shareId;
     return this;
   }
@@ -39,11 +38,11 @@ public class ShareInviteResult {
    * @return shareId
   **/
   @Schema(description = "")
-  public UUID getShareId() {
+  public String getShareId() {
     return shareId;
   }
 
-  public void setShareId(UUID shareId) {
+  public void setShareId(String shareId) {
     this.shareId = shareId;
   }
 

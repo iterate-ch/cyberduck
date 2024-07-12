@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.UUID;
 
 public class DeepboxCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(DeepboxCopyFeature.class);
@@ -58,10 +57,10 @@ public class DeepboxCopyFeature implements Copy {
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
             final NodeCopy nodeCopy = new NodeCopy();
-            nodeCopy.setTargetParentNodeId(UUID.fromString(fileid.getFileId(target.getParent())));
+            nodeCopy.setTargetParentNodeId(fileid.getFileId(target.getParent()));
             final String nodeId = fileid.getFileId(file);
             // manually patched deepbox-api.json, return code 200 missing in theirs
-            final Node copied = new CoreRestControllerApi(session.getClient()).copyNode(nodeCopy, UUID.fromString(nodeId));
+            final Node copied = new CoreRestControllerApi(session.getClient()).copyNode(nodeCopy, nodeId);
             final NodeUpdate nodeUpdate = new NodeUpdate();
             nodeUpdate.setName(target.getName());
             new CoreRestControllerApi(session.getClient()).updateNode(nodeUpdate, copied.getNodeId());

@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,10 +39,10 @@ import static org.junit.Assert.fail;
 
 public class AbstractDeepboxTest extends VaultTest {
 
-    protected final UUID ORG4 = UUID.fromString("a548e68e-5584-42c1-b2bc-9e051dc78e5e");
-    protected final UUID ORG4_BOX1 = UUID.fromString("366a7117-0ad3-4dcb-9e79-a4270c3f6fb5");
-    protected final UUID ORG1 = UUID.fromString("71fdd537-17db-4a8a-b959-64a1ab07774a");
-    protected final UUID ORG1_BOX1 = UUID.fromString("40062559-c1a3-4229-9b1b-77320821d0d5");
+    protected final String ORG4 = "a548e68e-5584-42c1-b2bc-9e051dc78e5e";
+    protected final String ORG4_BOX1 = "366a7117-0ad3-4dcb-9e79-a4270c3f6fb5";
+    protected final String ORG1 = "71fdd537-17db-4a8a-b959-64a1ab07774a";
+    protected final String ORG1_BOX1 = "40062559-c1a3-4229-9b1b-77320821d0d5";
 
     protected DeepboxSession session;
 
@@ -74,6 +73,18 @@ public class AbstractDeepboxTest extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
+    }
+
+    protected void deleteAndPurge(final Path file) throws BackgroundException {
+        if(new DeepboxPathContainerService(session).isInTrash(file)) {
+            session.getFeature(Delete.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        else {
+            session.getFeature(Trash.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            final Path trash = new Path(new DeepboxPathContainerService(session).getBoxPath(file).withAttributes(new PathAttributes()), session.getPinnedLocalization(DeepboxListService.TRASH), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+            final Path fileInTrash = new Path(trash, file.getName(), file.getType());
+            session.getFeature(Delete.class).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
@@ -125,18 +136,6 @@ public class AbstractDeepboxTest extends VaultTest {
                 final String prefix = user.replace(" OAuth2 Refresh Token", "");
                 VaultTest.add(String.format("%s.refreshtoken", map.get(prefix)), password);
             }
-        }
-    }
-
-    protected void deleteAndPurge(final Path file) throws BackgroundException {
-        if(new DeepboxPathContainerService(session).isInTrash(file)) {
-            session.getFeature(Delete.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-        else {
-            session.getFeature(Trash.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            final Path trash = new Path(new DeepboxPathContainerService(session).getBoxPath(file).withAttributes(new PathAttributes()), session.getPinnedLocalization(DeepboxListService.TRASH), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
-            final Path fileInTrash = new Path(trash, file.getName(), file.getType());
-            session.getFeature(Delete.class).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 }

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * SearchItem
  */
@@ -33,7 +32,7 @@ import java.util.UUID;
 
 public class SearchItem {
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   @JsonProperty("name")
   private String name = null;
@@ -93,7 +92,7 @@ public class SearchItem {
   @JsonProperty("parentPath")
   private Path parentPath = null;
 
-  public SearchItem nodeId(UUID nodeId) {
+  public SearchItem nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -103,11 +102,11 @@ public class SearchItem {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

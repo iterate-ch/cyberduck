@@ -7,7 +7,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import java.util.UUID;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Watch;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.WatchAdd;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.WatchUpdate;
@@ -45,7 +44,7 @@ public class WatchRestControllerApi {
    * @return Watch
    * @throws ApiException if fails to make API call
    */
-  public Watch addWatch(UUID nodeId, WatchAdd body) throws ApiException {
+  public Watch addWatch(String nodeId, WatchAdd body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -83,7 +82,7 @@ public class WatchRestControllerApi {
    * @param watchId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteWatch(UUID watchId) throws ApiException {
+  public void deleteWatch(String watchId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'watchId' is set
     if (watchId == null) {
@@ -121,7 +120,7 @@ public class WatchRestControllerApi {
    * @param watchId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateWatch(WatchUpdate body, UUID watchId) throws ApiException {
+  public void updateWatch(WatchUpdate body, String watchId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

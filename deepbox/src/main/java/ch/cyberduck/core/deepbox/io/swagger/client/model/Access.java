@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * Access
  */
@@ -32,7 +31,7 @@ import java.util.UUID;
 
 public class Access {
   @JsonProperty("accessId")
-  private UUID accessId = null;
+  private String accessId = null;
 
   @JsonProperty("displayName")
   private String displayName = null;
@@ -55,7 +54,7 @@ public class Access {
   @JsonProperty("accessPath")
   private AccessPath accessPath = null;
 
-  public Access accessId(UUID accessId) {
+  public Access accessId(String accessId) {
     this.accessId = accessId;
     return this;
   }
@@ -65,11 +64,11 @@ public class Access {
    * @return accessId
   **/
   @Schema(description = "")
-  public UUID getAccessId() {
+  public String getAccessId() {
     return accessId;
   }
 
-  public void setAccessId(UUID accessId) {
+  public void setAccessId(String accessId) {
     this.accessId = accessId;
   }
 

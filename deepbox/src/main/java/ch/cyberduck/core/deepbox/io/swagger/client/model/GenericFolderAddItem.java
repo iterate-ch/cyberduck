@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * GenericFolderAddItem
  */
@@ -30,7 +29,7 @@ public class GenericFolderAddItem {
   private String id = null;
 
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   public GenericFolderAddItem id(String id) {
     this.id = id;
@@ -50,7 +49,7 @@ public class GenericFolderAddItem {
     this.id = id;
   }
 
-  public GenericFolderAddItem nodeId(UUID nodeId) {
+  public GenericFolderAddItem nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -60,11 +59,11 @@ public class GenericFolderAddItem {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

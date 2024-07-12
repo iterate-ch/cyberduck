@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * OutShareNodeUpdate
  */
@@ -27,9 +26,9 @@ import java.util.UUID;
 
 public class OutShareNodeUpdate {
   @JsonProperty("permissionId")
-  private UUID permissionId = null;
+  private String permissionId = null;
 
-  public OutShareNodeUpdate permissionId(UUID permissionId) {
+  public OutShareNodeUpdate permissionId(String permissionId) {
     this.permissionId = permissionId;
     return this;
   }
@@ -39,11 +38,11 @@ public class OutShareNodeUpdate {
    * @return permissionId
   **/
   @Schema(description = "")
-  public UUID getPermissionId() {
+  public String getPermissionId() {
     return permissionId;
   }
 
-  public void setPermissionId(UUID permissionId) {
+  public void setPermissionId(String permissionId) {
     this.permissionId = permissionId;
   }
 

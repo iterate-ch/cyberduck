@@ -10,7 +10,6 @@ import javax.ws.rs.core.GenericType;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Download;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DownloadAdd;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.LogEntry;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class DownloadRestControllerApi {
    * @return Download
    * @throws ApiException if fails to make API call
    */
-  public Download downloadStatus(UUID downloadId, String acceptMessageIds) throws ApiException {
+  public Download downloadStatus(String downloadId, String acceptMessageIds) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'downloadId' is set
     if (downloadId == null) {
@@ -86,7 +85,7 @@ public class DownloadRestControllerApi {
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String downloadUrl(UUID nodeId, String acceptMessageIds) throws ApiException {
+  public String downloadUrl(String nodeId, String acceptMessageIds) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {

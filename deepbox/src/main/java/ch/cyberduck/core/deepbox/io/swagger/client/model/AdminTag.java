@@ -21,7 +21,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 /**
  * AdminTag
  */
@@ -30,7 +29,7 @@ import java.util.UUID;
 
 public class AdminTag {
   @JsonProperty("tagId")
-  private UUID tagId = null;
+  private String tagId = null;
 
   @JsonProperty("tagKey")
   private String tagKey = null;
@@ -94,7 +93,7 @@ public class AdminTag {
   @JsonProperty("colorFg")
   private String colorFg = null;
 
-  public AdminTag tagId(UUID tagId) {
+  public AdminTag tagId(String tagId) {
     this.tagId = tagId;
     return this;
   }
@@ -104,11 +103,11 @@ public class AdminTag {
    * @return tagId
   **/
   @Schema(description = "")
-  public UUID getTagId() {
+  public String getTagId() {
     return tagId;
   }
 
-  public void setTagId(UUID tagId) {
+  public void setTagId(String tagId) {
     this.tagId = tagId;
   }
 

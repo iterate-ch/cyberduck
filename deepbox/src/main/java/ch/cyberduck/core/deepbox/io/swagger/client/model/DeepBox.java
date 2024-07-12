@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * DeepBox
  */
@@ -27,18 +26,18 @@ import java.util.UUID;
 
 public class DeepBox {
   @JsonProperty("deepBoxNodeId")
-  private UUID deepBoxNodeId = null;
+  private String deepBoxNodeId = null;
 
   @JsonProperty("name")
   private String name = null;
 
   @JsonProperty("companyId")
-  private UUID companyId = null;
+  private String companyId = null;
 
   @JsonProperty("boxType")
   private String boxType = null;
 
-  public DeepBox deepBoxNodeId(UUID deepBoxNodeId) {
+  public DeepBox deepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
     return this;
   }
@@ -48,11 +47,11 @@ public class DeepBox {
    * @return deepBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getDeepBoxNodeId() {
+  public String getDeepBoxNodeId() {
     return deepBoxNodeId;
   }
 
-  public void setDeepBoxNodeId(UUID deepBoxNodeId) {
+  public void setDeepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
   }
 
@@ -74,7 +73,7 @@ public class DeepBox {
     this.name = name;
   }
 
-  public DeepBox companyId(UUID companyId) {
+  public DeepBox companyId(String companyId) {
     this.companyId = companyId;
     return this;
   }
@@ -84,11 +83,11 @@ public class DeepBox {
    * @return companyId
   **/
   @Schema(description = "")
-  public UUID getCompanyId() {
+  public String getCompanyId() {
     return companyId;
   }
 
-  public void setCompanyId(UUID companyId) {
+  public void setCompanyId(String companyId) {
     this.companyId = companyId;
   }
 

@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * TransformToUser
  */
@@ -27,12 +26,12 @@ import java.util.UUID;
 
 public class TransformToUser {
   @JsonProperty("pendingUserId")
-  private UUID pendingUserId = null;
+  private String pendingUserId = null;
 
   @JsonProperty("userId")
-  private UUID userId = null;
+  private String userId = null;
 
-  public TransformToUser pendingUserId(UUID pendingUserId) {
+  public TransformToUser pendingUserId(String pendingUserId) {
     this.pendingUserId = pendingUserId;
     return this;
   }
@@ -42,15 +41,15 @@ public class TransformToUser {
    * @return pendingUserId
   **/
   @Schema(required = true, description = "")
-  public UUID getPendingUserId() {
+  public String getPendingUserId() {
     return pendingUserId;
   }
 
-  public void setPendingUserId(UUID pendingUserId) {
+  public void setPendingUserId(String pendingUserId) {
     this.pendingUserId = pendingUserId;
   }
 
-  public TransformToUser userId(UUID userId) {
+  public TransformToUser userId(String userId) {
     this.userId = userId;
     return this;
   }
@@ -60,11 +59,11 @@ public class TransformToUser {
    * @return userId
   **/
   @Schema(required = true, description = "")
-  public UUID getUserId() {
+  public String getUserId() {
     return userId;
   }
 
-  public void setUserId(UUID userId) {
+  public void setUserId(String userId) {
     this.userId = userId;
   }
 

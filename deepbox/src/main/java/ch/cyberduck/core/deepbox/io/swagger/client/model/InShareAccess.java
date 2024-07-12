@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * InShareAccess
  */
@@ -29,10 +28,10 @@ import java.util.UUID;
 
 public class InShareAccess {
   @JsonProperty("accessId")
-  private UUID accessId = null;
+  private String accessId = null;
 
   @JsonProperty("accessNodeId")
-  private UUID accessNodeId = null;
+  private String accessNodeId = null;
 
   @JsonProperty("accessNodeName")
   private String accessNodeName = null;
@@ -46,7 +45,7 @@ public class InShareAccess {
   @JsonProperty("withUser")
   private UserContext withUser = null;
 
-  public InShareAccess accessId(UUID accessId) {
+  public InShareAccess accessId(String accessId) {
     this.accessId = accessId;
     return this;
   }
@@ -56,15 +55,15 @@ public class InShareAccess {
    * @return accessId
   **/
   @Schema(description = "")
-  public UUID getAccessId() {
+  public String getAccessId() {
     return accessId;
   }
 
-  public void setAccessId(UUID accessId) {
+  public void setAccessId(String accessId) {
     this.accessId = accessId;
   }
 
-  public InShareAccess accessNodeId(UUID accessNodeId) {
+  public InShareAccess accessNodeId(String accessNodeId) {
     this.accessNodeId = accessNodeId;
     return this;
   }
@@ -74,11 +73,11 @@ public class InShareAccess {
    * @return accessNodeId
   **/
   @Schema(description = "")
-  public UUID getAccessNodeId() {
+  public String getAccessNodeId() {
     return accessNodeId;
   }
 
-  public void setAccessNodeId(UUID accessNodeId) {
+  public void setAccessNodeId(String accessNodeId) {
     this.accessNodeId = accessNodeId;
   }
 

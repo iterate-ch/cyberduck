@@ -7,7 +7,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +40,7 @@ public class AttributesRestControllerApi {
    * @return Map&lt;String, String&gt;
    * @throws ApiException if fails to make API call
    */
-  public Map<String, String> readFileAttributes(UUID nodeId) throws ApiException {
+  public Map<String, String> readFileAttributes(String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -81,7 +80,7 @@ public class AttributesRestControllerApi {
    * @param nodeId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void writeFileAttributes(Map<String, String> body, UUID deepBoxAppKey, UUID nodeId) throws ApiException {
+  public void writeFileAttributes(Map<String, String> body, String deepBoxAppKey, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

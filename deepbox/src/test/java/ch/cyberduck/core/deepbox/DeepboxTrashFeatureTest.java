@@ -38,7 +38,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
 import static org.junit.Assert.*;
@@ -54,7 +53,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
         final String nodeId = new DeepboxAttributesFinderFeature(session, nodeid).find(file).getFileId();
-        new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(nodeId), null, null, null); // assert no fail
+        new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null); // assert no fail
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
         new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(file));
@@ -66,7 +65,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(fileInTrash));
         try {
-            new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(nodeId), null, null, null);
+            new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null);
         }
         catch(ApiException e) {
             // not found
@@ -81,7 +80,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new DeepboxDirectoryFeature(session, nodeid).mkdir(new Path(documents, String.format(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String nodeId = nodeid.getFileId(folder);
-        new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(nodeId), null, null, null); // assert no fail
+        new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null); // assert no fail
         final Path subfolderWithContent = new DeepboxDirectoryFeature(session, nodeid).mkdir(new Path(folder, new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(subfolderWithContent));
         final Path file = new Path(subfolderWithContent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -97,12 +96,12 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path folderInTrash = new Path(trash, folder.getName(), EnumSet.of(Path.Type.directory));
         assertTrue(new DeepboxFindFeature(session, nodeid).find(folderInTrash));
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, nodeid).find(folderInTrash).getFileId());
-        new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(nodeId), null, null, null); // assert no fail
+        new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null); // assert no fail
         // file in trash is purged (i.e. deleted permanently)
         new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(folderInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folderInTrash));
         try {
-            new CoreRestControllerApi(session.getClient()).getNodeInfo(UUID.fromString(nodeId), null, null, null);
+            new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null);
         }
         catch(ApiException e) {
             // not found

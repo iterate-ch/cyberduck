@@ -45,8 +45,8 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
     public void testDeepBox() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path directory = new Path("/ORG 4 - DeepBox Desktop App/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-        assertEquals(ORG4.toString(), nodeid.getFileId(directory));
-        assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(directory));
+        assertEquals(ORG4, nodeid.getFileId(directory));
+        assertEquals(ORG4, nodeid.getDeepBoxNodeId(directory));
         assertThrows(NotfoundException.class, () -> nodeid.getBoxNodeId(directory));
         assertThrows(NotfoundException.class, () -> nodeid.getThirdLevelId(directory));
     }
@@ -55,9 +55,9 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
     public void testBox() throws Exception {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path directory = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
-        assertEquals(ORG4_BOX1.toString(), nodeid.getFileId(directory));
-        assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(directory));
-        assertEquals(ORG4_BOX1.toString(), nodeid.getBoxNodeId(directory));
+        assertEquals(ORG4_BOX1, nodeid.getFileId(directory));
+        assertEquals(ORG4, nodeid.getDeepBoxNodeId(directory));
+        assertEquals(ORG4_BOX1, nodeid.getBoxNodeId(directory));
         assertThrows(NotfoundException.class, () -> nodeid.getThirdLevelId(directory));
     }
 
@@ -66,8 +66,8 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path directory = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         assertEquals("dc37e9db-36e9-4330-881c-730789aaa8ce", nodeid.getFileId(directory));
-        assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(directory));
-        assertEquals(ORG4_BOX1.toString(), nodeid.getBoxNodeId(directory));
+        assertEquals(ORG4, nodeid.getDeepBoxNodeId(directory));
+        assertEquals(ORG4_BOX1, nodeid.getBoxNodeId(directory));
         assertEquals("dc37e9db-36e9-4330-881c-730789aaa8ce", nodeid.getThirdLevelId(directory));
     }
 
@@ -76,8 +76,8 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path directory = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         assertEquals("1fc77175-f2a7-4b65-bd38-9aaeb9272a90", nodeid.getFileId(directory));
-        assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(directory));
-        assertEquals(ORG4_BOX1.toString(), nodeid.getBoxNodeId(directory));
+        assertEquals(ORG4, nodeid.getDeepBoxNodeId(directory));
+        assertEquals(ORG4_BOX1, nodeid.getBoxNodeId(directory));
         assertEquals("1fc77175-f2a7-4b65-bd38-9aaeb9272a90", nodeid.getThirdLevelId(directory));
     }
 
@@ -86,8 +86,8 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path directory = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         assertEquals("ec5f9666-f99e-47ad-bc8c-41da9f1324e2", nodeid.getFileId(directory));
-        assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(directory));
-        assertEquals(ORG4_BOX1.toString(), nodeid.getBoxNodeId(directory));
+        assertEquals(ORG4, nodeid.getDeepBoxNodeId(directory));
+        assertEquals(ORG4_BOX1, nodeid.getBoxNodeId(directory));
         assertEquals("ec5f9666-f99e-47ad-bc8c-41da9f1324e2", nodeid.getThirdLevelId(directory));
     }
 
@@ -96,8 +96,8 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path directory = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         assertEquals("e9ad9677-0883-4751-817f-8407a590dc9d", nodeid.getFileId(directory));
-        assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(directory));
-        assertEquals(ORG4_BOX1.toString(), nodeid.getBoxNodeId(directory));
+        assertEquals(ORG4, nodeid.getDeepBoxNodeId(directory));
+        assertEquals(ORG4_BOX1, nodeid.getBoxNodeId(directory));
         assertEquals("ec5f9666-f99e-47ad-bc8c-41da9f1324e2", nodeid.getThirdLevelId(directory));
     }
 
@@ -106,8 +106,8 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
         final Path file = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
         assertEquals("c38d7abf-4d37-4303-8061-d76efd4e77b0", nodeid.getFileId(file));
-        assertEquals(ORG4.toString(), nodeid.getDeepBoxNodeId(file));
-        assertEquals(ORG4_BOX1.toString(), nodeid.getBoxNodeId(file));
+        assertEquals(ORG4, nodeid.getDeepBoxNodeId(file));
+        assertEquals(ORG4_BOX1, nodeid.getBoxNodeId(file));
         assertEquals("ec5f9666-f99e-47ad-bc8c-41da9f1324e2", nodeid.getThirdLevelId(file));
     }
 }

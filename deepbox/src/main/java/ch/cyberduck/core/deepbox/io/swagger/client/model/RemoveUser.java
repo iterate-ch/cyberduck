@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * RemoveUser
  */
@@ -27,12 +26,12 @@ import java.util.UUID;
 
 public class RemoveUser {
   @JsonProperty("userId")
-  private UUID userId = null;
+  private String userId = null;
 
   @JsonProperty("companyId")
-  private UUID companyId = null;
+  private String companyId = null;
 
-  public RemoveUser userId(UUID userId) {
+  public RemoveUser userId(String userId) {
     this.userId = userId;
     return this;
   }
@@ -42,15 +41,15 @@ public class RemoveUser {
    * @return userId
   **/
   @Schema(required = true, description = "")
-  public UUID getUserId() {
+  public String getUserId() {
     return userId;
   }
 
-  public void setUserId(UUID userId) {
+  public void setUserId(String userId) {
     this.userId = userId;
   }
 
-  public RemoveUser companyId(UUID companyId) {
+  public RemoveUser companyId(String companyId) {
     this.companyId = companyId;
     return this;
   }
@@ -60,11 +59,11 @@ public class RemoveUser {
    * @return companyId
   **/
   @Schema(required = true, description = "")
-  public UUID getCompanyId() {
+  public String getCompanyId() {
     return companyId;
   }
 
-  public void setCompanyId(UUID companyId) {
+  public void setCompanyId(String companyId) {
     this.companyId = companyId;
   }
 

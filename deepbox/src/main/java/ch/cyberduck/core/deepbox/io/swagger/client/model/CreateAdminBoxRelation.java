@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * CreateAdminBoxRelation
  */
@@ -27,9 +26,9 @@ import java.util.UUID;
 
 public class CreateAdminBoxRelation {
   @JsonProperty("targetBoxNodeId")
-  private UUID targetBoxNodeId = null;
+  private String targetBoxNodeId = null;
 
-  public CreateAdminBoxRelation targetBoxNodeId(UUID targetBoxNodeId) {
+  public CreateAdminBoxRelation targetBoxNodeId(String targetBoxNodeId) {
     this.targetBoxNodeId = targetBoxNodeId;
     return this;
   }
@@ -39,11 +38,11 @@ public class CreateAdminBoxRelation {
    * @return targetBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getTargetBoxNodeId() {
+  public String getTargetBoxNodeId() {
     return targetBoxNodeId;
   }
 
-  public void setTargetBoxNodeId(UUID targetBoxNodeId) {
+  public void setTargetBoxNodeId(String targetBoxNodeId) {
     this.targetBoxNodeId = targetBoxNodeId;
   }
 

@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
 
@@ -62,11 +61,11 @@ public class DeepboxMoveFeature implements Move {
             final String sourceId = fileid.getFileId(file);
             final NodeMove nodeMove = new NodeMove();
             final String targetParentId = fileid.getFileId(renamed.getParent());
-            nodeMove.setTargetParentNodeId(UUID.fromString(targetParentId));
-            new CoreRestControllerApi(session.getClient()).moveNode(nodeMove, UUID.fromString(sourceId));
+            nodeMove.setTargetParentNodeId(targetParentId);
+            new CoreRestControllerApi(session.getClient()).moveNode(nodeMove, sourceId);
             final NodeUpdate nodeUpdate = new NodeUpdate();
             nodeUpdate.setName(renamed.getName());
-            new CoreRestControllerApi(session.getClient()).updateNode(nodeUpdate, UUID.fromString(sourceId));
+            new CoreRestControllerApi(session.getClient()).updateNode(nodeUpdate, sourceId);
             fileid.cache(file, null);
             fileid.cache(renamed, sourceId);
             return renamed;

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * InSharedNode
  */
@@ -30,7 +29,7 @@ import java.util.UUID;
 
 public class InSharedNode {
   @JsonProperty("nodeId")
-  private UUID nodeId = null;
+  private String nodeId = null;
 
   @JsonProperty("name")
   private String name = null;
@@ -44,7 +43,7 @@ public class InSharedNode {
   @JsonProperty("availablePermissions")
   private List<Permission> availablePermissions = null;
 
-  public InSharedNode nodeId(UUID nodeId) {
+  public InSharedNode nodeId(String nodeId) {
     this.nodeId = nodeId;
     return this;
   }
@@ -54,11 +53,11 @@ public class InSharedNode {
    * @return nodeId
   **/
   @Schema(description = "")
-  public UUID getNodeId() {
+  public String getNodeId() {
     return nodeId;
   }
 
-  public void setNodeId(UUID nodeId) {
+  public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 

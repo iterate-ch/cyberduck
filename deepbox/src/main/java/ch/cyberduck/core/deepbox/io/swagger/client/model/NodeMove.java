@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 /**
  * NodeMove
  */
@@ -27,9 +26,9 @@ import java.util.UUID;
 
 public class NodeMove {
   @JsonProperty("targetParentNodeId")
-  private UUID targetParentNodeId = null;
+  private String targetParentNodeId = null;
 
-  public NodeMove targetParentNodeId(UUID targetParentNodeId) {
+  public NodeMove targetParentNodeId(String targetParentNodeId) {
     this.targetParentNodeId = targetParentNodeId;
     return this;
   }
@@ -39,11 +38,11 @@ public class NodeMove {
    * @return targetParentNodeId
   **/
   @Schema(description = "")
-  public UUID getTargetParentNodeId() {
+  public String getTargetParentNodeId() {
     return targetParentNodeId;
   }
 
-  public void setTargetParentNodeId(UUID targetParentNodeId) {
+  public void setTargetParentNodeId(String targetParentNodeId) {
     this.targetParentNodeId = targetParentNodeId;
   }
 

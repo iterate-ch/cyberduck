@@ -26,8 +26,6 @@ import ch.cyberduck.core.features.Restore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.UUID;
-
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANREVERT;
 
 public class DeepboxRestoreFeature implements Restore {
@@ -45,7 +43,7 @@ public class DeepboxRestoreFeature implements Restore {
     public void restore(final Path file, final LoginCallback prompt) throws BackgroundException {
         final String nodeId = fileid.getFileId(file);
         try {
-            new CoreRestControllerApi(session.getClient()).revertNode(UUID.fromString(nodeId));
+            new CoreRestControllerApi(session.getClient()).revertNode(nodeId);
             this.fileid.cache(file, null);
         }
         catch(ApiException e) {

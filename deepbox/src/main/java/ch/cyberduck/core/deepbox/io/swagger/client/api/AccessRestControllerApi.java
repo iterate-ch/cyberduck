@@ -11,7 +11,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Access;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.AccessAdd;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.AccessData;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.AccessUpdate;
-import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public class AccessRestControllerApi {
    * @return List&lt;Access&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Access> addAccesses(AccessAdd body, UUID nodeId) throws ApiException {
+  public List<Access> addAccesses(AccessAdd body, String nodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -91,7 +90,7 @@ public class AccessRestControllerApi {
    * @return List&lt;Access&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<Access> addBoxAccesses(AccessAdd body, UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public List<Access> addBoxAccesses(AccessAdd body, String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -138,7 +137,7 @@ public class AccessRestControllerApi {
    * @param accessId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteAccess(UUID accessId) throws ApiException {
+  public void deleteAccess(String accessId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'accessId' is set
     if (accessId == null) {
@@ -176,7 +175,7 @@ public class AccessRestControllerApi {
    * @return AccessData
    * @throws ApiException if fails to make API call
    */
-  public AccessData listAccesses(UUID nodeId) throws ApiException {
+  public AccessData listAccesses(String nodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -216,7 +215,7 @@ public class AccessRestControllerApi {
    * @return AccessData
    * @throws ApiException if fails to make API call
    */
-  public AccessData listAllBoxAccesses(UUID deepBoxNodeId, UUID boxNodeId) throws ApiException {
+  public AccessData listAllBoxAccesses(String deepBoxNodeId, String boxNodeId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'deepBoxNodeId' is set
     if (deepBoxNodeId == null) {
@@ -261,7 +260,7 @@ public class AccessRestControllerApi {
    * @param accessId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateAccess(AccessUpdate body, UUID nodeId, UUID accessId) throws ApiException {
+  public void updateAccess(AccessUpdate body, String nodeId, String accessId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -310,7 +309,7 @@ public class AccessRestControllerApi {
    * @param accessId  (required)
    * @throws ApiException if fails to make API call
    */
-  public void updateBoxAccess(AccessUpdate body, UUID deepBoxNodeId, UUID boxNodeId, UUID accessId) throws ApiException {
+  public void updateBoxAccess(AccessUpdate body, String deepBoxNodeId, String boxNodeId, String accessId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {

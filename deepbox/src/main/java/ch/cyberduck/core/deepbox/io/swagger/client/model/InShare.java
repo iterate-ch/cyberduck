@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 /**
  * InShare
  */
@@ -31,25 +30,25 @@ import java.util.UUID;
 
 public class InShare {
   @JsonProperty("shareId")
-  private UUID shareId = null;
+  private String shareId = null;
 
   @JsonProperty("deepBoxNodeId")
-  private UUID deepBoxNodeId = null;
+  private String deepBoxNodeId = null;
 
   @JsonProperty("boxType")
   private String boxType = null;
 
   @JsonProperty("boxNodeId")
-  private UUID boxNodeId = null;
+  private String boxNodeId = null;
 
   @JsonProperty("boxName")
   private String boxName = null;
 
   @JsonProperty("originCompanyId")
-  private UUID originCompanyId = null;
+  private String originCompanyId = null;
 
   @JsonProperty("withCompanyId")
-  private UUID withCompanyId = null;
+  private String withCompanyId = null;
 
   @JsonProperty("withEmail")
   private String withEmail = null;
@@ -60,7 +59,7 @@ public class InShare {
   @JsonProperty("sharedNodes")
   private List<InSharedNode> sharedNodes = null;
 
-  public InShare shareId(UUID shareId) {
+  public InShare shareId(String shareId) {
     this.shareId = shareId;
     return this;
   }
@@ -70,15 +69,15 @@ public class InShare {
    * @return shareId
   **/
   @Schema(description = "")
-  public UUID getShareId() {
+  public String getShareId() {
     return shareId;
   }
 
-  public void setShareId(UUID shareId) {
+  public void setShareId(String shareId) {
     this.shareId = shareId;
   }
 
-  public InShare deepBoxNodeId(UUID deepBoxNodeId) {
+  public InShare deepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
     return this;
   }
@@ -88,11 +87,11 @@ public class InShare {
    * @return deepBoxNodeId
   **/
   @Schema(description = "")
-  public UUID getDeepBoxNodeId() {
+  public String getDeepBoxNodeId() {
     return deepBoxNodeId;
   }
 
-  public void setDeepBoxNodeId(UUID deepBoxNodeId) {
+  public void setDeepBoxNodeId(String deepBoxNodeId) {
     this.deepBoxNodeId = deepBoxNodeId;
   }
 
@@ -114,7 +113,7 @@ public class InShare {
     this.boxType = boxType;
   }
 
-  public InShare boxNodeId(UUID boxNodeId) {
+  public InShare boxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
     return this;
   }
@@ -124,11 +123,11 @@ public class InShare {
    * @return boxNodeId
   **/
   @Schema(description = "")
-  public UUID getBoxNodeId() {
+  public String getBoxNodeId() {
     return boxNodeId;
   }
 
-  public void setBoxNodeId(UUID boxNodeId) {
+  public void setBoxNodeId(String boxNodeId) {
     this.boxNodeId = boxNodeId;
   }
 
@@ -150,7 +149,7 @@ public class InShare {
     this.boxName = boxName;
   }
 
-  public InShare originCompanyId(UUID originCompanyId) {
+  public InShare originCompanyId(String originCompanyId) {
     this.originCompanyId = originCompanyId;
     return this;
   }
@@ -160,15 +159,15 @@ public class InShare {
    * @return originCompanyId
   **/
   @Schema(description = "")
-  public UUID getOriginCompanyId() {
+  public String getOriginCompanyId() {
     return originCompanyId;
   }
 
-  public void setOriginCompanyId(UUID originCompanyId) {
+  public void setOriginCompanyId(String originCompanyId) {
     this.originCompanyId = originCompanyId;
   }
 
-  public InShare withCompanyId(UUID withCompanyId) {
+  public InShare withCompanyId(String withCompanyId) {
     this.withCompanyId = withCompanyId;
     return this;
   }
@@ -178,11 +177,11 @@ public class InShare {
    * @return withCompanyId
   **/
   @Schema(description = "")
-  public UUID getWithCompanyId() {
+  public String getWithCompanyId() {
     return withCompanyId;
   }
 
-  public void setWithCompanyId(UUID withCompanyId) {
+  public void setWithCompanyId(String withCompanyId) {
     this.withCompanyId = withCompanyId;
   }
 
