@@ -30,17 +30,20 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.message.BasicHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,11 +72,6 @@ public class DeepboxReadFeature implements Read {
     public DeepboxReadFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-    }
-
-    @Override
-    public boolean offset(final Path file) throws BackgroundException {
-        return false;
     }
 
     protected void poll(final String downloadId) throws BackgroundException {
@@ -145,6 +143,23 @@ public class DeepboxReadFeature implements Read {
             final Download download = rest.requestDownload(new DownloadAdd().addNodesItem(boxNodeId));
             this.poll(download.getDownloadId());
             final HttpUriRequest request = new HttpGet(URI.create(rest.downloadStatus(download.getDownloadId(), null).getDownloadUrl()));
+            if(status.isAppend()) {
+                final HttpRange range = HttpRange.withStatus(status);
+                final String header;
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
+                    header = String.format("bytes=%d-", range.getStart());
+                }
+                else {
+                    header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Add range header %s for file %s", header, file));
+                }
+                request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
+                // Disable compression
+                request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
+            }
+
             final HttpResponse response = session.getClient().getClient().execute(request);
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:
