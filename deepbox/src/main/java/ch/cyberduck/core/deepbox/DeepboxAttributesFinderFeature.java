@@ -101,6 +101,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
      * @see ch.cyberduck.core.deepbox.io.swagger.client.model.NodePolicy#canRename(Boolean)
      */
     public static final Acl.Role CANRENAME = new Acl.Role("canRename");
+
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
     private final DeepboxPathContainerService containerService;
