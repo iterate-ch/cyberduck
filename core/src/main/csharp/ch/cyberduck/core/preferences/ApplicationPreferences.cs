@@ -275,16 +275,12 @@ public class ApplicationPreferences<T> : DefaultPreferences
         this.setDefault("local.normalize.unicode", bool.FalseString);
 
         // SSL Keystore
-        // Add mscapi security provider
-        Security.addProvider(new SunMSCAPI());
         this.setDefault("connection.ssl.keystore.type", "Windows-MY");
         this.setDefault("connection.ssl.keystore.provider", "SunMSCAPI");
 
         // Override secure random strong algorithm. Outputs bytes from the Windows CryptGenRandom() API
         this.setDefault("connection.ssl.securerandom.algorithm", "Windows-PRNG");
         this.setDefault("connection.ssl.securerandom.provider", "SunMSCAPI");
-        // Set secure random algorithms for BC
-        Security.setProperty("securerandom.strongAlgorithms", "Windows-PRNG:SunMSCAPI,SHA1PRNG:SUN");
 
         // Enable Integrated Windows Authentication
         this.setDefault("connection.proxy.windows.authentication.enable", bool.TrueString);
