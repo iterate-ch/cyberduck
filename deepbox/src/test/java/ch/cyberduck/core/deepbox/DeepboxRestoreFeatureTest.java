@@ -19,12 +19,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Restore;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -42,7 +40,7 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void restoreFile() throws BackgroundException {
-        final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -72,8 +70,8 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void restoreDirectory() throws BackgroundException, ApiException {
-        final DeepboxIdProvider fileid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void restoreDirectory() throws Exception {
+        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

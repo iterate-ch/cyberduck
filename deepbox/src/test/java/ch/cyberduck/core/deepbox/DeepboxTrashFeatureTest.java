@@ -25,10 +25,8 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -47,7 +45,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -75,7 +73,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testDeleteFolder() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new DeepboxDirectoryFeature(session, nodeid).mkdir(new Path(documents, String.format(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
@@ -111,15 +109,15 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testDeleteNotFound() {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertThrows(NotfoundException.class, () -> new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback()));
     }
 
     @Test
-    public void testNodeDeleteRoot() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testNodeDeleteRoot() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
@@ -127,8 +125,8 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testNodeDeleteDeepBox() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testNodeDeleteDeepBox() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
@@ -138,8 +136,8 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testNoDeleteBox() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testNoDeleteBox() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
@@ -149,8 +147,8 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testNoDeleteFile() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testNoDeleteFile() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path file = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/Property/RE-IN - Copy2.pdf", EnumSet.of(Path.Type.file));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(file);
         assertTrue(attributes.getAcl().containsKey(new Acl.CanonicalUser()));
@@ -161,8 +159,8 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testNoDeleteFolder() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testNoDeleteFolder() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/Property/", EnumSet.of(Path.Type.directory));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(attributes.getAcl().containsKey(new Acl.CanonicalUser()));
@@ -173,8 +171,8 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testDeleteRevertDeletePurgeFile() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testDeleteRevertDeletePurgeFile() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path parentFolder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Auditing", EnumSet.of(Path.Type.directory));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
@@ -214,8 +212,8 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testDeleteRevertDeletePurgeFolder() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testDeleteRevertDeletePurgeFolder() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path parentFolder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Auditing", EnumSet.of(Path.Type.directory));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
@@ -257,8 +255,8 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
 
     @Test
     // Trash not listable
-    public void testDeleteNoRevertFile() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testDeleteNoRevertFile() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path parentFolder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Documents/Bookkeeping", EnumSet.of(Path.Type.directory));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
@@ -278,8 +276,8 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
 
     @Test
     // Trash not listable
-    public void testDeleteNoRevertFolder() throws BackgroundException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testDeleteNoRevertFolder() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path parentFolder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2/Documents/Bookkeeping", EnumSet.of(Path.Type.directory));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, AbstractPath.Type.volume));
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));

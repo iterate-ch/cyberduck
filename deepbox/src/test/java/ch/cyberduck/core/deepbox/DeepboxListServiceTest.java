@@ -32,8 +32,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeCopy;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -59,7 +57,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testListDeepBoxes() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path directory = new Path("/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(directory, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
@@ -79,7 +77,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testListBoxes() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path deepBox = new Path("/ORG 4 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(deepBox, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
@@ -99,7 +97,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testListBox() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(box, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
@@ -128,7 +126,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testListDocuments() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(documents, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
@@ -146,7 +144,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testListInbox() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path queue = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox", EnumSet.of(Path.Type.directory));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(queue, new DisabledListProgressListener());
         assertNotEquals(AttributedList.emptyList(), list);
@@ -163,14 +161,14 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testListTrash() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory));
         new DeepboxListService(session, nodeid).list(trash, new DisabledListProgressListener()); // assert no fail
     }
 
     @Test
     public void testListReceipts() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path receipts = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/", EnumSet.of(AbstractPath.Type.directory));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(receipts, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
@@ -191,7 +189,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     public void testChunksizeExact() throws Exception {
         session.getHost().setProperty("deepbox.listing.chunksize", "5");
         final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
 
         final Path receipts = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(receipts, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
@@ -213,7 +211,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     public void testChunksizeInexact() throws Exception {
         session.getHost().setProperty("deepbox.listing.chunksize", "5");
         final int chunkSize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
 
         final Path receipts = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(receipts, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
@@ -233,7 +231,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testDuplicatesListing() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
 
         final Path auditing = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
@@ -272,7 +270,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testDuplicateFiles() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
@@ -292,7 +290,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     public void testDuplicateFolders() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
@@ -323,7 +321,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     // Still, subfolders of documents are accessible (by listing the boxes files, but without passing the nodeId).
     // See also comment at {@link DeepboxIdProvider#lookupDocumentsNodeId}.
     public void testNoListChildrenTrashInbox() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path box = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box2", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(box, new DisabledListProgressListener());
         final String deepBoxNodeId = nodeid.getDeepBoxNodeId(box);
@@ -347,8 +345,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testListChildrenInbox() throws BackgroundException, ApiException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testListChildrenInbox() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddQueue());
@@ -358,8 +356,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testListChildrenDocuments() throws BackgroundException, ApiException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testListChildrenDocuments() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddFilesRoot());
@@ -369,8 +367,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     }
 
     @Test
-    public void testListChildrenTrash() throws BackgroundException, ApiException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testListChildrenTrash() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddFilesRoot());
@@ -381,8 +379,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
     @Test
     // N.B. all folders always seem to have canListChildren
-    public void testListChildrenFolder() throws BackgroundException, ApiException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testListChildrenFolder() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Auditing", EnumSet.of(Path.Type.directory));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanListChildren());
@@ -393,8 +391,8 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
 
     @Test
-    public void testNoListChildrenFile() throws BackgroundException, ApiException {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+    public void testNoListChildrenFile() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanListChildren());

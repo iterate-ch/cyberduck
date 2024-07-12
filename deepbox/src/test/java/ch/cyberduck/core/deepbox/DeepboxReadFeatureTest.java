@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -47,7 +46,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testRead() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path file = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
         final String s = IOUtils.toString(new DeepboxReadFeature(session, nodeid).read(file, status, new DisabledConnectionCallback()));
         assertNotNull(s);
@@ -56,7 +55,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -66,7 +65,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
@@ -99,7 +98,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final DeepboxIdProvider nodeid = (DeepboxIdProvider) session.getFeature(FileIdProvider.class);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
