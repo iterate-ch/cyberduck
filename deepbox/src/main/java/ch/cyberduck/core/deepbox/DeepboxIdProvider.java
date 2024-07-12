@@ -20,8 +20,11 @@ import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Box;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Boxes;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.PathSegment;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -143,19 +146,19 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     final Optional<PathSegment> documentsId = new BoxRestControllerApi(session.getClient())
                             .listFiles(deepBoxNodeId, boxNodeId, null, null, null)
                             .getPath().getSegments().stream().findFirst();
-                    return documentsId.map(pathSegment -> pathSegment.getNodeId()).orElse(null);
+                    return documentsId.map(PathSegment::getNodeId).orElse(null);
                 }
                 if(containerService.isInbox(file)) {
                     final Optional<PathSegment> inboxId = new BoxRestControllerApi(session.getClient())
                             .listQueue(deepBoxNodeId, boxNodeId, null, null, null, null)
                             .getPath().getSegments().stream().findFirst();
-                    return inboxId.map(pathSegment -> pathSegment.getNodeId()).orElse(null);
+                    return inboxId.map(PathSegment::getNodeId).orElse(null);
                 }
                 if(containerService.isTrash(file)) {
                     final Optional<PathSegment> trashId = new BoxRestControllerApi(session.getClient())
                             .listTrash(deepBoxNodeId, boxNodeId, null, null, null)
                             .getPath().getSegments().stream().findFirst();
-                    return trashId.map(pathSegment -> pathSegment.getNodeId()).orElse(null);
+                    return trashId.map(PathSegment::getNodeId).orElse(null);
                 }
                 return null;
             }
@@ -250,7 +253,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 int size;
                 do {
                     final NodeContent files = supplier.getNodes(offset);
-                    final String nodeId = files.getNodes().stream().filter(b -> DeepboxPathNormalizer.name(b.getDisplayName()).equals(file.getName())).findFirst().map(b -> b.getNodeId()).orElse(null);
+                    final String nodeId = files.getNodes().stream().filter(b -> DeepboxPathNormalizer.name(b.getDisplayName()).equals(file.getName())).findFirst().map(Node::getNodeId).orElse(null);
                     if(nodeId != null) {
                         return nodeId;
                     }
@@ -277,7 +280,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 do {
                     final Boxes boxes = rest.listBoxes(deepBoxNodeId, offset, chunksize, "displayName asc", null);
                     final String boxName = file.getName();
-                    final String boxNodeId = boxes.getBoxes().stream().filter(b -> DeepboxPathNormalizer.name(b.getName()).equals(boxName)).findFirst().map(b -> b.getBoxNodeId()).orElse(null);
+                    final String boxNodeId = boxes.getBoxes().stream().filter(b -> DeepboxPathNormalizer.name(b.getName()).equals(boxName)).findFirst().map(Box::getBoxNodeId).orElse(null);
                     if(boxNodeId != null) {
                         return boxNodeId;
                     }
@@ -303,7 +306,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 do {
                     final DeepBoxes deepBoxes = rest.listDeepBoxes(offset, chunksize, "displayName asc", null);
                     final String deepBoxName = file.getName();
-                    final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> DeepboxPathNormalizer.name(db.getName()).equals(deepBoxName)).findFirst().map(db -> db.getDeepBoxNodeId()).orElse(null);
+                    final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> DeepboxPathNormalizer.name(db.getName()).equals(deepBoxName)).findFirst().map(DeepBox::getDeepBoxNodeId).orElse(null);
                     if(deepBoxNodeId != null) {
                         return deepBoxNodeId;
                     }
