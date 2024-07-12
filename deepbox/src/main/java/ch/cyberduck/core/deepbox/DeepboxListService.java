@@ -207,21 +207,21 @@ public class DeepboxListService implements ListService {
                 final String boxNodeId = fileid.getBoxNodeId(directory);
                 final Box box = rest.getBox(deepBoxNodeId, boxNodeId);
                 if(box.getBoxPolicy().isCanListQueue()) {
-                    final String inboxName = session.getPinnedLocalization(INBOX);
+                    final String inboxName = containerService.getPinnedLocalization(INBOX);
                     final Path inbox = new Path(directory, inboxName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                             new PathAttributes().withFileId(fileid.getFileId(new Path(directory, inboxName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
                     );
                     list.add(inbox.withAttributes(attributes.find(inbox)));
                 }
                 if(box.getBoxPolicy().isCanListFilesRoot()) {
-                    final String documentsName = session.getPinnedLocalization(DOCUMENTS);
+                    final String documentsName = containerService.getPinnedLocalization(DOCUMENTS);
                     final Path documents = new Path(directory, documentsName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                             new PathAttributes().withFileId(fileid.getFileId(new Path(directory, documentsName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
                     );
                     list.add(documents.withAttributes(attributes.find(documents)));
                 }
                 if(box.getBoxPolicy().isCanAccessTrash()) {
-                    final String trashName = session.getPinnedLocalization(TRASH);
+                    final String trashName = containerService.getPinnedLocalization(TRASH);
                     final Path trash = new Path(directory, trashName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                             new PathAttributes().withFileId(fileid.getFileId(new Path(directory, trashName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
                     );

@@ -88,14 +88,6 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
-        this.pinLocalizations();
-    }
-
-    /**
-     * Key to use in preferences to save the pinned locale.
-     */
-    private static String toPinnedLocalizationPropertyKey(final String name) {
-        return String.format("deepbox.localization.%s", name);
     }
 
     @Override
@@ -122,8 +114,8 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         new ChainedServiceUnavailableRetryStrategy(new ExecutionCountServiceUnavailableRetryStrategy(
                 new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
         configuration.addInterceptorLast(authorizationService);
-        configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request.addHeader("Accept-Language", this.getPinnedLocale()));
-
+        final String locale = this.pinLocalization();
+        configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request.addHeader("Accept-Language", locale));
         final CloseableHttpClient apache = configuration.build();
         final DeepboxApiClient client = new DeepboxApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
@@ -142,6 +134,24 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         return client;
     }
 
+    private String pinLocalization() {
+        final String locale;
+        if(null == preferences.getProperty("deepbox.locale")) {
+            locale = PreferencesFactory.get().locale();
+            host.setProperty("deepbox.locale", locale);
+        }
+        else {
+            locale = preferences.getProperty("deepbox.locale");
+        }
+        for(String name : DeepboxListService.VIRTUALFOLDERS) {
+            final String localized = preferences.getProperty(DeepboxPathContainerService.toPinnedLocalizationPropertyKey(name));
+            if(null == localized) {
+                host.setProperty(DeepboxPathContainerService.toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
+            }
+        }
+        return locale;
+    }
+
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = authorizationService.validate();
@@ -155,27 +165,6 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map(e);
         }
-    }
-
-    private void pinLocalizations() {
-        final String locale = preferences.getProperty("deepbox.locale");
-        if(null == locale) {
-            host.setProperty("deepbox.locale", PreferencesFactory.get().locale());
-        }
-        for(String name : DeepboxListService.VIRTUALFOLDERS) {
-            final String localized = preferences.getProperty(toPinnedLocalizationPropertyKey(name));
-            if(null == localized) {
-                host.setProperty(toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
-            }
-        }
-    }
-
-    public String getPinnedLocale() {
-        return preferences.getProperty("deepbox.locale");
-    }
-
-    public String getPinnedLocalization(final String name) {
-        return DeepboxPathNormalizer.name(preferences.getProperty(toPinnedLocalizationPropertyKey(name)));
     }
 
     @Override

@@ -81,7 +81,8 @@ public class AbstractDeepboxTest extends VaultTest {
         }
         else {
             session.getFeature(Trash.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            final Path trash = new Path(new DeepboxPathContainerService(session).getBoxPath(file).withAttributes(new PathAttributes()), session.getPinnedLocalization(DeepboxListService.TRASH), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+            final Path trash = new Path(new DeepboxPathContainerService(session).getBoxPath(file).withAttributes(new PathAttributes()),
+                    new DeepboxPathContainerService(session).getPinnedLocalization(DeepboxListService.TRASH), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
             final Path fileInTrash = new Path(trash, file.getName(), file.getType());
             session.getFeature(Delete.class).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
