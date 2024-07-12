@@ -1,9 +1,6 @@
 ﻿using java.nio.file;
 using NUnit.Framework;
-using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
@@ -17,7 +14,7 @@ public class RevealServiceTests
     [Test]
     public unsafe void TestSHCreateItemFromPath([Values([false, true])] bool create, [Values([false, true])] bool validate)
     {
-        string path = LongPath(1024);
+        string path = PathUtils.LongPath(1024);
         if (create)
         {
             Paths.get(path).toFile().mkdirs();
@@ -51,7 +48,7 @@ public class RevealServiceTests
     public unsafe void TestSHParseDisplayName([Values([false, true])] bool create, [Values([false, true])] bool validate)
     {
         ITEMIDLIST* idlist = null;
-        string path = LongPath(1024);
+        string path = PathUtils.LongPath(1024);
         if (create)
         {
             Paths.get(path).toFile().mkdirs();
@@ -86,31 +83,5 @@ public class RevealServiceTests
         {
             Marshal.FreeCoTaskMem((nint)idlist);
         }
-    }
-
-    private static string LongPath(int minimumLength, string pattern = null, [CallerMemberName] string testName = null)
-    {
-        pattern ??= System.IO.Path.GetRandomFileName();
-        string basePath = $@"{TestContext.CurrentContext.WorkDirectory}\{testName}\";
-        var startIndex = basePath.Length;
-        minimumLength = Math.Max(minimumLength, startIndex + pattern.Length);
-        minimumLength += (minimumLength - startIndex) % (pattern.Length + 2) - 1;
-
-        StringBuilder builder = new(basePath)
-        {
-            Length = minimumLength
-        };
-
-        for (int i = basePath.Length, m = 0; i < minimumLength; i++)
-        {
-            if (m == pattern.Length)
-            {
-                m = 0;
-                builder[i] = '\\';
-            }
-            else builder[i] = pattern[m++];
-        }
-
-        return builder.ToString();
     }
 }

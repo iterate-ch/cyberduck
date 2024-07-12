@@ -1,7 +1,10 @@
 ﻿using ch.cyberduck.core;
+using com.sun.nio.file;
 using java.nio.file;
 using java.util;
+using java.util.concurrent;
 using NUnit.Framework;
+using System.Threading;
 using CoreLocal = ch.cyberduck.core.Local;
 using CorePath = ch.cyberduck.core.Path;
 using Path = System.IO.Path;
@@ -104,7 +107,7 @@ namespace Ch.Cyberduck.Core.Local
 
         [Test]
         public void TestAbsoluteEquality([Values(
-            PIPE_NAME, 
+            PIPE_NAME,
             @"\\?\C:\ÄÖÜßßäöü",
             WSL_PATH,
             @"\Volumes\System\Test",
@@ -119,6 +122,25 @@ namespace Ch.Cyberduck.Core.Local
         public void TestTildePath()
         {
             Assert.That(new CoreLocal("~/.ssh/known_hosts").getAbsolute(), Is.Not.Empty);
+        }
+
+        [Test]
+        public void WatchServiceLongPath([Values(0, 260, 1024)] int length)
+        {
+            var localPath = Paths.get(PathUtils.TestDir);
+            var targetPath = Paths.get(PathUtils.LongPath(length), Path.GetRandomFileName());
+            var targetFile = targetPath.toFile();
+            targetFile.getParentFile().mkdirs();
+            using var watcher = FileSystems.getDefault().newWatchService();
+            _ = localPath.register(watcher, [StandardWatchEventKinds.ENTRY_CREATE], [ExtendedWatchEventModifier.FILE_TREE]);
+            Thread.Sleep(500);
+            targetFile.createNewFile();
+            WatchKey poll;
+            Assert.That(poll = watcher.poll(1, TimeUnit.SECONDS), Is.Not.Null);
+            UtilList<WatchEvent> events;
+            Assert.That(events = poll.pollEvents().ToList<WatchEvent>(), Is.Not.Empty);
+            var first = events[0];
+            Assert.That(first.kind(), Is.EqualTo(StandardWatchEventKinds.ENTRY_CREATE));
         }
     }
 }
