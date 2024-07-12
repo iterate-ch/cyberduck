@@ -15,7 +15,20 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Trash;
@@ -82,7 +95,7 @@ public class AbstractDeepboxTest extends VaultTest {
         else {
             session.getFeature(Trash.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
             final Path trash = new Path(new DeepboxPathContainerService(session).getBoxPath(file).withAttributes(new PathAttributes()),
-                    new DeepboxPathContainerService(session).getPinnedLocalization(DeepboxListService.TRASH), EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+                    new DeepboxPathContainerService(session).getPinnedLocalization(DeepboxListService.TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume));
             final Path fileInTrash = new Path(trash, file.getName(), file.getType());
             session.getFeature(Delete.class).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
