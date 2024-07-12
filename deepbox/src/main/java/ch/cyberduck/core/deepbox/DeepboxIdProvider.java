@@ -110,7 +110,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             if(StringUtils.isNotBlank(segment.attributes().getFileId())) {
                 continue;
             }
-            final String cachedSeg = super.getFileId(file);
+            final String cachedSeg = super.getFileId(segment);
             if(cachedSeg != null) {
                 continue;
             }
