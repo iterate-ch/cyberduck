@@ -16,8 +16,10 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -25,6 +27,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -45,7 +48,7 @@ public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
             assertNotNull(feature.toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         }
         finally {
-            deleteAndPurge(test);
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 }

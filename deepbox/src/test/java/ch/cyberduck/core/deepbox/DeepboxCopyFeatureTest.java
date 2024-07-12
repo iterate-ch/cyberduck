@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -29,6 +30,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -49,8 +51,8 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
             assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(new PathAttributes())));
         }
         finally {
-            deleteAndPurge(test.withAttributes(new PathAttributes()));
-            deleteAndPurge(copy.withAttributes(new PathAttributes()));
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test.withAttributes(new PathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(copy.withAttributes(new PathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 
@@ -62,7 +64,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(UnsupportedException.class, () -> new DeepboxCopyFeature(session, fileid).preflight(directory, copy));
-        deleteAndPurge(directory);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(directory.withAttributes(new PathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -107,8 +109,8 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         assertEquals(originalTargetAttributes.getModificationDate(), trashedTargetAttributes.getModificationDate());
         assertEquals(originalTargetAttributes.getChecksum(), trashedTargetAttributes.getChecksum());
 
-        deleteAndPurge(targetInTrash);
-        deleteAndPurge(target);
-        deleteAndPurge(test);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

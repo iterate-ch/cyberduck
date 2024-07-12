@@ -18,6 +18,7 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -58,7 +59,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertEquals(test.attributes().getChecksum(), target.attributes().getChecksum());
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), new DeepboxAttributesFinderFeature(session, fileid).find(target)));
 
-        deleteAndPurge(target);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -73,7 +74,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertFalse(new DeepboxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target));
 
-        deleteAndPurge(target);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -108,8 +109,8 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertEquals(originalTargetAttributes.getModificationDate(), trashedTargetAttributes.getModificationDate());
         assertEquals(originalTargetAttributes.getChecksum(), trashedTargetAttributes.getChecksum());
 
-        deleteAndPurge(targetInTrash);
-        deleteAndPurge(target);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -144,8 +145,8 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertEquals(originalTargetAttributes.getModificationDate(), trashedTargetAttributes.getModificationDate());
         assertEquals(originalTargetAttributes.getChecksum(), trashedTargetAttributes.getChecksum());
 
-        deleteAndPurge(targetInTrash);
-        deleteAndPurge(target);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -228,7 +229,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
         assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(fileInTrash, file));
         assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(fileInTrash, new Path(trash, file.getName(), EnumSet.of(Path.Type.file))));
-        deleteAndPurge(fileInTrash);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -244,7 +245,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
         assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(file, fileInTrash));
-        deleteAndPurge(file);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

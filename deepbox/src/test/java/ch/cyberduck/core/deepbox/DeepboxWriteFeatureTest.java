@@ -18,11 +18,13 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -69,7 +71,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             assertEquals(content.length, new DeepboxAttributesFinderFeature(session, nodeid).find(file).getSize());
         }
         finally {
-            deleteAndPurge(file);
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 
@@ -89,7 +91,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
-        deleteAndPurge(file);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -138,7 +140,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(nodeId, new DeepboxIdProvider(session).getFileId(test));
-        deleteAndPurge(room);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -164,8 +166,8 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        deleteAndPurge(file);
-        deleteAndPurge(room);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -195,6 +197,6 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         assertThrows(TransferStatusCanceledException.class, () -> new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out));
         assertFalse(new DefaultFindFeature(session).find(test));
         assertThrows(TransferStatusCanceledException.class, out::getStatus);
-        deleteAndPurge(room);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

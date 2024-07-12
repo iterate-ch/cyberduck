@@ -110,7 +110,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(folder, new TransferStatus());
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
-        deleteAndPurge(folder);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
     }
 
@@ -121,6 +121,6 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path test = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new DeepboxDirectoryFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), test.getName());
         assertTrue(new DeepboxFindFeature(session, fileid).find(test));
-        deleteAndPurge(test);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

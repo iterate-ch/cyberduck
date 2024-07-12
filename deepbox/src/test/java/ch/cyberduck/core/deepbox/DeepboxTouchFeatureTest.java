@@ -17,12 +17,14 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -30,6 +32,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
@@ -52,7 +55,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DeepboxTouchFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), test.getName());
         assertTrue(new DeepboxFindFeature(session, fileid).find(test));
-        deleteAndPurge(test);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -61,7 +64,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Insurance", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random() + "éf", EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, fileid).find(documents));
-        deleteAndPurge(test);
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

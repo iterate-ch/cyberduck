@@ -24,14 +24,10 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -42,7 +38,6 @@ import org.junit.Before;
 
 import java.util.AbstractMap;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,19 +81,6 @@ public class AbstractDeepboxTest extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-    }
-
-    protected void deleteAndPurge(final Path file) throws BackgroundException {
-        if(new DeepboxPathContainerService(session).isInTrash(file)) {
-            session.getFeature(Delete.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-        else {
-            session.getFeature(Trash.class).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            final Path trash = new Path(new DeepboxPathContainerService(session).getBoxPath(file).withAttributes(new PathAttributes()),
-                    new DeepboxPathContainerService(session).getPinnedLocalization(DeepboxListService.TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume));
-            final Path fileInTrash = new Path(trash, file.getName(), file.getType());
-            session.getFeature(Delete.class).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {

@@ -18,9 +18,11 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -35,6 +37,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -59,7 +62,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
         final Path test = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertThrows(NotfoundException.class, () -> new DeepboxReadFeature(session, nodeid).read(new Path(test, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
-        deleteAndPurge(test);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -92,7 +95,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        deleteAndPurge(file);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -125,6 +128,6 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        deleteAndPurge(file);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

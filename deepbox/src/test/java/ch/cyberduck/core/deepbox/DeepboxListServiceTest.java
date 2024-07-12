@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeCopy;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -202,7 +204,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertEquals(numFiles, listing.size());
         }
         finally {
-            deleteAndPurge(folder);
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 
@@ -224,7 +226,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertEquals(numFiles, listing.size());
         }
         finally {
-            deleteAndPurge(folder);
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 
@@ -264,7 +266,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         assertTrue(nodeContent.getNodes().get(0).getNodeId().equals(nodeid.getFileId(file)) ||
                 nodeContent.getNodes().get(1).getNodeId().equals(nodeid.getFileId(file))
         );
-        deleteAndPurge(folder);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -284,7 +286,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
             assertTrue(f.attributes().isDuplicate());
         }
-        deleteAndPurge(folder);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -311,7 +313,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
             assertTrue(f.attributes().isDuplicate());
         }
-        deleteAndPurge(folder);
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
