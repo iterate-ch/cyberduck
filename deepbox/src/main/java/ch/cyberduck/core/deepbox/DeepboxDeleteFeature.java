@@ -31,6 +31,6 @@ public class DeepboxDeleteFeature extends DeepboxTrashFeature {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         // Purge directly if not yet in trash
-        super.trash(files, prompt, callback, true);
+        super.trash(files, callback, true);
     }
 }

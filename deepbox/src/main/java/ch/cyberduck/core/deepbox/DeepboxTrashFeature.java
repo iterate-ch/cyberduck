@@ -46,11 +46,11 @@ public class DeepboxTrashFeature implements Trash {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        this.trash(files, prompt, callback, false);
+        this.trash(files, callback, false);
     }
 
-    // move to trash unless already in trash or forcePurge=true
-    protected void trash(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback, final boolean forcePurge) throws BackgroundException {
+    // Move to trash unless already in trash or forcePurge=true
+    protected void trash(final Map<Path, TransferStatus> files, final Callback callback, final boolean forcePurge) throws BackgroundException {
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             final Path file = entry.getKey();
             try {
@@ -58,7 +58,7 @@ public class DeepboxTrashFeature implements Trash {
                 final UUID nodeId = UUID.fromString(fileId);
                 callback.delete(file);
                 final boolean inTrash = new DeepboxPathContainerService(session).isInTrash(file);
-                // purge if in trash
+                // Purge if in trash
                 new CoreRestControllerApi(session.getClient()).deletePurgeNode(nodeId, inTrash || forcePurge);
                 fileid.cache(file, null);
             }
