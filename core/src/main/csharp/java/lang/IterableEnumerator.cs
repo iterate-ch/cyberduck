@@ -4,18 +4,12 @@ using System.Collections.Generic;
 
 namespace java.lang
 {
-    public struct IterableEnumerator : IEnumerator
+    public struct IterableEnumerator(Iterable iterable) : IEnumerator
     {
-        private readonly Iterable iterable;
         private object current;
         private Iterator iterator;
 
-        public IterableEnumerator(Iterable iterable)
-        {
-            this.iterable = iterable;
-        }
-
-        public object Current => current;
+        public readonly object Current => current;
 
         public bool MoveNext()
         {
@@ -25,6 +19,7 @@ namespace java.lang
                 current = iterator.next();
                 return true;
             }
+
             return false;
         }
 
@@ -34,24 +29,17 @@ namespace java.lang
         }
     }
 
-    public struct IterableEnumerator<T> : IEnumerator<T>
+    public struct IterableEnumerator<T>(Iterable iterable) : IEnumerator<T>
     {
-        private readonly Iterable iterable;
         private T current;
         private Iterator iterator;
 
-        public IterableEnumerator(Iterable iterable)
-        {
-            this.iterable = iterable;
-        }
+        public readonly T Current => current;
 
-        public T Current => current;
+        readonly object IEnumerator.Current => current;
 
-        object IEnumerator.Current => current;
-
-        public void Dispose()
-        {
-        }
+        public readonly void Dispose()
+        { }
 
         public bool MoveNext()
         {
@@ -61,6 +49,7 @@ namespace java.lang
                 current = (T)iterator.next();
                 return true;
             }
+
             return false;
         }
 
