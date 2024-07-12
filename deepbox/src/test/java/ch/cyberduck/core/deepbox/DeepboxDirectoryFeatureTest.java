@@ -22,7 +22,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -89,7 +88,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testDocuments() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final DeepboxDirectoryFeature directory = (DeepboxDirectoryFeature) session.getFeature(Directory.class);
+        final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(folder, new TransferStatus());

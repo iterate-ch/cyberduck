@@ -23,7 +23,6 @@ import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Restore;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -59,7 +58,7 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
         assertThrows(NotfoundException.class, () -> new DeepboxAttributesFinderFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())).getFileId());
 
-        final DeepboxRestoreFeature restore = (DeepboxRestoreFeature) session.getFeature(Restore.class);
+        final DeepboxRestoreFeature restore = new DeepboxRestoreFeature(session, fileid);
         restore.restore(testInTrash, new DisabledLoginCallback());
         assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, fileid).find(testInTrash.withAttributes(new PathAttributes())));
@@ -114,7 +113,7 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
         assertEquals(subFolderId, new DeepboxAttributesFinderFeature(session, fileid).find(subfolderWithContentInTrash.withAttributes(new PathAttributes())).getFileId());
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, fileid).find(fileInTrash.withAttributes(new PathAttributes())).getFileId());
 
-        final DeepboxRestoreFeature restore = (DeepboxRestoreFeature) session.getFeature(Restore.class);
+        final DeepboxRestoreFeature restore = new DeepboxRestoreFeature(session, fileid);
         restore.restore(folderInTrash, new DisabledLoginCallback());
         assertTrue(new DeepboxFindFeature(session, fileid).find(folder.withAttributes(new PathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(subfolderWithContent.withAttributes(new PathAttributes())));
