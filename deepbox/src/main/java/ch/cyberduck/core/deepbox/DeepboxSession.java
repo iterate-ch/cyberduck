@@ -88,6 +88,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+        this.pinLocalizations();
     }
 
     /**
@@ -156,19 +157,24 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         }
     }
 
-    public String getPinnedLocale() {
+    private void pinLocalizations() {
         final String locale = preferences.getProperty("deepbox.locale");
         if(null == locale) {
             host.setProperty("deepbox.locale", PreferencesFactory.get().locale());
         }
+        for(String name : DeepboxListService.VIRTUALFOLDERS) {
+            final String localized = preferences.getProperty(toPinnedLocalizationPropertyKey(name));
+            if(null == localized) {
+                host.setProperty(toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
+            }
+        }
+    }
+
+    public String getPinnedLocale() {
         return preferences.getProperty("deepbox.locale");
     }
 
     public String getPinnedLocalization(final String name) {
-        final String localized = preferences.getProperty(toPinnedLocalizationPropertyKey(name));
-        if(null == localized) {
-            host.setProperty(toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
-        }
         return DeepboxPathNormalizer.name(preferences.getProperty(toPinnedLocalizationPropertyKey(name)));
     }
 

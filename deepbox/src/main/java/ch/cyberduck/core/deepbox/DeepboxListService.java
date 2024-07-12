@@ -40,15 +40,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCHILDREN;
 
 public class DeepboxListService implements ListService {
+
+    private static final Logger log = LogManager.getLogger(DeepboxListService.class);
+
     public static final String INBOX = "Inbox";
     public static final String DOCUMENTS = "Documents";
     public static final String TRASH = "Trash";
-    private static final Logger log = LogManager.getLogger(DeepboxListService.class);
+    public static final List<String> VIRTUALFOLDERS = Arrays.asList(INBOX, DOCUMENTS, TRASH);
+
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
     private final DeepboxAttributesFinderFeature attributes;
