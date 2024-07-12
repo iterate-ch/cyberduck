@@ -4,7 +4,9 @@ using java.nio.file;
 using java.util;
 using java.util.concurrent;
 using NUnit.Framework;
+using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using CoreLocal = ch.cyberduck.core.Local;
 using CorePath = ch.cyberduck.core.Path;
 using Path = System.IO.Path;
@@ -133,7 +135,6 @@ namespace Ch.Cyberduck.Core.Local
             targetFile.getParentFile().mkdirs();
             using var watcher = FileSystems.getDefault().newWatchService();
             _ = localPath.register(watcher, [StandardWatchEventKinds.ENTRY_CREATE], [ExtendedWatchEventModifier.FILE_TREE]);
-            Thread.Sleep(500);
             targetFile.createNewFile();
             WatchKey poll;
             Assert.That(poll = watcher.poll(1, TimeUnit.SECONDS), Is.Not.Null);
@@ -141,6 +142,31 @@ namespace Ch.Cyberduck.Core.Local
             Assert.That(events = poll.pollEvents().ToList<WatchEvent>(), Is.Not.Empty);
             var first = events[0];
             Assert.That(first.kind(), Is.EqualTo(StandardWatchEventKinds.ENTRY_CREATE));
+        }
+
+        [Test]
+        public void FileSystemWatcherLongPath([Values(0, 260, 1024)] int length)
+        {
+            var localPath = Paths.get(PathUtils.TestDir);
+            var targetPath = Paths.get(PathUtils.LongPath(length), Path.GetRandomFileName());
+            var targetFile = targetPath.toFile();
+            targetFile.getParentFile().mkdirs();
+            using FileSystemWatcher watcher = new(localPath.toString())
+            {
+                IncludeSubdirectories = true
+            };
+
+            var task = Task.Factory.StartNew(state => ((FileSystemWatcher)state).WaitForChanged(WatcherChangeTypes.Created, 1000), watcher, TaskCreationOptions.LongRunning);
+            while (task.Status != TaskStatus.Running && !task.IsCompleted)
+            {
+                Thread.Sleep(125);
+            }
+
+            targetFile.createNewFile();
+            WaitForChangedResult result = task.Result;
+            Assert.That(!result.TimedOut);
+            Assert.That(result.ChangeType, Is.EqualTo(WatcherChangeTypes.Created));
+            Assert.That(localPath.relativize(targetPath).toString(), Is.EqualTo(result.Name));
         }
     }
 }
