@@ -16,26 +16,26 @@
 // yves@cyberduck.ch
 // 
 
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.threading;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
+using ch.cyberduck.core.threading;
+using ch.cyberduck.ui.core;
+using Ch.Cyberduck.Core.TaskDialog;
 using java.lang;
-using String = System.String;
-using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
+using UiUtils = Ch.Cyberduck.Ui.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
     public class DialogAlertCallback : AlertCallback
     {
-        private readonly WindowController _controller;
+        private readonly IWindowController _controller;
         private readonly FailureDiagnostics _diagnostics = new DefaultFailureDiagnostics();
         private readonly NotificationAlertCallback _notification = new NotificationAlertCallback();
 
-        public DialogAlertCallback(WindowController controller)
+        public DialogAlertCallback(IWindowController controller)
         {
             _controller = controller;
         }
@@ -68,39 +68,51 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                     string commandButtons;
                     if (type == FailureDiagnostics.Type.network)
                     {
-                        commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
+                        commandButtons = string.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
                                                        LocaleFactory.localizedString("Network Diagnostics", "Alert"));
                     }
                     else if (type == FailureDiagnostics.Type.quota)
                     {
-                        commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
+                        commandButtons = string.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
                                                        LocaleFactory.localizedString("Help", "Main"));
                     }
                     else
                     {
-                        commandButtons = String.Format("{0}", LocaleFactory.localizedString("Try Again", "Alert"));
+                        commandButtons = string.Format("{0}", LocaleFactory.localizedString("Try Again", "Alert"));
                     }
-                    _controller.WarningBox(title, message, detail, expanded, commandButtons, true, footer,
-                                           delegate(int option, bool @checked)
-                                               {
-                                                   switch (option)
-                                                   {
-                                                       case 0:
-                                                           r = true;
-                                                           break;
-                                                       case 1:
-                                                           if (type == FailureDiagnostics.Type.network)
-                                                           {
-                                                               ReachabilityDiagnosticsFactory.get().diagnose(host);
-                                                           }
-                                                           if (type == FailureDiagnostics.Type.quota)
-                                                           {
-                                                               BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(host.getProtocol()));
-                                                           }
-                                                           r = false;
-                                                           break;
-                                                   }
-                                               });
+
+                    UiUtils.CommandBox(
+                        owner: _controller.Window,
+                        title: title,
+                        mainInstruction: message,
+                        content: detail,
+                        expandedInfo: expanded,
+                        help: footer,
+                        verificationText: null,
+                        commandButtons: commandButtons,
+                        showCancelButton: true,
+                        mainIcon: TaskDialogIcon.Warning,
+                        footerIcon: TaskDialogIcon.Information,
+                        handler: (option, @checked) =>
+                        {
+                            switch (option)
+                            {
+                                case 0:
+                                    r = true;
+                                    break;
+                                case 1:
+                                    if (type == FailureDiagnostics.Type.network)
+                                    {
+                                        ReachabilityDiagnosticsFactory.get().diagnose(host);
+                                    }
+                                    if (type == FailureDiagnostics.Type.quota)
+                                    {
+                                        BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(host.getProtocol()));
+                                    }
+                                    r = false;
+                                    break;
+                            }
+                        });
                 }, true);
             return r;
         }

@@ -39,6 +39,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public virtual IView View { get; set; }
 
+        public bool Visible => View?.Visible ?? false;
+
         public IWin32Window Window => View;
 
         public void Background(AsyncDelegate del, AsyncDelegate cleanup)

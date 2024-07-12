@@ -19,20 +19,21 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.ui.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
-using Ch.Cyberduck.Ui.Controller;
 using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
+using UiUtils = Ch.Cyberduck.Ui.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
     public class DialogTransferErrorCallback : TransferErrorCallback
     {
-        private readonly WindowController _controller;
+        private readonly IWindowController _controller;
         private bool _option;
         private bool _supressed;
 
-        public DialogTransferErrorCallback(WindowController controller)
+        public DialogTransferErrorCallback(IWindowController controller)
         {
             _controller = controller;
         }
@@ -48,22 +49,28 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                 AtomicBoolean c = new AtomicBoolean(true);
                 _controller.Invoke(delegate
                 {
-                    TaskDialogResult result = _controller.View.CommandBox(LocaleFactory.localizedString("Error"),
-                        failure.getMessage() ?? LocaleFactory.localizedString("Unknown"),
-                        failure.getDetail() ?? LocaleFactory.localizedString("Unknown"), null, null,
-                        LocaleFactory.localizedString("Always"),
-                        LocaleFactory.localizedString("Continue", "Credentials"), true, TaskDialogIcon.Warning,
-                        TaskDialogIcon.Information, delegate(int opt, bool verificationChecked)
+                    if (UiUtils.CommandBox(
+                        owner: _controller.Window,
+                        title: LocaleFactory.localizedString("Error"),
+                        mainInstruction: failure.getMessage() ?? LocaleFactory.localizedString("Unknown"),
+                        content: failure.getDetail() ?? LocaleFactory.localizedString("Unknown"),
+                        expandedInfo: null,
+                        help: null,
+                        verificationText: LocaleFactory.localizedString("Always"),
+                        commandButtons: LocaleFactory.localizedString("Continue", "Credentials"),
+                        showCancelButton: true,
+                        mainIcon: TaskDialogIcon.Warning,
+                        footerIcon: TaskDialogIcon.Information,
+                        handler: (opt, verificationChecked) =>
                         {
                             if (verificationChecked)
                             {
                                 _supressed = true;
                                 _option = c.Value;
                             }
-                        });
-                    if (result.Button == IDCANCEL)
+                        }) is { Button: IDCANCEL })
                     {
-                        c.SetValue(false);
+                        c.SetValue(true);
                     }
                 }, true);
                 return c.Value;

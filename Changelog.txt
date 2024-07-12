@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+9.0.1
+- [Bugfix] Auto detect of vaults not always working (Cryptomator)
+
 9.0.0
 - [Feature] Versioning of files edited in external application (#15137)
 - [Feature] Custom icons for protocols (Nextcloud, ownCloud)

@@ -31,24 +31,12 @@ import ch.cyberduck.core.ctera.model.PublicInfo;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.CustomActions;
-import ch.cyberduck.core.features.DefaultFileIdProvider;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.FileIdProvider;
-import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.features.Metadata;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -196,6 +184,9 @@ public class CteraSession extends DAVSession {
         }
         if(type == FileIdProvider.class) {
             return (T) new DefaultFileIdProvider();
+        }
+        if(type == Quota.class) {
+            return (T) new DisabledQuotaFeature();
         }
         return super._getFeature(type);
     }

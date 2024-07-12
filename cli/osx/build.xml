@@ -100,11 +100,12 @@
             <replacefilter token="${SOURCE}"
                            value="https://dist.duck.sh/duck-src-${version}.${revision}.tar.gz"/>
         </replace>
-        <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+        <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true"
+              unless:true="${skipSign}">
             <arg line="pkgbuild --component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
-        <checksum file="${build.deploy}/duck-${version}.${revision}.pkg" algorithm="md5"/>
-        <exec executable="/usr/bin/xcrun" failonerror="true">
+        <checksum file="${build.deploy}/duck-${version}.${revision}.pkg" algorithm="md5" unless:true="${skipSign}"/>
+        <exec executable="/usr/bin/xcrun" failonerror="true" unless:true="${skipSign}">
             <arg line="pkgutil --check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
         <antcall target="notarize" unless:true="${skipNotarize}">

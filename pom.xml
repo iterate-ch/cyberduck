@@ -517,7 +517,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                     <configuration>
                         <argLine>@{argLine} --add-opens=java.base/sun.security.ssl=ALL-UNNAMED
                             --add-opens=java.base/sun.security.util=ALL-UNNAMED
@@ -538,14 +538,14 @@
                         <dependency>
                             <groupId>org.apache.maven.surefire</groupId>
                             <artifactId>surefire-junit47</artifactId>
-                            <version>3.3.0</version>
+                            <version>3.3.1</version>
                         </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                     <configuration>
                         <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
@@ -568,7 +568,7 @@
                         <dependency>
                             <groupId>org.apache.maven.surefire</groupId>
                             <artifactId>surefire-junit47</artifactId>
-                            <version>3.3.0</version>
+                            <version>3.3.1</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -670,7 +670,7 @@
                 <plugin>
                     <groupId>io.swagger.codegen.v3</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>3.0.57</version>
+                    <version>3.0.58</version>
                     <configuration>
                         <configOptions>
                             <sourceFolder>src/main/java</sourceFolder>

@@ -928,13 +928,11 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ConfirmDisconnect = PreferencesFactory.get().getBoolean("browser.disconnect.confirm");
             View.UseKeychain = PreferencesFactory.get().getBoolean("connection.login.keychain");
             PopulateDefaultProtocols();
-            View.DefaultProtocol =
-                ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
+            View.DefaultProtocol = ProtocolFactory.get().forNameOrDefault(
+                PreferencesFactory.get().getProperty("connection.protocol.default"));
             View.AlternatingRowBackground = PreferencesFactory.get().getBoolean("browser.alternatingRows");
             View.VerticalLines = PreferencesFactory.get().getBoolean("browser.verticalLines");
             View.HorizontalLines = PreferencesFactory.get().getBoolean("browser.horizontalLines");
-            View.DefaultProtocol = ProtocolFactory.get().forNameOrDefault(
-                PreferencesFactory.get().getProperty("connection.protocol.default"));
             PopulateEncodings();
             View.DefaultEncoding = PreferencesFactory.get().getProperty("browser.charset.encoding");
 
