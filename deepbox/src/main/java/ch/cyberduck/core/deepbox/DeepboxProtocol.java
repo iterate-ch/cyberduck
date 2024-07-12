@@ -60,11 +60,6 @@ public class DeepboxProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isOAuthPKCE() {
-        return true;
-    }
-
-    @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
     }
