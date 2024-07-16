@@ -16,47 +16,46 @@
 // feedback@cyberduck.io
 // 
 
-using System;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp;
+using ch.cyberduck.ui.core;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.security;
 using net.schmizz.sshj.common;
 using org.apache.logging.log4j;
+using System;
+using UiUtils = Ch.Cyberduck.Ui.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class HostKeyController : PreferencesHostKeyVerifier
+    /// <param name="parent">
+    /// Parent browser
+    /// </param>
+    public class HostKeyController(IWindowController parent) : PreferencesHostKeyVerifier
     {
         private static readonly Logger Log = LogManager.getLogger(typeof (HostKeyController).FullName);
-
-        /// <summary>
-        /// Parent browser
-        /// </summary>
-        private readonly WindowController _parent;
-
-        public HostKeyController(WindowController c)
-        {
-            _parent = c;
-        }
 
         protected override bool isUnknownKeyAccepted(Host host, PublicKey key)
         {
             AsyncController.AsyncDelegate d = delegate
             {
-                _parent.CommandBox(
-                    String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), host.getHostname()),
-                    String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), host.getHostname()),
-                    String.Format(
+                UiUtils.CommandBox(
+                    owner: parent.Window,
+                    title: String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), host.getHostname()),
+                    mainInstruction: String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), host.getHostname()),
+                    content: String.Format(
                         LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.",
                             "Sftp"), new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).toString()),
-                    String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
-                        LocaleFactory.localizedString("Deny")), false, LocaleFactory.localizedString("Always"),
-                    TaskDialogIcon.Question,
-                    ProviderHelpServiceFactory.get().help(Scheme.sftp),
-                    delegate(int option, bool verificationChecked)
+                    expandedInfo: null,
+                    help: ProviderHelpServiceFactory.get().help(Scheme.sftp),
+                    verificationText: LocaleFactory.localizedString("Always"),
+                    commandButtons: String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
+                        LocaleFactory.localizedString("Deny")),
+                    showCancelButton: false, 
+                    mainIcon: TaskDialogIcon.Question,
+                    footerIcon: TaskDialogIcon.Information,
+                    handler: delegate (int option, bool verificationChecked)
                     {
                         switch (option)
                         {
@@ -69,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     });
             };
-            _parent.Invoke(d, true);
+            parent.Invoke(d, true);
             return true;
         }
 
@@ -77,17 +76,22 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             AsyncController.AsyncDelegate d = delegate
             {
-                _parent.CommandBox(
-                    String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), host.getHostname()),
-                    String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), host.getHostname()),
-                    String.Format(
+                UiUtils.CommandBox(
+                    owner: parent.Window,
+                    title: String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), host.getHostname()),
+                    mainInstruction: String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), host.getHostname()),
+                    content: String.Format(
                         LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.",
                             "Sftp"), new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).toString()),
-                    String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
-                        LocaleFactory.localizedString("Deny")), false, LocaleFactory.localizedString("Always"),
-                    TaskDialogIcon.Warning,
-                    ProviderHelpServiceFactory.get().help(Scheme.sftp),
-                    delegate(int option, bool verificationChecked)
+                    expandedInfo: null,
+                    help: ProviderHelpServiceFactory.get().help(Scheme.sftp),
+                    verificationText: LocaleFactory.localizedString("Always"),
+                    commandButtons: String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
+                        LocaleFactory.localizedString("Deny")), 
+                    showCancelButton: false, 
+                    mainIcon: TaskDialogIcon.Warning,
+                    footerIcon: TaskDialogIcon.Information,
+                    handler: delegate (int option, bool verificationChecked)
                     {
                         switch (option)
                         {
@@ -100,7 +104,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     });
             };
-            _parent.Invoke(d, true);
+            parent.Invoke(d, true);
             return true;
         }
     }
