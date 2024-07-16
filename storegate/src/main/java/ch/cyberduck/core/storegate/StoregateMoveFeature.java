@@ -74,7 +74,7 @@ public class StoregateMoveFeature implements Move {
                     case HttpStatus.SC_NO_CONTENT:
                         final PathAttributes attr = new PathAttributes(file.attributes());
                         fileid.cache(file, null);
-                        fileid.cache(renamed, file.attributes().getFileId());
+                        fileid.cache(renamed, attr.getFileId());
                         return renamed.withAttributes(attr);
                     default:
                         throw new StoregateExceptionMappingService(fileid).map("Cannot rename {0}",
