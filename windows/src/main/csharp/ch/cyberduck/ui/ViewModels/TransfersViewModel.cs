@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,13 +40,14 @@ using static Ch.Cyberduck.ImageHelper;
 
 namespace ch.cyberduck.ui.ViewModels;
 
-public partial class TransfersViewModel : SynchronizedObservableObject
+public sealed partial class TransfersViewModel : ObservableObject, IDisposable
 {
     public static readonly Logger Log = LogManager.getLogger(typeof(TransferViewModel).FullName);
 
     private readonly Dictionary<int, BandwidthViewModel> bandwidthLookup;
     private readonly Dictionary<int, ConnectionViewModel> connectionLookup;
     private readonly WpfIconProvider iconProvider;
+    private readonly CompositeDisposable subscriptions = [];
     private readonly Preferences preferences;
     private readonly ReadOnlyObservableCollection<TransferViewModel> selectedTransfers;
     private readonly TransfersStore store;
@@ -230,25 +232,25 @@ public partial class TransfersViewModel : SynchronizedObservableObject
 
         var transfersCache = store.Transfers.Connect().ObserveOnDispatcher()
             .Transform(m => new TransferViewModel(controller, m, locale)).DisposeMany()
-            .Bind(out transfers).AsObservableCache();
-        transfersCache.Connect().WhenAnyPropertyChanged().Subscribe(OnTransferItemChanged);
-        transfersCache.CountChanged.Subscribe(OnTransfersCountChanged);
+            .Bind(out transfers).AsObservableCache().DisposeWith(subscriptions);
+        subscriptions.Add(transfersCache.Connect().Subscribe(OnTransfersChanged));
+        subscriptions.Add(transfersCache.CountChanged.Subscribe(OnTransfersCountChanged));
 
         var localTransfers = transfersCache.Connect()
             .AutoRefresh(m => m.IsSelected).Filter(m => m.IsSelected)
-            .Bind(out selectedTransfers).AsObservableCache();
-        localTransfers.Connect().WhenAnyPropertyChanged().Subscribe(OnSelectedTransferPropertyChanged);
-        localTransfers.CountChanged.Subscribe(OnSelectionCountChanged);
+            .Bind(out selectedTransfers).AsObservableCache().DisposeWith(subscriptions);
+        subscriptions.Add(localTransfers.Connect().WhenAnyPropertyChanged().ObserveOnDispatcher().Subscribe(OnSelectedTransferPropertyChanged));
+        subscriptions.Add(localTransfers.CountChanged.Subscribe(OnSelectionCountChanged));
 
         var progressStream = controller.Progress.Connect();
-        Observable.CombineLatest(
+        subscriptions.Add(Observable.CombineLatest(
             controller.Progress.CountChanged,
             progressStream.Avg(m => m.Progress)
                 .InvalidateWhen(progressStream.WhenPropertyChanged(v => v.Progress, false)),
             progressStream.TrueForAll(
                 v => v.WhenPropertyChanged(v => v.Progress),
                 v => v.Value is not null),
-            (count, progress, allRunning) => new ProgressState(allRunning, count, progress)).Subscribe(OnProgressChanged);
+            (count, progress, allRunning) => new ProgressState(allRunning, count, progress)).Subscribe(OnProgressChanged));
 
         BandwidthViewModel unlimitedBandwidth = new(-1, true, locale.localize("Unlimited Bandwidth", "Preferences"));
         Bandwidth = [
@@ -264,7 +266,12 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         connectionLookup = Connections.ToDictionary(m => m.Connections);
         selectedConnectionLimit = FetchConnectionLimit();
 
-        this.WhenValueChanged(v => v.Controller.BadgeLabel, fallbackValue: () => null).Subscribe(v => TaskbarDescription = v);
+        subscriptions.Add(this.WhenValueChanged(v => v.Controller.BadgeLabel, fallbackValue: () => null).Subscribe(v => TaskbarDescription = v));
+    }
+
+    public void Dispose()
+    {
+        subscriptions.Dispose();
     }
 
     partial void OnSelectedConnectionLimitChanged(ConnectionViewModel value)
@@ -449,17 +456,29 @@ public partial class TransfersViewModel : SynchronizedObservableObject
     private async Task OnShowCanExecute(CancellationToken cancellationToken)
     {
         CanShow = false;
+        bool __result = false;
         try
         {
-            CanShow = await Task.Run(Run, cancellationToken).ConfigureAwait(true);
+            __result = await Task.Run(Run, cancellationToken);
         }
         catch { }
+        finally
+        {
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                CanShow = __result;
+            }
+        }
 
         bool Run()
         {
             foreach (var item in SelectedTransfers)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return false;
+                }
+
                 if (item.Local is null)
                 {
                     continue;
@@ -467,7 +486,10 @@ public partial class TransfersViewModel : SynchronizedObservableObject
 
                 foreach (var file in item.Roots)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return false;
+                    }
                     if (file.TransferItem.Local.exists())
                     {
                         return true;
@@ -493,18 +515,27 @@ public partial class TransfersViewModel : SynchronizedObservableObject
         }
     }
 
+    private void OnTransfersChanged(IChangeSet<TransferViewModel, Transfer> changes)
+    {
+        if (SelectedTransfers.Count is 0 && changes.Adds is 1)
+        {
+            if (changes.FirstOrDefault(m => m.Reason is ChangeReason.Add) is
+                {
+                    Current:
+                    {
+                        ProgressState: not null
+                    } viewModel
+                })
+            {
+                viewModel.IsSelected = true;
+                WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(viewModel));
+            }
+        }
+    }
+
     private void OnTransfersCountChanged(int obj)
     {
         CleanCommand.NotifyCanExecuteChanged();
-    }
-
-    private void OnTransferItemChanged(TransferViewModel transferViewModel)
-    {
-        if (SelectedTransfers.Count is 0 && transferViewModel.ProgressState is not null)
-        {
-            transferViewModel.IsSelected = true;
-            WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(transferViewModel));
-        }
     }
 
     [RelayCommand(CanExecute = nameof(ValidateTrashCommand))]
