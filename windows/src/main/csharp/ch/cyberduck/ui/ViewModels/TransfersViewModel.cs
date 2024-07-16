@@ -233,7 +233,7 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
         var transfersCache = store.Transfers.Connect().ObserveOnDispatcher()
             .Transform(m => new TransferViewModel(controller, m, locale)).DisposeMany()
             .Bind(out transfers).AsObservableCache().DisposeWith(subscriptions);
-        subscriptions.Add(transfersCache.Connect().WhenAnyPropertyChanged().Subscribe(OnTransferItemChanged));
+        subscriptions.Add(transfersCache.Connect().Subscribe(OnTransfersChanged));
         subscriptions.Add(transfersCache.CountChanged.Subscribe(OnTransfersCountChanged));
 
         var localTransfers = transfersCache.Connect()
@@ -515,18 +515,27 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void OnTransfersChanged(IChangeSet<TransferViewModel, Transfer> changes)
+    {
+        if (SelectedTransfers.Count is 0 && changes.Adds is 1)
+        {
+            if (changes.FirstOrDefault(m => m.Reason is ChangeReason.Add) is
+                {
+                    Current:
+                    {
+                        ProgressState: not null
+                    } viewModel
+                })
+            {
+                viewModel.IsSelected = true;
+                WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(viewModel));
+            }
+        }
+    }
+
     private void OnTransfersCountChanged(int obj)
     {
         CleanCommand.NotifyCanExecuteChanged();
-    }
-
-    private void OnTransferItemChanged(TransferViewModel transferViewModel)
-    {
-        if (SelectedTransfers.Count is 0 && transferViewModel.ProgressState is not null)
-        {
-            transferViewModel.IsSelected = true;
-            WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(transferViewModel));
-        }
     }
 
     [RelayCommand(CanExecute = nameof(ValidateTrashCommand))]
