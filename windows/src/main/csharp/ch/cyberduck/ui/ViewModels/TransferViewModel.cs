@@ -31,7 +31,7 @@ using System.Text;
 
 namespace ch.cyberduck.ui.ViewModels
 {
-    public partial class TransferViewModel : SynchronizedObservableObject, IDisposable
+    public partial class TransferViewModel : ObservableObject, IDisposable
     {
         private static readonly UserDateFormatter dateFormatter = UserDateFormatterFactory.get();
         private static readonly SizeFormatter sizeFormatter = SizeFormatterFactory.get(false);
@@ -149,7 +149,7 @@ namespace ch.cyberduck.ui.ViewModels
                 }
 
                 return subscription;
-            }).Subscribe(v => ProgressState = v);
+            }).ObserveOnDispatcher().Subscribe(v => ProgressState = v);
 
             Transfer.Roots.Connect().ObserveOnDispatcher()
                 .Transform(m => new TransferItemViewModel(m))
@@ -200,7 +200,7 @@ namespace ch.cyberduck.ui.ViewModels
 
         partial void OnProgressStateChanged(TransferProgressModel old, TransferProgressModel value)
         {
-            progressStateNotifications.Disposable = value?.WhenAnyPropertyChanged().Subscribe(OnProgressStateChanged);
+            progressStateNotifications.Disposable = value?.WhenAnyPropertyChanged().ObserveOnDispatcher().Subscribe(OnProgressStateChanged);
         }
 
         private void OnTransferChanged(object sender, PropertyChangedEventArgs e)

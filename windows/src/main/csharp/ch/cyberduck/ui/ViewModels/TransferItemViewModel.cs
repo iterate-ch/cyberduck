@@ -18,7 +18,7 @@ using System;
 
 namespace ch.cyberduck.ui.ViewModels;
 
-public partial class TransferItemViewModel : SynchronizedObservableObject
+public partial class TransferItemViewModel : ObservableObject
 {
     [ObservableProperty]
     private string title;
