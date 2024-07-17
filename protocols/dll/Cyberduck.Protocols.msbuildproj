@@ -13,6 +13,7 @@
         <Convert Include="$(TargetBuildDir)ch.cyberduck.box.jar" />
         <Convert Include="$(TargetBuildDir)ch.cyberduck.brick.jar" />
         <Convert Include="$(TargetBuildDir)ch.cyberduck.ctera.jar" />
+        <Convert Include="$(TargetBuildDir)ch.cyberduck.deepbox.jar" />
         <Convert Include="$(TargetBuildDir)ch.cyberduck.dracoon.jar" />
         <Convert Include="$(TargetBuildDir)ch.cyberduck.dropbox.jar" />
         <Convert Include="$(TargetBuildDir)ch.cyberduck.eue.jar" />
