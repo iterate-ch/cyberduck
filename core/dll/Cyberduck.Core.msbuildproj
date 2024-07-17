@@ -6,8 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <JavaResource Include="$(TargetBuildDir)jnidispatch.dll" ResourcePath="/com/sun/jna/win32-x64/jnidispatch.dll" />
-
         <Convert Include="$(TargetBuildDir)ch.cyberduck.core.jar" />
         <Convert Include="$(TargetBuildDir)ch.cyberduck.defaults.jar" />
         <Convert Include="$(TargetBuildDir)ch.iterate.s3.jets3t.jar" />
