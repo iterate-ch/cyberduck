@@ -96,6 +96,10 @@ public class ListWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public void cleanup(final AttributedList<Path> list) {
+        // Do not cache results from a canceled list worker as it may be incomplete
+        if(this.isCanceled()) {
+            return;
+        }
         // Update the working directory if listing is successful
         if(!(AttributedList.<Path>emptyList() == list)) {
             // Cache directory listing
@@ -106,7 +110,7 @@ public class ListWorker extends Worker<AttributedList<Path>> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
-            directory.getName());
+                directory.getName());
     }
 
     @Override
