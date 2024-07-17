@@ -22,7 +22,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,7 +37,7 @@ import java.util.Map;
 
 import com.google.api.services.drive.model.File;
 
-public class DriveTrashFeature implements Delete {
+public class DriveTrashFeature implements Trash {
     private static final Logger log = LogManager.getLogger(DriveTrashFeature.class);
 
     private final DriveSession session;
