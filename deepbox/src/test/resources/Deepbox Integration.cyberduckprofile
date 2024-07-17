@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>deepbox</string>
+        <key>Vendor</key>
+        <string>deepbox</string>
+        <key>Description</key>
+        <string>DeepBox Integration</string>
+        <key>Nickname</key>
+        <string>DeepBox Integration</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Username Placeholder</key>
+        <string>Username</string>
+        <key>Password Placeholder</key>
+        <string>Password</string>
+        <key>Default Hostname</key>
+        <string>api.int.deepbox.swiss</string>
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Anonymous Configurable</key>
+        <false/>
+        <key>Path Configurable</key>
+        <true/>
+        <key>Certificate Configurable</key>
+        <false/>
+        <key>Authorization</key>
+        <string>oauth</string>
+        <key>Username Configurable</key>
+        <false/>
+        <key>Password Configurable</key>
+        <false/>
+        <key>OAuth Authorization Url</key>
+        <string>https://int.deepcloud.swiss/auth/realms/sso/protocol/openid-connect/auth</string>
+        <key>OAuth Token Url</key>
+        <string>https://int.deepcloud.swiss/auth/realms/sso/protocol/openid-connect/token</string>
+        <key>OAuth Redirect Url</key>
+        <string>x-deepbox-action:oauth</string>
+        <key>OAuth Client ID</key>
+        <string>deepbox-desktop-app-int</string>
+        <key>OAuth Client Secret</key>
+        <string>h3NNafBfFE6T8Nk62rLpjXPxY6q0o36J</string>
+        <key>Scopes</key>
+        <array>
+            <string>offline_access</string>
+        </array>
+    </dict>
+</plist>

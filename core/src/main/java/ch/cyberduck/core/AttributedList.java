@@ -26,8 +26,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -201,6 +203,10 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     public E find(final Predicate<E> predicate) {
         final Optional<E> optional = impl.stream().filter(predicate).findFirst();
         return optional.orElse(null);
+    }
+
+    public Set<E> findAll(final Predicate<E> predicate) {
+        return impl.stream().filter(predicate).collect(Collectors.toSet());
     }
 
     @SuppressWarnings("unchecked")

@@ -17,6 +17,7 @@
 // 
 
 using System;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
@@ -238,6 +239,13 @@ namespace Ch.Cyberduck.Ui.Controller
                         finally
                         {
                             controller.transfersWindow = null;
+                            if (s is FrameworkElement
+                                {
+                                    DataContext: IDisposable disposable
+                                })
+                            {
+                                disposable.Dispose();
+                            }
                         }
                     };
 

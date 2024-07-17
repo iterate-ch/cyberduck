@@ -343,12 +343,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         try {
             final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
-            final Location.Name location = new S3PathStyleFallbackAdapter<>(client, new BackgroundExceptionCallable<Location.Name>() {
-                @Override
-                public Location.Name call() throws BackgroundException {
-                    return new S3LocationFeature(S3Session.this, regions).getLocation(home);
-                }
-            }).call();
+            final Location.Name location = new S3LocationFeature(S3Session.this, regions).getLocation(home);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Retrieved region %s", location));
             }
@@ -388,18 +383,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            final S3ListService proxy = new S3ListService(this, acl);
-            return (T) new ListService() {
-                @Override
-                public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-                    return new S3PathStyleFallbackAdapter<>(client, new BackgroundExceptionCallable<AttributedList<Path>>() {
-                        @Override
-                        public AttributedList<Path> call() throws BackgroundException {
-                            return proxy.list(directory, listener);
-                        }
-                    }).call();
-                }
-            };
+            return (T) new S3ListService(this, acl);
         }
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
@@ -417,23 +401,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ThresholdUploadService(this, acl);
         }
         if(type == Directory.class) {
-            final S3DirectoryFeature proxy = new S3DirectoryFeature(this, new S3WriteFeature(this, acl), acl);
-            return (T) new Directory<StorageObject>() {
-                @Override
-                public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-                    return new S3PathStyleFallbackAdapter<>(client, new BackgroundExceptionCallable<Path>() {
-                        @Override
-                        public Path call() throws BackgroundException {
-                            return proxy.mkdir(folder, status);
-                        }
-                    }).call();
-                }
-
-                @Override
-                public Directory<StorageObject> withWriter(final Write<StorageObject> writer) {
-                    return proxy.withWriter(writer);
-                }
-            };
+            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, acl), acl);
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this, acl);
@@ -493,18 +461,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3FindFeature(this, acl);
         }
         if(type == AttributesFinder.class) {
-            final S3AttributesFinderFeature proxy = new S3AttributesFinderFeature(this, acl);
-            return (T) new AttributesFinder() {
-                @Override
-                public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-                    return new S3PathStyleFallbackAdapter<>(client, new BackgroundExceptionCallable<PathAttributes>() {
-                        @Override
-                        public PathAttributes call() throws BackgroundException {
-                            return proxy.find(file, listener);
-                        }
-                    }).call();
-                }
-            };
+            return (T) new S3AttributesFinderFeature(this, acl);
         }
         if(type == TransferAcceleration.class) {
             // Only for AWS. Disable transfer acceleration for AWS GovCloud

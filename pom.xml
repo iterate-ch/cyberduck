@@ -57,6 +57,7 @@
         <module>ctera</module>
         <module>eue</module>
         <module>freenet</module>
+        <module>deepbox</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
@@ -467,7 +468,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.1.1</version>
                     <configuration>
                         <arguments>-DskipTests</arguments>
                     </configuration>
