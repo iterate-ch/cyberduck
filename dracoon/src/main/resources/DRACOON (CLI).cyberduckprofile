@@ -16,8 +16,6 @@
         <string>Username</string>
         <key>Password Placeholder</key>
         <string>Password</string>
-        <key>Default Hostname</key>
-        <string>dracoon.team</string>
         <key>Hostname Configurable</key>
         <true/>
         <key>Port Configurable</key>
