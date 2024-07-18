@@ -25,6 +25,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.FolderAdded;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -52,6 +53,9 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
+            if(new DeepboxFindFeature(session, fileid).find(folder)) {
+                throw new ConflictException(folder.getAbsolute());
+            }
             final Folder upload = new Folder();
             upload.setName(folder.getName());
             upload.setI18n(Collections.emptyMap());

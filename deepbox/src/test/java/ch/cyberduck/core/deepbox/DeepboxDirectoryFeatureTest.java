@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -122,5 +123,18 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         new DeepboxDirectoryFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), test.getName());
         assertTrue(new DeepboxFindFeature(session, fileid).find(test));
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testConflict() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
+        final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory));
+        final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        directory.mkdir(folder, new TransferStatus());
+        assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
+        assertThrows(ConflictException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
     }
 }
