@@ -130,15 +130,8 @@
         <Convert Include="$(TargetBuildDir)org.jetbrains.annotations.jar" />
         <Convert Include="$(TargetBuildDir)org.jetbrains.kotlin.kotlin-stdlib.jar" />
         <Convert Include="$(TargetBuildDir)org.json.json.jar" />
-        <Convert Include="$(TargetBuildDir)org.junit.jupiter.junit-jupiter-api.jar" />
-        <Convert Include="$(TargetBuildDir)org.junit.jupiter.junit-jupiter-engine.jar" />
-        <Convert Include="$(TargetBuildDir)org.junit.jupiter.junit-jupiter-params.jar" />
-        <Convert Include="$(TargetBuildDir)org.junit.jupiter.junit-jupiter.jar" />
-        <Convert Include="$(TargetBuildDir)org.junit.platform.junit-platform-commons.jar" />
-        <Convert Include="$(TargetBuildDir)org.junit.platform.junit-platform-engine.jar" />
         <Convert Include="$(TargetBuildDir)org.jvnet.mimepull.mimepull.jar" />
         <Convert Include="$(TargetBuildDir)org.objenesis.objenesis.jar" />
-        <Convert Include="$(TargetBuildDir)org.opentest4j.opentest4j.jar" />
         <Convert Include="$(TargetBuildDir)org.slf4j.jcl-over-slf4j.jar" />
         <Convert Include="$(TargetBuildDir)software.amazon.ion.ion-java.jar" />
         <Convert Include="$(TargetBuildDir)uk.com.robust-it.cloning.jar" />
