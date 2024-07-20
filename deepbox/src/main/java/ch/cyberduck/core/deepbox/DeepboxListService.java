@@ -15,14 +15,12 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
@@ -207,24 +205,15 @@ public class DeepboxListService implements ListService {
                 final String boxNodeId = fileid.getBoxNodeId(directory);
                 final Box box = rest.getBox(deepBoxNodeId, boxNodeId);
                 if(box.getBoxPolicy().isCanListQueue()) {
-                    final String inboxName = containerService.getPinnedLocalization(INBOX);
-                    final Path inbox = new Path(directory, inboxName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, inboxName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
-                    );
+                    final Path inbox = new Path(directory, containerService.getPinnedLocalization(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume));
                     list.add(inbox.withAttributes(attributes.find(inbox)));
                 }
                 if(box.getBoxPolicy().isCanListFilesRoot()) {
-                    final String documentsName = containerService.getPinnedLocalization(DOCUMENTS);
-                    final Path documents = new Path(directory, documentsName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, documentsName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
-                    );
+                    final Path documents = new Path(directory, containerService.getPinnedLocalization(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume));
                     list.add(documents.withAttributes(attributes.find(documents)));
                 }
                 if(box.getBoxPolicy().isCanAccessTrash()) {
-                    final String trashName = containerService.getPinnedLocalization(TRASH);
-                    final Path trash = new Path(directory, trashName, EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                            new PathAttributes().withFileId(fileid.getFileId(new Path(directory, trashName, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume))))
-                    );
+                    final Path trash = new Path(directory, containerService.getPinnedLocalization(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume));
                     list.add(trash.withAttributes(attributes.find(trash)));
                 }
                 listener.chunk(directory, list);
