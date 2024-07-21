@@ -21,6 +21,8 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class FlatTemporaryFileService extends AbstractTemporaryFileService implements TemporaryFileService {
     /**
      * Create random prefix for filename
@@ -41,7 +43,8 @@ public class FlatTemporaryFileService extends AbstractTemporaryFileService imple
     @Override
     public Local create(final String uid, final Path file) {
         final Local folder = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"), uid);
-        return this.create(folder, String.format("%d-%s", file.attributes().hashCode(), file.getName()));
+        return this.create(folder, String.format("%d-%s", file.attributes().hashCode(),
+                StringUtils.isNotBlank(file.attributes().getDisplayname()) ? file.attributes().getDisplayname() : file.getName()));
     }
 
     /**
