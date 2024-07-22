@@ -25,6 +25,8 @@ import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 
 public class DefaultTemporaryFileService extends AbstractTemporaryFileService implements TemporaryFileService {
@@ -60,6 +62,6 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
                 new File(preferences.getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, file.getName())).getAbsolutePath().length();
         final Local folder = LocalFactory.get(preferences.getProperty("tmp.dir"), String.format(pathFormat, delimiter, uid,
                 this.shorten(file.getParent().getAbsolute(), limit), attributes));
-        return this.create(folder, file.getName());
+        return this.create(folder, StringUtils.isNotBlank(file.attributes().getDisplayname()) ? file.attributes().getDisplayname() : file.getName());
     }
 }

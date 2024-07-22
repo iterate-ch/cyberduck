@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.w3c.dom.Element;
@@ -125,6 +126,13 @@ public class NextcloudVersioningFeature implements Versioning {
                 attributes.setDuplicate(true);
                 attributes.setFileId(file.attributes().getFileId());
                 attributes.setVersionId(PathNormalizer.name(resource.getHref().getPath()));
+                final String basename = String.format("%s-%s", FilenameUtils.getBaseName(file.getName()), attributes.getVersionId());
+                if(StringUtils.isNotBlank(FilenameUtils.getExtension(file.getName()))) {
+                    attributes.setDisplayname(String.format("%s.%s", basename, FilenameUtils.getExtension(file.getName())));
+                }
+                else {
+                    attributes.setDisplayname(basename);
+                }
                 versions.add(new Path(parent, PathNormalizer.name(resource.getHref().getPath()), file.getType(), attributes));
                 listener.chunk(file.getParent(), versions);
             }
@@ -150,7 +158,6 @@ public class NextcloudVersioningFeature implements Versioning {
     }
 
     protected Path versions(final Path file) throws IOException, BackgroundException {
-        return new Path(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions),
-                String.format("versions/%s" , file.attributes().getFileId()), EnumSet.of(Path.Type.directory));
+        return new Path(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions), String.format("versions/%s", file.attributes().getFileId()), EnumSet.of(Path.Type.directory));
     }
 }
