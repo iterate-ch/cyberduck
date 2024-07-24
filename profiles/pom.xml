@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>9.0.1</version>
+        <version>9.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>profiles</artifactId>
     <packaging>jar</packaging>
