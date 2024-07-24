@@ -82,7 +82,7 @@ public class ProfileDescription {
                     return new ProfilePlistReader(protocols, parent).read(local.get());
                 }
                 catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure reading profile: %s", e));
+                    log.warn(String.format("Failure %s reading profile %s", e, local.get()));
                     throw new ConcurrentException(e);
                 }
             }
