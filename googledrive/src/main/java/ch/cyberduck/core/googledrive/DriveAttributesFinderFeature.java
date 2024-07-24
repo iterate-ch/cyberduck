@@ -96,7 +96,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
                 return this.toAttributes(session.getClient().files().get(shortcutDetails.getTargetId()).setFields(DEFAULT_FIELDS).execute());
             }
             catch(IOException e) {
-                log.warn(String.format("Failure %s resolving shortcut for %s", e, e));
+                log.warn(String.format("Failure resolving shortcut for %s. Exception: %s", shortcutDetails.getTargetId(), e));
                 return PathAttributes.EMPTY;
             }
         }
