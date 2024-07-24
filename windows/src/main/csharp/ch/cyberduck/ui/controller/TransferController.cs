@@ -54,6 +54,8 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         public static Logger Log = LogManager.getLogger(typeof(TransferController).FullName);
 
+        public event Action<Transfer> RevealTransfer;
+
         private static TransferController instance;
         private readonly Dispatcher dispatcher;
         private readonly NativeWindow nativeTransfersWindow = new();
@@ -318,6 +320,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             progress.Refresh(null);
+
+            RevealTransfer?.Invoke(t);
         }
 
         void TransferListener.transferDidStop(Transfer t)

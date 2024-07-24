@@ -26,6 +26,7 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 using org.apache.logging.log4j;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -233,8 +234,12 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
         var transfersCache = store.Transfers.Connect().ObserveOnDispatcher()
             .Transform(m => new TransferViewModel(controller, m, locale)).DisposeMany()
             .Bind(out transfers).AsObservableCache().DisposeWith(subscriptions);
-        subscriptions.Add(transfersCache.Connect().Subscribe(OnTransfersChanged));
         subscriptions.Add(transfersCache.CountChanged.Subscribe(OnTransfersCountChanged));
+        subscriptions.Add(Observable.FromEvent<Transfer>(
+            h => controller.RevealTransfer += h,
+            h => controller.RevealTransfer -= h)
+            .Select(transfersCache.WatchValue).Switch()
+            .ObserveOnDispatcher().Subscribe(OnRevealTransfer));
 
         var localTransfers = transfersCache.Connect()
             .AutoRefresh(m => m.IsSelected).Filter(m => m.IsSelected)
@@ -412,6 +417,15 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void OnRevealTransfer(TransferViewModel transfer)
+    {
+        if (SelectedTransfers.Count is 0)
+        {
+            transfer.IsSelected = true;
+            WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(transfer));
+        }
+    }
+
     private void OnSelectedBandwidthChanged(BandwidthViewModel value)
     {
         foreach (var transfer in SelectedTransfers)
@@ -512,24 +526,6 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
             }
 
             item.Cancel();
-        }
-    }
-
-    private void OnTransfersChanged(IChangeSet<TransferViewModel, Transfer> changes)
-    {
-        if (SelectedTransfers.Count is 0 && changes.Adds is 1)
-        {
-            if (changes.FirstOrDefault(m => m.Reason is ChangeReason.Add) is
-                {
-                    Current:
-                    {
-                        ProgressState: not null
-                    } viewModel
-                })
-            {
-                viewModel.IsSelected = true;
-                WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(viewModel));
-            }
         }
     }
 
