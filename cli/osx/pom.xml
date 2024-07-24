@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>9.0.1-SNAPSHOT</version>
+        <version>9.0.1</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
@@ -195,8 +195,8 @@
                                         <property name="hash" value="${git.revision}" />
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
                                         <property name="installer.certificate" value="${installer.certificate}" />
-                                        <property name="skipNotarize" value="${skipNotarize}"/>
-                                        <property name="skipSign" value="${skipSign}"/>
+                                        <property name="skipNotarize" value="${skipNotarize}" />
+                                        <property name="skipSign" value="${skipSign}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </target>
                                 </configuration>
