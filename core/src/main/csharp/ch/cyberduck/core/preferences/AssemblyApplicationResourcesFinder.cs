@@ -16,22 +16,16 @@
 // yves@cyberduck.ch
 //
 
+using System;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Local;
+using CoreLocal = ch.cyberduck.core.Local;
 
-namespace Ch.Cyberduck.Core.Preferences
+namespace Ch.Cyberduck.Core.Preferences;
+
+public class AssemblyApplicationResourcesFinder : ApplicationResourcesFinder
 {
-    using Local = ch.cyberduck.core.Local;
+    private static readonly Lazy<SystemLocal> local = new(() => new(EnvironmentInfo.ResourcesLocation), true);
 
-    public class AssemblyApplicationResourcesFinder : ApplicationResourcesFinder
-    {
-        private static readonly SystemLocal local;
-
-        static AssemblyApplicationResourcesFinder()
-        {
-            local = new(EnvironmentInfo.ResourcesLocation);
-        }
-
-        public Local find() => new SystemLocal(local);
-    }
+    public CoreLocal find() => local.Value;
 }
