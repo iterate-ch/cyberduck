@@ -4,14 +4,11 @@
     <TargetFramework>net472</TargetFramework>
 
     <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <CyberduckReference Include="Core" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="@(IKVMReferences)" />
   </ItemGroup>
 
   <ItemGroup>
