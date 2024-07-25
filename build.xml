@@ -130,4 +130,17 @@
                     locale="en"/>
         </tstamp>
     </target>
+
+    <target name="msbuild">
+        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
+    </target>
+    
+    <target name="msbuild.configuration">
+        <condition property="msbuild.configuration" value="Debug">
+            <equals arg1="${configuration}" arg2="debug" />
+        </condition>
+        <property name="msbuild.configuration" value="Release" />
+    </target>
 </project>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
   <Product Id="*" Name="Cyberduck" Language="1033" Version="!(bind.FileVersion.product.exe)" Manufacturer="iterate GmbH" UpgradeCode="B9C33495-4B77-4863-9A40-4E767388647E">
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"/>
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade AllowDowngrades="yes" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
@@ -17,19 +17,19 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
         <Directory Id="INSTALLLOCATION" Name="!(bind.property.ProductName)">
-          <Directory Id="PROFILES" Name="profiles"/>
+          <Directory Id="PROFILES" Name="profiles" />
         </Directory>
       </Directory>
       <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)"/>
+        <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)" />
       </Directory>
     </Directory>
 
-    <Icon Id="icon.ico" SourceFile="$(var.cyberduck.TargetDir)/cyberduck-application.ico"/>
-    <Icon Id="cd_document.ico" SourceFile="$(var.cyberduck.TargetDir)/cyberduck-document.ico"/>
+    <Icon Id="icon.ico" SourceFile="$(var.cyberduck.TargetDir)/cyberduck-application.ico" />
+    <Icon Id="cd_document.ico" SourceFile="$(var.cyberduck.TargetDir)/cyberduck-document.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
-    <Property Id="AUTOSTART" Value="0"/>
-    <Property Id="REINSTALLMODE" Value="dmus"/>
+    <Property Id="AUTOSTART" Value="0" />
+    <Property Id="REINSTALLMODE" Value="dmus" />
 
     <ComponentGroup Id="ProductComponents" Directory="INSTALLLOCATION">
       <Component Id="InstallLocationRegistrySearch">
@@ -37,7 +37,7 @@
       </Component>
 
       <Component Id="ProductExe">
-        <File Id="product.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes" >
+        <File Id="product.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes">
           <Shortcut Id="ApplicationStartMenuShortcut"
             Name="Cyberduck"
             Advertise="yes"
@@ -93,115 +93,60 @@
         <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.License" Name="FriendlyTypeName" Value="Cyberduck License" Type="string" />
       </Component>
       <Component Id="Cyberduck.Exe.Config">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="CustomOpenFileFolderDialog">
-        <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Core">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Core.Native">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Core.Refresh">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Protocols">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Bonjour">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Bonjour.Native">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Importer">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Cryptomator">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="WinSparkle">
-        <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="msvcr120">
-        <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.beans">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.core">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.charsets">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.localedata">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.security">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.text">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Text.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.util">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Util.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.management">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.xml.api">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.API.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.xml.bind">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.xml.parse">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.xml.transform">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.xml.xpath">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.swingawt">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.naming">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Naming.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.remoting">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Remoting.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.runtime">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.runtime.jni">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.jdbc">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.misc" Guid="29564F63-CA76-4944-9022-D705E038DF24">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="objectlistview">
-        <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="ikvm.native">
-        <File Source="$(var.cyberduck.TargetDir)/ikvm-native-win32-x64.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="jnidispatch">
-        <File Source="$(var.cyberduck.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="sunmscapi">
-        <File Source="$(var.cyberduck.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
+
+      <!-- IKVM -->
+      <Component Id="IKVM.ByteCode.dll">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.ByteCode.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="sunec">
-        <File Source="$(var.cyberduck.TargetDir)/sunec.dll" KeyPath="yes" Checksum="yes" />
+      <Component Id="ikvm.dll">
+        <File Source="$(var.cyberduck.TargetDir)/ikvm.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="IKVM.Java.dll">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.Java.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.properties">
+        <File Source="$(var.cyberduck.TargetDir)/ikvm.properties" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="IKVM.Runtime.dll">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
       <Component Id="System.Buffers">
@@ -233,14 +178,14 @@
         <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="DotNetZip">
-        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="SimpleMapi">
-        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- Microsoft.Toolkit.Uwp.Notifications -->
       <Component Id="MSTKUWPNotifications">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- System.Reactive -->
       <Component Id="System.Reactive">
@@ -264,14 +209,14 @@
       </Component>
       <!-- StructureMap -->
       <Component Id="structuremap">
-        <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- CommunityToolkit.Mvvm -->
       <Component Id="CommunityToolkit.Mvvm">
-        <File Source="$(var.cyberduck.TargetDir)/CommunityToolkit.Mvvm.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/CommunityToolkit.Mvvm.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Microsoft.Bcl.AsyncInterfaces">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- /Nuget Dependencies -->
 
@@ -294,7 +239,7 @@
           <RegistryValue Name="dav" Value="Cyberduck.ProtocolHandler" Type="string" />
           <RegistryValue Name="davs" Value="Cyberduck.ProtocolHandler" Type="string" />
           <RegistryValue Name="sftp" Value="Cyberduck.ProtocolHandler" Type="string" />
-          <RegistryValue Name="smb" Value="Cyberduck.ProtocolHandler" Type="string"/>
+          <RegistryValue Name="smb" Value="Cyberduck.ProtocolHandler" Type="string" />
           <RegistryValue Name="s3" Value="Cyberduck.ProtocolHandler" Type="string" />
           <RegistryValue Name="irods" Value="Cyberduck.ProtocolHandler" Type="string" />
         </RegistryKey>
@@ -332,6 +277,7 @@
     <Feature Id="ProductFeature" Title="cyberduck-WiX" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="ProfileComponents" />
+      <ComponentGroupRef Id="IkvmRuntime" />
     </Feature>
 
     <Binary Id="WindowsVersionCustomAction.dll" SourceFile="$(var.WindowsVersionCustomAction.TargetDir)$(var.WindowsVersionCustomAction.TargetName).dll" />
