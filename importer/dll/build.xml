@@ -23,32 +23,18 @@
 
     <import file="../../build.xml"/>
 
-    <property name="ikvm.home" value="${build}/ikvm"/>
-
-    <target name="dll" if="platform.windows">
-        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
-            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
-        </taskdef>
-        <mkdir dir="${build}"/>
-        <!-- Create DLL Cyberduck.Importer -->
-        <ikvmc target="library" out="${build}/Cyberduck.Importer.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}.${revision}" debug="${ikvm.debug}"
-               verbose="false">
-            <reference path="${build}/Cyberduck.Core.dll"/>
-            <arg value="-skipDuplicates"/>
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
-                <exclude name="*-sources.jar"/>
-                <exclude name="*-tests.jar"/>
-            </fileset>
-            <outputfilter>
-                <contains>IKVMC0109</contains>
-                <contains>class is already available in referenced assembly</contains>
-            </outputfilter>
-        </ikvmc>
+    <target name="restore" depends="msbuild">
+        <msbuild buildfile="Cyberduck.Importer.msbuildproj">
+            <target name="Restore" />
+        </msbuild>
     </target>
 
-    <target name="build" depends="version,dll" />
+    <target name="build" if="platform.windows" depends="version,restore,msbuild.configuration">
+        <msbuild buildfile="Cyberduck.Importer.msbuildproj">
+            <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Copyright" value="${copyright}" />
+            <property name="Version" value="${version}.${revision}" />
+        </msbuild>
+    </target>
+
 </project>
