@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(BuildProject)'=='True' ">
-    <ProjectReference Include="src\main\csharp\Cyberduck.csproj" />
-    <ProjectReference Include="src\test\csharp\Cyberduck.Test.csproj" />
+    <ProjectReference Include="src\main\csharp\Cyberduck.csproj" SetPlatform="Platform=x64" />
+    <ProjectReference Include="src\test\csharp\Cyberduck.Test.csproj" SetPlatform="Platform=x64" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(BuildInstaller)'=='True' ">

@@ -40,11 +40,7 @@
 
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
-    <target name="init-msbuild">
-        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-        </taskdef>
-    </target>
+    <target name="init-msbuild" depends="msbuild" />
 
     <target name="restore" depends="init-msbuild, version">
         <msbuild buildfile="build.proj">

@@ -1,0 +1,13 @@
+<Project Sdk="IKVM.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <CyberduckReference Include="Core" />
+
+        <Convert Include="$(TargetBuildDir)ch.cyberduck.binding.jar" />
+        <Convert Include="$(TargetBuildDir)ch.cyberduck.importer.jar" />
+        <Convert Include="$(TargetBuildDir)org.rococoa.rococoa-core.jar" />
+    </ItemGroup>
+</Project>
