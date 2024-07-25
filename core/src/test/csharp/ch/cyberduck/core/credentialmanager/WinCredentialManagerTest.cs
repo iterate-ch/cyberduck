@@ -47,13 +47,11 @@ namespace Ch.Cyberduck.Core.credentialmanager
         {
             var target = $"protocol://{user}@service.{UUID.randomUUID().toString()}.tld";
             var credentials = new NetworkCredential(user, UUID.randomUUID().toString());
-            var saveResult = WinCredentialManager.SaveCredentials(target, credentials);
-            Assert.True(saveResult);
+            Assert.That(WinCredentialManager.SaveCredentials(target, credentials));
             var query = WinCredentialManager.GetCredentials(target);
-            Assert.AreEqual(credentials.UserName, query.UserName);
-            Assert.AreEqual(credentials.Password, query.Password);
-            var removeResult = WinCredentialManager.RemoveCredentials(target);
-            Assert.True(removeResult);
+            Assert.That(query.UserName, Is.EqualTo(credentials.UserName));
+            Assert.That(credentials.Password, Is.EqualTo(credentials.Password));
+            Assert.That(WinCredentialManager.RemoveCredentials(target));
         }
 
         [Test]
@@ -61,13 +59,11 @@ namespace Ch.Cyberduck.Core.credentialmanager
         {
             var target = $"protocol://service.{UUID.randomUUID().toString()}.tld";
             var credentials = new NetworkCredential(user, UUID.randomUUID().toString());
-            var saveResult = WinCredentialManager.SaveCredentials(target, credentials);
-            Assert.True(saveResult);
+            Assert.That(WinCredentialManager.SaveCredentials(target, credentials));
             var query = WinCredentialManager.GetCredentials(target);
-            Assert.AreEqual(credentials.UserName, query.UserName);
-            Assert.AreEqual(credentials.Password, query.Password);
-            var removeResult = WinCredentialManager.RemoveCredentials(target);
-            Assert.True(removeResult);
+            Assert.That(query.UserName, Is.EqualTo(credentials.UserName));
+            Assert.That(credentials.Password, Is.EqualTo(credentials.Password));
+            Assert.That(WinCredentialManager.RemoveCredentials(target));
         }
 
         [Test]
@@ -75,13 +71,11 @@ namespace Ch.Cyberduck.Core.credentialmanager
         {
             var target = $"{user}@{UUID.randomUUID().toString()}";
             var credentials = new NetworkCredential(user, UUID.randomUUID().toString());
-            var saveResult = WinCredentialManager.SaveCredentials(target, credentials);
-            Assert.True(saveResult);
+            Assert.That(WinCredentialManager.SaveCredentials(target, credentials));
             var query = WinCredentialManager.GetCredentials(target);
-            Assert.AreEqual(credentials.UserName, query.UserName);
-            Assert.AreEqual(credentials.Password, query.Password);
-            var removeResult = WinCredentialManager.RemoveCredentials(target);
-            Assert.True(removeResult);
+            Assert.That(query.UserName, Is.EqualTo(credentials.UserName));
+            Assert.That(credentials.Password, Is.EqualTo(credentials.Password));
+            Assert.That(WinCredentialManager.RemoveCredentials(target));
         }
 
         [Test]
@@ -89,13 +83,11 @@ namespace Ch.Cyberduck.Core.credentialmanager
         {
             var target = UUID.randomUUID().toString();
             var credentials = new NetworkCredential(user, UUID.randomUUID().toString());
-            var saveResult = WinCredentialManager.SaveCredentials(target, credentials);
-            Assert.True(saveResult);
+            Assert.That(WinCredentialManager.SaveCredentials(target, credentials));
             var query = WinCredentialManager.GetCredentials(target);
-            Assert.AreEqual(credentials.UserName, query.UserName);
-            Assert.AreEqual(credentials.Password, query.Password);
-            var removeResult = WinCredentialManager.RemoveCredentials(target);
-            Assert.True(removeResult);
+            Assert.That(query.UserName, Is.EqualTo(credentials.UserName));
+            Assert.That(credentials.Password, Is.EqualTo(credentials.Password));
+            Assert.That(WinCredentialManager.RemoveCredentials(target));
         }
 
         [Test]
@@ -144,8 +136,7 @@ namespace Ch.Cyberduck.Core.credentialmanager
             };
             var credTarget = "test:large-blob" + target;
             Assert.That(WinCredentialManager.SaveCredentials(credTarget, cred), Is.True);
-            cred = WinCredentialManager.GetCredentials(credTarget);
-            Assert.That(() => WinCredentialManager.GetCredentials(credTarget).Attributes["Blob"], Is.EqualTo(blob));
+            Assert.That(WinCredentialManager.GetCredentials(credTarget).Attributes["Blob"], Is.EqualTo(blob));
             WinCredentialManager.RemoveCredentials(credTarget);
         }
     }
