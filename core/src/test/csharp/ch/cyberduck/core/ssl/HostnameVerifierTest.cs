@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Core.Ssl
         [Test]
         public void WilcardCertificate()
         {
-            Assert.True(HostnameVerifier.Match("foo.secure.example.com", "*.secure.example.com"));
+            Assert.That(HostnameVerifier.Match("foo.secure.example.com", "*.secure.example.com"));
         }
     }
 }
