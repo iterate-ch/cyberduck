@@ -14,7 +14,7 @@ public class ApplicationPreferencesTests
 
         foreach (string locale in preferences.applicationLocales())
         {
-            Assert.IsNotEmpty(preferences.getDisplayName(locale));
+            Assert.That(preferences.getDisplayName(locale), Is.Not.Empty);
         }
     }
 
