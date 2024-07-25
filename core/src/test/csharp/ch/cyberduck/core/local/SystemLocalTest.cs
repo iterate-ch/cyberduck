@@ -14,17 +14,17 @@ namespace Ch.Cyberduck.Core.Local
         const string PIPE_NAME = @"\\.\pipe\openssh-ssh-agent";
         const string WSL_PATH = @"\\wsl$\test\";
 
-        [Test, Explicit("Broken in IKVM")]
+        [Test]
         public void FilesGetUsableSpace()
         {
-            var store = Files.getFileStore(Paths.get(@"\\?\c:\"));
+            var store = Files.getFileStore(Paths.get(@"c:\"));
             store.getUsableSpace();
         }
 
-        [Test, Explicit("Broken in IKVM")]
+        [Test]
         public void PathsToFileGetUsableSpace()
         {
-            Paths.get(@"\\?\c:\").toFile().getUsableSpace();
+            Paths.get(@"c:\").toFile().getUsableSpace();
         }
 
         [Test]
