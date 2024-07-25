@@ -1,0 +1,13 @@
+<Project Sdk="IKVM.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <CyberduckReference Include="Core" />
+
+        <Convert Include="$(TargetBuildDir)ch.cyberduck.cryptomator.jar" />
+        <Convert Include="$(TargetBuildDir)ch.iterate.cryptomator.cryptolib.jar" />
+        <Convert Include="$(TargetBuildDir)org.cryptomator.siv-mode.jar" />
+    </ItemGroup>
+</Project>

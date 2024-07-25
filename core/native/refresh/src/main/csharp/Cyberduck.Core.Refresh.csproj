@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
+    <PackageReference Include="IKVM" />
     <PackageReference Include="Microsoft.Windows.CsWin32">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -41,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="@(IKVMReferences)" />
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 
