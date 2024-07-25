@@ -1,0 +1,10 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>1.8</LangVersion>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <CompileStatically>true</CompileStatically>
+    <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+  </PropertyGroup>
+
+</Project>

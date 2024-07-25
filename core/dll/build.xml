@@ -21,34 +21,20 @@
  -->
 <project name="Cyberduck Native Libraries" basedir=".">
 
-    <import file="../../build.xml"/>
+    <import file="../../build.xml" />
 
-    <property name="ikvm.home" value="${build}/ikvm"/>
-
-    <target name="dll" if="platform.windows">
-        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
-            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
-        </taskdef>
-        <mkdir dir="${build}"/>
-        <!-- Create DLL Cyberduck.Core -->
-        <ikvmc target="library" out="${build}/Cyberduck.Core.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}.${revision}" debug="${ikvm.debug}"
-               verbose="false">
-            <arg value="-skipDuplicates"/>
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
-                <exclude name="*-sources.jar"/>
-                <exclude name="*-tests.jar"/>
-            </fileset>
-            <outputfilter>
-                <contains>IKVMC0109</contains>
-                <contains>class is already available in referenced assembly</contains>
-            </outputfilter>
-            <resource name="/com/sun/jna/win32-x64/jnidispatch.dll" path="${build}/jnidispatch.dll"/>
-        </ikvmc>
+    <target name="restore" depends="msbuild">
+        <msbuild buildfile="Cyberduck.Core.msbuildproj">
+            <target name="Restore" />
+        </msbuild>
     </target>
 
-    <target name="build" depends="version,dll" />
+    <target name="build" if="platform.windows" depends="version,restore,msbuild.configuration">
+        <msbuild buildfile="Cyberduck.Core.msbuildproj">
+            <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Copyright" value="${copyright}" />
+            <property name="Version" value="${version}.${revision}" />
+        </msbuild>
+    </target>
+
 </project>

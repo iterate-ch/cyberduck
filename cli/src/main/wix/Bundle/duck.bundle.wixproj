@@ -12,6 +12,7 @@
       CyberduckDir=$(CyberduckDir);
       ProfilesDir=$(CyberduckDir)profiles\default\;
       LicenseFile=$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt;
+      IkvmRuntimeDir=$(TargetBuildDir)\ikvm;
       $(DefineConstants)
     </DefineConstants>
   </PropertyGroup>
@@ -32,6 +33,12 @@
       <DirectoryRefId>PROFILES</DirectoryRefId>
       <ComponentGroupName>ProfileComponents</ComponentGroupName>
       <PreprocessorVariable>var.ProfilesDir</PreprocessorVariable>
+    </HarvestDirectory>
+    <HarvestDirectory Include="$(TargetBuildDir)ikvm" SuppressCom="true" SuppressRegistry="true">
+      <Link>ikvm</Link>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <ComponentGroupName>IkvmRuntime</ComponentGroupName>
+      <PreprocessorVariable>var.IkvmRuntimeDir</PreprocessorVariable>
     </HarvestDirectory>
   </ItemGroup>
 
