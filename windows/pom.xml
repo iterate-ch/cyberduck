@@ -18,7 +18,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>9.2.0-SNAPSHOT</version>
+        <version>10.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>Cyberduck.Native</artifactId>
@@ -222,11 +222,11 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <property name="skip" value="${skipSign}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
+                                        <property name="home" value="${main.basedir}"/>
+                                        <property name="version" value="${project.version}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="skip" value="${skipSign}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="."/>
                                     </target>
                                 </configuration>
                             </execution>
@@ -238,12 +238,12 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <property name="hash" value="${git.revision}" />
-                                        <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="deploy" dir="." />
+                                        <property name="home" value="${main.basedir}"/>
+                                        <property name="version" value="${project.version}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="hash" value="${git.revision}"/>
+                                        <property name="sparkle.feed" value="${sparkle.feed}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="deploy" dir="."/>
                                     </target>
                                 </configuration>
                             </execution>
