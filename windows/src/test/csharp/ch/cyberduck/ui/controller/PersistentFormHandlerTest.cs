@@ -16,10 +16,8 @@
 // yves@cyberduck.ch
 // 
 
-using System.Drawing;
-using Ch.Cyberduck.Core.I18n;
-using Ch.Cyberduck.Core.Local;
 using NUnit.Framework;
+using System.Drawing;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -32,7 +30,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PersistentFormHandler handler = new PersistentFormHandler(GetType(), 0, Rectangle.Empty);
             handler.Set("key", 189);
             handler = new PersistentFormHandler(GetType(), 0, Rectangle.Empty);
-            Assert.AreEqual(189, handler.Get<int>("key"));
+            Assert.That(handler.Get<int>("key"), Is.EqualTo(189));
         }
 
         [Test]
@@ -41,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PersistentFormHandler handler = new PersistentFormHandler(GetType(), 0, Rectangle.Empty);
             handler.Set("keyDefault", 111);
             handler = new PersistentFormHandler(GetType(), 0, Rectangle.Empty);
-            Assert.AreEqual(500, handler.Get("keyNotAvailable", 500));
+            Assert.That(handler.Get("keyNotAvailable", 500), Is.EqualTo(500));
         }
     }
 }
