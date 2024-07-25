@@ -31,48 +31,48 @@ namespace Ch.Cyberduck.Core.Local
         public void TestBadDriveLetter1()
         {
             const string PATH = @"#:\";
-            Assert.IsEmpty(new SystemLocal(PATH).getAbsolute());
+            Assert.That(new SystemLocal(PATH).getAbsolute(), Is.Empty);
         }
 
         [Test]
         public void TestBadDriveLetter2()
         {
             const string PATH = @"\#:\";
-            Assert.IsEmpty(new SystemLocal(PATH).getAbsolute());
+            Assert.That(new SystemLocal(PATH).getAbsolute(), Is.Empty);
         }
 
         [Test]
         public void TestBadDriveLetter3()
         {
             const string PATH = @"\\.\#:\";
-            Assert.IsEmpty(new SystemLocal(PATH).getAbsolute());
+            Assert.That(new SystemLocal(PATH).getAbsolute(), Is.Empty);
         }
 
         [Test]
         public void TestConvertToDirectorySeparator()
         {
             var path = new SystemLocal(PIPE_NAME.Replace('\\', '/'));
-            Assert.AreEqual(PIPE_NAME, path.getAbsolute());
+            Assert.That(path.getAbsolute(), Is.EqualTo(PIPE_NAME));
         }
 
         [Test]
         public void TestDirectoryAltSeparators()
         {
             var path = new SystemLocal(@"C:" + Path.AltDirectorySeparatorChar);
-            Assert.AreEqual(@"C:" + Path.DirectorySeparatorChar, path.getAbsolute());
+            Assert.That(path.getAbsolute(), Is.EqualTo($"C:{Path.DirectorySeparatorChar}"));
         }
 
         [Test]
         public void TestDirectorySeparators()
         {
             var path = new SystemLocal(@"C:" + Path.DirectorySeparatorChar);
-            Assert.AreEqual(@"C:" + Path.DirectorySeparatorChar, path.getAbsolute());
+            Assert.That(path.getAbsolute(), Is.EqualTo($"C:{Path.DirectorySeparatorChar}"));
         }
 
         [Test]
         public void TestEmptyPath()
         {
-            Assert.IsEmpty(new SystemLocal("").getAbsolute());
+            Assert.That(new SystemLocal("").getAbsolute(), Is.Empty);
         }
 
         /// <remarks>
@@ -94,7 +94,7 @@ namespace Ch.Cyberduck.Core.Local
             foreach (var item in filenames)
             {
                 var local = new SystemLocal(item);
-                Assert.AreEqual(item, local.getAbsolute());
+                Assert.That(local.getAbsolute(), Is.EqualTo(item));
             }
         }
 
@@ -104,7 +104,7 @@ namespace Ch.Cyberduck.Core.Local
             const string TEST = @"C:\:?<>:";
             const string EXPECT = @"C:\_____";
             CoreLocal local = new SystemLocal(TEST);
-            Assert.AreEqual(EXPECT, local.getAbsolute());
+            Assert.That(local.getAbsolute(), Is.EqualTo(EXPECT));
         }
 
         [Test]
@@ -112,14 +112,14 @@ namespace Ch.Cyberduck.Core.Local
         {
             CoreLocal root = new SystemLocal(@"C:\");
             CoreLocal compound = new SystemLocal(root, @"C:\");
-            Assert.AreEqual(@"C:\C$", compound.getAbsolute());
+            Assert.That(compound.getAbsolute(), Is.EqualTo("C:\\C$"));
         }
 
         [Test]
         public void TestMountainDuckPath()
         {
             CoreLocal local = new SystemLocal("/C:/Users/Public");
-            Assert.AreEqual("C:\\Users\\Public", local.getAbsolute());
+            Assert.That(local.getAbsolute(), Is.EqualTo("C:\\Users\\Public"));
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace Ch.Cyberduck.Core.Local
         {
             var test = @"C:\Directory\File.ext";
             var path = new SystemLocal(test);
-            Assert.AreEqual(test, path.getAbsolute());
+            Assert.That(path.getAbsolute(), Is.EqualTo(test));
         }
 
         [Test]
@@ -135,23 +135,21 @@ namespace Ch.Cyberduck.Core.Local
         {
             const string TEST = @"\Volumes\System\Test";
             SystemLocal path = new(TEST);
-            Assert.AreEqual(TEST, path.getAbsolute());
+            Assert.That(path.getAbsolute(), Is.EqualTo(TEST));
         }
 
         [Test]
         public void TestPathsPipe()
         {
             var path = Paths.get(PIPE_NAME);
-            Assert.NotNull(path);
-            Assert.AreEqual(PIPE_NAME, path.ToString());
+            Assert.That(path.toString(), Is.EqualTo(PIPE_NAME));
         }
 
         [Test]
         public void TestPathsWslPath()
         {
             var path = Paths.get(WSL_PATH);
-            Assert.NotNull(path);
-            Assert.AreEqual(WSL_PATH, path.ToString());
+            Assert.That(path.toString(), Is.EqualTo(WSL_PATH));
         }
 
         [Test]
@@ -159,21 +157,21 @@ namespace Ch.Cyberduck.Core.Local
         {
             CorePath path = new CorePath("C:\\Users\\Public", EnumSet.of(AbstractPath.Type.directory));
             var local = new SystemLocal(path.getAbsolute());
-            Assert.AreEqual("C:\\Users\\Public", local.getAbsolute());
+            Assert.That(local.getAbsolute(), Is.EqualTo("C:\\Users\\Public"));
         }
 
         [Test]
         public void TestPipeName()
         {
             CoreLocal local = new SystemLocal(PIPE_NAME);
-            Assert.AreEqual(PIPE_NAME, local.getAbsolute());
+            Assert.That(local.getAbsolute(), Is.EqualTo(PIPE_NAME));
         }
 
         [Test]
         public void TestTildePath()
         {
             CoreLocal local = new SystemLocal("~/.ssh/known_hosts");
-            Assert.IsNotEmpty(local.getAbsolute());
+            Assert.That(local.getAbsolute(), Is.Not.Empty);
         }
 
         [Test]
@@ -181,14 +179,14 @@ namespace Ch.Cyberduck.Core.Local
         {
             var test = @"\\?\C:\ÄÖÜßßäöü";
             var path = new SystemLocal(test);
-            Assert.AreEqual(test, path.getAbsolute());
+            Assert.That(path.getAbsolute(), Is.EqualTo(test));
         }
 
         [Test]
         public void TestWslPath()
         {
             CoreLocal local = new SystemLocal(WSL_PATH);
-            Assert.AreEqual(WSL_PATH, local.getAbsolute());
+            Assert.That(local.getAbsolute(), Is.EqualTo(WSL_PATH));
         }
     }
 }
