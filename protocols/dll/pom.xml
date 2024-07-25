@@ -65,26 +65,6 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-runtime</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>ch.iterate</groupId>
-                                            <artifactId>ikvm</artifactId>
-                                            <type>zip</type>
-                                            <version>${ikvm-version}</version>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
