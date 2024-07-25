@@ -1,0 +1,53 @@
+<Project Sdk="IKVM.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Convert Include="$(TargetBuildDir)ch.cyberduck.core.jar" />
+        <Convert Include="$(TargetBuildDir)ch.cyberduck.defaults.jar" />
+        <Convert Include="$(TargetBuildDir)ch.iterate.s3.jets3t.jar" />
+        <Convert Include="$(TargetBuildDir)com.auth0.java-jwt.jar" />
+        <Convert Include="$(TargetBuildDir)com.fasterxml.jackson.core.jackson-annotations.jar" />
+        <Convert Include="$(TargetBuildDir)com.fasterxml.jackson.core.jackson-core.jar" />
+        <Convert Include="$(TargetBuildDir)com.fasterxml.jackson.core.jackson-databind.jar" />
+        <Convert Include="$(TargetBuildDir)com.google.code.findbugs.jsr305.jar" />
+        <Convert Include="$(TargetBuildDir)com.google.code.gson.gson.jar" />
+        <Convert Include="$(TargetBuildDir)com.google.errorprone.error_prone_annotations.jar" />
+        <Convert Include="$(TargetBuildDir)com.google.guava.failureaccess.jar" />
+        <Convert Include="$(TargetBuildDir)com.google.guava.guava.jar" />
+        <Convert Include="$(TargetBuildDir)com.google.guava.listenablefuture.jar" />
+        <Convert Include="$(TargetBuildDir)com.google.j2objc.j2objc-annotations.jar" />
+        <Convert Include="$(TargetBuildDir)com.googlecode.plist.dd-plist.jar" />
+        <Convert Include="$(TargetBuildDir)com.jamesmurty.utils.java-xmlbuilder.jar" />
+        <Convert Include="$(TargetBuildDir)com.joyent.util.fast-md5.jar" />
+        <Convert Include="$(TargetBuildDir)com.nulab-inc.zxcvbn.jar" />
+        <Convert Include="$(TargetBuildDir)commons-codec.commons-codec.jar" />
+        <Convert Include="$(TargetBuildDir)commons-io.commons-io.jar" />
+        <Convert Include="$(TargetBuildDir)commons-logging.commons-logging.jar" />
+        <Convert Include="$(TargetBuildDir)commons-net.commons-net.jar" />
+        <Convert Include="$(TargetBuildDir)javax.activation.activation.jar" />
+        <Convert Include="$(TargetBuildDir)net.iharder.base64.jar" />
+        <Convert Include="$(TargetBuildDir)net.java.dev.jna.jna-min.jar" />
+        <Convert Include="$(TargetBuildDir)net.java.dev.jna.jna-platform.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.commons.commons-collections4.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.commons.commons-lang3.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.commons.commons-pool2.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.commons.commons-text.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.httpcomponents.httpclient-win.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.httpcomponents.httpclient.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.httpcomponents.httpcore.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.httpcomponents.httpmime.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.logging.log4j.log4j-api.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.logging.log4j.log4j-core.jar" />
+        <Convert Include="$(TargetBuildDir)org.apache.logging.log4j.log4j-slf4j-impl.jar" />
+        <Convert Include="$(TargetBuildDir)org.bouncycastle.bcpkix-jdk18on.jar" />
+        <Convert Include="$(TargetBuildDir)org.bouncycastle.bcprov-jdk18on.jar" />
+        <Convert Include="$(TargetBuildDir)org.bouncycastle.bcutil-jdk18on.jar" />
+        <Convert Include="$(TargetBuildDir)org.checkerframework.checker-qual.jar" />
+        <Convert Include="$(TargetBuildDir)org.codehaus.jackson.jackson-core-asl.jar" />
+        <Convert Include="$(TargetBuildDir)org.codehaus.jackson.jackson-mapper-asl.jar" />
+        <Convert Include="$(TargetBuildDir)org.slf4j.jul-to-slf4j.jar" />
+        <Convert Include="$(TargetBuildDir)org.slf4j.slf4j-api.jar" />
+    </ItemGroup>
+</Project>

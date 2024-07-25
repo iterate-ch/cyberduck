@@ -24,6 +24,8 @@
         <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
         <AssetTargetFallback>net472;$(AssetTargetFallback)</AssetTargetFallback>
         <EntryPointProjectUniqueName>..\csharp\Cyberduck.csproj</EntryPointProjectUniqueName>
+        <!-- Unsupported with IKVM -->
+        <AppxSymbolPackageEnabled>false</AppxSymbolPackageEnabled>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <SignOutput Condition="'$(SignOutput)'!='true'">False</SignOutput>
