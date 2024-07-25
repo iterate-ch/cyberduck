@@ -10,11 +10,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="IKVM" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Windows.Forms" />
-
-    <Reference Include="@(IKVMReferences)" />
   </ItemGroup>
 
   <ItemGroup>
