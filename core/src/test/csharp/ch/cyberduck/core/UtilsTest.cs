@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Core
             {
                 var TestVersion = TestVersions[i];
                 var OSVersion = OSVersions[i];
-                IsTrue(Utils.OSVersion.TestOSVersion(TestVersion, OSVersion), $"{TestVersion} (OS: {OSVersion})");
+                That(Utils.OSVersion.TestOSVersion(TestVersion, OSVersion), $"{TestVersion} (OS: {OSVersion})");
             }
 
             // Test Greater OS-versions
@@ -53,7 +53,7 @@ namespace Ch.Cyberduck.Core
                 for (int j = TestVersions.Length - 1; j > i; j--)
                 {
                     var TestVersion = TestVersions[j];
-                    IsFalse(Utils.OSVersion.TestOSVersion(TestVersion, OSVersion), $"{TestVersion} (OS: {OSVersion})");
+                    That(!Utils.OSVersion.TestOSVersion(TestVersion, OSVersion), $"{TestVersion} (OS: {OSVersion})");
                 }
             }
 
@@ -64,7 +64,7 @@ namespace Ch.Cyberduck.Core
                 for (int j = i - 1; j >= 0; j--)
                 {
                     var TestVersion = TestVersions[j];
-                    IsTrue(Utils.OSVersion.TestOSVersion(TestVersion, OSVersion), $"{TestVersion} (OS: {OSVersion})");
+                    That(Utils.OSVersion.TestOSVersion(TestVersion, OSVersion), $"{TestVersion} (OS: {OSVersion})");
                 }
             }
         }
