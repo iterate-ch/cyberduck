@@ -59,12 +59,12 @@ namespace Ch.Cyberduck.Ui.Controller
             const string hostName = "foo.secure.example.com";
             List certs = new ArrayList();
             certs.add(cert);
-            Assert.False(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
+            Assert.That(!new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
             //register exception
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
                     SystemCertificateStore.ConvertCertificate(cert).Thumbprint);
-            Assert.IsTrue(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
+            Assert.That(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
         }
 
         [Test]
@@ -140,12 +140,12 @@ namespace Ch.Cyberduck.Ui.Controller
             certs.add(hostCert);
             certs.add(caCert);
 
-            Assert.False(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
+            Assert.That(!new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
             //register exception
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
                     SystemCertificateStore.ConvertCertificate(hostCert).Thumbprint);
-            Assert.IsTrue(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
+            Assert.That(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
         }
     }
 }
