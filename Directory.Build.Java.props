@@ -1,10 +1,15 @@
 <Project>
 
-  <PropertyGroup>
-    <LangVersion>1.8</LangVersion>
-    <EnableDefaultItems>false</EnableDefaultItems>
-    <CompileStatically>true</CompileStatically>
+  <PropertyGroup Label="IKVM">
     <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <LangVersion>1.8</LangVersion>
+    <Static>true</Static>
+  </PropertyGroup>
+
+  <PropertyGroup Label="MSBuild">
+    <!-- Skip EmittedNoClassDefFoundError & ClassFormatError -->
+    <NoWarn>IKVMC0101;IKVMC0111;$(NoWarn)</NoWarn>
   </PropertyGroup>
 
 </Project>
