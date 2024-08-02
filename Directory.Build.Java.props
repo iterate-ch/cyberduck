@@ -4,7 +4,6 @@
     <LangVersion>1.8</LangVersion>
     <EnableDefaultItems>false</EnableDefaultItems>
     <Static>true</Static>
-    <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
     <!-- Skip EmittedNoClassDefFoundError & ClassFormatError -->
     <NoWarn>IKVMC0101;IKVMC0111;$(NoWarn)</NoWarn>
   </PropertyGroup>
