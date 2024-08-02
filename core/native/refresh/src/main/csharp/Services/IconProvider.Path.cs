@@ -7,8 +7,8 @@ namespace Ch.Cyberduck.Core.Refresh.Services
     {
         public T GetPath(Path path, int size)
         {
-            string key = "path:" + (path.isDirectory() ? "folder" : path.getExtension());
-
+            var fileIconKey = path.getExtension();
+            string key = "path:" + (path.isDirectory() ? "folder" : fileIconKey);
             Func<(string, Func<int, T>)> overlayFactory = default;
             if (path.getType().contains(AbstractPath.Type.decrypted))
             {
@@ -21,28 +21,23 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             else
             {
                 var permission = path.attributes().getPermission();
-                if (path.isFile())
+                if (path.isFile() && permission.isExecutable() && string.IsNullOrWhiteSpace(fileIconKey))
                 {
-                    return string.IsNullOrWhiteSpace(path.getExtension()) && permission.isExecutable()
-                        ? GetResource("executable", size)
-                        : GetFileIcon(path.getName(), false, size >= 32, false);
+                    return GetResource("executable", size);
                 }
-                else if (path.isDirectory())
+                else if (path.isDirectory() && Permission.EMPTY != permission)
                 {
-                    if (Permission.EMPTY != permission)
+                    if (!permission.isExecutable())
                     {
-                        if (!permission.isExecutable())
-                        {
-                            overlayFactory = () => ("privatefolder", (int size) => GetResource("privatefolderbadge", size));
-                        }
-                        else if (!permission.isReadable() && permission.isWritable())
-                        {
-                            overlayFactory = () => ("dropfolder", (int size) => GetResource("dropfolderbadge", size));
-                        }
-                        else if (!permission.isWritable() && permission.isReadable())
-                        {
-                            overlayFactory = () => ("readonlyfolder", (int size) => GetResource("readonlyfolderbadge", size));
-                        }
+                        overlayFactory = () => ("privatefolder", (int size) => GetResource("privatefolderbadge", size));
+                    }
+                    else if (!permission.isReadable() && permission.isWritable())
+                    {
+                        overlayFactory = () => ("dropfolder", (int size) => GetResource("dropfolderbadge", size));
+                    }
+                    else if (!permission.isWritable() && permission.isReadable())
+                    {
+                        overlayFactory = () => ("readonlyfolder", (int size) => GetResource("readonlyfolderbadge", size));
                     }
                 }
             }
@@ -53,7 +48,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 return image;
             }
 
-            var baseImage = GetFileIcon(path.getExtension(), path.isDirectory(), size >= 32, false);
+            var baseImage = GetFileIcon($".{fileIconKey}", path.isDirectory(), size >= 32, false);
             if (factory is not null)
             {
                 baseImage = Overlay(baseImage, factory(size), size);

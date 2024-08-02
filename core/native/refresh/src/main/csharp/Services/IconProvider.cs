@@ -47,6 +47,8 @@ namespace Ch.Cyberduck.Core.Refresh.Services
     {
         protected static readonly Logger Log = LogManager.getLogger(typeof(T));
 
+        private static char[] PathSeparatorChars => [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar];
+
         protected IconProvider(IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
         {
         }
@@ -111,15 +113,17 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 key = "folder";
                 fileInfo = "_unknown";
             }
-            else if (Path.IsPathRooted(filename) || isExecutable)
-            {
-                key = filename.ToUpperInvariant().GetHashCode().ToString("X4");
-                IconCache.Temporary("ext", key);
-            }
-            else if (filename.LastIndexOf('.') is int index && index != -1)
+            else if (!isExecutable
+                && filename.LastIndexOf('.') is int index && index != -1
+                && filename.IndexOfAny(PathSeparatorChars, index) == -1)
             {
                 key = filename.Substring(index + 1);
                 fileInfo = filename.Substring(index);
+            }
+            else
+            {
+                key = filename.ToUpperInvariant().GetHashCode().ToString("X4");
+                IconCache.Temporary("ext", key);
             }
 
             if (IconCache.TryGetIcon("ext", large ? 32 : 16, out T image, key))
