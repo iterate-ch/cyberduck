@@ -17,8 +17,12 @@
 // 
 
 using ch.cyberduck.cli;
+using ikvm.runtime;
+using IKVM.Attributes;
 using org.apache.commons.cli;
 using Console = System.Console;
+
+[assembly: CustomAssemblyClassLoader(typeof(AppDomainAssemblyClassLoader))]
 
 namespace Ch.Cyberduck.Cli
 {

@@ -5,7 +5,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>9.1.0-SNAPSHOT</version>
+        <version>10.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>Cyberduck.Bonjour.Native</artifactId>
     <packaging>pom</packaging>
@@ -22,26 +22,6 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-runtime</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>ch.iterate</groupId>
-                                            <artifactId>ikvm</artifactId>
-                                            <type>zip</type>
-                                            <version>${ikvm-version}</version>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>

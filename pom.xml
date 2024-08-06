@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.1.0-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
@@ -984,6 +984,32 @@
                 <surefire.group.excluded>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest
                 </surefire.group.excluded>
             </properties>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-dependency-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>copy-dependencies-jar-target</id>
+                                    <configuration>
+                                        <prependGroupId>true</prependGroupId>
+                                        <stripVersion>true</stripVersion>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
         </profile>
     </profiles>
 </project>
