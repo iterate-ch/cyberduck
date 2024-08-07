@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <Platforms>x64</Platforms>
 
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

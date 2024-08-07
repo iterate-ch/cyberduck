@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <_DirectoryBuildJavaPropsFile>$([MSBuild]::GetPathOfFileAbove('Directory.Build.Java.props', '$(MSBuildProjectDirectory)'))</_DirectoryBuildJavaPropsFile>
+  </PropertyGroup>
+
+  <Import Project="$(_DirectoryBuildJavaPropsFile)" Condition=" '$(_DirectoryBuildJavaPropsFile)' != '' " />
+</Project>

@@ -33,7 +33,10 @@
     <PackageReference Update="ReactiveUI" Version="17.1.50" />
     <PackageReference Update="ReactiveUI.WPF" Version="17.1.50" />
     <PackageReference Update="StructureMap" Version="2.6.4.1" />
+    <PackageReference Update="System.Configuration.ConfigurationManager" Version="8.0.0" />
     <PackageReference Update="System.Memory" Version="4.5.5" />
+    <PackageReference Update="System.Runtime.Caching" Version="8.0.0" />
+    <PackageReference Update="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
 
     <GlobalPackageReference Include="MSBuildTasks" Version="1.5.0.235" GeneratePathProperty="true" />
   </ItemGroup>

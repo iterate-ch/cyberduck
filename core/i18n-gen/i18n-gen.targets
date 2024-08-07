@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <i18n_gen_dll>$(CyberduckDir)core\target\i18n-gen.dll</i18n_gen_dll>
+    <i18n_gen_dll>$(CyberduckDir)core\target\netstandard2.0\i18n-gen.dll</i18n_gen_dll>
   </PropertyGroup>
 
   <UsingTask TaskName="ResourceGenTask"
