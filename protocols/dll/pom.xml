@@ -55,8 +55,14 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
+                                            <classifier>net472</classifier>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/Cyberduck.Protocols.dll</file>
+                                            <file>${project.build.directory}/net472/Cyberduck.Protocols.dll</file>
+                                        </artifact>
+                                        <artifact>
+                                            <classifier>net8.0</classifier>
+                                            <type>dll</type>
+                                            <file>${project.build.directory}/net8.0/Cyberduck.Protocols.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -75,9 +81,16 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core</artifactId>
+                    <classifier>net8.0</classifier>
+                    <type>dll</type>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -89,6 +102,13 @@
             <artifactId>protocols</artifactId>
             <type>pom</type>
             <version>${project.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

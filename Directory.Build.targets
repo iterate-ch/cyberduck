@@ -16,66 +16,71 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.41" />
+  <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.41" />
 
+  <PropertyGroup>
+    <AssemblySearchPaths>$(LibDir);$(AssemblySearchPaths)</AssemblySearchPaths>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' != '' ">
+    <LibDirFramework Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net472'))">net472</LibDirFramework>
+    <LibDirFramework Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">net8.0</LibDirFramework>
+    <AssemblySearchPaths Condition=" '$(LibDirFramework)' != '' ">$(LibDir)$(LibDirFramework)\;$(AssemblySearchPaths)</AssemblySearchPaths>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CyberduckReference Update="Bonjour">
+      <ProjectPath>$(CyberduckDir)bonjour\dll\Cyberduck.Bonjour.msbuildproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Bonjour.Native">
+      <ProjectPath>$(CyberduckDir)bonjour\src\main\csharp\Cyberduck.Bonjour.Native.csproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Cli">
+      <ProjectPath>$(CyberduckDir)cli\dll\Cyberduck.Cli.msbuildproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Core">
+      <ProjectPath>$(CyberduckDir)core\dll\Cyberduck.Core.msbuildproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Core.Native">
+      <ProjectPath>$(CyberduckDir)core\src\main\csharp\Cyberduck.Core.Native.csproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Core.Refresh">
+      <ProjectPath>$(CyberduckDir)core\native\refresh\src\main\csharp\Cyberduck.Core.Refresh.csproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Cryptomator">
+      <ProjectPath>$(CyberduckDir)cryptomator\dll\Cyberduck.Cryptomator.msbuildproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Importer">
+      <ProjectPath>$(CyberduckDir)importer\dll\Cyberduck.Importer.msbuildproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Protocols">
+      <ProjectPath>$(CyberduckDir)protocols\dll\Cyberduck.Protocols.msbuildproj</ProjectPath>
+    </CyberduckReference>
+
+    <CyberduckProjectReferences Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildingInsideVisualStudio)'=='True' " />
+    <CyberduckLibraryReferences Include="@(CyberduckReference->'Cyberduck.%(Identity)')" Exclude="@(CyberduckProjectReferences)" />
+    <ProjectReference Include="@(CyberduckProjectReferences->'%(ProjectPath)')">
+      <Name>Cyberduck.%(Identity)</Name>
+    </ProjectReference>
+    <Reference Include="@(CyberduckLibraryReferences)" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(NETCoreSdkVersion)'!='' ">
+    <!-- Treat SDK 6.0.301 as last known to work. -->
+    <NETSDKBeforeFeature>$([MSBuild]::VersionLessThanOrEquals('$(NETCoreSdkVersion)', '6.0.301'))</NETSDKBeforeFeature>
+    <NETSDKAfterFix>$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '6.0.401'))</NETSDKAfterFix>
+    <CoreCompileDependsOn Condition="!($(NETSDKBeforeFeature) or $(NETSDKAfterFix))">SDKFix_RemoveDuplicateAnalyzers;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+  </PropertyGroup>
+
+  <Target Name="SDKFix_RemoveDuplicateAnalyzers">
     <ItemGroup>
-        <CyberduckReference Update="Bonjour">
-            <ProjectPath>$(CyberduckDir)bonjour\dll\Cyberduck.Bonjour.msbuildproj</ProjectPath>
-        </CyberduckReference>
-        <CyberduckReference Update="Bonjour.Native">
-            <ProjectPath>$(CyberduckDir)bonjour\src\main\csharp\Cyberduck.Bonjour.Native.csproj</ProjectPath>
-        </CyberduckReference>
-        <CyberduckReference Update="Cli">
-            <ProjectPath>$(CyberduckDir)cli\dll\Cyberduck.Cli.msbuildproj</ProjectPath>
-        </CyberduckReference>
-        <CyberduckReference Update="Core">
-            <ProjectPath>$(CyberduckDir)core\dll\Cyberduck.Core.msbuildproj</ProjectPath>
-        </CyberduckReference>
-        <CyberduckReference Update="Core.Native">
-            <ProjectPath>$(CyberduckDir)core\src\main\csharp\Cyberduck.Core.Native.csproj</ProjectPath>
-        </CyberduckReference>
-        <CyberduckReference Update="Core.Refresh">
-            <ProjectPath>$(CyberduckDir)core\native\refresh\src\main\csharp\Cyberduck.Core.Refresh.csproj</ProjectPath>
-        </CyberduckReference>
-        <CyberduckReference Update="Cryptomator">
-            <ProjectPath>$(CyberduckDir)cryptomator\dll\Cyberduck.Cryptomator.msbuildproj</ProjectPath>
-        </CyberduckReference>
-        <CyberduckReference Update="Importer">
-          <ProjectPath>$(CyberduckDir)importer\dll\Cyberduck.Importer.msbuildproj</ProjectPath>
-        </CyberduckReference>
-        <CyberduckReference Update="Protocols">
-            <ProjectPath>$(CyberduckDir)protocols\dll\Cyberduck.Protocols.msbuildproj</ProjectPath>
-        </CyberduckReference>
+      <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
+      <Analyzer Remove="@(Analyzer)" />
+      <Analyzer Include="@(FilteredAnalyzer)" />
+      <FilteredAnalyzer Remove="@(FilteredAnalyzer)" />
     </ItemGroup>
-
-    <ItemGroup>
-        <CyberduckProjectReferences Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildingInsideVisualStudio)'=='True' " />
-        <CyberduckLibraryReferences Include="@(CyberduckReference)" Exclude="@(CyberduckProjectReferences)" />
-
-        <ProjectReference Include="@(CyberduckProjectReferences->'%(ProjectPath)')">
-            <Name>Cyberduck.%(Identity)</Name>
-        </ProjectReference>
-        <Reference Include="@(CyberduckLibraryReferences->'Cyberduck.%(Identity)')">
-            <HintPath>$(TargetBuildDir)%(Identity).dll</HintPath>
-        </Reference>
-    </ItemGroup>
-
-    <PropertyGroup Condition=" '$(NETCoreSdkVersion)'!='' ">
-        <!-- Treat SDK 6.0.301 as last known to work. -->
-        <NETSDKBeforeFeature>$([MSBuild]::VersionLessThanOrEquals('$(NETCoreSdkVersion)', '6.0.301'))</NETSDKBeforeFeature>
-        <NETSDKAfterFix>$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '6.0.401'))</NETSDKAfterFix>
-        <CoreCompileDependsOn Condition="!($(NETSDKBeforeFeature) or $(NETSDKAfterFix))">SDKFix_RemoveDuplicateAnalyzers;$(CoreCompileDependsOn)</CoreCompileDependsOn>
-    </PropertyGroup>
-
-    <Target Name="SDKFix_RemoveDuplicateAnalyzers">
-        <ItemGroup>
-          <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
-          <Analyzer Remove="@(Analyzer)" />
-          <Analyzer Include="@(FilteredAnalyzer)" />
-          <FilteredAnalyzer Remove="@(FilteredAnalyzer)" />
-      </ItemGroup>
   </Target>
-  
+
   <Target Name="_ExportReference" />
 
 </Project>

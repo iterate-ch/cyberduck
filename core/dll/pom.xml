@@ -58,8 +58,14 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
+                                            <classifier>net472</classifier>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/Cyberduck.Core.dll</file>
+                                            <file>${project.build.directory}/net472/Cyberduck.Core.dll</file>
+                                        </artifact>
+                                        <artifact>
+                                            <classifier>net8.0</classifier>
+                                            <type>dll</type>
+                                            <file>${project.build.directory}/net8.0/Cyberduck.Core.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -78,7 +84,7 @@
                       -->
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
-                    <scope>compile</scope>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <!--
@@ -86,7 +92,7 @@
                       -->
                     <groupId>com.auth0</groupId>
                     <artifactId>java-jwt</artifactId>
-                    <scope>compile</scope>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>net.java.dev.jna</groupId>
@@ -105,6 +111,7 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

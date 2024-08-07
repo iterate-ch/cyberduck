@@ -20,6 +20,5 @@
     </PropertyGroup>
 
     <Import Project="../Directory.Build.props" />
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Java.props', '$(MSBuildThisFileDirectory)../'))" />
 
 </Project>

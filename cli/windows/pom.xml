@@ -40,34 +40,6 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>run-ant-restore-target</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="restore" dir="." />
-                                    </target>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>run-ant-build-target</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
-                                    </target>
-                                </configuration>
-                            </execution>
-                            <execution>
                                 <id>run-ant-installer-target</id>
                                 <phase>package</phase>
                                 <goals>
@@ -111,46 +83,39 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Native</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Protocols</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cryptomator</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cli</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>
     </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>cli</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 </project>

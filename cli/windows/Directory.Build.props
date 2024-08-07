@@ -17,6 +17,7 @@
 
     <PropertyGroup>
         <ModulePath Condition="'$(ModulePath)'==''">$(MSBuildThisFileDirectory)</ModulePath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
 
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(MSBuildThisFileDirectory)../))" />

@@ -16,29 +16,36 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup Label="AssemblyInfo">
-        <Company>iterate GmbH</Company>
-        <Description>Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows.</Description>
-    </PropertyGroup>
+  <PropertyGroup Label="AssemblyInfo">
+    <Company>iterate GmbH</Company>
+    <Description>Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows.</Description>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <CyberduckDir>$(MSBuildThisFileDirectory)</CyberduckDir>
-        <TargetBuildDir>$(ModulePath)target\</TargetBuildDir>
+  <PropertyGroup>
+    <CyberduckDir>$(MSBuildThisFileDirectory)</CyberduckDir>
+    <BuildSupportDir>$(CyberduckDir)src\main\msbuild\</BuildSupportDir>
+    <TargetBuildDir>$(ModulePath)target\</TargetBuildDir>
+    <LibDir>$(TargetBuildDir)lib\</LibDir>
+    <GeneratedMSBuildDir>$(TargetBuildDir)generated\msbuild\</GeneratedMSBuildDir>
 
-        <BaseIntermediateOutputPath>$(TargetBuildDir)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-        <BaseOutputPath>$(TargetBuildDir)</BaseOutputPath>
-        <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
-        <OutputPath>$(BaseOutputPath)</OutputPath>
+    <ArtifactsPath>$(TargetBuildDir)</ArtifactsPath>
+    <UseArtifactsOutput>false</UseArtifactsOutput>
 
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-        <LangVersion>12</LangVersion>
-    </PropertyGroup>
+    <BaseIntermediateOutputPath>$(ArtifactsPath)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(ArtifactsPath)</BaseOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>$(BaseOutputPath)</OutputPath>
 
-    <ItemDefinitionGroup>
-        <CyberduckReference>
-            <ProjectPath />
-        </CyberduckReference>
-    </ItemDefinitionGroup>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <LangVersion>12</LangVersion>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <CyberduckReference>
+      <ProjectPath />
+    </CyberduckReference>
+  </ItemDefinitionGroup>
+
+  <Import Project="$(GeneratedMSBuildDir)Version.props" Condition="Exists('$(GeneratedMSBuildDir)Version.props')" />
 
 </Project>

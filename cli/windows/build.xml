@@ -19,26 +19,12 @@
     <import file="../../build.xml"/>
     <import file="../../archive.xml"/>
 
-    <condition property="msbuild.configuration" value="Debug">
-        <equals arg1="${configuration}" arg2="debug" />
-    </condition>
-    <condition property="msbuild.configuration" value="Release">
-        <equals arg1="${configuration}" arg2="release" />
-    </condition>
-
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
     <property name="chocolatey.source" value="${setup}/chocolatey/duck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
 
-    <target name="init-msbuild">
-        <taskdef name="msbuild"
-                 classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-        </taskdef>
-    </target>
-
-    <target name="restore" depends="init-msbuild, version">
+    <target name="restore" depends="msbuild">
         <msbuild buildfile="build.proj">
             <target name="Restore" />
 
@@ -47,20 +33,16 @@
         </msbuild>
     </target>
 
-    <target name="build" depends="init-msbuild, version">
+    <target name="build" depends="restore,msbuild">
         <msbuild buildfile="build.proj">
             <target name="Build" />
 
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
             <property name="Exe" value="true" />
-            <property name="Platform" value="x64" />
-            <property name="ShortVersion" value="${version} (${revision})" />
-            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 
-    <target name="package" depends="init-msbuild, version">
+    <target name="package" depends="restore,msbuild">
         <condition property="msbuild.sign" value="false">
             <istrue value="${skip}" />
         </condition>
@@ -71,11 +53,8 @@
 
             <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
             <property name="Installer" value="true" />
-            <property name="ShortVersion" value="${version} (${revision})" />
             <property name="SignOutput" value="${msbuild.sign}" />
-            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 
