@@ -20,6 +20,10 @@
       <Link>$(Filename)$(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="$(TargetBuildDir)lib\jnidispatch.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>$(Filename)$(Extension)</Link>
+    </Content>
 
     <Content Include="$(CyberduckDir)bookmarks/*.duck">
       <Link>bookmarks/%(Filename)%(Extension)</Link>
@@ -36,9 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IKVM">
-      <PrivateAssets>contentfiles;analyzers;build;buildTransitive</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="IKVM" />
     <PackageReference Include="System.Memory" />
   </ItemGroup>
 

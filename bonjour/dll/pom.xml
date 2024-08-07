@@ -58,8 +58,9 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
+                                            <classifier>net472</classifier>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/Cyberduck.Bonjour.dll</file>
+                                            <file>${project.build.directory}/net472/Cyberduck.Bonjour.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -75,6 +76,7 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
+                    <classifier>net472</classifier>
                     <version>${project.version}</version>
                     <type>dll</type>
                 </dependency>
@@ -87,6 +89,13 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>bonjour</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

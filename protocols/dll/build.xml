@@ -29,11 +29,9 @@
         </msbuild>
     </target>
 
-    <target name="build" if="platform.windows" depends="version,restore,msbuild.configuration">
+    <target name="build" if="platform.windows" depends="restore,msbuild">
         <msbuild buildfile="Cyberduck.Protocols.msbuildproj">
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 </project>
