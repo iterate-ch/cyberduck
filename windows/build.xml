@@ -31,42 +31,32 @@
     <property name="chocolatey.source" value="${setup}/chocolatey/cyberduck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
 
-    <condition property="msbuild.configuration" value="Debug">
-        <equals arg1="${configuration}" arg2="debug" />
-    </condition>
-    <condition property="msbuild.configuration" value="Release">
-        <equals arg1="${configuration}" arg2="release" />
-    </condition>
-
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
-    <target name="init-msbuild" depends="msbuild" />
-
-    <target name="restore" depends="init-msbuild, version">
+    <target name="restore" depends="msbuild">
         <msbuild buildfile="build.proj">
             <target name="Restore" />
         </msbuild>
     </target>
 
-    <target name="build" depends="init-msbuild, version">
+    <target name="build" depends="restore,msbuild">
         <msbuild buildfile="build.proj">
             <target name="Build" />
 
             <property name="BuildModule" value="Project" />
-            <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Version" value="${normalized.version}.${revision}" />
         </msbuild>
     </target>
 
-    <target name="test" depends="init-msbuild, version" unless="${skip}">
+    <target name="test" depends="msbuild" unless="${skip}">
         <msbuild buildfile="src/test/csharp/Cyberduck.Test.csproj">
             <target name="Test" />
+            
+            <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
     </target>
 
-    <target name="package" depends="init-msbuild, version">
+    <target name="package" depends="msbuild">
         <copy todir="${build}">
             <fileset dir="${home}">
                 <include name="*.ico"/>
@@ -91,15 +81,9 @@
         <msbuild buildfile="build.proj">
             <target name="Build" />
 
-            <property name="Platform" value="x64" />
             <property name="BuildModule" value="Installer" />
-            <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="ShortVersion" value="${version} (${revision})" />
             <property name="SignOutput" value="${msbuild.sign}" />
-            <property name="BuildVersion" value="${normalized.version}" />
-            <property name="Revision" value="${revision}" />
         </msbuild>
     </target>
 
