@@ -36,7 +36,7 @@
     </HarvestDirectory>
     <HarvestDirectory Include="$(TargetBuildDir)ikvm" SuppressCom="true" SuppressRegistry="true">
       <Link>ikvm</Link>
-      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <DirectoryRefId>INSTALLLOCATION</DirectoryRefId>
       <ComponentGroupName>IkvmRuntime</ComponentGroupName>
       <PreprocessorVariable>var.IkvmRuntimeDir</PreprocessorVariable>
     </HarvestDirectory>
