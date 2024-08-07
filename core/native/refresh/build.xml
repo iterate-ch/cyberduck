@@ -23,35 +23,19 @@
 
     <import file="../../../build.xml"/>
 
-    <condition property="msbuild.configuration" value="Debug">
-        <equals arg1="${configuration}" arg2="debug" />
-    </condition>
-    <condition property="msbuild.configuration" value="Release">
-        <equals arg1="${configuration}" arg2="release" />
-    </condition>
-
-    <target name="init-msbuild">
-        <taskdef name="msbuild"
-                 classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-        </taskdef>
-    </target>
-
-    <target name="restore" depends="init-msbuild, version">
+    <target name="restore" depends="msbuild">
         <msbuild buildfile="src/main/csharp/Cyberduck.Core.Refresh.csproj">
             <target name="Restore" />
         </msbuild>
     </target>
 
-    <target name="build" depends="init-msbuild, version">
+    <target name="build" depends="restore,msbuild">
         <!-- Create DLL Cyberduck.Core.Refresh -->
         <msbuild buildfile="src/main/csharp/Cyberduck.Core.Refresh.csproj">
             <target name="Build"/>
 
-            <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Version" value="${version}.${revision}" />
+            <property name="Platform" value="x64" />
         </msbuild>
     </target>
 </project>

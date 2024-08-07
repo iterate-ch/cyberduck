@@ -23,33 +23,21 @@
 
     <import file="../../build.xml"/>
 
-    <condition property="msbuild.configuration" value="Debug">
-        <equals arg1="${configuration}" arg2="debug" />
-    </condition>
-    <condition property="msbuild.configuration" value="Release">
-        <equals arg1="${configuration}" arg2="release" />
-    </condition>
-
-    <target name="init-msbuild" depends="msbuild" />
-
-    <target name="restore" depends="init-msbuild, version">
+    <target name="restore" depends="msbuild">
         <msbuild buildfile="build.proj">
             <target name="Restore"/>
         </msbuild>
     </target>
 
-    <target name="build" depends="init-msbuild, version">
+    <target name="build" depends="restore,msbuild">
         <msbuild buildfile="build.proj">
             <target name="Build"/>
 
-            <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 
-    <target name="test" depends="init-msbuild, version" unless="${skip}">
+    <target name="test" depends="msbuild" unless="${skip}">
         <msbuild buildfile="../src/test/csharp/Cyberduck.Core.Test.csproj">
             <target name="Test"/>
 

@@ -617,7 +617,36 @@
                                 <goal>copy-dependencies</goal>
                             </goals>
                             <configuration>
-                                <outputDirectory>${project.build.directory}</outputDirectory>
+                                <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                <excludeClassifiers>net472,net8.0</excludeClassifiers>
+                                <includeTypes>dll</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-dll-net472-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/lib/net472</outputDirectory>
+                                <classifier>net472</classifier>
+                                <includeTypes>dll</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-dll-net8.0-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/lib/net8.0</outputDirectory>
+                                <classifier>net8.0</classifier>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
@@ -1017,6 +1046,7 @@
                                     <configuration>
                                         <prependGroupId>true</prependGroupId>
                                         <stripVersion>true</stripVersion>
+                                        <includeScope>compile</includeScope>
                                     </configuration>
                                 </execution>
                             </executions>
