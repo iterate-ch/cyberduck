@@ -63,7 +63,6 @@
         <Content Include="$(CyberduckDir)Acknowledgments.rtf;$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
             <Link>%(Filename)%(Extension)</Link>
         </Content>
-        <Content Include="Directory.Build.props" />
     </ItemGroup>
     <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
     <ItemGroup>
