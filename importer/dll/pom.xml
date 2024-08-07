@@ -55,8 +55,14 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
+                                            <classifier>net472</classifier>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/Cyberduck.Importer.dll</file>
+                                            <file>${project.build.directory}/net472/Cyberduck.Importer.dll</file>
+                                        </artifact>
+                                        <artifact>
+                                            <classifier>net8.0</classifier>
+                                            <type>dll</type>
+                                            <file>${project.build.directory}/net8.0/Cyberduck.Importer.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -75,6 +81,14 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
+                    <classifier>net472</classifier>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core</artifactId>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
@@ -87,6 +101,13 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>importer</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
