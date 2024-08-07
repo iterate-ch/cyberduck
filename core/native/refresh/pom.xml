@@ -36,8 +36,14 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
+                                            <classifier>net472</classifier>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/Cyberduck.Core.Refresh.dll</file>
+                                            <file>${project.build.directory}/net472/Cyberduck.Core.Refresh.dll</file>
+                                        </artifact>
+                                        <artifact>
+                                            <classifier>net8.0</classifier>
+                                            <type>dll</type>
+                                            <file>${project.build.directory}/net8.0-windows10.0.22621.0/Cyberduck.Core.Refresh.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -46,37 +52,6 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>run-ant-restore-target</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="restore" dir="." />
-                                    </target>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>run-ant-build-target</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <property name="git.revision" value="${git.revision}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -84,16 +59,16 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Native</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Protocols</artifactId>
+                    <artifactId>Cyberduck.Core.Native</artifactId>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>

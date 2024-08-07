@@ -12,7 +12,7 @@ insert_final_newline = true
 charset = utf-8-bom
 
 # XML project files
-[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj,wixproj}]
+[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj,wixproj,msbuildproj}]
 indent_size = 2
 
 # XML config files
