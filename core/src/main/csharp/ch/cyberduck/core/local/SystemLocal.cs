@@ -143,7 +143,8 @@ namespace Ch.Cyberduck.Core.Local
                         // there is no need to validate hostnames here, would bail out somewhere else
                         // handles all cases of "\\*\"
                         // including, but not limited to: wsl$, wsl.localhost, \\?\ (MAX_PATH bypass), any network share
-                        Append(segment, writer);
+                        writer.Write(segment);
+
                         nextDriveLetter = segment.Length == 1 && (segment[0] == '?' || segment[0] == '.');
                     }
                     else if (firstChanceDriveLetter && segment.Length == 2 && segment[1] == Path.VolumeSeparatorChar)
@@ -198,15 +199,6 @@ namespace Ch.Cyberduck.Core.Local
                 }
             }
             return writer.ToString();
-
-            static void Append(in ReadOnlySpan<char> range, StringWriter writer)
-            {
-                // skip any allocation of strings or arrays.
-                foreach (ref readonly var c in range)
-                {
-                    writer.Write(c);
-                }
-            }
         }
     }
 }
