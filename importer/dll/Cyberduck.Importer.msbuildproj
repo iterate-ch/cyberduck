@@ -1,13 +1,15 @@
 <Project Sdk="IKVM.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <CyberduckReference Include="Core" />
+  <Import Project="$(BuildSupportDir)Cyberduck.Java.props" />
 
-        <Convert Include="$(TargetBuildDir)ch.cyberduck.binding.jar" />
-        <Convert Include="$(TargetBuildDir)ch.cyberduck.importer.jar" />
-        <Convert Include="$(TargetBuildDir)org.rococoa.rococoa-core.jar" />
-    </ItemGroup>
+  <ItemGroup>
+    <CyberduckReference Include="Core" />
+
+    <Convert Include="$(TargetBuildDir)ch.cyberduck.binding.jar" />
+    <Convert Include="$(TargetBuildDir)ch.cyberduck.importer.jar" />
+    <Convert Include="$(TargetBuildDir)org.rococoa.rococoa-core.jar" />
+  </ItemGroup>
 </Project>
