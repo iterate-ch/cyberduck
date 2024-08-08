@@ -20,7 +20,7 @@ import ch.cyberduck.test.TestcontainerTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.ComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
@@ -31,16 +31,13 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
 
     protected static final int OAUTH_TTL_MILLIS = 5000;
 
-    public static DockerComposeContainer prepareDockerComposeContainer() {
+    public static ComposeContainer prepareDockerComposeContainer() {
         log.info("Preparing docker compose container...");
-        return new DockerComposeContainer<>(
+        return new ComposeContainer(
                 new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
                 .withPull(false)
                 .withLocalCompose(true)
-                .withOptions("--compatibility")
-                .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-                .withExposedService("minio_1", 9000, Wait.forListeningPort());
+                .withExposedService("keycloak-1", 8080, Wait.forListeningPort())
+                .withExposedService("minio-1", 9000, Wait.forListeningPort());
     }
-
-
 }

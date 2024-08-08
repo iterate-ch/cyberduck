@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
@@ -44,7 +43,7 @@ import ch.cyberduck.test.TestcontainerTest;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.ComposeContainer;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -56,7 +55,7 @@ import static org.junit.Assert.*;
 public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRoleWithWebIdentityTest {
 
     @ClassRule
-    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer();
+    public static ComposeContainer compose = prepareDockerComposeContainer();
 
     @Test
     public void testAuthorizationFindBucket() throws BackgroundException {

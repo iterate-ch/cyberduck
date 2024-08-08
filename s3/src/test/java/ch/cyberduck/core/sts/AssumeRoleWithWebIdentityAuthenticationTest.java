@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -42,7 +41,7 @@ import org.jets3t.service.security.AWSSessionCredentials;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.ComposeContainer;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -56,11 +55,11 @@ import static org.junit.Assert.*;
 public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeRoleWithWebIdentityTest {
 
     @ClassRule
-    public static DockerComposeContainer<?> compose = prepareDockerComposeContainer();
+    public static ComposeContainer compose = prepareDockerComposeContainer();
 
     @Test
     public void testSuccessfulLogin() throws BackgroundException {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
@@ -82,7 +81,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
 
     @Test
     public void testInvalidUserName() throws BackgroundException {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
         final S3Session session = new S3Session(host);
@@ -93,7 +92,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
 
     @Test
     public void testInvalidPassword() throws BackgroundException {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalidPassword"));
         final S3Session session = new S3Session(host);
@@ -104,7 +103,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
 
     @Test
     public void testTokenRefresh() throws BackgroundException, InterruptedException {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
@@ -136,7 +135,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
      */
     @Test
     public void testLoginInvalidOAuthTokensLogin() throws Exception {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Credentials credentials = new Credentials("rouser", "rouser")
                 .withOauth(new OAuthTokens(
@@ -161,7 +160,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
      */
     @Test
     public void testBucketListInvalidOAuthTokensList() throws Exception {
-        final Protocol profile =  new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
+        final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Credentials credentials = new Credentials("rouser", "rouser")
                 .withOauth(OAuthTokens.EMPTY)
