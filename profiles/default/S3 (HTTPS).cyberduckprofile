@@ -43,7 +43,9 @@
             <string>ap-southeast-1</string>
             <string>ap-southeast-2</string>
             <string>ap-southeast-3</string>
+            <string>ap-southeast-4</string>
             <string>ca-central-1</string>
+            <string>ca-west-1</string>
             <string>eu-west-1</string>
             <string>eu-west-2</string>
             <string>eu-west-3</string>
@@ -52,6 +54,7 @@
             <string>eu-south-2</string>
             <string>eu-central-1</string>
             <string>eu-central-2</string>
+            <string>il-central-1</string>
             <string>me-central-1</string>
             <string>me-south-1</string>
             <string>sa-east-1</string>
