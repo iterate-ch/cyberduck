@@ -65,9 +65,9 @@ public class SDSCopyFeature implements Copy {
                 Long.parseLong(nodeid.getVersionId(target.getParent())),
                 StringUtils.EMPTY, null);
             listener.sent(status.getLength());
-            nodeid.cache(target, null);
+            nodeid.cache(target, null, null);
             final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(target);
-            nodeid.cache(target, attributes.getVersionId());
+            nodeid.cache(target, attributes.getVersionId(), attributes.getFileId());
             return target.withAttributes(attributes);
         }
         catch(ApiException e) {

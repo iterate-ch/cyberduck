@@ -23,7 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class CachingVersionIdProvider implements VersionIdProvider {
+public class CachingVersionIdProvider implements VersionIdProvider {
     private static final Logger log = LogManager.getLogger(CachingVersionIdProvider.class);
 
     private final LRUCache<SimplePathPredicate, String> cache
@@ -31,7 +31,7 @@ public abstract class CachingVersionIdProvider implements VersionIdProvider {
 
     private final Protocol.Case sensitivity;
 
-    protected CachingVersionIdProvider(final Protocol.Case sensitivity) {
+    public CachingVersionIdProvider(final Protocol.Case sensitivity) {
         this.sensitivity = sensitivity;
     }
 
