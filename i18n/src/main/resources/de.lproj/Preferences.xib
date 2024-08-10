@@ -1792,7 +1792,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="264"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Application" translatesAutoresizingMaskIntoConstraints="NO" id="369">
+                <box fixedFrame="YES" title="Anwendung" translatesAutoresizingMaskIntoConstraints="NO" id="369">
                     <rect key="frame" x="17" y="114" width="473" height="130"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="HTA-ik-z0B">
