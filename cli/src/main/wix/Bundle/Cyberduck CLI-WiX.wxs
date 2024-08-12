@@ -19,7 +19,7 @@
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="INSTALLFOLDER" Name="Cyberduck CLI">
+        <Directory Id="INSTALLLOCATION" Name="Cyberduck CLI">
           <Component Id="setEnviroment"
                      Guid="B429556B-9604-45DD-896C-4AE7BFFBE9EB">
             <CreateFolder />
@@ -29,14 +29,14 @@
                          Name="PATH"
                          Permanent="no"
                          System="yes"
-                         Value="[INSTALLFOLDER]" />
+                         Value="[INSTALLLOCATION]" />
           </Component>
           <Directory Id="PROFILES" Name="profiles"/>
         </Directory>
       </Directory>
     </Directory>
 
-    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLLOCATION">
       <Component Id="InstallLocationRegistrySearch">
         <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
       </Component>
