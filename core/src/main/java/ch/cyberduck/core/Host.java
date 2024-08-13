@@ -413,7 +413,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
-        this.hostname = hostname.trim();
+        this.hostname = StringUtils.trim(hostname);
     }
 
     /**
