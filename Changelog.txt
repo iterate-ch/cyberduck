@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+9.0.2
+- [Feature] Support for Canada West (Calgary) region (S3) (#16215)
+- [Feature] Support for Asia Pacific (Melbourne) region (S3)
+- [Feature] Support for Israel (Tel Aviv) region (S3)
+- [Feature] Support for Asia Pacific (Kuala Lumpur) region (S3)
+
 9.0.1
 - [Bugfix] Auto detect of vaults not always working (Cryptomator)
 - [Bugfix] Missing server prompts before transfer (Windows) (#16140, #16113)
