@@ -36,6 +36,9 @@ public class HttpReachabilityTest {
     @Test
     public void testIsReachable() {
         final Reachability r = new HttpReachability();
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(Scheme.http))
+        ));
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(Scheme.http), "test.cyberduck.io")
         ));
