@@ -32,6 +32,9 @@ public class DefaultInetAddressReachabilityTest {
     @Test
     public void testIsReachable() {
         final Reachability r = new DefaultInetAddressReachability();
+        assertFalse(r.isReachable(
+                new Host(new TestProtocol(), "cyberduck.io")
+        ));
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(), "cyberduck.io")
         ));
