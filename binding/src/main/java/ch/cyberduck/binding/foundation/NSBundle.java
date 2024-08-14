@@ -144,6 +144,13 @@ public abstract class NSBundle extends NSObject {
     public abstract boolean loadAndReturnError(ObjCObjectByReference error1);
 
     /**
+     * Use this app bundle property to locate the app receipt if it's present; this property is nil if the receipt isn’t present.
+     *
+     * @return The file URL for the bundle’s App Store receipt.
+     */
+    public abstract NSURL appStoreReceiptURL();
+
+    /**
      * Original signature : <code>String* bundlePath)</code><br>
      * <i>native declaration : :45</i>
      */
