@@ -592,6 +592,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.hidden = hidden;
     }
 
+    public PathAttributes withHidden(final boolean hidden) {
+        this.setHidden(hidden);
+        return this;
+    }
+
     public Map<String, String> getMetadata() {
         return metadata;
     }

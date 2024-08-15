@@ -163,8 +163,12 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     @Test
     public void testListTrash() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory));
-        new DeepboxListService(session, nodeid).list(trash, new DisabledListProgressListener()); // assert no fail
+        final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(box, new DisabledListProgressListener());
+        final Path trash = new Path(box, "Trash", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertNotNull(list.find(new SimplePathPredicate(trash)));
+        assertTrue(list.find(new SimplePathPredicate(trash)).attributes().isHidden());
+        assertNotSame(AttributedList.EMPTY, new DeepboxListService(session, nodeid).list(trash, new DisabledListProgressListener())); // assert no fail
     }
 
     @Test
@@ -372,6 +376,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
+        assertTrue(attributes.isHidden());
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN));
         // assert no fail
