@@ -57,9 +57,9 @@
       <ProjectPath>$(CyberduckDir)protocols\dll\Cyberduck.Protocols.msbuildproj</ProjectPath>
     </CyberduckReference>
 
-    <CyberduckProjectReferences Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildingInsideVisualStudio)'=='True' " />
-    <CyberduckLibraryReferences Include="@(CyberduckReference->'Cyberduck.%(Identity)')" Exclude="@(CyberduckProjectReferences)" />
-    <ProjectReference Include="@(CyberduckProjectReferences->'%(ProjectPath)')">
+    <CyberduckProjectReference Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildProjectReferences)'=='true' " />
+    <CyberduckLibraryReferences Include="@(CyberduckReference->'Cyberduck.%(Identity)')" Exclude="@(CyberduckProjectReference)" />
+    <ProjectReference Include="@(CyberduckProjectReference->'%(ProjectPath)')">
       <Name>Cyberduck.%(Identity)</Name>
     </ProjectReference>
     <Reference Include="@(CyberduckLibraryReferences)" />
@@ -80,7 +80,5 @@
       <FilteredAnalyzer Remove="@(FilteredAnalyzer)" />
     </ItemGroup>
   </Target>
-
-  <Target Name="_ExportReference" />
 
 </Project>
