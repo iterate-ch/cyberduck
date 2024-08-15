@@ -1,4 +1,7 @@
-<Project Sdk="IKVM.NET.Sdk">
+<Project>
+
+  <Import Sdk="IKVM.NET.Sdk" Project="Sdk.props" />
+
   <PropertyGroup>
     <TargetFrameworks>net472;net8.0</TargetFrameworks>
   </PropertyGroup>
@@ -52,4 +55,8 @@
     <Convert Include="$(TargetBuildDir)org.slf4j.jul-to-slf4j.jar" />
     <Convert Include="$(TargetBuildDir)org.slf4j.slf4j-api.jar" />
   </ItemGroup>
+
+  <Import Sdk="IKVM.NET.Sdk" Project="Sdk.targets" />
+  <Import Project="$(BuildSupportDir)Cyberduck.Java.targets" />
+  
 </Project>
