@@ -1,4 +1,7 @@
-<Project Sdk="IKVM.NET.Sdk">
+<Project>
+
+  <Import Sdk="IKVM.NET.Sdk" Project="Sdk.props" />
+
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
@@ -12,4 +15,8 @@
     <Convert Include="$(TargetBuildDir)commons-cli.commons-cli.jar" />
     <Convert Include="$(TargetBuildDir)org.fusesource.jansi.jansi.jar" />
   </ItemGroup>
+
+  <Import Sdk="IKVM.NET.Sdk" Project="Sdk.targets" />
+  <Import Project="$(BuildSupportDir)Cyberduck.Java.targets" />
+
 </Project>
