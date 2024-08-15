@@ -1,4 +1,7 @@
-<Project Sdk="IKVM.NET.Sdk">
+<Project>
+
+  <Import Sdk="IKVM.NET.Sdk" Project="Sdk.props" />
+  
   <PropertyGroup>
     <!--
       Only really used in Cyberduck.
@@ -14,4 +17,8 @@
     <Convert Include="$(TargetBuildDir)ch.cyberduck.bonjour.jar" />
     <Convert Include="$(TargetBuildDir)com.apple.dnssd.jar" />
   </ItemGroup>
+
+  <Import Sdk="IKVM.NET.Sdk" Project="Sdk.targets" />
+  <Import Project="$(BuildSupportDir)Cyberduck.Java.targets" />
+  
 </Project>
