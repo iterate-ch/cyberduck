@@ -41,7 +41,7 @@
 
     <BuildProjectReferences Condition=" '$(BuildProjectReferences)'=='' And '$(BuildingInsideVisualStudio)'!='True' ">false</BuildProjectReferences>
   </PropertyGroup>
-
+  
   <ItemDefinitionGroup>
     <CyberduckReference>
       <ProjectPath />
