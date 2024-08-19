@@ -16,19 +16,16 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Net;
 using ch.cyberduck.core.proxy;
 using org.apache.logging.log4j;
+using System;
 using Logger = org.apache.logging.log4j.Logger;
 
 namespace Ch.Cyberduck.Core.Proxy
 {
-    public class SystemProxy : AbstractProxyFinder
+    public partial class SystemProxy : AbstractProxyFinder
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(SystemProxy).FullName);
-
-        private readonly IWebProxy _system = WebRequest.GetSystemWebProxy();
 
         public override ch.cyberduck.core.proxy.Proxy find(string host)
         {
@@ -47,7 +44,8 @@ namespace Ch.Cyberduck.Core.Proxy
                 return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
 
-            if (_system.IsBypassed(target))
+            var systemProxy = DefaultSystemProxy;
+            if (systemProxy.IsBypassed(target) || systemProxy.GetProxy(target) is not { } uri)
             {
                 if (Log.isDebugEnabled())
                 {
@@ -56,7 +54,6 @@ namespace Ch.Cyberduck.Core.Proxy
                 return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
 
-            Uri uri = _system.GetProxy(target);
             var proxy = new ch.cyberduck.core.proxy.Proxy(ch.cyberduck.core.proxy.Proxy.Type.valueOf(uri.Scheme.ToUpper()),
                 uri.Host, uri.Port, uri.UserInfo);
             if (Log.isDebugEnabled())
