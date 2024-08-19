@@ -28,6 +28,13 @@
     <AssemblySearchPaths Condition=" '$(LibDirFramework)' != '' ">$(LibDir)$(LibDirFramework)\;$(AssemblySearchPaths)</AssemblySearchPaths>
   </PropertyGroup>
 
+  <PropertyGroup Condition= " '$(TargetFramework)' != 'net472' ">
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/*net472*</DefaultItemExcludes>
+  </PropertyGroup>
+  <PropertyGroup Condition= " !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0')) ">
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/*net8.0*</DefaultItemExcludes>
+  </PropertyGroup>
+
   <ItemGroup>
     <CyberduckReference Update="Bonjour">
       <ProjectPath>$(CyberduckDir)bonjour\dll\Cyberduck.Bonjour.msbuildproj</ProjectPath>
