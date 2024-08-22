@@ -54,7 +54,9 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
 
     @Override
     public void flush() throws IOException {
-        log.warn(String.format("Flush stream %s", proxy));
+        if(log.isWarnEnabled()) {
+            log.warn(String.format("Flush stream %s", proxy));
+        }
         this.flush(true);
     }
 
