@@ -24,7 +24,7 @@ import java.util.concurrent.Callable;
 
 public abstract class TransferWorker<T> extends Worker<T> {
 
-    interface TransferCallable extends Callable<TransferStatus> {
+    public interface TransferCallable extends Callable<TransferStatus> {
         TransferStatus call() throws BackgroundException;
     }
 }
