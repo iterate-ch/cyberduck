@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <CyberduckReference Include="Core;Core.Native" />
+    <CyberduckReference Include="Core;Core.Native;Core.Refresh" />
   </ItemGroup>
 
   <ItemGroup>
