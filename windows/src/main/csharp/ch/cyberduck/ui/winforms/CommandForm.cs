@@ -20,6 +20,7 @@ using Ch.Cyberduck.Ui.Controller;
 using System;
 using System.Drawing;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static Ch.Cyberduck.ImageHelper;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.PInvoke;
@@ -54,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             transcriptBox.SelectionColor = Color.Black;
             transcriptBox.SelectedText = message + Environment.NewLine;
             transcriptBox.Select(transcriptBox.TextLength, transcriptBox.TextLength);
-            SendMessage((HWND)transcriptBox.Handle, WM_VSCROLL, (nuint)SB_BOTTOM, 0);
+            SendMessage((HWND)transcriptBox.Handle, WM_VSCROLL, (nuint)SCROLLBAR_COMMAND.SB_BOTTOM, 0);
         }
 
         public void StartActivityAnimation()

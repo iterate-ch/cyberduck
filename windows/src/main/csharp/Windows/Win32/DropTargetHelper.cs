@@ -1,38 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
 using Windows.Win32.Foundation;
+using Windows.Win32.System.Ole;
 using Windows.Win32.UI.Shell;
-using static System.Runtime.InteropServices.ComTypes.DVASPECT;
-using static System.Runtime.InteropServices.ComTypes.TYMED;
-using static Windows.Win32.PInvoke;
-using static Windows.Win32.System.Com.CLSCTX;
 using ComTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace Windows.Win32
 {
-    public static unsafe partial class DropTargetHelper
+    public static partial class DropTargetHelper
     {
-        private static readonly IDictionary<Control, ComTypes.IDataObject> s_dataContext = new Dictionary<Control, ComTypes.IDataObject>();
+        private static readonly Dictionary<Control, IDataObject> s_dataContext = [];
 
-        private static readonly IDropTargetHelper s_instance;
-
-        static DropTargetHelper()
+        public static void DragEnter(Control control, IDataObject dataObject, in Point cursorOffset, DragDropEffects effect)
         {
-            Marshal.ThrowExceptionForHR(CoCreateInstance(CLSID_DragDropHelper, null, CLSCTX_ALL, out s_instance));
+            s_instance.DragEnter((HWND)control.Handle, (ComTypes.IDataObject)dataObject, cursorOffset, (DROPEFFECT)effect);
         }
 
-        public static void DragEnter(Control control, ComTypes.IDataObject data, in Point cursorOffset, DROPIMAGETYPE effect)
+        public static void DragEnter(Control control, IDataObject data, Point cursorOffset, DragDropEffects effect, string descriptionMessage, string descriptionInsert)
         {
-            s_instance.DragEnter((HWND)control.Handle, data, ToPoint(cursorOffset), effect);
-        }
-
-        public static void DragEnter(Control control, ComTypes.IDataObject data, Point cursorOffset, DROPIMAGETYPE effect, string descriptionMessage, string descriptionInsert)
-        {
-            SetDropDescription(data, effect, descriptionMessage, descriptionInsert);
+            SetDropDescription((ComTypes.IDataObject)data, (DROPIMAGETYPE)effect, descriptionMessage, descriptionInsert);
             DragEnter(control, data, cursorOffset, effect);
             if (!s_dataContext.ContainsKey(control))
             {
@@ -49,46 +36,30 @@ namespace Windows.Win32
             s_instance.DragLeave();
         }
 
-        public static void DragOver(Point cursorOffset, DROPIMAGETYPE effect)
+        public static void DragLeave(Control control)
         {
-            s_instance.DragOver(ToPoint(cursorOffset), effect);
+            if (s_dataContext.ContainsKey(control))
+            {
+                SetDropDescription(s_dataContext[control], DROPIMAGETYPE.DROPIMAGE_INVALID, null, null);
+                s_dataContext.Remove(control);
+            }
+
+            DragLeave();
         }
 
-        public static void Drop(ComTypes.IDataObject data, Point cursorOffset, DROPIMAGETYPE effect)
+        public static void DragOver(in Point cursorOffset, DragDropEffects effect)
         {
-            s_instance.Drop(data, ToPoint(cursorOffset), effect);
+            s_instance.DragOver(cursorOffset, (DROPEFFECT)effect);
         }
 
-        public unsafe static void SetDropDescription(ComTypes.IDataObject data, DROPIMAGETYPE type, string descriptionMessage, string descriptionInsert)
+        public static void Drop(IDataObject data, in Point cursorOffset, DragDropEffects effect)
         {
-            FORMATETC format = new()
-            {
-                cfFormat = (short)RegisterClipboardFormat("DropDescription"),
-                dwAspect = DVASPECT_CONTENT,
-                lindex = -1,
-                ptd = default,
-                tymed = TYMED_HGLOBAL,
-            };
-            var dropDescription = (DROPDESCRIPTION*)Marshal.AllocHGlobal(sizeof(DROPDESCRIPTION));
-            dropDescription->type = type;
-            dropDescription->szMessage = descriptionMessage;
-            dropDescription->szInsert = descriptionInsert;
+            s_instance.Drop((ComTypes.IDataObject)data, cursorOffset, (DROPEFFECT)effect);
+        }
 
-            STGMEDIUM medium = new()
-            {
-                pUnkForRelease = default,
-                tymed = TYMED_HGLOBAL,
-                unionmember = (nint)dropDescription
-            };
-
-            try
-            {
-                data.SetData(ref format, ref medium, true);
-            }
-            catch
-            {
-                Marshal.FreeHGlobal((nint)dropDescription);
-            }
+        public static void SetDropDescription(IDataObject data, DragDropEffects type, string descriptionMessage, string descriptionInsert)
+        {
+            SetDropDescription(data, (DROPIMAGETYPE)type, descriptionMessage, descriptionInsert);
         }
 
         public static void Show(bool show)
@@ -96,6 +67,9 @@ namespace Windows.Win32
             s_instance.Show(show);
         }
 
-        private static ref POINT ToPoint(in Point point) => ref Unsafe.As<Point, POINT>(ref Unsafe.AsRef(point));
+        private static void SetDropDescription(IDataObject data, DROPIMAGETYPE type, string descriptionMessage, string descriptionInsert)
+        {
+            SetDropDescription((ComTypes.IDataObject)data, type, descriptionMessage, descriptionInsert);
+        }
     }
 }

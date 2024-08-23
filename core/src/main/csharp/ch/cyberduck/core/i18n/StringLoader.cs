@@ -26,21 +26,15 @@ namespace Ch.Cyberduck.Core.I18n
     public class StringLoader : IDisposable
     {
         private readonly FreeLibrarySafeHandle shell32;
-        private bool disposedValue;
 
         public StringLoader()
         {
             shell32 = LoadLibrary("shell32.dll");
         }
 
-        ~StringLoader()
-        {
-            Dispose(disposing: false);
-        }
-
         public void Dispose()
         {
-            Dispose(disposing: true);
+            shell32.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -51,16 +45,8 @@ namespace Ch.Cyberduck.Core.I18n
             {
                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
-            return lpBuffer.ToString(length);
-        }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                shell32.Dispose();
-                disposedValue = true;
-            }
+            return lpBuffer.ToString(length);
         }
     }
 }
