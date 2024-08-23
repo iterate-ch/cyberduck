@@ -163,7 +163,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
             }
             meta.setFileName(URIEncoder.encode(file.getName()));
             meta.setParentId(fileid.getFileId(file.getParent()));
-            meta.setFileSize(status.getLength() > 0 ? status.getLength() : null);
+            meta.setFileSize(TransferStatus.UNKNOWN_LENGTH != status.getLength() ? status.getLength() : null);
             if(null != status.getModified()) {
                 meta.setModified(new DateTime(status.getModified()));
             }
