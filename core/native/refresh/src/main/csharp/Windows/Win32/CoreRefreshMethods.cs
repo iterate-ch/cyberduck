@@ -16,6 +16,12 @@ public partial class CoreRefreshMethods
     }
 
     /// <inheritdoc cref="SHLoadIndirectString(PCWSTR, PWSTR, uint, void**)"/>
+    public static string SHLoadIndirectString(string pszSource)
+    {
+        return SHLoadIndirectString(PCWSTR.DangerousFromString(pszSource));
+    }
+
+    /// <inheritdoc cref="SHLoadIndirectString(PCWSTR, PWSTR, uint, void**)"/>
     public static unsafe string SHLoadIndirectString(PCWSTR pszSource)
     {
         var pool = ArrayPool<char>.Shared;
