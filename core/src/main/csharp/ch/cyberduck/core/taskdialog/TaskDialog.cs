@@ -437,20 +437,18 @@ namespace Ch.Cyberduck.Core.TaskDialog
             count = (uint)target.Count;
             if (value is MESSAGEBOX_RESULT button && button != 0)
             {
-                AsRef(defaultButton) = (int)button;
+                AsRef(in defaultButton) = (int)button;
             }
         }
 
-        private unsafe HRESULT Handler(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
+        private unsafe HRESULT Handler(HWND hwnd, TASKDIALOG_NOTIFICATIONS msg, WPARAM wParam, LPARAM lParam)
         {
-            var notification = (TASKDIALOG_NOTIFICATIONS)msg;
-
-            if (notification is TDN_CREATED)
+            if (msg is TDN_CREATED)
             {
                 SetSyncEvent();
             }
 
-            EventArgs args = (TASKDIALOG_NOTIFICATIONS)msg switch
+            EventArgs args = msg switch
             {
                 TDN_CREATED => new TaskDialogCreatedEventArgs(hwnd),
                 TDN_NAVIGATED => new TaskDialogNavigatedEventArgs(hwnd),
@@ -465,7 +463,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 TDN_EXPANDO_BUTTON_CLICKED => new TaskDialogExpandoButtonClickedEventArgs(hwnd, wParam.Value != 0),
                 _ => default
             };
-            return callback?.Invoke(this, args) == true ? S_FALSE : S_OK;
+            return callback?.Invoke(this, args) == true ? HRESULT.S_FALSE : HRESULT.S_OK;
         }
 
         private void SetSyncEvent()

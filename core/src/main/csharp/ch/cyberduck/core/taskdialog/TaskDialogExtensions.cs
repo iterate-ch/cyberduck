@@ -21,7 +21,6 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
-using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Controls.TASKDIALOG_ELEMENTS;
 using static Windows.Win32.UI.Controls.TASKDIALOG_ICON_ELEMENTS;
 using static Windows.Win32.UI.Controls.TASKDIALOG_MESSAGES;
@@ -32,22 +31,22 @@ namespace Ch.Cyberduck.Core.TaskDialog
     public static class TaskDialogEventArgsExtensions
     {
         public static bool ClickButton(this TaskDialogEventArgs @this, uint buttonId)
-            => SendMessage(@this, TDM_CLICK_BUTTON, (nuint)buttonId, 0).Value != 0;
+            => SendMessage(@this, TDM_CLICK_BUTTON, buttonId, 0).Value != 0;
 
         public static bool ClickRadioButton(this TaskDialogEventArgs @this, uint buttonId)
-            => SendMessage(@this, TDM_CLICK_RADIO_BUTTON, (nuint)buttonId, 0).Value != 0;
+            => SendMessage(@this, TDM_CLICK_RADIO_BUTTON, buttonId, 0).Value != 0;
 
         public static bool ClickVerification(this TaskDialogEventArgs @this, bool checkedState, bool setKeyboardFocusToCheckBox)
-            => SendMessage(@this, TDM_CLICK_VERIFICATION, (nuint)(checkedState ? 1 : 0), (nint)(setKeyboardFocusToCheckBox ? 1 : 0)).Value != 0;
+            => SendMessage(@this, TDM_CLICK_VERIFICATION, (nuint)(checkedState ? 1 : 0), setKeyboardFocusToCheckBox ? 1 : 0).Value != 0;
 
         public static bool MakeTopMost(this TaskDialogEventArgs @this)
-            => SetWindowPos(@this, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+            => SetWindowPos(@this, HWND.HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 
         public static void SetButtonElevationRequiredState(this TaskDialogEventArgs @this, uint buttonId, bool elevationRequired)
-            => SendMessage(@this, TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE, (nuint)buttonId, (nint)(elevationRequired ? 1 : 0));
+            => SendMessage(@this, TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE, buttonId, elevationRequired ? 1 : 0);
 
         public static void SetButtonState(this TaskDialogEventArgs @this, uint buttonId, bool enabled)
-            => SendMessage(@this, TDM_ENABLE_BUTTON, (nuint)buttonId, (nint)(enabled ? 1 : 0));
+            => SendMessage(@this, TDM_ENABLE_BUTTON, buttonId, enabled ? 1 : 0);
 
         public static bool SetContent(this TaskDialogEventArgs @this, string content)
             => SendMessage(@this, TDM_SET_ELEMENT_TEXT, (nuint)TDE_CONTENT, content).Value != 0;
@@ -65,19 +64,19 @@ namespace Ch.Cyberduck.Core.TaskDialog
             => SendMessage(@this, TDM_SET_MARQUEE_PROGRESS_BAR, (nuint)(marquee ? 1 : 0), 0).Value != 0;
 
         public static bool SetProgressBarMarquee(this TaskDialogEventArgs @this, bool startMarquee, int speed)
-            => SendMessage(@this, TDM_SET_PROGRESS_BAR_MARQUEE, (nuint)(startMarquee ? 1 : 0), (nint)speed).Value != 0;
+            => SendMessage(@this, TDM_SET_PROGRESS_BAR_MARQUEE, (nuint)(startMarquee ? 1 : 0), speed).Value != 0;
 
         public static int SetProgressBarPosition(this TaskDialogEventArgs @this, uint newPosition)
-            => (int)SendMessage(@this, TDM_SET_PROGRESS_BAR_POS, (nuint)newPosition, 0).Value;
+            => (int)SendMessage(@this, TDM_SET_PROGRESS_BAR_POS, newPosition, 0).Value;
 
         public static bool SetProgressBarRange(this TaskDialogEventArgs @this, short minRange, short maxRange)
-            => (int)SendMessage(@this, TDM_SET_PROGRESS_BAR_RANGE, 0, (nint)((int)minRange | maxRange << 16)).Value != 0;
+            => (int)SendMessage(@this, TDM_SET_PROGRESS_BAR_RANGE, 0, (int)minRange | maxRange << 16).Value != 0;
 
         public static bool SetProgressBarState(this TaskDialogEventArgs @this, uint newState)
-            => SendMessage(@this, TDM_SET_PROGRESS_BAR_STATE, (nuint)newState, 0).Value != 0;
+            => SendMessage(@this, TDM_SET_PROGRESS_BAR_STATE, newState, 0).Value != 0;
 
         public static void SetRadioButtonState(this TaskDialogEventArgs @this, uint buttonId, bool enabled)
-            => SendMessage(@this, TDM_ENABLE_RADIO_BUTTON, (nuint)buttonId, (nint)(enabled ? 1 : 0));
+            => SendMessage(@this, TDM_ENABLE_RADIO_BUTTON, buttonId, enabled ? 1 : 0);
 
         public static bool SetWindowTitle(this TaskDialogEventArgs @this, string title)
             => SetWindowText(@this, title);
