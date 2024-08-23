@@ -1,5 +1,4 @@
-﻿ASSOCF_INIT_DEFAULTTOSTAR
-ASSOCF_NOTRUNCATE
+﻿ASSOCF
 BHID_DataObject
 CLSID_QueryAssociations
 CoTaskMemFree
@@ -44,14 +43,12 @@ SetWindowPos
 SetWindowText
 SHAssocEnumHandlers
 SHCreateAssociationRegistration
-SHCreateFileExtractIcon
 SHCreateItemFromIDList
 Shell_GetCachedImageIndex
 ShellExecuteEx
 SHGetFileInfo
 SHGetKnownFolderPath
 SHGFI_FLAGS
-SHLoadIndirectString
 SHOpenFolderAndSelectItems
 SHOpenWithDialog
 SHParseDisplayName
@@ -63,6 +60,10 @@ TASKDIALOG_ICON_ELEMENTS
 TASKDIALOG_MESSAGES
 TASKDIALOG_NOTIFICATIONS
 TaskDialogIndirect
+TD_ERROR_ICON
+TD_INFORMATION_ICON
+TD_SHIELD_ICON
+TD_WARNING_ICON
 TOKEN_ELEVATION_TYPE
 WINDOW_EX_STYLE
 WINDOW_STYLE
