@@ -50,8 +50,8 @@ using static Ch.Cyberduck.ImageHelper;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.PInvoke;
 using Application = ch.cyberduck.core.local.Application;
-using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -1094,7 +1094,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public static void ScrollToBottom(RichTextBox richTextBox)
         {
-            SendMessage((HWND)richTextBox.Handle, WM_VSCROLL, (nuint)SB_BOTTOM, 0);
+            SendMessage((HWND)richTextBox.Handle, WM_VSCROLL, (nuint)SCROLLBAR_COMMAND.SB_BOTTOM, 0);
         }
         
         private void SetupComparators()
