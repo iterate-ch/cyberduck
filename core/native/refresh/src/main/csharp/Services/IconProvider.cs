@@ -87,7 +87,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 DestroyIconSafeHandle smallIcon = null;
                 try
                 {
-                    iconPath = SHLoadIndirectString(PCWSTR.DangerousFromString(iconPath));
+                    iconPath = SHLoadIndirectString(iconPath);
 
                     SHCreateFileExtractIcon(iconPath, 0, out IExtractIconW icon);
                     icon.Extract(iconPath, (uint)iconIndex, out largeIcon, out smallIcon, 0);
