@@ -60,20 +60,19 @@ namespace Ch.Cyberduck.Core.Local
             const string key = "enum.assoc.handler.all";
             if (assocHandlerListCache.get(key) is not List<Application> map)
             {
-                map = new List<Application>();
+                map = [];
                 assocHandlerListCache.put(key, map);
                 map.Add(ShellOpenWithApplication.Instance);
 
                 HRESULT result;
                 if ((result = SHAssocEnumHandlers(string.Empty, ASSOC_FILTER.ASSOC_FILTER_NONE, out var enumHandlers)).Succeeded)
                 {
-                    IAssocHandler[] passocHandler = new IAssocHandler[1];
-                    ref IAssocHandler assocHandler = ref passocHandler[0];
+                    IAssocHandler[] assocHandler = new IAssocHandler[1];
                     try
                     {
-                        while (enumHandlers.Next(passocHandler) > 0)
+                        while (enumHandlers.Next(assocHandler) > 0)
                         {
-                            map.Add(new ShellApplication(assocHandler));
+                            map.Add(new ShellApplication(assocHandler[0]));
                         }
                     }
                     catch (Exception e)
@@ -233,7 +232,7 @@ namespace Ch.Cyberduck.Core.Local
         {
             public ProgIdApplication(string identifier, string name, string defaultIcon) : base(identifier, name)
             {
-                PWSTR pszIconFile = defaultIcon;
+                PWSTR pszIconFile = PWSTR.DangerousFromString(defaultIcon);
                 IconIndex = PathParseIconLocation(pszIconFile);
                 IconPath = pszIconFile.ToString();
             }
@@ -247,10 +246,10 @@ namespace Ch.Cyberduck.Core.Local
                 SHELLEXECUTEINFOW info = new()
                 {
                     cbSize = (uint)sizeof(SHELLEXECUTEINFOW),
-                    lpClass = getIdentifier(),
+                    lpClass = PCWSTR.DangerousFromString(getIdentifier()),
                     fMask = SEE_MASK_CLASSNAME | SEE_MASK_NOASYNC,
-                    lpVerb = "open",
-                    lpFile = local.getAbsolute()
+                    lpVerb = PCWSTR.DangerousFromString("open"),
+                    lpFile = PCWSTR.DangerousFromString(local.getAbsolute())
                 };
                 ShellExecuteEx(ref info);
             }
@@ -285,13 +284,13 @@ namespace Ch.Cyberduck.Core.Local
                     return;
                 }
 
-                using PIDLIST_ABSOLUTEHandle pidl = ILCreateFromPath2(local.getAbsolute());
-                if (!pidl)
+                using var pidl = ILCreateFromPathSafe(local.getAbsolute());
+                if (pidl.IsInvalid)
                 {
                     return;
                 }
 
-                SHCreateItemFromIDList(pidl.Value, out IShellItem ppv);
+                SHCreateItemFromIDList(pidl, out IShellItem ppv);
                 ppv.BindToHandler(null, BHID_DataObject, out IDataObject pdo);
                 handler.Invoke(pdo);
             }
@@ -332,7 +331,7 @@ namespace Ch.Cyberduck.Core.Local
                 OPENASINFO info = new()
                 {
                     oaifInFlags = OAIF_EXEC,
-                    pcszFile = local.getAbsolute()
+                    pcszFile = PCWSTR.DangerousFromString(local.getAbsolute())
                 };
                 SHOpenWithDialog(default, info);
             }
