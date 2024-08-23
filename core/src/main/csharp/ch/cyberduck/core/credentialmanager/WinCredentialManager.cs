@@ -20,10 +20,8 @@ using org.apache.logging.log4j;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Windows.Win32.Foundation;
@@ -58,8 +56,8 @@ namespace Ch.Cyberduck.Core.CredentialManager
         /// <returns>empty credentials if target not found, else stored credentials</returns>
         public unsafe static WindowsCredentialManagerCredential GetCredentials(string target)
         {
-            using CredHandle handle = CredRead(target, CRED_TYPE_GENERIC, 0);
-            if (!handle)
+            using var handle = CredRead(target, CRED_TYPE_GENERIC, 0);
+            if (handle.IsInvalid)
             {
                 if (log.isDebugEnabled())
                 {
@@ -69,7 +67,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                 return default;
             }
 
-            ref readonly CREDENTIALW cred = ref handle.Value;
+            ref readonly CREDENTIALW cred = ref handle.Credential;
             var type = cred.Type;
             var flags = cred.Flags;
             var persist = cred.Persist;
@@ -77,7 +75,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
             string password = default;
             if (cred.CredentialBlobSize > 0)
             {
-                password = new string((sbyte*)cred.CredentialBlob, 0, (int)cred.CredentialBlobSize, Encoding.Unicode);
+                password = Encoding.Unicode.GetString(cred.CredentialBlob, (int)cred.CredentialBlobSize);
             }
             var attributes = new Dictionary<string, string>();
 
@@ -126,7 +124,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
         public static bool RemoveCredentials(string target)
         {
-            if (!CredDelete(target, (uint)CRED_TYPE_GENERIC, 0))
+            if (!CredDelete(target, CRED_TYPE_GENERIC))
             {
                 var message = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
                 log.error($"Could not remove credentials \"{target}\": {message.Message}");
@@ -144,8 +142,8 @@ namespace Ch.Cyberduck.Core.CredentialManager
         {
             var cred = new CREDENTIALW
             {
-                TargetName = target,
-                UserName = credential.UserName,
+                TargetName = PWSTR.DangerousFromString(target),
+                UserName = PWSTR.DangerousFromString(credential.UserName),
                 Type = credential.Type,
                 Flags = credential.Flags,
                 Persist = credential.Persist,
@@ -153,9 +151,8 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
             if (!string.IsNullOrWhiteSpace(credential.Password))
             {
-                PCWSTR wstr = credential.Password;
                 cred.CredentialBlobSize = (uint)(credential.Password.Length * 2);
-                cred.CredentialBlob = (byte*)wstr.Value;
+                cred.CredentialBlob = (byte*)PCWSTR.DangerousFromString(credential.Password).Value;
             }
 
             using var attributes = MemoryPool<CREDENTIAL_ATTRIBUTEW>.Shared.Rent(64); // cannot be larger than this.
@@ -167,7 +164,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     continue;
                 }
 
-                PCWSTR wstr = item.Value;
+                PCWSTR wstr = PCWSTR.DangerousFromString(item.Value);
                 var byteLen = item.Value.Length * 2;
                 string formatString = byteLen switch
                 {
@@ -181,7 +178,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     var key = string.Format(formatString, item.Key, innerIndex);
                     attributes.Memory.Span[index] = new CREDENTIAL_ATTRIBUTEW()
                     {
-                        Keyword = key,
+                        Keyword = PWSTR.DangerousFromString(key),
                         ValueSize = (uint)length,
                         Value = ((byte*)wstr.Value) + i
                     };
@@ -208,6 +205,6 @@ namespace Ch.Cyberduck.Core.CredentialManager
         CRED_FLAGS Flags,
         CRED_PERSIST Persist)
     {
-        public Dictionary<string, string> Attributes { get; } = new();
+        public Dictionary<string, string> Attributes { get; } = [];
     }
 }
