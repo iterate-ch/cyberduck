@@ -64,12 +64,12 @@
       <ProjectPath>$(CyberduckDir)protocols\dll\Cyberduck.Protocols.msbuildproj</ProjectPath>
     </CyberduckReference>
 
-    <CyberduckProjectReference Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildProjectReferences)'=='true' " />
-    <CyberduckLibraryReferences Include="@(CyberduckReference->'Cyberduck.%(Identity)')" Exclude="@(CyberduckProjectReference)" />
+    <CyberduckProjectReference Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildingInsideVisualStudio)'=='true' Or '$(BuildProjectReferences)'!='false' " />
+    <CyberduckAssemblyReference Include="@(CyberduckReference)" Exclude="@(CyberduckProjectReference)" />
     <ProjectReference Include="@(CyberduckProjectReference->'%(ProjectPath)')">
       <Name>Cyberduck.%(Identity)</Name>
     </ProjectReference>
-    <Reference Include="@(CyberduckLibraryReferences)" />
+    <Reference Include="@(CyberduckAssemblyReference->'Cyberduck.%(Identity)')" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(NETCoreSdkVersion)'!='' ">

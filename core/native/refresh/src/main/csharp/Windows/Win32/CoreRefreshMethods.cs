@@ -1,21 +1,66 @@
-﻿#pragma warning disable CS1591,CS1573,CS0465,CS0649,CS8019,CS1570,CS1584,CS1658,CS0436
-namespace Windows.Win32
-{
-    using global::System;
-    using global::System.Diagnostics;
-    using global::System.Runtime.CompilerServices;
-    using global::System.Runtime.InteropServices;
-    using winmdroot = global::Windows.Win32;
+﻿using System;
+using System.Buffers;
+using Windows.Win32.Foundation;
 
-    public partial class CoreRefreshMethods
+namespace Windows.Win32;
+
+public partial class CoreRefreshMethods
+{
+    /// <inheritdoc cref="SHGetImageList(int, Guid*, void**)"/>
+    public static unsafe HRESULT SHGetImageList<T>(int iImageList, out T ppvObj)
     {
-        /// <inheritdoc cref="SHGetImageList(int, global::System.Guid*, void**)"/>
-        public static unsafe Foundation.HRESULT SHGetImageList<T>(int iImageList, out T ppvObj)
+        Guid riid = typeof(T).GUID;
+        HRESULT __result = SHGetImageList(iImageList, &riid, out var ppvObjLocal);
+        ppvObj = (T)ppvObjLocal;
+        return __result;
+    }
+
+    /// <inheritdoc cref="SHLoadIndirectString(PCWSTR, PWSTR, uint, void**)"/>
+    public static unsafe string SHLoadIndirectString(PCWSTR pszSource)
+    {
+        var pool = ArrayPool<char>.Shared;
+
+        char[] pszOutBuf;
+        // include trailing zero-byte.
+        int cchOutBuf = pszSource.Length + 1;
+        HRESULT __result;
+
+    jump:
+        pszOutBuf = pool.Rent(cchOutBuf);
+        try
         {
-            Guid riid = typeof(T).GUID;
-            void* ppvObjLocal;
-            winmdroot.Foundation.HRESULT __result = SHGetImageList(iImageList, &riid, &ppvObjLocal);
-            ppvObj = (T)Marshal.GetObjectForIUnknown((IntPtr)ppvObjLocal);
+            fixed (char* pszOutBufLocal = pszOutBuf)
+            {
+                __result = SHLoadIndirectString(pszSource, pszOutBufLocal, (uint)pszOutBuf.Length, null);
+                if (__result.Succeeded)
+                {
+                    return new PWSTR(pszOutBufLocal).ToString();
+                }
+            }
+        }
+        finally
+        {
+            pool.Return(pszOutBuf);
+        }
+
+        if (__result == HRESULT.STRSAFE_E_INSUFFICIENT_BUFFER)
+        {
+            cchOutBuf *= 2;
+            goto jump;
+        }
+
+        __result.ThrowOnFailure();
+        return default;
+    }
+
+    /// <inheritdoc cref="SHCreateFileExtractIcon(PCWSTR, uint, Guid*, void**)"/>
+    public static unsafe HRESULT SHCreateFileExtractIcon<T>(string pszFile, uint dwFileAttributes, out T ppv)
+    {
+        Guid riid = typeof(T).GUID;
+        fixed (char* pszFileLocal = pszFile)
+        {
+            HRESULT __result = SHCreateFileExtractIcon(pszFileLocal, dwFileAttributes, &riid, out var ppvLocal);
+            ppv = (T)ppvLocal;
             return __result;
         }
     }
