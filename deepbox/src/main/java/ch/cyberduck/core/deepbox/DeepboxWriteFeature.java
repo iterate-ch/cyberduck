@@ -15,21 +15,6 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-/*
- * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
@@ -53,6 +38,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.AbstractResponseHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,6 +48,8 @@ import java.nio.charset.StandardCharsets;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
+    private static final Logger log = LogManager.getLogger(DeepboxWriteFeature.class);
+
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
 
@@ -81,11 +70,19 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
                         request = new HttpPut(String.format("%s/api/v1/nodes/%s/revisions", session.getClient().getBasePath(), fileid.getFileId(file)));
                     }
                     else {
-                        request = new HttpPost(String.format("%s/api/v1/deepBoxes/%s/boxes/%s/files/%s",
-                                session.getClient().getBasePath(),
-                                fileid.getDeepBoxNodeId(file),
-                                fileid.getBoxNodeId(file),
-                                fileid.getFileId(file.getParent())));
+                        if(new DeepboxPathContainerService(session).isInbox(file.getParent())) {
+                            request = new HttpPost(String.format("%s/api/v1/deepBoxes/%s/boxes/%s/queue",
+                                    session.getClient().getBasePath(),
+                                    fileid.getDeepBoxNodeId(file),
+                                    fileid.getBoxNodeId(file)));
+                        }
+                        else {
+                            request = new HttpPost(String.format("%s/api/v1/deepBoxes/%s/boxes/%s/files/%s",
+                                    session.getClient().getBasePath(),
+                                    fileid.getDeepBoxNodeId(file),
+                                    fileid.getBoxNodeId(file),
+                                    fileid.getFileId(file.getParent())));
+                        }
                     }
                     final Checksum checksum = status.getChecksum();
                     if(Checksum.NONE != checksum) {
