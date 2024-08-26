@@ -1,7 +1,5 @@
 <Project>
 
-  <Target Name="_ExportReference" />
-
   <Target Name="_UpdateTargetPathWithTargetPlatformMonikerWithJavaMetadata" />
 
 </Project>
