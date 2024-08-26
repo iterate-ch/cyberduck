@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -56,7 +55,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524289);
         final TransferStatus status = new TransferStatus();
-        status.setLength(-1L);
+        status.setLength(content.length);
         final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -65,9 +64,9 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final String version = out.getStatus().getId();
         assertNotNull(version);
         assertEquals(content.length, out.getStatus().getSize(), 0L);
-        assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(new StoregateAttributesFinderFeature(session, nodeid).toAttributes(out.getStatus()),
-                new StoregateAttributesFinderFeature(session, nodeid).find(test));
+        assertTrue(new StoregateFindFeature(session, nodeid).find(test));
+        assertEquals(content.length, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
+        assertEquals(new StoregateAttributesFinderFeature(session, nodeid).toAttributes(out.getStatus()), new StoregateAttributesFinderFeature(session, nodeid).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -86,7 +85,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
             new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
-        final TransferStatus status = new TransferStatus().withLength(-1L);
+        final TransferStatus status = new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH);
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         try {
             final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -109,7 +108,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                    EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH));
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final BytecountStreamListener listener = new BytecountStreamListener();
@@ -127,7 +126,8 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out);
-        assertFalse(new DefaultFindFeature(session).find(test));
+        assertFalse(new StoregateFindFeature(session, nodeid).find(test));
+        assertEquals(content.length, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
         out.getStatus();
     }
 
@@ -146,18 +146,19 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final String version = out.getStatus().getId();
         assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new StoregateFindFeature(session, nodeid).find(test));
+        assertEquals(content.length, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
-    public void testWriteUnknownLength() throws Exception {
+    public void testWriteSingleByteUnknownLength() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1);
-        final TransferStatus status = new TransferStatus().withLength(-1L);
+        final TransferStatus status = new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -166,7 +167,8 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final String version = out.getStatus().getId();
         assertEquals(content.length, out.getStatus().getSize(), 0L);
         assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new StoregateFindFeature(session, nodeid).find(test));
+        assertEquals(content.length, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -176,7 +178,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -185,7 +187,8 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         assertEquals(0L, out.getStatus().getSize(), 0L);
         final String version = out.getStatus().getId();
         assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new StoregateFindFeature(session, nodeid).find(test));
+        assertEquals(0L, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -193,10 +193,11 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
                     log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
                     return;
                 }
-                if(overall.getLength() <= 0) {
+                if(TransferStatus.UNKNOWN_LENGTH == overall.getLength() || 0L == overall.getLength()) {
                     final StoregateApiClient client = session.getClient();
                     final HttpPut put = new HttpPut(location);
-                    put.addHeader(HttpHeaders.CONTENT_RANGE, "bytes */0");
+                    // Use Content-Length = 0 and Content-Range = */Length to query upload status.
+                    put.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes */%d", 0));
                     final HttpResponse response = client.getClient().execute(put);
                     try {
                         switch(response.getStatusLine().getStatusCode()) {
