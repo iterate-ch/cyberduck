@@ -46,10 +46,16 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
 
     @Override
     public boolean isContainer(final Path file) {
-        if(file.isRoot()) {
-            return false;
+        if(this.isDeepbox(file)) {
+            return true;
         }
-        return file.isDirectory() && (file.getParent().isRoot() || file.getParent().getParent().isRoot() || file.getParent().getParent().isRoot() || file.getParent().getParent().getParent().isRoot());
+        if(this.isBox(file)) {
+            return true;
+        }
+        if(this.isThirdLevel(file)) {
+            return true;
+        }
+        return false;
     }
 
     public boolean isDeepbox(final Path file) {
