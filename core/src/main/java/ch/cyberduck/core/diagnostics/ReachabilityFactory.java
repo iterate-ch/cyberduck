@@ -21,9 +21,14 @@ package ch.cyberduck.core.diagnostics;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.JumpHostConfiguratorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ReachabilityFactory extends Factory<Reachability> {
+    private static final Logger log = LogManager.getLogger(ReachabilityFactory.class);
 
     private ReachabilityFactory() {
         super("factory.reachability.class");
@@ -49,6 +54,17 @@ public class ReachabilityFactory extends Factory<Reachability> {
                 case https:
                 case http:
                     new ChainedReachability(monitor, new ResolverReachability(), new HttpReachability()).test(bookmark);
+                    break;
+                case sftp:
+                    final Host jumphost = JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname());
+                    if(null != jumphost) {
+                        log.warn(String.format("Run reachablity check for jump host %s", jumphost));
+                        new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).test(jumphost);
+                        return;
+                    }
+                    else {
+                        new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
+                    }
                     break;
                 default:
                     new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
