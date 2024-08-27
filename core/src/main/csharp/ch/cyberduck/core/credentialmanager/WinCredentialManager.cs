@@ -24,6 +24,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security.Credentials;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -142,8 +143,8 @@ namespace Ch.Cyberduck.Core.CredentialManager
         {
             var cred = new CREDENTIALW
             {
-                TargetName = PWSTR.DangerousFromString(target),
-                UserName = PWSTR.DangerousFromString(credential.UserName),
+                TargetName = PCWSTR.DangerousFromString(target).DangerousAsPWSTR(),
+                UserName = PCWSTR.DangerousFromString(credential.UserName).DangerousAsPWSTR(),
                 Type = credential.Type,
                 Flags = credential.Flags,
                 Persist = credential.Persist,
@@ -178,7 +179,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     var key = string.Format(formatString, item.Key, innerIndex);
                     attributes.Memory.Span[index] = new CREDENTIAL_ATTRIBUTEW()
                     {
-                        Keyword = PWSTR.DangerousFromString(key),
+                        Keyword = PCWSTR.DangerousFromString(key).DangerousAsPWSTR(),
                         ValueSize = (uint)length,
                         Value = ((byte*)wstr.Value) + i
                     };

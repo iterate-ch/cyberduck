@@ -232,7 +232,7 @@ namespace Ch.Cyberduck.Core.Local
         {
             public ProgIdApplication(string identifier, string name, string defaultIcon) : base(identifier, name)
             {
-                PWSTR pszIconFile = PWSTR.DangerousFromString(defaultIcon);
+                PWSTR pszIconFile = PCWSTR.DangerousFromString(defaultIcon).DangerousAsPWSTR();
                 IconIndex = PathParseIconLocation(pszIconFile);
                 IconPath = pszIconFile.ToString();
             }
