@@ -11,4 +11,3 @@ public class SafeITEMIDLISTHandle(bool ownsHandle) : CoTaskMemFreeHandle(ownsHan
         SetHandle(handle);
     }
 }
-
