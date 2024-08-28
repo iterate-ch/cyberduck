@@ -69,7 +69,9 @@
     <ProjectReference Include="@(CyberduckProjectReference->'%(ProjectPath)')">
       <Name>Cyberduck.%(Identity)</Name>
     </ProjectReference>
-    <Reference Include="@(CyberduckAssemblyReference->'Cyberduck.%(Identity)')" />
+    <Reference Include="@(CyberduckAssemblyReference->'Cyberduck.%(Identity)')">
+      <JavaClasspath>\\?\</JavaClasspath>
+    </Reference>
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(NETCoreSdkVersion)'!='' ">
