@@ -1,6 +1,4 @@
-<Project>
-
-  <Import Sdk="IKVM.NET.Sdk" Project="Sdk.props" />
+<Project Sdk="IKVM.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net472;net8.0</TargetFrameworks>
@@ -139,8 +137,5 @@
     <Convert Include="$(TargetBuildDir)software.amazon.ion.ion-java.jar" />
     <Convert Include="$(TargetBuildDir)uk.com.robust-it.cloning.jar" />
   </ItemGroup>
-
-  <Import Sdk="IKVM.NET.Sdk" Project="Sdk.targets" />
-  <Import Project="$(BuildSupportDir)Cyberduck.Java.targets" />
 
 </Project>
