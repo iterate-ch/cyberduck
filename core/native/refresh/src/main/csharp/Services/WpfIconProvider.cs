@@ -161,7 +161,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         {
             var list = new List<BitmapSource>();
 
-            var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.IgnoreColorProfile, BitmapCacheOption.OnLoad);
             if (decoder is GifBitmapDecoder)
             {
                 var frame = decoder.Frames[0];
