@@ -209,17 +209,22 @@ public class S3VersioningFeature implements Versioning {
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
      */
     protected Credentials getToken(final PasswordCallback callback) throws ConnectionCanceledException {
-        // Prompt for multi factor authentication credentials.
-        return callback.prompt(
+        // Prompt for multifactor authentication credentials
+        final LoginOptions options = new LoginOptions().icon(session.getHost().getProtocol().disk())
+                .password(true)
+                .user(false)
+                .keychain(false);
+        final String serialNumber = callback.prompt(
                 session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                 LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                new LoginOptions()
-                        .icon(session.getHost().getProtocol().disk())
-                        .password(true)
-                        .user(false)
-                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                        .keychain(false)
-        );
+                options.passwordPlaceholder(LocaleFactory.localizedString("MFA Serial Number", "S3"))
+        ).getPassword();
+        final String code = callback.prompt(
+                session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                options.passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+        ).getPassword();
+        return new Credentials(serialNumber, code);
     }
 
     @Override
