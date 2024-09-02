@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostnameConfiguratorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,6 +41,9 @@ public class DefaultInetAddressReachability extends DisabledReachability {
     @Override
     public void test(final Host bookmark) throws BackgroundException {
         try {
+            if(StringUtils.isBlank(bookmark.getHostname())) {
+                throw new ConnectException();
+            }
             if(!InetAddress.getByName(HostnameConfiguratorFactory.get(bookmark.getProtocol()).getHostname(bookmark.getHostname())).isReachable(
                     ConnectionTimeoutFactory.get(bookmark).getTimeout() * 1000
             )) {

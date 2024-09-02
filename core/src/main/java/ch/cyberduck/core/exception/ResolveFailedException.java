@@ -22,6 +22,10 @@ import ch.cyberduck.core.LocaleFactory;
 public class ResolveFailedException extends BackgroundException {
     private static final long serialVersionUID = 5213700700233301556L;
 
+    public ResolveFailedException() {
+        super(LocaleFactory.localizedString("Connection failed", "Error"), (Throwable) null);
+    }
+
     public ResolveFailedException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("Connection failed", "Error"), detail, cause);
     }

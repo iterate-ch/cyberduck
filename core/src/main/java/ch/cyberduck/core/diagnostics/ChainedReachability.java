@@ -26,7 +26,6 @@ public class ChainedReachability extends DisabledReachability {
         this.delegates = delegates;
     }
 
-
     @Override
     public void test(final Host bookmark) throws BackgroundException {
         for(Reachability delegate : delegates) {

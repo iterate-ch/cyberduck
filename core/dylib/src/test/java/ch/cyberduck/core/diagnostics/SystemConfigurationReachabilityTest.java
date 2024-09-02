@@ -38,6 +38,7 @@ public class SystemConfigurationReachabilityTest {
     @Test
     public void testIsReachable() {
         final Reachability r = new SystemConfigurationReachability();
+        assertFalse(r.isReachable(new Host(new TestProtocol(Scheme.http))));
         assertTrue(r.isReachable(new Host(new TestProtocol(Scheme.http), "cyberduck.io")));
         assertTrue(r.isReachable(new Host(new TestProtocol(Scheme.https), "cyberduck.io")));
     }
