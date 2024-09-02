@@ -29,9 +29,6 @@ public class TcpReachabilityTest {
     @Test
     public void testIsReachable() {
         final Reachability r = new TcpReachability();
-        assertFalse(r.isReachable(
-                new Host(new TestProtocol(Scheme.http))
-        ));
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(Scheme.http), "cyberduck.io")
         ));

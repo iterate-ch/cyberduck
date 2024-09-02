@@ -48,10 +48,10 @@ public class ReachabilityFactory extends Factory<Reachability> {
                     break;
                 case https:
                 case http:
-                    new ChainedReachability(monitor, new ResolverReachability(), new HttpReachability()).test(bookmark);
+                    new ChainedReachability(monitor, new HostnameReachability(), new ResolverReachability(), new HttpReachability()).test(bookmark);
                     break;
                 default:
-                    new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
+                    new ChainedReachability(monitor, new HostnameReachability(), new ResolverReachability(), new TcpReachability()).test(bookmark);
                     break;
             }
         }
