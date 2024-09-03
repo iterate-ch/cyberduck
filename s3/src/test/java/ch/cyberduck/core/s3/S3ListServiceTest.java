@@ -50,6 +50,6 @@ public class S3ListServiceTest extends AbstractS3Test {
         final MultipartUpload multipart = session.getClient().multipartStartUpload(bucket.getName(), String.format("%s/.", new S3PathContainerService(session.getHost()).getKey(placeholder)), Collections.emptyMap());
         assertNotNull(new S3ListService(session, acl).list(placeholder, new DisabledListProgressListener()).find(path -> path.getName().equals(".")));
         new S3DefaultMultipartService(session).delete(multipart);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

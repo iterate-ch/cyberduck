@@ -49,7 +49,8 @@ public class CachingFindFeatureTest extends AbstractS3Test {
         final String name = new AlphanumericRandomStringService().random();
         final CachingFindFeature f = new CachingFindFeature(session, cache, new DefaultFindFeature(session));
         assertFalse(f.find(new Path(bucket, name, EnumSet.of(Path.Type.file))));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertFalse(f.find(test));
         cache.clear();
         assertTrue(f.find(test));
@@ -62,6 +63,6 @@ public class CachingFindFeatureTest extends AbstractS3Test {
                 return false;
             }
         }).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -50,21 +50,22 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, new DisabledConnectionCallback());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final OutputStream out = new S3WriteFeature(session, acl).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         test.attributes().setSize(content.length);
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
-        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
+        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, acl);
         feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(copy));
-        assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(copy).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(copy));
+        assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(copy).getSize());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -73,20 +74,21 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).write(test, status, new DisabledConnectionCallback());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
+        final OutputStream out = new S3WriteFeature(virtualhost, acl).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         test.attributes().setSize(content.length);
         final Path copy = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(virtualhost, new S3AccessControlListFeature(virtualhost));
+        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(virtualhost, acl);
         feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new S3FindFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(test));
-        assertEquals(content.length, new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(test).getSize());
-        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(copy));
-        assertEquals(content.length, new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(copy).getSize());
-        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        assertEquals(content.length, new S3AttributesFinderFeature(virtualhost, acl).find(test).getSize());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(virtualhost, acl).find(copy));
+        assertEquals(content.length, new S3AttributesFinderFeature(virtualhost, acl).find(copy).getSize());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -96,20 +98,21 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, new DisabledConnectionCallback());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final OutputStream out = new S3WriteFeature(session, acl).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         test.attributes().setSize(content.length);
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
-        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
+        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, acl);
         feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(copy));
-        assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(copy).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(copy));
+        assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(copy).getSize());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

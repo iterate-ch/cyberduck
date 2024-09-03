@@ -43,12 +43,13 @@ public class DefaultTouchFeatureTest extends AbstractS3Test {
     public void testTouch() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<>(new S3WriteFeature(session, new S3AccessControlListFeature(session))).touch(test, new TransferStatus());
-        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new DefaultTouchFeature<>(new S3WriteFeature(session, acl)).touch(test, new TransferStatus());
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, acl);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotEquals(-1L, attributes.getModificationDate());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

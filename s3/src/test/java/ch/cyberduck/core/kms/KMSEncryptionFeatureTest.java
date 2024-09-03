@@ -63,7 +63,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
         // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted using SSE-S3.
         // If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is not the MD5 of the object data.
         assertNotEquals("d41d8cd98f00b204e9800998ecf8427e", Checksum.parse(attr.getETag()).hash);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("aws:kms", value.algorithm);
         assertEquals("arn:aws:kms:eu-west-1:930717317329:key/015fa0af-f95e-483e-8fb6-abffb46fb783", value.key);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

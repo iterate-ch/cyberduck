@@ -92,7 +92,7 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
         assertNotNull(multipart);
         service.delete(first);
         service.delete(second);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
