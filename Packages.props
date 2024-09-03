@@ -25,7 +25,7 @@
     <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
     <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.3.106" />
     <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.22000.196" />
-    <PackageReference Update="NUnit" Version="4.1.0" />
+    <PackageReference Update="NUnit" Version="4.2.0" />
     <PackageReference Update="NUnit.Console" Version="3.17.0" />
     <PackageReference Update="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Update="ObjectListView.Official" Version="2.9.1" />
