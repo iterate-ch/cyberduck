@@ -90,7 +90,7 @@ public abstract class NSTableView extends NSControl {
     }
 
     public interface Delegate {
-        void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row);
+        void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row);
     }
 
     /**

@@ -1141,7 +1141,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              * @see NSOutlineView.Delegate
              */
             @Override
-            public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSObject item) {
+            public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSCell cell, final NSTableColumn tableColumn, final NSObject item) {
                 if(null == item) {
                     return;
                 }
@@ -1153,10 +1153,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(file));
                 }
                 if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
-                    cell.setTextColor(NSColor.disabledControlTextColor());
+                    Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                 }
                 else {
-                    cell.setTextColor(NSColor.controlTextColor());
+                    Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
                 }
             }
 
@@ -1299,14 +1299,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
             @Override
-            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSInteger row) {
+            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell, final NSTableColumn tableColumn, final NSInteger row) {
                 final Path file = browserListModel.get(workdir).get(row.intValue());
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
-                        cell.setTextColor(NSColor.disabledControlTextColor());
+                        Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
-                        cell.setTextColor(NSColor.controlTextColor());
+                        Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
                     }
                 }
             }
@@ -1672,6 +1672,41 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                     bookmarkTable.selectRowIndexes(
                             NSIndexSet.indexSetWithIndex(next), false);
+                }
+            }
+
+            @Override
+            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell, final NSTableColumn c, final NSInteger row) {
+                cell.setAccessibilityLabel(LocaleFactory.localizedString("Connect to server"));
+                if(c.identifier().equals(BookmarkColumn.icon.name())) {
+                    cell.setAccessibilityTitle(bookmarkModel.getSource().get(row.intValue()).getProtocol().getName());
+                }
+                if(c.identifier().equals(BookmarkColumn.bookmark.name())) {
+                    cell.setAccessibilityTitle(BookmarkNameProvider.toString(bookmarkModel.getSource().get(row.intValue())));
+                }
+                if(c.identifier().equals(BookmarkColumn.status.name())) {
+                    final Host host = bookmarkModel.getSource().get(row.intValue());
+                    if(host.equals(pool.getHost())) {
+                        switch(pool.getState()) {
+                            case open:
+                                cell.setAccessibilityTitle(LocaleFactory.localizedString("Idle", "Status"));
+                                break;
+                            case closed:
+                                cell.setAccessibilityTitle(LocaleFactory.localizedString("Disconnected", "Status"));
+                                break;
+                            case opening:
+                                cell.setAccessibilityTitle(MessageFormat.format(LocaleFactory.localizedString("Mounting {0}", "Status"),
+                                        BookmarkNameProvider.toString(host)));
+                                break;
+                            case closing:
+                                cell.setAccessibilityTitle(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
+                                        BookmarkNameProvider.toString(host)));
+                                break;
+                        }
+                    }
+                    else {
+                        cell.setAccessibilityTitle(LocaleFactory.localizedString("Disconnected", "Status"));
+                    }
                 }
             }
         }).id());

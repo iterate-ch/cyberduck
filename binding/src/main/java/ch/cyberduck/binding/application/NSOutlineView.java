@@ -55,7 +55,7 @@ public abstract class NSOutlineView extends NSTableView {
     }
 
     public interface Delegate {
-        void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSObject item);
+        void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell, NSTableColumn tableColumn, NSObject item);
 
         boolean outlineView_shouldExpandItem(NSOutlineView view, NSObject item);
 
