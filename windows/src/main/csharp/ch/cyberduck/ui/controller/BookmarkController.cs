@@ -214,6 +214,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 _host.setHostname(input);
+                _host.setPort(HostnameConfiguratorFactory.get(_host.getProtocol()).getPort(input));
                 _host.setCredentials(CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host));
             }
 
@@ -624,13 +625,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
 
                 _host.setProtocol(selected);
-                int port = HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname());
-                if (port != -1)
-                {
-                    // External configuration found
-                    _host.setPort(port);
-                }
-
+                _host.setPort(HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname()));
                 _options.configure(selected);
                 _validator.configure(selected);
                 ItemChanged();
