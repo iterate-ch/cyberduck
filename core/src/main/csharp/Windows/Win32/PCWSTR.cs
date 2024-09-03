@@ -15,5 +15,5 @@ public unsafe partial struct PCWSTR
 
     public PWSTR DangerousAsPWSTR() => Value;
 
-    public string ToString(int length) => Value is null ? new string(Value, 0, length) : null;
+    public readonly string ToString(int length) => Value is null ? null : new string(Value, 0, length);
 }
