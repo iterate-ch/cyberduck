@@ -244,7 +244,7 @@ public class ProfilesPreferencesController extends BundleController {
         }
 
         @Override
-        public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSObject item) {
+        public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSCell cell, final NSTableColumn tableColumn, final NSObject item) {
             //
         }
 

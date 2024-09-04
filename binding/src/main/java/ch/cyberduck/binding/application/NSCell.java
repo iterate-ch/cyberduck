@@ -31,7 +31,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-public abstract class NSCell extends NSObject implements NSCopying {
+public abstract class NSCell extends NSObject implements NSCopying, NSAccessibility {
 
     /// <i>native declaration : :11</i>
     public static final int NSAnyType = 0;

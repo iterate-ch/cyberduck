@@ -20,7 +20,6 @@ import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSTableView;
-import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.NullComparator;
@@ -92,13 +91,13 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSOutlineView.Delegate
      */
-    public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSObject item) {
+    public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSCell cell, final NSTableColumn tableColumn, final NSObject item) {
     }
 
     /**
      * @see NSTableView.Delegate
      */
-    public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn c, NSInteger row) {
+    public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell, final NSTableColumn c, final NSInteger row) {
     }
 
     public boolean selectionShouldChange() {
@@ -215,12 +214,12 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     }
 
     public boolean tableView_shouldTypeSelectForEvent_withCurrentSearchString(
-        final NSTableView view, final NSEvent event, final String searchString) {
+            final NSTableView view, final NSEvent event, final String searchString) {
         return this.isTypeSelectSupported();
     }
 
     public boolean outlineView_shouldTypeSelectForEvent_withCurrentSearchString(
-        final NSOutlineView view, final NSEvent event, final String searchString) {
+            final NSOutlineView view, final NSEvent event, final String searchString) {
         return this.isTypeSelectSupported();
     }
 

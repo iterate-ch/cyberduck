@@ -1354,8 +1354,7 @@ public class InfoController extends ToolbarWindowController {
                 return false;
             }
 
-            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
-                                                                     NSTableColumn c, NSInteger row) {
+            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSTextFieldCell cell, final NSTableColumn c, final NSInteger row) {
                 if(c.identifier().equals(MetadataColumn.VALUE.name())) {
                     final String value = metadata.get(row.intValue()).getValue();
                     if(null == value) {
