@@ -63,13 +63,14 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
-        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, new S3AccessControlListFeature(session)), new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator).touch(
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session))).find(test));
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test));
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -81,12 +82,13 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
-        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, new S3AccessControlListFeature(session)), new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator).touch(
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, new S3AccessControlListFeature(session))).find(test));
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -98,11 +100,12 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new S3WriteFeature(session, new S3AccessControlListFeature(session))), new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator).touch(
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new S3WriteFeature(session, acl)), new S3WriteFeature(session, acl), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

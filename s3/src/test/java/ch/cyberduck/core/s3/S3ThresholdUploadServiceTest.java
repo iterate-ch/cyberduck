@@ -77,7 +77,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         final PathAttributes attributes = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test);
         assertEquals(random.length, attributes.getSize(), 0L);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, new S3AccessControlListFeature(session)).getClass(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -103,7 +103,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         assertEquals(random.length, attributes.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, new S3AccessControlListFeature(session)).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -127,7 +127,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test);
         assertEquals(random.length, attributes.getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
 }

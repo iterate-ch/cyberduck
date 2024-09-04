@@ -32,7 +32,8 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWrite() throws Exception {
-        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, new S3AccessControlListFeature(session));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -48,8 +49,8 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         out.close();
         assertNotNull(out.getStatus());
         assertEquals(content.length, out.getStatus().getContentLength());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(file));
-        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        assertTrue(new S3FindFeature(session, acl).find(file));
+        final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(content.length, attr.getSize());
         final byte[] compare = new byte[content.length];
@@ -57,7 +58,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -87,12 +88,13 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testWriteZeroLength() throws Exception {
-        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, new S3AccessControlListFeature(session));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
@@ -109,12 +111,13 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testWriteZeroLengthVersioning() throws Exception {
-        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, new S3AccessControlListFeature(session));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
@@ -132,6 +135,6 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

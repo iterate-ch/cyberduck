@@ -36,7 +36,7 @@ public class S3ThresholdDeleteFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         if(files.size() == 1) {
-            new S3DefaultDeleteFeature(session).delete(files, prompt, callback);
+            new S3DefaultDeleteFeature(session, acl).delete(files, prompt, callback);
         }
         else {
             new S3MultipleDeleteFeature(session, acl).delete(files, prompt, callback);

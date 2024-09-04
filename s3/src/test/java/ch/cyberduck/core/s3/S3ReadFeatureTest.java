@@ -61,7 +61,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         assertEquals(rawContent.length, count.getRecv());
         assertArrayEquals(rawContent, received.toByteArray());
         in.close();
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(content.length, count.getRecv());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -167,6 +167,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(content.length, count.getRecv());
-        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

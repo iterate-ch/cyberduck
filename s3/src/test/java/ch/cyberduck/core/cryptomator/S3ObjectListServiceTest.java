@@ -62,6 +62,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertTrue(new CryptoListService(session, new S3ObjectListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new S3ObjectListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

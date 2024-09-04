@@ -40,13 +40,14 @@ public class S3PublicUrlProviderTest extends AbstractS3Test {
     public void toDownloadUrl() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
-        final S3PublicUrlProvider provider = new S3PublicUrlProvider(session, new S3AccessControlListFeature(session));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3TouchFeature(session, acl).touch(test, new TransferStatus());
+        final S3PublicUrlProvider provider = new S3PublicUrlProvider(session, acl);
         assertFalse(provider.isSupported(bucket, Share.Type.download));
         assertTrue(provider.isSupported(test, Share.Type.download));
         final DescriptiveUrl url = provider.toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertNotNull(url.getUrl());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

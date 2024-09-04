@@ -74,7 +74,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final Versioning feature = new S3VersioningFeature(session, acl);
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -132,6 +132,6 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
             assertEquals(updated.getVersionId(), versions.get(0).attributes().getVersionId());
             assertEquals(initialVersion, versions.get(1).attributes().getVersionId());
         }
-        new S3DefaultDeleteFeature(session).delete(Arrays.asList(directory, test, ignored), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(directory, test, ignored), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -37,9 +37,9 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.s3.S3AttributesAdapter;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.spectra.SpectraAttributesFinderFeature;
 import ch.cyberduck.core.spectra.SpectraBulkService;
+import ch.cyberduck.core.spectra.SpectraDeleteFeature;
 import ch.cyberduck.core.spectra.SpectraDirectoryFeature;
 import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.spectra.SpectraSession;
@@ -170,6 +170,6 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

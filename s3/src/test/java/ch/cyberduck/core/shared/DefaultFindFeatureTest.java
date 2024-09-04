@@ -43,10 +43,11 @@ public class DefaultFindFeatureTest extends AbstractS3Test {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertFalse(new DefaultFindFeature(session).find(file));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(file, new TransferStatus());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session, acl).touch(file, new TransferStatus());
         // Find without version id set in attributes
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(file));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

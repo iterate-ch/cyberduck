@@ -54,6 +54,6 @@ public class S3BucketCreateServiceTest extends AbstractS3Test {
         assertTrue(header.get());
         bucket.attributes().setRegion("eu-central-1");
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(bucket));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -53,24 +53,25 @@ public class S3FindFeatureTest extends AbstractS3Test {
     @Test
     public void testFindCommonPrefix() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        assertTrue(new S3FindFeature(session, acl).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
+        final Path test = new S3TouchFeature(session, acl).touch(
                 new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertFalse(new S3FindFeature(session, acl).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
+        assertTrue(new S3FindFeature(session, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
+        assertTrue(new S3FindFeature(session, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(new S3ObjectListService(session, acl).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener()).contains(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, acl).find(test));
+        assertFalse(new S3FindFeature(session, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         final PathCache cache = new PathCache(1);
         final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        assertFalse(new CachingFindFeature(session, cache, new S3FindFeature(session, new S3AccessControlListFeature(session))).find(directory));
+        assertFalse(new CachingFindFeature(session, cache, new S3FindFeature(session, acl)).find(directory));
         assertFalse(cache.isCached(directory));
-        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertFalse(new S3FindFeature(session, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }
 }

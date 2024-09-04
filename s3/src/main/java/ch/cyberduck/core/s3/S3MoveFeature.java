@@ -53,7 +53,7 @@ public class S3MoveFeature implements Move {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
         this.proxy = new S3ThresholdCopyFeature(session, acl);
-        this.delete = new S3DefaultDeleteFeature(session);
+        this.delete = new S3DefaultDeleteFeature(session, acl);
     }
 
     @Override

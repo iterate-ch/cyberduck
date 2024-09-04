@@ -58,12 +58,13 @@ public class GlacierTest extends AbstractS3Test {
         status.setStorageClass("GLACIER");
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, new DisabledConnectionCallback());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals("GLACIER", new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getStorageClass());
+        assertEquals("GLACIER", new S3AttributesFinderFeature(session, acl).find(test).getStorageClass());
         final Glacier feature = new Glacier(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         feature.restore(test, new DisabledLoginCallback());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

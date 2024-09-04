@@ -72,10 +72,10 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
         assertNotNull(attributes.getVersionId());
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new S3ListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener())
                 .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -92,6 +92,6 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
         assertEquals(versionId, attributes.getVersionId());
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

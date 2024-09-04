@@ -83,13 +83,14 @@ public class CopyWorkerTest extends AbstractS3Test {
         session.withRegistry(registry);
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new S3DefaultDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session, new S3AccessControlListFeature(session)), cryptomator).write(source, status.withLength(content.length), new DisabledConnectionCallback()));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new S3DefaultDeleteFeature(session, acl), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session, acl), cryptomator).write(source, status.withLength(content.length), new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, new S3AccessControlListFeature(session))).find(source));
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, new S3AccessControlListFeature(session))).find(target));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(source));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(target));
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());

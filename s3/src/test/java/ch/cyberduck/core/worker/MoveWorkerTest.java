@@ -92,7 +92,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final S3TouchFeature touch = new S3TouchFeature(session, acl);
         Path test = touch.touch(new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
+        final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session, acl);
         delete.delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session, acl).find(test));
         test = touch.touch(test, new TransferStatus());

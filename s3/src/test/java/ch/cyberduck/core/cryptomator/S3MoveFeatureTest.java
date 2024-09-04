@@ -81,6 +81,6 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(fileRenamedInRenamedFolder));
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

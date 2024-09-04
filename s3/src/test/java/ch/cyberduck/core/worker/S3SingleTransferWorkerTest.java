@@ -78,21 +78,22 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals(writeStatus.getResponse().getVersionId(), new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getVersionId());
+        assertEquals(writeStatus.getResponse().getVersionId(), new S3AttributesFinderFeature(session, acl).find(test).getVersionId());
         assertEquals(writeStatus.getResponse().getVersionId(), new DefaultAttributesFinderFeature(session).find(test).getVersionId());
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -106,7 +107,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         }.run(session));
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile.delete();
     }
 
@@ -186,11 +187,12 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         }.run(session));
         local.delete();
         assertTrue(t.isComplete());
-        assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getSize());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -260,10 +262,11 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         }.run(session));
         local.delete();
         assertTrue(t.isComplete());
-        assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getSize());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

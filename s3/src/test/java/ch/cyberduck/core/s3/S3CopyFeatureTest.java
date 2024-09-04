@@ -42,15 +42,16 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         test.attributes().setSize(0L);
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3TouchFeature(session, acl).touch(test, new TransferStatus());
         final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        new S3CopyFeature(session, acl).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertTrue(new S3FindFeature(session, acl).find(test));
         assertNull(copy.attributes().getVersionId());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(copy));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(copy));
         ;
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -58,28 +59,30 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
-        final Path copy = new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test,
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path copy = new S3CopyFeature(session, acl).copy(test,
                 new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(test));
         assertNull(copy.attributes().getVersionId());
-        assertEquals("m", new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("cyberduck"));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(copy));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals("m", new S3MetadataFeature(session, acl).getMetadata(copy).get("cyberduck"));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(copy));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testCopyFileToBucketWithOwnerEnforced() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
-        final Path copy = new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test,
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path copy = new S3CopyFeature(session, acl).copy(test,
                 new Path(new Path("test-eu-central-1-cyberduck-ownerenforced", EnumSet.of(Path.Type.directory, Path.Type.volume)), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(copy));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(copy));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -87,18 +90,19 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         assertNotNull(test.attributes().getVersionId());
-        final Path copy = new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test,
+        final Path copy = new S3CopyFeature(session, acl).copy(test,
                 new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(test));
         assertNotNull(copy.attributes().getVersionId());
         assertNotEquals("", copy.attributes().getVersionId());
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
-        assertEquals("m", new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("cyberduck"));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(copy));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals("m", new S3MetadataFeature(session, acl).getMetadata(copy).get("cyberduck"));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(copy));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -111,8 +115,8 @@ public class S3CopyFeatureTest extends AbstractS3Test {
                 new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         assertEquals("m", new S3MetadataFeature(virtualhost, acl).getMetadata(copy).get("cyberduck"));
-        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(virtualhost, acl).find(copy));
-        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

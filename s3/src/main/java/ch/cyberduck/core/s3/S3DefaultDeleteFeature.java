@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -41,14 +42,16 @@ public class S3DefaultDeleteFeature implements Delete {
     private final S3Session session;
     private final PathContainerService containerService;
     private final S3MultipartService multipartService;
+    private final S3VersioningFeature versioningService;
 
-    public S3DefaultDeleteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session));
+    public S3DefaultDeleteFeature(final S3Session session, final S3AccessControlListFeature acl) {
+        this(session, new S3DefaultMultipartService(session), new S3VersioningFeature(session, acl));
     }
 
-    public S3DefaultDeleteFeature(final S3Session session, final S3MultipartService multipartService) {
+    public S3DefaultDeleteFeature(final S3Session session, final S3MultipartService multipartService, final S3VersioningFeature versioningService) {
         this.session = session;
         this.multipartService = multipartService;
+        this.versioningService = versioningService;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -73,9 +76,19 @@ public class S3DefaultDeleteFeature implements Delete {
                 }
                 else {
                     try {
-                        // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                        session.getClient().deleteVersionedObject(
-                                file.attributes().getVersionId(), bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file));
+                        if(versioningService.getConfiguration(bucket).isMultifactor()) {
+                            final Credentials mfa = versioningService.getToken(prompt);
+                            final String multiFactorSerialNumber = mfa.getUsername();
+                            final String multiFactorAuthCode = mfa.getPassword();
+                            session.getClient().deleteVersionedObjectWithMFA(file.attributes().getVersionId(),
+                                    multiFactorSerialNumber, multiFactorAuthCode,
+                                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file));
+                        }
+                        else {
+                            // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                            session.getClient().deleteVersionedObject(
+                                    file.attributes().getVersionId(), bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file));
+                        }
                     }
                     catch(ServiceException e) {
                         throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);

@@ -80,20 +80,21 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-                new S3SingleUploadService(session, new S3WriteFeature(session, new S3AccessControlListFeature(session))),
-                new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator);
+                new S3SingleUploadService(session, new S3WriteFeature(session, acl)),
+                new S3WriteFeature(session, acl), cryptomator);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, new S3AccessControlListFeature(session))).find(test));
-        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session))).find(test).getSize());
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
+        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);
         final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
 }

@@ -94,10 +94,11 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3TouchFeature(session, acl).touch(test, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, acl).find(test));
         session.close();
     }
 
