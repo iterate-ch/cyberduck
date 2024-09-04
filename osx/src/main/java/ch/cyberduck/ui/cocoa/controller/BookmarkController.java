@@ -197,7 +197,6 @@ public class BookmarkController extends SheetController implements CollectionLis
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Protocol selection changed to %s", selected));
             }
-            bookmark.setPort(selected.getDefaultPort());
             if(!bookmark.getProtocol().isHostnameConfigurable()) {
                 // Previously selected protocol had a default hostname. Change to default
                 // of newly selected protocol.
@@ -216,11 +215,7 @@ public class BookmarkController extends SheetController implements CollectionLis
                 bookmark.setDefaultPath(selected.getDefaultPath());
             }
             bookmark.setProtocol(selected);
-            final int port = HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname());
-            if(port != -1) {
-                // External configuration found
-                bookmark.setPort(port);
-            }
+            bookmark.setPort(HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname()));
             options.configure(selected);
             validator.configure(selected);
         }
@@ -264,6 +259,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         }
         else {
             bookmark.setHostname(input);
+            bookmark.setPort(HostnameConfiguratorFactory.get(bookmark.getProtocol()).getPort(input));
             bookmark.setCredentials(CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark));
         }
         this.update();
