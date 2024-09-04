@@ -598,7 +598,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                _host.setPort(selected.getDefaultPort());
                 if (!_host.getProtocol().isHostnameConfigurable())
                 {
                     // Previously selected protocol had a default hostname. Change to default
