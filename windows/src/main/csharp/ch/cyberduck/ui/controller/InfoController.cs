@@ -1452,6 +1452,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         Log.warn("Ignore failure reading transfer acceleration", ex);
                     }
+                    catch (ConflictException ex)
+                    {
+                        Log.warn("Ignore failure reading transfer acceleration", ex);
+                    }
                 }
                 return true;
             }
