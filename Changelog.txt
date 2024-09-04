@@ -6,6 +6,8 @@ https://cyberduck.io/
 - [Feature] Support for Asia Pacific (Melbourne) region (S3)
 - [Feature] Support for Israel (Tel Aviv) region (S3)
 - [Feature] Support for Asia Pacific (Kuala Lumpur) region (S3)
+- [Bugfix] No accessible elements in list of bookmarks (macOS) (#10853)
+- [Bugfix] Unable to enter device serial number for MFA delete (S3) (#16267)
 
 9.0.1
 - [Bugfix] Auto detect of vaults not always working (Cryptomator)
