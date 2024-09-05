@@ -165,8 +165,8 @@
             <properties>
                 <xcode.configuration>Release</xcode.configuration>
                 <sparkle.feed>local</sparkle.feed>
-                <codesign.certificate>Developer ID Application: David Kocher (G69SCX94XU)</codesign.certificate>
-                <installer.certificate>Developer ID Installer: David Kocher (G69SCX94XU)</installer.certificate>
+                <codesign.certificate>Apple Development: David Kocher (DF448WW9PY)</codesign.certificate>
+                <installer.certificate>Apple Development: David Kocher (DF448WW9PY)</installer.certificate>
             </properties>
         </profile>
         <profile>
