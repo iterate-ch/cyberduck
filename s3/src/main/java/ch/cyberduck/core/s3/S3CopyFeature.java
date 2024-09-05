@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -84,7 +85,8 @@ public class S3CopyFeature implements Copy {
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
         final String versionId = this.copy(source, destination, status, listener);
-        return target.withAttributes(new PathAttributes(source.attributes()).withVersionId(versionId));
+        return target.withAttributes(new PathAttributes(source.attributes()).withVersionId(
+                new HostPreferences(session.getHost()).getBoolean("s3.listing.versioning.enable") ? versionId : null));
     }
 
     protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
