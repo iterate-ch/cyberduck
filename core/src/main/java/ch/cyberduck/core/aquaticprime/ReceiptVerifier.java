@@ -43,13 +43,16 @@ import org.bouncycastle.util.Store;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.NetworkInterface;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+
+import com.sun.jna.platform.mac.CoreFoundation;
+import com.sun.jna.platform.mac.IOKit;
+import com.sun.jna.platform.mac.IOKitUtil;
 
 public class ReceiptVerifier implements LicenseVerifier {
     private static final Logger log = LogManager.getLogger(ReceiptVerifier.class);
@@ -152,19 +155,28 @@ public class ReceiptVerifier implements LicenseVerifier {
             if(!StringUtils.equals(version, StringUtils.trim(bundleVersion))) {
                 log.warn(String.format("Bundle version %s in ASN set does not match", bundleVersion));
             }
-            final NetworkInterface en0 = NetworkInterface.getByName("en0");
+            final IOKit.IOService en0 = IOKitUtil.getMatchingService(IOKitUtil.getBSDNameMatchingDict("en0"));
             if(null == en0) {
                 // Interface is not found when link is down #fail
                 log.warn("No network interface en0");
                 return true;
             }
             else {
-                final byte[] mac = en0.getHardwareAddress();
-                if(null == mac) {
+                // #define kIOMACAddress            "IOMACAddress"
+                final CoreFoundation.CFStringRef kIOMACAddress = CoreFoundation.CFStringRef.createCFString("IOMACAddress");
+                // #define kIOServicePlane          "IOService"
+                final String kIOServicePlane = "IOService";
+                int kIORegistryIterateRecursively = 0x00000001;
+                int kIORegistryIterateParents = 0x00000002;
+                final CoreFoundation.CFTypeRef property = IOKit.INSTANCE.IORegistryEntrySearchCFProperty(en0, kIOServicePlane, kIOMACAddress,
+                        CoreFoundation.INSTANCE.CFAllocatorGetDefault(), kIORegistryIterateRecursively | kIORegistryIterateParents);
+                if(null == property) {
                     log.error("Cannot determine MAC address");
                     // Continue without validation
                     return true;
                 }
+                final CoreFoundation.CFDataRef dataRef = new CoreFoundation.CFDataRef(property.getPointer());
+                final byte[] mac = dataRef.getBytePtr().getByteArray(0, dataRef.getLength());
                 final String hex = Hex.encodeHexString(mac);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Interface en0 %s", hex));
