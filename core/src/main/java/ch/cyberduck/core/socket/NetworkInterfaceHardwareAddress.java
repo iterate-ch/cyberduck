@@ -22,8 +22,10 @@ import ch.cyberduck.core.exception.UnsupportedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class NetworkInterfaceHardwareAddress implements HardwareAddress {
     private static final Logger log = LogManager.getLogger(NetworkInterfaceHardwareAddress.class);
@@ -31,7 +33,7 @@ public class NetworkInterfaceHardwareAddress implements HardwareAddress {
     @Override
     public byte[] getAddress() throws BackgroundException {
         try {
-            final NetworkInterface en0 = NetworkInterface.getByName("en0");
+            final NetworkInterface en0 = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
             if(null == en0) {
                 // Interface is not found when link is down #fail
                 log.warn("No network interface en0");
@@ -44,7 +46,7 @@ public class NetworkInterfaceHardwareAddress implements HardwareAddress {
             }
             return address;
         }
-        catch(SocketException e) {
+        catch(SocketException | UnknownHostException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
