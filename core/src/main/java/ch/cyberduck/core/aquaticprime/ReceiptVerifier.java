@@ -20,7 +20,7 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.socket.IOKitHardwareAddress;
+import ch.cyberduck.core.socket.HardwareAddressFactory;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -152,7 +152,7 @@ public class ReceiptVerifier implements LicenseVerifier {
             if(!StringUtils.equals(version, StringUtils.trim(bundleVersion))) {
                 log.warn(String.format("Bundle version %s in ASN set does not match", bundleVersion));
             }
-            final byte[] address = new IOKitHardwareAddress().getAddress();
+            final byte[] address = HardwareAddressFactory.get().getAddress();
             final String hex = Hex.encodeHexString(address);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Interface en0 %s", hex));

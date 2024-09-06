@@ -47,6 +47,7 @@ import ch.cyberduck.core.proxy.SystemPreferencesProxyConfiguration;
 import ch.cyberduck.core.proxy.SystemSettingsProxyConfiguration;
 import ch.cyberduck.core.quicklook.QuartzQuickLook;
 import ch.cyberduck.core.resources.NSImageIconCache;
+import ch.cyberduck.core.socket.IOKitHardwareAddress;
 import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
@@ -119,6 +120,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         }
         this.setDefault("factory.urlfilewriter.class", WeblocFileWriter.class.getName());
         this.setDefault("factory.quicklook.class", QuartzQuickLook.class.getName());
+        this.setDefault("factory.hardwareaddress.class", IOKitHardwareAddress.class.getName());
     }
 
     @Override
