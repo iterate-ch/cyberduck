@@ -70,7 +70,7 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
                         request = new HttpPut(String.format("%s/api/v1/nodes/%s/revisions", session.getClient().getBasePath(), fileid.getFileId(file)));
                     }
                     else {
-                        if(new DeepboxPathContainerService(session).isInbox(file.getParent())) {
+                        if(new DeepboxPathContainerService(session, fileid).isInbox(file.getParent())) {
                             request = new HttpPost(String.format("%s/api/v1/deepBoxes/%s/boxes/%s/queue",
                                     session.getClient().getBasePath(),
                                     fileid.getDeepBoxNodeId(file),

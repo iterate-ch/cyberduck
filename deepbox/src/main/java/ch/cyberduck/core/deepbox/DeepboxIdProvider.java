@@ -15,17 +15,22 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.api.OverviewRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Box;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.BoxEntry;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Boxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Overview;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.PathSegment;
 import ch.cyberduck.core.deepcloud.DeepcloudExceptionMappingService;
 import ch.cyberduck.core.deepcloud.io.swagger.client.api.UsersApi;
@@ -42,7 +47,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.EnumSet;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdProvider {
     private static final Logger log = LogManager.getLogger(DeepboxIdProvider.class);
@@ -51,11 +59,13 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     private final int chunksize;
     private final DeepboxPathContainerService containerService;
 
+    private Pattern SHARED = Pattern.compile("(.*)\\s\\((.*)\\)");
+
     public DeepboxIdProvider(final DeepboxSession session) {
         super(session.getCaseSensitivity());
         this.session = session;
         this.chunksize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
-        this.containerService = new DeepboxPathContainerService(session);
+        this.containerService = new DeepboxPathContainerService(session, this);
     }
 
     public String getCompanyNodeId(final Path file) throws BackgroundException {
@@ -67,9 +77,10 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     }
 
     public String getDeepBoxNodeId(final Path file) throws BackgroundException {
-        final Path deepBox = containerService.getDeepboxPath(file);
+        final Path normalized = this.normalize(file);
+        final Path deepBox = containerService.getDeepboxPath(normalized);
         if(null == deepBox) {
-            throw new NotfoundException(file.getName());
+            throw new NotfoundException(normalized.getName());
         }
         return this.getFileId(deepBox);
     }
@@ -82,12 +93,51 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         return this.getFileId(box);
     }
 
-    public String getThirdLevelId(final Path file) throws BackgroundException {
+    public String getFourthLevelId(final Path file) throws BackgroundException {
         final Path path = containerService.getFourthLevelPath(file);
         if(null == path) {
             throw new NotfoundException(file.getName());
         }
         return this.getFileId(path);
+    }
+
+    protected Path normalize(final Path file) {
+        if(!containerService.isInSharedWithMe(file)) {
+            return file;
+        }
+        if(containerService.isSharedWithMe(file)) {
+            return file;
+        }
+        final Deque<Path> segments = this.decompose(file);
+        Path result = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+
+        while(!segments.isEmpty()) {
+            Path segment = segments.pop();
+            if(containerService.isSharedWithMe(segment)) {
+                final String combined = segments.pop().getName();
+                final Matcher matcher = SHARED.matcher(combined);
+                if(matcher.matches()) {
+                    final String deepboxName = matcher.group(1);
+                    final String boxName = matcher.group(2);
+                    final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(segment.getType());
+                    type.add(AbstractPath.Type.shared);
+                    final Path deepbox = new Path(result, deepboxName, type, new PathAttributes(segment.attributes()).withFileId(null));
+                    result = new Path(deepbox, boxName, type, segment.attributes());
+                }
+                else {
+                    log.warn(String.format("Folder %s does not match pattern %s", combined, SHARED.pattern()));
+                    return file;
+                }
+            }
+            else {
+                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(segment.getType());
+                if(containerService.isInSharedWithMe(segment)) {
+                    type.add(AbstractPath.Type.shared);
+                }
+                result = new Path(result, segment.getName(), type, segment.attributes());
+            }
+        }
+        return result;
     }
 
     private Deque<Path> decompose(final Path path) {
@@ -102,16 +152,17 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
 
     @Override
     public String getFileId(final Path file) throws BackgroundException {
-        if(file.isRoot()) {
+        final Path normalized = this.normalize(file);
+        if(normalized.isRoot()) {
             return null;
         }
-        if(StringUtils.isNotBlank(file.attributes().getFileId())) {
-            return file.attributes().getFileId();
+        if(StringUtils.isNotBlank(normalized.attributes().getFileId())) {
+            return normalized.attributes().getFileId();
         }
-        final String cached = super.getFileId(file);
+        final String cached = super.getFileId(normalized);
         if(cached != null) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Return cached fileid %s for file %s", cached, file));
+                log.debug(String.format("Return cached fileid %s for file %s", cached, normalized));
             }
             return cached;
         }
@@ -119,7 +170,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         // Therefore, we have to iteratively get from/add to cache
         // There is currently no API to reverse-lookup the fileId (DeepBox nodeId) of a file in a folder by its name,
         // let alone to directly look up the fileId (DeepBox nodeId) by the full path (which is even language-dependent).
-        final Deque<Path> segments = this.decompose(file);
+        final Deque<Path> segments = this.decompose(normalized);
         while(!segments.isEmpty()) {
             final Path segment = segments.pop();
             if(StringUtils.isNotBlank(segment.attributes().getFileId())) {
@@ -136,7 +187,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             }
         }
         // get from cache now
-        return super.getFileId(file);
+        return super.getFileId(normalized);
     }
 
     private String lookupFileId(final Path file) throws BackgroundException {
@@ -146,12 +197,12 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 return new CompanyNodeIdProvider().getFileId(file);
             }
             if(containerService.isDeepbox(file)) { // DeepBox
-                return new DeepboxNodeIdProvider().getFileId(file);
+                return new DelegatingDeepboxNodeIdProvider().getFileId(file);
             }
             else if(containerService.isBox(file)) { // Box
                 return new BoxNodeIdProvider().getFileId(file);
             }
-            else if(containerService.isFourthLevel(file)) { // 3rd level: Inbox,Documents,Trash
+            else if(containerService.isFourthLevel(file)) { // 4th level: Inbox,Documents,Trash
                 final String boxNodeId = this.getFileId(file.getParent());
                 final String deepBoxNodeId = this.getFileId(file.getParent().getParent());
                 if(containerService.isDocuments(file)) {
@@ -268,7 +319,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 int size;
                 do {
                     final NodeContent files = supplier.getNodes(offset);
-                    final String nodeId = files.getNodes().stream().filter(b -> DeepboxPathNormalizer.name(b.getDisplayName()).equals(file.getName())).findFirst().map(Node::getNodeId).orElse(null);
+                    final String nodeId = files.getNodes().stream().filter(b ->
+                            DeepboxPathNormalizer.name(b.getDisplayName()).equals(file.getName())).findFirst().map(Node::getNodeId).orElse(null);
                     if(nodeId != null) {
                         return nodeId;
                     }
@@ -295,7 +347,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 do {
                     final Boxes boxes = rest.listBoxes(deepBoxNodeId, offset, chunksize, "displayName asc", null);
                     final String boxName = file.getName();
-                    final String boxNodeId = boxes.getBoxes().stream().filter(b -> DeepboxPathNormalizer.name(b.getName()).equals(boxName)).findFirst().map(Box::getBoxNodeId).orElse(null);
+                    final String boxNodeId = boxes.getBoxes().stream().filter(b ->
+                            DeepboxPathNormalizer.name(b.getName()).equals(boxName)).findFirst().map(Box::getBoxNodeId).orElse(null);
                     if(boxNodeId != null) {
                         return boxNodeId;
                     }
@@ -311,6 +364,16 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         }
     }
 
+    private final class DelegatingDeepboxNodeIdProvider implements FileIdProvider {
+        @Override
+        public String getFileId(final Path file) throws BackgroundException {
+            if(file.getType().contains(Path.Type.shared)) {
+                return new SharedDeepboxNodeIdProvider().getFileId(file);
+            }
+            return new DeepboxNodeIdProvider().getFileId(file);
+        }
+    }
+
     private final class DeepboxNodeIdProvider implements FileIdProvider {
         @Override
         public String getFileId(final Path file) throws BackgroundException {
@@ -321,7 +384,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 do {
                     final DeepBoxes deepBoxes = rest.listDeepBoxes(offset, chunksize, "displayName asc", null);
                     final String deepBoxName = file.getName();
-                    final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db -> DeepboxPathNormalizer.name(db.getName()).equals(deepBoxName)).findFirst().map(DeepBox::getDeepBoxNodeId).orElse(null);
+                    final String deepBoxNodeId = deepBoxes.getDeepBoxes().stream().filter(db ->
+                            DeepboxPathNormalizer.name(db.getName()).equals(deepBoxName)).findFirst().map(DeepBox::getDeepBoxNodeId).orElse(null);
                     if(deepBoxNodeId != null) {
                         return deepBoxNodeId;
                     }
@@ -338,13 +402,30 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         }
     }
 
+    private final class SharedDeepboxNodeIdProvider implements FileIdProvider {
+        @Override
+        public String getFileId(final Path file) throws BackgroundException {
+            try {
+                final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
+                final String companyId = DeepboxIdProvider.this.getFileId(file.getParent());
+                final Overview overview = rest.getOverview(companyId, chunksize, null);
+                return overview.getSharedWithMe().getBoxes().stream().filter(box ->
+                        DeepboxPathNormalizer.name(box.getDeepBoxName()).equals(file.getName())).findFirst().map(BoxEntry::getDeepBoxNodeId).orElse(null);
+            }
+            catch(ApiException e) {
+                throw new DeepboxExceptionMappingService(DeepboxIdProvider.this).map("Failure to read attributes of {0}", e, file);
+            }
+        }
+    }
+
     private final class CompanyNodeIdProvider implements FileIdProvider {
         @Override
         public String getFileId(final Path file) throws BackgroundException {
             try {
                 final UsersApi rest = new UsersApi(session.getDeepcloudClient());
                 final UserFull user = rest.usersMeList();
-                return user.getCompanies().stream().filter(db -> DeepboxPathNormalizer.name(db.getDisplayName()).equals(file.getName())).findFirst().map(CompanyRoles::getGroupId).orElse(null);
+                return user.getCompanies().stream().filter(db ->
+                        DeepboxPathNormalizer.name(db.getDisplayName()).equals(file.getName())).findFirst().map(CompanyRoles::getGroupId).orElse(null);
             }
             catch(ch.cyberduck.core.deepcloud.io.swagger.client.ApiException e) {
                 throw new DeepcloudExceptionMappingService(DeepboxIdProvider.this).map("Failure to read attributes of {0}", e, file);

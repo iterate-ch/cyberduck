@@ -21,12 +21,16 @@ import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 
+import static ch.cyberduck.core.deepbox.DeepboxListService.SHARED;
+
 public class DeepboxPathContainerService extends DefaultPathContainerService {
 
     private final DeepboxSession session;
+    private final DeepboxIdProvider fileid;
 
-    public DeepboxPathContainerService(final DeepboxSession session) {
+    public DeepboxPathContainerService(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     /**
@@ -46,49 +50,66 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
 
     @Override
     public boolean isContainer(final Path file) {
-        if(this.isCompany(file)) {
+        final Path normalized = fileid.normalize(file);
+        if(this.isCompany(normalized)) {
             return true;
         }
-        if(this.isDeepbox(file)) {
+        if(this.isDeepbox(normalized)) {
             return true;
         }
-        if(this.isBox(file)) {
+        if(this.isSharedWithMe(normalized)) {
             return true;
         }
-        if(this.isFourthLevel(file)) {
+        if(this.isBox(normalized)) {
+            return true;
+        }
+        if(this.isFourthLevel(normalized)) {
             return true;
         }
         return false;
     }
 
     public boolean isCompany(final Path file) {
+        final Path normalized = fileid.normalize(file);
+        if(normalized.isRoot()) {
+            return false;
+        }
+        return normalized.isDirectory() && normalized.getParent().isRoot();
+    }
+
+    public boolean isSharedWithMe(final Path file) {
         if(file.isRoot()) {
             return false;
         }
-        return file.isDirectory() && file.getParent().isRoot();
+        return file.isDirectory() && !file.getParent().isRoot() && file.getParent().getParent().isRoot() &&
+                StringUtils.equals(file.getName(), this.getPinnedLocalization(SHARED));
     }
 
     public boolean isDeepbox(final Path file) {
-        if(file.isRoot()) {
+        final Path normalized = fileid.normalize(file);
+        if(normalized.isRoot()) {
             return false;
         }
-        return file.isDirectory() && !file.getParent().isRoot() && file.getParent().getParent().isRoot();
+        return normalized.isDirectory() && !normalized.getParent().isRoot() && normalized.getParent().getParent().isRoot() &&
+                !isSharedWithMe(file);
     }
 
     public boolean isBox(final Path file) {
-        if(file.isRoot()) {
+        final Path normalized = fileid.normalize(file);
+        if(normalized.isRoot()) {
             return false;
         }
-        return file.isDirectory() && !file.getParent().isRoot() && !file.getParent().getParent().isRoot() &&
-                file.getParent().getParent().getParent().isRoot();
+        return normalized.isDirectory() && !normalized.getParent().isRoot() && !normalized.getParent().getParent().isRoot() &&
+                normalized.getParent().getParent().getParent().isRoot();
     }
 
     public boolean isFourthLevel(final Path file) {
-        if(file.isRoot()) {
+        final Path normalized = fileid.normalize(file);
+        if(normalized.isRoot()) {
             return false;
         }
-        return file.isDirectory() && !file.getParent().isRoot() && !file.getParent().getParent().isRoot() &&
-                !file.getParent().getParent().getParent().isRoot() && file.getParent().getParent().getParent().getParent().isRoot();
+        return normalized.isDirectory() && !normalized.getParent().isRoot() && !normalized.getParent().getParent().isRoot() &&
+                !normalized.getParent().getParent().getParent().isRoot() && normalized.getParent().getParent().getParent().getParent().isRoot();
     }
 
     public boolean isTrash(final Path file) {
@@ -104,6 +125,17 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     public boolean isDocuments(final Path file) {
         return this.isFourthLevel(file)
                 && StringUtils.equals(file.getName(), this.getPinnedLocalization(DeepboxListService.DOCUMENTS));
+    }
+
+    public boolean isInSharedWithMe(final Path file) {
+        Path f = file;
+        while(!f.isRoot()) {
+            if(this.isSharedWithMe(f)) {
+                return true;
+            }
+            f = f.getParent();
+        }
+        return false;
     }
 
     public boolean isInDocuments(final Path file) {
@@ -131,16 +163,17 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     protected Path getFourthLevelPath(final Path file) {
-        if(this.isCompany(file)) {
+        final Path normalized = fileid.normalize(file);
+        if(this.isCompany(normalized)) {
             return null;
         }
-        if(this.isDeepbox(file)) {
+        if(this.isDeepbox(normalized)) {
             return null;
         }
-        if(this.isBox(file)) {
+        if(this.isBox(normalized)) {
             return null;
         }
-        Path fourthLevel = file;
+        Path fourthLevel = normalized;
         while(!fourthLevel.isRoot() && !this.isFourthLevel(fourthLevel)) {
             fourthLevel = fourthLevel.getParent();
         }
@@ -151,10 +184,11 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     protected Path getBoxPath(final Path file) {
-        if(this.isDeepbox(file)) {
+        final Path normalized = fileid.normalize(file);
+        if(this.isDeepbox(normalized)) {
             return null;
         }
-        Path box = file;
+        Path box = normalized;
         while(!box.isRoot() && !this.isBox(box)) {
             box = box.getParent();
         }
@@ -165,10 +199,11 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     protected Path getDeepboxPath(final Path file) {
-        if(this.isCompany(file)) {
+        final Path normalized = fileid.normalize(file);
+        if(this.isCompany(normalized)) {
             return null;
         }
-        Path deepbox = file;
+        Path deepbox = normalized;
         while(!deepbox.isRoot() && !this.isDeepbox(deepbox)) {
             deepbox = deepbox.getParent();
         }
@@ -179,7 +214,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     protected Path getCompanyPath(final Path file) {
-        Path company = file;
+        Path company = fileid.normalize(file);
         while(!company.isRoot() && !this.isCompany(company)) {
             company = company.getParent();
         }

@@ -32,7 +32,8 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void testRoot() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path folder = Home.ROOT;
         assertFalse(container.isContainer(folder));
         assertFalse(container.isCompany(folder));
@@ -53,7 +54,8 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void testCompany() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path folder = new Path("/Mountainduck Buddies", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(container.isContainer(folder));
         assertTrue(container.isCompany(folder));
@@ -74,7 +76,8 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void testDeepBox() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path folder = new Path("/Mountainduck Buddies/DeepBox", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isCompany(folder));
@@ -94,8 +97,32 @@ public class DeepboxPathContainerServiceTest {
     }
 
     @Test
+    public void testSharedWithMe() {
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
+        final Path folder = new Path(String.format("/Mountainduck Buddies/%s", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(container.isContainer(folder));
+        assertFalse(container.isCompany(folder));
+        assertFalse(container.isDeepbox(folder));
+        assertTrue(container.isSharedWithMe(folder));
+        assertFalse(container.isBox(folder));
+        assertFalse(container.isFourthLevel(folder));
+        assertFalse(container.isDocuments(folder));
+        assertFalse(container.isInbox(folder));
+        assertFalse(container.isTrash(folder));
+        assertEquals(folder, container.getContainer(folder));
+        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertNull(container.getKey(folder));
+        assertEquals(folder.getParent(), container.getCompanyPath(folder));
+        assertNull(container.getDeepboxPath(folder));
+        assertNull(container.getBoxPath(folder));
+        assertNull(container.getFourthLevelPath(folder));
+    }
+
+    @Test
     public void testBox() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path folder = new Path("/Mountainduck Buddies/DeepBox/My Box", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isCompany(folder));
@@ -116,7 +143,8 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void testInbox() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path folder = new Path(String.format("/Mountainduck Buddies/DeepBox/My Box/%s", DeepboxListService.INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isCompany(folder));
@@ -137,7 +165,8 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void testDocuments() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path folder = new Path(String.format("/Mountainduck Buddies/DeepBox/My Box/%s", DeepboxListService.DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isCompany(folder));
@@ -158,7 +187,8 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void testTrash() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path folder = new Path(String.format("/Mountainduck Buddies/DeepBox/My Box/%s", DeepboxListService.TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(container.isContainer(folder));
         assertFalse(container.isCompany(folder));
@@ -179,7 +209,8 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void testAuditing() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path folder = new Path(String.format("/Mountainduck Buddies/DeepBox/My Box/%s/Auditing", DeepboxListService.DOCUMENTS), EnumSet.of(Path.Type.directory));
         assertFalse(container.isContainer(folder));
         assertFalse(container.isCompany(folder));
@@ -200,7 +231,8 @@ public class DeepboxPathContainerServiceTest {
 
     @Test
     public void testFile() {
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
         final Path file = new Path(String.format("/Mountainduck Buddies/DeepBox/My Box/%s/Auditing/nix4.txt", DeepboxListService.DOCUMENTS), EnumSet.of(Path.Type.file));
         assertFalse(container.isContainer(file));
         assertFalse(container.isDeepbox(file));

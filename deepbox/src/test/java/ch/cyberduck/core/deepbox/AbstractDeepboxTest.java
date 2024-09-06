@@ -50,8 +50,12 @@ public class AbstractDeepboxTest extends VaultTest {
     protected final String ORG4 = "3ce7505e-6497-4723-b5c6-e381d8b8cbad";
     protected final String ORG4_DEEPBOX4 = "a548e68e-5584-42c1-b2bc-9e051dc78e5e";
     protected final String ORG4_DEEPBOX4_BOX1 = "366a7117-0ad3-4dcb-9e79-a4270c3f6fb5";
+    protected final String ORG1 = "9df0bd54-c4c6-43b5-b622-34988af31f78";
     protected final String ORG1_DEEPBOX1 = "71fdd537-17db-4a8a-b959-64a1ab07774a";
     protected final String ORG1_DEEPBOX1_BOX1 = "40062559-c1a3-4229-9b1b-77320821d0d5";
+    protected final String SHARED_DEEPBOX = "18e8c231-0c6f-462c-85ea-67b7c7942fe3";
+    protected final String SHARED_DEEPBOX_BOX = "540e2462-7e82-432d-ae2a-5d7f9edf9f3e";
+
 
     protected DeepboxSession session;
 
@@ -68,11 +72,15 @@ public class AbstractDeepboxTest extends VaultTest {
      */
     @Before
     public void setup() throws BackgroundException {
+        session = setup("deepbox.deepboxapp3.user");
+    }
+
+    public DeepboxSession setup(final String user) throws BackgroundException {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DeepboxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Deepbox Integration.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("deepbox.deepboxapp3.user")));
-        session = new DeepboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get(user)));
+        DeepboxSession session = new DeepboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -82,6 +90,7 @@ public class AbstractDeepboxTest extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
+        return session;
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
