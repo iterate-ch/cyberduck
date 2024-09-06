@@ -384,7 +384,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         @Override
         public void process(final HttpResponse response, final HttpContext context) {
             if(response.containsHeader("Persistent-Auth")) {
-                client.disablePreemptiveAuthentication();
+                if(response.getFirstHeader("Persistent-Auth").getValue().equals("true")) {
+                    client.disablePreemptiveAuthentication();
+                }
             }
         }
     }
