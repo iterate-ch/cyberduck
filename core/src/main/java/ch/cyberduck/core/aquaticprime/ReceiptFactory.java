@@ -21,9 +21,7 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,21 +47,7 @@ public class ReceiptFactory extends LicenseFactory {
 
     @Override
     protected License open(final Local file) {
-        // Set name
-        final Receipt receipt = new Receipt(file);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Receipt %s in %s", receipt, file));
-        }
-        // Copy to Application Support for users switching versions
-        final Local support = SupportDirectoryFinderFactory.get().find();
-        try {
-            file.copy(LocalFactory.get(support, String.format("%s.cyberduckreceipt",
-                    PreferencesFactory.get().getProperty("application.name"))));
-        }
-        catch(AccessDeniedException e) {
-            log.warn(e.getMessage());
-        }
-        return receipt;
+        return new Receipt(file);
     }
 
     private static class ReceiptFilter implements Filter<Local> {

@@ -18,19 +18,15 @@ package ch.cyberduck.core.aquaticprime;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
-import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class DonationKeyFactory extends LicenseFactory {
     private static final Logger log = LogManager.getLogger(DonationKeyFactory.class);
@@ -52,26 +48,6 @@ public class DonationKeyFactory extends LicenseFactory {
             if(log.isInfoEnabled()) {
                 log.info("No donation key found");
             }
-            final Pattern pattern = Pattern.compile(".*\\.cyberduckreceipt");
-            // No key found. Look for receipt in sandboxed application container
-            for(Local file : SupportDirectoryFinderFactory.get().find().list().filter(new Filter<Local>() {
-                @Override
-                public boolean accept(final Local file) {
-                    return "cyberduckreceipt".equals(Path.getExtension(file.getName()));
-                }
-
-                @Override
-                public Pattern toPattern() {
-                    return pattern;
-                }
-            })) {
-                final Receipt receipt = new Receipt(file);
-                if(receipt.verify(new DisabledLicenseVerifierCallback())) {
-                    keys.add(receipt);
-                }
-            }
-        }
-        if(keys.isEmpty()) {
             final Local bundle = ApplicationResourcesFinderFactory.get().find();
             if(bundle.exists()) {
                 for(Local key : bundle.list().filter(new LicenseFilter())) {
