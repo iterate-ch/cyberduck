@@ -15,6 +15,8 @@ package ch.cyberduck.core.aquaticprime;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Factory;
+
 public class ExitCodeLicenseVerifierCallback implements LicenseVerifierCallback {
 
     /**
@@ -24,6 +26,8 @@ public class ExitCodeLicenseVerifierCallback implements LicenseVerifierCallback 
 
     @Override
     public void failure(final InvalidLicenseException failure) {
-        System.exit(APPSTORE_VALIDATION_FAILURE);
+        if(Factory.Platform.osversion.matches("(10|11|12|13|14)\\..*")) {
+            System.exit(APPSTORE_VALIDATION_FAILURE);
+        }
     }
 }
