@@ -23,24 +23,16 @@ import ch.cyberduck.core.Local;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 @Ignore
 public class ReceiptFactoryTest {
 
     @Test
-    public void testCreate() {
-        assertEquals("b8e85600dffe", new ReceiptFactory(new Local("src/test/resources")).create().getName());
-    }
-
-    @Test
     public void testOpen() throws Exception {
-        // Expect exit code 173
-        new ReceiptFactory().open();
-    }
-
-    @Test
-    public void testOpenDirectory() throws Exception {
-        assertEquals(1, new ReceiptFactory(new Local("/Applications/Cyberduck.app/Contents/_MASReceipt")).open().size());
+        final List<License> receipts = new ReceiptFactory(new Local("src/test/resources")).open();
+        assertEquals(1, receipts.size());
     }
 }

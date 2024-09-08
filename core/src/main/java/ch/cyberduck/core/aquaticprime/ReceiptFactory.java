@@ -28,20 +28,14 @@ import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class ReceiptFactory extends LicenseFactory {
     private static final Logger log = LogManager.getLogger(ReceiptFactory.class);
 
-    /**
-     * Application has determined that its receipt is invalid. Exit with a status of 173
-     */
-    private static final int APPSTORE_VALIDATION_FAILURE = 173;
-
     public ReceiptFactory() {
         super(LocalFactory.get(PreferencesFactory.get().getProperty("application.receipt.path")),
-            new ReceiptFilter());
+                new ReceiptFilter());
     }
 
     public ReceiptFactory(final Local folder) {
@@ -55,39 +49,21 @@ public class ReceiptFactory extends LicenseFactory {
 
     @Override
     protected License open(final Local file) {
-        // Verify immediately and exit if not a valid receipt
-        final ReceiptVerifier verifier = new ReceiptVerifier(file);
-        if(verifier.verify(new DisabledLicenseVerifierCallback())) {
-            // Set name
-            final Receipt receipt = new Receipt(file, verifier.getGuid());
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Valid receipt %s in %s", receipt, file));
-            }
-            // Copy to Application Support for users switching versions
-            final Local support = SupportDirectoryFinderFactory.get().find();
-            try {
-                file.copy(LocalFactory.get(support, String.format("%s.cyberduckreceipt",
-                        PreferencesFactory.get().getProperty("application.name"))));
-            }
-            catch(AccessDeniedException e) {
-                log.warn(e.getMessage());
-            }
-            return receipt;
+        // Set name
+        final Receipt receipt = new Receipt(file);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Receipt %s in %s", receipt, file));
         }
-        else {
-            log.error(String.format("Invalid receipt found in %s", file));
-            System.exit(APPSTORE_VALIDATION_FAILURE);
-            return null;
+        // Copy to Application Support for users switching versions
+        final Local support = SupportDirectoryFinderFactory.get().find();
+        try {
+            file.copy(LocalFactory.get(support, String.format("%s.cyberduckreceipt",
+                    PreferencesFactory.get().getProperty("application.name"))));
         }
-    }
-
-    @Override
-    public List<License> open() throws AccessDeniedException {
-        final List<License> keys = super.open();
-        if(keys.isEmpty()) {
-            System.exit(APPSTORE_VALIDATION_FAILURE);
+        catch(AccessDeniedException e) {
+            log.warn(e.getMessage());
         }
-        return keys;
+        return receipt;
     }
 
     private static class ReceiptFilter implements Filter<Local> {

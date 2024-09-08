@@ -22,18 +22,16 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 
-import java.util.Objects;
-
 public class Receipt extends AbstractLicense {
 
-    private final String guid;
+    private final ReceiptVerifier verifier;
 
     /**
      * @param file The license key file.
      */
-    public Receipt(final Local file, final String guid) {
+    public Receipt(final Local file) {
         super(file);
-        this.guid = guid;
+        this.verifier = new ReceiptVerifier(file);
     }
 
     /**
@@ -43,8 +41,7 @@ public class Receipt extends AbstractLicense {
      */
     @Override
     public boolean verify(final LicenseVerifierCallback callback) {
-        // Always return true to dismiss donation prompt.
-        return true;
+        return verifier.verify(new DelegatingLicenseVerifierCallback(callback, new ExitCodeLicenseVerifierCallback()));
     }
 
     @Override
@@ -59,28 +56,6 @@ public class Receipt extends AbstractLicense {
 
     @Override
     public String getName() {
-        return guid;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final Receipt receipt = (Receipt) o;
-        if(!Objects.equals(guid, receipt.guid)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (guid != null ? guid.hashCode() : 0);
-        return result;
+        return verifier.getGuid();
     }
 }
