@@ -53,8 +53,8 @@ public final class TerminalHelpPrinter {
         formatter.setSyntaxPrefix("Usage:");
         final Preferences preferences = PreferencesFactory.get();
         final StringBuilder builder = new StringBuilder()
-            .append("Default protocols")
-            .append(StringUtils.LF);
+                .append("Default protocols")
+                .append(StringUtils.LF);
 
         final ProtocolFactory protocols = ProtocolFactory.get();
         for(Protocol p : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav, Protocol.Type.smb)))) {
@@ -75,32 +75,28 @@ public final class TerminalHelpPrinter {
         }
         builder.append(StringUtils.LF);
         builder.append(String.format("Third party connection profiles. Install additional connection profiles in %s",
-            LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-                PreferencesFactory.get().getProperty("profiles.folder.name")).getAbbreviatedPath()));
+                LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+                        PreferencesFactory.get().getProperty("profiles.folder.name")).getAbbreviatedPath()));
         builder.append(StringUtils.LF);
         for(Protocol p : protocols.find(new ProfileProtocolPredicate())) {
             append(p, builder);
         }
         final StringBuilder header = new StringBuilder(StringUtils.LF)
-            .append("\t")
-            .append("URLs must be fully qualified. Paths can either denote "
-                + "a remote file (ftps://user@example.net/resource) or folder (ftps://user@example.net/directory/) "
-                + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).")
-            .append(StringUtils.LF)
-            .append(builder)
-            .append(StringUtils.LF)
-            .append(StringUtils.LF);
+                .append("\t")
+                .append("URLs must be fully qualified. Paths can either denote "
+                        + "a remote file (ftps://user@example.net/resource) or folder (ftps://user@example.net/directory/) "
+                        + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).")
+                .append(StringUtils.LF)
+                .append(builder)
+                .append(StringUtils.LF)
+                .append(StringUtils.LF);
         final StringBuilder footer = new StringBuilder(StringUtils.LF);
         footer.append(String.format("Cyberduck is libre software licenced under the GPL. For general help about using Cyberduck, please refer to %s and the wiki at %s. For bug reports or feature requests open a ticket at %s.",
-            preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
+                preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
         final License l = LicenseFactory.find();
         footer.append(StringUtils.LF);
-        if(l.verify(new DisabledLicenseVerifierCallback())) {
-            footer.append(l.toString());
-        }
-        else {
-            footer.append("Not registered. Purchase a donation key to support the development of this software.");
-        }
+        footer.append(l.getName());
+        footer.append(l);
         formatter.printHelp("duck [options...]", header.toString(), options, footer.toString());
     }
 
@@ -132,14 +128,14 @@ public final class TerminalHelpPrinter {
         url = String.format(format, getScheme(protocol));
 
         builder
-            .append(String.format("%s %s", StringUtils.leftPad(protocol.getDescription(), 50), url))
-            .append(StringUtils.LF);
+                .append(String.format("%s %s", StringUtils.leftPad(protocol.getDescription(), 50), url))
+                .append(StringUtils.LF);
     }
 
     protected static String getScheme(final Protocol protocol) {
         if(new BundledProtocolPredicate().test(protocol)) {
             for(String scheme :
-                protocol.getSchemes()) {
+                    protocol.getSchemes()) {
                 // Return first custom scheme registered
                 return scheme;
             }
