@@ -86,6 +86,7 @@ public class ReceiptVerifier implements LicenseVerifier {
                     if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(
                             new BouncyCastleProvider()
                     ).build(holder))) {
+                        callback.failure(new InvalidLicenseException());
                         return false;
                     }
                 }
@@ -142,11 +143,11 @@ public class ReceiptVerifier implements LicenseVerifier {
                 }
             }
             else {
-                log.error(String.format("Expected set of attributes for %s", asn));
+                callback.failure(new InvalidLicenseException(String.format("Expected set of attributes for %s", asn)));
                 return false;
             }
             if(!StringUtils.equals(application, StringUtils.trim(bundleIdentifier))) {
-                log.error(String.format("Bundle identifier %s in ASN set does not match", bundleIdentifier));
+                callback.failure(new InvalidLicenseException(String.format("Bundle identifier %s in ASN set does not match", bundleIdentifier)));
                 return false;
             }
             if(!StringUtils.equals(version, StringUtils.trim(bundleVersion))) {
@@ -161,12 +162,12 @@ public class ReceiptVerifier implements LicenseVerifier {
             final MessageDigest digest = MessageDigest.getInstance("SHA-1");
             digest.update(address);
             if(null == opaque) {
-                log.error(String.format("Missing opaque string in ASN.1 set %s", asn));
+                callback.failure(new InvalidLicenseException(String.format("Missing opaque string in ASN.1 set %s", asn)));
                 return false;
             }
             digest.update(opaque);
             if(null == bundleIdentifier) {
-                log.error(String.format("Missing bundle identifier in ASN.1 set %s", asn));
+                callback.failure(new InvalidLicenseException(String.format("Missing bundle identifier in ASN.1 set %s", asn)));
                 return false;
             }
             digest.update(bundleIdentifier.getBytes(StandardCharsets.UTF_8));
@@ -179,17 +180,18 @@ public class ReceiptVerifier implements LicenseVerifier {
                 return true;
             }
             else {
-                log.error(String.format("Failed verification. Hash with GUID %s does not match hash in receipt", hex));
+                callback.failure(new InvalidLicenseException(String.format("Hash with GUID %s does not match hash in receipt", hex)));
                 return false;
             }
         }
         catch(IOException | GeneralSecurityException | CMSException | SecurityException e) {
             log.error("Receipt validation error", e);
-            // Shutdown if receipt is not valid
+            callback.failure(new InvalidLicenseException());
             return false;
         }
         catch(Exception e) {
             log.error("Unknown receipt validation error", e);
+            callback.failure(new InvalidLicenseException());
             return true;
         }
     }
