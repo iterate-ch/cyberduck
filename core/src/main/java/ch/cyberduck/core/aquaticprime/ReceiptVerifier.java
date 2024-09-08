@@ -57,7 +57,6 @@ public class ReceiptVerifier implements LicenseVerifier {
     private final Local file;
     private final String application;
     private final String version;
-    private String guid;
 
     public ReceiptVerifier(final Local file) {
         this(file, PreferencesFactory.get().getDefault("application.identifier"),
@@ -176,7 +175,6 @@ public class ReceiptVerifier implements LicenseVerifier {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Valid receipt for GUID %s", hex));
                 }
-                guid = hex;
                 return true;
             }
             else {
@@ -194,9 +192,5 @@ public class ReceiptVerifier implements LicenseVerifier {
             callback.failure(new InvalidLicenseException());
             return true;
         }
-    }
-
-    public String getGuid() {
-        return guid;
     }
 }

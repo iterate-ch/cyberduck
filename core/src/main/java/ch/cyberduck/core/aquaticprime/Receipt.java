@@ -56,6 +56,6 @@ public class Receipt extends AbstractLicense {
 
     @Override
     public String getName() {
-        return verifier.getGuid();
+        return LocaleFactory.localizedString("Unknown");
     }
 }
