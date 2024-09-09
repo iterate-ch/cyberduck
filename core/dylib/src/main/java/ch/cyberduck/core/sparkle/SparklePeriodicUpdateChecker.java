@@ -140,6 +140,16 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
         }
 
         @Override
+        public void updaterWillRelaunchApplication(final SPUUpdater updater) {
+            for(Handler handler : handlers) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Notify handler %s for application relaunch", handler));
+                }
+                handler.quit();
+            }
+        }
+
+        @Override
         public String feedURLStringForUpdater(final ID updater) {
             return SparklePeriodicUpdateChecker.this.getFeedUrl();
         }

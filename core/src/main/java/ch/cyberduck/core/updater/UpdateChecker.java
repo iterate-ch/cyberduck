@@ -48,6 +48,13 @@ public interface UpdateChecker {
          * @return True if standard driver should not continue handling update or false if no additinal prompt for update is shown
          */
         boolean handle(UpdateChecker.Update item);
+
+        /**
+         * Notification that the application is restarted to perform the update
+         */
+        default void quit() {
+            // No-op
+        }
     }
 
     final class Update {
