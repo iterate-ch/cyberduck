@@ -26,7 +26,6 @@ import ch.cyberduck.core.ProfileProtocolPredicate;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.aquaticprime.DisabledLicenseVerifierCallback;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -97,7 +96,7 @@ public final class TerminalHelpPrinter {
                 preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
         final License l = LicenseFactory.find();
         footer.append(StringUtils.LF);
-        if(l.verify(new DisabledLicenseVerifierCallback())) {
+        if(l.verify()) {
             footer.append(l.getEntitlement());
         }
         else {

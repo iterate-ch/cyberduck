@@ -223,7 +223,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Logger.debug("ApplicationShouldTerminateAfterDonationPrompt");
             License l = LicenseFactory.find();
-            if (!l.verify(new DisabledLicenseVerifierCallback()))
+            if (!l.verify())
             {
                 string appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 String lastversion = PreferencesFactory.get().getProperty("donate.reminder");
@@ -532,7 +532,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Local f = LocalFactory.get(registrationPath);
             License license = LicenseFactory.get(f);
-            if (license.verify(new DisabledLicenseVerifierCallback()))
+            if (license.verify())
             {
                 f.copy(LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
                     f.getName()));

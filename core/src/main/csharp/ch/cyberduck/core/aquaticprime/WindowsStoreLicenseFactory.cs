@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
 
         protected override License open(ch.cyberduck.core.Local l)
         {
-            return EMPTY_LICENSE;
+            return unregistered();
         }
     }
 }

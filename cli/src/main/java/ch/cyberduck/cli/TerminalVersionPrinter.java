@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.aquaticprime.DisabledLicenseVerifierCallback;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -36,6 +35,6 @@ public final class TerminalVersionPrinter {
                 preferences.getProperty("application.name"),
                 preferences.getProperty("application.version"),
                 preferences.getProperty("application.revision"),
-                l.verify(new DisabledLicenseVerifierCallback()) ? l.toString() : "Not registered. Purchase a donation key to support the development of this software.");
+                l.verify() ? l.toString() : "Not registered. Purchase a donation key to support the development of this software.");
     }
 }
