@@ -48,27 +48,19 @@ public abstract class LicenseFactory extends Factory<License> {
     /**
      * Delegate returning the first key found.
      */
-    public static final class DefaultLicenseFactory extends Factory<License> {
-        private final LicenseFactory delegate;
-
-        public DefaultLicenseFactory(final LicenseFactory delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public License create() {
-            try {
-                final List<License> list = delegate.open();
-                if(list.isEmpty()) {
-                    return LicenseFactory.EMPTY_LICENSE;
-                }
-                return list.iterator().next();
+    @Override
+    protected License create() {
+        try {
+            final List<License> list = this.open();
+            if(list.isEmpty()) {
+                return EMPTY_LICENSE;
             }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure finding receipt %s", e.getMessage()));
-            }
-            return LicenseFactory.EMPTY_LICENSE;
+            return list.iterator().next();
         }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure finding receipt %s", e.getMessage()));
+        }
+        return EMPTY_LICENSE;
     }
 
     protected final Local[] folders;
@@ -154,7 +146,7 @@ public abstract class LicenseFactory extends Factory<License> {
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure finding receipt %s", e.getMessage()));
         }
-        return LicenseFactory.EMPTY_LICENSE;
+        return EMPTY_LICENSE;
     }
 
     protected License unregistered() {

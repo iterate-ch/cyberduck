@@ -27,11 +27,6 @@ public class DonationKeyFactory extends LicenseFactory {
     private static final Logger log = LogManager.getLogger(DonationKeyFactory.class);
 
     @Override
-    protected License create() {
-        return new DefaultLicenseFactory(this).create();
-    }
-
-    @Override
     protected License open(final Local file) {
         return new DonationKey(file);
     }
