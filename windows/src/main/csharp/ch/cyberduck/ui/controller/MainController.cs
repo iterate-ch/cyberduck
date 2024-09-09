@@ -536,7 +536,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 f.copy(LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
                     f.getName()));
-                _bc.InfoBox(license.ToString(),
+                _bc.InfoBox(license.getEntitlement(),
                     LocaleFactory.localizedString(
                         "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
                         "License"),

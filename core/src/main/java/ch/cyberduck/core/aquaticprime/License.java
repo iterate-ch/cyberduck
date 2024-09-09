@@ -39,7 +39,7 @@ public interface License extends LicenseVerifier {
      *
      * @return Email address if name is not known.
      */
-    String getName();
+    String getEntitlement();
 
     /**
      * @return True if this is a receipt from the store

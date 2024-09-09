@@ -25,7 +25,6 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -136,10 +135,11 @@ public abstract class LicenseFactory extends Factory<License> {
             final String clazz = preferences.getProperty("factory.licensefactory.class");
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
-                final List<License> list = new ArrayList<>(name.getDeclaredConstructor().newInstance().open());
+                final LicenseFactory factory = name.getDeclaredConstructor().newInstance();
+                final List<License> list = new ArrayList<>(factory.open());
                 list.removeIf(key -> !key.verify(callback));
                 if(list.isEmpty()) {
-                    return LicenseFactory.EMPTY_LICENSE;
+                    return factory.unregistered();
                 }
                 return list.iterator().next();
             }
@@ -154,6 +154,10 @@ public abstract class LicenseFactory extends Factory<License> {
         return LicenseFactory.EMPTY_LICENSE;
     }
 
+    protected License unregistered() {
+        return EMPTY_LICENSE;
+    }
+
     public static final License EMPTY_LICENSE = new License() {
         @Override
         public boolean verify(final LicenseVerifierCallback callback) {
@@ -166,34 +170,13 @@ public abstract class LicenseFactory extends Factory<License> {
         }
 
         @Override
-        public String getName() {
+        public String getEntitlement() {
             return LocaleFactory.localizedString("Not a valid registration key", "License");
         }
 
         @Override
         public boolean isReceipt() {
             return false;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof License) {
-                return EMPTY_LICENSE == obj;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return this.toString().hashCode();
-        }
-
-        @Override
-        public String toString() {
-            final StringAppender message = new StringAppender();
-            message.append(LocaleFactory.localizedString("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!", "Donate"));
-            message.append(LocaleFactory.localizedString("As a contributor to Cyberduck, you receive a registration key that disables this prompt.", "Donate"));
-            return message.toString();
         }
     };
 

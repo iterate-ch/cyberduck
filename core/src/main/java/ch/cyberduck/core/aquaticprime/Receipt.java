@@ -55,7 +55,7 @@ public class Receipt extends AbstractLicense {
     }
 
     @Override
-    public String getName() {
+    public String getEntitlement() {
         return LocaleFactory.localizedString("Unknown");
     }
 }

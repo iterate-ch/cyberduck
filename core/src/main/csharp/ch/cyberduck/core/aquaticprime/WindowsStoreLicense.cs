@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
 {
     public class WindowsStoreLicense : License
     {
-        public string getName()
+        private string getName()
         {
             StoreContext storeContext = StoreContext.GetDefault();
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
@@ -82,7 +82,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
             return true;
         }
 
-        public override string ToString()
+        public string getEntitlement()
         {
             return string.Format(LocaleFactory.localizedString("Registered to {0}", "License"), getName());
         }
@@ -93,5 +93,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
             return license?.IsActive ?? false;
         }
+
+        public bool verify() => License.__DefaultMethods.verify(this);
     }
 }

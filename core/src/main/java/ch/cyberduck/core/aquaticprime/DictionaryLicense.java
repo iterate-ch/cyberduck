@@ -154,4 +154,12 @@ public abstract class DictionaryLicense extends AbstractLicense {
     }
 
     protected abstract String getPublicKey();
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DictionaryLicense{");
+        sb.append("file=").append(file);
+        sb.append('}');
+        return sb.toString();
+    }
 }

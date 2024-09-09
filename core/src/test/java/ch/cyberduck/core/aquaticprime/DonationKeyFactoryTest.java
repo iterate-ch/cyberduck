@@ -28,6 +28,6 @@ public class DonationKeyFactoryTest {
 
     @Test
     public void testCreate() {
-        assertEquals("c42c030b8670", new DonationKeyFactory().create().getName());
+        assertEquals("Not a valid registration key", new DonationKeyFactory().create().getEntitlement());
     }
 }

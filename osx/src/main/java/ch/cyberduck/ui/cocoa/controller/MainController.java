@@ -283,7 +283,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         else {
             this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
-                NSAttributedString.attributedStringWithAttributes(key.toString(), MENU_HELP_FONT_ATTRIBUTES)
+                    NSAttributedString.attributedStringWithAttributes(key.getEntitlement(), MENU_HELP_FONT_ATTRIBUTES)
             );
         }
     }
@@ -602,7 +602,7 @@ public class MainController extends BundleController implements NSApplication.De
                     try {
                         f.copy(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), f.getName()));
                         final NSAlert alert = NSAlert.alert(
-                            l.toString(),
+                                l.getEntitlement(),
                             LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                 + "\n\n"
                                 + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
