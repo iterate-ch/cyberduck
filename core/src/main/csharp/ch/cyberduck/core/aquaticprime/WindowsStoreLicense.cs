@@ -91,7 +91,12 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         {
             StoreContext storeContext = StoreContext.GetDefault();
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
-            return license?.IsActive ?? false;
+            if (license is not { IsActive: true })
+            {
+                callback.failure(new InvalidLicenseException());
+                return false;
+            }
+            return true;
         }
 
         public bool verify() => License.__DefaultMethods.verify(this);
