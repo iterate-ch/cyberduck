@@ -25,6 +25,7 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -42,7 +43,7 @@ public abstract class LicenseFactory extends Factory<License> {
     private static final Logger log = LogManager.getLogger(LicenseFactory.class);
 
     private static final Preferences preferences
-        = PreferencesFactory.get();
+            = PreferencesFactory.get();
 
     /**
      * Delegate returning the first key found.
@@ -116,7 +117,8 @@ public abstract class LicenseFactory extends Factory<License> {
             final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
             return name.getDeclaredConstructor().newInstance().open(file);
         }
-        catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException |
+              InvocationTargetException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
@@ -141,7 +143,8 @@ public abstract class LicenseFactory extends Factory<License> {
                 }
                 return list.iterator().next();
             }
-            catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException |
+                  InvocationTargetException e) {
                 throw new FactoryException(e.getMessage(), e);
             }
         }
@@ -187,7 +190,10 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public String toString() {
-            return LocaleFactory.localizedString("Not a valid registration key", "License");
+            final StringAppender message = new StringAppender();
+            message.append(LocaleFactory.localizedString("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!", "Donate"));
+            message.append(LocaleFactory.localizedString("As a contributor to Cyberduck, you receive a registration key that disables this prompt.", "Donate"));
+            return message.toString();
         }
     };
 

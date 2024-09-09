@@ -49,6 +49,7 @@ import ch.cyberduck.core.serializer.impl.dd.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.dd.PlistWriter;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.dd.TransferPlistReader;
+import ch.cyberduck.core.socket.NetworkInterfaceHardwareAddress;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
@@ -556,6 +557,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
         this.setDefault("factory.quicklook.class", ApplicationLauncherQuicklook.class.getName());
         this.setDefault("factory.connectiontimeout.class", DefaultConnectionTimeout.class.getName());
+        this.setDefault("factory.hardwareaddress.class", NetworkInterfaceHardwareAddress.class.getName());
         this.setDefault("factory.authorizationcodeprovider.class", "ch.cyberduck.core.oauth.BrowserOAuth2AuthorizationCodeProvider");
         this.setDefault("factory.s3.pathcontainerservice.class", "ch.cyberduck.core.s3.S3PathContainerService");
     }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.socket.HardwareAddressFactory;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +44,6 @@ import org.bouncycastle.util.Store;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.NetworkInterface;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -57,7 +57,6 @@ public class ReceiptVerifier implements LicenseVerifier {
     private final Local file;
     private final String application;
     private final String version;
-    private String guid;
 
     public ReceiptVerifier(final Local file) {
         this(file, PreferencesFactory.get().getDefault("application.identifier"),
@@ -86,6 +85,7 @@ public class ReceiptVerifier implements LicenseVerifier {
                     if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(
                             new BouncyCastleProvider()
                     ).build(holder))) {
+                        callback.failure(new InvalidLicenseException());
                         return false;
                     }
                 }
@@ -142,72 +142,55 @@ public class ReceiptVerifier implements LicenseVerifier {
                 }
             }
             else {
-                log.error(String.format("Expected set of attributes for %s", asn));
+                callback.failure(new InvalidLicenseException(String.format("Expected set of attributes for %s", asn)));
                 return false;
             }
             if(!StringUtils.equals(application, StringUtils.trim(bundleIdentifier))) {
-                log.error(String.format("Bundle identifier %s in ASN set does not match", bundleIdentifier));
+                callback.failure(new InvalidLicenseException(String.format("Bundle identifier %s in ASN set does not match", bundleIdentifier)));
                 return false;
             }
             if(!StringUtils.equals(version, StringUtils.trim(bundleVersion))) {
                 log.warn(String.format("Bundle version %s in ASN set does not match", bundleVersion));
             }
-            final NetworkInterface en0 = NetworkInterface.getByName("en0");
-            if(null == en0) {
-                // Interface is not found when link is down #fail
-                log.warn("No network interface en0");
+            final byte[] address = HardwareAddressFactory.get().getAddress();
+            final String hex = Hex.encodeHexString(address);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Interface en0 %s", hex));
+            }
+            // Compute the hash of the GUID
+            final MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            digest.update(address);
+            if(null == opaque) {
+                callback.failure(new InvalidLicenseException(String.format("Missing opaque string in ASN.1 set %s", asn)));
+                return false;
+            }
+            digest.update(opaque);
+            if(null == bundleIdentifier) {
+                callback.failure(new InvalidLicenseException(String.format("Missing bundle identifier in ASN.1 set %s", asn)));
+                return false;
+            }
+            digest.update(bundleIdentifier.getBytes(StandardCharsets.UTF_8));
+            final byte[] result = digest.digest();
+            if(Arrays.equals(result, hash)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Valid receipt for GUID %s", hex));
+                }
                 return true;
             }
             else {
-                final byte[] mac = en0.getHardwareAddress();
-                if(null == mac) {
-                    log.error("Cannot determine MAC address");
-                    // Continue without validation
-                    return true;
-                }
-                final String hex = Hex.encodeHexString(mac);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Interface en0 %s", hex));
-                }
-                // Compute the hash of the GUID
-                final MessageDigest digest = MessageDigest.getInstance("SHA-1");
-                digest.update(mac);
-                if(null == opaque) {
-                    log.error(String.format("Missing opaque string in ASN.1 set %s", asn));
-                    return false;
-                }
-                digest.update(opaque);
-                if(null == bundleIdentifier) {
-                    log.error(String.format("Missing bundle identifier in ASN.1 set %s", asn));
-                    return false;
-                }
-                digest.update(bundleIdentifier.getBytes(StandardCharsets.UTF_8));
-                final byte[] result = digest.digest();
-                if(Arrays.equals(result, hash)) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Valid receipt for GUID %s", hex));
-                    }
-                    guid = hex;
-                    return true;
-                }
-                else {
-                    log.error(String.format("Failed verification. Hash with GUID %s does not match hash in receipt", hex));
-                    return false;
-                }
+                callback.failure(new InvalidLicenseException(String.format("Hash with GUID %s does not match hash in receipt", hex)));
+                return false;
             }
         }
         catch(IOException | GeneralSecurityException | CMSException | SecurityException e) {
             log.error("Receipt validation error", e);
-            // Shutdown if receipt is not valid
+            callback.failure(new InvalidLicenseException());
             return false;
         }
         catch(Exception e) {
             log.error("Unknown receipt validation error", e);
+            callback.failure(new InvalidLicenseException());
             return true;
         }
-    }
-
-    public String getGuid() {
-        return guid;
     }
 }

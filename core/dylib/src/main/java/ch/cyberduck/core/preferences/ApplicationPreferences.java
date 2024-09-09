@@ -15,6 +15,7 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.ApplescriptTerminalService;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
@@ -46,6 +47,7 @@ import ch.cyberduck.core.proxy.SystemPreferencesProxyConfiguration;
 import ch.cyberduck.core.proxy.SystemSettingsProxyConfiguration;
 import ch.cyberduck.core.quicklook.QuartzQuickLook;
 import ch.cyberduck.core.resources.NSImageIconCache;
+import ch.cyberduck.core.socket.IOKitHardwareAddress;
 import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
@@ -118,12 +120,13 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         }
         this.setDefault("factory.urlfilewriter.class", WeblocFileWriter.class.getName());
         this.setDefault("factory.quicklook.class", QuartzQuickLook.class.getName());
+        this.setDefault("factory.hardwareaddress.class", IOKitHardwareAddress.class.getName());
     }
 
     @Override
     protected void setDefaults() {
         super.setDefaults();
-        if(null == this.getDefault("SUExpectsDSASignature")) {
+        if(null != NSBundle.mainBundle().appStoreReceiptURL()) {
             this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
         }
     }
