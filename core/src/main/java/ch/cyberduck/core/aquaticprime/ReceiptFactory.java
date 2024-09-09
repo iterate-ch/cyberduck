@@ -33,12 +33,12 @@ public class ReceiptFactory extends LicenseFactory {
     private static final Logger log = LogManager.getLogger(ReceiptFactory.class);
 
     public ReceiptFactory() {
-        super(LocalFactory.get(PreferencesFactory.get().getProperty("application.receipt.path")),
+        super(new Local[]{LocalFactory.get(PreferencesFactory.get().getProperty("application.receipt.path"))},
                 new ReceiptFilter());
     }
 
     public ReceiptFactory(final Local folder) {
-        super(folder, new ReceiptFilter());
+        super(new Local[]{folder}, new ReceiptFilter());
     }
 
     @Override

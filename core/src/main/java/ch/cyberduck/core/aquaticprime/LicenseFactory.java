@@ -26,6 +26,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
@@ -70,20 +71,20 @@ public abstract class LicenseFactory extends Factory<License> {
         }
     }
 
-    protected final Local folder;
+    protected final Local[] folders;
 
     private final Filter<Local> filter;
 
     protected LicenseFactory() {
-        this(SupportDirectoryFinderFactory.get().find());
+        this(new Local[]{SupportDirectoryFinderFactory.get().find(), ApplicationResourcesFinderFactory.get().find()});
     }
 
-    protected LicenseFactory(final Local folder) {
-        this(folder, new LicenseFilter());
+    protected LicenseFactory(final Local[] folders) {
+        this(folders, new LicenseFilter());
     }
 
-    protected LicenseFactory(final Local folder, final Filter<Local> filter) {
-        this.folder = folder;
+    protected LicenseFactory(final Local[] folders, final Filter<Local> filter) {
+        this.folders = folders;
         this.filter = filter;
     }
 
@@ -95,9 +96,11 @@ public abstract class LicenseFactory extends Factory<License> {
 
     public List<License> open() throws AccessDeniedException {
         final List<License> keys = new ArrayList<>();
-        if(folder.exists()) {
-            for(Local key : folder.list().filter(filter)) {
-                keys.add(this.open(key));
+        for(Local folder : folders) {
+            if(folder.exists()) {
+                for(Local key : folder.list().filter(filter)) {
+                    keys.add(this.open(key));
+                }
             }
         }
         return keys;
