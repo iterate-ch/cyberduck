@@ -21,10 +21,11 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.BundledProtocolPredicate;
 import ch.cyberduck.core.DefaultProtocolPredicate;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProfileProtocolPredicate;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.aquaticprime.DisabledLicenseVerifierCallback;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -95,8 +96,15 @@ public final class TerminalHelpPrinter {
                 preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
         final License l = LicenseFactory.find();
         footer.append(StringUtils.LF);
-        footer.append(l.getName());
-        footer.append(l);
+        if(l.verify()) {
+            footer.append(l.getEntitlement());
+        }
+        else {
+            final StringAppender message = new StringAppender();
+            message.append(LocaleFactory.localizedString("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!", "Donate"));
+            message.append(LocaleFactory.localizedString("As a contributor to Cyberduck, you receive a registration key that disables this prompt.", "Donate"));
+            footer.append(message);
+        }
         formatter.printHelp("duck [options...]", header.toString(), options, footer.toString());
     }
 

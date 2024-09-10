@@ -210,7 +210,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             historyToolStripButton.ToolTipText = LocaleFactory.localizedString("History");
             bonjourToolStripButton.ToolTipText = LocaleFactory.localizedString("Bonjour", "Browser");
 
-            keyMainMenuItem.Text = LicenseFactory.find().ToString();
+            keyMainMenuItem.Text = LicenseFactory.find().getEntitlement();
             keyMainMenuItem.Enabled = false;
 
             //Terminal app menu entries
@@ -260,7 +260,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
             };
 
-            if (!LicenseFactory.find().Equals(LicenseFactory.EMPTY_LICENSE))
+            if (!LicenseFactory.find().verify())
             {
                 RemoveDonateButton();
             }

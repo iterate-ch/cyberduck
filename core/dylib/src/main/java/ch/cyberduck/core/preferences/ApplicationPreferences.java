@@ -127,7 +127,9 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
     protected void setDefaults() {
         super.setDefaults();
         if(null != NSBundle.mainBundle().appStoreReceiptURL()) {
-            this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
+            if(null != NSBundle.mainBundle().appStoreReceiptURL().fileReferenceURL()) {
+                this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
+            }
         }
     }
 }

@@ -389,7 +389,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.window.setToolbar(toolbar);
         this._configureBrowserColumns(browserListView, browserListViewDelegate);
         this._configureBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
-        if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
+        if(!LicenseFactory.find().verify()) {
             this.addDonateWindowTitle();
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);

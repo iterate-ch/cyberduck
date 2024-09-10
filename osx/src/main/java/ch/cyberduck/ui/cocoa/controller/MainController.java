@@ -46,7 +46,6 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.aquaticprime.DisabledLicenseVerifierCallback;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.NotificationRendezvousListener;
@@ -283,7 +282,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         else {
             this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
-                NSAttributedString.attributedStringWithAttributes(key.toString(), MENU_HELP_FONT_ATTRIBUTES)
+                    NSAttributedString.attributedStringWithAttributes(key.getEntitlement(), MENU_HELP_FONT_ATTRIBUTES)
             );
         }
     }
@@ -598,11 +597,11 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberducklicense".equals(f.getExtension())) {
                 final License l = LicenseFactory.get(f);
-                if(l.verify(new DisabledLicenseVerifierCallback())) {
+                if(l.verify()) {
                     try {
                         f.copy(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), f.getName()));
                         final NSAlert alert = NSAlert.alert(
-                            l.toString(),
+                                l.getEntitlement(),
                             LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                 + "\n\n"
                                 + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
@@ -1168,7 +1167,7 @@ public class MainController extends BundleController implements NSApplication.De
             return NSApplication.NSTerminateNow;
         }
         final License key = LicenseFactory.find();
-        if(!key.verify(new DisabledLicenseVerifierCallback())) {
+        if(!key.verify()) {
             final String lastversion = preferences.getProperty("donate.reminder");
             if(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString().equals(lastversion)) {
                 // Do not display if same version is installed

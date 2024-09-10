@@ -144,7 +144,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public virtual string RegisteredText()
         {
-            return LicenseFactory.find().ToString();
+            return LicenseFactory.find().getEntitlement();
         }
 
         public virtual Image ApplicationIcon()

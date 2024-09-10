@@ -36,17 +36,10 @@ public abstract class AbstractLicense implements License {
     }
 
     @Override
-    public String getName() {
-        String to = this.getValue("Name");
-        if(StringUtils.isBlank(to)) {
-            to = this.getValue("Email"); // primary key
-        }
-        return to;
-    }
-
-    @Override
-    public boolean isReceipt() {
-        return false;
+    public String getEntitlement() {
+        final String name = this.getValue("Name");
+        return MessageFormat.format(LocaleFactory.localizedString("Registered to {0}", "License"),
+                StringUtils.isNotBlank(name) ? name : this.getValue("Email"));
     }
 
     @Override
@@ -67,10 +60,5 @@ public abstract class AbstractLicense implements License {
     @Override
     public int hashCode() {
         return file != null ? file.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return MessageFormat.format(LocaleFactory.localizedString("Registered to {0}", "License"), this.getName());
     }
 }

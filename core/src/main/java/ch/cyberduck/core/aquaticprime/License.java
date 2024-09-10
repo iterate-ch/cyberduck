@@ -21,6 +21,10 @@ package ch.cyberduck.core.aquaticprime;
 
 public interface License extends LicenseVerifier {
 
+    default boolean verify() {
+        return this.verify(new DisabledLicenseVerifierCallback());
+    }
+
     /**
      * @param callback Verification callback
      * @return True if valid license key
@@ -39,7 +43,7 @@ public interface License extends LicenseVerifier {
      *
      * @return Email address if name is not known.
      */
-    String getName();
+    String getEntitlement();
 
     /**
      * @return True if this is a receipt from the store

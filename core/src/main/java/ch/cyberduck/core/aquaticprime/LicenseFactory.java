@@ -25,8 +25,8 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
@@ -48,43 +48,35 @@ public abstract class LicenseFactory extends Factory<License> {
     /**
      * Delegate returning the first key found.
      */
-    public static final class DefaultLicenseFactory extends Factory<License> {
-        private final LicenseFactory delegate;
-
-        public DefaultLicenseFactory(final LicenseFactory delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public License create() {
-            try {
-                final List<License> list = delegate.open();
-                if(list.isEmpty()) {
-                    return LicenseFactory.EMPTY_LICENSE;
-                }
-                return list.iterator().next();
+    @Override
+    protected License create() {
+        try {
+            final List<License> list = this.open();
+            if(list.isEmpty()) {
+                return EMPTY_LICENSE;
             }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure finding receipt %s", e.getMessage()));
-            }
-            return LicenseFactory.EMPTY_LICENSE;
+            return list.iterator().next();
         }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure finding receipt %s", e.getMessage()));
+        }
+        return EMPTY_LICENSE;
     }
 
-    protected final Local folder;
+    protected final Local[] folders;
 
     private final Filter<Local> filter;
 
     protected LicenseFactory() {
-        this(SupportDirectoryFinderFactory.get().find());
+        this(new Local[]{SupportDirectoryFinderFactory.get().find(), ApplicationResourcesFinderFactory.get().find()});
     }
 
-    protected LicenseFactory(final Local folder) {
-        this(folder, new LicenseFilter());
+    protected LicenseFactory(final Local[] folders) {
+        this(folders, new LicenseFilter());
     }
 
-    protected LicenseFactory(final Local folder, final Filter<Local> filter) {
-        this.folder = folder;
+    protected LicenseFactory(final Local[] folders, final Filter<Local> filter) {
+        this.folders = folders;
         this.filter = filter;
     }
 
@@ -96,9 +88,11 @@ public abstract class LicenseFactory extends Factory<License> {
 
     public List<License> open() throws AccessDeniedException {
         final List<License> keys = new ArrayList<>();
-        if(folder.exists()) {
-            for(Local key : folder.list().filter(filter)) {
-                keys.add(this.open(key));
+        for(Local folder : folders) {
+            if(folder.exists()) {
+                for(Local key : folder.list().filter(filter)) {
+                    keys.add(this.open(key));
+                }
             }
         }
         return keys;
@@ -136,10 +130,11 @@ public abstract class LicenseFactory extends Factory<License> {
             final String clazz = preferences.getProperty("factory.licensefactory.class");
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
-                final List<License> list = new ArrayList<>(name.getDeclaredConstructor().newInstance().open());
+                final LicenseFactory factory = name.getDeclaredConstructor().newInstance();
+                final List<License> list = new ArrayList<>(factory.open());
                 list.removeIf(key -> !key.verify(callback));
                 if(list.isEmpty()) {
-                    return LicenseFactory.EMPTY_LICENSE;
+                    return factory.unregistered();
                 }
                 return list.iterator().next();
             }
@@ -151,10 +146,14 @@ public abstract class LicenseFactory extends Factory<License> {
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure finding receipt %s", e.getMessage()));
         }
-        return LicenseFactory.EMPTY_LICENSE;
+        return EMPTY_LICENSE;
     }
 
-    public static final License EMPTY_LICENSE = new License() {
+    protected License unregistered() {
+        return EMPTY_LICENSE;
+    }
+
+    private static final License EMPTY_LICENSE = new License() {
         @Override
         public boolean verify(final LicenseVerifierCallback callback) {
             return false;
@@ -166,34 +165,13 @@ public abstract class LicenseFactory extends Factory<License> {
         }
 
         @Override
-        public String getName() {
+        public String getEntitlement() {
             return LocaleFactory.localizedString("Not a valid registration key", "License");
         }
 
         @Override
         public boolean isReceipt() {
             return false;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof License) {
-                return EMPTY_LICENSE == obj;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return this.toString().hashCode();
-        }
-
-        @Override
-        public String toString() {
-            final StringAppender message = new StringAppender();
-            message.append(LocaleFactory.localizedString("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!", "Donate"));
-            message.append(LocaleFactory.localizedString("As a contributor to Cyberduck, you receive a registration key that disables this prompt.", "Donate"));
-            return message.toString();
         }
     };
 

@@ -20,7 +20,7 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -39,7 +39,10 @@ public class DonateAlertController extends AlertController {
     public void loadBundle() {
         final NSAlert alert = NSAlert.alert();
         alert.setMessageText(LocaleFactory.localizedString("Thank you for using Cyberduck!", "Donate"));
-        alert.setInformativeText(LicenseFactory.EMPTY_LICENSE.toString());
+        final StringAppender message = new StringAppender();
+        message.append(LocaleFactory.localizedString("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!", "Donate"));
+        message.append(LocaleFactory.localizedString("As a contributor to Cyberduck, you receive a registration key that disables this prompt.", "Donate"));
+        alert.setInformativeText(message.toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Donate", "Donate"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Later", "Donate"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Buy in Mac App Store", "Donate"));
