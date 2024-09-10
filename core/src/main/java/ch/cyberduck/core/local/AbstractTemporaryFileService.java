@@ -20,8 +20,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,7 +34,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public abstract class AbstractTemporaryFileService implements TemporaryFileService {
     private static final Logger log = LogManager.getLogger(AbstractTemporaryFileService.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
+    private final Local temp;
+
+    public AbstractTemporaryFileService(final Local temp) {
+        this.temp = temp;
+    }
 
     /**
      * Set of filenames to be deleted on VM exit through a shutdown hook.
@@ -83,7 +85,7 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure %s creating intermediate folder", e));
-            return this.delete(LocalFactory.get(preferences.getProperty("tmp.dir"),
+            return this.delete(LocalFactory.get(temp,
                     String.format("%s-%s", new AlphanumericRandomStringService().random(), filename)));
         }
         this.delete(folder);

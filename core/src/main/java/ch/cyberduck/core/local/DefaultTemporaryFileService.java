@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,8 +30,23 @@ import java.io.File;
 
 public class DefaultTemporaryFileService extends AbstractTemporaryFileService implements TemporaryFileService {
 
-    private final Preferences preferences = PreferencesFactory.get();
-    private final String delimiter = preferences.getProperty("local.delimiter");
+    private final Local temp;
+    private final String delimiter;
+
+    public DefaultTemporaryFileService() {
+        this(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir")),
+                PreferencesFactory.get().getProperty("local.delimiter"));
+    }
+
+    public DefaultTemporaryFileService(final Local temp) {
+        this(temp, PreferencesFactory.get().getProperty("local.delimiter"));
+    }
+
+    public DefaultTemporaryFileService(final Local temp, final String delimiter) {
+        super(temp);
+        this.temp = temp;
+        this.delimiter = delimiter;
+    }
 
     @Override
     public Local create(final Path file) {
@@ -41,7 +55,7 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
 
     @Override
     public Local create(final String name) {
-        return this.create(LocalFactory.get(preferences.getProperty("tmp.dir"), new UUIDRandomStringService().random()), name);
+        return this.create(LocalFactory.get(temp, new UUIDRandomStringService().random()), name);
     }
 
     /**
@@ -58,9 +72,9 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
         final String pathFormat = "%2$s%1$s%3$s%1$s%4$s";
         final String normalizedPathFormat = pathFormat + "%1$s%5$s";
         final String attributes = String.valueOf(file.attributes().hashCode());
-        final int limit = preferences.getInteger("local.temporaryfiles.shortening.threshold") -
-                new File(preferences.getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, file.getName())).getAbsolutePath().length();
-        final Local folder = LocalFactory.get(preferences.getProperty("tmp.dir"), String.format(pathFormat, delimiter, uid,
+        final int limit = PreferencesFactory.get().getInteger("local.temporaryfiles.shortening.threshold") -
+                new File(temp.getAbsolute(), String.format(normalizedPathFormat, delimiter, uid, "", attributes, file.getName())).getAbsolutePath().length();
+        final Local folder = LocalFactory.get(temp, String.format(pathFormat, delimiter, uid,
                 this.shorten(file.getParent().getAbsolute(), limit), attributes));
         return this.create(folder, StringUtils.isNotBlank(file.attributes().getDisplayname()) ? file.attributes().getDisplayname() : file.getName());
     }
