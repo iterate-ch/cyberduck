@@ -296,7 +296,7 @@
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Νέο Κρυπτογραφημένο Θησαυρού..." keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -386,7 +386,7 @@ CA
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Restore" id="7eU-SG-dx0">
+                <menuItem title="Επανάληψη" id="7eU-SG-dx0">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
@@ -395,7 +395,7 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Lock Vault" keyEquivalent="l" id="oiv-b0-EWZ">
+                <menuItem title="Κλείδωμα Θησαυρού" keyEquivalent="l" id="oiv-b0-EWZ">
                     <connections>
                         <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="0Jf-FX-vuw"/>
                     </connections>
@@ -422,12 +422,12 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Άνοιγμα URL Ιστού" id="95"/>
                 </menuItem>
-                <menuItem title="Share…" id="NBw-Mh-zlT">
+                <menuItem title="Μοιραστείτε" id="NBw-Mh-zlT">
                     <connections>
                         <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Request files…" id="MMd-ej-pkb">
+                <menuItem title="Αίτηση Αρχείων" id="MMd-ej-pkb">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="requestFilesButtonClicked:" target="-1" id="z9T-Od-FNa"/>
@@ -485,23 +485,23 @@ DQ
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Sort By" id="107">
+                <menuItem title="Ταξινόμηση κατά" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Sort By" id="108">
+                    <menu key="submenu" title="Ταξινόμηση κατά" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="ψευδώνυμο" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Hostname" keyEquivalent="2" id="110">
+                            <menuItem title="Όνομα Υπολογιστή" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Protocol" keyEquivalent="3" id="111">
+                            <menuItem title="πρωτόκολλο" keyEquivalent="3" id="111">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByProtocol:" target="-1" id="188"/>
