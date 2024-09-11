@@ -105,7 +105,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                         parsed.setSymlinkTarget(parsed);
                     }
                     else {
-                        parsed.setSymlinkTarget(new Path(directory, target, EnumSet.of(Path.Type.file)));
+                        parsed.setSymlinkTarget(new Path(PathNormalizer.normalize(String.format("%s/%s", directory.getAbsolute(), target)), EnumSet.of(Path.Type.file)));
                     }
                     break;
             }
