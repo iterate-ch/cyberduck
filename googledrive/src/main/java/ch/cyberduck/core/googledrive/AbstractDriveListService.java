@@ -20,6 +20,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.webloc.UrlFileWriter;
@@ -111,6 +112,8 @@ public abstract class AbstractDriveListService implements ListService {
                         children.add(new Path(parent, filename, type, properties));
                     }
                 }
+                // Mark duplicates
+                children.toStream().forEach(f -> f.attributes().setDuplicate(children.findAll(new SimplePathPredicate(f)).size() != 1));
                 listener.chunk(directory, children);
                 page = list.getNextPageToken();
                 if(log.isDebugEnabled()) {
