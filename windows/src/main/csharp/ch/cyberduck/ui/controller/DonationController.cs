@@ -38,11 +38,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void Show()
         {
-            int uses = PreferencesFactory.get().getInteger("uses");
-
             var dialog = TaskDialog.Create()
                 .AllowCancellation()
-                .Title(Localize("Please Donate") + "(" + uses + ")")
+                .Title(Localize("Please Donate"))
                 .Instruction(Localize("Thank you for using Cyberduck!"))
                 .Content($@"{Localize("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!")} {Localize("As a contributor to Cyberduck, you receive a registration key that disables this prompt.")}")
                 .CommandLinks(add =>
