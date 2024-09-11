@@ -16,6 +16,8 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -99,6 +101,53 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertEquals(new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()), attributes);
         }
         new DriveDeleteFeature(session, idProvider).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteSameFilename() throws Exception {
+        final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
+        final Path folder = new DriveDirectoryFeature(session, idProvider).mkdir(
+                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        {
+            final byte[] content = RandomUtils.nextBytes(2048);
+            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            final String fileid = out.getStatus().getId();
+            assertNotNull(fileid);
+            assertTrue(new DefaultFindFeature(session).find(test));
+            final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);
+            assertEquals(fileid, attributes.getFileId());
+            assertEquals(content.length, attributes.getSize());
+        }
+        {
+            // Add file with same name
+            final byte[] content = RandomUtils.nextBytes(1024);
+            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            final String fileid = out.getStatus().getId();
+            final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);
+            assertEquals(content.length, attributes.getSize());
+            assertEquals(fileid, attributes.getFileId());
+        }
+        final AttributedList<Path> list = new DriveListService(session, idProvider).list(folder, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertNotEquals(list.get(0).attributes().getFileId(), list.get(1).attributes().getFileId());
+        assertTrue(list.find(new CacheReference<Path>() {
+            @Override
+            public boolean test(final Path f) {
+                return f.attributes().getSize() == 2048;
+            }
+        }).attributes().isDuplicate());
+        assertTrue(list.find(new CacheReference<Path>() {
+            @Override
+            public boolean test(final Path f) {
+                return f.attributes().getSize() == 1024;
+            }
+        }).attributes().isDuplicate());
+        new DriveDeleteFeature(session, idProvider).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
