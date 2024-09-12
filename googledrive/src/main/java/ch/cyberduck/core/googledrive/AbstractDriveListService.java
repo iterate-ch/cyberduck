@@ -113,7 +113,13 @@ public abstract class AbstractDriveListService implements ListService {
                     }
                 }
                 // Mark duplicates
-                children.toStream().forEach(f -> f.attributes().setDuplicate(children.findAll(new SimplePathPredicate(f)).size() != 1));
+                children.toStream().forEach(f -> f.attributes().setDuplicate(children.findAll(new SimplePathPredicate(f) {
+                    @Override
+                    public boolean test(final Path f) {
+                        // Exclude trashed
+                        return super.test(f) && !f.attributes().isHidden();
+                    }
+                }).size() != 1));
                 listener.chunk(directory, children);
                 page = list.getNextPageToken();
                 if(log.isDebugEnabled()) {

@@ -132,21 +132,46 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertEquals(content.length, attributes.getSize());
             assertEquals(fileid, attributes.getFileId());
         }
-        final AttributedList<Path> list = new DriveListService(session, idProvider).list(folder, new DisabledListProgressListener());
-        assertEquals(2, list.size());
-        assertNotEquals(list.get(0).attributes().getFileId(), list.get(1).attributes().getFileId());
-        assertTrue(list.find(new CacheReference<Path>() {
+        final AttributedList<Path> l1 = new DriveListService(session, idProvider).list(folder, new DisabledListProgressListener());
+        {
+            assertEquals(2, l1.size());
+            assertNotEquals(l1.get(0).attributes().getFileId(), l1.get(1).attributes().getFileId());
+            assertTrue(l1.find(new CacheReference<Path>() {
+                @Override
+                public boolean test(final Path f) {
+                    return f.attributes().getSize() == 2048;
+                }
+            }).attributes().isDuplicate());
+            assertTrue(l1.find(new CacheReference<Path>() {
+                @Override
+                public boolean test(final Path f) {
+                    return f.attributes().getSize() == 1024;
+                }
+            }).attributes().isDuplicate());
+        }
+        new DriveTrashFeature(session, idProvider).delete(Collections.singletonList(l1.find(new CacheReference<Path>() {
             @Override
             public boolean test(final Path f) {
                 return f.attributes().getSize() == 2048;
             }
-        }).attributes().isDuplicate());
-        assertTrue(list.find(new CacheReference<Path>() {
-            @Override
-            public boolean test(final Path f) {
-                return f.attributes().getSize() == 1024;
-            }
-        }).attributes().isDuplicate());
+        })), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        final AttributedList<Path> l2 = new DriveListService(session, idProvider).list(folder, new DisabledListProgressListener());
+        {
+            assertEquals(2, l2.size());
+            assertNotEquals(l2.get(0).attributes().getFileId(), l2.get(1).attributes().getFileId());
+            assertTrue(l2.find(new CacheReference<Path>() {
+                @Override
+                public boolean test(final Path f) {
+                    return f.attributes().getSize() == 2048;
+                }
+            }).attributes().isHidden());
+            assertFalse(l2.find(new CacheReference<Path>() {
+                @Override
+                public boolean test(final Path f) {
+                    return f.attributes().getSize() == 1024;
+                }
+            }).attributes().isDuplicate());
+        }
         new DriveDeleteFeature(session, idProvider).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
