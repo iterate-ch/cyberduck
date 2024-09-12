@@ -260,7 +260,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
             };
 
-            if (!LicenseFactory.find().verify())
+            if (LicenseFactory.find().verify())
             {
                 RemoveDonateButton();
             }
