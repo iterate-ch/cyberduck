@@ -119,7 +119,7 @@ public abstract class AbstractDriveListService implements ListService {
                         // Exclude trashed
                         return super.test(f) && !f.attributes().isHidden();
                     }
-                }).size() != 1));
+                }).size() > 1));
                 listener.chunk(directory, children);
                 page = list.getNextPageToken();
                 if(log.isDebugEnabled()) {
