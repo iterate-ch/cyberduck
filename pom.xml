@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.0.3-SNAPSHOT</version>
+    <version>9.0.4-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
