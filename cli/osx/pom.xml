@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>9.0.3</version>
+        <version>9.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
