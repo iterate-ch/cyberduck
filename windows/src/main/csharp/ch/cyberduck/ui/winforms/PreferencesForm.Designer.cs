@@ -1646,6 +1646,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.editorComboBox.Name = "editorComboBox";
 			this.editorComboBox.Size = new System.Drawing.Size(732, 24);
 			this.editorComboBox.TabIndex = 2;
+            this.editorComboBox.SelectionChangeCommitted += editorComboBox_SelectionChangeCommitted;
 			// 
 			// alwaysUseDefaultEditorCheckBox
 			// 
