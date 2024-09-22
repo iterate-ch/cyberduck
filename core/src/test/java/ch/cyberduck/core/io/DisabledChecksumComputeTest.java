@@ -27,8 +27,7 @@ public class DisabledChecksumComputeTest {
     @Test
     public void compute() throws Exception {
         final NullInputStream in = new NullInputStream(0L);
-        new DisabledChecksumCompute().compute(in, new TransferStatus());
         assertEquals(-1, in.read());
-        assertEquals(-1, in.read());
+        assertEquals(Checksum.NONE, new DisabledChecksumCompute().compute(in, new TransferStatus()));
     }
 }
