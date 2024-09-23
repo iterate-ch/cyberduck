@@ -251,7 +251,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.HostFieldEnabled = _host.getProtocol().isHostnameConfigurable();
             View.Nickname = BookmarkNameProvider.toString(_host);
             View.DownloadFolder = new DownloadDirectoryFinder().find(_host).getAbsolute();
-            View.URL = new HostUrlProvider(true, true).get(_host);
+            View.URL = new HostUrlProvider(false, true).get(_host);
             View.Port = _host.getPort().ToString();
             View.PortFieldEnabled = _host.getProtocol().isPortConfigurable();
             View.PathFieldEnabled = _host.getProtocol().isPathConfigurable();
