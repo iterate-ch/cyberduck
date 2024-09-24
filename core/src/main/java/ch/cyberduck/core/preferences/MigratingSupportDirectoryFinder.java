@@ -17,17 +17,9 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.local.LocalSymlinkFactory;
-import ch.cyberduck.core.local.LocalTrashFactory;
-import ch.cyberduck.core.local.features.Symlink;
-import ch.cyberduck.core.local.features.Trash;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
 
 public class MigratingSupportDirectoryFinder implements SupportDirectoryFinder {
     private static final Logger log = LogManager.getLogger(MigratingSupportDirectoryFinder.class);
@@ -45,41 +37,27 @@ public class MigratingSupportDirectoryFinder implements SupportDirectoryFinder {
 
     @Override
     public SupportDirectoryFinder setup() {
-        final Local previous = deprecated.find();
-        if(previous.exists()) {
-            if(previous.isSymbolicLink()) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Previous application support folder %s already symlink", previous));
+        final Local appdata = proxy.find();
+        if(appdata.exists()) {
+            log.debug(String.format("Application support folder %s already exists", appdata));
+        }
+        else {
+            final Local previous = deprecated.find();
+            if(previous.exists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Migrate application support folder from %s to %s", previous, appdata));
+                }
+                try {
+                    // Rename folder recursively
+                    previous.rename(appdata);
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Failure %s migrating %s to application group directory %s", e, previous, appdata));
                 }
             }
             else {
-                final Local folder = proxy.find().getParent();
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Migrate application support folder from %s to %s", previous, folder));
-                }
-                // Rename folder recursively
-                try {
-                    FileUtils.copyDirectory(new File(previous.getAbsolute()), new File(folder.getAbsolute()));
-                    try {
-                        final Trash trash = LocalTrashFactory.get();
-                        if(log.isWarnEnabled()) {
-                            log.warn(String.format("Trash previous application support folder %s", previous));
-                        }
-                        trash.trash(previous);
-                        final Symlink symlink = LocalSymlinkFactory.get();
-                        symlink.symlink(previous, folder.getAbsolute());
-                    }
-                    catch(AccessDeniedException e) {
-                        log.warn(String.format("Failure %s creating symbolcic link for previous application support directory %s", e, previous));
-                    }
-                }
-                catch(IOException e) {
-                    log.warn(String.format("Failure %s migrating %s to security application group directory %s", e, previous, folder));
-                }
+                log.debug(String.format("No previous application support folder found in %s", previous));
             }
-        }
-        else {
-            log.debug(String.format("No previous application support folder found in %s", previous));
         }
         return this;
     }
