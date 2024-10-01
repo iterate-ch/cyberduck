@@ -1408,8 +1408,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             defaultEditor.getName()));
                 }
             }
-            editors.Add(new KeyValueIconTriple<Application, string>(Application.notfound,
-                LocaleFactory.localizedString("Choose") + "…", String.Empty));
+
             View.PopulateEditors(editors);
             if (defaultEditor != null)
             {
