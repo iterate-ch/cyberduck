@@ -40,7 +40,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private const int MaxWidth = 1000;
         private const int MinHeight = 250;
         private const int MinWidth = 450;
-        private Application _lastSelectedEditor;
 
         public PreferencesForm()
         {
@@ -152,7 +151,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set
             {
                 editorComboBox.SelectedValue = value;
-                _lastSelectedEditor = value;
             }
         }
 
@@ -1505,36 +1503,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void editorComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            Application selected = DefaultEditor;
-            if (selected != null && selected.getIdentifier() == null)
-            {
-                //choose dialog
-                editorOpenFileDialog.FileName = null;
-                DialogResult result = editorOpenFileDialog.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    PreferencesFactory.get()
-                        .setProperty("editor.bundleIdentifier", editorOpenFileDialog.FileName.ToLower());
-                    RepopulateEditorsEvent();
-                }
-                else
-                {
-                    if (_lastSelectedEditor != null)
-                    {
-                        DefaultEditor = _lastSelectedEditor;
-                    }
-                    else
-                    {
-                        //dummy editor which leads to an empty selection
-                        DefaultEditor = Application.notfound;
-                    }
-                }
-            }
-            else
-            {
-                _lastSelectedEditor = DefaultEditor;
-                DefaultEditorChangedEvent();
-            }
+            DefaultEditorChangedEvent();
         }
 
         private void alwaysUseDefaultEditorCheckBox_CheckedChanged(object sender, EventArgs e)
