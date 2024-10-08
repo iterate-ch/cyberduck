@@ -69,6 +69,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Multipart upload started for %s with ID %s", multipart.getObjectKey(), multipart.getUploadId()));
             }
+            multipart.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);

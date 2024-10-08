@@ -126,6 +126,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Multipart upload started for %s with ID %s", multipart.getObjectKey(), multipart.getUploadId()));
                 }
+                multipart.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             }
             else {
                 if(status.isAppend()) {
