@@ -28,7 +28,7 @@ public class MemorySegementingOutputStreamTest {
     public void testFlush() throws Exception {
         final ByteArrayOutputStream proxy = new ByteArrayOutputStream(20);
         final MemorySegementingOutputStream out = new MemorySegementingOutputStream(proxy, 32768);
-        final byte[] content = RandomUtils.nextBytes(40500);
+        final byte[] content = RandomUtils.insecure().nextBytes(40500);
         out.write(content, 0, 32800);
         assertEquals(32768, proxy.toByteArray().length);
         out.flush();
@@ -42,7 +42,7 @@ public class MemorySegementingOutputStreamTest {
     public void testCopy1() throws Exception {
         final ByteArrayOutputStream proxy = new ByteArrayOutputStream(20);
         final MemorySegementingOutputStream out = new MemorySegementingOutputStream(proxy, 32768);
-        final byte[] content = RandomUtils.nextBytes(40500);
+        final byte[] content = RandomUtils.insecure().nextBytes(40500);
         out.write(content, 0, 32800);
         assertEquals(32768, proxy.toByteArray().length);
         out.write(content, 32800, 7700);
@@ -54,7 +54,7 @@ public class MemorySegementingOutputStreamTest {
     public void testCopy2() throws Exception {
         final ByteArrayOutputStream proxy = new ByteArrayOutputStream(40500);
         final MemorySegementingOutputStream out = new MemorySegementingOutputStream(proxy, 32768);
-        final byte[] content = RandomUtils.nextBytes(40500);
+        final byte[] content = RandomUtils.insecure().nextBytes(40500);
         out.write(content, 0, 32768);
         out.write(content, 32768, 7732);
         out.close();
@@ -65,7 +65,7 @@ public class MemorySegementingOutputStreamTest {
     public void testCopy3() throws Exception {
         final ByteArrayOutputStream proxy = new ByteArrayOutputStream(40500);
         final MemorySegementingOutputStream out = new MemorySegementingOutputStream(proxy, 32768);
-        final byte[] content = RandomUtils.nextBytes(40500);
+        final byte[] content = RandomUtils.insecure().nextBytes(40500);
         out.write(content, 0, 32767);
         assertEquals(0, proxy.toByteArray().length);
         out.write(content, 32767, 2);
