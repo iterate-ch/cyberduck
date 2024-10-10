@@ -65,6 +65,16 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testReadEmoji() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, String.format("%s-\uD83D\uDE80", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(test, new TransferStatus());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
+        in.close();
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testReadRangeUnknownLength() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
