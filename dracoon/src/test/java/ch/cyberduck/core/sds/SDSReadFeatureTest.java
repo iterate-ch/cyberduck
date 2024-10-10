@@ -190,7 +190,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         // Assume previously seen but changed on server
         final String invalidId = String.valueOf(RandomUtils.nextLong());
         test.attributes().setVersionId(invalidId);
-        nodeid.cache(test, invalidId);
+        nodeid.cache(test, invalidId, null);
         try {
             final InputStream in = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().withRemote(test.attributes()), new DisabledLoginCallback());
             fail();

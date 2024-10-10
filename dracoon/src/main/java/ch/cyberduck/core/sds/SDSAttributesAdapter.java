@@ -47,6 +47,9 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
     @Override
     public PathAttributes toAttributes(final Node node) {
         final PathAttributes attributes = new PathAttributes();
+        if(node.getReferenceId() != null) {
+            attributes.setFileId(String.valueOf(node.getReferenceId()));
+        }
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setRevision(node.getBranchVersion());
         if(node.isIsEncrypted() != null && !node.isIsEncrypted()) {
@@ -109,6 +112,9 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
     public PathAttributes toAttributes(final DeletedNode node) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setDuplicate(true);
+        if(node.getReferenceId() != null) {
+            attributes.setVersionId(String.valueOf(node.getReferenceId()));
+        }
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
         attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
