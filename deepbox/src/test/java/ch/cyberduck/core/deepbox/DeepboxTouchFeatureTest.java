@@ -51,7 +51,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testNoDuplicates() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DeepboxTouchFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), test.getName());
         assertTrue(new DeepboxFindFeature(session, fileid).find(test));
@@ -61,14 +61,14 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testAccents() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Insurance", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Insurance", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random() + "éf", EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, fileid).find(documents));
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
-    public void testNoAddChildrenDeepbox() throws Exception {
+    public void testNoAddChildrenCompany() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
@@ -77,9 +77,18 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
+    public void testNoAddChildrenDeepbox() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
+        assertEquals(Acl.EMPTY, attributes.getAcl());
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+    }
+
+    @Test
     public void testNoAddChildrenBox() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
@@ -88,9 +97,9 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testAddChildrenInbox() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
-        assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddQueue());
+        assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4_DEEPBOX4, ORG4_DEEPBOX4_BOX1).getBoxPolicy().isCanAddQueue());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         // assert no fail
         new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random());
@@ -101,9 +110,9 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenInbox() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG 1 - DeepBox Desktop App/ORG1:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
-        assertFalse(new BoxRestControllerApi(session.getClient()).getBox(ORG1, ORG1_BOX1).getBoxPolicy().isCanAddQueue());
+        assertFalse(new BoxRestControllerApi(session.getClient()).getBox(ORG1_DEEPBOX1, ORG1_DEEPBOX1_BOX1).getBoxPolicy().isCanAddQueue());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
         assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
@@ -112,9 +121,9 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testAddChildrenDocuments() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
-        assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4, ORG4_BOX1).getBoxPolicy().isCanAddFilesRoot());
+        assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4_DEEPBOX4, ORG4_DEEPBOX4_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         // assert no fail
         new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random());
@@ -125,9 +134,9 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenDocuments() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
-        assertFalse(new BoxRestControllerApi(session.getClient()).getBox(ORG1, ORG1_BOX1).getBoxPolicy().isCanAddFilesRoot());
+        assertFalse(new BoxRestControllerApi(session.getClient()).getBox(ORG1_DEEPBOX1, ORG1_DEEPBOX1_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
         assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
@@ -136,7 +145,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenTrash() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG 1 - DeepBox Desktop App/ORG1:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
@@ -146,7 +155,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testAddChildrenFolder() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Auditing", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Auditing", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertTrue(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
@@ -159,7 +168,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenFolder() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG 1 - DeepBox Desktop App/ORG1:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
@@ -170,7 +179,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testNoAddChildrenFile() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
+        final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/RE-IN - Copy1.pdf", EnumSet.of(Path.Type.file));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));

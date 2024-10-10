@@ -63,5 +63,9 @@
         <array>
             <string>offline_access</string>
         </array>
+        <key>Properties</key>
+        <array>
+            <string>deepcloud.api.hostname=int.deepcloud.swiss</string>
+        </array>
     </dict>
 </plist>

@@ -38,7 +38,7 @@ public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testFile() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {

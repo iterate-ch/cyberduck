@@ -30,10 +30,16 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
+import ch.cyberduck.core.deepcloud.DeepcloudExceptionMappingService;
+import ch.cyberduck.core.deepcloud.io.swagger.client.api.UsersApi;
+import ch.cyberduck.core.deepcloud.io.swagger.client.model.CompanyRoles;
+import ch.cyberduck.core.deepcloud.io.swagger.client.model.StructureEnum;
+import ch.cyberduck.core.deepcloud.io.swagger.client.model.UserFull;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,6 +75,9 @@ public class DeepboxListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
+            return new CompanyListService().list(directory, listener);
+        }
+        if(containerService.isCompany(directory)) { // in Company
             return new DeepBoxesListService().list(directory, listener);
         }
         if(containerService.isDeepbox(directory)) { // in DeepBox
@@ -79,7 +88,7 @@ public class DeepboxListService implements ListService {
         }
         final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
         final String boxNodeId = fileid.getBoxNodeId(directory);
-        if(containerService.isThirdLevel(directory)) { // in Inbox/Documents/Trash
+        if(containerService.isFourthLevel(directory)) { // in Inbox/Documents/Trash
             // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with
             // parentNode may fail!
             if(containerService.isInInbox(directory)) {
@@ -259,14 +268,17 @@ public class DeepboxListService implements ListService {
             try {
                 final AttributedList<Path> list = new AttributedList<>();
                 final BoxRestControllerApi rest = new BoxRestControllerApi(session.getClient());
+                final String companyId = fileid.getFileId(directory);
                 int offset = 0;
                 int size;
                 do {
                     final DeepBoxes deepBoxes = rest.listDeepBoxes(offset, chunksize, "name asc", null);
                     for(final DeepBox deepBox : deepBoxes.getDeepBoxes()) {
-                        list.add(new Path(directory, DeepboxPathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                                attributes.toAttributes(deepBox))
-                        );
+                        if(StringUtils.equals(companyId, deepBox.getCompanyId())) {
+                            list.add(new Path(directory, DeepboxPathNormalizer.name(deepBox.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                                    attributes.toAttributes(deepBox))
+                            );
+                        }
                     }
                     listener.chunk(directory, list);
                     size = deepBoxes.getSize();
@@ -277,6 +289,30 @@ public class DeepboxListService implements ListService {
             }
             catch(ApiException e) {
                 throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
+            }
+        }
+    }
+
+    private final class CompanyListService implements ListService {
+        @Override
+        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+            try {
+                final AttributedList<Path> list = new AttributedList<>();
+                final UsersApi rest = new UsersApi(session.getDeepcloudClient());
+                final UserFull user = rest.usersMeList();
+                for(CompanyRoles company : user.getCompanies()) {
+                    if(company.getStructure() == StructureEnum.PERSONAL) {
+                        continue;
+                    }
+                    list.add(new Path(directory, DeepboxPathNormalizer.name(company.getDisplayName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                            attributes.toAttributes(company))
+                    );
+                }
+                listener.chunk(directory, list);
+                return list;
+            }
+            catch(ch.cyberduck.core.deepcloud.io.swagger.client.ApiException e) {
+                throw new DeepcloudExceptionMappingService(fileid).map("Listing directory failed", e, directory);
             }
         }
     }
