@@ -50,7 +50,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testOverwrite() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
@@ -77,7 +77,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testInbox() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path inbox = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path inbox = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(inbox, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         try {
             final byte[] content = RandomUtils.nextBytes(1047);
@@ -102,7 +102,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testNewFile() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
         final HttpResponseOutputStream<Node> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
@@ -121,7 +121,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testReadWrite() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents,
                         new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -171,7 +171,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     public void testWriteSingleByte() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxWriteFeature feature = new DeepboxWriteFeature(session, nodeid);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
@@ -197,7 +197,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testWriteCancel() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path room = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(documents, new AlphanumericRandomStringService().random(),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());

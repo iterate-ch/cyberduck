@@ -47,10 +47,11 @@ import static org.junit.Assert.fail;
 
 public class AbstractDeepboxTest extends VaultTest {
 
-    protected final String ORG4 = "a548e68e-5584-42c1-b2bc-9e051dc78e5e";
-    protected final String ORG4_BOX1 = "366a7117-0ad3-4dcb-9e79-a4270c3f6fb5";
-    protected final String ORG1 = "71fdd537-17db-4a8a-b959-64a1ab07774a";
-    protected final String ORG1_BOX1 = "40062559-c1a3-4229-9b1b-77320821d0d5";
+    protected final String ORG4 = "3ce7505e-6497-4723-b5c6-e381d8b8cbad";
+    protected final String ORG4_DEEPBOX4 = "a548e68e-5584-42c1-b2bc-9e051dc78e5e";
+    protected final String ORG4_DEEPBOX4_BOX1 = "366a7117-0ad3-4dcb-9e79-a4270c3f6fb5";
+    protected final String ORG1_DEEPBOX1 = "71fdd537-17db-4a8a-b959-64a1ab07774a";
+    protected final String ORG1_DEEPBOX1_BOX1 = "40062559-c1a3-4229-9b1b-77320821d0d5";
 
     protected DeepboxSession session;
 

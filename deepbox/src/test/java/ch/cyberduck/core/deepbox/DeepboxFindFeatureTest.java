@@ -38,7 +38,7 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testFindNotFound() throws Exception {
-        final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertFalse(new DeepboxFindFeature(session, new DeepboxIdProvider(session)).find(new Path(box, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
     }
 
@@ -55,7 +55,7 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testFindDirectory() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new DeepboxDirectoryFeature(session, nodeid).mkdir(
                 new Path(box, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(folder));
@@ -65,7 +65,7 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testFindFile() throws Exception {
-        final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(box, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
