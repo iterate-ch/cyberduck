@@ -114,7 +114,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSOutlineView.DataSource
      */
-    public boolean selectionShouldChangeInOutlineView(final NSTableView view) {
+    public boolean selectionShouldChangeInOutlineView(final NSOutlineView view) {
         return this.selectionShouldChange();
     }
 
