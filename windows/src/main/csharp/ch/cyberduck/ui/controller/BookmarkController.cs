@@ -625,6 +625,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 _host.setProtocol(selected);
                 _host.setPort(HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname()));
+                _host.setCredentials(CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host));
                 _options.configure(selected);
                 _validator.configure(selected);
                 ItemChanged();

@@ -216,6 +216,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             }
             bookmark.setProtocol(selected);
             bookmark.setPort(HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname()));
+            bookmark.setCredentials(CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark));
             options.configure(selected);
             validator.configure(selected);
         }
