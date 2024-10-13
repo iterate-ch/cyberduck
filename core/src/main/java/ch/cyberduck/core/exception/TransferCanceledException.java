@@ -27,7 +27,15 @@ public class TransferCanceledException extends ConnectionCanceledException {
         super(cause);
     }
 
+    public TransferCanceledException(final String message, final String detail) {
+        super(message, detail);
+    }
+
     public TransferCanceledException(final String detail, final Throwable cause) {
         super(detail, cause);
+    }
+
+    public TransferCanceledException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
     }
 }
