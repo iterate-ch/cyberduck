@@ -15,12 +15,17 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
+
+import java.text.MessageFormat;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.WRITEPERMISSION;
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
+import static ch.cyberduck.core.ctera.CteraTouchFeature.validate;
 
 public class CteraWriteFeature extends DAVWriteFeature {
 
@@ -30,6 +35,9 @@ public class CteraWriteFeature extends DAVWriteFeature {
 
     @Override
     public void preflight(Path file) throws BackgroundException {
+        if(!validate(file.getName())) {
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName()));
+        }
         assumeRole(file, WRITEPERMISSION);
     }
 }
