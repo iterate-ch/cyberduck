@@ -27,6 +27,10 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.PathSegment;
+import ch.cyberduck.core.deepcloud.DeepcloudExceptionMappingService;
+import ch.cyberduck.core.deepcloud.io.swagger.client.api.UsersApi;
+import ch.cyberduck.core.deepcloud.io.swagger.client.model.CompanyRoles;
+import ch.cyberduck.core.deepcloud.io.swagger.client.model.UserFull;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
@@ -54,6 +58,14 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         this.containerService = new DeepboxPathContainerService(session);
     }
 
+    public String getCompanyNodeId(final Path file) throws BackgroundException {
+        final Path company = containerService.getCompanyPath(file);
+        if(null == company) {
+            throw new NotfoundException(file.getName());
+        }
+        return this.getFileId(company);
+    }
+
     public String getDeepBoxNodeId(final Path file) throws BackgroundException {
         final Path deepBox = containerService.getDeepboxPath(file);
         if(null == deepBox) {
@@ -71,7 +83,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     }
 
     public String getThirdLevelId(final Path file) throws BackgroundException {
-        final Path path = containerService.getThirdLevelPath(file);
+        final Path path = containerService.getFourthLevelPath(file);
         if(null == path) {
             throw new NotfoundException(file.getName());
         }
@@ -130,13 +142,16 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     private String lookupFileId(final Path file) throws BackgroundException {
         // pre-condition: all parents can be looked up from cache
         try {
+            if(containerService.isCompany(file)) { // Company
+                return new CompanyNodeIdProvider().getFileId(file);
+            }
             if(containerService.isDeepbox(file)) { // DeepBox
                 return new DeepboxNodeIdProvider().getFileId(file);
             }
             else if(containerService.isBox(file)) { // Box
                 return new BoxNodeIdProvider().getFileId(file);
             }
-            else if(containerService.isThirdLevel(file)) { // 3rd level: Inbox,Documents,Trash
+            else if(containerService.isFourthLevel(file)) { // 3rd level: Inbox,Documents,Trash
                 final String boxNodeId = this.getFileId(file.getParent());
                 final String deepBoxNodeId = this.getFileId(file.getParent().getParent());
                 if(containerService.isDocuments(file)) {
@@ -162,7 +177,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 }
                 return null;
             }
-            else if(containerService.isThirdLevel(file.getParent())) { // Inbox,Documents,Trash
+            else if(containerService.isFourthLevel(file.getParent())) { // Inbox,Documents,Trash
                 // N.B. although Documents and Trash have a nodeId, calling the listFiles1/listTrash1 API with
                 // parentNode may fail!
                 final String boxNodeId = this.getFileId(file.getParent().getParent());
@@ -319,6 +334,20 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             }
             catch(ApiException e) {
                 throw new DeepboxExceptionMappingService(DeepboxIdProvider.this).map("Failure to read attributes of {0}", e, file);
+            }
+        }
+    }
+
+    private final class CompanyNodeIdProvider implements FileIdProvider {
+        @Override
+        public String getFileId(final Path file) throws BackgroundException {
+            try {
+                final UsersApi rest = new UsersApi(session.getDeepcloudClient());
+                final UserFull user = rest.usersMeList();
+                return user.getCompanies().stream().filter(db -> DeepboxPathNormalizer.name(db.getDisplayName()).equals(file.getName())).findFirst().map(CompanyRoles::getGroupId).orElse(null);
+            }
+            catch(ch.cyberduck.core.deepcloud.io.swagger.client.ApiException e) {
+                throw new DeepcloudExceptionMappingService(DeepboxIdProvider.this).map("Failure to read attributes of {0}", e, file);
             }
         }
     }

@@ -46,56 +46,68 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
 
     @Override
     public boolean isContainer(final Path file) {
+        if(this.isCompany(file)) {
+            return true;
+        }
         if(this.isDeepbox(file)) {
             return true;
         }
         if(this.isBox(file)) {
             return true;
         }
-        if(this.isThirdLevel(file)) {
+        if(this.isFourthLevel(file)) {
             return true;
         }
         return false;
     }
 
-    public boolean isDeepbox(final Path file) {
+    public boolean isCompany(final Path file) {
         if(file.isRoot()) {
             return false;
         }
         return file.isDirectory() && file.getParent().isRoot();
     }
 
-    public boolean isBox(final Path file) {
+    public boolean isDeepbox(final Path file) {
         if(file.isRoot()) {
             return false;
         }
         return file.isDirectory() && !file.getParent().isRoot() && file.getParent().getParent().isRoot();
     }
 
-    public boolean isThirdLevel(final Path file) {
+    public boolean isBox(final Path file) {
         if(file.isRoot()) {
             return false;
         }
-        return file.isDirectory() && !file.getParent().isRoot() && !file.getParent().getParent().isRoot() && file.getParent().getParent().getParent().isRoot();
+        return file.isDirectory() && !file.getParent().isRoot() && !file.getParent().getParent().isRoot() &&
+                file.getParent().getParent().getParent().isRoot();
+    }
+
+    public boolean isFourthLevel(final Path file) {
+        if(file.isRoot()) {
+            return false;
+        }
+        return file.isDirectory() && !file.getParent().isRoot() && !file.getParent().getParent().isRoot() &&
+                !file.getParent().getParent().getParent().isRoot() && file.getParent().getParent().getParent().getParent().isRoot();
     }
 
     public boolean isTrash(final Path file) {
-        return this.isThirdLevel(file)
+        return this.isFourthLevel(file)
                 && StringUtils.equals(file.getName(), this.getPinnedLocalization(DeepboxListService.TRASH));
     }
 
     public boolean isInbox(final Path file) {
-        return this.isThirdLevel(file)
+        return this.isFourthLevel(file)
                 && StringUtils.equals(file.getName(), this.getPinnedLocalization(DeepboxListService.INBOX));
     }
 
     public boolean isDocuments(final Path file) {
-        return this.isThirdLevel(file)
+        return this.isFourthLevel(file)
                 && StringUtils.equals(file.getName(), this.getPinnedLocalization(DeepboxListService.DOCUMENTS));
     }
 
     public boolean isInDocuments(final Path file) {
-        final Path documents = this.getThirdLevelPath(file);
+        final Path documents = this.getFourthLevelPath(file);
         if(null == documents) {
             return false;
         }
@@ -103,7 +115,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     public boolean isInTrash(final Path file) {
-        final Path trash = this.getThirdLevelPath(file);
+        final Path trash = this.getFourthLevelPath(file);
         if(null == trash) {
             return false;
         }
@@ -111,28 +123,31 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     public boolean isInInbox(final Path file) {
-        final Path inbox = this.getThirdLevelPath(file);
+        final Path inbox = this.getFourthLevelPath(file);
         if(null == inbox) {
             return false;
         }
         return StringUtils.equals(inbox.getName(), getPinnedLocalization(DeepboxListService.INBOX));
     }
 
-    protected Path getThirdLevelPath(final Path file) {
+    protected Path getFourthLevelPath(final Path file) {
+        if(this.isCompany(file)) {
+            return null;
+        }
         if(this.isDeepbox(file)) {
             return null;
         }
         if(this.isBox(file)) {
             return null;
         }
-        Path thirdLevel = file;
-        while(!thirdLevel.isRoot() && !this.isThirdLevel(thirdLevel)) {
-            thirdLevel = thirdLevel.getParent();
+        Path fourthLevel = file;
+        while(!fourthLevel.isRoot() && !this.isFourthLevel(fourthLevel)) {
+            fourthLevel = fourthLevel.getParent();
         }
-        if(thirdLevel.isRoot()) {
+        if(fourthLevel.isRoot()) {
             return null;
         }
-        return thirdLevel;
+        return fourthLevel;
     }
 
     protected Path getBoxPath(final Path file) {
@@ -150,6 +165,9 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     protected Path getDeepboxPath(final Path file) {
+        if(this.isCompany(file)) {
+            return null;
+        }
         Path deepbox = file;
         while(!deepbox.isRoot() && !this.isDeepbox(deepbox)) {
             deepbox = deepbox.getParent();
@@ -158,5 +176,16 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
             return null;
         }
         return deepbox;
+    }
+
+    protected Path getCompanyPath(final Path file) {
+        Path company = file;
+        while(!company.isRoot() && !this.isCompany(company)) {
+            company = company.getParent();
+        }
+        if(company.isRoot()) {
+            return null;
+        }
+        return company;
     }
 }

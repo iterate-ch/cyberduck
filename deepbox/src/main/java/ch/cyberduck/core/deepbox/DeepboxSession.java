@@ -29,6 +29,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.JSON;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.UserRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Me;
+import ch.cyberduck.core.deepcloud.DeepcloudApiClient;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -84,6 +85,8 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private final PreferencesReader preferences = new HostPreferences(host);
     private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
 
+    private DeepcloudApiClient deepcloudClient;
+
     private OAuth2RequestInterceptor authorizationService;
 
     public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -102,6 +105,9 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
                         if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
                             super.process(request, context);
                         }
+                        else if(StringUtils.equals(wrapper.getTarget().getHostName(), preferences.getProperty("deepcloud.api.hostname"))) {
+                            super.process(request, context);
+                        }
                     }
                 }
             }
@@ -117,6 +123,8 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         final String locale = this.pinLocalization();
         configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request.addHeader("Accept-Language", locale));
         final CloseableHttpClient apache = configuration.build();
+
+        // Deepbox API client
         final DeepboxApiClient client = new DeepboxApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
                 null, host.getHostname(), host.getProtocol().getContext()));
@@ -131,6 +139,16 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
         client.setUserAgent(new PreferencesUseragentProvider().get());
+
+        // Deepcloud API client
+        deepcloudClient = new DeepcloudApiClient(apache);
+        deepcloudClient.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
+                null, preferences.getProperty("deepcloud.api.hostname"), host.getProtocol().getContext()));
+        deepcloudClient.setHttpClient(client.getHttpClient());
+        deepcloudClient.setConnectTimeout(timeout);
+        deepcloudClient.setReadTimeout(timeout);
+        deepcloudClient.setUserAgent(new PreferencesUseragentProvider().get());
+
         return client;
     }
 
@@ -165,6 +183,10 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map(e);
         }
+    }
+
+    public DeepcloudApiClient getDeepcloudClient() {
+        return deepcloudClient;
     }
 
     @Override

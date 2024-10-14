@@ -27,6 +27,9 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.BoxAccessPolicy;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeInfo;
+import ch.cyberduck.core.deepcloud.DeepcloudExceptionMappingService;
+import ch.cyberduck.core.deepcloud.io.swagger.client.api.UsersApi;
+import ch.cyberduck.core.deepcloud.io.swagger.client.model.CompanyRoles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
@@ -118,6 +121,14 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
             if(file.isRoot()) {
                 return PathAttributes.EMPTY;
             }
+            else if(containerService.isCompany(file)) {
+                final String deepBoxNodeId = fileid.getCompanyNodeId(file);
+                final CompanyRoles company = new UsersApi(session.getDeepcloudClient()).usersMeList().getCompanies().stream()
+                        .filter(c -> c.getGroupId().equals(deepBoxNodeId))
+                        .findFirst()
+                        .orElseThrow(() -> new NotfoundException(file.getAbsolute()));
+                return this.toAttributes(company);
+            }
             else if(containerService.isDeepbox(file)) {
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
                 final DeepBox deepBox = new BoxRestControllerApi(session.getClient()).getDeepBox(deepBoxNodeId);
@@ -129,7 +140,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 final Box box = new BoxRestControllerApi(session.getClient()).getBox(deepBoxNodeId, boxNodeId);
                 return this.toAttributes(box);
             }
-            else if(containerService.isThirdLevel(file)) {
+            else if(containerService.isFourthLevel(file)) {
                 final String fileId = fileid.getFileId(file);
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(file);
                 final String boxNodeId = fileid.getBoxNodeId(file);
@@ -183,6 +194,9 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         }
+        catch(ch.cyberduck.core.deepcloud.io.swagger.client.ApiException e) {
+            throw new DeepcloudExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
+        }
     }
 
     public PathAttributes toAttributes(final Box box) {
@@ -194,6 +208,12 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     public PathAttributes toAttributes(final DeepBox deepBox) {
         final PathAttributes attrs = new PathAttributes();
         attrs.setFileId(deepBox.getDeepBoxNodeId());
+        return attrs;
+    }
+
+    public PathAttributes toAttributes(final CompanyRoles company) {
+        final PathAttributes attrs = new PathAttributes();
+        attrs.setFileId(company.getGroupId());
         return attrs;
     }
 
