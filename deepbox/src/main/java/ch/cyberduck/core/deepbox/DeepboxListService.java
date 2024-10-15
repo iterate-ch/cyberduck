@@ -310,22 +310,15 @@ public class DeepboxListService implements ListService {
             try {
                 final AttributedList<Path> list = new AttributedList<>();
                 final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
-                int offset = 0;
-                int size;
-                do {
-                    final Overview overview = rest.getOverview(companyId, chunksize, null);
-                    for(final BoxEntry box : overview.getSharedWithMe().getBoxes()) {
-                        list.add(new Path(directory,
-                                String.format("%s (%s)", DeepboxPathNormalizer.name(box.getDeepBoxName()), DeepboxPathNormalizer.name(box.getBoxName())),
-                                EnumSet.of(Path.Type.directory, Path.Type.volume),
-                                new PathAttributes().withFileId(box.getBoxNodeId()))
-                        );
-                    }
-                    listener.chunk(directory, list);
-                    size = overview.getSize();
-                    offset += chunksize;
+                final Overview overview = rest.getOverview(companyId, chunksize, null);
+                for(final BoxEntry box : overview.getSharedWithMe().getBoxes()) {
+                    list.add(new Path(directory,
+                            String.format("%s (%s)", DeepboxPathNormalizer.name(box.getDeepBoxName()), DeepboxPathNormalizer.name(box.getBoxName())),
+                            EnumSet.of(Path.Type.directory, Path.Type.volume),
+                            new PathAttributes().withFileId(box.getBoxNodeId()))
+                    );
                 }
-                while(offset < size);
+                listener.chunk(directory, list);
                 return list;
             }
             catch(ApiException e) {
