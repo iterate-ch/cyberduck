@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+9.0.4
+- [Bugfix] Multipart uploads fail to buckets with '.' character in name (#16401)
+
 9.0.3
 - [Bugfix] Registration key prompt in browser window regardless of registration (Windows) (#16326)
 
