@@ -15,6 +15,7 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
@@ -42,7 +43,6 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.urlhandler.SchemeHandler;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 
@@ -66,7 +66,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
@@ -76,7 +75,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(CteraAuthenticationHandler.class);
@@ -89,7 +87,6 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     private final CteraSession session;
     private final Host host;
     private final LoginCallback prompt;
-    private final CancelCallback cancel;
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
 
@@ -101,11 +98,10 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     private String username = StringUtils.EMPTY;
     private String password = StringUtils.EMPTY;
 
-    public CteraAuthenticationHandler(final CteraSession session, final LoginCallback prompt, final CancelCallback cancel) {
+    public CteraAuthenticationHandler(final CteraSession session, final LoginCallback prompt) {
         this.session = session;
         this.host = session.getHost();
         this.prompt = prompt;
-        this.cancel = cancel;
     }
 
     public CteraAuthenticationHandler withCredentials(final String username, final String password, final CteraTokens tokens) {
@@ -165,7 +161,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
             if(log.isDebugEnabled()) {
                 log.debug("Start new flow attaching device with activation code");
             }
-            return this.attachDeviceWithActivationCode(this.startWebSSOFlow(cancel));
+            return this.attachDeviceWithActivationCode(this.startWebSSOFlow());
         }
         else {
             if(log.isDebugEnabled()) {
@@ -225,7 +221,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     /**
      * @return Activation code
      */
-    private String startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
+    private String startWebSSOFlow() throws BackgroundException {
         if(new HostPreferences(session.getHost()).getBoolean("oauth.browser.open.warn")) {
             prompt.warn(session.getHost(),
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -260,9 +256,9 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
         if(!BrowserLauncherFactory.get().open(url)) {
             throw new LoginCanceledException(new LocalAccessDeniedException(String.format("Failed to launch web browser for %s", url)));
         }
-        while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofMillis(500))) {
-            cancel.verify();
-        }
+        prompt.await(signal, session.getHost(), String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(session.getHost(), true)),
+                LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
+        session.getHost().getCredentials().setSaved(new LoginOptions().save);
         return activationCode.get();
     }
 
