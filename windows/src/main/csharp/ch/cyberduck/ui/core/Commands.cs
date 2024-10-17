@@ -161,18 +161,39 @@ namespace Ch.Cyberduck.Ui.Core
                 if (_toolStripItems != null)
                     foreach (ToolStripItem item in _toolStripItems)
                     {
-                        item.Enabled = enabled;
+                        try
+                        {
+                            item.Enabled = enabled;
+                        }
+                        catch
+                        {
+                            /* NOP */
+                        }
                     }
                 if (_controls != null)
                     foreach (Control control in _controls)
                     {
-                        control.Enabled = enabled;
+                        try
+                        {
+                            control.Enabled = enabled;
+                        }
+                        catch
+                        {
+                            /* NOP */
+                        }
                     }
                 if (_menuItems != null)
                 {
                     foreach (var item in _menuItems)
                     {
-                        item.Enabled = enabled;
+                        try
+                        {
+                            item.Enabled = enabled;
+                        }
+                        catch
+                        {
+                            /* NOP */
+                        }
                     }
                 }
             }
