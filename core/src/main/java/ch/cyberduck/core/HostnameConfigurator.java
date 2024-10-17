@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Configurator for resolving hostname from alias
  */
@@ -40,20 +42,29 @@ public interface HostnameConfigurator {
 
     HostnameConfigurator reload();
 
-    HostnameConfigurator DISABLED = new HostnameConfigurator() {
+    class DefaultHostnameConfigurator implements HostnameConfigurator {
+        private final AbstractProtocol protocol;
+
+        public DefaultHostnameConfigurator(final AbstractProtocol protocol) {
+            this.protocol = protocol;
+        }
+
         @Override
-        public String getHostname(String alias) {
-            return alias;
+        public String getHostname(final String alias) {
+            if(StringUtils.isBlank(protocol.getDefaultHostname())) {
+                return alias;
+            }
+            return protocol.getDefaultHostname();
         }
 
         @Override
         public int getPort(final String alias) {
-            return -1;
+            return protocol.getDefaultPort();
         }
 
         @Override
         public HostnameConfigurator reload() {
             return this;
         }
-    };
+    }
 }
