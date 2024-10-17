@@ -2,7 +2,7 @@
 
 <project name="Java Runtime" basedir=".">
 
-    <property name="runtime.dependency" value="${build}/jdk-17.0.9+9"/>
+    <property name="runtime.dependency" value="${build}/jdk-21.0.1+12"/>
 
     <property name="bundle.runtime" value="${bundle.plugins}/Runtime.jre"/>
     <property name="bundle.runtime.lib"
