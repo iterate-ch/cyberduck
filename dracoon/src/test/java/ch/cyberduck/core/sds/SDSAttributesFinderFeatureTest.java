@@ -180,7 +180,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         // Assume previously seen but changed on server
         final String invalidId = String.valueOf(RandomUtils.nextLong());
         test.attributes().setVersionId(invalidId);
-        nodeid.cache(test, invalidId);
+        nodeid.cache(test, invalidId, null);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         assertEquals(latestnodeid, f.find(test).getVersionId());
         assertEquals(latestnodeid, test.attributes().getVersionId());
