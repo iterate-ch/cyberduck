@@ -72,7 +72,7 @@ public class CteraSession extends DAVSession {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.disableRedirectHandling();
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt, cancel))));
+                new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt))));
         configuration.addInterceptorFirst(new CteraCookieInterceptor());
         final DAVClient client = new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
         final HttpGet request = new HttpGet(PUBLIC_INFO_PATH);
