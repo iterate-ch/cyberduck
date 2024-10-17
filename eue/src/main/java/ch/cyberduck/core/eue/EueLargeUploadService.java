@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
@@ -80,7 +81,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public EueWriteFeature.Chunk upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -102,7 +103,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             }
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(chunksize, remaining);
-                parts.add(this.submit(pool, file, local, throttle, listener, status,
+                parts.add(this.submit(pool, file, local, throttle, streamListener, status,
                         uploadUri, resourceId, partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;

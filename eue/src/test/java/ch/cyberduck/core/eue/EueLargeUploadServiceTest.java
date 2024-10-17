@@ -20,6 +20,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -55,7 +56,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final EueWriteFeature.Chunk uploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+        final EueWriteFeature.Chunk uploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertEquals(PathAttributes.EMPTY, status.getResponse());

@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -29,15 +30,16 @@ public interface Upload<Reply> {
     /**
      * Copy file on disk to server
      *
-     * @param file     File on server
-     * @param local    File on local disk
-     * @param throttle Bandwidth management
-     * @param listener Progress callback
-     * @param status   Transfer status holder
-     * @param callback Prompt
+     * @param file           File on server
+     * @param local          File on local disk
+     * @param throttle       Bandwidth management
+     * @param progress
+     * @param streamListener Progress callback
+     * @param status         Transfer status holder
+     * @param callback       Prompt
      * @see AttributesAdapter#toAttributes(Reply)
      */
-    Reply upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
+    Reply upload(Path file, Local local, BandwidthThrottle throttle, final ProgressListener progress, StreamListener streamListener,
                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
     /**

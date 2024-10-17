@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -109,7 +110,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
         new DefaultUploadFeature<>(new SDSDirectS3MultipartWriteFeature(session, nodeid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -142,7 +143,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
         new DefaultUploadFeature<>(new SDSDirectS3MultipartWriteFeature(session, nodeid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

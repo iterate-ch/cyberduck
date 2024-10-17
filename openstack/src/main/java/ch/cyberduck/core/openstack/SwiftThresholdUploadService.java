@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -66,7 +67,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
     }
 
     @Override
-    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Upload<StorageObject> feature;
         if(this.threshold(status)) {
@@ -75,7 +76,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
         else {
             feature = new SwiftSmallObjectUploadFeature(session, writer);
         }
-        return feature.upload(file, local, throttle, listener, status, callback);
+        return feature.upload(file, local, throttle, progress, streamListener, status, callback);
     }
 
     protected boolean threshold(final TransferStatus status) {

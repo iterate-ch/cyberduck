@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -94,7 +95,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().withLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         final String lock = new BrickLockFeature(session).lock(test);
         final Path target = new BrickMoveFeature(session).move(test,
