@@ -201,8 +201,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 try
                 {
                     Host parsed = HostParser.parse(input);
+                    if (!_host.getProtocol().getScheme().equals(parsed.getProtocol().getScheme()))
+                    {
+                        _host.setProtocol(parsed.getProtocol());
+                    }
                     _host.setHostname(parsed.getHostname());
-                    _host.setProtocol(parsed.getProtocol());
                     _host.setPort(parsed.getPort());
                     _host.setDefaultPath(parsed.getDefaultPath());
                 }
