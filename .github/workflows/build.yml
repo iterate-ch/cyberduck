@@ -31,6 +31,13 @@ jobs:
         if: runner.os == 'windows'
         with:
           msbuild-architecture: x64
+      - name: "NuGet"
+        if: runner.os == 'windows'
+        env:
+          NugetCredentials: "Username=${{ github.actor }};Password=${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          echo "NuGetPackageSourceCredentials_gh-ikvmnet=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
+          echo "NuGetPackageSourceCredentials_gh-iterate-ch=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
       - name: Cache local Maven repository
         uses: actions/cache@v4
         with:
