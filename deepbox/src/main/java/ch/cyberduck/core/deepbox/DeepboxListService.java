@@ -21,15 +21,19 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.api.OverviewRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Box;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.BoxEntry;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Boxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Overview;
 import ch.cyberduck.core.deepcloud.DeepcloudExceptionMappingService;
 import ch.cyberduck.core.deepcloud.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.deepcloud.io.swagger.client.model.CompanyRoles;
@@ -285,6 +289,36 @@ public class DeepboxListService implements ListService {
                     offset += chunksize;
                 }
                 while(offset < size);
+                return list;
+            }
+            catch(ApiException e) {
+                throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
+            }
+        }
+    }
+
+    private final class SharedWithMeListService implements ListService {
+
+        private final String companyId;
+
+        public SharedWithMeListService(final String companyId) {
+            this.companyId = companyId;
+        }
+
+        @Override
+        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+            try {
+                final AttributedList<Path> list = new AttributedList<>();
+                final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
+                final Overview overview = rest.getOverview(companyId, chunksize, null);
+                for(final BoxEntry box : overview.getSharedWithMe().getBoxes()) {
+                    list.add(new Path(directory,
+                            String.format("%s (%s)", DeepboxPathNormalizer.name(box.getDeepBoxName()), DeepboxPathNormalizer.name(box.getBoxName())),
+                            EnumSet.of(Path.Type.directory, Path.Type.volume),
+                            new PathAttributes().withFileId(box.getBoxNodeId()))
+                    );
+                }
+                listener.chunk(directory, list);
                 return list;
             }
             catch(ApiException e) {
