@@ -21,6 +21,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
@@ -57,8 +58,8 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
 
     @Override
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                        final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final Reply response = this.upload(file, local, throttle, listener, status, status, status, callback);
+                        final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final Reply response = this.upload(file, local, throttle, streamListener, status, status, status, callback);
         log.debug("Received response {}", response);
         return response;
     }

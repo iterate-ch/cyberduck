@@ -18,6 +18,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,7 +49,7 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public EueWriteFeature.Chunk upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadUri;
         final String resourceId;
@@ -66,7 +67,7 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
         status.setParameters(Collections.singletonMap(RESOURCE_ID, resourceId));
         status.setUrl(uploadUri);
         status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
-        return super.upload(file, local, throttle, listener, status, callback);
+        return super.upload(file, local, throttle, progress, streamListener, status, callback);
     }
 
     @Override

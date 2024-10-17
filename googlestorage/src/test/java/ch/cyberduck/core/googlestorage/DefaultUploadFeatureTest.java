@@ -18,6 +18,7 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -60,7 +61,7 @@ public class DefaultUploadFeatureTest extends AbstractGoogleStorageTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         final StorageObject versionId = m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         final PathAttributes attributes = new GoogleStorageListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes();
         assertEquals(random.length, attributes.getSize());

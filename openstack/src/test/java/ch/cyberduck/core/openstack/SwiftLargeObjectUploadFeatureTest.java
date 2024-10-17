@@ -5,6 +5,7 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -75,7 +76,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                         }
                     };
                 }
-            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, status, new DisabledLoginCallback());
+            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -89,7 +90,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
                 1 * 1024L * 1024L, 1).upload(test, local,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new SwiftFindFeature(session).find(test));
@@ -134,7 +135,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final BytecountStreamListener listener = new BytecountStreamListener();
         try {
             feature.upload(test, new Local(System.getProperty("java.io.tmpdir"), name),
-                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, status, new DisabledLoginCallback());
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -150,7 +151,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
         final TransferStatus append = new TransferStatus().append(true).withLength(1024L * 1024L).withOffset(1024L * 1024L);
         feature.upload(test, local,
-            new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, append,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, append,
             new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
@@ -195,7 +196,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                     new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
             final BytecountStreamListener count = new BytecountStreamListener();
-            final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
+            final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
                     status, new DisabledConnectionCallback());
             assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
             assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
@@ -248,7 +249,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                     new SwiftWriteFeature(session, regionService), 1048576L, 4);
 
             final BytecountStreamListener count = new BytecountStreamListener();
-            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
                     status, new DisabledConnectionCallback());
 
             assertTrue(status.isComplete());

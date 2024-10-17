@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -92,7 +93,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
         writeStatus.setLength(content.length);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BytecountStreamListener counter = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), counter, writeStatus, new DisabledConnectionCallback());
+        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));

@@ -19,8 +19,10 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
@@ -42,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -94,7 +97,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
 
     @Override
     public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                                 final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                 final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final long partSize;
         if(file.getType().contains(Path.Type.encrypted)) {
             // For uploads to vault part size must be a multiple of 32 * 1024. Recommended partsize from B2 API may not meet that requirement.
@@ -103,12 +106,12 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         else {
             partSize = this.partSize;
         }
-        return this.upload(file, local, throttle, listener, status, callback,
+        return this.upload(file, local, throttle, progress, streamListener, status, callback,
                 partSize < status.getLength() ? partSize : PreferencesFactory.get().getLong("b2.upload.largeobject.size.minimum"));
     }
 
     public BaseB2Response upload(final Path file, final Local local,
-                                 final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status,
+                                 final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
                                  final ConnectionCallback callback, final Long partSize) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("largeupload", concurrency);
         try {
@@ -171,7 +174,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 if(!skip) {
                     final long length = Math.min(Math.max((size / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(pool, file, local, throttle, listener, status, fileId, partNumber, offset, length, callback));
+                    parts.add(this.submit(pool, file, local, throttle, streamListener, status, fileId, partNumber, offset, length, callback));
                     log.debug("Part {} submitted with size {} and offset {}", partNumber, length, offset);
                     remaining -= length;
                     offset += length;
@@ -188,6 +191,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             for(B2UploadPartResponse part : completed) {
                 checksums.add(part.getContentSha1());
             }
+            progress.message(MessageFormat.format(LocaleFactory.localizedString("Finalize {0}", "Status"),
+                    file.getName()));
             final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(fileId, checksums.toArray(new String[checksums.size()]));
             log.info("Finished large file upload {} with {} parts", file, completed.size());
             fileid.cache(file, response.getFileId());

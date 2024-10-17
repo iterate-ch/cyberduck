@@ -22,6 +22,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -89,7 +90,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     }
 
     @Override
-    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // In order to achieve parallel upload the Concatenation extension MAY be used.
         try {
@@ -143,7 +144,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             }
             while(remaining > 0) {
                 final long length = Math.min(preferences.getInteger("tus.chunk.size"), remaining);
-                chunks.add(this.submit(file, local, throttle, listener, status,
+                chunks.add(this.submit(file, local, throttle, streamListener, status,
                         uploadUrl, offset, length, callback));
                 remaining -= length;
                 offset += length;

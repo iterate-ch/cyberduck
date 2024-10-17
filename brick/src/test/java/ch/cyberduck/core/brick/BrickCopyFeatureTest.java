@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -63,7 +64,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().withLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         assertTrue(new BrickFindFeature(session).find(test));
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -84,7 +85,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().withLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         assertTrue(new BrickFindFeature(session).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -107,7 +108,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().withLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         assertTrue(new BrickFindFeature(session).find(file));
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

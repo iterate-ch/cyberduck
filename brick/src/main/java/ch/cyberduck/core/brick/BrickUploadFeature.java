@@ -19,6 +19,7 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FileActionsApi;
 import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
@@ -79,7 +80,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
     }
 
     @Override
-    public FileEntity upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public FileEntity upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                              final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -98,7 +99,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 else {
                     length = remaining;
                 }
-                parts.add(this.submit(pool, file, local, throttle, listener, status,
+                parts.add(this.submit(pool, file, local, throttle, streamListener, status,
                         uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;

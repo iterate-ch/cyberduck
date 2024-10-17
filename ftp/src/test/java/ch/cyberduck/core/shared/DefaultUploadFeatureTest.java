@@ -19,6 +19,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -58,14 +59,14 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2);
             final Void reply = new DefaultUploadFeature<>(new FTPWriteFeature(session)).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
             final Void reply = new DefaultUploadFeature<Void>(new FTPWriteFeature(session)).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }

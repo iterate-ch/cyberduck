@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -97,7 +98,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     @Override
-    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -152,7 +153,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     // Last part can be less than 5 MB. Adjust part size.
                     final long length = Math.min(Math.max((size / (S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
+                    parts.add(this.submit(pool, file, local, throttle, streamListener, status, multipart, partNumber, offset, length, callback));
                     remaining -= length;
                     offset += length;
                 }
@@ -162,6 +163,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             // could take several minutes to complete. Because a request could fail after the initial 200 OK response
             // has been sent, it is important that you check the response body to determine whether the request succeeded.
             multipart.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
+            progress.message(MessageFormat.format(LocaleFactory.localizedString("Finalize {0}", "Status"),
+                    file.getName()));
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
             log.info("Completed multipart upload for {} with {} parts and checksum {}", complete.getObjectKey(), completed.size(), complete.getEtag());
             if(file.getType().contains(Path.Type.encrypted)) {

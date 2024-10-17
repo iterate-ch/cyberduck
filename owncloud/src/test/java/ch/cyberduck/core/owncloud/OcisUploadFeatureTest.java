@@ -20,6 +20,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -73,7 +74,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             status.setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             assertFalse(feature.append(file, status).append);
-            final Void response = feature.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+            final Void response = feature.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertTrue(status.isComplete());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
@@ -95,7 +96,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             status.setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             assertFalse(feature.append(file, status).append);
-            final Void response = feature.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+            final Void response = feature.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertTrue(status.isComplete());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());

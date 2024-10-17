@@ -24,8 +24,10 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -48,6 +50,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,7 +102,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     @Override
     public StorageObject upload(final Path file, final Local local,
                                 final BandwidthThrottle throttle,
-                                final StreamListener listener,
+                                final ProgressListener progress, final StreamListener streamListener,
                                 final TransferStatus status,
                                 final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
@@ -148,7 +151,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             else {
                 // Submit to queue
-                segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length, callback));
+                segments.add(this.submit(pool, segment, local, throttle, streamListener, status, offset, length, callback));
                 log.debug("Segment {} submitted with size {} and offset {}", segment, length, offset);
                 remaining -= length;
                 offset += length;
@@ -164,6 +167,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         // Create and upload the large object manifest. It is best to upload all the segments first and
         // then create or update the manifest.
         try {
+            progress.message(MessageFormat.format(LocaleFactory.localizedString("Finalize {0}", "Status"),
+                    file.getName()));
             // Static Large Object.
             final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
             log.debug("Creating SLO manifest {} for {}", manifest, file);
