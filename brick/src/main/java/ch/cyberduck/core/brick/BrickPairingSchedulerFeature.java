@@ -22,7 +22,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -30,7 +29,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
@@ -51,7 +49,6 @@ import java.util.concurrent.TimeUnit;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 
 public class BrickPairingSchedulerFeature {
     private static final Logger log = LogManager.getLogger(BrickPairingSchedulerFeature.class);
@@ -116,16 +113,7 @@ public class BrickPairingSchedulerFeature {
             });
             if(json.has("nickname")) {
                 if(new HostPreferences(session.getHost()).getBoolean("brick.pairing.nickname.configure")) {
-                    final JsonPrimitive nickname = json.getAsJsonPrimitive("nickname");
-                    if(StringUtils.isNotBlank(host.getNickname())) {
-                        if(!StringUtils.equals(host.getNickname(), nickname.getAsString())) {
-                            log.warn(String.format("Mismatch of nickname. Previously authorized as %s and now paired as %s",
-                                host.getNickname(), nickname.getAsString()));
-                            callback.close(null);
-                            throw new LoginCanceledException();
-                        }
-                    }
-                    host.setNickname(nickname.getAsString());
+                    host.setNickname(json.getAsJsonPrimitive("nickname").getAsString());
                 }
             }
             final Credentials credentials = host.getCredentials();
