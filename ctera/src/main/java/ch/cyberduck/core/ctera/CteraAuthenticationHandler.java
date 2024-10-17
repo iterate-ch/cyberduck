@@ -16,10 +16,12 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.MacUniqueIdService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.StringAppender;
@@ -85,6 +87,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     public static final String ATTACH_DEVICE_USERNAME_PATH = "/ServicesPortal/public/users/%s?format=jsonext";
 
     private final CteraSession session;
+    private final Host host;
     private final LoginCallback prompt;
     private final CancelCallback cancel;
 
@@ -100,6 +103,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
 
     public CteraAuthenticationHandler(final CteraSession session, final LoginCallback prompt, final CancelCallback cancel) {
         this.session = session;
+        this.host = session.getHost();
         this.prompt = prompt;
         this.cancel = cancel;
     }
@@ -137,6 +141,22 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
             tokens = this.attach();
             this.authorize();
         }
+        return tokens;
+    }
+
+    /**
+     * Save updated tokens in keychain
+     *
+     * @return Same tokens saved
+     */
+    public CteraTokens save(final CteraTokens tokens) throws LocalAccessDeniedException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Save new tokens %s for %s", tokens, host));
+        }
+        host.getCredentials()
+                .withToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()))
+                .withSaved(new LoginOptions().save);
+        store.save(host);
         return tokens;
     }
 
@@ -339,7 +359,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
             case HttpStatus.SC_MOVED_TEMPORARILY:
                 try {
                     log.info(String.format("Attempt to refresh cookie for failure %s", response));
-                    this.validate();
+                    this.save(this.validate());
                     // Try again
                     return true;
                 }
