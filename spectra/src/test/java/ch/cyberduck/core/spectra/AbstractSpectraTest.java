@@ -50,7 +50,7 @@ public class AbstractSpectraTest extends VaultTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SpectraProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/Spectra S3 (HTTP).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Spectra S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
                 PROPERTIES.get("spectra.user"), PROPERTIES.get("spectra.key")
         ));

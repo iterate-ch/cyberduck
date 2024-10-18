@@ -20,15 +20,15 @@
         <key>Protocol</key>
         <string>spectra</string>
         <key>Vendor</key>
-        <string>spectralogic-http</string>
+        <string>spectralogic-https</string>
         <key>Description</key>
-        <string>Spectra S3 (HTTP)</string>
+        <string>Spectra S3 (HTTPS)</string>
         <key>Authorization</key>
         <string>AWS2</string>
         <key>Scheme</key>
-        <string>http</string>
+        <string>https</string>
         <key>Default Port</key>
-        <string>80</string>
+        <string>443</string>
         <key>Username Placeholder</key>
         <string>S3 Access ID</string>
         <key>Password Placeholder</key>
@@ -40,7 +40,6 @@
         <key>Schemes</key>
         <array>
             <string>spectra</string>
-            <string>http</string>
         </array>
         <key>Properties</key>
         <array>
