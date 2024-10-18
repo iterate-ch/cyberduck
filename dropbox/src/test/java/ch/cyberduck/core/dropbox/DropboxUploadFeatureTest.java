@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -60,7 +61,7 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         final Metadata metadata = feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                count, status, new DisabledLoginCallback());
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new DropboxFindFeature(session).find(test));

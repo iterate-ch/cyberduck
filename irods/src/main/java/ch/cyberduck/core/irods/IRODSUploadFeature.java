@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
@@ -61,7 +62,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
 
     @Override
     public Checksum upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                           final StreamListener listener, final TransferStatus status,
+                           final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
                            final ConnectionCallback callback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
@@ -78,7 +79,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
             block.setTransferOptions(options);
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory().getDataTransferOperations(fs.getIRODSAccount());
             transfer.putOperation(new File(local.getAbsolute()), f, new DefaultTransferStatusCallbackListener(
-                status, listener, block
+                    status, streamListener, block
             ), block);
             if(status.isComplete()) {
                 final DataObjectChecksumUtilitiesAO checksum = fs

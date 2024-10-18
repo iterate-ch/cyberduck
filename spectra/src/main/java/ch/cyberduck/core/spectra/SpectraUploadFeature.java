@@ -18,6 +18,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -48,7 +49,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
 
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                                final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(Checksum.NONE == status.getChecksum()) {
             // The client-side checksum is passed to the BlackPearl gateway by supplying the applicable CRC HTTP header.
             // If this is done, the BlackPearl gateway verifies that the data received matches the checksum provided.
@@ -63,7 +64,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         StorageObject stored = null;
         for(TransferStatus chunk : chunks) {
             chunk.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), chunk));
-            stored = super.upload(file, local, throttle, listener, chunk, callback);
+            stored = super.upload(file, local, throttle, progress, streamListener, chunk, callback);
         }
         return stored;
     }

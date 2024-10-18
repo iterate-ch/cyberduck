@@ -21,6 +21,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -43,14 +44,14 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                        final StreamListener listener, final TransferStatus status,
+                        final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
                         final ConnectionCallback callback) throws BackgroundException {
         final InputStream in = local.getInputStream();
         final StatusOutputStream<Reply> out = writer.write(file, status, callback);
         new StreamCopier(status, status)
             .withOffset(status.getOffset())
             .withLimit(status.getLength())
-            .withListener(listener)
+                .withListener(streamListener)
             .transfer(in, new ThrottledOutputStream(out, throttle));
         return out.getStatus();
     }

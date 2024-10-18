@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
@@ -91,7 +92,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new EueThresholdUploadService(session, fileid, registry),
                 new EueWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));
@@ -128,7 +129,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new EueThresholdUploadService(session, fileid, registry),
                 new EueWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));

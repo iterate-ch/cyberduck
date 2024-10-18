@@ -18,7 +18,9 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadPart;
@@ -44,6 +46,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.security.MessageDigest;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +81,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
     }
 
     @Override
-    public File upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public File upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -92,13 +95,15 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             final UploadSession uploadSession = helper.createUploadSession(status, file);
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(uploadSession.getPartSize(), remaining);
-                parts.add(this.submit(pool, file, local, throttle, listener, status,
+                parts.add(this.submit(pool, file, local, throttle, streamListener, status,
                         uploadSession.getId(), partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
             }
             // Checksums for uploaded segments
             final List<Part> chunks = Interruptibles.awaitAll(parts);
+            progress.message(MessageFormat.format(LocaleFactory.localizedString("Finalize {0}", "Status"),
+                    file.getName()));
             final Files files = helper.commitUploadSession(file, uploadSession.getId(), status,
                     chunks.stream().map(f -> new UploadPart().sha1(f.part.getSha1())
                             .size(f.status.getLength()).offset(f.status.getOffset()).partId(f.part.getId())).collect(Collectors.toList()));
