@@ -82,10 +82,10 @@ public class DeepboxMoveFeature implements Move {
 
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(source.isRoot() || new DeepboxPathContainerService(session).isContainer(source) || new DeepboxPathContainerService(session).isInTrash(source)) {
+        if(source.isRoot() || new DeepboxPathContainerService(session, fileid).isContainer(source) || new DeepboxPathContainerService(session, fileid).isInTrash(source)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(target.isRoot() || new DeepboxPathContainerService(session).isContainer(target) || new DeepboxPathContainerService(session).isInTrash(target)) {
+        if(target.isRoot() || new DeepboxPathContainerService(session, fileid).isContainer(target) || new DeepboxPathContainerService(session, fileid).isInTrash(target)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
         }
         final Acl acl = source.attributes().getAcl();
