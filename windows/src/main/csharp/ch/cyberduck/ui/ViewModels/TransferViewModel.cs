@@ -187,10 +187,10 @@ namespace ch.cyberduck.ui.ViewModels
             else
             {
                 Running = true;
-                (ProgressPending, Progress) = value.Progress switch
+                (ProgressPending, Progress) = (value.Progress, value.Completed) switch
                 {
-                    null => (true, 0),
-                    double progress => (false, progress)
+                    (null, _) or (_, true) => (true, 0),
+                    (double progress, _) => (false, progress),
                 };
 
                 OnPropertyChanged(nameof(MessageText));

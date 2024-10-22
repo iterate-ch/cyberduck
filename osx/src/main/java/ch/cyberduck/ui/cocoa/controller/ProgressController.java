@@ -59,24 +59,24 @@ import java.util.List;
 public class ProgressController extends BundleController implements TransferListener, ProgressListener {
 
     private static final NSDictionary NORMAL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-        NSArray.arrayWithObjects(
-            NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-            NSColor.controlTextColor(),
-            BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-        NSArray.arrayWithObjects(
-            NSAttributedString.FontAttributeName,
-            NSAttributedString.ForegroundColorAttributeName,
-            NSAttributedString.ParagraphStyleAttributeName)
+            NSArray.arrayWithObjects(
+                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
+                    NSColor.controlTextColor(),
+                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+            NSArray.arrayWithObjects(
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ForegroundColorAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName)
     );
     private static final NSDictionary HIGHLIGHTED_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-        NSArray.arrayWithObjects(
-            NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-            NSColor.alternateSelectedControlTextColor(),
-            BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-        NSArray.arrayWithObjects(
-            NSAttributedString.FontAttributeName,
-            NSAttributedString.ForegroundColorAttributeName,
-            NSAttributedString.ParagraphStyleAttributeName)
+            NSArray.arrayWithObjects(
+                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
+                    NSColor.alternateSelectedControlTextColor(),
+                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+            NSArray.arrayWithObjects(
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ForegroundColorAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName)
     );
     private static final NSImage RED_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusUnavailable");
     private static final NSImage GREEN_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusAvailable");
@@ -128,11 +128,11 @@ public class ProgressController extends BundleController implements TransferList
     @Override
     public void awakeFromNib() {
         this.setProgress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
-            sizeFormatter.format(transfer.getTransferred()),
-            sizeFormatter.format(transfer.getSize())));
+                sizeFormatter.format(transfer.getTransferred()),
+                sizeFormatter.format(transfer.getSize())));
         this.setMessage(StringUtils.EMPTY);
         this.setStatus(LocaleFactory.localizedString(transfer.isComplete() ?
-            String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"));
+                String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"));
         super.awakeFromNib();
     }
 
@@ -176,10 +176,10 @@ public class ProgressController extends BundleController implements TransferList
                 progressBar.setHidden(true);
                 setMessage(StringUtils.EMPTY);
                 setProgress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
-                    sizeFormatter.format(transfer.getTransferred()),
-                    sizeFormatter.format(transfer.getSize())));
+                        sizeFormatter.format(transfer.getTransferred()),
+                        sizeFormatter.format(transfer.getSize())));
                 setStatus(LocaleFactory.localizedString(LocaleFactory.localizedString(transfer.isComplete() ?
-                    String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"), "Status"));
+                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"), "Status"));
                 statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
             }
         });
@@ -193,13 +193,18 @@ public class ProgressController extends BundleController implements TransferList
         invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                if(transferred > 0 && size > 0) {
-                    progressBar.setIndeterminate(false);
-                    progressBar.setMaxValue(size);
-                    progressBar.setDoubleValue(transferred);
+                if(transfer.isComplete()) {
+                    progressBar.setIndeterminate(true);
                 }
                 else {
-                    progressBar.setIndeterminate(true);
+                    if(progress.isComplete()) {
+                        progressBar.setIndeterminate(true);
+                    }
+                    else {
+                        progressBar.setIndeterminate(false);
+                        progressBar.setMaxValue(size);
+                        progressBar.setDoubleValue(transferred);
+                    }
                 }
             }
         });
@@ -210,7 +215,7 @@ public class ProgressController extends BundleController implements TransferList
             @Override
             public void run() {
                 progressField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                    message, TRUNCATE_MIDDLE_ATTRIBUTES));
+                        message, TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         });
     }
@@ -231,12 +236,12 @@ public class ProgressController extends BundleController implements TransferList
             text = message;
         }
         messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-            text, TRUNCATE_MIDDLE_ATTRIBUTES));
+                text, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setStatus(final String status) {
         statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(status,
-            TRUNCATE_MIDDLE_ATTRIBUTES));
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     public boolean isHighlighted() {
@@ -268,18 +273,18 @@ public class ProgressController extends BundleController implements TransferList
         for(int i = 0; i < items.size(); i++) {
             final TransferItem entry = items.get(i);
             this.filesPopup.addItemWithTitle(i == 0 && items.size() > 1 ?
-                String.format("%s (%d more)", entry.remote.getName(), items.size() - 1) : entry.remote.getName());
+                    String.format("%s (%d more)", entry.remote.getName(), items.size() - 1) : entry.remote.getName());
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
         notificationCenter.addObserver(this.id(),
-            Foundation.selector("filesPopupWillShow:"),
-            NSPopUpButton.PopUpButtonWillPopUpNotification,
-            this.filesPopup.id());
+                Foundation.selector("filesPopupWillShow:"),
+                NSPopUpButton.PopUpButtonWillPopUpNotification,
+                this.filesPopup.id());
         notificationCenter.addObserver(this.id(),
-            Foundation.selector("filesPopupWillHide:"),
-            "NSMenuDidEndTrackingNotification",
-            this.filesPopup.menu().id());
+                Foundation.selector("filesPopupWillHide:"),
+                "NSMenuDidEndTrackingNotification",
+                this.filesPopup.menu().id());
     }
 
     @Action

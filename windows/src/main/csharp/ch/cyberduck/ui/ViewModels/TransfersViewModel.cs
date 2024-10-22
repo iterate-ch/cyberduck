@@ -486,19 +486,26 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
 
         bool Run()
         {
-            foreach (var item in SelectedTransfers)
+            foreach (var transfer in SelectedTransfers)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return false;
                 }
 
-                if (item.Local is null)
+                if (transfer.Running)
+                {
+                    // Dont flicker 
+                    return false;
+                }
+
+
+                if (transfer.Local is null)
                 {
                     continue;
                 }
 
-                foreach (var file in item.Roots)
+                foreach (var file in transfer.Roots)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -608,6 +615,7 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
         StopCommand.NotifyCanExecuteChanged();
         TrashCommand.NotifyCanExecuteChanged();
 
+        // TODO Reduce triggering this a billion times a second
         OpenCanExecuteCommand.ExecuteAsync(null).ContinueWith(LogTask);
         ShowCanExecuteCommand.ExecuteAsync(null).ContinueWith(LogTask);
     }
