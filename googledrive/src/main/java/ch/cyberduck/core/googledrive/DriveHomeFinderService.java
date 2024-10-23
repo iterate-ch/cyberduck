@@ -40,6 +40,10 @@ public class DriveHomeFinderService extends AbstractHomeFeature {
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared Drives", "Google Drive")),
         EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
+    public static final Path TRASH_FOLDER
+            = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Trash", "Google Drive")),
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+
     @Override
     public Path find() throws BackgroundException {
         return MYDRIVE_FOLDER;
