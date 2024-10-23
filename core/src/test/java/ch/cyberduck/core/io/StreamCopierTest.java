@@ -22,7 +22,7 @@ public class StreamCopierTest {
 
     @Test
     public void testIntegrity() throws Exception {
-        final byte[] bytes = RandomUtils.nextBytes(39865);
+        final byte[] bytes = RandomUtils.insecure().nextBytes(39865);
         final TransferStatus status = new TransferStatus();
         final ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
         final BytecountStreamListener count = new BytecountStreamListener();
