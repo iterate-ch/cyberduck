@@ -1,0 +1,25 @@
+name: template-reusable
+
+on:
+  workflow_call:
+    inputs:
+      variablePre:
+        required: true
+        type: string
+      variableRel:
+        required: true
+        type: string
+      variableTim:
+        required: true
+        type: string
+
+
+jobs:
+  my_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print variables
+        run: |
+          echo "Prerelease: ${{ inputs.variablePre }}"
+          echo "Release: ${{ inputs.variableRel }}"
+          echo "Time: ${{ inputs.variableTim }}"
