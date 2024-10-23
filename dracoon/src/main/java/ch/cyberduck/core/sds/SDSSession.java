@@ -568,6 +568,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Delete.class) {
             return (T) new SDSThresholdDeleteFeature(this, nodeid);
         }
+        if(type == SDSNodeIdProvider.class) {
+            return (T) nodeid;
+        }
         if(type == VersionIdProvider.class) {
             return (T) nodeid;
         }

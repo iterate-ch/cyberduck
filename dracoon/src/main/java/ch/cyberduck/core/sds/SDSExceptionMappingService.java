@@ -71,7 +71,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                                         // "debugInfo":"File not found","errorCode":-40751
                                     case -40751:
                                         // Invalidate cache on Node not found
-                                        fileid.cache(file, null);
+                                        fileid.cache(file, null, null);
                                         break;
                                 }
                                 break;
