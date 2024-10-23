@@ -17,6 +17,7 @@
 // 
 
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
@@ -35,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public delegate void SyncDelegate();
 
-        private static readonly Logger Log = LogManager.getLogger(typeof (AsyncController).Name);
+        private static readonly Logger Log = LogManager.getLogger(typeof(AsyncController).Name);
 
         public virtual IView View { get; set; }
 
@@ -105,13 +106,20 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (View.InvokeRequired)
                 {
                     //currently only sync
-                    if (true)
+                    if (wait)
                     {
                         View.Invoke(new AsyncDelegate(runnable.run), null);
                     }
                     else
                     {
-                        View.BeginInvoke(new AsyncDelegate(runnable.run), null);
+                        Task.Factory.FromAsync(View.BeginInvoke(new AsyncDelegate(runnable.run), null), View.EndInvoke)
+                            .ContinueWith(result =>
+                            {
+                                if (result.IsFaulted)
+                                {
+                                    Log.warn("Exception on async invoke", result.Exception);
+                                }
+                            });
                     }
                 }
                 else
