@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav.microsoft;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
@@ -57,7 +58,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().withLength(content.length),
                 new DisabledConnectionCallback());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -77,7 +78,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
         manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
         assertThrows(InteroperabilityException.class, () -> new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().withLength(content.length),
                 new DisabledConnectionCallback()));
         local.delete();
@@ -96,7 +97,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
         manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
         new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().withLength(content.length),
                 new DisabledConnectionCallback());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

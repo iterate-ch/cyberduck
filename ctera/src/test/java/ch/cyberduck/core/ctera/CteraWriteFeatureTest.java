@@ -5,6 +5,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -58,7 +59,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new CteraListService(session).list(test.getParent(), new DisabledListProgressListener())
                 .find(new SimplePathPredicate(test)).attributes().getSize(), 0L);
@@ -98,7 +99,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         }
         final PathAttributes attr1 = new CteraAttributesFinderFeature(session).find(test);
         Thread.sleep(1000L);
@@ -110,7 +111,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         }
         final PathAttributes attr2 = new CteraAttributesFinderFeature(session).find(test);
         assertEquals(101L, attr2.getSize());

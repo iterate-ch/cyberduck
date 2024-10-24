@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LockedException;
@@ -55,7 +56,7 @@ public class BrickLockFeatureTest extends AbstractBrickTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BrickUploadFeature upload = new BrickUploadFeature(session, new BrickWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(new BrickFindFeature(session).find(test));
         final BrickLockFeature feature = new BrickLockFeature(session);
         final String lockid = feature.lock(test);

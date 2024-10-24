@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -127,7 +128,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         IOUtils.write(content, out);
         out.close();
         final BaseB2Response reply = new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().withLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -159,7 +160,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         IOUtils.write(content, out);
         out.close();
         new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().withLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();

@@ -21,6 +21,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
@@ -53,18 +54,18 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public EueWriteFeature.Chunk upload(final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                         final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
             if(Vault.DISABLED == registry.find(session, file)) {
                 // Only allow concurrent write of chunks when not uploading to vault. Write with default feature multiple 4MB chunks in parallel
-                return new EueLargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
+                return new EueLargeUploadService(session, fileid, writer).upload(file, local, throttle, progress, streamListener, status, prompt);
             }
             // Write with multipart write feature for known file length sequentially 4MB chunks
-            return new EueUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
+            return new EueUploadService(session, fileid, writer).upload(file, local, throttle, progress, streamListener, status, prompt);
         }
         // Write single chunk smaller than threshold
-        return new EueSingleUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
+        return new EueSingleUploadService(session, fileid, writer).upload(file, local, throttle, progress, streamListener, status, prompt);
     }
 
     @Override

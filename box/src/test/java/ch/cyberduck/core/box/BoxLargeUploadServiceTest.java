@@ -20,6 +20,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
@@ -57,7 +58,7 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
         status.setChecksum(new SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final File response = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+        final File response = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
         assertTrue(status.isComplete());
         assertNotNull(response.getSha1());
         assertEquals(content.length, count.getSent());

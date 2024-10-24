@@ -355,7 +355,7 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
             // Transfer
             final Upload upload = source.getFeature(Upload.class);
-            final Object reply = upload.upload(file, local, bandwidth, streamListener, segment, connectionCallback);
+            final Object reply = upload.upload(file, local, bandwidth, listener, streamListener, segment, connectionCallback);
         }
     }
 
