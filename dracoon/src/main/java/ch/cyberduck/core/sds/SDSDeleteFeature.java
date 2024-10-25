@@ -65,7 +65,7 @@ public class SDSDeleteFeature implements Delete {
                     new NodesApi(session.getClient()).removeNode(
                             Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY);
                 }
-                nodeid.cache(file, null);
+                nodeid.cache(file, null, null);
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService(nodeid).map("Cannot delete {0}", e, file);

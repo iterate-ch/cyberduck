@@ -15,11 +15,13 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.CachingVersionIdProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -33,17 +35,31 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SDSNodeIdProvider extends CachingVersionIdProvider implements VersionIdProvider {
+public class SDSNodeIdProvider implements FileIdProvider, VersionIdProvider {
     private static final Logger log = LogManager.getLogger(SDSNodeIdProvider.class);
 
     private static final UnicodeNormalizer normalizer = new NFCNormalizer();
     private static final String ROOT_NODE_ID = "0";
 
     private final SDSSession session;
+    /**
+     * Node id as file version
+     */
+    private final CachingVersionIdProvider versions;
+    /**
+     * Reference id that is static across different file versions
+     */
+    private final CachingFileIdProvider references;
 
     public SDSNodeIdProvider(final SDSSession session) {
-        super(session.getCaseSensitivity());
         this.session = session;
+        this.versions = new CachingVersionIdProvider(session.getCaseSensitivity());
+        this.references = new CachingFileIdProvider(session.getCaseSensitivity());
+    }
+
+    public void cache(final Path file, final String nodeId, final String referenceId) {
+        this.versions.cache(file, nodeId);
+        this.references.cache(file, referenceId);
     }
 
     @Override
@@ -54,19 +70,60 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
             }
             return file.attributes().getVersionId();
         }
-        final String cached = super.getVersionId(file);
+        final String cached = versions.getVersionId(file);
         if(cached != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return cached versionid %s for file %s", cached, file));
             }
             return cached;
         }
-        return this.getNodeId(file, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
+        final Node node = this.getNode(file, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
+        if(null == node) {
+            return ROOT_NODE_ID;
+        }
+        if(null != node.getId()) {
+            return String.valueOf(node.getId());
+        }
+        return null;
     }
 
-    protected String getNodeId(final Path file, final int chunksize) throws BackgroundException {
-        if(file.isRoot()) {
+    @Override
+    public String getFileId(final Path file) throws BackgroundException {
+        if(file.isDirectory()) {
+            return null;
+        }
+        if(StringUtils.isNotBlank(file.attributes().getFileId())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getFileId(), file));
+            }
+            return file.attributes().getFileId();
+        }
+        final String cached = references.getFileId(file);
+        if(cached != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached versionid %s for file %s", cached, file));
+            }
+            return cached;
+        }
+        final Node node = this.getNode(file, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
+        if(null == node) {
             return ROOT_NODE_ID;
+        }
+        if(null != node.getReferenceId()) {
+            return String.valueOf(node.getReferenceId());
+        }
+        return null;
+    }
+
+    @Override
+    public void clear() {
+        versions.clear();
+        references.clear();
+    }
+
+    protected Node getNode(final Path file, final int chunksize) throws BackgroundException {
+        if(file.isRoot()) {
+            return null;
         }
         try {
             final String type;
@@ -101,7 +158,13 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Return node %s for file %s", node.getId(), file));
                         }
-                        return this.cache(file, node.getId().toString());
+                        if(node.getId() != null) {
+                            versions.cache(file, node.getId().toString());
+                        }
+                        if(node.getReferenceId() != null) {
+                            references.cache(file, node.getReferenceId().toString());
+                        }
+                        return node;
                     }
                 }
                 offset += chunksize;

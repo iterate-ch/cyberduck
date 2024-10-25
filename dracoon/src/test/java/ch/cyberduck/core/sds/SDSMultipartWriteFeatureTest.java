@@ -179,7 +179,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final String rommname = new AlphanumericRandomStringService().random();
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
                 new Path(rommname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final String fileid = nodeid.getNodeId(room, 1);
+        final String fileid = String.valueOf(nodeid.getNode(room, 1).getId());
         assertEquals(fileid, room.attributes().getVersionId());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
