@@ -114,19 +114,6 @@ public class FTPSession extends SSLSession<FTPClient> {
         super.disconnect();
     }
 
-    @Override
-    public void interrupt() throws BackgroundException {
-        if(host.getProtocol().isSecure()) {
-            // The client and the server must share knowledge that the connection is ending in order to avoid a truncation attack.
-            // Either party may initiate the exchange of closing messages.
-            log.warn(String.format("Skip disconnect for %s connection to workaround hang in closing socket", host.getProtocol()));
-            super.disconnect();
-        }
-        else {
-            super.interrupt();
-        }
-    }
-
     protected void configure(final FTPClient client) throws IOException {
         client.setProtocol(host.getProtocol());
         client.setSocketFactory(new ProxySocketFactory(host));
