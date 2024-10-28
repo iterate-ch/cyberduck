@@ -15,9 +15,7 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -61,15 +59,15 @@ public class EueMoveFeature implements Move {
     public Path move(final Path file, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
             final EueApiClient client = new EueApiClient(session);
+            final String resourceId = fileid.getFileId(file);
             if(status.isExists()) {
-                if(!new CaseInsensitivePathPredicate(file).test(target)) {
+                if(!resourceId.equals(fileid.getFileId(target))) {
                     if(log.isWarnEnabled()) {
                         log.warn(String.format("Trash file %s to be replaced with %s", target, file));
                     }
                     new EueTrashFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, delete);
                 }
             }
-            final String resourceId = fileid.getFileId(file);
             if(!new SimplePathPredicate(file.getParent()).test(target.getParent())) {
                 final ResourceMoveResponseEntries resourceMoveResponseEntries;
                 final String parentResourceId = fileid.getFileId(target.getParent());
