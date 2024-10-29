@@ -70,7 +70,12 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
             log.debug(String.format("Display progress alert for %s", bookmark));
         }
         final AlertController alert = new ProgressAlertController(signal, title, message, bookmark.getProtocol());
-        alert.beginSheet(parent);
+        final int returnCode = alert.beginSheet(parent);
+        switch(returnCode) {
+            case SheetCallback.DEFAULT_OPTION:
+                // User dismissed sheet
+                throw new ConnectionCanceledException();
+        }
     }
 
     @Override
