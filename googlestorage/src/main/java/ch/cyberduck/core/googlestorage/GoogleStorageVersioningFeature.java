@@ -24,10 +24,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.cache.LRUCache;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -36,6 +40,7 @@ import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageVersioningFeature implements Versioning {
+    private static final Logger log = LogManager.getLogger(GoogleStorageVersioningFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -48,42 +53,48 @@ public class GoogleStorageVersioningFeature implements Versioning {
 
     @Override
     public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
-        final Path container = containerService.getContainer(file);
-        if(container.isRoot()) {
+        final Path bucket = containerService.getContainer(file);
+        if(bucket.isRoot()) {
             return VersioningConfiguration.empty();
         }
-        if(cache.contains(container)) {
-            return cache.get(container);
+        if(cache.contains(bucket)) {
+            return cache.get(bucket);
         }
         try {
-            final Storage.Buckets.Get request = session.getClient().buckets().get(container.getName());
+            final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());
             if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             final Bucket.Versioning versioning = request.execute().getVersioning();
             final VersioningConfiguration configuration = new VersioningConfiguration(versioning != null && versioning.getEnabled());
-            cache.put(container, configuration);
+            cache.put(bucket, configuration);
             return configuration;
         }
         catch(IOException e) {
-            throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, container);
+            try {
+                throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
+            }
+            catch(AccessDeniedException l) {
+                log.warn(String.format("Missing permission to read versioning configuration for %s %s", bucket, e.getMessage()));
+                return VersioningConfiguration.empty();
+            }
         }
     }
 
     @Override
     public void setConfiguration(final Path file, final PasswordCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
-        final Path container = containerService.getContainer(file);
+        final Path bucket = containerService.getContainer(file);
         try {
-            final Storage.Buckets.Patch request = session.getClient().buckets().patch(container.getName(),
+            final Storage.Buckets.Patch request = session.getClient().buckets().patch(bucket.getName(),
                     new Bucket().setVersioning(new Bucket.Versioning().setEnabled(configuration.isEnabled())));
             if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             request.execute();
-            cache.remove(container);
+            cache.remove(bucket);
         }
         catch(IOException e) {
-            throw new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, container);
+            throw new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, bucket);
         }
     }
 
