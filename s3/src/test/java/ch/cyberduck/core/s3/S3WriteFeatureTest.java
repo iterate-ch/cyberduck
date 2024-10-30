@@ -125,6 +125,43 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testWriteAWS2SignaturePathStyle() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.bucket.virtualhost.disable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
+        assertEquals(status.getResponse().getETag(), attr.getETag());
+        assertEquals(content.length, attr.getSize());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
     public void testWriteAWS4Signature() throws Exception {
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
