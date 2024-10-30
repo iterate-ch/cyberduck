@@ -601,23 +601,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                if (!_host.getProtocol().isHostnameConfigurable())
-                {
-                    // Previously selected protocol had a default hostname. Change to default
-                    // of newly selected protocol.
-                    _host.setHostname(selected.getDefaultHostname());
-                }
+                _host.setProtocol(selected);
 
-                if (!selected.isHostnameConfigurable())
-                {
-                    // Hostname of newly selected protocol is not configurable. Change to default.
-                    _host.setHostname(selected.getDefaultHostname());
-                }
-
-                if (Utils.IsNotBlank(selected.getDefaultHostname()))
+                var hostname = HostnameConfiguratorFactory.get(selected).getHostname(_host.getHostname());
+                if (Utils.IsNotBlank(hostname))
                 {
                     // Prefill with default hostname
-                    _host.setHostname(selected.getDefaultHostname());
+                    _host.setHostname(hostname);
                 }
 
                 if (Objects.equals(_host.getDefaultPath(), _host.getProtocol().getDefaultPath()) ||
@@ -626,8 +616,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     _host.setDefaultPath(selected.getDefaultPath());
                 }
 
-                _host.setProtocol(selected);
                 _host.setPort(HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname()));
+                _host.setCredentials(CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host));
                 _options.configure(selected);
                 _validator.configure(selected);
                 ItemChanged();
