@@ -26,7 +26,6 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -38,12 +37,15 @@ import org.junit.Before;
 import java.util.Collections;
 import java.util.HashSet;
 
+import static org.junit.Assert.fail;
+
 public class AbstractSpectraTest extends VaultTest {
 
     protected SpectraSession session;
 
     @After
     public void disconnect() throws Exception {
+        session.close();
     }
 
     @Before
@@ -58,8 +60,9 @@ public class AbstractSpectraTest extends VaultTest {
                 new DefaultX509KeyManager());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                fail(reason);
+                return null;
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
