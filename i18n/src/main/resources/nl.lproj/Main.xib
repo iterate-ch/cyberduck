@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa"
+          propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -94,7 +95,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Bestand" id="243">
+                <menuItem title="File" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -349,7 +350,8 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="300"/>
-                            <menuItem title="Toon Verborgen Bestanden" keyEquivalent="R" id="301">
+                            <menuItem title="Toon Verborgen Bestanden" keyEquivalent="." id="301">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>
                                     <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
                                 </connections>
@@ -565,6 +567,6 @@ CA
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="20" height="13"/>
+        <image name="NSQuickLookTemplate" width="27" height="16"/>
     </resources>
 </document>
