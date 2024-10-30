@@ -21,8 +21,12 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -33,6 +37,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -61,6 +66,72 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
                     new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
         }
+    }
+
+    @Test
+    public void testCreateBucketAWS2SignaturePathStyle() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.bucket.virtualhost.disable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl);
+        for(Location.Name region : Collections.singletonList(new S3LocationFeature.S3Region("us-east-1"))) {
+            final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            assertTrue(feature.isSupported(test.getParent(), test.getName()));
+            test.attributes().setRegion(region.getIdentifier());
+            feature.mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+            assertTrue(new S3FindFeature(session, acl).find(test));
+            assertEquals(region.getIdentifier(), new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(test).getIdentifier());
+            new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        session.close();
+    }
+
+    @Test
+    public void testCreateBucketAWS2Signature() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.bucket.virtualhost.disable".equals(key)) {
+                    return String.valueOf(false);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl);
+        for(Location.Name region : Collections.singletonList(new S3LocationFeature.S3Region("us-east-1"))) {
+            final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            assertTrue(feature.isSupported(test.getParent(), test.getName()));
+            test.attributes().setRegion(region.getIdentifier());
+            feature.mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+            assertTrue(new S3FindFeature(session, acl).find(test));
+            assertEquals(region.getIdentifier(), new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(test).getIdentifier());
+            new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        session.close();
     }
 
     @Test(expected = InteroperabilityException.class)
