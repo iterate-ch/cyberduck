@@ -18,8 +18,8 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -78,7 +78,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = NotfoundException.class)
     public void testPreDownloadNotFound() throws Exception {
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
             new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))), new TransferStatus().withLength(1L)
