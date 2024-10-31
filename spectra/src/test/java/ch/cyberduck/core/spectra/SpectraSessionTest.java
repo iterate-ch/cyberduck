@@ -42,7 +42,7 @@ public class SpectraSessionTest extends AbstractSpectraTest {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
-                return Scheme.http;
+                return Scheme.https;
             }
         }, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
                 PROPERTIES.get("spectra.user"), "s"
@@ -59,7 +59,7 @@ public class SpectraSessionTest extends AbstractSpectraTest {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
-                return Scheme.http;
+                return Scheme.https;
             }
         }, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
                 "u", PROPERTIES.get("spectra.key")

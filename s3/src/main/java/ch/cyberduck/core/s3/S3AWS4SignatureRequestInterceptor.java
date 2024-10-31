@@ -61,7 +61,16 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
             return;
         }
         final ProviderCredentials credentials = session.getClient().getProviderCredentials();
-        final String bucketName = context.getAttribute("bucket").toString();
+        final String bucketName;
+        if(context.getAttribute("bucket") == null) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("No bucket name in context %s", context));
+            }
+            bucketName = StringUtils.EMPTY;
+        }
+        else {
+            bucketName = context.getAttribute("bucket").toString();
+        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use bucket name %s from context", bucketName));
         }
