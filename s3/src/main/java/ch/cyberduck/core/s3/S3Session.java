@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -28,15 +29,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
+import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.RFC822DateFormatter;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
@@ -49,7 +50,6 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.restore.Glacier;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -59,8 +59,10 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
+import ch.cyberduck.core.sts.STSExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -86,6 +88,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityRequest;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityResult;
 
 import static com.amazonaws.services.s3.Headers.*;
 
@@ -323,20 +331,47 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             log.warn("Skip verifying credentials with previous successful authentication event for {}", this);
             return;
         }
-        try {
-            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
-            final Location.Name location = new S3LocationFeature(S3Session.this, regions).getLocation(home);
-            log.debug("Retrieved region {}", location);
-            if(!Location.unknown.equals(location)) {
-                log.debug("Set default region to {} determined from {}", location, home);
-                //
-                host.setProperty("s3.location", location.getIdentifier());
+        final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
+        if(S3Session.isAwsHostname(host.getHostname(), false)) {
+            if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
+                final CustomClientConfiguration configuration = new CustomClientConfiguration(host,
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+                final AWSSecurityTokenServiceClientBuilder builder = AWSSecurityTokenServiceClientBuilder.standard()
+                        .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(client.getProviderCredentials()))
+                        .withClientConfiguration(configuration);
+                final AWSSecurityTokenService service = builder.build();
+                // Returns details about the IAM user or role whose credentials are used to call the operation.
+                // No permissions are required to perform this operation.
+                try {
+                    final GetCallerIdentityResult identity = service.getCallerIdentity(new GetCallerIdentityRequest());
+                    log.debug("Successfully verified credentials for {}", identity);
+                }
+                catch(AWSSecurityTokenServiceException e) {
+                    throw new STSExceptionMappingService().map(e);
+                }
+            }
+            else {
+                final Location.Name location = new S3LocationFeature(this, regions).getLocation(home);
+                log.debug("Retrieved region {}", location);
+                if(!Location.unknown.equals(location)) {
+                    log.debug("Set default region to {} determined from {}", location, home);
+                    host.setProperty("s3.location", location.getIdentifier());
+                }
             }
         }
-        catch(AccessDeniedException | InteroperabilityException e) {
-            log.warn("Failure {} querying region", e.getMessage());
-            final Path home = new DefaultHomeFinderService(this).find();
-            log.debug("Retrieved {}", home);
+        else {
+            if(home.isRoot() && StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
+                log.debug("Skip querying region for {}", home);
+                new S3ListService(this, acl).list(home, new DisabledListProgressListener());
+            }
+            else {
+                final Location.Name location = new S3LocationFeature(this, regions).getLocation(home);
+                log.debug("Retrieved region {}", location);
+                if(!Location.unknown.equals(location)) {
+                    log.debug("Set default region to {} determined from {}", location, home);
+                    host.setProperty("s3.location", location.getIdentifier());
+                }
+            }
         }
     }
 

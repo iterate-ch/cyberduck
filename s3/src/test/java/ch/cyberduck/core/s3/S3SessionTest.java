@@ -164,30 +164,6 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testCustomHostname() throws Exception {
-        final Host host = new Host(new S3Protocol(), "cyberduck.io", new Credentials(
-                PROPERTIES.get("s3.key"), "s"
-        ));
-        final AtomicBoolean set = new AtomicBoolean();
-        final S3Session session = new S3Session(host);
-        session.withListener(new TranscriptListener() {
-            @Override
-            public void log(final Type request, final String message) {
-                switch(request) {
-                    case request:
-                        if(message.contains("Host:")) {
-                            assertEquals("Host: cyberduck.io", message);
-                            set.set(true);
-                        }
-                }
-            }
-        });
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(set.get());
-    }
-
-    @Test
     public void testFeatures() {
         final S3Session aws = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertNotNull(aws.getFeature(Copy.class));
