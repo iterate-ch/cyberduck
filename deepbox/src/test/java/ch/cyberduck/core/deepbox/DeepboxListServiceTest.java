@@ -98,6 +98,26 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
     }
 
     @Test
+    public void testListDeepBoxesIncludingSharedWithMe() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path directory = new Path("/ORG 1 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(directory, new DisabledListProgressListener());
+        assertNotSame(AttributedList.emptyList(), list);
+        assertFalse(list.isEmpty());
+        assertNotNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App/ORG 1 - DeepBox Desktop App", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertNotNull(list.find(new SimplePathPredicate(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertEquals(2, list.size());
+        for(final Path f : list) {
+            assertSame(directory, f.getParent());
+            assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
+            // no modification/creation date for Companies
+            assertTrue(f.attributes().getModificationDate() < 0);
+            assertTrue(f.attributes().getCreationDate() < 0);
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
+        }
+    }
+
+    @Test
     public void testListBoxes() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path deepBox = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -108,6 +128,26 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         assertEquals(2, list.size());
         for(final Path f : list) {
             assertSame(deepBox, f.getParent());
+            assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
+            // no modification/creation date for Boxes
+            assertTrue(f.attributes().getModificationDate() < 0);
+            assertTrue(f.attributes().getCreationDate() < 0);
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new PathAttributes())));
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
+        }
+    }
+
+    @Test
+    public void testListSharedBoxes() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path shared = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(shared, new DisabledListProgressListener());
+        assertNotSame(AttributedList.emptyList(), list);
+        assertFalse(list.isEmpty());
+        assertNotNull(list.find(new SimplePathPredicate(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Testing (1 Christian Gruber)", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertEquals(1, list.size());
+        for(final Path f : list) {
+            assertSame(shared, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             // no modification/creation date for Boxes
             assertTrue(f.attributes().getModificationDate() < 0);

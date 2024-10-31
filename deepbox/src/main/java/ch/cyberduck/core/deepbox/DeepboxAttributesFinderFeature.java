@@ -112,13 +112,13 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     public DeepboxAttributesFinderFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-        this.containerService = new DeepboxPathContainerService(session);
+        this.containerService = new DeepboxPathContainerService(session, fileid);
     }
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            if(file.isRoot()) {
+            if(file.isRoot() || containerService.isSharedWithMe(file)) {
                 return PathAttributes.EMPTY;
             }
             else if(containerService.isCompany(file)) {

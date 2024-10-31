@@ -21,15 +21,19 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
+import ch.cyberduck.core.deepbox.io.swagger.client.api.OverviewRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Box;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.BoxEntry;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Boxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBox;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.DeepBoxes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.NodeContent;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Overview;
 import ch.cyberduck.core.deepcloud.DeepcloudExceptionMappingService;
 import ch.cyberduck.core.deepcloud.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.deepcloud.io.swagger.client.model.CompanyRoles;
@@ -50,13 +54,44 @@ import java.util.List;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCHILDREN;
 
+/**
+ * List files in DeepBox
+ * <p>
+ * Structure:
+ * <p>
+ * /
+ * ├── company 1
+ * │   ├── deepbox 1
+ * │   │   ├── mybox 1
+ * │   │   │   ├── inbox
+ * │   │   │   │   ├── file1.txt
+ * │   │   │   │   ├── folder1
+ * │   │   │   │   └── ...
+ * │   │   │   ├── documents
+ * │   │   │   │   ├── template-folder1
+ * │   │   │   │   ├── template-folder2
+ * │   │   │   │   ├── ...
+ * │   │   │   │   └── template-foldern
+ * │   │   │   └── trash
+ * │   │   │       └── ...
+ * │   │   └── mybox 2
+ * │   ├── deepbox 2
+ * │   │   └── mybox 3
+ * │   └── boxes shared with me
+ * │       ├── deepbox 77 (box 65)
+ * │       ├── deepbox 77 (box 67)
+ * │       └── deepbox 89 (box 78)
+ * └── company 29
+ * └── ....
+ */
 public class DeepboxListService implements ListService {
     private static final Logger log = LogManager.getLogger(DeepboxListService.class);
 
     public static final String INBOX = "Inbox";
     public static final String DOCUMENTS = "Documents";
     public static final String TRASH = "Trash";
-    public static final List<String> VIRTUALFOLDERS = Arrays.asList(INBOX, DOCUMENTS, TRASH);
+    public static final String SHARED = "Boxes shared with me";
+    public static final List<String> VIRTUALFOLDERS = Arrays.asList(INBOX, DOCUMENTS, TRASH, SHARED);
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
@@ -68,7 +103,7 @@ public class DeepboxListService implements ListService {
         this.session = session;
         this.fileid = fileid;
         this.attributes = new DeepboxAttributesFinderFeature(session, fileid);
-        this.containerService = new DeepboxPathContainerService(session);
+        this.containerService = new DeepboxPathContainerService(session, fileid);
         this.chunksize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
     }
 
@@ -76,6 +111,9 @@ public class DeepboxListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             return new CompanyListService().list(directory, listener);
+        }
+        if(containerService.isSharedWithMe(directory)) { // in Boxes shared with me
+            return new SharedWithMeListService(fileid.getCompanyNodeId(directory)).list(directory, listener);
         }
         if(containerService.isCompany(directory)) { // in Company
             return new DeepBoxesListService().list(directory, listener);
@@ -285,6 +323,40 @@ public class DeepboxListService implements ListService {
                     offset += chunksize;
                 }
                 while(offset < size);
+                final Path shared = new Path(directory, containerService.getPinnedLocalization(SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
+                if(!new SharedWithMeListService(companyId).list(shared, listener).isEmpty()) {
+                    list.add(shared);
+                }
+                return list;
+            }
+            catch(ApiException e) {
+                throw new DeepboxExceptionMappingService(fileid).map("Listing directory failed", e, directory);
+            }
+        }
+    }
+
+    private final class SharedWithMeListService implements ListService {
+
+        private final String companyId;
+
+        public SharedWithMeListService(final String companyId) {
+            this.companyId = companyId;
+        }
+
+        @Override
+        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+            try {
+                final AttributedList<Path> list = new AttributedList<>();
+                final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
+                final Overview overview = rest.getOverview(companyId, chunksize, null);
+                for(final BoxEntry box : overview.getSharedWithMe().getBoxes()) {
+                    list.add(new Path(directory,
+                            String.format("%s (%s)", DeepboxPathNormalizer.name(box.getDeepBoxName()), DeepboxPathNormalizer.name(box.getBoxName())),
+                            EnumSet.of(Path.Type.directory, Path.Type.volume),
+                            new PathAttributes().withFileId(box.getBoxNodeId()))
+                    );
+                }
+                listener.chunk(directory, list);
                 return list;
             }
             catch(ApiException e) {

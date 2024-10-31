@@ -34,16 +34,18 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Node> {
     private static final Logger log = LogManager.getLogger(DeepboxTouchFeature.class);
 
     private final DeepboxSession session;
+    private final DeepboxIdProvider fileid;
 
     public DeepboxTouchFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         super(new DeepboxWriteFeature(session, fileid));
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(workdir.isRoot() || new DeepboxPathContainerService(session).isCompany(workdir) ||
-                new DeepboxPathContainerService(session).isDeepbox(workdir) || new DeepboxPathContainerService(session).isBox(workdir)) {
+        if(workdir.isRoot() || new DeepboxPathContainerService(session, fileid).isCompany(workdir) ||
+                new DeepboxPathContainerService(session, fileid).isDeepbox(workdir) || new DeepboxPathContainerService(session, fileid).isBox(workdir)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
         final Acl acl = workdir.attributes().getAcl();

@@ -146,6 +146,15 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
     }
 
     @Test
+    public void testNoSharedWithMe() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path folder = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
+        assertEquals(Acl.EMPTY, attributes.getAcl());
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTrashFeature(session, nodeid).preflight(folder.withAttributes(attributes)));
+    }
+
+    @Test
     public void testNoDeleteBox() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
