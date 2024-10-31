@@ -61,31 +61,16 @@ public class S3LocationFeature implements Location {
 
     @Override
     public Set<Name> getLocations() {
-        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
-            final S3Region region = new S3Region(session.getHost().getRegion());
-            log.debug("Return single region {} set in bookmark", region);
-            return Collections.singleton(region);
-        }
         if(StringUtils.isNotEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
             log.debug("Return empty set for hostname {}", session.getHost());
             // Connected to single bucket
             return Collections.emptySet();
-        }
-        if(!S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
-            if(new S3Protocol().getRegions().equals(session.getHost().getProtocol().getRegions())) {
-                // Return empty set for unknown provider
-                log.debug("Return empty set for unknown provider {}", session.getHost());
-                return Collections.emptySet();
-            }
         }
         return session.getHost().getProtocol().getRegions();
     }
 
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
-        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
-            return new S3Region(session.getHost().getRegion());
-        }
         final Path bucket = containerService.getContainer(file);
         return this.getLocation(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
     }
@@ -105,7 +90,12 @@ public class S3LocationFeature implements Location {
             final S3Region region;
             if(StringUtils.isBlank(location)) {
                 log.warn("No region known for bucket {}", bucketname);
-                region = DEFAULT_REGION;
+                if(StringUtils.isNotBlank(session.getHost().getRegion())) {
+                    region = new S3Region(session.getHost().getRegion());
+                }
+                else {
+                    region = DEFAULT_REGION;
+                }
             }
             else {
                 switch(location) {
