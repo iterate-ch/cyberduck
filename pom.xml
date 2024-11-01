@@ -395,6 +395,11 @@
                 <version>31.0.1-jre</version>
             </dependency>
             <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>2.9.3</version>
+            </dependency>
+            <dependency>
                 <groupId>com.joyent.util</groupId>
                 <artifactId>fast-md5</artifactId>
                 <version>2.7.1</version>
