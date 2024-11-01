@@ -1,7 +1,7 @@
 package ch.cyberduck.core.cache;
 
 /*
- * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,13 +23,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.CacheLoader;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.Expiry;
-import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.github.benmanes.caffeine.cache.RemovalListener;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class LRUCache<Key, Value> {
     private static final Logger log = LogManager.getLogger(LRUCache.class);
@@ -55,7 +55,7 @@ public class LRUCache<Key, Value> {
     }
 
     public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader, final RemovalListener<Key, Value> listener, final long maximumSize, final long expireDuration, boolean expireAfterAccess) {
-        return new LRUCache<>(loader, listener, maximumSize, expireDuration, expireAfterAccess, null);
+        return new LRUCache<>(loader, listener, maximumSize, expireDuration, expireAfterAccess);
     }
 
     public static <Key, Value> LRUCache<Key, Value> build() {
@@ -79,33 +79,26 @@ public class LRUCache<Key, Value> {
     }
 
     public static <Key, Value> LRUCache<Key, Value> build(final RemovalListener<Key, Value> listener, final long maximumSize, final long expireDuration, boolean expireAfterAccess) {
-        return new LRUCache<>(null, listener, maximumSize, expireDuration, expireAfterAccess, null);
-    }
-
-    public static <Key, Value> LRUCache<Key, Value> build(final RemovalListener<Key, Value> listener, final long maximumSize, final Expiry<Key, Value> expiry) {
-        return new LRUCache<>(null, listener, maximumSize, -1L, true, expiry);
+        return new LRUCache<>(null, listener, maximumSize, expireDuration, expireAfterAccess);
     }
 
     private final Cache<Key, Value> delegate;
 
-    private LRUCache(final Function<Key, Value> loader, final RemovalListener<Key, Value> listener, final long maximumSize, final long expireDuration, boolean expireAfterAccess, final Expiry<Key, Value> expiry) {
-        final Caffeine<Object, Object> builder = Caffeine.newBuilder();
+    private LRUCache(final Function<Key, Value> loader, final RemovalListener<Key, Value> listener, final long maximumSize, final long expireDuration, boolean expireAfterAccess) {
+        final CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
         if(listener != null) {
             builder.removalListener(new RemovalListener<Key, Value>() {
                 @Override
-                public void onRemoval(final Key key, final Value value, final RemovalCause cause) {
+                public void onRemoval(final RemovalNotification<Key, Value> notification) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Removed %s from cache with cause %s", key, cause));
+                        log.debug(String.format("Removed %s from cache with cause %s", notification.getKey(), notification.getCause()));
                     }
-                    listener.onRemoval(key, value, cause);
+                    listener.onRemoval(notification);
                 }
             });
         }
         if(maximumSize > 0) {
             builder.maximumSize(maximumSize);
-        }
-        if(expiry != null) {
-            builder.expireAfter(expiry);
         }
         if(expireDuration > 0) {
             if(expireAfterAccess) {
@@ -128,9 +121,9 @@ public class LRUCache<Key, Value> {
         }
     }
 
-    public Value get(final Key key) {
+    public Value get(final Key key) throws UncheckedExecutionException {
         if(delegate instanceof LoadingCache) {
-            return ((LoadingCache<Key, Value>) delegate).get(key);
+            return ((LoadingCache<Key, Value>) delegate).getUnchecked(key);
         }
         return delegate.getIfPresent(key);
     }
@@ -157,11 +150,11 @@ public class LRUCache<Key, Value> {
     }
 
     public long size() {
-        return delegate.estimatedSize();
+        return delegate.size();
     }
 
     public boolean isEmpty() {
-        return delegate.estimatedSize() == 0;
+        return delegate.size() == 0;
     }
 
     public boolean contains(final Key key) {
