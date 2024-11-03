@@ -71,7 +71,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                 return new S3MultipartUploadService(session, writer, acl).upload(file, local, throttle, listener, status, prompt);
             }
             catch(NotfoundException | InteroperabilityException e) {
-                log.warn("Failure {} using multipart upload. Fallback to single upload.", e);
+                log.warn("Failure {} using multipart upload. Fallback to single upload.", e.getMessage());
                 status.append(false);
                 try {
                     return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);

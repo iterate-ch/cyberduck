@@ -60,7 +60,7 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
         }
         final boolean retry = super.retryRequest(exception, executionCount, context);
         if(retry) {
-            log.info("Retry request with failure {}", exception);
+            log.info("Retry request with failure {}", exception.getMessage());
         }
         else {
             log.warn("Cancel retry request with execution count {} for failure {}", executionCount, exception);

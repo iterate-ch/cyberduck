@@ -61,7 +61,7 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
                         synchronize(ProfilesFinder.Visitor.Noop);
                     }
                     catch(BackgroundException e) {
-                        log.warn("Failure {} refreshing profiles", e);
+                        log.warn("Failure {} refreshing profiles", e.getMessage());
                     }
                 }
             }, 0L, delay.toMillis());

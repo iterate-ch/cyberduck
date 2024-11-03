@@ -125,7 +125,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             this.setSwallowedExceptionListener(new SwallowedExceptionListener() {
                 @Override
                 public void onSwallowException(final Exception e) {
-                    log.warn("Ignore failure {}", e);
+                    log.warn("Ignore failure {}", e.getMessage(), e);
                 }
             });
         }

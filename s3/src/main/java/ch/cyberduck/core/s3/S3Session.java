@@ -334,7 +334,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
         }
         catch(AccessDeniedException | InteroperabilityException e) {
-            log.warn("Failure {} querying region", e);
+            log.warn("Failure {} querying region", e.getMessage());
             final Path home = new DefaultHomeFinderService(this).find();
             log.debug("Retrieved {}", home);
         }

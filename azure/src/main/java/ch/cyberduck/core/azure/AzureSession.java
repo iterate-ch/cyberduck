@@ -163,7 +163,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             // Success
         }
         catch(NotfoundException e) {
-            log.warn("Ignore failure {}", e);
+            log.warn("Ignore failure {}", e.getMessage());
         }
     }
 

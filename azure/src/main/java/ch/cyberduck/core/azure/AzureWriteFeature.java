@@ -168,7 +168,7 @@ public class AzureWriteFeature implements Write<Void> {
                 @Override
                 protected void handleIOException(final IOException e) throws IOException {
                     if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
-                        log.warn("Ignore failure {}", e);
+                        log.warn("Ignore failure {}", e.getMessage());
                         return;
                     }
                     final Throwable cause = ExceptionUtils.getRootCause(e);

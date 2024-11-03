@@ -80,7 +80,7 @@ public class S3AuthenticationResponseInterceptor extends DisabledServiceUnavaila
                     log.warn("Failure parsing response entity from {}", response);
                 }
                 catch(BackgroundException e) {
-                    log.warn("Failure {} retrieving credentials", e);
+                    log.warn("Failure {} retrieving credentials", e.getMessage());
                 }
         }
         return false;

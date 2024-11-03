@@ -73,7 +73,7 @@ public class MountWorker extends Worker<Path> {
             return home;
         }
         catch(NotfoundException e) {
-            log.warn("Mount failed with {}", e);
+            log.warn("Mount failed with {}", e.getMessage());
             if(new HostPreferences(session.getHost()).getBoolean("mount.notfound.skipfallback")) {
                 throw e;
             }

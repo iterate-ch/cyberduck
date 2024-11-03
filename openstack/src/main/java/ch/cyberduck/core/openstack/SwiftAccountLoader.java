@@ -63,7 +63,7 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
                         info.setTempUrlKey(key);
                     }
                     catch(GenericException e) {
-                        log.warn("Ignore failure {} updating account metadata", e);
+                        log.warn("Ignore failure {} updating account metadata", e.getMessage());
                     }
                 }
                 accounts.put(region, info);

@@ -160,7 +160,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
                             }
                         }
                         catch(BackgroundException e) {
-                            log.warn("Ignore failure {} retrieving key pair", e);
+                            log.warn("Ignore failure {} retrieving key pair", e.getMessage());
                         }
                     }
                     else {

@@ -84,7 +84,7 @@ public class SMBRootListService implements ListService {
                 return result;
             }
             catch(SMB2Exception e) {
-                log.warn("Failure {} getting share info from server", e);
+                log.warn("Failure {} getting share info from server", e.getMessage());
                 final Credentials name = prompt.prompt(session.getHost(),
                         LocaleFactory.localizedString("SMB Share"),
                         LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),

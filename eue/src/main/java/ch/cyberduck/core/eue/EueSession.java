@@ -209,7 +209,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     client.execute(new HttpPost(host.getProperty("pacs.url")));
                 }
                 catch(IOException e) {
-                    log.warn("Ignore failure {} running Personal Agent Context Service (PACS) request", e);
+                    log.warn("Ignore failure {} running Personal Agent Context Service (PACS) request", e.getMessage());
                 }
             }
             if(StringUtils.isNotBlank(new HostPreferences(host).getProperty("cryptomator.vault.name.default"))) {

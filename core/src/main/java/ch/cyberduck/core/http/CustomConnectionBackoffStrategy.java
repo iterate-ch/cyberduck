@@ -34,11 +34,11 @@ public class CustomConnectionBackoffStrategy extends DefaultServiceUnavailableRe
     @Override
     public boolean shouldBackoff(final Throwable t) {
         if(t instanceof SocketTimeoutException) {
-            log.warn("Backoff for timeout failure {}", t);
+            log.warn("Backoff for timeout failure {}", t.getMessage());
             return true;
         }
         if(t instanceof ConnectException) {
-            log.warn("Backoff for connect failure {}", t);
+            log.warn("Backoff for connect failure {}", t.getMessage());
             return true;
         }
         return false;

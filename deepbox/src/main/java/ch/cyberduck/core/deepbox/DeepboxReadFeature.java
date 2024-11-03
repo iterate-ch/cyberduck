@@ -109,7 +109,7 @@ public class DeepboxReadFeature implements Read {
                     }
                 }
                 catch(ApiException e) {
-                    log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                    log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()));
                     failure.set(new DeepboxExceptionMappingService(fileid).map(e));
                     signal.countDown();
                 }

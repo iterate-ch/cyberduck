@@ -99,7 +99,7 @@ public class HttpReachability implements Reachability {
             }
         }
         catch(ClientProtocolException e) {
-            log.warn("Ignore HTTP error response {}", e);
+            log.warn("Ignore HTTP error response {}", e.getMessage());
         }
         catch(SSLException e) {
             try {
@@ -107,7 +107,7 @@ public class HttpReachability implements Reachability {
             }
             catch(ConnectionCanceledException c) {
                 // Certificate error only
-                log.warn("Ignore SSL failure {}", e);
+                log.warn("Ignore SSL failure {}", e.getMessage());
             }
         }
         catch(SocketException e) {

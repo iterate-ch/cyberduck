@@ -292,7 +292,7 @@ public class SFTPSession extends Session<SSHClient> {
                                 new WindowsOpenSSHAgentAuthenticator(identityAgent)));
                     }
                     catch(AgentProxyException e) {
-                        log.warn("Agent proxy failed with {}", e);
+                        log.warn("Agent proxy failed with {}", e.getMessage());
                     }
                     break;
                 default:
@@ -301,7 +301,7 @@ public class SFTPSession extends Session<SSHClient> {
                                 new OpenSSHAgentAuthenticator(identityAgent)));
                     }
                     catch(AgentProxyException e) {
-                        log.warn("Agent proxy failed with {}", e);
+                        log.warn("Agent proxy failed with {}", e.getMessage());
                     }
                     break;
             }

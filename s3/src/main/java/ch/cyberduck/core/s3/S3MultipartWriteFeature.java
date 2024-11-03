@@ -186,7 +186,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn("Skip closing with previous failure {}", canceled.get());
+                    log.warn("Skip closing with previous failure {}", canceled.get().getMessage());
                     return;
                 }
                 if(completed.isEmpty()) {

@@ -23,6 +23,6 @@ public class DisabledLicenseVerifierCallback implements LicenseVerifierCallback 
 
     @Override
     public void failure(final InvalidLicenseException failure) {
-        log.warn("Failure verifying registration key. {}", failure);
+        log.warn("Failure verifying registration key. {}", failure.getMessage());
     }
 }

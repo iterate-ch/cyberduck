@@ -159,7 +159,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             }
             catch(InterruptedException e) {
                 // Errors are handled in transfer worker error callback already
-                log.warn("Unhandled failure {}", e);
+                log.warn("Unhandled failure {}", e.getMessage());
                 throw new ConnectionCanceledException(e);
             }
             catch(ExecutionException e) {

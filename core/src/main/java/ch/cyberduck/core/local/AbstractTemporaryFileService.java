@@ -82,7 +82,7 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
             folder.mkdir();
         }
         catch(AccessDeniedException e) {
-            log.warn("Failure {} creating intermediate folder", e);
+            log.warn("Failure {} creating intermediate folder", e.getMessage());
             return this.delete(LocalFactory.get(temp,
                     String.format("%s-%s", new AlphanumericRandomStringService().random(), filename)));
         }

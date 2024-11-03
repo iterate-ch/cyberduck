@@ -96,7 +96,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                             }
                             catch(IOException | B2ApiException e) {
                                 // Upload many files to the same upload_url until that URL gives an error
-                                log.warn("Remove cached upload URL after failure {}", e);
+                                log.warn("Remove cached upload URL after failure {}", e.toString());
                                 urls.remove();
                                 // Retry
                                 return this.upload(uploadUrl, entity, checksum);

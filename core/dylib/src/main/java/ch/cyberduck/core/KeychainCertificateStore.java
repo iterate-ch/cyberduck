@@ -144,7 +144,7 @@ public final class KeychainCertificateStore implements CertificateStore {
                 certs.addObject(certificateRef);
             }
             catch(CertificateEncodingException e) {
-                log.error("Failure {} retrieving encoded certificate", e);
+                log.error("Failure {} retrieving encoded certificate", e.getMessage());
             }
         }
         return certs;

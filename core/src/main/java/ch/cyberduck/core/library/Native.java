@@ -49,13 +49,13 @@ public final class Native {
                 return true;
             }
             catch(UnsatisfiedLinkError e) {
-                log.warn(String.format("Failed to load %s:%s", path, e.getMessage()), e);
+                log.warn(String.format("Failed to load %s. %s", path, e.getMessage()), e);
                 try {
                     System.loadLibrary(library);
                     return true;
                 }
                 catch(UnsatisfiedLinkError f) {
-                    log.warn(String.format("Failed to load %s:%s", library, e.getMessage()), e);
+                    log.warn(String.format("Failed to load %s. %s", library, e.getMessage()), e);
                     return false;
                 }
             }

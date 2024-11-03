@@ -79,7 +79,7 @@ public class BrickFileMigrationFeature {
                     }
                 }
                 catch(ApiException e) {
-                    log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                    log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()));
                     failure.set(new BrickExceptionMappingService().map(e));
                     signal.countDown();
                 }

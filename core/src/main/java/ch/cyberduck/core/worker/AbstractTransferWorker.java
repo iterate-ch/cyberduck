@@ -292,7 +292,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         // Prompt to continue or abort for application errors
                         else if(error.prompt(new TransferItem(file, local), parent, e, table.size())) {
                             // Continue
-                            log.warn("Ignore transfer failure {}", e);
+                            log.warn("Ignore transfer failure {}", e.getMessage());
                             return null;
                         }
                         else {
@@ -443,7 +443,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             // Prompt to continue or abort for application errors
                             if(error.prompt(item, segment, e, table.size())) {
                                 // Continue
-                                log.warn("Ignore transfer failure {}", e);
+                                log.warn("Ignore transfer failure {}", e.getMessage());
                             }
                             else {
                                 throw new TransferCanceledException(e);

@@ -50,7 +50,7 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
                     return true;
                 }
                 catch(BackgroundException e) {
-                    log.warn("Failure {} refreshing OAuth tokens", e);
+                    log.warn("Failure {} refreshing OAuth tokens", e.getMessage());
                 }
         }
         return false;

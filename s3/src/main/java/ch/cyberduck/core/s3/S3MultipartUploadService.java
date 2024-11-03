@@ -111,7 +111,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn("Ignore failure listing incomplete multipart uploads. {}", e);
+                log.warn("Ignore failure listing incomplete multipart uploads. {}", e.getMessage());
             }
             final Path bucket = containerService.getContainer(file);
             final List<MultipartPart> completed = new ArrayList<>();
@@ -263,7 +263,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             }
         }
         catch(AccessDeniedException | InteroperabilityException e) {
-            log.warn("Ignore failure listing incomplete multipart uploads. {}", e);
+            log.warn("Ignore failure listing incomplete multipart uploads. {}", e.getMessage());
         }
         return Write.override;
     }

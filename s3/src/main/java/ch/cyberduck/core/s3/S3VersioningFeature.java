@@ -182,7 +182,7 @@ public class S3VersioningFeature implements Versioning {
                     }
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn("Ignore failure {}", e);
+                    log.warn("Ignore failure {}", e.getMessage());
                 }
                 final Path bucket = containerService.getContainer(file);
                 final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();

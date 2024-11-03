@@ -82,7 +82,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         }
         catch(LoginFailureException e) {
             // Expired STS tokens
-            log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e);
+            log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
             return this.tokens = this.authorize(oauth.refresh(oidc));
         }
     }

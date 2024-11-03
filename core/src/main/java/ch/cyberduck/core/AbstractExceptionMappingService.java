@@ -87,7 +87,7 @@ public abstract class AbstractExceptionMappingService<T extends Throwable> imple
 
     protected BackgroundException wrap(final T failure, final String title, final StringBuilder buffer) {
         if(buffer.toString().isEmpty()) {
-            log.warn("No message for failure {}", failure);
+            log.warn("No message for failure {}", failure.getMessage());
             this.append(buffer, LocaleFactory.localizedString("Unknown"));
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {

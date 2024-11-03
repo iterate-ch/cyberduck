@@ -88,7 +88,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
         catch(InteroperabilityException e) {
             if(expect) {
                 // Handle 417 Expectation Failed
-                log.warn("Retry failure {} with Expect: Continue removed", e);
+                log.warn("Retry failure {} with Expect: Continue removed", e.getMessage());
                 return this.write(file, this.toHeaders(file, status.withLockId(null), false), status);
             }
             throw e;

@@ -158,7 +158,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                             }
                         }
                         catch(JsonParseException | IllegalArgumentException e) {
-                            log.warn("Ignore failure {}", e);
+                            log.warn("Ignore failure {}", e.toString());
                         }
                         break;
                     case HttpStatus.SC_FORBIDDEN:

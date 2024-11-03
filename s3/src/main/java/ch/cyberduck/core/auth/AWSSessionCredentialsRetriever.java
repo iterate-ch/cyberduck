@@ -125,7 +125,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
             });
         }
         catch(IOException e) {
-            log.warn("Failure {} to retrieve session credentials", e);
+            log.warn("Failure {} to retrieve session credentials", e.getMessage());
             throw new LoginFailureException(e.getMessage(), e);
         }
     }

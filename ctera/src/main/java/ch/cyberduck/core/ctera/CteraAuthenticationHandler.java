@@ -344,7 +344,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
                     return true;
                 }
                 catch(BackgroundException e) {
-                    log.error("Failure refreshing cookie. {}", e);
+                    log.error("Failure refreshing cookie. {}", e.getMessage());
                     return false;
                 }
         }

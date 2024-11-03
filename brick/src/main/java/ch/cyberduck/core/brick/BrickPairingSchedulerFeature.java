@@ -80,12 +80,12 @@ public class BrickPairingSchedulerFeature {
                 this.operate(callback);
             }
             catch(ConnectionCanceledException e) {
-                log.warn(String.format("Cancel processing scheduled task. %s", e.getMessage()), e);
+                log.warn(String.format("Cancel processing scheduled task. %s", e.getMessage()));
                 callback.close(null);
                 this.shutdown();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()));
                 callback.close(null);
                 this.shutdown();
             }

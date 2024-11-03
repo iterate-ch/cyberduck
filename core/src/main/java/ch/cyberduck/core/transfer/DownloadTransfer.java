@@ -248,7 +248,7 @@ public class DownloadTransfer extends Transfer {
                 catch(AccessDeniedException e) {
                     if(error.prompt(entry.getKey(), status, e, files.size())) {
                         // Continue
-                        log.warn("Ignore transfer failure {}", e);
+                        log.warn("Ignore transfer failure {}", e.getMessage());
                     }
                     else {
                         throw new TransferCanceledException(e);
@@ -273,7 +273,7 @@ public class DownloadTransfer extends Transfer {
                 log.warn("Prompt with failure {} for item {} only", e, item.getKey());
                 if(error.prompt(item.getKey(), item.getValue(), e, files.size())) {
                     // Continue
-                    log.warn("Ignore transfer failure {}", e);
+                    log.warn("Ignore transfer failure {}", e.getMessage());
                 }
                 else {
                     throw new TransferCanceledException(e);

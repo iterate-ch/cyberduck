@@ -76,7 +76,7 @@ public class StatelessSessionPool implements SessionPool {
                 session.close();
             }
             catch(BackgroundException e) {
-                log.warn("Ignore failure {} closing connection", e);
+                log.warn("Ignore failure {} closing connection", e.getMessage());
             }
             finally {
                 session.removeListener(transcript);
@@ -96,7 +96,7 @@ public class StatelessSessionPool implements SessionPool {
                 session.close();
             }
             catch(BackgroundException e) {
-                log.warn("Failure {} closing session", e);
+                log.warn("Failure {} closing session", e.getMessage());
             }
             finally {
                 registry.clear();

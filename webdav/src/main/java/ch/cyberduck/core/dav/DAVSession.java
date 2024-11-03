@@ -171,7 +171,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             catch(SardineException e) {
                 switch(e.getStatusCode()) {
                     case HttpStatus.SC_NOT_FOUND:
-                        log.warn("Ignore failure {}", e);
+                        log.warn("Ignore failure {}", e.getMessage());
                         break;
                     case HttpStatus.SC_NOT_IMPLEMENTED:
                     case HttpStatus.SC_FORBIDDEN:

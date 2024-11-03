@@ -227,7 +227,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn("Skip closing with previous failure {}", canceled.get());
+                    log.warn("Skip closing with previous failure {}", canceled.get().getMessage());
                     return;
                 }
                 // Skip complete if previously switched to simple upload because of smaller chunk size

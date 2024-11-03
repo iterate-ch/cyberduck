@@ -89,7 +89,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                     break;
                 }
             default:
-                log.warn("No retry for failure {}", failure);
+                log.warn("No retry for failure {}", failure.getMessage());
                 return false;
         }
         log.warn("Retry for failure {} with delay of {}s", failure, delay);
@@ -98,7 +98,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 @Override
                 public void validate() throws ConnectionCanceledException {
                     if(cancel.isCanceled()) {
-                        log.warn("Abort pausing retry after failure {}", failure);
+                        log.warn("Abort pausing retry after failure {}", failure.getMessage());
                         throw new ConnectionCanceledException();
                     }
                 }

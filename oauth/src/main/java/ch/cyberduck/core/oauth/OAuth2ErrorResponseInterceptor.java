@@ -45,7 +45,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                     return true;
                 }
                 catch(BackgroundException e) {
-                    log.warn("Failure {} refreshing OAuth tokens", e);
+                    log.warn("Failure {} refreshing OAuth tokens", e.getMessage());
                 }
         }
         return false;

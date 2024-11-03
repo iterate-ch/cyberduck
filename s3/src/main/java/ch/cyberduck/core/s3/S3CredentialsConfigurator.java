@@ -211,7 +211,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                                 assumeRoleResult.getCredentials().getExpiration().getTime()));
                     }
                     catch(AWSSecurityTokenServiceException e) {
-                        log.warn(e.getErrorMessage(), e);
+                        log.warn(e.getErrorMessage());
                         return credentials;
                     }
                 }
@@ -255,7 +255,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                                 sessionTokenResult.getCredentials().getExpiration().getTime()));
                     }
                     catch(AWSSecurityTokenServiceException e) {
-                        log.warn(e.getErrorMessage(), e);
+                        log.warn(e.getErrorMessage());
                         return credentials;
                     }
                 }
@@ -303,7 +303,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
         }
         catch(AccessDeniedException | IllegalArgumentException | IOException e) {
-            log.warn(String.format("Failure reading %s and %s", configFile, credentialsFile), e);
+            log.warn(String.format("Failure reading %s and %s", configFile, credentialsFile));
             return this;
         }
         if(allProfileProperties.isEmpty()) {
@@ -371,7 +371,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
         }
         catch(IOException | AccessDeniedException e) {
-            log.warn("Failure retrieving SSO credentials.", e);
+            log.warn("Failure retrieving SSO credentials. {}", e.getMessage());
             return null;
         }
     }

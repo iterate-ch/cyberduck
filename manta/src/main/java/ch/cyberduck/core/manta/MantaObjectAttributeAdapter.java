@@ -66,7 +66,7 @@ public final class MantaObjectAttributeAdapter implements AttributesAdapter<Mant
                 attributes.setLink(new DescriptiveUrl(link, DescriptiveUrl.Type.http));
             }
             catch(URISyntaxException e) {
-                log.warn(String.format("Cannot set link. Web URL returned %s", joinedPath), e);
+                log.warn("Cannot set link. Web URL returned {}", joinedPath);
             }
         }
         attributes.setSize(object.getContentLength());

@@ -190,7 +190,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn("Skip closing with previous failure {}", canceled.get());
+                    log.warn("Skip closing with previous failure {}", canceled.get().toString());
                     return;
                 }
                 if(TransferStatus.UNKNOWN_LENGTH == overall.getLength() || 0L == overall.getLength()) {

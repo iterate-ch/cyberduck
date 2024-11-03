@@ -192,7 +192,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn("Skip closing with previous failure {}", canceled.get());
+                    log.warn("Skip closing with previous failure {}", canceled.get().toString());
                     return;
                 }
                 if(completed.isEmpty()) {

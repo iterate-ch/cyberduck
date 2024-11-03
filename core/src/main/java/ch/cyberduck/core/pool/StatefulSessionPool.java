@@ -69,7 +69,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
                         connect.close(conn);
                     }
                     catch(final BackgroundException e) {
-                        log.warn("Ignore failure {} closing connection", e);
+                        log.warn("Ignore failure {} closing connection", e.getMessage());
                     }
                 }
             }

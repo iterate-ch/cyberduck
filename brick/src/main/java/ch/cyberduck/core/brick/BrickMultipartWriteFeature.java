@@ -168,7 +168,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn("Skip closing with previous failure {}", canceled.get());
+                    log.warn("Skip closing with previous failure {}", canceled.get().getMessage());
                     return;
                 }
                 if(null == ref) {

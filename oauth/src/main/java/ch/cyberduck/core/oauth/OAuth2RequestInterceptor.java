@@ -95,7 +95,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
             return tokens = super.refresh(previous);
         }
         catch(LoginFailureException e) {
-            log.warn("Failure {} refreshing OAuth tokens", e);
+            log.warn("Failure {} refreshing OAuth tokens", e.getMessage());
             return tokens = this.authorize();
         }
     }

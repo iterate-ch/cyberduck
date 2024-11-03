@@ -1971,7 +1971,7 @@ public class InfoController extends ToolbarWindowController {
                             transferAcceleration = session.getFeature(TransferAcceleration.class).getStatus(file);
                         }
                         catch(InteroperabilityException | ConflictException e) {
-                            log.warn("Ignore failure {} reading transfer acceleration", e);
+                            log.warn("Ignore failure {} reading transfer acceleration", e.getMessage());
                             // 405 The specified method is not allowed against this resource
                         }
                     }

@@ -298,10 +298,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.error("No available key pair algorithm with status required found.");
         }
         catch(ApiException e) {
-            log.warn("Ignore failure reading key pair version. {}", new SDSExceptionMappingService(nodeid).map(e));
+            log.warn("Ignore failure reading key pair version. {}", e.getMessage());
         }
         catch(UnknownVersionException e) {
-            log.warn("Ignore failure reading required key pair algorithm. {}", new TripleCryptExceptionMappingService().map(e));
+            log.warn("Ignore failure reading required key pair algorithm. {}", e.getMessage());
         }
         return UserKeyPair.Version.RSA2048;
     }
@@ -375,7 +375,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             throw new TripleCryptExceptionMappingService().map(e);
         }
         catch(ApiException e) {
-            log.warn("Ignore failure unlocking user key pair. {}", new SDSExceptionMappingService(nodeid).map(e));
+            log.warn("Ignore failure unlocking user key pair. {}", e.getMessage());
         }
         catch(LoginCanceledException e) {
             log.warn("Ignore cancel unlocking triple crypt private key pair");
@@ -396,7 +396,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null)));
             }
             catch(ApiException e) {
-                log.warn("Failure updating user info. {}", new SDSExceptionMappingService(nodeid).map(e));
+                log.warn("Failure updating user info. {}", e.getMessage());
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -428,7 +428,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     log.debug("User does not have a keypair for version {}", UserKeyPair.Version.RSA2048.getValue());
                 }
                 else {
-                    log.warn("Failure updating user key pair. {}", new SDSExceptionMappingService(nodeid).map(e));
+                    log.warn("Failure updating user key pair. {}", e.getMessage());
                     throw new SDSExceptionMappingService(nodeid).map(e);
                 }
             }
@@ -461,7 +461,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 log.info("Server version {}", softwareVersion.get());
             }
             catch(ApiException e) {
-                log.warn("Failure {} updating software version", new SDSExceptionMappingService(nodeid).map(e));
+                log.warn("Failure {} updating software version", e.getMessage());
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -475,7 +475,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn("Failure {} reading system defaults", new SDSExceptionMappingService(nodeid).map(e));
+                log.warn("Failure {} reading system defaults", e.getMessage());
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -489,7 +489,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn("Failure {} reading configuration", new SDSExceptionMappingService(nodeid).map(e));
+                log.warn("Failure {} reading configuration", e.getMessage());
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -506,7 +506,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     }
                     catch(ApiException e) {
                         // Precondition: Right "Config Read" required.
-                        log.warn("Failure {} reading configuration", new SDSExceptionMappingService(nodeid).map(e));
+                        log.warn("Failure {} reading configuration", e.getMessage());
                         throw new SDSExceptionMappingService(nodeid).map(e);
                     }
                 }
