@@ -113,16 +113,6 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     }
 
     @Override
-    public Spliterator<Host> spliterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Stream<Host> stream() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean allowsAdd() {
         return false;
     }

@@ -68,6 +68,13 @@ public abstract class NSWindow extends NSResponder {
      */
     public static final int NSUnifiedTitleAndToolbarWindowMask = 1 << 12;
     /**
+     * When set, the window’s contentView consumes the full size of the window. Although you can combine this
+     * constant with other window style masks, it is respected only for windows with a title bar. Note that using
+     * this mask opts in to layer-backing. Use the contentLayoutRect or the contentLayoutGuide to lay out views
+     * underneath the title bar–toolbar area.
+     */
+    public static final int NSWindowStyleMaskFullSizeContentView = 1 << 15;
+    /**
      * used with NSRunLoop's performSelector:target:argument:order:modes:<br>
      * <i>native declaration : line 55</i>
      */
@@ -275,7 +282,7 @@ public abstract class NSWindow extends NSResponder {
 
     public static void setAllowsAutomaticWindowTabbing(boolean automatic) {
         if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(
-            Foundation.selector("setAllowsAutomaticWindowTabbing:"))) {
+                Foundation.selector("setAllowsAutomaticWindowTabbing:"))) {
             CLASS.setAllowsAutomaticWindowTabbing(automatic);
         }
     }

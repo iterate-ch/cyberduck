@@ -70,6 +70,8 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
+import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.jna.PlistSerializer;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
@@ -268,9 +270,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Delegate
     private BookmarkTableDataSource bookmarkModel;
     @Outlet
-    private NSTableView bookmarkTable;
+    private NSOutlineView bookmarkTable;
     @Delegate
-    private AbstractTableDelegate<Host, BookmarkColumn> bookmarkTableDelegate;
+    private AbstractBookmarkTableDelegate bookmarkTableDelegate;
     @Outlet
     private NSSearchField searchField;
     @Outlet
@@ -1024,10 +1026,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.setBookmarkFilter(null);
         this.reloadBookmarks();
         if(this.isMounted()) {
-            int row = this.bookmarkModel.getSource().indexOf(pool.getHost());
-            if(row != -1) {
-                this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
-                this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
+            final NSInteger row = bookmarkTable.rowForItem(pool.getHost().serialize(new PlistSerializer()));
+            if(row.intValue() != -1) {
+                this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+                this.bookmarkTable.scrollRowToVisible(row);
             }
             else {
                 this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
@@ -1035,8 +1037,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         }
         else {
-            this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
-            this.bookmarkTable.scrollRowToVisible(new NSInteger(0));
+            this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(1)), false);
+            this.bookmarkTable.scrollRowToVisible(new NSInteger(1));
         }
         this.getFocus();
     }
@@ -1046,6 +1048,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void reloadBookmarks() {
         bookmarkTable.reloadData();
+//        bookmarkTable.reloadItem_reloadChildren(null, true);
         this.setStatus();
     }
 
@@ -1529,7 +1532,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.reload();
     }
 
-    public NSTableView getBookmarkTable() {
+    public NSOutlineView getBookmarkTable() {
         return bookmarkTable;
     }
 
@@ -1538,7 +1541,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     // ----------------------------------------------------------
 
     @Action
-    public void setBookmarkTable(NSTableView view) {
+    public void setBookmarkTable(final NSOutlineView view) {
         bookmarkTable = view;
         bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
         bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(this)).id());
@@ -1548,6 +1551,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
             c.setDataCell(imageCellPrototype);
             bookmarkTable.addTableColumn(c);
+            bookmarkTable.setOutlineTableColumn(c);
         }
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkColumn.bookmark.name());
@@ -1568,13 +1572,36 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             bookmarkTable.addTableColumn(c);
         }
-        bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractTableDelegate<Host, BookmarkColumn>(
+        bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractBookmarkTableDelegate(
                 bookmarkTable.tableColumnWithIdentifier(BookmarkColumn.bookmark.name())
         ) {
             private static final double kSwipeGestureLeft = 1.000000;
             private static final double kSwipeGestureRight = -1.000000;
             private static final double kSwipeGestureUp = 1.000000;
             private static final double kSwipeGestureDown = -1.000000;
+
+            public NSCell outlineView_dataCellForTableColumn_item(final NSOutlineView view, final NSTableColumn column, final NSObject item) {
+                if(null == item) {
+                    return null;
+                }
+                if(null == column) {
+                    if(outlineView_isGroupItem(view, item)) {
+                        // When each row (identified by the item) is being drawn, this method is first called
+                        // with a nil value for tableColumn. At this time, you can return a cell that is used to draw the entire row, acting like a group
+                        return textCellPrototype;
+                    }
+                    return null;
+                }
+                return column.dataCell();
+            }
+
+            @Override
+            public boolean outlineView_shouldSelectItem(final NSOutlineView view, final NSObject item) {
+                if(this.outlineView_isGroupItem(view, item)) {
+                    return false;
+                }
+                return true;
+            }
 
             @Override
             public String tooltip(Host bookmark, final BookmarkColumn column) {
@@ -1587,20 +1614,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
             @Override
-            public void enterKeyPressed(final ID sender) {
-                this.tableRowDoubleClicked(sender);
-            }
-
-            @Override
             public void deleteKeyPressed(final ID sender) {
                 if(bookmarkModel.getSource().allowsDelete()) {
                     BrowserController.this.deleteBookmarkButtonClicked(sender);
                 }
-            }
-
-            @Override
-            public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-
             }
 
             @Override
@@ -1612,7 +1629,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
             @Action
-            public CGFloat tableView_heightOfRow(NSTableView view, NSInteger row) {
+            public CGFloat outlineView_heightOfRowByItem(final NSOutlineView view, final NSObject item) {
+                if(outlineView_isGroupItem(view, item)) {
+                    return new CGFloat(18);
+                }
                 final int size = preferences.getInteger("bookmark.icon.size");
                 if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
                     return new CGFloat(18);
@@ -1628,15 +1648,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 return true;
             }
 
-            @Action
-            public String tableView_typeSelectStringForTableColumn_row(NSTableView view,
-                                                                       NSTableColumn tableColumn,
-                                                                       NSInteger row) {
-                return BookmarkNameProvider.toString(bookmarkModel.getSource().get(row.intValue()));
+            public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view, final NSTableColumn column, final NSObject item) {
+                final NSDictionary dict = Rococoa.cast(item, NSDictionary.class);
+                return BookmarkNameProvider.toString(new HostDictionary(new DeserializerFactory(PlistDeserializer.class)).deserialize(dict));
             }
 
-            @Action
-            public boolean tableView_isGroupRow(NSTableView view, NSInteger row) {
+            @Override
+            public boolean outlineView_isGroupItem(final NSOutlineView view, final NSObject item) {
+                if(null == item) {
+                    return false;
+                }
+                if(item.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class))) {
+                    return true;
+                }
                 return false;
             }
 
@@ -1646,7 +1670,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              * @param event Swipe event
              */
             @Action
-            public void swipeWithEvent(NSEvent event) {
+            public void swipeWithEvent(final NSEvent event) {
                 if(event.deltaY().doubleValue() == kSwipeGestureUp) {
                     NSInteger row = bookmarkTable.selectedRow();
                     NSInteger next;
@@ -1732,8 +1756,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             bookmarkTable.setRowHeight(new CGFloat(70));
         }
 
-        // setting appearance attributes()
+        // setting appearance attributes
         bookmarkTable.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
+        // No grid lines until bookmarks are loaded
         bookmarkTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
 
         // selection properties
@@ -1742,6 +1767,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         bookmarkTable.setAllowsColumnResizing(false);
         bookmarkTable.setAllowsColumnSelection(false);
         bookmarkTable.setAllowsColumnReordering(false);
+        bookmarkTable.setAutosaveName("Bookmarks");
+        bookmarkTable.setAutosaveExpandedItems(true);
         bookmarkTable.sizeToFit();
     }
 
@@ -1874,7 +1901,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private void setBookmarkFilter(final String searchString) {
         if(StringUtils.isBlank(searchString)) {
             searchField.setStringValue(StringUtils.EMPTY);
-            bookmarkModel.setFilter(null);
+            bookmarkModel.setFilter(HostFilter.NONE);
         }
         else {
             bookmarkModel.setFilter(new BookmarkSearchFilter(searchString));
@@ -1885,7 +1912,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void connectBookmarkButtonClicked(final ID sender) {
         if(bookmarkTable.numberOfSelectedRows().intValue() == 1) {
-            final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
+            final NSObject item = bookmarkTable.itemAtRow(bookmarkTable.selectedRow());
+            if(bookmarkTableDelegate.outlineView_isGroupItem(bookmarkTable, item)) {
+                return;
+            }
+            final NSDictionaryHostFilter filter = new NSDictionaryHostFilter(
+                Rococoa.cast(item, NSDictionary.class)
+            );
+            final Host selected = bookmarkModel.getSource().stream().filter(filter::accept).findFirst().orElse(null);
             this.mount(selected);
         }
     }
@@ -1905,15 +1939,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
-        final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
-                bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
+        final NSDictionaryHostFilter filter = new NSDictionaryHostFilter(
+                Rococoa.cast(bookmarkTable.itemAtRow(bookmarkTable.selectedRow()), NSDictionary.class)
         );
+        final Host selected = bookmarkModel.getSource().stream().filter(filter::accept).findFirst().orElse(null);
+        final BookmarkController c = BookmarkControllerFactory.create(bookmarks, selected);
         c.window().makeKeyAndOrderFront(null);
     }
 
     @Action
     public void duplicateBookmarkButtonClicked(final ID sender) {
-        final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
+        final NSDictionaryHostFilter filter = new NSDictionaryHostFilter(
+            Rococoa.cast(bookmarkTable.itemAtRow(bookmarkTable.selectedRow()), NSDictionary.class)
+        );
+        final Host selected = bookmarkModel.getSource().stream().filter(filter::accept).findFirst().orElse(null);
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         final Host duplicate = new HostDictionary<>().deserialize(selected.serialize(SerializerFactory.get()));
         // Make sure a new UUID is asssigned for duplicate
@@ -1971,10 +2010,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void deleteBookmarkButtonClicked(final ID sender) {
-        NSIndexSet iterator = bookmarkTable.selectedRowIndexes();
+        final NSIndexSet iterator = bookmarkTable.selectedRowIndexes();
         final List<Host> selected = new ArrayList<>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            selected.add(bookmarkModel.getSource().get(index.intValue()));
+            final NSDictionaryHostFilter filter = new NSDictionaryHostFilter(
+                Rococoa.cast(bookmarkTable.itemAtRow(new NSInteger(index.intValue())), NSDictionary.class)
+            );
+            selected.add(bookmarkModel.getSource().stream().filter(filter::accept).findFirst().orElse(null));
         }
         StringBuilder alertText = new StringBuilder(
                 LocaleFactory.localizedString("Do you want to delete the selected bookmark?"));
@@ -3822,6 +3864,47 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             log.warn(String.format("No item at row %d", row));
             return null;
+        }
+    }
+
+    private abstract static class AbstractBookmarkTableDelegate extends AbstractTableDelegate<Host, BookmarkColumn> implements NSOutlineView.Delegate {
+        protected AbstractBookmarkTableDelegate(final NSTableColumn selectedColumn) {
+            super(selectedColumn);
+        }
+
+        @Override
+        public void enterKeyPressed(final ID sender) {
+            this.tableRowDoubleClicked(sender);
+        }
+
+        @Override
+        public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+
+        }
+
+        @Override
+        public boolean outlineView_shouldExpandItem(final NSOutlineView view, final NSObject item) {
+            return true;
+        }
+
+        @Override
+        public void outlineViewItemWillExpand(final NSNotification notification) {
+
+        }
+
+        @Override
+        public void outlineViewItemDidExpand(final NSNotification notification) {
+
+        }
+
+        @Override
+        public void outlineViewItemWillCollapse(final NSNotification notification) {
+
+        }
+
+        @Override
+        public void outlineViewItemDidCollapse(final NSNotification notification) {
+
         }
     }
 

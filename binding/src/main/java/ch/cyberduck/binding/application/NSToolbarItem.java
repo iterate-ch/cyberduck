@@ -52,6 +52,8 @@ public abstract class NSToolbarItem extends NSObject implements NSCopying, NSVal
     public static final String NSToolbarPrintItemIdentifier = "NSToolbarPrintItem";
     public static final String NSToolbarToggleSidebarItemIdentifier = "NSToolbarToggleSidebarItem";
     public static final String NSToolbarCloudSharingItemIdentifier = "NSToolbarCloudSharingItem";
+    public static final String NSToolbarInspectorTrackingSeparatorItemIdentifier = "NSToolbarInspectorTrackingSeparatorItem";
+    public static final String NSToolbarToggleInspectorItemIdentifier = "NSToolbarToggleInspectorItem";
 
     public static final int VisibilityPriorityStandard = 0;
     public static final int VisibilityPriorityLow = -1000;

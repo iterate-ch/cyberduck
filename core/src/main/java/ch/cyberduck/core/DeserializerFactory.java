@@ -34,6 +34,10 @@ public class DeserializerFactory<T> extends Factory<Deserializer<T>> {
         super("factory.deserializer.class");
     }
 
+    public DeserializerFactory(final Class<? extends Deserializer<T>> clazz) {
+        super(clazz);
+    }
+
     public Deserializer<T> create(final T dict) {
         try {
             final Constructor<? extends Deserializer<T>> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, dict.getClass());
