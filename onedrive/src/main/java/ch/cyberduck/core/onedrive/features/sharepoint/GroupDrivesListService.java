@@ -42,9 +42,7 @@ public class GroupDrivesListService extends AbstractDriveListService {
     @Override
     protected Iterator<Drive.Metadata> getIterator(final Path directory) throws BackgroundException {
         final GroupItem group = session.getGroup(directory);
-        if(log.isDebugEnabled()) {
-            log.debug("Return drives for group {}", group);
-        }
+        log.debug("Return drives for group {}", group);
         return Drives.getDrives(group);
     }
 }

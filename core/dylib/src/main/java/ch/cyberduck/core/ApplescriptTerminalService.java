@@ -47,16 +47,12 @@ public class ApplescriptTerminalService implements TerminalService {
             host.getCredentials().getUsername(),
             host.getHostname(),
             String.valueOf(host.getPort()), this.escape(workdir.getAbsolute()));
-        if(log.isInfoEnabled()) {
-            log.info("Execute SSH command {}", ssh);
-        }
+        log.info("Execute SSH command {}", ssh);
         // Escape
         ssh = StringUtils.replace(ssh, "\\", "\\\\");
         // Escape all " for do script command
         ssh = StringUtils.replace(ssh, "\"", "\\\"");
-        if(log.isInfoEnabled()) {
-            log.info("Escaped SSH Command for Applescript:{}", ssh);
-        }
+        log.info("Escaped SSH Command for Applescript:{}", ssh);
         // Applescript
         final String applescript;
         switch(application.getIdentifier()) {
@@ -75,9 +71,7 @@ public class ApplescriptTerminalService implements TerminalService {
             + applescript
             + "\n"
             + "end tell";
-        if(log.isInfoEnabled()) {
-            log.info("Execute AppleScript {}", command);
-        }
+        log.info("Execute AppleScript {}", command);
         final NSAppleScript as = NSAppleScript.createWithSource(command);
         final ObjCObjectByReference error = new ObjCObjectByReference();
         if(null == as.executeAndReturnError(error)) {

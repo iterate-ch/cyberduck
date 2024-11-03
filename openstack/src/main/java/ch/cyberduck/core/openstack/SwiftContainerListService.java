@@ -54,9 +54,7 @@ public class SwiftContainerListService implements RootListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("List containers for {}", session);
-        }
+        log.debug("List containers for {}", session);
         try {
             final AttributedList<Path> containers = new AttributedList<>();
             final int limit = new HostPreferences(session.getHost()).getInteger("openstack.list.container.limit");

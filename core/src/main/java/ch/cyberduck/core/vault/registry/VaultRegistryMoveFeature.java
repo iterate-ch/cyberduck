@@ -53,9 +53,7 @@ public class VaultRegistryMoveFeature implements Move {
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         final Vault vault = registry.find(session, source);
         if(vault.equals(registry.find(session, target, false))) {
-            if(log.isDebugEnabled()) {
-                log.debug("Move {} to {} inside vault {}", source, target, vault);
-            }
+            log.debug("Move {} to {} inside vault {}", source, target, vault);
             // Move files inside vault
             return vault.getFeature(session, Move.class, proxy).move(source, target, status, delete, callback);
         }

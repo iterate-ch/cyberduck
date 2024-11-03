@@ -57,9 +57,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     final Path container = containerService.getContainer(entry.getKey().remote);
                     if(rooms.get(container)) {
                         final TransferStatus status = entry.getValue();
-                        if(log.isDebugEnabled()) {
-                            log.debug("Set file key for {}", entry.getKey());
-                        }
+                        log.debug("Set file key for {}", entry.getKey());
                         status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
                     }
                 }
@@ -79,9 +77,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             if(rooms.containsKey(container)) {
                 continue;
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Determine encryption status for {}", container);
-            }
+            log.debug("Determine encryption status for {}", container);
             rooms.put(container, triplecrypt.isEncrypted(container));
         }
         return rooms;
@@ -102,9 +98,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                             if(file.isFile()) {
                                 final Path container = containerService.getContainer(file);
                                 if(rooms.get(container)) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("Run missing file keys for {}", file);
-                                    }
+                                    log.debug("Run missing file keys for {}", file);
                                     background.operate(session, callback, file);
                                 }
                             }

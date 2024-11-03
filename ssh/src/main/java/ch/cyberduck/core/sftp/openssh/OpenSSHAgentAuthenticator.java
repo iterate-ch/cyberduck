@@ -58,13 +58,9 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
             log.warn("Missing proxy reference");
             return Collections.emptyList();
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Retrieve identities from proxy {}", proxy);
-        }
+        log.debug("Retrieve identities from proxy {}", proxy);
         final List<Identity> identities = Arrays.asList(proxy.getIdentities());
-        if(log.isDebugEnabled()) {
-            log.debug("Found {} identities", identities.size());
-        }
+        log.debug("Found {} identities", identities.size());
         return identities;
     }
 

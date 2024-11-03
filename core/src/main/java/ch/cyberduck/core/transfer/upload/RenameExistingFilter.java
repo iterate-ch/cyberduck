@@ -69,13 +69,9 @@ public class RenameExistingFilter extends AbstractUploadFilter {
                 rename = new Path(file.getParent(), proposal, file.getType());
             }
             while(find.find(rename));
-            if(log.isInfoEnabled()) {
-                log.info("Rename existing file {} to {}", file, rename);
-            }
+            log.info("Rename existing file {} to {}", file, rename);
             move.move(file, rename, new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-            if(log.isDebugEnabled()) {
-                log.debug("Clear exist flag for file {}", file);
-            }
+            log.debug("Clear exist flag for file {}", file);
             status.exists(false).getDisplayname().exists(false);
         }
         super.apply(file, local, status, listener);

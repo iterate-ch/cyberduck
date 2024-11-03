@@ -186,9 +186,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                     catch(ApiException e) {
                         throw new IOException(e.getMessage(), new BrickExceptionMappingService().map("Upload {0} failed", e, file));
                     }
-                    if(log.isDebugEnabled()) {
-                        log.debug("Completed multipart upload for {}", file);
-                    }
+                    log.debug("Completed multipart upload for {}", file);
                 }
             }
             catch(BackgroundException e) {

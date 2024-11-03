@@ -96,9 +96,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
             // Test credentials
             try {
                 final Path home = new DefaultHomeFinderService(this).find();
-                if(log.isDebugEnabled()) {
-                    log.debug("Retrieved {}", home);
-                }
+                log.debug("Retrieved {}", home);
             }
             catch(LoginFailureException e) {
                 throw new LoginCanceledException(e);
@@ -132,9 +130,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
                             final String title, final String message,
                             final BrowserLauncher browser) throws BackgroundException {
         final String token = new BrickCredentialsConfigurator().configure(host).getToken();
-        if(log.isDebugEnabled()) {
-            log.debug("Attempt pairing with token {}", token);
-        }
+        log.debug("Attempt pairing with token {}", token);
         final BrickPairingSchedulerFeature scheduler = new BrickPairingSchedulerFeature(this, token, bookmark, cancel);
         // Operate in background until canceled
         final ConnectionCallback lock = new DisabledConnectionCallback() {

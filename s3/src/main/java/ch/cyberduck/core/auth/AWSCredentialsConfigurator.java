@@ -51,9 +51,7 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
             for(AWSCredentialsProvider provider : providers) {
                 try {
                     final AWSCredentials c = provider.getCredentials();
-                    if(log.isDebugEnabled()) {
-                        log.debug("Configure {} with {}", host, c);
-                    }
+                    log.debug("Configure {} with {}", host, c);
                     credentials.setUsername(c.getAWSAccessKeyId());
                     credentials.setPassword(c.getAWSSecretKey());
                     if(c instanceof AWSSessionCredentials) {
@@ -73,9 +71,7 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
     public CredentialsConfigurator reload() throws LoginCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug("Reload from {}", Arrays.toString(providers));
-        }
+        log.debug("Reload from {}", Arrays.toString(providers));
         for(AWSCredentialsProvider provider : providers) {
             provider.refresh();
         }

@@ -45,9 +45,7 @@ public class DefaultEditorListener implements FileWatcherListener {
 
     @Override
     public void fileWritten(final Local temporary) {
-        if(log.isInfoEnabled()) {
-            log.info("File {} written", temporary);
-        }
+        log.info("File {} written", temporary);
         controller.background(new WorkerBackgroundAction<Transfer>(controller, session, editor.save(new DisabledTransferErrorCallback())) {
             @Override
             public void cleanup() {
@@ -59,16 +57,12 @@ public class DefaultEditorListener implements FileWatcherListener {
 
     @Override
     public void fileDeleted(final Local temporary) {
-        if(log.isInfoEnabled()) {
-            log.info("File {} deleted", temporary);
-        }
+        log.info("File {} deleted", temporary);
     }
 
     @Override
     public void fileCreated(final Local temporary) {
-        if(log.isInfoEnabled()) {
-            log.info("File {} created", temporary);
-        }
+        log.info("File {} created", temporary);
         controller.background(new WorkerBackgroundAction<Transfer>(controller, session, editor.save(new DisabledTransferErrorCallback())) {
             @Override
             public void cleanup() {

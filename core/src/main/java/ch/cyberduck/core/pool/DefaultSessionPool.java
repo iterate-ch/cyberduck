@@ -103,25 +103,19 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     public DefaultSessionPool withMinIdle(final int count) {
-        if(log.isDebugEnabled()) {
-            log.debug("Configure with min idle {}", count);
-        }
+        log.debug("Configure with min idle {}", count);
         pool.setMinIdle(count);
         return this;
     }
 
     public DefaultSessionPool withMaxIdle(final int count) {
-        if(log.isDebugEnabled()) {
-            log.debug("Configure with max idle {}", count);
-        }
+        log.debug("Configure with max idle {}", count);
         pool.setMaxIdle(count);
         return this;
     }
 
     public DefaultSessionPool withMaxTotal(final int count) {
-        if(log.isDebugEnabled()) {
-            log.debug("Configure with max total {}", count);
-        }
+        log.debug("Configure with max total {}", count);
         pool.setMaxTotal(count);
         return this;
     }
@@ -135,13 +129,9 @@ public class DefaultSessionPool implements SessionPool {
         try {
             while(!callback.isCanceled()) {
                 try {
-                    if(log.isInfoEnabled()) {
-                        log.info("Borrow session from pool {}", this);
-                    }
+                    log.info("Borrow session from pool {}", this);
                     final Session<?> session = pool.borrowObject();
-                    if(log.isInfoEnabled()) {
-                        log.info("Borrowed session {} from pool {}", session, this);
-                    }
+                    log.info("Borrowed session {} from pool {}", session, this);
                     if(DISCONNECTED == features) {
                         features = new StatelessSessionPool(connect, session, transcript, registry);
                     }
@@ -191,9 +181,7 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public void release(final Session<?> session, final BackgroundException failure) {
-        if(log.isInfoEnabled()) {
-            log.info("Release session {} to pool", session);
-        }
+        log.info("Release session {} to pool", session);
         try {
             if(null != failure) {
                 if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
@@ -221,18 +209,14 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public void evict() {
-        if(log.isInfoEnabled()) {
-            log.info("Clear idle connections in pool {}", this);
-        }
+        log.info("Clear idle connections in pool {}", this);
         pool.clear();
     }
 
     @Override
     public void shutdown() {
         try {
-            if(log.isInfoEnabled()) {
-                log.info("Close connection pool {}", this);
-            }
+            log.info("Close connection pool {}", this);
             this.evict();
             pool.close();
         }

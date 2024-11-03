@@ -78,9 +78,7 @@ public class DriveReadFeature implements Read {
                 else {
                     header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug("Add range header {} for file {}", header, file);
-                }
+                log.debug("Add range header {} for file {}", header, file);
                 headers.setRange(header);
                 // Disable compression
                 headers.setAcceptEncoding("identity");

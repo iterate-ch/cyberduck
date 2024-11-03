@@ -78,9 +78,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
 
     private boolean authenticate(final Host host, final Credentials credentials, final LoginCallback callback, final CancelCallback cancel)
             throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Login using password authentication with credentials {}", credentials);
-        }
+        log.debug("Login using password authentication with credentials {}", credentials);
         try {
             // Use both password and keyboard-interactive
             client.auth(credentials.getUsername(), new AuthPassword(new PasswordFinder() {

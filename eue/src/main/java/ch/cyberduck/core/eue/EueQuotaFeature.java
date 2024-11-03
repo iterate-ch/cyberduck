@@ -40,9 +40,7 @@ public class EueQuotaFeature implements Quota {
             final EueApiClient client = new EueApiClient(session);
             final UserInfoApi userInfoApi = new UserInfoApi(client);
             final UserInfoResponseModel userInfoResponseModel = userInfoApi.userinfoGet(null, null);
-            if(log.isDebugEnabled()) {
-                log.debug("Received user info {}", userInfoResponseModel);
-            }
+            log.debug("Received user info {}", userInfoResponseModel);
             return new Space(userInfoResponseModel.getQuotas().getContentSize().getCurrent(),
                     userInfoResponseModel.getQuotas().getContentSize().getMax() - userInfoResponseModel.getQuotas().getContentSize().getCurrent());
         }

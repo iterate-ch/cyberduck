@@ -40,9 +40,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
 
     @Override
     protected Iterator<Site.Metadata> getIterator(final Path directory) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Return sites for {}", directory);
-        }
+        log.debug("Return sites for {}", directory);
         final ODataQuery query = new ODataQuery().select(
                 BaseItem.Property.Id,
                 BaseItem.Property.Name,

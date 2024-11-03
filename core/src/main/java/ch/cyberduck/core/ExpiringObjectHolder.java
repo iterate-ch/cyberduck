@@ -39,9 +39,7 @@ public class ExpiringObjectHolder<T> {
         if(updated + timeToLiveMillis > System.currentTimeMillis()) {
             return object;
         }
-        if(log.isWarnEnabled()) {
-            log.warn("Expired object {}", object);
-        }
+        log.warn("Expired object {}", object);
         return object = null;
     }
 }

@@ -118,9 +118,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                                 provider = new BackportWindowsNTLMSchemeFactory(null);
                                 break;
                         }
-                        if(log.isDebugEnabled()) {
-                            log.debug("Use provider {} for challenge {}", provider, challenge);
-                        }
+                        log.debug("Use provider {} for challenge {}", provider, challenge);
                         final AuthScheme authScheme = provider.create(context);
                         authScheme.processChallenge(challenge);
                         final AuthScope authScope = new AuthScope(
@@ -128,9 +126,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                             authhost.getPort(),
                             authScheme.getRealm(),
                             authScheme.getSchemeName());
-                        if(log.isDebugEnabled()) {
-                            log.debug("Add authentication options for scheme {}", authPrefs);
-                        }
+                        log.debug("Add authentication options for scheme {}", authPrefs);
                         options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(
                             null == clientContext.getCredentialsProvider() ? new BasicCredentialsProvider() : clientContext.getCredentialsProvider()).getCredentials(authScope)));
                     }
@@ -168,9 +164,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             log.warn("Missing authentication scheme registry in client context");
             return options;
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Authentication schemes in the order of preference: {}", authPrefs);
-        }
+        log.debug("Authentication schemes in the order of preference: {}", authPrefs);
         for(final String id : authPrefs) {
             final Header challenge = challenges.get(id.toLowerCase(Locale.ROOT));
             if(challenge != null) {
@@ -184,10 +178,8 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                     preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug("Challenge for {} authentication scheme not available", id);
-                    // Try again
-                }
+                // Try again
+                log.debug("Challenge for {} authentication scheme not available", id);
             }
         }
         return options;
@@ -199,9 +191,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
         final Credentials credentials = clientContext.getAttribute(PROXY_CREDENTIALS_INPUT_ID, Credentials.class);
         if(null != credentials) {
             clientContext.removeAttribute(PROXY_CREDENTIALS_INPUT_ID);
-            if(log.isInfoEnabled()) {
-                log.info("Save passphrase for proxy {}", authhost);
-            }
+            log.info("Save passphrase for proxy {}", authhost);
             keychain.addCredentials(authhost.toURI(), credentials.getUsername(), credentials.getPassword());
         }
         super.authSucceeded(authhost, authScheme, context);

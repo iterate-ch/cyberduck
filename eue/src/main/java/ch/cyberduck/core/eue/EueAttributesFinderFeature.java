@@ -94,9 +94,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
         catch(ApiException e) {
             switch(e.getCode()) {
                 case HttpStatus.SC_NOT_MODIFIED:
-                    if(log.isDebugEnabled()) {
-                        log.debug("No changes for file {} with ETag {}", file, file.attributes().getETag());
-                    }
+                    log.debug("No changes for file {} with ETag {}", file, file.attributes().getETag());
                     return file.attributes();
             }
             throw new EueExceptionMappingService().map("Failure to read attributes of {0}", e, file);

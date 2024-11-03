@@ -35,15 +35,11 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
     @Override
     public void shutdown(boolean gracefully) {
         if(gracefully) {
-            if(log.isInfoEnabled()) {
-                log.info("Shutdown pool {} gracefully", pool);
-            }
+            log.info("Shutdown pool {} gracefully", pool);
             pool.shutdown();
         }
         else {
-            if(log.isInfoEnabled()) {
-                log.info("Shutdown pool {} now", pool);
-            }
+            log.info("Shutdown pool {} now", pool);
             pool.shutdownNow();
         }
         try {

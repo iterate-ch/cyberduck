@@ -75,9 +75,7 @@ public class GoogleStorageReadFeature implements Read {
                 else {
                     header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug("Add range header {} for file {}", header, file);
-                }
+                log.debug("Add range header {} for file {}", header, file);
                 final HttpHeaders headers = request.getRequestHeaders();
                 headers.setRange(header);
                 // Disable compression

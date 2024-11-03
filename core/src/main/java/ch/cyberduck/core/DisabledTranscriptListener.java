@@ -25,8 +25,6 @@ public class DisabledTranscriptListener implements TranscriptListener {
 
     @Override
     public void log(final Type request, final String message) {
-        if(log.isTraceEnabled()) {
-            log.trace(message);
-        }
+        log.trace(message);
     }
 }

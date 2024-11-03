@@ -160,9 +160,7 @@ public class SFTPSession extends Session<SSHClient> {
                 service.validate(proxy, prompt, new LoginOptions(proxy.getProtocol()));
                 // Authenticate with jump host
                 this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
-                if(log.isDebugEnabled()) {
-                    log.debug("Authenticated with jump host {}", proxy);
-                }
+                log.debug("Authenticated with jump host {}", proxy);
                 // Write credentials to keychain
                 service.save(proxy);
                 final DirectConnection tunnel = hop.newDirectConnection(
@@ -213,9 +211,7 @@ public class SFTPSession extends Session<SSHClient> {
             }
         });
         final Charset charset = Charset.forName(host.getEncoding());
-        if(log.isDebugEnabled()) {
-            log.debug("Use character encoding {}", charset);
-        }
+        log.debug("Use character encoding {}", charset);
         connection.setRemoteCharset(charset);
         disconnectListener = new StateDisconnectListener();
         final Transport transport = connection.getTransport();
@@ -324,9 +320,7 @@ public class SFTPSession extends Session<SSHClient> {
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
         final String[] preferred = new OpenSSHPreferredAuthenticationsConfigurator().getPreferred(host.getHostname());
         if(preferred != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Filter authentication methods with {}", Arrays.toString(preferred));
-            }
+            log.debug("Filter authentication methods with {}", Arrays.toString(preferred));
             for(String p : preferred) {
                 final List<AuthenticationProvider<Boolean>> providers = methodsMap.remove(p);
                 if(providers != null) {
@@ -335,30 +329,22 @@ public class SFTPSession extends Session<SSHClient> {
             }
         }
         methodsMap.values().forEach(methods::addAll);
-        if(log.isDebugEnabled()) {
-            log.debug("Attempt login with {} authentication methods {}", methods.size(), Arrays.toString(methods.toArray()));
-        }
+        log.debug("Attempt login with {} authentication methods {}", methods.size(), Arrays.toString(methods.toArray()));
         BackgroundException lastFailure = null;
         for(AuthenticationProvider<Boolean> auth : methods) {
             cancel.verify();
             try {
                 // Obtain latest list of allowed methods
                 final Collection<String> allowed = client.getUserAuth().getAllowedMethods();
-                if(log.isDebugEnabled()) {
-                    log.debug("Remaining authentication methods {}", Arrays.toString(allowed.toArray()));
-                }
+                log.debug("Remaining authentication methods {}", Arrays.toString(allowed.toArray()));
                 if(!allowed.contains(auth.getMethod())) {
                     log.warn("Skip authentication method {} not allowed", auth);
                     continue;
                 }
-                if(log.isInfoEnabled()) {
-                    log.info("Attempt authentication with credentials {} and authentication method {}", credentials, auth);
-                }
+                log.info("Attempt authentication with credentials {} and authentication method {}", credentials, auth);
                 try {
                     if(auth.authenticate(host, prompt, cancel)) {
-                        if(log.isInfoEnabled()) {
-                            log.info("Authentication succeeded with credentials {} and authentication method {}", credentials, auth);
-                        }
+                        log.info("Authentication succeeded with credentials {} and authentication method {}", credentials, auth);
                         // Success
                         break;
                     }

@@ -169,9 +169,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         final String lock = sleep.lock();
         final Session<?> destination = this.borrow(Connection.destination);
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Start transfer with prompt {} and options {}", prompt, options);
-            }
+            log.debug("Start transfer with prompt {} and options {}", prompt, options);
             // Determine the filter to match files against
             final TransferAction action = transfer.action(source, destination, options.resumeRequested, options.reloadRequested, prompt,
                     new DisabledListProgressListener() {
@@ -180,13 +178,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             progress.message(message);
                         }
                     });
-            if(log.isDebugEnabled()) {
-                log.debug("Selected transfer action {}", action);
-            }
+            log.debug("Selected transfer action {}", action);
             if(action.equals(TransferAction.cancel)) {
-                if(log.isInfoEnabled()) {
-                    log.info("Transfer {} canceled by user", this);
-                }
+                log.info("Transfer {} canceled by user", this);
                 throw new TransferCanceledException();
             }
             // Reset the cached size of the transfer and progress value
@@ -235,9 +229,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
      * @param action Transfer action for existing files
      */
     public Future<TransferStatus> prepare(final Path file, final Local local, final TransferStatus parent, final TransferAction action) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Find transfer status of {} for transfer {}", file, this);
-        }
+        log.debug("Find transfer status of {} for transfer {}", file, this);
         if(this.isCanceled()) {
             throw new TransferStatusCanceledException();
         }
@@ -255,17 +247,13 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
                         // Only prepare the path it will be actually transferred
                         if(!filter.accept(file, local, parent)) {
-                            if(log.isInfoEnabled()) {
-                                log.info("Skip file {} by filter {} for transfer {}", file, filter, this);
-                            }
+                            log.info("Skip file {} by filter {} for transfer {}", file, filter, this);
                             transfer.addSize(0L);
                             transfer.addTransferred(0L);
                             return null;
                         }
                         else {
-                            if(log.isInfoEnabled()) {
-                                log.info("Accepted file {} in transfer {}", file, this);
-                            }
+                            log.info("Accepted file {} in transfer {}", file, this);
                             // Transfer
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent, progress);
@@ -292,9 +280,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     prepare(f.remote, f.local, status, action);
                                 }
                             }
-                            if(log.isInfoEnabled()) {
-                                log.info("Determined transfer status {} of {} for transfer {}", status, file, this);
-                            }
+                            log.info("Determined transfer status {} of {} for transfer {}", status, file, this);
                             return status;
                         }
                     }
@@ -355,9 +341,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                     public TransferStatus call() throws BackgroundException {
                         status.validate();
                         if(segment.isComplete()) {
-                            if(log.isWarnEnabled()) {
-                                log.warn("Skip transferring already completed item {}", item);
-                            }
+                            log.warn("Skip transferring already completed item {}", item);
                         }
                         else {
                             // Do transfer with retry
@@ -393,9 +377,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                     }
 
                     private void transferSegment(final TransferStatus segment) throws BackgroundException {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Transfer item {} with status {}", item, segment);
-                        }
+                        log.debug("Transfer item {} with status {}", item, segment);
                         final Session<?> s = borrow(Connection.source);
                         final Session<?> d = borrow(Connection.destination);
                         final BytecountStreamListener counter = new TransferStreamListener(transfer, stream);
@@ -418,15 +400,11 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     final TransferPathFilter resume = transfer
                                             .withCache(new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")))
                                             .filter(source, destination, TransferAction.resume, progress);
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("Ask filter {} to accept retry for segment {} of {}", resume, segment, item);
-                                    }
+                                    log.debug("Ask filter {} to accept retry for segment {} of {}", resume, segment, item);
                                     if(resume.accept(
                                             segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                             segment.getRename().local != null ? segment.getRename().local : item.local, new TransferStatus().exists(true))) {
-                                        if(log.isDebugEnabled()) {
-                                            log.debug("Determine status for retry of {}", segment);
-                                        }
+                                        log.debug("Determine status for retry of {}", segment);
                                         final TransferStatus retry;
                                         if(segment.isSegment()) {
                                             // Repeat full length of single segment
@@ -445,9 +423,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                             counter.sent(retry.getOffset() - counter.getSent());
                                         }
                                         // Retry immediately
-                                        if(log.isInfoEnabled()) {
-                                            log.info("Retry segment {} of {} with status {}", segment, item, retry);
-                                        }
+                                        log.info("Retry segment {} of {} with status {}", segment, item, retry);
                                         this.transferSegment(segment
                                                 .withNonces(retry.getNonces())
                                                 .withChecksum(retry.getChecksum())
@@ -462,9 +438,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     release(destination, Connection.destination, null);
                                 }
                             }
-                            if(log.isDebugEnabled()) {
-                                log.debug("Cancel retry for segment {} of {}", segment, item);
-                            }
+                            log.debug("Cancel retry for segment {} of {}", segment, item);
                             segment.setFailure(e);
                             // Prompt to continue or abort for application errors
                             if(error.prompt(item, segment, e, table.size())) {

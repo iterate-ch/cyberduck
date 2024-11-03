@@ -137,9 +137,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             final Path segment = segmentService.getSegment(file, segmentNumber);
             if(existingSegments.contains(segment)) {
                 final Path existingSegment = existingSegments.get(existingSegments.indexOf(segment));
-                if(log.isDebugEnabled()) {
-                    log.debug("Skip segment {}", existingSegment);
-                }
+                log.debug("Skip segment {}", existingSegment);
                 final StorageObject stored = new StorageObject(containerService.getKey(segment));
                 if(HashAlgorithm.md5.equals(existingSegment.attributes().getChecksum().algorithm)) {
                     stored.setMd5sum(existingSegment.attributes().getChecksum().hash);
@@ -151,9 +149,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             else {
                 // Submit to queue
                 segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length, callback));
-                if(log.isDebugEnabled()) {
-                    log.debug("Segment {} submitted with size {} and offset {}", segment, length, offset);
-                }
+                log.debug("Segment {} submitted with size {} and offset {}", segment, length, offset);
                 remaining -= length;
                 offset += length;
             }
@@ -164,17 +160,13 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         finally {
             pool.shutdown(false);
         }
-        if(log.isInfoEnabled()) {
-            log.info("Finished large file upload {} with {} parts", file, completed.size());
-        }
+        log.info("Finished large file upload {} with {} parts", file, completed.size());
         // Create and upload the large object manifest. It is best to upload all the segments first and
         // then create or update the manifest.
         try {
             // Static Large Object.
             final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
-            if(log.isDebugEnabled()) {
-                log.debug("Creating SLO manifest {} for {}", manifest, file);
-            }
+            log.debug("Creating SLO manifest {} for {}", manifest, file);
             final StorageObject stored = new StorageObject(containerService.getKey(file));
             stored.setSize(status.getOffset() + status.getLength());
             final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(

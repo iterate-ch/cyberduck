@@ -43,9 +43,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
                 return registry.find(session, directory);
             }
             final Vault vault = VaultFactory.get(directory, masterkey, config, pepper);
-            if(log.isInfoEnabled()) {
-                log.info("Loading vault {} for session {}", vault, session);
-            }
+            log.info("Loading vault {} for session {}", vault, session);
             try {
                 registry.add(vault.load(session, prompt));
             }

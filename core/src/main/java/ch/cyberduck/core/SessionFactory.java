@@ -36,14 +36,10 @@ public final class SessionFactory {
     }
 
     public static Session<?> create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        if(log.isDebugEnabled()) {
-            log.debug("Create session for {}", host);
-        }
+        log.debug("Create session for {}", host);
         final Protocol protocol = host.getProtocol();
         final String prefix = protocol.getPrefix();
-        if(log.isDebugEnabled()) {
-            log.debug("Load class with prefix {}", prefix);
-        }
+        log.debug("Load class with prefix {}", prefix);
         try {
             final Class<Session> name = (Class<Session>) Class.forName(String.format("%sSession", prefix));
             final Constructor<Session> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,

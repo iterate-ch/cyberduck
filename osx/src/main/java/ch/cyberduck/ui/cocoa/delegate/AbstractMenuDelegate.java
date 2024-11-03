@@ -60,9 +60,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      *               and return NO to stop the updating.
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        if(log.isTraceEnabled()) {
-            log.trace("menuUpdateItemAtIndex:{}", index.intValue());
-        }
+        log.trace("menuUpdateItemAtIndex:{}", index.intValue());
         if(index.intValue() == this.numberOfItemsInMenu(menu).intValue() - 1) {
             // Collection fully populated
             this.setNeedsUpdate(false);
@@ -104,9 +102,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      *         equivalent to the event characters.
      */
     public boolean menuHasKeyEquivalent_forEvent(NSMenu menu, NSEvent event) {
-        if(log.isTraceEnabled()) {
-            log.trace("menuHasKeyEquivalent_forEvent:{}", menu);
-        }
+        log.trace("menuHasKeyEquivalent_forEvent:{}", menu);
         if(StringUtils.isBlank(this.getKeyEquivalent())) {
             return false;
         }
@@ -117,16 +113,12 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     }
 
     public ID menuKeyEquivalentTarget_forEvent(NSMenu menu, NSEvent event) {
-        if(log.isTraceEnabled()) {
-            log.trace("menuKeyEquivalentTarget_forEvent:{}", menu);
-        }
+        log.trace("menuKeyEquivalentTarget_forEvent:{}", menu);
         return this.getTarget();
     }
 
     public Selector menuKeyEquivalentAction_forEvent(NSMenu menu, NSEvent event) {
-        if(log.isTraceEnabled()) {
-            log.trace("menuKeyEquivalentAction_forEvent:{}", menu);
-        }
+        log.trace("menuKeyEquivalentAction_forEvent:{}", menu);
         return this.getDefaultAction();
     }
 
@@ -134,9 +126,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      * Menu needs revalidation before being displayed the next time
      */
     public void setNeedsUpdate(boolean u) {
-        if(log.isTraceEnabled()) {
-            log.trace("setNeedsUpdate:{}", u);
-        }
+        log.trace("setNeedsUpdate:{}", u);
         update.set(u);
     }
 

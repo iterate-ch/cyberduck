@@ -104,9 +104,7 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
         if(!find.find(metadataFile)) {
             new ContentWriter(session).write(metadataFile, longFileNameBytes);
         }
-        if(log.isInfoEnabled()) {
-            log.info("Deflated {} to {}", filename, shortName);
-        }
+        log.info("Deflated {} to {}", filename, shortName);
         cache.put(filename, shortName);
         return shortName;
     }

@@ -60,9 +60,7 @@ public class SDSDelegatingMoveFeature implements Move {
         if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(source) ^ new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(target))) {
             // Moving into or from an encrypted room
             final Copy copy = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
-            if(log.isDebugEnabled()) {
-                log.debug("Move {} to {} using copy feature {}", source, target, copy);
-            }
+            log.debug("Move {} to {} using copy feature {}", source, target, copy);
             final Path c = copy.copy(source, target, status, connectionCallback, new DisabledStreamListener());
             // Delete source file after copy is complete
             final Delete delete = new SDSDeleteFeature(session, nodeid);

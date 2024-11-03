@@ -80,9 +80,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             // Default provider
             context = SSLContext.getInstance("TLSv1.3");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, seeder);
-            if(log.isDebugEnabled()) {
-                log.debug("Using SSL context with protocol {}", context.getProtocol());
-            }
+            log.debug("Using SSL context with protocol {}", context.getProtocol());
             factory = context.getSocketFactory();
         }
         catch(NoSuchAlgorithmException | KeyManagementException e) {
@@ -98,9 +96,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     protected void configure(final Socket socket, final String[] protocols) {
         if(socket instanceof SSLSocket) {
             try {
-                if(log.isDebugEnabled()) {
-                    log.debug("Configure SSL parameters with protocols {}", Arrays.toString(protocols));
-                }
+                log.debug("Configure SSL parameters with protocols {}", Arrays.toString(protocols));
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
                 final List<String> ciphers = Arrays.asList(((SSLSocket) socket).getEnabledCipherSuites());
                 final List<String> blacklist = preferences.getList("connection.ssl.cipher.blacklist");
@@ -108,9 +104,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                     ciphers.removeIf(blacklist::contains);
                 }
                 ((SSLSocket) socket).setEnabledCipherSuites(ciphers.toArray(new String[ciphers.size()]));
-                if(log.isInfoEnabled()) {
-                    log.info("Enabled cipher suites {}", Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites()));
-                }
+                log.info("Enabled cipher suites {}", Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites()));
             }
             catch(Exception e) {
                 log.warn("Failed to configure SSL parameters {}", e.getMessage());
@@ -134,9 +128,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         // Configure socket
         final Socket socket = f.create();
         this.configure(socket, protocols);
-        if(log.isDebugEnabled()) {
-            log.debug("Handshake for socket {}", socket);
-        }
+        log.debug("Handshake for socket {}", socket);
         return socket;
     }
 

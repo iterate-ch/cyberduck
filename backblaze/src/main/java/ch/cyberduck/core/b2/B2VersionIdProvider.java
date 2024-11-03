@@ -50,16 +50,12 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
     @Override
     public String getVersionId(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            if(log.isDebugEnabled()) {
-                log.debug("Return version {} from attributes for file {}", file.attributes().getVersionId(), file);
-            }
+            log.debug("Return version {} from attributes for file {}", file.attributes().getVersionId(), file);
             return file.attributes().getVersionId();
         }
         final String cached = super.getVersionId(file);
         if(cached != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Return cached versionid {} for file {}", cached, file);
-            }
+            log.debug("Return cached versionid {} for file {}", cached, file);
             return cached;
         }
         try {
@@ -87,9 +83,7 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
                 // Search for common prefix returned when no placeholder file was found
                 if(response.getFiles().stream().anyMatch(
                         info -> StringUtils.startsWith(info.getFileName(), new DirectoryDelimiterPathContainerService().getKey(file)))) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Common prefix found for {} but no placeholder file", file);
-                    }
+                    log.debug("Common prefix found for {} but no placeholder file", file);
                     return null;
                 }
                 throw new NotfoundException(file.getAbsolute());

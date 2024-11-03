@@ -64,15 +64,11 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
     @Override
     public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
         if(Arrays.asList(this.getAcceptedIssuers()).containsAll(Arrays.asList(certs))) {
-            if(log.isInfoEnabled()) {
-                log.info("Certificate for {} previously trusted", hostname);
-            }
+            log.info("Certificate for {} previously trusted", hostname);
             return;
         }
         if(store.verify(prompt, hostname, Arrays.asList(certs))) {
-            if(log.isInfoEnabled()) {
-                log.info("Certificate for {} trusted in certificate store", hostname);
-            }
+            log.info("Certificate for {} trusted in certificate store", hostname);
             // We still accept the certificate if we find it in the Keychain
             // regardless of its trust settings. There is currently no way I am
             // aware of to read the trust settings for a certificate in the Keychain

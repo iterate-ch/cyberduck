@@ -95,9 +95,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
 
     @Override
     public void clear() {
-        if(log.isInfoEnabled()) {
-            log.info("Close {} registered vaults", this.size());
-        }
+        log.info("Close {} registered vaults", this.size());
         this.forEach(Vault::close);
         super.clear();
     }
@@ -106,9 +104,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     public Vault find(final Session session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
         for(Vault vault : this) {
             if(vault.contains(file)) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Found vault {} for file {}", vault, file);
-                }
+                log.debug("Found vault {} for file {}", vault, file);
                 return vault;
             }
         }

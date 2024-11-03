@@ -199,9 +199,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
             final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
-            if(log.isDebugEnabled()) {
-                log.debug("Cancel job {}", job);
-            }
+            log.debug("Cancel job {}", job);
             final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
             client.cancelJobSpectraS3(new CancelJobSpectraS3Request(job));
         }
@@ -234,9 +232,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
             final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
-            if(log.isDebugEnabled()) {
-                log.debug("Query status for job {}", job);
-            }
+            log.debug("Query status for job {}", job);
             // Fetch current list from server
             final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
             // For GET, the client may need to issue multiple GET requests for a single object if it has
@@ -247,9 +243,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
 
             final GetJobChunksReadyForClientProcessingSpectraS3Response response = client.getJobChunksReadyForClientProcessingSpectraS3(
                 new GetJobChunksReadyForClientProcessingSpectraS3Request(UUID.fromString(job)).withPreferredNumberOfChunks(Integer.MAX_VALUE));
-            if(log.isInfoEnabled()) {
-                log.info("Job status {} for job {}", response.getStatus(), job);
-            }
+            log.info("Job status {} for job {}", response.getStatus(), job);
             switch(response.getStatus()) {
                 case RETRYLATER: {
                     final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
@@ -257,19 +251,15 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 }
             }
             final MasterObjectList master = response.getMasterObjectListResult();
-            if(log.isInfoEnabled()) {
-                log.info("Master object list with {} objects for {}", master.getObjects().size(), file);
-                log.info("Master object list status {} for {}", master.getStatus(), file);
-            }
+            log.info("Master object list with {} objects for {}", master.getObjects().size(), file);
+            log.info("Master object list status {} for {}", master.getStatus(), file);
             final List<TransferStatus> chunks = query(file, status, job, master);
             if(chunks.isEmpty()) {
                 log.info("Still missing chunks for file {} for job {}", file.getName(), job);
                 throw new RetriableAccessDeniedException(String.format("Missing chunks for job %s", job),
                     Duration.ofSeconds(new HostPreferences(session.getHost()).getInteger("spectra.retry.delay")));
             }
-            if(log.isInfoEnabled()) {
-                log.info("Server returned {} chunks for {}", chunks.size(), file);
-            }
+            log.info("Server returned {} chunks for {}", chunks.size(), file);
             return chunks;
         }
         catch(FailedRequestException e) {
@@ -290,9 +280,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 log.warn("No node returned in master object list for file {}", file);
             }
             else {
-                if(log.isInfoEnabled()) {
-                    log.info("Determined node {} for {}", nodeId, file);
-                }
+                log.info("Determined node {} for {}", nodeId, file);
             }
             for(JobNode node : master.getNodes()) {
                 if(node.getId().equals(nodeId)) {
@@ -308,17 +296,11 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     log.warn("Redirect to {} for file {}", node.getEndPoint(), file);
                 }
             }
-            if(log.isInfoEnabled()) {
-                log.info("Object list with {} objects for job {}", objects.getObjects().size(), job);
-            }
+            log.info("Object list with {} objects for job {}", objects.getObjects().size(), job);
             for(BulkObject object : objects.getObjects()) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Found object {} looking for {}", object, file);
-                }
+                log.debug("Found object {} looking for {}", object, file);
                 if(object.getName().equals(containerService.getKey(file))) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Found chunk {} matching file {}", object, file);
-                    }
+                    log.info("Found chunk {} matching file {}", object, file);
                     final TransferStatus chunk = new TransferStatus()
                         .exists(status.isExists())
                         .withMetadata(status.getMetadata())
@@ -334,9 +316,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     // Set offset for chunk.
                     parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
                     chunk.setParameters(parameters);
-                    if(log.isInfoEnabled()) {
-                        log.info("Add chunk {} for file {}", chunk, file);
-                    }
+                    log.info("Add chunk {} for file {}", chunk, file);
                     chunks.add(chunk);
                     counter++;
                 }

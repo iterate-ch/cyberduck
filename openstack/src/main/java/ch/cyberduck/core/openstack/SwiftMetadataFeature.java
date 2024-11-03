@@ -92,16 +92,12 @@ public class SwiftMetadataFeature implements Headers {
                         status.getMetadata().put(entry.getKey(), StringUtils.EMPTY);
                     }
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug("Write metadata {} for file {}", status, file);
-                }
+                log.debug("Write metadata {} for file {}", status, file);
                 session.getClient().updateContainerMetadata(regionService.lookup(file),
                     containerService.getContainer(file).getName(), status.getMetadata());
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug("Write metadata {} for file {}", status, file);
-                }
+                log.debug("Write metadata {} for file {}", status, file);
                 session.getClient().updateObjectMetadata(regionService.lookup(file),
                     containerService.getContainer(file).getName(), containerService.getKey(file), status.getMetadata());
             }

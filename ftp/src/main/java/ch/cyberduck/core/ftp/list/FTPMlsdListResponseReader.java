@@ -112,9 +112,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     }
                 }
                 if(name.equals(".") || name.equals("..")) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Skip {}", name);
-                    }
+                    log.debug("Skip {}", name);
                     continue;
                 }
                 if(facts.containsKey("size")) {

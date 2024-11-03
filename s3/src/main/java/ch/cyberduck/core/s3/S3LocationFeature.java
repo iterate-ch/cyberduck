@@ -63,24 +63,18 @@ public class S3LocationFeature implements Location {
     public Set<Name> getLocations() {
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {
             final S3Region region = new S3Region(session.getHost().getRegion());
-            if(log.isDebugEnabled()) {
-                log.debug("Return single region {} set in bookmark", region);
-            }
+            log.debug("Return single region {} set in bookmark", region);
             return Collections.singleton(region);
         }
         if(StringUtils.isNotEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
-            if(log.isDebugEnabled()) {
-                log.debug("Return empty set for hostname {}", session.getHost());
-            }
+            log.debug("Return empty set for hostname {}", session.getHost());
             // Connected to single bucket
             return Collections.emptySet();
         }
         if(!S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(new S3Protocol().getRegions().equals(session.getHost().getProtocol().getRegions())) {
                 // Return empty set for unknown provider
-                if(log.isDebugEnabled()) {
-                    log.debug("Return empty set for unknown provider {}", session.getHost());
-                }
+                log.debug("Return empty set for unknown provider {}", session.getHost());
                 return Collections.emptySet();
             }
         }
@@ -106,9 +100,7 @@ public class S3LocationFeature implements Location {
                 log.warn("Skip attempt to read bucket location with missing credentials");
                 return Location.unknown;
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Query location for bucket {}", bucketname);
-            }
+            log.debug("Query location for bucket {}", bucketname);
             final String location = session.getClient().getBucketLocation(bucketname);
             final S3Region region;
             if(StringUtils.isBlank(location)) {

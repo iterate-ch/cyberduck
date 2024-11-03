@@ -57,21 +57,15 @@ public class RenameFilter extends AbstractDownloadFilter {
                 status.withRename(LocalFactory.get(local.getParent(), proposal));
             }
             while(status.getRename().local.exists());
-            if(log.isInfoEnabled()) {
-                log.info("Changed download target from {} to {}", local, status.getRename().local);
-            }
-            if(log.isDebugEnabled()) {
-                log.debug("Clear exist flag for file {}", local);
-            }
+            log.info("Changed download target from {} to {}", local, status.getRename().local);
+            log.debug("Clear exist flag for file {}", local);
             status.setExists(false);
         }
         else {
             if(parent.getRename().local != null) {
                 status.withRename(LocalFactory.get(parent.getRename().local, file.getName()));
             }
-            if(log.isInfoEnabled()) {
-                log.info("Changed download target from {} to {}", local, status.getRename().local);
-            }
+            log.info("Changed download target from {} to {}", local, status.getRename().local);
         }
         return status;
     }

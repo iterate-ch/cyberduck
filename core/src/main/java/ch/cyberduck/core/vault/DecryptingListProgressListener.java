@@ -54,9 +54,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path f) {
         if(skip.accept(f)) {
-            if(log.isDebugEnabled()) {
-                log.debug("Skip decrypting {}", f);
-            }
+            log.debug("Skip decrypting {}", f);
             list.remove(index);
             return;
         }

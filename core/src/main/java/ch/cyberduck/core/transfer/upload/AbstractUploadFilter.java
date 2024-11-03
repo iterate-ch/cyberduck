@@ -113,9 +113,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Prepare {}", file);
-        }
+        log.debug("Prepare {}", file);
         final TransferStatus status = new TransferStatus()
                 .hidden(!hidden.accept(file))
                 .withLockId(parent.getLockId());
@@ -161,9 +159,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), new AlphanumericRandomStringService().random()), file.getType());
                 if(feature.isSupported(file, renamed)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Set temporary filename {}", renamed);
-                    }
+                    log.debug("Set temporary filename {}", renamed);
                     // Set target name after transfer
                     status.withRename(renamed).withDisplayname(file);
                     // Remember status of target file for later rename
@@ -312,9 +308,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                             final Versioning feature = session.getFeature(Versioning.class);
                             if(feature != null && feature.getConfiguration(file).isEnabled()) {
                                 if(feature.save(file)) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("Clear exist flag for file {}", file);
-                                    }
+                                    log.debug("Clear exist flag for file {}", file);
                                     status.exists(false).getDisplayname().exists(false);
                                 }
                             }
@@ -323,9 +317,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(status.getRename().remote != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Clear exist flag for file {}", local);
-            }
+            log.debug("Clear exist flag for file {}", local);
             // Reset exist flag after subclass hae applied strategy
             status.setExists(false);
         }
@@ -334,9 +326,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public void complete(final Path file, final Local local,
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Complete {} with status {}", file.getAbsolute(), status);
-        }
+        log.debug("Complete {} with status {}", file.getAbsolute(), status);
         if(status.isComplete()) {
             if(!Permission.EMPTY.equals(status.getPermission())) {
                 final UnixPermission feature = session.getFeature(UnixPermission.class);
@@ -385,9 +375,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 if(status.getDisplayname().remote != null) {
                     final Move move = session.getFeature(Move.class);
-                    if(log.isInfoEnabled()) {
-                        log.info("Rename file {} to {}", file, status.getDisplayname().remote);
-                    }
+                    log.info("Rename file {} to {}", file, status.getDisplayname().remote);
                     move.move(file, status.getDisplayname().remote, new TransferStatus(status).exists(status.getDisplayname().exists),
                             new Delete.DisabledCallback(), new DisabledConnectionCallback());
                 }

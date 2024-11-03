@@ -67,9 +67,7 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
                 if(index != -1) {
                     // Found bookmark with matching UUID
                     if(new HostEditComparator().compare(bookmark, this.get(index)) != 0) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Replace bookmark {} at index {}", bookmark, index);
-                        }
+                        log.debug("Replace bookmark {} at index {}", bookmark, index);
                         this.replace(index, bookmark);
                     }
                 }

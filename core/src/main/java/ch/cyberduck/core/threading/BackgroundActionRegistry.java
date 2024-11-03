@@ -97,9 +97,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
 
     @Override
     public synchronized boolean remove(final Object action) {
-        if(log.isDebugEnabled()) {
-            log.debug("Remove action {}", action);
-        }
+        log.debug("Remove action {}", action);
         if(!running.remove(action)) {
             log.warn("Failure finding action {} in running tasks", action);
         }

@@ -236,9 +236,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                         this.write(new byte[0]);
                     }
                     else {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Complete chunked upload for {}", file);
-                        }
+                        log.debug("Complete chunked upload for {}", file);
                         try {
                             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
                             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)

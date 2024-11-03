@@ -70,9 +70,7 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
                             case HttpStatus.SC_OK:
                                 // Upload complete
                                 if(response.containsHeader("ETag")) {
-                                    if(log.isInfoEnabled()) {
-                                        log.info("Received response {} for part number {}", response, status.getPart());
-                                    }
+                                    log.info("Received response {} for part number {}", response, status.getPart());
                                     return new Node()
                                             .type(Node.TypeEnum.FILE)
                                             .hash(Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"')).hash);

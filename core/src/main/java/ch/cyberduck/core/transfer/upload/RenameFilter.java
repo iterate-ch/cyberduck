@@ -66,12 +66,8 @@ public class RenameFilter extends AbstractUploadFilter {
                 }
             }
             while(find.find(status.getRename().remote));
-            if(log.isInfoEnabled()) {
-                log.info("Changed upload target from {} to {}", file, status.getRename().remote);
-            }
-            if(log.isDebugEnabled()) {
-                log.debug("Clear exist flag for file {}", file);
-            }
+            log.info("Changed upload target from {} to {}", file, status.getRename().remote);
+            log.debug("Clear exist flag for file {}", file);
             status.setExists(false);
         }
         else {
@@ -85,9 +81,7 @@ public class RenameFilter extends AbstractUploadFilter {
                     status.withRename(renamed);
                 }
             }
-            if(log.isInfoEnabled()) {
-                log.info("Changed upload target from {} to {}", file, status.getRename().remote);
-            }
+            log.info("Changed upload target from {} to {}", file, status.getRename().remote);
         }
         return status;
     }

@@ -153,9 +153,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                             if(element.isJsonObject()) {
                                 final JsonObject json = element.getAsJsonObject();
                                 final URI url = URI.create(json.getAsJsonPrimitive("web_url_api").getAsString());
-                                if(log.isInfoEnabled()) {
-                                    log.info("Set base path to {}", url);
-                                }
+                                log.info("Set base path to {}", url);
                                 client.setBasePath(StringUtils.removeEnd(url.toString(), String.valueOf(Path.DELIMITER)));
                             }
                         }
@@ -178,9 +176,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             }
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();
-            if(log.isDebugEnabled()) {
-                log.debug("Authenticated for user {}", me);
-            }
+            log.debug("Authenticated for user {}", me);
             credentials.setUsername(me.getUsername());
             // Get root folders
             roots = new SettingsApi(client).settingsGetRootfolders();

@@ -61,15 +61,11 @@ public class PageantAuthenticator extends AgentAuthenticator {
             log.warn("Missing proxy reference");
             return Collections.emptyList();
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Retrieve identities from proxy {}", proxy);
-        }
+        log.debug("Retrieve identities from proxy {}", proxy);
         final List<Identity> identities = new ArrayList<Identity>();
         try {
             Collections.addAll(identities, proxy.getIdentities());
-            if(log.isDebugEnabled()) {
-                log.debug("Found {} identities", identities.size());
-            }
+            log.debug("Found {} identities", identities.size());
         }
         catch(Exception e) {
             log.warn("Ignore failure reading identities from {}", proxy);

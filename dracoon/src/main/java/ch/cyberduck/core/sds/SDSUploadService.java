@@ -99,9 +99,7 @@ public class SDSUploadService {
                 final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                 if(matcher.matches()) {
                     if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Set modification timestamp to {} for {}", status.getModified(), file);
-                        }
+                        log.debug("Set modification timestamp to {} for {}", status.getModified(), file);
                         body.timestampModification(new DateTime(status.getModified()));
                     }
                 }
@@ -111,16 +109,12 @@ public class SDSUploadService {
                 final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                 if(matcher.matches()) {
                     if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Set creation timestamp to {} for {}", status.getCreated(), file);
-                        }
+                        log.debug("Set creation timestamp to {} for {}", status.getCreated(), file);
                         body.timestampCreation(new DateTime(status.getCreated()));
                     }
                 }
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Start file upload for {} with {}", file, body);
-            }
+            log.debug("Start file upload for {} with {}", file, body);
             return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY);
         }
         catch(ApiException e) {
@@ -142,9 +136,7 @@ public class SDSUploadService {
                     .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                     .resolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
             if(status.getFilekey() != null) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Set file key to {} for {}", status.getFilekey(), file);
-                }
+                log.debug("Set file key to {} for {}", status.getFilekey(), file);
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                 final FileKey fileKey = reader.readValue(status.getFilekey().array());
                 final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
@@ -153,9 +145,7 @@ public class SDSUploadService {
                 );
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Complete file upload for {} with token {}", file, uploadToken);
-            }
+            log.debug("Complete file upload for {} with token {}", file, uploadToken);
             final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(uploadToken, body, StringUtils.EMPTY);
             if(!upload.isIsEncrypted()) {
                 final Checksum checksum = status.getChecksum();
@@ -193,9 +183,7 @@ public class SDSUploadService {
      * @param uploadToken Upload token
      */
     public void cancel(final Path file, final String uploadToken) throws BackgroundException {
-        if(log.isWarnEnabled()) {
-            log.warn("Cancel failed upload {} for {}", uploadToken, file);
-        }
+        log.warn("Cancel failed upload {} for {}", uploadToken, file);
         try {
             new UploadsApi(session.getClient()).cancelFileUploadByToken(uploadToken);
         }
@@ -214,9 +202,7 @@ public class SDSUploadService {
      * @throws BackgroundException Error status received
      */
     public S3FileUploadStatus await(final Path file, final TransferStatus status, final String uploadId) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Await file upload for {} with upload ID {}", file, uploadId);
-        }
+        log.debug("Await file upload for {} with upload ID {}", file, uploadId);
         final CountDownLatch signal = new CountDownLatch(1);
         final AtomicReference<S3FileUploadStatus> response = new AtomicReference<>();
         final AtomicReference<BackgroundException> failure = new AtomicReference<>();
@@ -231,9 +217,7 @@ public class SDSUploadService {
         final AtomicLong polls = new AtomicLong();
         final ScheduledFuture<?> f = polling.repeat(() -> {
                     try {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Query upload status for {} ({})", uploadId, polls.incrementAndGet());
-                        }
+                        log.debug("Query upload status for {} ({})", uploadId, polls.incrementAndGet());
                         final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
                                 .requestUploadStatusFiles(uploadId, StringUtils.EMPTY, null);
                         response.set(uploadStatus);
@@ -252,9 +236,7 @@ public class SDSUploadService {
                                     failure.set(new InteroperabilityException());
                                 }
                                 else {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("Error in upload status {}", uploadStatus);
-                                    }
+                                    log.debug("Error in upload status {}", uploadStatus);
                                     failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
                                 }
                                 signal.countDown();
@@ -295,9 +277,7 @@ public class SDSUploadService {
             }
         }
         polling.shutdown();
-        if(log.isDebugEnabled()) {
-            log.debug("Polling completed for {} with {} polls in {}ms ", file, polls.get(), System.currentTimeMillis() - start);
-        }
+        log.debug("Polling completed for {} with {} polls in {}ms ", file, polls.get(), System.currentTimeMillis() - start);
         if(null != failure.get()) {
             throw failure.get();
         }

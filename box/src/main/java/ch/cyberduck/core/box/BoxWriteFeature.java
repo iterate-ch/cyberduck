@@ -116,9 +116,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                             return new JSON().getContext(null).readValue(entity.getContent(), Files.class);
                         }
                     });
-                    if(log.isDebugEnabled()) {
-                        log.debug("Received response {} for upload of {}", files, file);
-                    }
+                    log.debug("Received response {} for upload of {}", files, file);
                     if(files.getEntries().stream().findFirst().isPresent()) {
                         return files.getEntries().stream().findFirst().get();
                     }

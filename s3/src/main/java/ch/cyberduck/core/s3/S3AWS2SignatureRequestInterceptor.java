@@ -56,17 +56,13 @@ public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor
         final ProviderCredentials credentials = session.getClient().getProviderCredentials();
         final String bucketName;
         if(context.getAttribute("bucket") == null) {
-            if(log.isWarnEnabled()) {
-                log.warn("No bucket name in context {}", context);
-            }
+            log.warn("No bucket name in context {}", context);
             bucketName = StringUtils.EMPTY;
         }
         else {
             bucketName = context.getAttribute("bucket").toString();
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Use bucket name {} from context", bucketName);
-        }
+        log.debug("Use bucket name {} from context", bucketName);
         final URI uri;
         try {
             uri = new URI(request.getRequestLine().getUri());

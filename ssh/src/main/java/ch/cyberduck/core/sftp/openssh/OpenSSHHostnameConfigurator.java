@@ -51,9 +51,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
         if(StringUtils.isBlank(hostname)) {
             return alias;
         }
-        if(log.isInfoEnabled()) {
-            log.info("Determined hostname {} from alias {} from {}", hostname, alias, configuration);
-        }
+        log.info("Determined hostname {} from alias {} from {}", hostname, alias, configuration);
         return hostname;
     }
 

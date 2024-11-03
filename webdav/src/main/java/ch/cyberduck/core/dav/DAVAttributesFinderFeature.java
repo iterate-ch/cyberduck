@@ -90,9 +90,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                 }
                 catch(InteroperabilityException | ConflictException i) {
                     // PROPFIND Method not allowed
-                    if(log.isWarnEnabled()) {
-                        log.warn("Failure with PROPFIND request for {}. {}", file, i.getMessage());
-                    }
+                    log.warn("Failure with PROPFIND request for {}. {}", file, i.getMessage());
                     final PathAttributes attr = this.head(file);
                     if(PathAttributes.EMPTY == attr) {
                         throw i;
@@ -168,9 +166,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                             }
                         }
                         else {
-                            if(log.isDebugEnabled()) {
-                                log.debug("Missing value for property {}", DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
-                            }
+                            log.debug("Missing value for property {}", DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
                             if(resource.getModified() != null) {
                                 attributes.setModificationDate(resource.getModified().getTime());
                             }
@@ -189,18 +185,14 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                 }
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug("Missing value for property {}", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
-                }
+                log.debug("Missing value for property {}", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());
                 }
             }
             // Validate value with fallback to server side modified date
             if(attributes.getModificationDate() == 0) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Invalid value for property {}", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
-                }
+                log.debug("Invalid value for property {}", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());
                 }

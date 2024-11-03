@@ -92,9 +92,7 @@ public class B2DeleteFeature implements Delete {
                     try {
                         if(!versioning.isEnabled() || null == file.attributes().getVersionId()) {
                             // Add hide marker
-                            if(log.isDebugEnabled()) {
-                                log.debug("Add hide marker {} of {}", file.attributes().getVersionId(), file);
-                            }
+                            log.debug("Add hide marker {} of {}", file.attributes().getVersionId(), file);
                             try {
                                 session.getClient().hideFile(fileid.getVersionId(containerService.getContainer(file)), containerService.getKey(file));
                             }
@@ -109,9 +107,7 @@ public class B2DeleteFeature implements Delete {
                         }
                         else {
                             // Delete specific version
-                            if(log.isDebugEnabled()) {
-                                log.debug("Delete version {} of {}", file.attributes().getVersionId(), file);
-                            }
+                            log.debug("Delete version {} of {}", file.attributes().getVersionId(), file);
                             session.getClient().deleteFileVersion(containerService.getKey(file), file.attributes().getVersionId());
                         }
                     }

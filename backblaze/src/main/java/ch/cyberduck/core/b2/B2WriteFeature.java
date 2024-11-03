@@ -84,17 +84,13 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     else {
                         if(null == urls.get()) {
                             final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file)));
-                            if(log.isDebugEnabled()) {
-                                log.debug("Obtained upload URL {} for file {}", uploadUrl, file);
-                            }
+                            log.debug("Obtained upload URL {} for file {}", uploadUrl, file);
                             urls.set(uploadUrl);
                             return this.upload(uploadUrl, entity, checksum);
                         }
                         else {
                             final B2GetUploadUrlResponse uploadUrl = urls.get();
-                            if(log.isDebugEnabled()) {
-                                log.debug("Use cached upload URL {} for file {}", uploadUrl, file);
-                            }
+                            log.debug("Use cached upload URL {} for file {}", uploadUrl, file);
                             try {
                                 return this.upload(uploadUrl, entity, checksum);
                             }

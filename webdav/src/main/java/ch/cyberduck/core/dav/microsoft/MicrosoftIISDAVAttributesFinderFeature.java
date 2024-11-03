@@ -69,9 +69,7 @@ public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderF
                 }
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug("Missing value for property {}", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
-                }
+                log.debug("Missing value for property {}", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());
                 }

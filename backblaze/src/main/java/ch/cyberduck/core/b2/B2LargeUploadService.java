@@ -158,14 +158,10 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 boolean skip = false;
                 if(status.isAppend()) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Determine if part number {} can be skipped", partNumber);
-                    }
+                    log.info("Determine if part number {} can be skipped", partNumber);
                     for(B2UploadPartResponse c : completed) {
                         if(c.getPartNumber().equals(partNumber)) {
-                            if(log.isInfoEnabled()) {
-                                log.info("Skip completed part number {}", partNumber);
-                            }
+                            log.info("Skip completed part number {}", partNumber);
                             skip = true;
                             offset += c.getContentLength();
                             break;
@@ -176,9 +172,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                     final long length = Math.min(Math.max((size / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
                     parts.add(this.submit(pool, file, local, throttle, listener, status, fileId, partNumber, offset, length, callback));
-                    if(log.isDebugEnabled()) {
-                        log.debug("Part {} submitted with size {} and offset {}", partNumber, length, offset);
-                    }
+                    log.debug("Part {} submitted with size {} and offset {}", partNumber, length, offset);
                     remaining -= length;
                     offset += length;
                 }
@@ -195,9 +189,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 checksums.add(part.getContentSha1());
             }
             final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(fileId, checksums.toArray(new String[checksums.size()]));
-            if(log.isInfoEnabled()) {
-                log.info("Finished large file upload {} with {} parts", file, completed.size());
-            }
+            log.info("Finished large file upload {} with {} parts", file, completed.size());
             fileid.cache(file, response.getFileId());
             // Mark parent status as complete
             status.withResponse(new B2AttributesFinderFeature(session, fileid).toAttributes(response)).setComplete();
@@ -219,9 +211,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                                                 final TransferStatus overall,
                                                 final String fileId, final int partNumber,
                                                 final Long offset, final Long length, final ConnectionCallback callback) {
-        if(log.isInfoEnabled()) {
-            log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
-        }
+        log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
             @Override

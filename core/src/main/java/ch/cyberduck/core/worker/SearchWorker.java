@@ -55,9 +55,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         // Run recursively
         final Search feature = session.getFeature(Search.class);
-        if(log.isDebugEnabled()) {
-            log.debug("Run with feature {}", feature);
-        }
+        log.debug("Run with feature {}", feature);
         return this.search(feature, directory);
     }
 
@@ -89,9 +87,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         else {
             for(final Path f : list) {
                 if(f.isDirectory()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Recursively search in {}", f);
-                    }
+                    log.debug("Recursively search in {}", f);
                     final AttributedList<Path> children = this.search(search, f);
                     list.addAll(children);
                     if(children.isEmpty()) {

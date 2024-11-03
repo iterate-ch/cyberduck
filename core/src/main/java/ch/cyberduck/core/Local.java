@@ -373,9 +373,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             log.warn("{} and {} are identical. Not copied.", this.getName(), copy.getName());
         }
         else {
-            if(log.isDebugEnabled()) {
-                log.debug("Copy to {} with options {}", copy, options);
-            }
+            log.debug("Copy to {} with options {}", copy, options);
             FileChannel in = null;
             FileChannel out = null;
             try {
@@ -484,9 +482,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public Object lock(final boolean interactive) throws AccessDeniedException {
-        if(log.isWarnEnabled()) {
-            log.warn("No lock support in {}", this);
-        }
+        log.warn("No lock support in {}", this);
         return null;
     }
 

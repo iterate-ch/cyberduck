@@ -65,17 +65,13 @@ public class ResumeFilter extends AbstractUploadFilter {
                             if(Checksum.NONE != attributes.getChecksum()) {
                                 final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
                                 if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
-                                    if(log.isInfoEnabled()) {
-                                        log.info("Skip file {} with checksum {}", file, attributes.getChecksum());
-                                    }
+                                    log.info("Skip file {} with checksum {}", file, attributes.getChecksum());
                                     return false;
                                 }
                                 log.warn("Checksum mismatch for {} and {}", file, local);
                             }
                             else {
-                                if(log.isInfoEnabled()) {
-                                    log.info("Skip file {} with remote size {}", file, attributes.getSize());
-                                }
+                                log.info("Skip file {} with remote size {}", file, attributes.getSize());
                                 // No need to resume completed transfers
                                 return false;
                             }
@@ -98,9 +94,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                 status.withRename((Path) null).withDisplayname((Path) null).setAppend(true);
                 status.setLength(status.getLength() - append.offset);
                 status.setOffset(append.offset);
-                if(log.isDebugEnabled()) {
-                    log.debug("Resume file {} at offset {} and remaining length {}", file, status.getOffset(), status.getLength());
-                }
+                log.debug("Resume file {} at offset {} and remaining length {}", file, status.getOffset(), status.getLength());
             }
         }
         return status;

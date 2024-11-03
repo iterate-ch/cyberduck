@@ -68,9 +68,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = prefix + cryptomator.getFileNameCryptor().encryptFilename(CryptorCache.BASE32, filename, directoryId.getBytes(StandardCharsets.UTF_8));
-        if(log.isDebugEnabled()) {
-            log.debug("Encrypted filename {} to {}", filename, ciphertextName);
-        }
+        log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return cryptomator.getFilenameProvider().deflate(session, ciphertextName);
     }
 
@@ -86,9 +84,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             attributes.withFileId(null);
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);
-            if(log.isDebugEnabled()) {
-                log.debug("Use directory ID '{}' for folder {}", id, directory);
-            }
+            log.debug("Use directory ID '{}' for folder {}", id, directory);
             attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
             final String directoryIdHash = cryptomator.getFileNameCryptor().hashDirectoryId(id);
@@ -112,9 +108,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
                 return cache.get(new SimplePathPredicate(directory));
             }
             try {
-                if(log.isDebugEnabled()) {
-                    log.debug("Acquire lock for {}", directory);
-                }
+                log.debug("Acquire lock for {}", directory);
                 lock.lock();
                 final String id = this.load(session, directory);
                 cache.put(new SimplePathPredicate(directory), id);
@@ -142,9 +136,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
         // Read directory id from file
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
-            }
+            log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
             final Path metadataFile = new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted));
             return new ContentReader(session).read(metadataFile);
         }

@@ -163,9 +163,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         if(applicationNameCache.contains(search)) {
             return applicationNameCache.get(search);
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Find application for {}", search);
-        }
+        log.debug("Find application for {}", search);
         final String identifier;
         final String name;
         synchronized(NSWorkspace.class) {

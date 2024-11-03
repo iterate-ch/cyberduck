@@ -74,18 +74,14 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
                 final Path metadata = vault.encrypt(session, f, true);
                 if(f.isDirectory()) {
                     // Delete metadata file for directory
-                    if(log.isDebugEnabled()) {
-                        log.debug("Add metadata file {}", metadata);
-                    }
+                    log.debug("Add metadata file {}", metadata);
                     metadataFiles.add(metadata);
                     vault.getDirectoryProvider().delete(f);
                 }
                 if(filenameProvider.isDeflated(metadata.getName())) {
                     filenameProvider.invalidate(filenameProvider.inflate(session, metadata.getName()));
                     final Path metadataFile = filenameProvider.resolve(metadata.getName());
-                    if(log.isDebugEnabled()) {
-                        log.debug("Add metadata file {}", metadata);
-                    }
+                    log.debug("Add metadata file {}", metadata);
                     metadataFiles.add(metadataFile);
                 }
             }

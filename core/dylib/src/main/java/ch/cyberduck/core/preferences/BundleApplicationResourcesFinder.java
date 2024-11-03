@@ -41,9 +41,7 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
             return new TemporarySupportDirectoryFinder().find();
         }
         final Local folder = new FinderLocal(b.resourcePath());
-        if(log.isDebugEnabled()) {
-            log.debug("Use folder {} for application resources directory", folder);
-        }
+        log.debug("Use folder {} for application resources directory", folder);
         return folder;
     }
 
@@ -51,9 +49,7 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
         if(cached != null) {
             return cached;
         }
-        if(log.isInfoEnabled()) {
-            log.info("Loading application bundle resources");
-        }
+        log.info("Loading application bundle resources");
         final NSBundle main = NSBundle.mainBundle();
         if(null == main) {
             cached = null;

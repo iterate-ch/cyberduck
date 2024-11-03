@@ -106,9 +106,7 @@ public final class StreamCopier {
                 cancel.validate();
                 final int read = in.read(buffer, 0, len);
                 if(-1 == read) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("End of file reached with {} bytes read from stream", total);
-                    }
+                    log.debug("End of file reached with {} bytes read from stream", total);
                     progress.setComplete();
                     break;
                 }
@@ -123,9 +121,7 @@ public final class StreamCopier {
                     len = (int) Math.min(limit - total, chunksize);
                 }
                 if(limit == total) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Limit {} reached reading from stream", limit);
-                    }
+                    log.debug("Limit {} reached reading from stream", limit);
                     progress.setComplete();
                 }
             }
@@ -147,9 +143,7 @@ public final class StreamCopier {
         try {
             if(offset > 0) {
                 long skipped = in.skip(offset);
-                if(log.isInfoEnabled()) {
-                    log.info("Skipping {} bytes", skipped);
-                }
+                log.info("Skipping {} bytes", skipped);
                 if(skipped < offset) {
                     throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
                             skipped, offset));

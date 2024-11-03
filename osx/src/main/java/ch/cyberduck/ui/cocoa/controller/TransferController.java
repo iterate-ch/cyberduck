@@ -655,9 +655,7 @@ public final class TransferController extends WindowController implements Transf
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Paste download transfer from pasteboard");
-            }
+            log.debug("Paste download transfer from pasteboard");
             final List<TransferItem> downloads = new ArrayList<>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(download, LocalFactory.get(

@@ -105,9 +105,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                     .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                     .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
-            if(log.isDebugEnabled()) {
-                log.debug("upload started for {} with response {}", file, createFileUploadResponse);
-            }
+            log.debug("upload started for {} with response {}", file, createFileUploadResponse);
             final MultipartOutputStream proxy = new MultipartOutputStream(createFileUploadResponse, file, status);
             return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, partsize),
                     new SDSAttributesAdapter(session), status) {
@@ -173,9 +171,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                                         case HttpStatus.SC_OK:
                                             // Upload complete
                                             if(response.containsHeader("ETag")) {
-                                                if(log.isInfoEnabled()) {
-                                                    log.info("Received response {} for part number {}", response, partNumber);
-                                                }
+                                                log.info("Received response {} for part number {}", response, partNumber);
                                                 return Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
                                             }
                                             else {
@@ -248,9 +244,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                 }
                 completed.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
                         new S3FileUploadPart().partEtag(value.hash).partNumber(key)));
-                if(log.isDebugEnabled()) {
-                    log.debug("Complete file upload with {} for {}", completeS3FileUploadRequest, file);
-                }
+                log.debug("Complete file upload with {} for {}", completeS3FileUploadRequest, file);
                 new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                 // Polling
                 result.set(new SDSUploadService(session, nodeid).await(file, overall, createFileUploadResponse.getUploadId()).getNode());

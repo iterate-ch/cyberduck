@@ -87,9 +87,7 @@ public class AzureObjectListService implements ListService {
                         new HostPreferences(session.getHost()).getInteger("azure.listing.chunksize"), token, options, context);
                 for(ListBlobItem object : result.getResults()) {
                     if(new SimplePathPredicate(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Skip placeholder key {}", object);
-                        }
+                        log.debug("Skip placeholder key {}", object);
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
@@ -114,9 +112,7 @@ public class AzureObjectListService implements ListService {
             }
             while(result.getHasMoreResults());
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
-                if(log.isWarnEnabled()) {
-                    log.warn("No placeholder found for directory {}", directory);
-                }
+                log.warn("No placeholder found for directory {}", directory);
                 throw new NotfoundException(directory.getAbsolute());
             }
             return children;

@@ -87,9 +87,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             final Long fileId = file != null ? Long.parseLong(nodeid.getVersionId(file)) : null;
             UserFileKeySetBatchRequest request;
             do {
-                if(log.isDebugEnabled()) {
-                    log.debug("Request a list of missing file keys for file {}", file);
-                }
+                log.debug("Request a list of missing file keys for file {}", file);
                 request = new UserFileKeySetBatchRequest();
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
                         null, null, null, fileId, null, null, null);
@@ -113,17 +111,13 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                                     .fileId(item.getFileId())
                                     .userId(item.getUserId())
                                     .fileKey(TripleCryptConverter.toSwaggerFileKey(fk));
-                            if(log.isDebugEnabled()) {
-                                log.debug("Missing file key processed for file {} and user {}", item.getFileId(), item.getUserId());
-                            }
+                            log.debug("Missing file key processed for file {} and user {}", item.getFileId(), item.getUserId());
                             request.addItemsItem(keySetRequest);
                         }
                     }
                 }
                 if(!request.getItems().isEmpty()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Set file keys with {}", request);
-                    }
+                    log.debug("Set file keys with {}", request);
                     new NodesApi(session.getClient()).setUserFileKeys(request, StringUtils.EMPTY);
                     processed.addAll(request.getItems());
                 }

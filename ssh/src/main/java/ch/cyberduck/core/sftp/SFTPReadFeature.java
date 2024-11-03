@@ -50,9 +50,7 @@ public class SFTPReadFeature implements Read {
         try {
             final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.READ));
             final int maxUnconfirmedReads = this.getMaxUnconfirmedReads(status);
-            if(log.isInfoEnabled()) {
-                log.info("Skipping {} bytes", status.getOffset());
-            }
+            log.info("Skipping {} bytes", status.getOffset());
             return handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getOffset(), status.getLength()) {
                 private final AtomicBoolean close = new AtomicBoolean();
 

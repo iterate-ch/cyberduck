@@ -111,9 +111,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                 if(json.has("errorCode")) {
                     if(json.get("errorCode").isJsonPrimitive()) {
                         final int errorCode = json.getAsJsonPrimitive("errorCode").getAsInt();
-                        if(log.isDebugEnabled()) {
-                            log.debug("Failure with errorCode {}", errorCode);
-                        }
+                        log.debug("Failure with errorCode {}", errorCode);
                         final String key = String.format("Error %d", errorCode);
                         final String localized = LocaleFactory.get().localize(key, "SDS");
                         this.append(buffer, localized);
@@ -150,9 +148,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                                         if(json.has("replyMessage")) {
                                             if(json.get("replyMessage").isJsonPrimitive()) {
                                                 final JsonPrimitive replyMessage = json.getAsJsonPrimitive("replyMessage");
-                                                if(log.isDebugEnabled()) {
-                                                    log.debug("Failure with replyMessage {}", replyMessage);
-                                                }
+                                                log.debug("Failure with replyMessage {}", replyMessage);
                                                 buffer.append(replyMessage.getAsString());
                                             }
                                         }

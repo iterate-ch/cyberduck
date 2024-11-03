@@ -85,9 +85,7 @@ public class STSAssumeRoleAuthorizationService {
         }
         try {
             final AssumeRoleWithSAMLResult result = service.assumeRoleWithSAML(request);
-            if(log.isDebugEnabled()) {
-                log.debug("Received assume role identity result {}", result);
-            }
+            log.debug("Received assume role identity result {}", result);
             final Credentials credentials = bookmark.getCredentials();
             final TemporaryAccessTokens tokens = new TemporaryAccessTokens(result.getCredentials().getAccessKeyId(),
                     result.getCredentials().getSecretAccessKey(),
@@ -103,9 +101,7 @@ public class STSAssumeRoleAuthorizationService {
 
     public TemporaryAccessTokens authorize(final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
-        if(log.isDebugEnabled()) {
-            log.debug("Assume role with OIDC Id token for {}", bookmark);
-        }
+        log.debug("Assume role with OIDC Id token for {}", bookmark);
         final String webIdentityToken = this.getWebIdentityToken(oauth);
         request.setWebIdentityToken(webIdentityToken);
         final HostPreferences preferences = new HostPreferences(bookmark);
@@ -121,9 +117,7 @@ public class STSAssumeRoleAuthorizationService {
         else {
             if(StringUtils.EMPTY.equals(preferences.getProperty("s3.assumerole.rolearn"))) {
                 // When defined in connection profile but with empty value
-                if(log.isDebugEnabled()) {
-                    log.debug("Prompt for Role ARN");
-                }
+                log.debug("Prompt for Role ARN");
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -155,13 +149,9 @@ public class STSAssumeRoleAuthorizationService {
             }
         }
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Use request {}", request);
-            }
+            log.debug("Use request {}", request);
             final AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(request);
-            if(log.isDebugEnabled()) {
-                log.debug("Received assume role identity result {}", result);
-            }
+            log.debug("Received assume role identity result {}", result);
             return new TemporaryAccessTokens(result.getCredentials().getAccessKeyId(),
                     result.getCredentials().getSecretAccessKey(),
                     result.getCredentials().getSessionToken(),

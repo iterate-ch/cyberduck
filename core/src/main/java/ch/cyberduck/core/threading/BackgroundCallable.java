@@ -49,9 +49,7 @@ public class BackgroundCallable<T> implements Callable<T> {
         }
         catch(BackgroundException e) {
             action.alert(e);
-            if(log.isDebugEnabled()) {
-                log.debug("Invoke cleanup for background action {}", action);
-            }
+            log.debug("Invoke cleanup for background action {}", action);
             this.cleanup();
             return false;
         }
@@ -74,35 +72,25 @@ public class BackgroundCallable<T> implements Callable<T> {
 
     @Override
     public T call() {
-        if(log.isDebugEnabled()) {
-            log.debug("Running background action {}", action);
-        }
+        log.debug("Running background action {}", action);
         final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
         if(action.isCanceled()) {
             // Canceled action yields no result
             return null;
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Prepare background action {}", action);
-        }
+        log.debug("Prepare background action {}", action);
         action.prepare();
         try {
             final T result = this.run();
-            if(log.isDebugEnabled()) {
-                log.debug("Return result {} from background action {}", result, action);
-            }
+            log.debug("Return result {} from background action {}", result, action);
             return result;
         }
         finally {
             action.finish();
-            if(log.isDebugEnabled()) {
-                log.debug("Invoke cleanup for background action {}", action);
-            }
+            log.debug("Invoke cleanup for background action {}", action);
             // Invoke the cleanup on the main thread to let the action synchronize the user interface
             this.cleanup();
-            if(log.isDebugEnabled()) {
-                log.debug("Releasing lock for background runnable {}", action);
-            }
+            log.debug("Releasing lock for background runnable {}", action);
             autorelease.operate();
         }
     }
@@ -110,18 +98,14 @@ public class BackgroundCallable<T> implements Callable<T> {
     protected T run() {
         try {
             // Execute the action of the runnable
-            if(log.isDebugEnabled()) {
-                log.debug("Call background action {}", action);
-            }
+            log.debug("Call background action {}", action);
             return action.call();
         }
         catch(Exception e) {
             this.failure(client, e);
             // Runtime failure
             if(action.alert(new DefaultExceptionMappingService().map(e))) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Retry background action {}", action);
-                }
+                log.debug("Retry background action {}", action);
                 // Retry
                 return this.run();
             }

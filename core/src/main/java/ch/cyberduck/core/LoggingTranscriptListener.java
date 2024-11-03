@@ -36,14 +36,10 @@ public class LoggingTranscriptListener implements TranscriptListener {
     public void log(final Type type, final String message) {
         switch(type) {
             case request:
-                if(request.isInfoEnabled()) {
-                    request.info(message);
-                }
+                request.info(message);
                 break;
             case response:
-                if(response.isInfoEnabled()) {
-                    response.info(message);
-                }
+                response.info(message);
                 break;
         }
     }

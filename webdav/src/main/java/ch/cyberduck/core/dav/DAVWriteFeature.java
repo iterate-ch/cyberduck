@@ -106,9 +106,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
             // in the full entity-body the partial body should be applied.
             final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
                     status.getOffset() + status.getLength());
-            if(log.isDebugEnabled()) {
-                log.debug("Add range header {} for file {}", header, file);
-            }
+            log.debug("Add range header {} for file {}", header, file);
             headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
         }
         if(expectdirective) {

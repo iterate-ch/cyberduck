@@ -95,9 +95,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
             return tokens = super.refresh(previous);
         }
         catch(LoginFailureException e) {
-            if(log.isWarnEnabled()) {
-                log.warn("Failure {} refreshing OAuth tokens", e);
-            }
+            log.warn("Failure {} refreshing OAuth tokens", e);
             return tokens = this.authorize();
         }
     }
@@ -119,9 +117,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
             }
         }
         if(StringUtils.isNotBlank(tokens.getAccessToken())) {
-            if(log.isInfoEnabled()) {
-                log.info("Authorizing service request with OAuth2 tokens {}", tokens);
-            }
+            log.info("Authorizing service request with OAuth2 tokens {}", tokens);
             request.removeHeaders(HttpHeaders.AUTHORIZATION);
             request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
         }

@@ -92,9 +92,7 @@ public final class ProtocolFactory {
     }
 
     public void register(Protocol... protocols) {
-        if(log.isInfoEnabled()) {
-            log.info("Register protocols {}", Arrays.toString(protocols));
-        }
+        log.info("Register protocols {}", Arrays.toString(protocols));
         // Order determines list in connection dropdown
         Collections.addAll(registered, protocols);
     }
@@ -142,18 +140,14 @@ public final class ProtocolFactory {
                 log.error("Attempt to register unknown protocol");
                 return null;
             }
-            if(log.isInfoEnabled()) {
-                log.info("Register profile {}", profile);
-            }
+            log.info("Register profile {}", profile);
             registered.add(profile);
             preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled",
                     profile.getProtocol().getIdentifier(), profile.getProvider())), true);
             if(!profiles.exists()) {
                 new DefaultLocalDirectoryFeature().mkdir(profiles);
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Save profile {} to {}", profile, profiles);
-            }
+            log.debug("Save profile {} to {}", profile, profiles);
             if(!file.isChild(profiles)) {
                 final Local target = LocalFactory.get(profiles, file.getName());
                 file.copy(target);

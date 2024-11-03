@@ -85,9 +85,7 @@ public class DropboxVersioningFeature implements Versioning {
                 if(StringUtils.equals(revision.getRev(), file.attributes().getVersionId())) {
                     continue;
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug("Found revision {}", revision);
-                }
+                log.debug("Found revision {}", revision);
                 final PathAttributes attributes = attr.toAttributes(revision);
                 attributes.setDuplicate(true);
                 versions.add(new Path(file.getParent(), PathNormalizer.name(revision.getName()), file.getType(), attributes));

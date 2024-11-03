@@ -89,9 +89,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     public void configure(final boolean enable, final Path file) {
         final Path bucket = containerService.getContainer(file);
         final Host host = session.getHost();
-        if(log.isDebugEnabled()) {
-            log.debug("Set S3 transfer acceleration to {}", enable);
-        }
+        log.debug("Set S3 transfer acceleration to {}", enable);
         // Set accelerated endpoint
         host.setProperty(String.format("s3.transferacceleration.%s.enable", bucket.getName()), String.valueOf(enable));
     }

@@ -70,9 +70,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
-        if(log.isDebugEnabled()) {
-            log.debug("Run with feature {}", feature);
-        }
+        log.debug("Run with feature {}", feature);
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

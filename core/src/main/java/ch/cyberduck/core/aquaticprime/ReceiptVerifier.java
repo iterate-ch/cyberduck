@@ -154,9 +154,7 @@ public class ReceiptVerifier implements LicenseVerifier {
             }
             final byte[] address = HardwareAddressFactory.get().getAddress();
             final String hex = Hex.encodeHexString(address);
-            if(log.isDebugEnabled()) {
-                log.debug("Interface en0 {}", hex);
-            }
+            log.debug("Interface en0 {}", hex);
             // Compute the hash of the GUID
             final MessageDigest digest = MessageDigest.getInstance("SHA-1");
             digest.update(address);
@@ -172,9 +170,7 @@ public class ReceiptVerifier implements LicenseVerifier {
             digest.update(bundleIdentifier.getBytes(StandardCharsets.UTF_8));
             final byte[] result = digest.digest();
             if(Arrays.equals(result, hash)) {
-                if(log.isInfoEnabled()) {
-                    log.info("Valid receipt for GUID {}", hex);
-                }
+                log.info("Valid receipt for GUID {}", hex);
                 return true;
             }
             else {

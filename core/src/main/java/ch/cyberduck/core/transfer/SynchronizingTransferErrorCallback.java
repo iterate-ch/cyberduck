@@ -35,9 +35,7 @@ public class SynchronizingTransferErrorCallback implements TransferErrorCallback
 
     @Override
     public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Await lock {}", lock);
-        }
+        log.debug("Await lock {}", lock);
         lock.lock();
         try {
             return proxy.prompt(item, status, failure, pending);

@@ -41,9 +41,7 @@ public final class MicrosoftIISFeaturesResponseHandler extends ValidatingRespons
     public Void handleResponse(final HttpResponse response) throws IOException {
         if(Arrays.stream(response.getAllHeaders()).anyMatch(header ->
                 HttpHeaders.SERVER.equals(header.getName()) && StringUtils.contains(header.getValue(), "Microsoft-IIS"))) {
-            if(log.isInfoEnabled()) {
-                log.info("Microsoft-IIS backend detected in response {}", response);
-            }
+            log.info("Microsoft-IIS backend detected in response {}", response);
             capabilities.withIIS(true);
         }
         this.validateResponse(response);

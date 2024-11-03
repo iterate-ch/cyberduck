@@ -50,9 +50,7 @@ public class DropboxTemporaryUrlProvider implements Share<Void, Void> {
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Create temporary link for {}", file);
-            }
+            log.debug("Create temporary link for {}", file);
             // This link will expire in four hours and afterwards you will get 410 Gone.
             final String link = new DbxUserFilesRequests(session.getClient(file)).getTemporaryLink(containerService.getKey(file)).getLink();
             // Determine expiry time for URL
@@ -72,9 +70,7 @@ public class DropboxTemporaryUrlProvider implements Share<Void, Void> {
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Create temporary upload link for {}", file);
-            }
+            log.debug("Create temporary upload link for {}", file);
             final String link = new DbxUserFilesRequests(session.getClient(file)).getTemporaryUploadLink(new CommitInfo(containerService.getKey(file))).getLink();
             return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
         }

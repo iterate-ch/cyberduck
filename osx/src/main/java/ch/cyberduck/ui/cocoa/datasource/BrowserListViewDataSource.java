@@ -46,9 +46,7 @@ public class BrowserListViewDataSource extends BrowserTableDataSource implements
     @Override
     public void render(final NSTableView view, final List<Path> folders) {
         super.render(view, folders);
-        if(log.isDebugEnabled()) {
-            log.debug("Reload table view {} for changes files {}", view, folders);
-        }
+        log.debug("Reload table view {} for changes files {}", view, folders);
         view.reloadData();
     }
 

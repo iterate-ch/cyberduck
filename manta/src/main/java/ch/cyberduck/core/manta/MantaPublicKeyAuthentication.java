@@ -71,9 +71,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
         final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
         config.setMantaKeyPath(identity.getAbsolute());
 
-        if(log.isInfoEnabled()) {
-            log.info("Reading private key {} with key format {}", identity, format);
-        }
+        log.info("Reading private key {} with key format {}", identity, format);
         provider.init(
                 new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),
                 new PasswordFinder() {

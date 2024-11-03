@@ -42,9 +42,7 @@ public class SharedWithMeListService extends AbstractItemListService {
     @Override
     protected Iterator<DriveItem.Metadata> getIterator(final Path directory) {
         final User user = User.getCurrent(session.getClient());
-        if(log.isDebugEnabled()) {
-            log.debug("Return shared items for user {}", user);
-        }
+        log.debug("Return shared items for user {}", user);
         return Files.getSharedWithMe(user);
     }
 }

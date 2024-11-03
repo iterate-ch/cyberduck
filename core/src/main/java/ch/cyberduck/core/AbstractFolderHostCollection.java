@@ -94,9 +94,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                 new DefaultLocalDirectoryFeature().mkdir(folder);
             }
             final Local f = this.getFile(bookmark);
-            if(log.isInfoEnabled()) {
-                log.info("Save bookmark {} to {}", bookmark, f);
-            }
+            log.info("Save bookmark {} to {}", bookmark, f);
             writer.write(bookmark, f);
         }
         catch(AccessDeniedException e) {
@@ -106,9 +104,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void load() throws AccessDeniedException {
-        if(log.isInfoEnabled()) {
-            log.info("Reloading {}", folder.getAbsolute());
-        }
+        log.info("Reloading {}", folder.getAbsolute());
         this.lock();
         try {
             if(!folder.exists()) {

@@ -90,9 +90,7 @@ public class LRUCache<Key, Value> {
             builder.removalListener(new RemovalListener<Key, Value>() {
                 @Override
                 public void onRemoval(final RemovalNotification<Key, Value> notification) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Removed {} from cache with cause {}", notification.getKey(), notification.getCause());
-                    }
+                    log.debug("Removed {} from cache with cause {}", notification.getKey(), notification.getCause());
                     listener.onRemoval(notification);
                 }
             });

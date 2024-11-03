@@ -40,9 +40,7 @@ public class GraphDrivesListService extends AbstractDriveListService {
 
     @Override
     protected Iterator<Drive.Metadata> getIterator(final Path directory) {
-        if(log.isDebugEnabled()) {
-            log.debug("Return drives for session {}", session);
-        }
+        log.debug("Return drives for session {}", session);
         // In most cases, OneDrive and OneDrive for Business users will only have a single
         // drive available, the default drive. When using OneDrive API with a SharePoint team site,
         // this API returns the collection of document libraries created in the site.

@@ -32,9 +32,7 @@ public class FTPParserSelector {
     }
 
     public CompositeFileEntryParser getParser(final String system, final TimeZone zone) {
-        if(log.isDebugEnabled()) {
-            log.debug("Select parser for system {} in zone {}", system, zone);
-        }
+        log.debug("Select parser for system {} in zone {}", system, zone);
         final CompositeFileEntryParser parser = new FTPParserFactory().createFileEntryParser(system, zone);
         // Configure timezone
         parser.configure(null);

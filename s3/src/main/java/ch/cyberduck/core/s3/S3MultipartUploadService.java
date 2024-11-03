@@ -117,15 +117,11 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             final List<MultipartPart> completed = new ArrayList<>();
             // Not found or new upload
             if(null == multipart) {
-                if(log.isInfoEnabled()) {
-                    log.info("No pending multipart upload found");
-                }
+                log.info("No pending multipart upload found");
                 final S3Object object = new S3WriteFeature(session, acl).getDetails(file, status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
-                if(log.isDebugEnabled()) {
-                    log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
-                }
+                log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
                 multipart.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             }
             else {
@@ -142,14 +138,10 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 boolean skip = false;
                 if(status.isAppend()) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Determine if part number {} can be skipped", partNumber);
-                    }
+                    log.info("Determine if part number {} can be skipped", partNumber);
                     for(MultipartPart c : completed) {
                         if(c.getPartNumber().equals(partNumber)) {
-                            if(log.isInfoEnabled()) {
-                                log.info("Skip completed part number {}", partNumber);
-                            }
+                            log.info("Skip completed part number {}", partNumber);
                             skip = true;
                             offset += c.getSize();
                             break;
@@ -171,9 +163,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             // has been sent, it is important that you check the response body to determine whether the request succeeded.
             multipart.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
-            if(log.isInfoEnabled()) {
-                log.info("Completed multipart upload for {} with {} parts and checksum {}", complete.getObjectKey(), completed.size(), complete.getEtag());
-            }
+            log.info("Completed multipart upload for {} with {} parts and checksum {}", complete.getObjectKey(), completed.size(), complete.getEtag());
             if(file.getType().contains(Path.Type.encrypted)) {
                 log.warn("Skip checksum verification for {} with client side encryption enabled", file);
             }
@@ -218,9 +208,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final MultipartUpload multipart,
                                          final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
-        if(log.isInfoEnabled()) {
-            log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
-        }
+        log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
             @Override
@@ -250,9 +238,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
                 final StorageObject part = S3MultipartUploadService.this.upload(
                         file, local, throttle, counter, status, overall, status, callback);
-                if(log.isInfoEnabled()) {
-                    log.info("Received response {} for part number {}", part, partNumber);
-                }
+                log.info("Received response {} for part number {}", part, partNumber);
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber,
                         null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),

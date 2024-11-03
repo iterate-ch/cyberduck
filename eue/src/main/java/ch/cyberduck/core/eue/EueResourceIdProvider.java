@@ -64,9 +64,7 @@ public class EueResourceIdProvider extends CachingFileIdProvider implements File
             }
             final String cached = super.getFileId(file);
             if(cached != null) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Return cached fileid {} for file {}", cached, file);
-                }
+                log.debug("Return cached fileid {} for file {}", cached, file);
                 return cached;
             }
             if(file.isRoot()) {

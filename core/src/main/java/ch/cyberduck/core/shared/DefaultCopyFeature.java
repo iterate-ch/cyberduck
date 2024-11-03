@@ -62,9 +62,7 @@ public class DefaultCopyFeature implements Copy {
         out = writer.write(target, status, callback);
         new StreamCopier(status, status).withListener(listener).transfer(in, out);
         if(!PathAttributes.EMPTY.equals(status.getResponse())) {
-            if(log.isDebugEnabled()) {
-                log.debug("Received reply {} for creating file {}", status.getResponse(), target);
-            }
+            log.debug("Received reply {} for creating file {}", status.getResponse(), target);
             return new Path(target).withAttributes(status.getResponse());
         }
         log.warn("Missing status from writer {}", writer);

@@ -69,9 +69,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
      */
     public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
         if(++count > retry) {
-            if(log.isWarnEnabled()) {
-                log.warn("Cancel retry for failure {} after {} counts", failure, retry);
-            }
+            log.warn("Cancel retry for failure {} after {} counts", failure, retry);
             return false;
         }
         int delay;
@@ -91,22 +89,16 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                     break;
                 }
             default:
-                if(log.isWarnEnabled()) {
-                    log.warn("No retry for failure {}", failure);
-                }
+                log.warn("No retry for failure {}", failure);
                 return false;
         }
-        if(log.isWarnEnabled()) {
-            log.warn("Retry for failure {} with delay of {}s", failure, delay);
-        }
+        log.warn("Retry for failure {} with delay of {}s", failure, delay);
         if(delay > 0) {
             final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                 @Override
                 public void validate() throws ConnectionCanceledException {
                     if(cancel.isCanceled()) {
-                        if(log.isWarnEnabled()) {
-                            log.warn("Abort pausing retry after failure {}", failure);
-                        }
+                        log.warn("Abort pausing retry after failure {}", failure);
                         throw new ConnectionCanceledException();
                     }
                 }

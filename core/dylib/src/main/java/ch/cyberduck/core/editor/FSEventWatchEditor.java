@@ -57,9 +57,7 @@ public class FSEventWatchEditor extends DefaultWatchEditor {
 
     private final Proxy terminate = new Proxy() {
         public void terminated(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug("Received notification {} from workspace", notification.userInfo());
-            }
+            log.debug("Received notification {} from workspace", notification.userInfo());
             if(notification.userInfo().objectForKey("NSApplicationBundleIdentifier") == null) {
                 log.warn("Missing NSApplicationBundleIdentifier in notification dictionary");
                 return;
@@ -68,9 +66,7 @@ public class FSEventWatchEditor extends DefaultWatchEditor {
                     "NSApplicationBundleIdentifier").toString());
             // Do cleanup if application matches
             for(ApplicationQuitCallback callback : registered.getOrDefault(application, Collections.emptySet())) {
-                if(log.isInfoEnabled()) {
-                    log.info("Run quit callback {} for application {}", callback, application);
-                }
+                log.info("Run quit callback {} for application {}", callback, application);
                 callback.callback();
             }
         }
@@ -86,9 +82,7 @@ public class FSEventWatchEditor extends DefaultWatchEditor {
 
     @Override
     protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
-        if(log.isInfoEnabled()) {
-            log.info("Register application {} for terminate callback {}", application, quit);
-        }
+        log.info("Register application {} for terminate callback {}", application, quit);
         final Set<ApplicationQuitCallback> callbacks = registered.getOrDefault(application, new HashSet<>());
         callbacks.add(quit);
         registered.putIfAbsent(application, callbacks);
@@ -97,9 +91,7 @@ public class FSEventWatchEditor extends DefaultWatchEditor {
 
     @Override
     public void close() {
-        if(log.isWarnEnabled()) {
-            log.warn("Remove observer {}", terminate);
-        }
+        log.warn("Remove observer {}", terminate);
         workspace.notificationCenter().removeObserver(terminate.id());
         super.close();
     }

@@ -36,14 +36,10 @@ public class TcpReachability implements Reachability {
         final HostnameConfigurator configurator = bookmark.getProtocol().getFeature(HostnameConfigurator.class);
         try (Socket socket = new ProxySocketFactory(bookmark, new DefaultSocketConfigurator(Reachability.timeout))
                 .createSocket(configurator.getHostname(bookmark.getHostname()), bookmark.getPort())) {
-            if(log.isInfoEnabled()) {
-                log.info("Opened socket {} for {}", socket, bookmark);
-            }
+            log.info("Opened socket {} for {}", socket, bookmark);
         }
         catch(IOException e) {
-            if(log.isWarnEnabled()) {
-                log.warn("Failure opening socket for {}", bookmark);
-            }
+            log.warn("Failure opening socket for {}", bookmark);
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }

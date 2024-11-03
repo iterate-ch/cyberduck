@@ -100,9 +100,7 @@ public class CteraCustomActionVersioning {
     protected String getSessionToken() throws BackgroundException {
         try {
             final String device = this.getDeviceName();
-            if(log.isDebugEnabled()) {
-                log.debug("Using device {} to request a session token", device);
-            }
+            log.debug("Using device {} to request a session token", device);
             final HttpPost post = new HttpPost(String.format("/ServicesPortal/api/devices/%s?format=jsonext", device));
             post.setEntity(new StringEntity(getSessionTokenPayloadAsString(), ContentType.APPLICATION_JSON));
             return session.getClient().execute(post, response -> StringUtils.remove(EntityUtils.toString(response.getEntity()), "\""));

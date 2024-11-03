@@ -62,9 +62,7 @@ public class GraphCopyFeature implements Copy {
             copyOperation.rename(target.getName());
         }
         if(status.isExists()) {
-            if(log.isWarnEnabled()) {
-                log.warn("Delete file {} to be replaced with {}", target, file);
-            }
+            log.warn("Delete file {} to be replaced with {}", target, file);
             new GraphDeleteFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
         final DriveItem targetItem = session.getItem(target.getParent());

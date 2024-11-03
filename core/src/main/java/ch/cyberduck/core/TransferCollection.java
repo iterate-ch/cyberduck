@@ -142,9 +142,7 @@ public class TransferCollection extends Collection<Transfer> {
                     new DefaultLocalDirectoryFeature().mkdir(folder);
                 }
                 final Local f = this.getFile(transfer);
-                if(log.isInfoEnabled()) {
-                    log.info("Save transfer {}", f);
-                }
+                log.info("Save transfer {}", f);
                 writer.write(transfer, f);
             }
             catch(AccessDeniedException e) {
@@ -158,9 +156,7 @@ public class TransferCollection extends Collection<Transfer> {
 
     @Override
     public void load() throws AccessDeniedException {
-        if(log.isInfoEnabled()) {
-            log.info("Reloading {}", folder.getAbsolute());
-        }
+        log.info("Reloading {}", folder.getAbsolute());
         this.lock();
         try {
             if(!folder.exists()) {

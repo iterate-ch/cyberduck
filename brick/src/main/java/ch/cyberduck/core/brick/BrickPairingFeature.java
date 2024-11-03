@@ -78,9 +78,7 @@ public class BrickPairingFeature implements Pairing {
                 resource.setHeader("X-FilesAPI-Key", token);
                 resource.setHeader(HttpHeaders.ACCEPT, "application/json");
                 resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-                if(log.isInfoEnabled()) {
-                    log.info("Delete paring key {}", token);
-                }
+                log.info("Delete paring key {}", token);
                 client.execute(resource, new ResponseHandler<Void>() {
                     @Override
                     public Void handleResponse(final HttpResponse response) {

@@ -86,9 +86,7 @@ public final class KeychainCertificateStore implements CertificateStore {
             case SecTrustResultType.kSecTrustResultProceed: // Accepted by user keychain setting explicitly
                 return true;
             default:
-                if(log.isDebugEnabled()) {
-                    log.debug("Evaluated recoverable trust result failure {}", trustResultType.getValue());
-                }
+                log.debug("Evaluated recoverable trust result failure {}", trustResultType.getValue());
                 try {
                     prompt.prompt(hostname, certificates);
                     return true;

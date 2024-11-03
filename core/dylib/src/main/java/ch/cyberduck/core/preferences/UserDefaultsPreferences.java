@@ -75,9 +75,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             // Missing in default. Lookup in Info.plist
             NSObject plist = bundle.infoDictionary().objectForKey(property);
             if(null == plist) {
-                if(log.isTraceEnabled()) {
-                    log.trace("No default value for property {}", property);
-                }
+                log.trace("No default value for property {}", property);
                 return null;
             }
             return plist.toString();
@@ -114,9 +112,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
     @Override
     public void setProperty(final String property, final String value) {
-        if(log.isInfoEnabled()) {
-            log.info("Set property {} for key {}", value, property);
-        }
+        log.info("Set property {} for key {}", value, property);
         if(StringUtils.isNotEmpty(value)) {
             // Sets the value of the default identified by defaultName in the standard application domain.
             // Setting a default has no effect on the value returned by the objectForKey method if
@@ -145,9 +141,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
     @Override
     public void deleteProperty(final String property) {
-        if(log.isDebugEnabled()) {
-            log.debug("Delete property {}", property);
-        }
+        log.debug("Delete property {}", property);
         store.removeObjectForKey(property);
         cache.remove(property);
     }

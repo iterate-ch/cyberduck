@@ -45,9 +45,7 @@ public class DefaultLocalTouchFeature implements Touch {
             catch(NoSuchFileException e) {
                 final Local parent = file.getParent();
                 new DefaultLocalDirectoryFeature().mkdir(parent);
-                if(log.isDebugEnabled()) {
-                    log.debug("Created folder {}", parent);
-                }
+                log.debug("Created folder {}", parent);
                 Files.createFile(Paths.get(file.getAbsolute()));
             }
             catch(FileAlreadyExistsException e) {
@@ -60,8 +58,6 @@ public class DefaultLocalTouchFeature implements Touch {
             throw new LocalAccessDeniedException(MessageFormat.format(
                 LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getAbsolute()), e);
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Created file {}", file);
-        }
+        log.debug("Created file {}", file);
     }
 }

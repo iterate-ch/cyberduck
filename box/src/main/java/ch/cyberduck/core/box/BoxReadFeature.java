@@ -59,9 +59,7 @@ public class BoxReadFeature implements Read {
                 else {
                     header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug("Add range header {} for file {}", header, file);
-                }
+                log.debug("Add range header {} for file {}", header, file);
                 request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
             }
             final CloseableHttpResponse response = session.getClient().execute(request);

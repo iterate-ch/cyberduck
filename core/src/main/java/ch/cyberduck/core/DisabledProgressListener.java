@@ -25,8 +25,6 @@ public class DisabledProgressListener implements ProgressListener {
 
     @Override
     public void message(final String message) {
-        if(log.isTraceEnabled()) {
-            log.trace(message);
-        }
+        log.trace(message);
     }
 }

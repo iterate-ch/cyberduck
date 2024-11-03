@@ -125,9 +125,7 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
                         try {
                             final OneDriveJsonObject reply = upload.uploadFragment(header, content);
                             if(reply instanceof DriveItem.Metadata) {
-                                if(log.isInfoEnabled()) {
-                                    log.info("Completed upload for {}", file);
-                                }
+                                log.info("Completed upload for {}", file);
                                 final String id = session.getFileId(((DriveItem.Metadata) reply));
                                 fileid.cache(file, id);
                                 response.set((DriveItem.Metadata) reply);

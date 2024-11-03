@@ -196,9 +196,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
-        if(log.isDebugEnabled()) {
-            log.debug("Set new value {} for item {}", value, item);
-        }
+        log.debug("Set new value {} for item {}", value, item);
         if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), new PathAttributes(item.attributes()).withVersionId(null));
@@ -218,9 +216,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(null == item) {
             return null;
         }
-        if(log.isTraceEnabled()) {
-            log.trace("objectValueForItem:{}", item.getAbsolute());
-        }
+        log.trace("objectValueForItem:{}", item.getAbsolute());
         if(identifier.equals(BrowserColumn.icon.name())) {
             return this.iconForPath(item);
         }
@@ -230,9 +226,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(null != value) {
             return value;
         }
-        if(log.isTraceEnabled()) {
-            log.trace("Lookup failed for {} in cache", key);
-        }
+        log.trace("Lookup failed for {} in cache", key);
         if(identifier.equals(BrowserColumn.filename.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                 item.getName(),
@@ -347,9 +341,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     @Override
     public NSUInteger draggingSourceOperationMaskForLocal(final boolean local) {
-        if(log.isDebugEnabled()) {
-            log.debug("Request dragging source operation mask for local {}", local);
-        }
+        log.debug("Request dragging source operation mask for local {}", local);
         if(local) {
             // Move or copy within the browser
             return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
@@ -365,9 +357,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @return True if accepted
      */
     public boolean acceptDrop(final NSTableView view, final Path destination, final NSDraggingInfo info) {
-        if(log.isDebugEnabled()) {
-            log.debug("Accept drop for destination {}", destination);
-        }
+        log.debug("Accept drop for destination {}", destination);
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             // Mount .webloc URLs dragged to browser window
@@ -450,9 +440,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @return Drag operation
      */
     public NSUInteger validateDrop(final NSTableView view, final Path destination, final NSInteger row, final NSDraggingInfo info) {
-        if(log.isDebugEnabled()) {
-            log.debug("Validate drop for destination {}", destination);
-        }
+        log.debug("Validate drop for destination {}", destination);
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             // Dragging URLs to mount new session
             final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
@@ -508,9 +496,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     return NSDraggingInfo.NSDragOperationNone;
                 }
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Drag operation mask is {}", info.draggingSourceOperationMask().intValue());
-            }
+            log.debug("Drag operation mask is {}", info.draggingSourceOperationMask().intValue());
             this.setDropRowAndDropOperation(view, destination, row);
             final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
             for(PathPasteboard pasteboard : pasteboards) {
@@ -560,9 +546,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     public boolean writeItemsToPasteBoard(final NSTableView view, final List<Path> selected, final NSPasteboard pboard) {
-        if(log.isDebugEnabled()) {
-            log.debug("Write items to pasteboard {}", pboard);
-        }
+        log.debug("Write items to pasteboard {}", pboard);
         if(controller.isMounted()) {
             if(selected.size() > 0) {
                 // The fileTypes argument is the list of fileTypes being promised.
@@ -606,9 +590,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     @Override
     public void draggedImage_beganAt(final NSImage image, final NSPoint point) {
-        if(log.isTraceEnabled()) {
-            log.trace("draggedImage_beganAt:{}", point);
-        }
+        log.trace("draggedImage_beganAt:{}", point);
     }
 
     /**
@@ -616,9 +598,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     @Override
     public void draggedImage_endedAt_operation(final NSImage image, final NSPoint point, final NSUInteger operation) {
-        if(log.isTraceEnabled()) {
-            log.trace("draggedImage_endedAt_operation:{}", operation);
-        }
+        log.trace("draggedImage_endedAt_operation:{}", operation);
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             new DeleteController(controller, controller.getSession()).delete(pasteboard, new ReloadCallback() {
@@ -633,9 +613,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     @Override
     public void draggedImage_movedTo(final NSImage image, final NSPoint point) {
-        if(log.isTraceEnabled()) {
-            log.trace("draggedImage_movedTo:{}", point);
-        }
+        log.trace("draggedImage_movedTo:{}", point);
     }
 
     /**
@@ -647,9 +625,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
-        if(log.isDebugEnabled()) {
-            log.debug("Return names of promised files dropped at {}", url);
-        }
+        log.debug("Return names of promised files dropped at {}", url);
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
             final Local destination = LocalFactory.get(url.path());

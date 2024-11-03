@@ -81,9 +81,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                             regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             entity, headers, checksum.algorithm == HashAlgorithm.md5 ? checksum.hash : null);
-                    if(log.isDebugEnabled()) {
-                        log.debug("Saved object {} with checksum {}", file, etag);
-                    }
+                    log.debug("Saved object {} with checksum {}", file, etag);
                     final StorageObject stored = new StorageObject(containerService.getKey(file));
                     stored.setMd5sum(etag);
                     stored.setSize(status.getLength());

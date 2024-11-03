@@ -90,9 +90,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
     public void process(final HttpRequest request, final HttpContext context) {
         if(StringUtils.contains(request.getRequestLine().getUri(), "b2_authorize_account")) {
             // Skip setting token for
-            if(log.isDebugEnabled()) {
-                log.debug("Skip setting token in b2_authorize_account");
-            }
+            log.debug("Skip setting token in b2_authorize_account");
             return;
         }
         switch(request.getRequestLine().getMethod()) {

@@ -152,9 +152,7 @@ public class DeepboxReadFeature implements Read {
                 else {
                     header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug("Add range header {} for file {}", header, file);
-                }
+                log.debug("Add range header {} for file {}", header, file);
                 request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
                 // Disable compression
                 request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
@@ -190,9 +188,7 @@ public class DeepboxReadFeature implements Read {
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANDOWNLOAD)) {
-            if(log.isWarnEnabled()) {
-                log.warn("ACL {} for {} does not include {}", acl, file, CANDOWNLOAD);
-            }
+            log.warn("ACL {} for {} does not include {}", acl, file, CANDOWNLOAD);
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot download {0}", "Error"), file.getName())).withFile(file);
         }
     }

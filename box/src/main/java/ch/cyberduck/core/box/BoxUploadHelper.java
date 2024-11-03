@@ -131,9 +131,7 @@ public class BoxUploadHelper {
                 @Override
                 public Files handleResponse(final HttpResponse response) throws IOException {
                     if(response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Wait for server to process chunks with response {}", response);
-                        }
+                        log.debug("Wait for server to process chunks with response {}", response);
                         this.flush(file, response, uploadSessionId);
                         return session.getClient().execute(request, this);
                     }
@@ -153,9 +151,7 @@ public class BoxUploadHelper {
                     do {
                         final HttpGet request = new HttpGet(String.format("%s/files/upload_sessions/%s", client.getBasePath(), uploadSessionId));
                         uploadSession = new JSON().getContext(null).readValue(session.getClient().execute(request).getEntity().getContent(), UploadSession.class);
-                        if(log.isDebugEnabled()) {
-                            log.debug("Server processed {} of {} parts", uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts());
-                        }
+                        log.debug("Server processed {} of {} parts", uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts());
                     }
                     while(!Objects.equals(uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts()));
                 }

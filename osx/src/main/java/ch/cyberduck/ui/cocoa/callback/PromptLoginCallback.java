@@ -66,9 +66,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
 
     @Override
     public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message) throws ConnectionCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug("Display progress alert for {}", bookmark);
-        }
+        log.debug("Display progress alert for {}", bookmark);
         final AlertController alert = new ProgressAlertController(signal, title, message, bookmark.getProtocol());
         final int returnCode = alert.beginSheet(parent);
         switch(returnCode) {
@@ -81,9 +79,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     @Override
     public void warn(final Host bookmark, final String title, final String message,
                      final String continueButton, final String disconnectButton, final String preference) throws ConnectionCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug("Display insecure connection alert for {}", bookmark);
-        }
+        log.debug("Display insecure connection alert for {}", bookmark);
         final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton,
                 bookmark.getProtocol(), StringUtils.isNotBlank(preference));
         int option = alert.beginSheet(parent);
@@ -101,9 +97,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     @Override
     public Credentials prompt(final Host bookmark, final String username,
                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug("Prompt for credentials for {}", username);
-        }
+        log.debug("Prompt for credentials for {}", username);
         final Credentials credentials = new Credentials(username).withSaved(options.save);
         final LoginController controller = new LoginController(new Host(bookmark).withCredentials(credentials), title, reason, options);
         final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);

@@ -72,9 +72,7 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<Void> {
 
     @Override
     public void shutdown() {
-        if(log.isDebugEnabled()) {
-            log.debug("Shutting down scheduler thread pool");
-        }
+        log.debug("Shutting down scheduler thread pool");
         scheduler.shutdown();
     }
 }

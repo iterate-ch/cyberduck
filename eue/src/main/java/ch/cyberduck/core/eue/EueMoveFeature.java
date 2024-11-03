@@ -62,9 +62,7 @@ public class EueMoveFeature implements Move {
             final String resourceId = fileid.getFileId(file);
             if(status.isExists()) {
                 if(!resourceId.equals(fileid.getFileId(target))) {
-                    if(log.isWarnEnabled()) {
-                        log.warn("Trash file {} to be replaced with {}", target, file);
-                    }
+                    log.warn("Trash file {} to be replaced with {}", target, file);
                     new EueTrashFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, delete);
                 }
             }

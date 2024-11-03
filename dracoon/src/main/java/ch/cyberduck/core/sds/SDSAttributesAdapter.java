@@ -173,9 +173,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
                     }
                     break;
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Map node permissions {} to {}", node.getPermissions(), permission);
-            }
+            log.debug("Map node permissions {} to {}", node.getPermissions(), permission);
         }
         return permission;
     }

@@ -45,9 +45,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             log.warn("Missing hostname in {}", bookmark);
             return null;
         }
-        if(log.isInfoEnabled()) {
-            log.info("Fetching login password from keychain for {}", bookmark);
-        }
+        log.info("Fetching login password from keychain for {}", bookmark);
         final String password;
         try {
             password = this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
@@ -58,9 +56,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             return null;
         }
         if(null == password) {
-            if(log.isInfoEnabled()) {
-                log.info("Password not found in keychain for {}", bookmark);
-            }
+            log.info("Password not found in keychain for {}", bookmark);
         }
         return password;
     }
@@ -71,9 +67,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             log.warn("Missing hostname in {}", bookmark);
             return null;
         }
-        if(log.isInfoEnabled()) {
-            log.info("Fetching login token from keychain for {}", bookmark);
-        }
+        log.info("Fetching login token from keychain for {}", bookmark);
         final Credentials credentials = bookmark.getCredentials();
         // Find token named like "Shared Access Signature (SAS) Token"
         final String token;
@@ -87,9 +81,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             return null;
         }
         if(null == token) {
-            if(log.isInfoEnabled()) {
-                log.info("Token not found in keychain for {}", bookmark);
-            }
+            log.info("Token not found in keychain for {}", bookmark);
         }
         return token;
     }
@@ -111,9 +103,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             log.warn("Missing username in {}", bookmark);
             return null;
         }
-        if(log.isInfoEnabled()) {
-            log.info("Fetching private key passphrase from keychain for {}", bookmark);
-        }
+        log.info("Fetching private key passphrase from keychain for {}", bookmark);
         if(credentials.isPublicKeyAuthentication()) {
             final Local key = credentials.getIdentity();
             try {
@@ -127,9 +117,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                     passphrase = this.getPassword("SSHKeychain", key.getAbbreviatedPath());
                 }
                 if(null == passphrase) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Passphrase not found in keychain for {}", key);
-                    }
+                    log.info("Passphrase not found in keychain for {}", key);
                 }
                 return passphrase;
             }
@@ -145,18 +133,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
 
     @Override
     public OAuthTokens findOAuthTokens(final Host bookmark) {
-        if(log.isInfoEnabled()) {
-            log.info("Fetching OAuth tokens from keychain for {}", bookmark);
-        }
+        log.info("Fetching OAuth tokens from keychain for {}", bookmark);
         final String[] descriptors = getOAuthPrefix(bookmark);
         for(String prefix : descriptors) {
-            if(log.isDebugEnabled()) {
-                log.debug("Search with prefix {}", prefix);
-            }
+            log.debug("Search with prefix {}", prefix);
             final String hostname = getOAuthHostname(bookmark);
-            if(log.isDebugEnabled()) {
-                log.debug("Search with hostname {}", hostname);
-            }
+            log.debug("Search with hostname {}", hostname);
             try {
                 final String expiry = this.getPassword(getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
                 final OAuthTokens tokens = new OAuthTokens(
@@ -168,9 +150,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                         this.getPassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), hostname,
                                 String.format("%s OIDC Id Token", prefix)));
                 if(tokens.validate()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Return tokens {} for {}", tokens, bookmark);
-                    }
+                    log.debug("Return tokens {} for {}", tokens, bookmark);
                     return tokens;
                 }
                 // Continue with deprecated descriptors
@@ -228,9 +208,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         final Credentials credentials = bookmark.getCredentials();
         final Protocol protocol = bookmark.getProtocol();
-        if(log.isInfoEnabled()) {
-            log.info("Save credentials {} for bookmark {}", credentials, bookmark);
-        }
+        log.info("Save credentials {} for bookmark {}", credentials, bookmark);
         if(credentials.isPublicKeyAuthentication()) {
             this.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
                     credentials.getIdentityPassphrase());
@@ -283,9 +261,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
 
     @Override
     public void delete(final Host bookmark) throws LocalAccessDeniedException {
-        if(log.isInfoEnabled()) {
-            log.info("Delete password for bookmark {}", bookmark);
-        }
+        log.info("Delete password for bookmark {}", bookmark);
         final Credentials credentials = bookmark.getCredentials();
         final Protocol protocol = bookmark.getProtocol();
         if(protocol.isPrivateKeyConfigurable()) {

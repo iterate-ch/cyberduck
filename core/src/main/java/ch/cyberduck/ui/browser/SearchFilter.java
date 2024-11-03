@@ -54,9 +54,7 @@ public class SearchFilter implements Filter<Path> {
                 return true;
             }
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Skip {} not matching {}", file.getAbsolute(), input);
-        }
+        log.debug("Skip {} not matching {}", file.getAbsolute(), input);
         return false;
     }
 

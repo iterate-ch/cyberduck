@@ -67,20 +67,14 @@ public class NSImageIconCache implements IconCache<NSImage> {
                 cached = NSImage.imageWithSymbol(name);
             }
             if(null == cached) {
-                if(log.isDebugEnabled()) {
-                    log.debug("No cached image for {}", name);
-                }
+                log.debug("No cached image for {}", name);
             }
             else {
-                if(log.isTraceEnabled()) {
-                    log.trace("Loaded symbol image {}", cached);
-                }
+                log.trace("Loaded symbol image {}", cached);
             }
         }
         else {
-            if(log.isTraceEnabled()) {
-                log.trace("Loaded image {}", cached);
-            }
+            log.trace("Loaded image {}", cached);
         }
         return cached;
     }
@@ -298,9 +292,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
             // are automatically marked as template images
         }
         if(null == width || null == height) {
-            if(log.isDebugEnabled()) {
-                log.debug("Return default size for {}", image.name());
-            }
+            log.debug("Return default size for {}", image.name());
             return image;
         }
         // Make a copy of original image. Otherwise might resize other references already displayed

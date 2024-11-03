@@ -51,9 +51,7 @@ public class BufferOutputStream extends ProxyOutputStream {
 
     @Override
     public void write(final byte[] bytes, final int off, final int len) throws IOException {
-        if(log.isDebugEnabled()) {
-            log.debug("Buffer {} bytes at offset {}", len, offset);
-        }
+        log.debug("Buffer {} bytes at offset {}", len, offset);
         final byte[] chunk = new byte[len];
         System.arraycopy(bytes, off, chunk, 0, len);
         if(buffer.write(chunk, offset) != len) {

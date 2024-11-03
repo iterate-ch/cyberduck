@@ -60,9 +60,7 @@ public class DropboxLockFeature implements Lock<String> {
                     throw this.failure(result);
                 }
                 if(result.isSuccess()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Locked file {} with result {}", file, result.getSuccessValue());
-                    }
+                    log.debug("Locked file {} with result {}", file, result.getSuccessValue());
                     return String.valueOf(true);
                 }
             }
@@ -81,9 +79,7 @@ public class DropboxLockFeature implements Lock<String> {
                 if(result.isFailure()) {
                     throw failure(result);
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug("Unlocked file {} with result {}", file, result.getSuccessValue());
-                }
+                log.debug("Unlocked file {} with result {}", file, result.getSuccessValue());
             }
         }
         catch(DbxException e) {

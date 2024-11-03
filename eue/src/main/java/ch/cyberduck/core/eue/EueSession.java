@@ -194,9 +194,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     if(element.isJsonObject()) {
                         final JsonObject json = element.getAsJsonObject();
                         final URI uri = URI.create(json.getAsJsonObject("serviceTarget").getAsJsonPrimitive("uri").getAsString());
-                        if(log.isInfoEnabled()) {
-                            log.info("Set base path to {}", url);
-                        }
+                        log.info("Set base path to {}", url);
                         this.setBasePath(uri.toString());
                     }
                     break;

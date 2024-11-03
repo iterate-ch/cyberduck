@@ -168,9 +168,7 @@ public class Terminal {
                 new DeepboxProtocol()
         );
         this.options = options;
-        if(log.isInfoEnabled()) {
-            log.info("Parsed options {} from input {}", options, input);
-        }
+        log.info("Parsed options {} from input {}", options, input);
         this.input = input;
         this.cache = new PathCache(preferences.getInteger("browser.cache.size"));
         this.progress = input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
@@ -246,9 +244,7 @@ public class Terminal {
             final String file = input.getOptionValue(TerminalOptionsBuilder.Params.profile.name());
             try {
                 final Profile profile = ProfileReaderFactory.get().read(LocalFactory.get(file));
-                if(log.isDebugEnabled()) {
-                    log.debug("Register profile {}", profile);
-                }
+                log.debug("Register profile {}", profile);
                 protocols.register(profile);
             }
             catch(AccessDeniedException e) {
@@ -304,9 +300,7 @@ public class Terminal {
                 else {
                     vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug("Attempting to load vault from {}", vault);
-                }
+                log.debug("Attempting to load vault from {}", vault);
                 try {
                     this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVaultRegistry(),
                             new TerminalPasswordCallback()), vault)));

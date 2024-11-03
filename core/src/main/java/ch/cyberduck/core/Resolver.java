@@ -81,9 +81,7 @@ public final class Resolver {
                             resolved.set(filtered);
                         }
                     }
-                    if(log.isInfoEnabled()) {
-                        log.info("Resolved {} to {}", hostname, Arrays.toString(resolved.get().toArray()));
-                    }
+                    log.info("Resolved {} to {}", hostname, Arrays.toString(resolved.get().toArray()));
                 }
                 catch(UnknownHostException e) {
                     log.warn("Failed resolving {}", hostname);

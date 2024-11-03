@@ -63,17 +63,13 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
         final ProviderCredentials credentials = session.getClient().getProviderCredentials();
         final String bucketName;
         if(context.getAttribute("bucket") == null) {
-            if(log.isWarnEnabled()) {
-                log.warn("No bucket name in context {}", context);
-            }
+            log.warn("No bucket name in context {}", context);
             bucketName = StringUtils.EMPTY;
         }
         else {
             bucketName = context.getAttribute("bucket").toString();
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Use bucket name {} from context", bucketName);
-        }
+        log.debug("Use bucket name {} from context", bucketName);
         final URI uri;
         try {
             uri = new URI(request.getRequestLine().getUri());
@@ -93,9 +89,7 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
                 }
             }
             if(region != null) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Cache region {} for bucket {}", region, bucketName);
-                }
+                log.debug("Cache region {} for bucket {}", region, bucketName);
                 session.getClient().getRegionEndpointCache().putRegionForBucketName(bucketName, region);
             }
         }

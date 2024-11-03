@@ -66,9 +66,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
             final Path bucket = containerService.getContainer(file);
             multipart = session.getClient().multipartStartUpload(
                     bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
-            if(log.isDebugEnabled()) {
-                log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
-            }
+            log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
             multipart.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         }
         catch(ServiceException e) {
@@ -81,9 +79,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
             @Override
             public StorageObject getStatus() {
                 if(proxy.getResponse() != null) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Received response {}", proxy.getResponse());
-                    }
+                    log.debug("Received response {}", proxy.getResponse());
                     object.setContentLength(proxy.getOffset());
                     object.setETag(proxy.getResponse().getEtag());
                     if(proxy.getResponse().getVersionId() != null) {
@@ -159,9 +155,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                             canceled.set(e);
                             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
                         }
-                        if(log.isDebugEnabled()) {
-                            log.debug("Saved object {} with checksum {}", file, part.getETag());
-                        }
+                        log.debug("Saved object {} with checksum {}", file, part.getETag());
                         return new MultipartPart(partNumber,
                                 null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
                                 null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
@@ -199,9 +193,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                     this.write(new byte[0]);
                 }
                 final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
-                if(log.isDebugEnabled()) {
-                    log.debug("Completed multipart upload for {} with checksum {}", complete.getObjectKey(), complete.getEtag());
-                }
+                log.debug("Completed multipart upload for {} with checksum {}", complete.getObjectKey(), complete.getEtag());
                 if(file.getType().contains(Path.Type.encrypted)) {
                     log.warn("Skip checksum verification for {} with client side encryption enabled", file);
                 }

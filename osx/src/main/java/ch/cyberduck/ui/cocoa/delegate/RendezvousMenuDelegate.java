@@ -91,9 +91,7 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
 
     @Action
     public void menuItemClicked(NSMenuItem sender) {
-        if(log.isDebugEnabled()) {
-            log.debug("Menu item clicked {}", sender);
-        }
+        log.debug("Menu item clicked {}", sender);
         callback.selected(sender);
     }
 

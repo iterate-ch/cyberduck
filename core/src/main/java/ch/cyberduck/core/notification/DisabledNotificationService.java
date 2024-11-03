@@ -41,9 +41,7 @@ public final class DisabledNotificationService implements NotificationService {
 
     @Override
     public void notify(final String group, final String identifier, final String title, final String description) {
-        if(log.isInfoEnabled()) {
-            log.info("{}. {}", title, description);
-        }
+        log.info("{}. {}", title, description);
     }
 
     @Override

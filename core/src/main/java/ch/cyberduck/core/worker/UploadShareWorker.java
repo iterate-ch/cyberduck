@@ -49,9 +49,7 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
     @Override
     public DescriptiveUrl run(final Session<?> session) throws BackgroundException {
         final Share<Void, Options> provider = session.getFeature(Share.class);
-        if(log.isDebugEnabled()) {
-            log.debug("Run with feature {}", provider);
-        }
+        log.debug("Run with feature {}", provider);
         final Set<Share.Sharee> sharees = provider.getSharees(Share.Type.upload);
         if(!sharees.stream().filter(s -> !s.equals(Share.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {
             return provider.toUploadUrl(file, prompt.prompt(Share.Type.upload, sharees), options, callback);

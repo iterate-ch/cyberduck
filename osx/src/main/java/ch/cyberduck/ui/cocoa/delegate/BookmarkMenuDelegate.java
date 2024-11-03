@@ -115,9 +115,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
 
     public void menuNeedsUpdate(final NSMenu menu) {
         if(!this.isPopulated()) {
-            if(log.isTraceEnabled()) {
-                log.trace("Build menu {}", menu);
-            }
+            log.trace("Build menu {}", menu);
             for(int i = menu.numberOfItems().intValue() - 1; i >= BOOKMARKS_INDEX; i--) {
                 menu.removeItemAtIndex(new NSInteger(i));
             }
@@ -206,9 +204,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
 
     @Action
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
-        if(log.isDebugEnabled()) {
-            log.debug("Menu item clicked {}", sender);
-        }
+        log.debug("Menu item clicked {}", sender);
         callback.selected(sender);
     }
 

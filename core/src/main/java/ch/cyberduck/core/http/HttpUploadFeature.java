@@ -59,9 +59,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
                         final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Reply response = this.upload(file, local, throttle, listener, status, status, status, callback);
-        if(log.isDebugEnabled()) {
-            log.debug("Received response {}", response);
-        }
+        log.debug("Received response {}", response);
         return response;
     }
 
@@ -106,9 +104,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
 
     protected void post(final Path file, final Digest digest, final Reply response) throws BackgroundException {
         // No-op with no checksum verification by default
-        if(log.isDebugEnabled()) {
-            log.debug("Missing checksum verification for {}", file);
-        }
+        log.debug("Missing checksum verification for {}", file);
     }
 
     protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {

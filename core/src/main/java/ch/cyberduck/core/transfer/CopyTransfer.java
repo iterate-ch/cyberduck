@@ -130,9 +130,7 @@ public class CopyTransfer extends Transfer {
     @Override
     public TransferAction action(final Session<?> source, final Session<?> destination, boolean resumeRequested, boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Find transfer action with prompt {}", prompt);
-        }
+        log.debug("Find transfer action with prompt {}", prompt);
         if(resumeRequested) {
             return TransferAction.comparison;
         }
@@ -171,9 +169,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public TransferPathFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-        if(log.isDebugEnabled()) {
-            log.debug("Filter transfer with action {}", action);
-        }
+        log.debug("Filter transfer with action {}", action);
         final Find find = new CachingFindFeature(destination, cache,
                 destination.getFeature(Find.class, new DefaultFindFeature(destination)));
         final AttributesFinder attributes = new CachingAttributesFinderFeature(destination, cache,
@@ -187,9 +183,7 @@ public class CopyTransfer extends Transfer {
     @Override
     public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("List children for {}", directory);
-        }
+        log.debug("List children for {}", directory);
         final AttributedList<Path> list = session.getFeature(ListService.class).list(directory, listener).filter(comparator, filter);
         final Path copy = mapping.get(directory);
         for(Path f : list) {
@@ -207,9 +201,7 @@ public class CopyTransfer extends Transfer {
         final Bulk<?> download = source.getFeature(Bulk.class);
         {
             final Object id = download.pre(Type.download, files, callback);
-            if(log.isDebugEnabled()) {
-                log.debug("Obtained bulk id {} for transfer {}", id, this);
-            }
+            log.debug("Obtained bulk id {} for transfer {}", id, this);
         }
         final Bulk<?> upload = destination.getFeature(Bulk.class);
         {
@@ -218,9 +210,7 @@ public class CopyTransfer extends Transfer {
                 targets.put(new TransferItem(mapping.get(entry.getKey().remote)), entry.getValue());
             }
             final Object id = upload.pre(Type.upload, targets, callback);
-            if(log.isDebugEnabled()) {
-                log.debug("Obtained bulk id {} for transfer {}", id, this);
-            }
+            log.debug("Obtained bulk id {} for transfer {}", id, this);
         }
     }
 
@@ -245,9 +235,7 @@ public class CopyTransfer extends Transfer {
                          final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                          final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Transfer file {} with options {}", source, options);
-        }
+        log.debug("Transfer file {} with options {}", source, options);
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), mapping.get(source).getName()));
         if(source.isDirectory()) {

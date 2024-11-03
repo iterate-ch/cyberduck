@@ -159,9 +159,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
         }
         if(credentials.isPassed()) {
-            if(log.isWarnEnabled()) {
-                log.warn("Skip verifying credentials with previous successful authentication event for {}", this);
-            }
+            log.warn("Skip verifying credentials with previous successful authentication event for {}", this);
             return;
         }
         try {
@@ -173,17 +171,13 @@ public class DAVSession extends HttpSession<DAVClient> {
             catch(SardineException e) {
                 switch(e.getStatusCode()) {
                     case HttpStatus.SC_NOT_FOUND:
-                        if(log.isWarnEnabled()) {
-                            log.warn("Ignore failure {}", e);
-                        }
+                        log.warn("Ignore failure {}", e);
                         break;
                     case HttpStatus.SC_NOT_IMPLEMENTED:
                     case HttpStatus.SC_FORBIDDEN:
                     case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE:
                     case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                        if(log.isWarnEnabled()) {
-                            log.warn("Failed HEAD request to {} with {}. Retry with PROPFIND.", host, e.getResponsePhrase());
-                        }
+                        log.warn("Failed HEAD request to {} with {}. Retry with PROPFIND.", host, e.getResponsePhrase());
                         cancel.verify();
                         // Possibly only HEAD requests are not allowed
                         final ListService list = this.getFeature(ListService.class);
@@ -201,9 +195,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                         break;
                     case HttpStatus.SC_BAD_REQUEST:
                         if(preferences.getBoolean("webdav.basic.preemptive")) {
-                            if(log.isWarnEnabled()) {
-                                log.warn("Disable preemptive authentication for {} due to failure {}", host, e.getResponsePhrase());
-                            }
+                            log.warn("Disable preemptive authentication for {} due to failure {}", host, e.getResponsePhrase());
                             cancel.verify();
                             client.disablePreemptiveAuthentication();
                             client.execute(head, new MicrosoftIISFeaturesResponseHandler(capabilities));

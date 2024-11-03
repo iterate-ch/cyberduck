@@ -116,9 +116,7 @@ public abstract class BundleController extends ProxyController {
             log.warn("Bundle {} already loaded", bundleName);
             return;
         }
-        if(log.isInfoEnabled()) {
-            log.info("Loading bundle {}", bundleName);
-        }
+        log.info("Loading bundle {}", bundleName);
         // Unarchives the contents of the nib file and links them to a specific owner object
         if(!NSBundle.loadNibNamed(bundleName, this.id())) {
             throw new FactoryException(String.format("Failure loading %s.xib", bundleName));

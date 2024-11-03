@@ -80,17 +80,13 @@ public class ProxySocketFactory extends SocketFactory {
         }
         switch(proxy.getType()) {
             case SOCKS:
-                if(log.isInfoEnabled()) {
-                    log.info("Configured to use SOCKS proxy {}", proxy);
-                }
+                log.info("Configured to use SOCKS proxy {}", proxy);
                 final java.net.Proxy socksProxy = new java.net.Proxy(
                     java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
                 return new DefaultSocketFactory(socksProxy);
             case HTTP:
             case HTTPS:
-                if(log.isInfoEnabled()) {
-                    log.info("Configured to use HTTP proxy {}", proxy);
-                }
+                log.info("Configured to use HTTP proxy {}", proxy);
                 final java.net.Proxy httpProxy = new java.net.Proxy(
                     java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
                 return new HttpProxySocketFactory(httpProxy);

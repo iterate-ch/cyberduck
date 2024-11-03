@@ -111,9 +111,7 @@ public class GoogleStorageObjectListService implements ListService {
                     for(StorageObject object : response.getItems()) {
                         final String key = object.getName();
                         if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
-                            if(log.isDebugEnabled()) {
-                                log.debug("Skip placeholder key {}", key);
-                            }
+                            log.debug("Skip placeholder key {}", key);
                             hasDirectoryPlaceholder = true;
                             continue;
                         }
@@ -184,9 +182,7 @@ public class GoogleStorageObjectListService implements ListService {
             }
             while(page != null);
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
-                if(log.isWarnEnabled()) {
-                    log.warn("No placeholder found for directory {}", directory);
-                }
+                log.warn("No placeholder found for directory {}", directory);
                 throw new NotfoundException(directory.getAbsolute());
             }
             return objects;

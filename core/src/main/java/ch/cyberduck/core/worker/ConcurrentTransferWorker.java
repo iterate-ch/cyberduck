@@ -142,9 +142,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     @Override
     public Future<TransferStatus> submit(final TransferCallable callable) {
-        if(log.isInfoEnabled()) {
-            log.info("Submit {} to pool", callable);
-        }
+        log.info("Submit {} to pool", callable);
         final Future<TransferStatus> f = completion.submit(callable);
         size.incrementAndGet();
         return f;
@@ -155,13 +153,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         while(size.get() > 0) {
             // Repeat until no new entries in queue found
             try {
-                if(log.isInfoEnabled()) {
-                    log.info("Await completion for {} submitted tasks in queue", size.get());
-                }
+                log.info("Await completion for {} submitted tasks in queue", size.get());
                 final TransferStatus status = completion.take().get();
-                if(log.isInfoEnabled()) {
-                    log.info("Finished task with return value {}", status);
-                }
+                log.info("Finished task with return value {}", status);
             }
             catch(InterruptedException e) {
                 // Errors are handled in transfer worker error callback already

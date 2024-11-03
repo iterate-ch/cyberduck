@@ -84,16 +84,12 @@ public class DeepboxTrashFeature implements Trash {
         }
         if(new DeepboxPathContainerService(session, fileid).isInTrash(file)) {
             if(!acl.get(new Acl.CanonicalUser()).contains(CANPURGE)) {
-                if(log.isWarnEnabled()) {
-                    log.warn("ACL {} for {} does not include {}", acl, file, CANPURGE);
-                }
+                log.warn("ACL {} for {} does not include {}", acl, file, CANPURGE);
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
             }
         }
         else if(!acl.get(new Acl.CanonicalUser()).contains(CANDELETE)) {
-            if(log.isWarnEnabled()) {
-                log.warn("ACL {} for {} does not include {}", acl, file, CANDELETE);
-            }
+            log.warn("ACL {} for {} does not include {}", acl, file, CANDELETE);
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
     }

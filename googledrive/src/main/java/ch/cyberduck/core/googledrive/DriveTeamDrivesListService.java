@@ -65,9 +65,7 @@ public class DriveTeamDrivesListService implements ListService {
                 }
                 listener.chunk(directory, children);
                 page = list.getNextPageToken();
-                if(log.isDebugEnabled()) {
-                    log.debug("Continue with next page token {}", page);
-                }
+                log.debug("Continue with next page token {}", page);
             }
             while(page != null);
             return children;

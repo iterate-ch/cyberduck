@@ -98,18 +98,14 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
                     final Local copy = registry.register(value);
                     if(null != copy) {
                         final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
-                        if(log.isDebugEnabled()) {
-                            log.debug("Add synched profile {}", d);
-                        }
+                        log.debug("Add synched profile {}", d);
                         returned.add(d);
                         visitor.visit(d);
                     }
                 });
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug("Add local only profile {}", local);
-                }
+                log.debug("Add local only profile {}", local);
                 returned.add(local);
                 visitor.visit(local);
             }
@@ -119,9 +115,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
             if(description.isLatest()) {
                 // Check if not already added previously when syncing with local list
                 if(!returned.contains(description)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Add remote profile {}", description);
-                    }
+                    log.debug("Add remote profile {}", description);
                     returned.add(description);
                     visitor.visit(description);
                 }

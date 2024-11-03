@@ -252,9 +252,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 else {
                     zone = host.getTimezone();
                 }
-                if(log.isInfoEnabled()) {
-                    log.info("Reset parser to timezone {}", zone);
-                }
+                log.info("Reset parser to timezone {}", zone);
                 String system = StringUtils.EMPTY; //Unknown
                 try {
                     system = client.getSystemType();

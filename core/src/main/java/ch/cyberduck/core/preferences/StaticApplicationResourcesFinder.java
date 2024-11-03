@@ -30,9 +30,7 @@ public class StaticApplicationResourcesFinder implements ApplicationResourcesFin
     @Override
     public Local find() {
         final Local folder = new DefaultWorkingDirectoryFinder().find();
-        if(log.isDebugEnabled()) {
-            log.debug("Use folder {} for application resources directory", folder);
-        }
+        log.debug("Use folder {} for application resources directory", folder);
         return folder;
     }
 }

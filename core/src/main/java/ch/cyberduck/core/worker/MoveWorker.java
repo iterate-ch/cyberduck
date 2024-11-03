@@ -93,9 +93,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         });
         try {
             final Move feature = session.getFeature(Move.class).withTarget(destination);
-            if(log.isDebugEnabled()) {
-                log.debug("Run with feature {}", feature);
-            }
+            log.debug("Run with feature {}", feature);
             final ListService list = session.getFeature(ListService.class);
             // Sort ascending by timestamp to move older versions first
             final Map<Path, Path> sorted = new TreeMap<>(new VersionsComparator(true));
@@ -106,9 +104,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     throw new ConnectionCanceledException();
                 }
                 final Map<Path, Path> recursive = this.compile(feature, list, entry.getKey(), entry.getValue());
-                if(log.isDebugEnabled()) {
-                    log.debug("Compiled recursive list {}", recursive);
-                }
+                log.debug("Compiled recursive list {}", recursive);
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
                         log.warn("Move operation is not recursive. Create directory {}", r.getValue());
@@ -149,30 +145,22 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                     final Versioning versioning = session.getFeature(Versioning.class);
                                     if(versioning != null) {
                                         if(versioning.getConfiguration(r.getKey()).isEnabled()) {
-                                            if(log.isDebugEnabled()) {
-                                                log.debug("List previous versions of {}", r.getKey());
-                                            }
+                                            log.debug("List previous versions of {}", r.getKey());
                                             for(Path version : versioning.list(r.getKey(), new DisabledListProgressListener())) {
                                                 final Path target = new Path(new DefaultVersioningFeature.DefaultVersioningDirectoryProvider().provide(r.getValue()),
                                                         version.getName(), version.getType());
                                                 final Path directory = target.getParent();
                                                 if(!new CachingFindFeature(session, cache, new DefaultFindFeature(session)).find(directory)) {
-                                                    if(log.isDebugEnabled()) {
-                                                        log.debug("Create directory {} for versions", directory);
-                                                    }
+                                                    log.debug("Create directory {} for versions", directory);
                                                     session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
                                                 }
                                                 if(version.isDirectory()) {
                                                     if(!session.getFeature(Move.class).isRecursive(version, target)) {
-                                                        if(log.isWarnEnabled()) {
-                                                            log.warn("Skip directory {}", version);
-                                                        }
+                                                        log.warn("Skip directory {}", version);
                                                         continue;
                                                     }
                                                 }
-                                                if(log.isDebugEnabled()) {
-                                                    log.debug("Move previous version {} to {}", version, target);
-                                                }
+                                                log.debug("Move previous version {} to {}", version, target);
                                                 feature.move(version, target, new TransferStatus()
                                                         .withLockId(this.getLockId(version))
                                                         .withMime(new MappingMimeTypeService().getMime(version.getName()))

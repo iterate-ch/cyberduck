@@ -73,21 +73,15 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             try {
                 final CDNContainer info
                     = session.getClient().getCDNContainerInfo(regionService.lookup(container), container.getName());
-                if(log.isDebugEnabled()) {
-                    log.debug("Found existing CDN configuration {}", info);
-                }
+                log.debug("Found existing CDN configuration {}", info);
             }
             catch(NotFoundException e) {
                 // Not found.
-                if(log.isDebugEnabled()) {
-                    log.debug("Enable CDN configuration for {}", container);
-                }
+                log.debug("Enable CDN configuration for {}", container);
                 session.getClient().cdnEnableContainer(regionService.lookup(container), container.getName());
             }
             // Toggle content distribution for the container without changing the TTL expiration
-            if(log.isDebugEnabled()) {
-                log.debug("Update CDN configuration for {}", container);
-            }
+            log.debug("Update CDN configuration for {}", container);
             session.getClient().cdnUpdateContainer(regionService.lookup(container),
                 container.getName(), -1, configuration.isEnabled(), configuration.isLogging());
         }
@@ -134,9 +128,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             }
             catch(NotFoundException e) {
                 // Not found.
-                if(log.isDebugEnabled()) {
-                    log.debug("No CDN configuration for {}", container);
-                }
+                log.debug("No CDN configuration for {}", container);
                 final Distribution distribution = new Distribution(method, regionService.lookup(container).getStorageUrl(container.getName()), false);
                 distribution.setStatus(LocaleFactory.localizedString("CDN Disabled", "Mosso"));
                 return distribution;

@@ -107,9 +107,7 @@ public abstract class AbstractEditor implements Editor {
 
     @Override
     public void delete() {
-        if(log.isDebugEnabled()) {
-            log.debug("Delete edited file {}", temporary);
-        }
+        log.debug("Delete edited file {}", temporary);
         try {
             temporary.delete();
         }
@@ -126,9 +124,7 @@ public abstract class AbstractEditor implements Editor {
     public Worker<Transfer> open(final Application application, final ApplicationQuitCallback quit, final FileWatcherListener listener) {
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, file,
                 temporary, progress, quit, listener, notification);
-        if(log.isDebugEnabled()) {
-            log.debug("Download file for edit {}", temporary);
-        }
+        log.debug("Download file for edit {}", temporary);
         return worker;
     }
 
@@ -145,13 +141,9 @@ public abstract class AbstractEditor implements Editor {
         final ApplicationQuitCallback callback = new ApplicationQuitCallback() {
             @Override
             public void callback() {
-                if(log.isDebugEnabled()) {
-                    log.debug("Received quit event for application {}", application);
-                }
+                log.debug("Received quit event for application {}", application);
                 quit.callback();
-                if(log.isDebugEnabled()) {
-                    log.debug("Close editor for {}", file);
-                }
+                log.debug("Close editor for {}", file);
                 close();
                 delete();
             }
@@ -201,20 +193,14 @@ public abstract class AbstractEditor implements Editor {
             return Worker.empty();
         }
         if(current.equals(checksum)) {
-            if(log.isInfoEnabled()) {
-                log.info("File {} not modified with checksum {}", temporary, current);
-            }
+            log.info("File {} not modified with checksum {}", temporary, current);
         }
         else {
-            if(log.isInfoEnabled()) {
-                log.info("Save new checksum {} for file {}", current, temporary);
-            }
+            log.info("Save new checksum {} for file {}", current, temporary);
             // Store current checksum
             checksum = current;
             final Worker<Transfer> worker = new EditSaveWorker(host, this, file, temporary, error, progress, notification);
-            if(log.isDebugEnabled()) {
-                log.debug("Upload changes for {}", temporary);
-            }
+            log.debug("Upload changes for {}", temporary);
             return worker;
         }
         return Worker.empty();

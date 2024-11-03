@@ -106,9 +106,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             if(attr.isDuplicate()) {
                 // Throw failure if latest version has hide marker set and lookup was without explicit version
                 if(StringUtils.isBlank(file.attributes().getVersionId())) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Latest version of {} is duplicate", file);
-                    }
+                    log.debug("Latest version of {} is duplicate", file);
                     throw new NotfoundException(file.getAbsolute());
                 }
             }

@@ -82,9 +82,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             controls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             for(OwnershipControlsConfig.Rule rule : controls.getRules()) {
                 if(rule.getOwnership() == OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Bucket owner enforced policy set with disabled ACLs for bucket {}", bucket);
-                    }
+                    log.debug("Bucket owner enforced policy set with disabled ACLs for bucket {}", bucket);
                     return true;
                 }
             }

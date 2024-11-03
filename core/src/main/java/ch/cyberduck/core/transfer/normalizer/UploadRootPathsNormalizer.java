@@ -64,9 +64,7 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Trans
                         remote = new Path(parent, proposal, upload.remote.getType());
                     }
                     while(false);//(upload.exists());
-                    if(log.isInfoEnabled()) {
-                        log.info("Changed name from {} to {}", filename, remote.getName());
-                    }
+                    log.info("Changed name from {} to {}", filename, remote.getName());
                     upload.remote = remote;
                 }
             }

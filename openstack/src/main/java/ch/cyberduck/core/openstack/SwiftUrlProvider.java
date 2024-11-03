@@ -143,9 +143,7 @@ public class SwiftUrlProvider implements UrlProvider {
             log.warn("Missing X-Account-Meta-Temp-URL-Key header value to sign temporary URL");
             return DescriptiveUrl.EMPTY;
         }
-        if(log.isInfoEnabled()) {
-            log.info("Using X-Account-Meta-Temp-URL-Key header value {} to sign", tempUrlKey);
-        }
+        log.info("Using X-Account-Meta-Temp-URL-Key header value {} to sign", tempUrlKey);
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
         return new PresignedUrl(file, region, tempUrlKey, expiry);

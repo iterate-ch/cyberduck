@@ -66,9 +66,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                     final Path backup = new Path(encrypt, CryptoDirectoryV7Provider.BACKUP_DIRECTORY_METADATAFILE,
                             EnumSet.of(AbstractPath.Type.file));
                     try {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Deleting directory id backup file {}", backup);
-                        }
+                        log.debug("Deleting directory id backup file {}", backup);
                         proxy.delete(Collections.singletonList(backup), prompt, callback);
                     }
                     catch(NotfoundException | AccessDeniedException e) {
@@ -91,22 +89,16 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                 final Path metadata = vault.encrypt(session, f, true);
                 if(f.isDirectory()) {
                     final Path metadataFile = new Path(metadata, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file));
-                    if(log.isDebugEnabled()) {
-                        log.debug("Add metadata file {}", metadataFile);
-                    }
+                    log.debug("Add metadata file {}", metadataFile);
                     metadataFiles.add(metadataFile);
                     metadataFiles.add(metadata);
-                    if(log.isDebugEnabled()) {
-                        log.debug("Add metadata folder {}", metadata);
-                    }
+                    log.debug("Add metadata folder {}", metadata);
                     vault.getDirectoryProvider().delete(f);
                 }
                 if(filenameProvider.isDeflated(metadata.getName())) {
                     filenameProvider.invalidate(filenameProvider.inflate(session, metadata.getName()));
                     final Path metadataFile = filenameProvider.resolve(metadata.getName());
-                    if(log.isDebugEnabled()) {
-                        log.debug("Add metadata file {}", metadata);
-                    }
+                    log.debug("Add metadata file {}", metadata);
                     metadataFiles.add(metadataFile);
                 }
             }

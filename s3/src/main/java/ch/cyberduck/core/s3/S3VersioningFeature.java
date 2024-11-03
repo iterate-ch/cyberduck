@@ -241,9 +241,7 @@ public class S3VersioningFeature implements Versioning {
             @Override
             public void visit(final AttributedList<Path> list, final int index, final Path f) {
                 if(!StringUtils.equals(f.getName(), file.getName())) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Skip file {}", f);
-                    }
+                    log.debug("Skip file {}", f);
                     // List with prefix will also return other keys
                     list.remove(index);
                 }

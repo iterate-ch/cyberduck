@@ -35,16 +35,12 @@ public class TripleCryptCleanupFeature implements Pairing {
     public void delete(final Host bookmark) throws BackgroundException {
         {
             final String account = TripleCryptKeyPair.toServiceName(bookmark, UserKeyPair.Version.RSA2048);
-            if(log.isDebugEnabled()) {
-                log.debug("Delete credentials for {} in keychain {}", account, keychain);
-            }
+            log.debug("Delete credentials for {} in keychain {}", account, keychain);
             keychain.deletePassword(account, TripleCryptKeyPair.toAccountName(bookmark));
         }
         {
             final String account = TripleCryptKeyPair.toServiceName(bookmark, UserKeyPair.Version.RSA4096);
-            if(log.isDebugEnabled()) {
-                log.debug("Delete credentials for {} in keychain {}", account, keychain);
-            }
+            log.debug("Delete credentials for {} in keychain {}", account, keychain);
             keychain.deletePassword(account, TripleCryptKeyPair.toAccountName(bookmark));
         }
     }

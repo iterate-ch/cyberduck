@@ -120,9 +120,7 @@ public abstract class DictionaryLicense extends AbstractLicense {
             log.warn("Signature verification failure for key {}", file);
             throw new InvalidLicenseException();
         }
-        if(log.isInfoEnabled()) {
-            log.info("Valid key in {}", file);
-        }
+        log.info("Valid key in {}", file);
     }
 
     @Override

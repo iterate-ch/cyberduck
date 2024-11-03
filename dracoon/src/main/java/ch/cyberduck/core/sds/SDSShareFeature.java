@@ -107,9 +107,7 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, CreateDownloadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Create download share for {}", file);
-            }
+            log.debug("Create download share for {}", file);
             if(null == options) {
                 options = new CreateDownloadShareRequest();
                 log.warn("Use default share options {}", options);
@@ -180,9 +178,7 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Create upload share for {}", file);
-            }
+            log.debug("Create upload share for {}", file);
             if(null == options) {
                 options = new CreateUploadShareRequest();
                 log.warn("Use default share options {}", options);

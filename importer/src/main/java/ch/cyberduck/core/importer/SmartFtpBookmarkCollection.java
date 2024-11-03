@@ -108,9 +108,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
 
         @Override
         public void endElement(String name, String elementText) {
-            if(log.isDebugEnabled()) {
-                log.debug("endElement:{},{}", name, elementText);
-            }
+            log.debug("endElement:{},{}", name, elementText);
             switch(name) {
                 case "Host":
                     current.setHostname(elementText);

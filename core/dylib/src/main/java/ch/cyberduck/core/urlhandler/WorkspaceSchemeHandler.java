@@ -69,9 +69,7 @@ public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
                     }
                 });
                 proxy.setDefaultHandler(NSURL.fileURLWithPath(path), scheme, callback.id());
-                if(log.isInfoEnabled()) {
-                    log.info("Await result from {}", proxy);
-                }
+                log.info("Await result from {}", proxy);
                 Uninterruptibles.awaitUninterruptibly(lock);
             }
         }

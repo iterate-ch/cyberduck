@@ -43,9 +43,7 @@ public class MappingMimeTypeService implements MimeTypeService {
             }
             while(resources.hasMoreElements()) {
                 final URL url = resources.nextElement();
-                if(log.isInfoEnabled()) {
-                    log.info("Loading MIME types from {}", url);
-                }
+                log.info("Loading MIME types from {}", url);
                 types.loadAndReplaceMimetypes(url.openStream());
                 break;
             }

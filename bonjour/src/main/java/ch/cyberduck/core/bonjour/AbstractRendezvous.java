@@ -214,18 +214,14 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * @param host     Bookmark
      */
     protected void add(final String fullname, final Host host) {
-        if(log.isDebugEnabled()) {
-            log.debug("Add resolved host {} for full name {}", host, fullname);
-        }
+        log.debug("Add resolved host {} for full name {}", host, fullname);
         if(null == services.put(fullname, host)) {
             notifier.serviceResolved(fullname, host);
         }
     }
 
     protected void remove(final String identifier) {
-        if(log.isDebugEnabled()) {
-            log.debug("Remove host with identifier {}", identifier);
-        }
+        log.debug("Remove host with identifier {}", identifier);
         final Host host = services.remove(identifier);
         if(null == host) {
             return;

@@ -107,9 +107,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANADDCHILDREN)) {
-            if(log.isWarnEnabled()) {
-                log.warn("ACL {} for {} does not include {}", acl, workdir, CANADDCHILDREN);
-            }
+            log.warn("ACL {} for {} does not include {}", acl, workdir, CANADDCHILDREN);
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
     }

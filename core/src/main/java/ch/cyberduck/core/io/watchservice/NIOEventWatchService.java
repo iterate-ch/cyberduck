@@ -41,9 +41,7 @@ public class NIOEventWatchService implements RegisterWatchService {
             monitor = FileSystems.getDefault().newWatchService();
         }
         final WatchKey key = folder.register(monitor, events, modifiers);
-        if(log.isInfoEnabled()) {
-            log.info("Registered for events for {}", key);
-        }
+        log.info("Registered for events for {}", key);
         return key;
     }
 

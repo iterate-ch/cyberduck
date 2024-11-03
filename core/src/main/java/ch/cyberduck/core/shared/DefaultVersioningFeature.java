@@ -83,9 +83,7 @@ public class DefaultVersioningFeature implements Versioning {
         if(include.matcher(file.getName()).matches()) {
             return new VersioningConfiguration(true);
         }
-        if(log.isDebugEnabled()) {
-            log.debug("No match for {} in {}", file.getName(), include);
-        }
+        log.debug("No match for {} in {}", file.getName(), include);
         return VersioningConfiguration.empty();
     }
 
@@ -110,14 +108,10 @@ public class DefaultVersioningFeature implements Versioning {
         }
         final Path directory = version.getParent();
         if(!session.getFeature(Find.class).find(directory)) {
-            if(log.isDebugEnabled()) {
-                log.debug("Create directory {} for versions", directory);
-            }
+            log.debug("Create directory {} for versions", directory);
             session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Rename existing file {} to {}", file, version);
-        }
+        log.debug("Rename existing file {} to {}", file, version);
         feature.move(file, version,
                 new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         return true;
@@ -165,9 +159,7 @@ public class DefaultVersioningFeature implements Versioning {
         final List<Path> versions = this.list(file, new DisabledListProgressListener()).toStream()
                 .sorted(new FilenameComparator(false)).skip(
                         new HostPreferences(session.getHost()).getInteger("versioning.limit")).collect(Collectors.toList());
-        if(log.isWarnEnabled()) {
-            log.warn("Delete {} previous versions of {}", versions.size(), file);
-        }
+        log.warn("Delete {} previous versions of {}", versions.size(), file);
         delete.delete(versions, callback, new Delete.DisabledCallback());
     }
 

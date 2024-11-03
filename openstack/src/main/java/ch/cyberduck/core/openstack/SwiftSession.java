@@ -97,9 +97,7 @@ public class SwiftSession extends HttpSession<Client> {
             for(Iterator<? extends AuthenticationRequest> iter = options.iterator(); iter.hasNext(); ) {
                 try {
                     final AuthenticationRequest auth = iter.next();
-                    if(log.isInfoEnabled()) {
-                        log.info("Attempt authentication with {}", auth);
-                    }
+                    log.info("Attempt authentication with {}", auth);
                     client.authenticate(auth);
                     break;
                 }
@@ -180,9 +178,7 @@ public class SwiftSession extends HttpSession<Client> {
                 @Override
                 public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
                     final Distribution distribution = super.read(container, method, prompt);
-                    if(log.isDebugEnabled()) {
-                        log.debug("Cache distribution {}", distribution);
-                    }
+                    log.debug("Cache distribution {}", distribution);
                     // Replace previously cached value
                     final Set<Distribution> cached = distributions.getOrDefault(container, new HashSet<>());
                     cached.add(distribution);

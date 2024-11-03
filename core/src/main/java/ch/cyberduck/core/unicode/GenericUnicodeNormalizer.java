@@ -34,9 +34,7 @@ public class GenericUnicodeNormalizer implements UnicodeNormalizer {
         if(!Normalizer.isNormalized(name, form)) {
             // Canonical decomposition followed by canonical composition (default)
             final String normalized = Normalizer.normalize(name, form);
-            if(log.isDebugEnabled()) {
-                log.debug("Normalized string {} to {}", name, normalized);
-            }
+            log.debug("Normalized string {} to {}", name, normalized);
             return normalized;
         }
         return name;

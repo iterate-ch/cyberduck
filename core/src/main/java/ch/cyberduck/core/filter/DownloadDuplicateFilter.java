@@ -29,9 +29,7 @@ public class DownloadDuplicateFilter extends NullFilter<Path> {
     @Override
     public boolean accept(final Path file) {
         if(file.attributes().isDuplicate()) {
-            if(log.isDebugEnabled()) {
-                log.debug("Reject duplicate {}", file);
-            }
+            log.debug("Reject duplicate {}", file);
             return false;
         }
         return true;

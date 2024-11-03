@@ -216,9 +216,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
 
     @Override
     public void complete(final Path source, final Local n, final TransferStatus status, final ProgressListener listener) {
-        if(log.isDebugEnabled()) {
-            log.debug("Complete {} with status {}", source.getAbsolute(), status);
-        }
+        log.debug("Complete {} with status {}", source.getAbsolute(), status);
         if(status.isComplete()) {
             final Path target = files.get(source);
             if(!Permission.EMPTY.equals(status.getPermission())) {

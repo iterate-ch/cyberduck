@@ -57,9 +57,7 @@ public class OpenSSHJumpHostConfigurator implements JumphostConfigurator {
         if(StringUtils.isBlank(proxyJump)) {
             return null;
         }
-        if(log.isInfoEnabled()) {
-            log.info("Found jump host configuration {} from {}", proxyJump, configuration);
-        }
+        log.info("Found jump host configuration {} from {}", proxyJump, configuration);
         try {
             final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new SFTPProtocol())), new SFTPProtocol()).get(proxyJump);
             // Resolve credentials

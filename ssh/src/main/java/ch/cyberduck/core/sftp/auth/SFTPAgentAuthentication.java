@@ -68,9 +68,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
 
     @Override
     public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Login using agent {} for {}", agent, bookmark);
-        }
+        log.debug("Login using agent {} for {}", agent, bookmark);
         if(agent.getIdentities().isEmpty()) {
             log.warn("Skip authentication with agent {} with no identity available", agent);
             return false;
@@ -81,9 +79,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
             if(configuration.isPublicKeyAuthentication()) {
                 try {
                     final Local setting = configuration.getIdentity();
-                    if(log.isWarnEnabled()) {
-                        log.warn("Only read specific key {} from SSH agent with IdentitiesOnly configuration", setting);
-                    }
+                    log.warn("Only read specific key {} from SSH agent with IdentitiesOnly configuration", setting);
                     final Identity identity = isPrivateKey(setting) ?
                             identityFromPrivateKey(setting) :
                             identityFromPublicKey(setting);
@@ -139,9 +135,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                 if(identity.getComment() != null) {
                     final String candidate = new String(identity.getComment(), StandardCharsets.UTF_8);
                     if(selected.getAbsolute().equals(candidate)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Matching identity {} found", candidate);
-                        }
+                        log.debug("Matching identity {} found", candidate);
                         return Collections.singletonList(identity);
                     }
                 }

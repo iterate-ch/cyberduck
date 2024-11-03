@@ -161,9 +161,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         }
         final String cached = super.getFileId(normalized);
         if(cached != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Return cached fileid {} for file {}", cached, normalized);
-            }
+            log.debug("Return cached fileid {} for file {}", cached, normalized);
             return cached;
         }
         // The DeepBox API is ID-based and not path-based.

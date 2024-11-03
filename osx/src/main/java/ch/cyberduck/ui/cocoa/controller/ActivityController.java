@@ -86,9 +86,7 @@ public final class ActivityController extends WindowController {
 
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
-            if(log.isDebugEnabled()) {
-                log.debug("Add background action {}", action);
-            }
+            log.debug("Add background action {}", action);
             tasks.put(action, new TaskController(action));
             reload();
         }

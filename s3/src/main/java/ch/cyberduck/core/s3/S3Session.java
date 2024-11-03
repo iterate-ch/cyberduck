@@ -112,9 +112,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         @Override
         public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
             final Distribution distribution = super.read(container, method, prompt);
-            if(log.isDebugEnabled()) {
-                log.debug("Cache distribution {}", distribution);
-            }
+            log.debug("Cache distribution {}", distribution);
             // Replace previously cached value
             final Set<Distribution> cached = distributions.getOrDefault(container, new HashSet<>());
             cached.add(distribution);
@@ -183,9 +181,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         authentication = this.configureCredentialsStrategy(proxy, configuration, prompt);
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             final String header = HTTP.EXPECT_DIRECTIVE;
-            if(log.isDebugEnabled()) {
-                log.debug("Add request handler for {}", header);
-            }
+            log.debug("Add request handler for {}", header);
             configuration.addInterceptorLast(new HttpRequestInterceptor() {
                 @Override
                 public void process(final HttpRequest request, final HttpContext context) {
@@ -200,9 +196,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Only for AWS
             if(S3Session.isAwsHostname(host.getHostname())) {
                 final String header = REQUESTER_PAYS_HEADER;
-                if(log.isDebugEnabled()) {
-                    log.debug("Add request handler for {}", header);
-                }
+                log.debug("Add request handler for {}", header);
                 configuration.addInterceptorLast(new HttpRequestInterceptor() {
                     @Override
                     public void process(final HttpRequest request, final HttpContext context) {
@@ -310,24 +304,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = authentication.get();
         if(credentials.isAnonymousLogin()) {
-            if(log.isDebugEnabled()) {
-                log.debug("Connect with no credentials to {}", host);
-            }
+            log.debug("Connect with no credentials to {}", host);
             client.setProviderCredentials(null);
         }
         else {
             if(credentials.getTokens().validate()) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Connect with session credentials to {}", host);
-                }
+                log.debug("Connect with session credentials to {}", host);
                 client.setProviderCredentials(new AWSSessionCredentials(
                         credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
                         credentials.getTokens().getSessionToken()));
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug("Connect with basic credentials to {}", host);
-                }
+                log.debug("Connect with basic credentials to {}", host);
                 client.setProviderCredentials(new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
             }
         }
@@ -338,13 +326,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         try {
             final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
             final Location.Name location = new S3LocationFeature(S3Session.this, regions).getLocation(home);
-            if(log.isDebugEnabled()) {
-                log.debug("Retrieved region {}", location);
-            }
+            log.debug("Retrieved region {}", location);
             if(!Location.unknown.equals(location)) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Set default region to {} determined from {}", location, home);
-                }
+                log.debug("Set default region to {} determined from {}", location, home);
                 //
                 host.setProperty("s3.location", location.getIdentifier());
             }
@@ -352,9 +336,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         catch(AccessDeniedException | InteroperabilityException e) {
             log.warn("Failure {} querying region", e);
             final Path home = new DefaultHomeFinderService(this).find();
-            if(log.isDebugEnabled()) {
-                log.debug("Retrieved {}", home);
-            }
+            log.debug("Retrieved {}", home);
         }
     }
 

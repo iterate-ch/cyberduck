@@ -54,9 +54,7 @@ public class DriveMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                if(log.isWarnEnabled()) {
-                    log.warn("Trash file {} to be replaced with {}", renamed, file);
-                }
+                log.warn("Trash file {} to be replaced with {}", renamed, file);
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
             final String id = fileid.getFileId(file);

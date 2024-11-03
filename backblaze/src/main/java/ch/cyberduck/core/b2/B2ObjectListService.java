@@ -77,9 +77,7 @@ public class B2ObjectListService implements ListService {
             final Map<String, Long> revisions = new HashMap<>();
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
-                if(log.isDebugEnabled()) {
-                    log.debug("List directory {} with marker {}", directory, marker);
-                }
+                log.debug("List directory {} with marker {}", directory, marker);
                 final B2ListFilesResponse response;
                 if(versioning.isEnabled()) {
                     // In alphabetical order by file name, and by reverse of date/time uploaded for
@@ -105,9 +103,7 @@ public class B2ObjectListService implements ListService {
             }
             while(marker.hasNext());
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
-                if(log.isWarnEnabled()) {
-                    log.warn("No placeholder found for directory {}", directory);
-                }
+                log.warn("No placeholder found for directory {}", directory);
                 throw new NotfoundException(directory.getAbsolute());
             }
             return objects;

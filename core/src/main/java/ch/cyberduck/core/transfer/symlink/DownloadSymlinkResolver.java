@@ -57,9 +57,7 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
             // Only create symbolic link if target is included in the download
             for(TransferItem root : files) {
                 if(this.findTarget(target, root.remote)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Resolved target {} for {}", target, file);
-                    }
+                    log.debug("Resolved target {} for {}", target, file);
                     // Create symbolic link
                     return true;
                 }

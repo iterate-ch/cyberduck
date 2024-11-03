@@ -292,9 +292,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         else if(!pasteboard.isEmpty()) {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
-            if(log.isDebugEnabled()) {
-                log.debug("Drag operation mask is {}", info.draggingSourceOperationMask().intValue());
-            }
+            log.debug("Drag operation mask is {}", info.draggingSourceOperationMask().intValue());
             // We accept any file promise within the bounds
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 return NSDraggingInfo.NSDragOperationCopy;
@@ -315,9 +313,7 @@ public class BookmarkTableDataSource extends ListDataSource {
     public boolean tableView_acceptDrop_row_dropOperation(final NSTableView view, final NSDraggingInfo info,
                                                           final NSInteger row, final NSUInteger operation) {
         NSPasteboard draggingPasteboard = info.draggingPasteboard();
-        if(log.isDebugEnabled()) {
-            log.debug("Accept drop at row {}", row);
-        }
+        log.debug("Accept drop at row {}", row);
         view.deselectAll(null);
         final AbstractHostCollection source = this.getSource();
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
@@ -460,9 +456,7 @@ public class BookmarkTableDataSource extends ListDataSource {
      */
     @Override
     public void draggedImage_endedAt_operation(final NSImage image, final NSPoint point, final NSUInteger operation) {
-        if(log.isDebugEnabled()) {
-            log.debug("Drop finished with operation {}", operation);
-        }
+        log.debug("Drop finished with operation {}", operation);
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deleteBookmarkButtonClicked(null);
         }
@@ -524,9 +518,7 @@ public class BookmarkTableDataSource extends ListDataSource {
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
-        if(log.isDebugEnabled()) {
-            log.debug("Query promised files dropped dat destination {}", dropDestination.path());
-        }
+        log.debug("Query promised files dropped dat destination {}", dropDestination.path());
         final NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != dropDestination) {
             for(Host bookmark : pasteboard) {

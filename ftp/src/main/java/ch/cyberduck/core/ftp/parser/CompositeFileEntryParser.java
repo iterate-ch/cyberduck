@@ -39,26 +39,20 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
 
     @Override
     public FTPFile parseFTPEntry(final String line) {
-        if(log.isDebugEnabled()) {
-            log.debug("Parse {}", line);
-        }
+        log.debug("Parse {}", line);
         if(current != null) {
             final FTPFile parsed = current.parseFTPEntry(line);
             if(null != parsed) {
                 return parsed;
             }
-            if(log.isInfoEnabled()) {
-                log.info("Switching parser implementation because {} failed", current);
-            }
+            log.info("Switching parser implementation because {} failed", current);
             current = null;
         }
         for(FTPFileEntryParser parser : parsers) {
             final FTPFile matched = parser.parseFTPEntry(line);
             if(matched != null) {
                 current = parser;
-                if(log.isInfoEnabled()) {
-                    log.info("Caching {} parser implementation", current);
-                }
+                log.info("Caching {} parser implementation", current);
                 return matched;
             }
         }

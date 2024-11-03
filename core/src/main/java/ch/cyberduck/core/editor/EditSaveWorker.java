@@ -86,9 +86,7 @@ public class EditSaveWorker extends Worker<Transfer> {
 
     @Override
     public Transfer run(final Session<?> session) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Run upload action for editor {}", editor);
-        }
+        log.debug("Run upload action for editor {}", editor);
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, session, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,

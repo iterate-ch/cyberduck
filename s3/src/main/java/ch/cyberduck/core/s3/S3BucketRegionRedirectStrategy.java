@@ -47,15 +47,11 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
     public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
         if(response.containsHeader("x-amz-bucket-region")) {
             final Header header = response.getFirstHeader("x-amz-bucket-region");
-            if(log.isWarnEnabled()) {
-                log.warn("Received redirect response {} with {}", response, header);
-            }
+            log.warn("Received redirect response {} with {}", response, header);
             if(service.getDisableDnsBuckets()) {
                 final String message = String.format("Virtual host style requests are disabled but received redirect response %s with x-amz-bucket-region %s",
                         response, response.getFirstHeader("x-amz-bucket-region"));
-                if(log.isWarnEnabled()) {
-                    log.warn(message);
-                }
+                log.warn(message);
                 throw new RedirectException(message);
             }
             final String region = header.getValue();
@@ -63,19 +59,13 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
                     host.getProtocol().getRegions().stream().map(Location.Name::getIdentifier).toArray(String[]::new),
                     host.getProtocol().getRegions().stream().map(location -> region).toArray(String[]::new));
             final HttpUriRequest redirect = RequestBuilder.copy(request).setUri(uri).build();
-            if(log.isWarnEnabled()) {
-                log.warn("Retry request with URI {}", redirect.getURI());
-            }
+            log.warn("Retry request with URI {}", redirect.getURI());
             final String bucketName = ServiceUtils.findBucketNameInHostOrPath(redirect.getURI(),
                     RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
-            if(log.isDebugEnabled()) {
-                log.debug("Determined bucket {} from request {}", bucketName, request);
-            }
+            log.debug("Determined bucket {} from request {}", bucketName, request);
             // Update cache with new region
             if(bucketName != null) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Cache region {} for bucket {}", region, bucketName);
-                }
+                log.debug("Cache region {} for bucket {}", region, bucketName);
                 service.getRegionEndpointCache().putRegionForBucketName(bucketName, region);
             }
             return redirect;

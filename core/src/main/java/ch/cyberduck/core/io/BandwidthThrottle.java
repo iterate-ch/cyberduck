@@ -110,9 +110,7 @@ public final class BandwidthThrottle {
             rate = UNLIMITED;
         }
         else {
-            if(log.isDebugEnabled()) {
-                log.debug("Set rate to {} bytes per second", bytesPerSecond);
-            }
+            log.debug("Set rate to {} bytes per second", bytesPerSecond);
             rate = bytesPerSecond;
             bytesPerTick = (int) (bytesPerSecond / TICKS_PER_SECOND);
         }
@@ -186,9 +184,7 @@ public final class BandwidthThrottle {
             if(availableBytes != 0) {
                 break;
             }
-            if(log.isInfoEnabled()) {
-                log.info("Throttling bandwidth for {} milliseconds", nextTickTime - now);
-            }
+            log.info("Throttling bandwidth for {} milliseconds", nextTickTime - now);
             Uninterruptibles.sleepUninterruptibly(nextTickTime - now, TimeUnit.MILLISECONDS);
         }
     }

@@ -75,17 +75,13 @@ public class CompareFilter extends AbstractDownloadFilter {
             final Comparison comparison = this.comparison.compare(file, local, listener);
             switch(comparison) {
                 case local:
-                    if(log.isInfoEnabled()) {
-                        log.info("Skip file {} with comparison {}", file, comparison);
-                    }
+                    log.info("Skip file {} with comparison {}", file, comparison);
                     return false;
                 case equal:
                     if(file.isDirectory()) {
                         return true;
                     }
-                    if(log.isInfoEnabled()) {
-                        log.info("Skip file {} with comparison {}", file, comparison);
-                    }
+                    log.info("Skip file {} with comparison {}", file, comparison);
                     return false;
                 case remote:
                     return true;

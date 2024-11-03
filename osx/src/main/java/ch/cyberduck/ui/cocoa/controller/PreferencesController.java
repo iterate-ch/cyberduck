@@ -2003,9 +2003,7 @@ public class PreferencesController extends ToolbarWindowController {
             defaultProtocolHandlerCombobox.setEnabled(false);
         }
         else {
-            if(log.isDebugEnabled()) {
-                log.debug("Default Protocol Handler for {}:{}", protocol, defaultHandler);
-            }
+            log.debug("Default Protocol Handler for {}:{}", protocol, defaultHandler);
             for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol.name())) {
                 defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
                 final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();

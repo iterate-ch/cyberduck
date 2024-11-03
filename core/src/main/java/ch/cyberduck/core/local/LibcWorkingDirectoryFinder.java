@@ -35,9 +35,7 @@ public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
     @Override
     public Local find() {
         final Local folder = LocalFactory.get(library.getcwd(null, 0L));
-        if(log.isDebugEnabled()) {
-            log.debug("Determined folder {} as working directory", folder);
-        }
+        log.debug("Determined folder {} as working directory", folder);
         return folder;
     }
 

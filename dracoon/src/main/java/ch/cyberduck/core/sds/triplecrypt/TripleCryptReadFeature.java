@@ -102,9 +102,7 @@ public class TripleCryptReadFeature implements Read {
     private UserKeyPair getUserKeyPair(final EncryptedFileKey encFileKey) throws BackgroundException, UnknownVersionException {
         final UserKeyPairContainer keyPairContainer = session.getKeyPairForFileKey(encFileKey.getVersion());
         final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
-        if(log.isDebugEnabled()) {
-            log.debug("Attempt to unlock private key {}", userKeyPair.getUserPrivateKey());
-        }
+        log.debug("Attempt to unlock private key {}", userKeyPair.getUserPrivateKey());
         return userKeyPair;
     }
 

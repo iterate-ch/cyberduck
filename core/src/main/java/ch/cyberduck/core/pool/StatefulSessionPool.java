@@ -49,9 +49,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Acquire lock for connection {}", session);
-            }
+            log.debug("Acquire lock for connection {}", session);
             lock.lock();
         }
         catch(IllegalMonitorStateException e) {
@@ -66,9 +64,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
         try {
             if(failure != null) {
                 if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                    if(log.isWarnEnabled()) {
-                        log.warn("Close session {} after failure {}", session, failure);
-                    }
+                    log.warn("Close session {} after failure {}", session, failure);
                     try {
                         connect.close(conn);
                     }
@@ -80,9 +76,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
         }
         finally {
             try {
-                if(log.isDebugEnabled()) {
-                    log.debug("Release lock for connection {}", session);
-                }
+                log.debug("Release lock for connection {}", session);
                 lock.unlock();
             }
             catch(IllegalMonitorStateException ignored) {

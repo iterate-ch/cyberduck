@@ -58,9 +58,7 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
     @Override
     public void setDefaultHandler(final Application application, final List<String> schemes) {
         for(String scheme : schemes) {
-            if(log.isDebugEnabled()) {
-                log.debug("Register handler for {}", scheme);
-            }
+            log.debug("Register handler for {}", scheme);
             if(0 != LaunchServicesLibrary.library.LSSetDefaultHandlerForURLScheme(scheme, application.getIdentifier())) {
                 log.error("Failure setting default handler for scheme {}", scheme);
             }

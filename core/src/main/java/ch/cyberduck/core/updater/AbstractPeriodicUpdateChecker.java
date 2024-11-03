@@ -67,9 +67,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Check for new updates after {}", delay);
-                    }
+                    log.debug("Check for new updates after {}", delay);
                     preferences.setProperty("update.check.timestamp", System.currentTimeMillis());
                     controller.invoke(new DefaultMainAction() {
                         @Override
@@ -115,9 +113,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
             }
             url.append(URIEncoder.encode(arg.getKey())).append("=").append(URIEncoder.encode(arg.getValue()));
         }
-        if(log.isInfoEnabled()) {
-            log.info("Setting update feed to {}", url);
-        }
+        log.info("Setting update feed to {}", url);
         return url.toString();
     }
 }

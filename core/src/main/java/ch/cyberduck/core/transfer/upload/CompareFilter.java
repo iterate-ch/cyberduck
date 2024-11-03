@@ -80,14 +80,10 @@ public class CompareFilter extends AbstractUploadFilter {
                     if(file.isDirectory()) {
                         return true;
                     }
-                    if(log.isInfoEnabled()) {
-                        log.info("Skip file {} with comparison {}", file, comparison);
-                    }
+                    log.info("Skip file {} with comparison {}", file, comparison);
                     return false;
                 case remote:
-                    if(log.isInfoEnabled()) {
-                        log.info("Skip file {} with comparison {}", file, comparison);
-                    }
+                    log.info("Skip file {} with comparison {}", file, comparison);
                     return false;
             }
             log.warn("Invalid comparison result {}", comparison);

@@ -172,9 +172,7 @@ public abstract class TransferPromptController extends SheetController implement
      * Reload the files in the prompt dialog
      */
     public void reload() {
-        if(log.isDebugEnabled()) {
-            log.debug("Reload table view");
-        }
+        log.debug("Reload table view");
         browserView.reloadData();
         browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0L)), false);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -184,18 +182,14 @@ public abstract class TransferPromptController extends SheetController implement
 
     @Override
     public TransferAction prompt(final TransferItem file) {
-        if(log.isDebugEnabled()) {
-            log.debug("Prompt for transfer action of {}", transfer);
-        }
+        log.debug("Prompt for transfer action of {}", transfer);
         new SheetInvoker(this, parent, this).beginSheet();
         return action;
     }
 
     @Override
     public void callback(final int returncode) {
-        if(log.isDebugEnabled()) {
-            log.debug("Callback with return code {}", returncode);
-        }
+        log.debug("Callback with return code {}", returncode);
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.cancel;
         }

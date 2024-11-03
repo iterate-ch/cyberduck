@@ -46,9 +46,7 @@ public class DownloadRegexFilter extends DownloadDuplicateFilter {
             return false;
         }
         if(pattern.matcher(file.getName()).matches()) {
-            if(log.isDebugEnabled()) {
-                log.debug("Skip {} excluded with regex", file.getAbsolute());
-            }
+            log.debug("Skip {} excluded with regex", file.getAbsolute());
             return false;
         }
         return true;

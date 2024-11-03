@@ -160,9 +160,7 @@ public class CryptoVault implements Vault {
         catch(IOException e) {
             throw new VaultException("Failure creating master key", e);
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Write master key to {}", masterkey);
-        }
+        log.debug("Write master key to {}", masterkey);
         // Obtain non encrypted directory writer
         final Directory<?> directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus().withRegion(region);
@@ -192,9 +190,7 @@ public class CryptoVault implements Vault {
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
-        if(log.isDebugEnabled()) {
-            log.debug("Create vault root directory at {}", secondLevel);
-        }
+        log.debug("Create vault root directory at {}", secondLevel);
         directory.mkdir(dataDir, status);
         directory.mkdir(firstLevel, status);
         directory.mkdir(secondLevel, status);
@@ -229,9 +225,7 @@ public class CryptoVault implements Vault {
             return parseVaultConfigFromJWT(token).withMasterkeyFile(this.readMasterkeyFile(session, masterkey));
         }
         catch(NotfoundException e) {
-            if(log.isDebugEnabled()) {
-                log.debug("Ignore failure reading {}", config);
-            }
+            log.debug("Ignore failure reading {}", config);
             final MasterkeyFile mkfile = this.readMasterkeyFile(session, masterkey);
             return new VaultConfig(mkfile.version,
                     mkfile.version == VAULT_VERSION_DEPRECATED ?
@@ -252,9 +246,7 @@ public class CryptoVault implements Vault {
     }
 
     private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path masterkey) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Read master key {}", masterkey);
-        }
+        log.debug("Read master key {}", masterkey);
         try (Reader reader = new ContentReader(session).getReader(masterkey)) {
             return MasterkeyFile.read(reader);
         }
@@ -294,9 +286,7 @@ public class CryptoVault implements Vault {
         try {
             this.open(vaultConfig, credentials.getPassword());
             if(credentials.isSaved()) {
-                if(log.isInfoEnabled()) {
-                    log.info("Save passphrase for {}", masterkey);
-                }
+                log.info("Save passphrase for {}", masterkey);
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                         new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
@@ -311,9 +301,7 @@ public class CryptoVault implements Vault {
     @Override
     public synchronized void close() {
         if(this.isUnlocked()) {
-            if(log.isInfoEnabled()) {
-                log.info("Close vault with cryptor {}", cryptor);
-            }
+            log.info("Close vault with cryptor {}", cryptor);
             if(cryptor != null) {
                 cryptor.destroy();
             }
@@ -372,9 +360,7 @@ public class CryptoVault implements Vault {
                         final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         this.vaultVersion = vaultConfig.version;
         final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
-        if(log.isDebugEnabled()) {
-            log.debug("Initialized crypto provider {}", provider);
-        }
+        log.debug("Initialized crypto provider {}", provider);
         vaultConfig.verify(masterKey.getEncoded(), VAULT_VERSION);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());

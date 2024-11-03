@@ -103,9 +103,7 @@ public class BrickPairingSchedulerFeature {
                 new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost()), token));
             resource.setHeader(HttpHeaders.ACCEPT, "application/json");
             resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-            if(log.isInfoEnabled()) {
-                log.info("Fetch credentials for paring key {} from {}", token, resource);
-            }
+            log.info("Fetch credentials for paring key {} from {}", token, resource);
             final JsonObject json = session.getClient().execute(resource, new AbstractResponseHandler<JsonObject>() {
                 @Override
                 public JsonObject handleEntity(final HttpEntity entity) throws IOException {

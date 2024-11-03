@@ -55,9 +55,7 @@ public class DriveDeleteFeature implements Delete {
                 }
                 else {
                     if(f.attributes().isDuplicate()) {
-                        if(log.isWarnEnabled()) {
-                            log.warn("Delete file {} already in trash", f);
-                        }
+                        log.warn("Delete file {} already in trash", f);
                         // Permanently deletes a file version
                         session.getClient().revisions().delete(fileid.getFileId(f), f.attributes().getVersionId()).execute();
                     }

@@ -55,15 +55,11 @@ public class LimitedRendezvousListener implements RendezvousListener {
 
     @Override
     public void serviceResolved(final String identifier, final Host host) {
-        if(log.isInfoEnabled()) {
-            log.info("Service resolved with identifier {} with {}", identifier, host);
-        }
+        log.info("Service resolved with identifier {} with {}", identifier, host);
         if(PreferencesFactory.get().getBoolean("rendezvous.loopback.suppress")) {
             try {
                 if(InetAddress.getByName(host.getHostname()).equals(InetAddress.getLocalHost())) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Suppressed Rendezvous notification for {}", host);
-                    }
+                    log.info("Suppressed Rendezvous notification for {}", host);
                     return;
                 }
             }
@@ -80,9 +76,7 @@ public class LimitedRendezvousListener implements RendezvousListener {
 
     @Override
     public void serviceLost(final Host servicename) {
-        if(log.isInfoEnabled()) {
-            log.info("Service with name {} lost", servicename);
-        }
+        log.info("Service with name {} lost", servicename);
         if(this.acquire()) {
             for(RendezvousListener listener : listeners) {
                 listener.serviceLost(servicename);
@@ -95,9 +89,7 @@ public class LimitedRendezvousListener implements RendezvousListener {
             try {
                 // Blocking if limit is exceeded
                 limit.acquire();
-                if(log.isDebugEnabled()) {
-                    log.debug("Acquired lock for {}", limit);
-                }
+                log.debug("Acquired lock for {}", limit);
                 return true;
             }
             catch(InterruptedException e) {

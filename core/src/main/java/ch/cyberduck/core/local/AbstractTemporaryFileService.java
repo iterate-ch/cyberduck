@@ -78,9 +78,7 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
 
     protected Local create(final Local folder, final String filename) {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Creating intermediate folder {}", folder);
-            }
+            log.debug("Creating intermediate folder {}", folder);
             folder.mkdir();
         }
         catch(AccessDeniedException e) {

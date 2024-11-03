@@ -63,9 +63,7 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
 
     @Override
     public T run(final Session<?> session) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Run worker {}", worker);
-        }
+        log.debug("Run worker {}", worker);
         try {
             result = worker.run(session);
         }
@@ -83,9 +81,7 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
             worker.cleanup(worker.initialize());
         }
         else {
-            if(log.isDebugEnabled()) {
-                log.debug("Cleanup worker {}", worker);
-            }
+            log.debug("Cleanup worker {}", worker);
             worker.cleanup(result);
         }
         super.cleanup();
@@ -93,9 +89,7 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
 
     @Override
     public void cancel() {
-        if(log.isDebugEnabled()) {
-            log.debug("Cancel worker {}", worker);
-        }
+        log.debug("Cancel worker {}", worker);
         worker.cancel();
         super.cancel();
     }

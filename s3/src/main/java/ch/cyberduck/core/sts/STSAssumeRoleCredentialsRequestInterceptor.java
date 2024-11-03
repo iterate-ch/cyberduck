@@ -82,9 +82,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         }
         catch(LoginFailureException e) {
             // Expired STS tokens
-            if(log.isWarnEnabled()) {
-                log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e);
-            }
+            log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e);
             return this.tokens = this.authorize(oauth.refresh(oidc));
         }
     }
@@ -94,9 +92,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         if(tokens.isExpired()) {
             try {
                 this.refresh(oauth.getTokens());
-                if(log.isInfoEnabled()) {
-                    log.info("Authorizing service request with STS tokens {}", tokens);
-                }
+                log.info("Authorizing service request with STS tokens {}", tokens);
                 session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
                         tokens.getSessionToken()));
             }

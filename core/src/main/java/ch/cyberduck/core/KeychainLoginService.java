@@ -46,9 +46,7 @@ public class KeychainLoginService implements LoginService {
 
     @Override
     public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
-        if(log.isDebugEnabled()) {
-            log.debug("Validate login credentials for {}", bookmark);
-        }
+        log.debug("Validate login credentials for {}", bookmark);
         final Credentials credentials = bookmark.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
@@ -61,9 +59,7 @@ public class KeychainLoginService implements LoginService {
                 if(StringUtils.isBlank(credentials.getPassword())) {
                     final String password = keychain.findLoginPassword(bookmark);
                     if(StringUtils.isNotBlank(password)) {
-                        if(log.isInfoEnabled()) {
-                            log.info("Fetched password from keychain for {}", bookmark);
-                        }
+                        log.info("Fetched password from keychain for {}", bookmark);
                         // No need to reinsert found password to the keychain.
                         credentials.setSaved(false);
                         credentials.setPassword(password);
@@ -74,9 +70,7 @@ public class KeychainLoginService implements LoginService {
                 if(StringUtils.isBlank(credentials.getToken())) {
                     final String token = keychain.findLoginToken(bookmark);
                     if(StringUtils.isNotBlank(token)) {
-                        if(log.isInfoEnabled()) {
-                            log.info("Fetched token from keychain for {}", bookmark);
-                        }
+                        log.info("Fetched token from keychain for {}", bookmark);
                         // No need to reinsert found token to the keychain.
                         credentials.setSaved(false);
                         credentials.setToken(token);
@@ -86,9 +80,7 @@ public class KeychainLoginService implements LoginService {
             if(options.publickey) {
                 final String passphrase = keychain.findPrivateKeyPassphrase(bookmark);
                 if(StringUtils.isNotBlank(passphrase)) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Fetched private key passphrase from keychain for {}", bookmark);
-                    }
+                    log.info("Fetched private key passphrase from keychain for {}", bookmark);
                     // No need to reinsert found token to the keychain.
                     credentials.setSaved(false);
                     credentials.setIdentityPassphrase(passphrase);
@@ -97,9 +89,7 @@ public class KeychainLoginService implements LoginService {
             if(options.oauth) {
                 final OAuthTokens tokens = keychain.findOAuthTokens(bookmark);
                 if(tokens.validate()) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Fetched OAuth token from keychain for {}", bookmark);
-                    }
+                    log.info("Fetched OAuth token from keychain for {}", bookmark);
                     // No need to reinsert found token to the keychain.
                     credentials.setSaved(tokens.isExpired());
                     credentials.setOauth(tokens);
@@ -108,9 +98,7 @@ public class KeychainLoginService implements LoginService {
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
             final CredentialsConfigurator configurator = bookmark.getProtocol().getFeature(CredentialsConfigurator.class);
-            if(log.isDebugEnabled()) {
-                log.debug("Auto configure credentials with {}", configurator);
-            }
+            log.debug("Auto configure credentials with {}", configurator);
             bookmark.setCredentials(configurator.configure(bookmark));
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
@@ -176,21 +164,15 @@ public class KeychainLoginService implements LoginService {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
                 StringUtils.isNotBlank(credentials.getUsername()) ? credentials.getUsername() : LocaleFactory.localizedString("Unknown")));
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Attempt authentication for {}", session);
-            }
+            log.debug("Attempt authentication for {}", session);
             session.login(prompt, cancel);
-            if(log.isDebugEnabled()) {
-                log.debug("Login successful for {}", session);
-            }
+            log.debug("Login successful for {}", session);
             listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
             this.save(bookmark);
             return true;
         }
         catch(LoginFailureException e) {
-            if(log.isDebugEnabled()) {
-                log.debug("Login failed for {}", session);
-            }
+            log.debug("Login failed for {}", session);
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
             credentials.setPassed(false);
             final LoginOptions options = new LoginOptions(bookmark.getProtocol());
@@ -198,9 +180,7 @@ public class KeychainLoginService implements LoginService {
                 // Retry
                 return false;
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Reset credentials for {}", bookmark);
-            }
+            log.debug("Reset credentials for {}", bookmark);
             // No updated credentials. Nullify input
             switch(session.getHost().getProtocol().getStatefulness()) {
                 case stateless:
@@ -222,16 +202,12 @@ public class KeychainLoginService implements LoginService {
             }
         }
         else {
-            if(log.isInfoEnabled()) {
-                log.info("Skip writing credentials for bookmark {}", bookmark.getHostname());
-            }
+            log.info("Skip writing credentials for bookmark {}", bookmark.getHostname());
         }
         // Flag for successful authentication
         credentials.setPassed(true);
         // Nullify password and tokens
-        if(log.isDebugEnabled()) {
-            log.debug("Reset credentials for {}", bookmark);
-        }
+        log.debug("Reset credentials for {}", bookmark);
         switch(bookmark.getProtocol().getStatefulness()) {
             case stateless:
                 credentials.reset();

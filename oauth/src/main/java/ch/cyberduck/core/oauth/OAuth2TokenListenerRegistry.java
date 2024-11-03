@@ -33,9 +33,7 @@ public class OAuth2TokenListenerRegistry {
     private final Map<String, OAuth2TokenListener> listeners = new HashMap<>();
 
     public void register(final String state, final OAuth2TokenListener listener) {
-        if(log.isDebugEnabled()) {
-            log.debug("Register listener for state {}", state);
-        }
+        log.debug("Register listener for state {}", state);
         listeners.put(state, listener);
     }
 
@@ -46,9 +44,7 @@ public class OAuth2TokenListenerRegistry {
             return;
         }
         listeners.remove(state);
-        if(log.isDebugEnabled()) {
-            log.debug("Notify listener for state {} with token {}", state, token);
-        }
+        log.debug("Notify listener for state {} with token {}", state, token);
         listener.callback(token);
     }
 

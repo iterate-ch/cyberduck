@@ -62,9 +62,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
-                if(log.isDebugEnabled()) {
-                    log.debug("Try to acquire semaphore for {}", session);
-                }
+                log.debug("Try to acquire semaphore for {}", session);
                 // Pairing token no longer valid
                 if(!semaphore.tryAcquire()) {
                     log.warn("Skip pairing because semaphore cannot be aquired for {}", session);
@@ -85,9 +83,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                     log.warn("Failure {} trying to refresh pairing after error response {}", e, response);
                 }
                 finally {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Release semaphore for {}", session);
-                    }
+                    log.debug("Release semaphore for {}", session);
                     semaphore.release();
                 }
         }

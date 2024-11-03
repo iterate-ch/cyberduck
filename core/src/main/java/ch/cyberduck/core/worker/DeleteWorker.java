@@ -129,9 +129,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                             final Path f = iter.next();
                             if(versioning.getConfiguration(f).isEnabled()) {
                                 if(versioning.save(f)) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("Skip deleting {}", f);
-                                    }
+                                    log.debug("Skip deleting {}", f);
                                     iter.remove();
                                 }
                             }

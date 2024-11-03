@@ -79,9 +79,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
             }
             success = true;
             if(name.equals(".") || name.equals("..")) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Skip {}", f.getName());
-                }
+                log.debug("Skip {}", f.getName());
                 continue;
             }
             final Path parsed = new Path(directory, PathNormalizer.name(name), f.getType() == FTPFile.DIRECTORY_TYPE ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file));

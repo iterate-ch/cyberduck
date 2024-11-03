@@ -88,9 +88,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final UnixPermission feature = session.getFeature(UnixPermission.class);
-        if(log.isDebugEnabled()) {
-            log.debug("Run with feature {}", feature);
-        }
+        log.debug("Run with feature {}", feature);
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

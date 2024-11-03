@@ -86,9 +86,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                     try {
                         switch(response.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
-                                if(log.isInfoEnabled()) {
-                                    log.info("Received response {} for part number {}", response, status.getPart());
-                                }
+                                log.info("Received response {} for part number {}", response, status.getPart());
                                 // Upload complete
                                 if(response.containsHeader("ETag")) {
                                     if(file.getType().contains(Path.Type.encrypted)) {
@@ -106,9 +104,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                                     }
                                 }
                                 else {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("No ETag header in response available");
-                                    }
+                                    log.debug("No ETag header in response available");
                                 }
                                 return null;
                             default:

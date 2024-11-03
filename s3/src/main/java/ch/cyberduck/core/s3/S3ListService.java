@@ -51,9 +51,7 @@ public class S3ListService implements ListService {
         if(directory.isRoot()) {
             final String bucket = RequestEntityRestStorageService.findBucketInHostname(session.getHost());
             if(StringUtils.isEmpty(bucket)) {
-                if(log.isDebugEnabled()) {
-                    log.debug("No bucket name in host {}", session.getHost().getHostname());
-                }
+                log.debug("No bucket name in host {}", session.getHost().getHostname());
                 // List all buckets
                 try {
                     return new S3BucketListService(session).list(directory, listener);

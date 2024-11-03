@@ -121,9 +121,7 @@ public class OAuth2AuthorizationService {
         if(saved.validate()) {
             // Found existing tokens
             if(saved.isExpired()) {
-                if(log.isWarnEnabled()) {
-                    log.warn("Refresh expired access tokens {}", saved);
-                }
+                log.warn("Refresh expired access tokens {}", saved);
                 // Refresh expired access key
                 try {
                     return credentials.withOauth(this.refresh(saved));
@@ -134,9 +132,7 @@ public class OAuth2AuthorizationService {
                 }
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug("Returned saved OAuth tokens {} for {}", saved, host);
-                }
+                log.debug("Returned saved OAuth tokens {} for {}", saved, host);
                 return credentials;
             }
         }
@@ -149,9 +145,7 @@ public class OAuth2AuthorizationService {
      * @return Same tokens saved
      */
     public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
-        if(log.isDebugEnabled()) {
-            log.debug("Save new tokens {} for {}", tokens, host);
-        }
+        log.debug("Save new tokens {} for {}", tokens, host);
         credentials.withOauth(tokens).withSaved(new LoginOptions().save);
         store.save(host);
         return tokens;
@@ -162,9 +156,7 @@ public class OAuth2AuthorizationService {
      * @return Tokens retrieved
      */
     public OAuthTokens authorize() throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Start new OAuth flow for {} with missing access token", host);
-        }
+        log.debug("Start new OAuth flow for {} with missing access token", host);
         final IdTokenResponse response;
         // Save access token, refresh token and id token
         switch(flowType) {
@@ -217,18 +209,14 @@ public class OAuth2AuthorizationService {
         }
         // Direct the user to an authorization page to grant access to their protected data.
         final String authorizationCodeUrl = authorizationCodeUrlBuilder.build();
-        if(log.isDebugEnabled()) {
-            log.debug("Open browser with URL {}", authorizationCodeUrl);
-        }
+        log.debug("Open browser with URL {}", authorizationCodeUrl);
         final String authorizationCode = OAuth2AuthorizationCodeProviderFactory.get().prompt(
                 bookmark, prompt, authorizationCodeUrl, redirectUri, state);
         if(StringUtils.isBlank(authorizationCode)) {
             throw new LoginCanceledException();
         }
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Request tokens for authentication code {}", authorizationCode);
-            }
+            log.debug("Request tokens for authentication code {}", authorizationCode);
             // Swap the given authorization token for access/refresh tokens
             return flow.newTokenRequest(authorizationCode)
                     .setRedirectUri(URIEncoder.decode(redirectUri)).setScopes(scopes.isEmpty() ? null : scopes)
@@ -248,9 +236,7 @@ public class OAuth2AuthorizationService {
 
     private IdTokenResponse authorizeWithPassword(final Credentials credentials) throws BackgroundException {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Request tokens for user {}", credentials.getUsername());
-            }
+            log.debug("Request tokens for user {}", credentials.getUsername());
             final PasswordTokenRequest request = new PasswordTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                     credentials.getUsername(), credentials.getPassword()
             )
@@ -276,14 +262,10 @@ public class OAuth2AuthorizationService {
 
     public OAuthTokens refresh(final OAuthTokens tokens) throws BackgroundException {
         if(StringUtils.isBlank(tokens.getRefreshToken())) {
-            if(log.isWarnEnabled()) {
-                log.warn("Missing refresh token in {}", tokens);
-            }
+            log.warn("Missing refresh token in {}", tokens);
             return tokens;
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Refresh expired tokens {}", tokens);
-        }
+        log.debug("Refresh expired tokens {}", tokens);
         try {
             final IdTokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                     tokens.getRefreshToken())

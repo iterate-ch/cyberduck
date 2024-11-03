@@ -65,9 +65,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                     // Get the key manager factory for the default algorithm.
                     final Preferences preferences = PreferencesFactory.get();
                     type = preferences.getProperty("connection.ssl.keystore.type");
-                    if(log.isInfoEnabled()) {
-                        log.info("Load default store of type {}", type);
-                    }
+                    log.info("Load default store of type {}", type);
                     if(StringUtils.isBlank(type)) {
                         type = KeyStore.getDefaultType();
                     }
@@ -82,9 +80,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 catch(Exception e) {
                     try {
                         log.error(String.format("Could not load default store of type %s", type), e);
-                        if(log.isInfoEnabled()) {
-                            log.info("Load default store of default type");
-                        }
+                        log.info("Load default store of default type");
                         store = KeyStore.getInstance(KeyStore.getDefaultType());
                     }
                     catch(KeyStoreException ex) {
@@ -124,13 +120,9 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             final Enumeration<String> aliases = keystore.get().aliases();
             while(aliases.hasMoreElements()) {
                 final String alias = aliases.nextElement();
-                if(log.isDebugEnabled()) {
-                    log.debug("Alias in Keychain {}", alias);
-                }
+                log.debug("Alias in Keychain {}", alias);
                 if(keystore.get().isKeyEntry(alias)) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Found private key for {}", alias);
-                    }
+                    log.info("Found private key for {}", alias);
                     list.add(alias);
                 }
                 else {
@@ -187,9 +179,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         catch(ConcurrentException | KeyStoreException e) {
             log.error("Keystore not loaded {}", e.getMessage());
         }
-        if(log.isInfoEnabled()) {
-            log.info("No matching certificate found for alias {} and issuers {}", alias, Arrays.toString(issuers));
-        }
+        log.info("No matching certificate found for alias {} and issuers {}", alias, Arrays.toString(issuers));
         return null;
     }
 
@@ -206,15 +196,11 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 selected = callback.choose(prompt, keyTypes, issuers, bookmark);
             }
             catch(ConnectionCanceledException e) {
-                if(log.isInfoEnabled()) {
-                    log.info("No certificate selected for socket {}", socket);
-                }
+                log.info("No certificate selected for socket {}", socket);
                 return null;
             }
             if(null == selected) {
-                if(log.isInfoEnabled()) {
-                    log.info("No certificate selected for socket {}", socket);
-                }
+                log.info("No certificate selected for socket {}", socket);
                 // Disconnect
                 return null;
             }
@@ -222,9 +208,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             if(null != aliases) {
                 for(String alias : aliases) {
                     if(keystore.get().getCertificate(alias).equals(selected)) {
-                        if(log.isInfoEnabled()) {
-                            log.info("Selected certificate alias {} for certificate {}", alias, selected);
-                        }
+                        log.info("Selected certificate alias {} for certificate {}", alias, selected);
                         bookmark.getCredentials().setCertificate(alias);
                         return alias;
                     }

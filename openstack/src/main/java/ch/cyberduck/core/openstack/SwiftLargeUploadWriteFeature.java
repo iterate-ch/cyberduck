@@ -136,9 +136,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                             canceled.set(e);
                             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                         }
-                        if(log.isDebugEnabled()) {
-                            log.debug("Saved segment {} with checksum {}", segment, checksum);
-                        }
+                        log.debug("Saved segment {} with checksum {}", segment, checksum);
                         final StorageObject stored = new StorageObject(containerService.getKey(segment));
                         stored.setMd5sum(checksum);
                         stored.setSize(status.getLength());
@@ -183,9 +181,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                 else {
                     // Static Large Object
                     final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
-                    if(log.isDebugEnabled()) {
-                        log.debug("Creating SLO manifest {} for {}", manifest, file);
-                    }
+                    log.debug("Creating SLO manifest {} for {}", manifest, file);
                     final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
                                     containerService.getContainer(file)),
                             containerService.getContainer(file).getName(),

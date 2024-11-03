@@ -35,9 +35,7 @@ public class RateLimitingHttpRequestInterceptor implements HttpRequestIntercepto
             log.warn("Wait for rate limiting lock from {}", limiter);
             // Acquires a single permit blocking until the request can be granted
             final double time = limiter.acquire();
-            if(log.isInfoEnabled()) {
-                log.info("Proceed after waiting {} seconds from {}", time, limiter);
-            }
+            log.info("Proceed after waiting {} seconds from {}", time, limiter);
         }
     }
 }

@@ -98,9 +98,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
 
     @Override
     public Credentials get() throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Configure credentials from {}", url);
-        }
+        log.debug("Configure credentials from {}", url);
         final Host address = new HostParser(ProtocolFactory.get()).get(url);
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(address,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, address.getHostname()), key, ProxyFactory.get());

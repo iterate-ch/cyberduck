@@ -53,9 +53,7 @@ public class DeepboxMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                if(log.isWarnEnabled()) {
-                    log.warn("Delete file {} to be replaced with {}", renamed, file);
-                }
+                log.warn("Delete file {} to be replaced with {}", renamed, file);
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
             final String sourceId = fileid.getFileId(file);
@@ -96,26 +94,20 @@ public class DeepboxMoveFeature implements Move {
         }
         if(!source.getName().equals(target.getName())) {
             if(!acl.get(new Acl.CanonicalUser()).contains(CANRENAME)) {
-                if(log.isWarnEnabled()) {
-                    log.warn("ACL {} for {} does not include {}", acl, source, CANRENAME);
-                }
+                log.warn("ACL {} for {} does not include {}", acl, source, CANRENAME);
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
         }
         if(!fileid.getFileId(source.getParent()).equals(fileid.getFileId(target.getParent()))) {
             if(fileid.getBoxNodeId(source.getParent()).equals(fileid.getBoxNodeId(target.getParent()))) {
                 if(!acl.get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX)) {
-                    if(log.isWarnEnabled()) {
-                        log.warn("ACL {} for {} does not include {}", acl, source, CANMOVEWITHINBOX);
-                    }
+                    log.warn("ACL {} for {} does not include {}", acl, source, CANMOVEWITHINBOX);
                     throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
                 }
             }
             else {
                 if(!acl.get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX)) {
-                    if(log.isWarnEnabled()) {
-                        log.warn("ACL {} for {} does not include {}", acl, source, CANMOVEOUTOFBOX);
-                    }
+                    log.warn("ACL {} for {} does not include {}", acl, source, CANMOVEOUTOFBOX);
                     throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
                 }
             }

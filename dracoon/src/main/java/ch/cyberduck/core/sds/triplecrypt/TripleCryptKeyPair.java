@@ -73,9 +73,7 @@ public class TripleCryptKeyPair {
         }
         else {
             if(credentials.isSaved()) {
-                if(log.isInfoEnabled()) {
-                    log.info("Save encryption password for {}", bookmark);
-                }
+                log.info("Save encryption password for {}", bookmark);
                 try {
                     keychain.addPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
                             toAccountName(bookmark), credentials.getPassword());

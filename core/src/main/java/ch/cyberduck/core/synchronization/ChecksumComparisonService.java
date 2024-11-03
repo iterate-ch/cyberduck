@@ -36,14 +36,10 @@ public class ChecksumComparisonService implements ComparisonService {
             return Comparison.unknown;
         }
         if(remote.getChecksum().equals(local.getChecksum())) {
-            if(log.isDebugEnabled()) {
-                log.debug("Equal checksum {}", remote.getChecksum());
-            }
+            log.debug("Equal checksum {}", remote.getChecksum());
             return Comparison.equal;
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Local checksum {} not equal remote {}", local.getChecksum(), remote.getChecksum());
-        }
+        log.debug("Local checksum {} not equal remote {}", local.getChecksum(), remote.getChecksum());
         return Comparison.notequal;
     }
 

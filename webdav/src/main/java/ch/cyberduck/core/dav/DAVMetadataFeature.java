@@ -87,9 +87,7 @@ public class DAVMetadataFeature implements Headers {
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Write metadata {} for file {}", status, file);
-        }
+        log.debug("Write metadata {} for file {}", status, file);
         try {
             final List<Element> props = new ArrayList<>();
             for(Map.Entry<String, String> entry : status.getMetadata().entrySet()) {

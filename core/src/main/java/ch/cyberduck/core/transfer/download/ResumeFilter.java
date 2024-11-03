@@ -63,9 +63,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                     if(Checksum.NONE != attributes.getChecksum()) {
                         final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
                         if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
-                            if(log.isInfoEnabled()) {
-                                log.info("Skip file {} with checksum {}", file, attributes.getChecksum());
-                            }
+                            log.info("Skip file {} with checksum {}", file, attributes.getChecksum());
                             return false;
                         }
                         else {
@@ -73,9 +71,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                         }
                     }
                     else {
-                        if(log.isInfoEnabled()) {
-                            log.info("Skip file {} with local size {}", file, local.attributes().getSize());
-                        }
+                        log.info("Skip file {} with local size {}", file, local.attributes().getSize());
                         // No need to resume completed transfers
                         return false;
                     }
@@ -92,9 +88,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
             for(TransferStatus segmentStatus : status.getSegments()) {
                 final Local segmentFile = segmentStatus.getRename().local;
                 if(segmentFile.exists()) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Determine if part {} can be skipped", segmentStatus);
-                    }
+                    log.info("Determine if part {} can be skipped", segmentStatus);
                     if(segmentFile.attributes().getSize() == segmentStatus.getLength()) {
                         segmentStatus.setComplete();
                         status.setLength(status.getLength() - segmentStatus.getLength());

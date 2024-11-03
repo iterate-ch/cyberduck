@@ -57,9 +57,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 final NonceGenerator nonces = status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                         new RandomNonceGenerator(vault.getNonceSize()) :
                         new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength()));
-                if(log.isDebugEnabled()) {
-                    log.debug("Using {}", nonces);
-                }
+                log.debug("Using {}", nonces);
                 status.setNonces(nonces);
             }
             final StatusOutputStream<Reply> cleartext = proxy.write(vault.encrypt(session, file),

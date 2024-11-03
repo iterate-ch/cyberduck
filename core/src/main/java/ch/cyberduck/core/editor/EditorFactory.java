@@ -124,9 +124,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
      * in the Preferences
      */
     public static List<Application> getEditors(final String filename) {
-        if(log.isDebugEnabled()) {
-            log.debug("Find installed editors for file {}", filename);
-        }
+        log.debug("Find installed editors for file {}", filename);
         final List<Application> editors = new ArrayList<>(
                 finder.findAll(filename));
         // Add the application set as the default editor in the Preferences to be always

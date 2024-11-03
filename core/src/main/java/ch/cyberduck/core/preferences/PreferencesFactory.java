@@ -41,9 +41,7 @@ public final class PreferencesFactory {
         preferences.setDefaults(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "default.properties"));
         preferences.configureLogging(preferences.getProperty("logging"));
         final Logger log = LogManager.getLogger(PreferencesFactory.class);
-        if(log.isInfoEnabled()) {
-            log.info("Running version {}", preferences.getVersion());
-        }
+        log.info("Running version {}", preferences.getVersion());
     }
 
     public static synchronized Preferences get() {

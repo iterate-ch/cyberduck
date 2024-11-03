@@ -44,9 +44,7 @@ public class MigratingSupportDirectoryFinder implements SupportDirectoryFinder {
         else {
             final Local previous = deprecated.find();
             if(previous.exists()) {
-                if(log.isWarnEnabled()) {
-                    log.warn("Migrate application support folder from {} to {}", previous, appdata);
-                }
+                log.warn("Migrate application support folder from {} to {}", previous, appdata);
                 try {
                     // Rename folder recursively
                     previous.rename(appdata);

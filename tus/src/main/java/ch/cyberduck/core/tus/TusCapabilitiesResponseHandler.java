@@ -38,9 +38,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
     public TusCapabilities handleResponse(final HttpResponse response) {
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_NO_CONTENT:
-                if(log.isDebugEnabled()) {
-                    log.debug("Support for resumable uploads detected from {}", response);
-                }
+                log.debug("Support for resumable uploads detected from {}", response);
                 if(response.containsHeader(TusCapabilities.TUS_HEADER_RESUMABLE)) {
                     if(response.containsHeader(TusCapabilities.TUS_HEADER_VERSION)) {
                         capabilities.withVersions(StringUtils.split(response.getFirstHeader(TusCapabilities.TUS_HEADER_VERSION).getValue(), ","));
@@ -48,9 +46,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                 }
                 if(response.containsHeader(TusCapabilities.TUS_HEADER_EXTENSION)) {
                     for(String extension : StringUtils.split(response.getFirstHeader(TusCapabilities.TUS_HEADER_EXTENSION).getValue(), ",")) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Support extension {}", extension);
-                        }
+                        log.debug("Support extension {}", extension);
                         if(StringUtils.equals(Extension.checksum.name(), StringUtils.strip(extension))) {
                             if(response.containsHeader(TusCapabilities.TUS_HEADER_CHECKSUM_ALGORITHM)) {
                                 for(String algorithm : StringUtils.split(response.getFirstHeader(TusCapabilities.TUS_HEADER_CHECKSUM_ALGORITHM).getValue(), ",")) {
@@ -75,9 +71,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                     }
                 }
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Determined capabilities {}", capabilities);
-        }
+        log.debug("Determined capabilities {}", capabilities);
         return capabilities;
     }
 }

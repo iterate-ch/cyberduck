@@ -94,9 +94,7 @@ public class EditOpenWorker extends Worker<Transfer> {
 
     @Override
     public Transfer run(final Session<?> session) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("Run edit action for editor {}", file);
-        }
+        log.debug("Run edit action for editor {}", file);
         // Delete any existing file which might be used by a watch editor already
         final TransferOptions options = new TransferOptions();
         final SingleTransferWorker worker

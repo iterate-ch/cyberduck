@@ -52,9 +52,7 @@ public class S3BucketListService implements RootListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("List containers for {}", session);
-        }
+        log.debug("List containers for {}", session);
         try {
             final AttributedList<Path> buckets = new AttributedList<>();
             // List all buckets owned

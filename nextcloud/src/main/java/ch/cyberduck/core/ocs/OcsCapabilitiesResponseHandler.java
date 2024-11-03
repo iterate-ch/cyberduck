@@ -63,9 +63,7 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                 }
             }
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Determined OCS capabilities {}", capabilities);
-        }
+        log.debug("Determined OCS capabilities {}", capabilities);
         return capabilities;
     }
 }

@@ -47,9 +47,7 @@ public class DefaultConnectionTimeout implements ConnectionTimeout {
 
     @Override
     public void setTimeout(final int timeout) {
-        if(log.isDebugEnabled()) {
-            log.debug("Set connection timeout to {}", timeout);
-        }
+        log.debug("Set connection timeout to {}", timeout);
         mutablePreferences.setProperty(PREFERENCE_KEY, clamp(timeout));
     }
 

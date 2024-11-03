@@ -65,9 +65,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
     public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
-            if(log.isDebugEnabled()) {
-                log.debug("Login using public key authentication with credentials {}", credentials);
-            }
+            log.debug("Login using public key authentication with credentials {}", credentials);
             final Local privKey = credentials.getIdentity();
             final Local pubKey;
             final FileKeyProvider provider;
@@ -75,9 +73,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
                         new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8), true);
-                if(log.isInfoEnabled()) {
-                    log.info("Reading private key {} with key format {}", privKey, format);
-                }
+                log.info("Reading private key {} with key format {}", privKey, format);
                 switch(format) {
                     case PKCS8:
                         provider = new PKCS8KeyFile.Factory().create();

@@ -48,9 +48,7 @@ public abstract class HttpResponseOutputStream<Reply> extends StatusOutputStream
         try {
             final Reply response = this.getStatus();
             if(response != null) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Closed stream {} with response value {}", this, response);
-                }
+                log.debug("Closed stream {} with response value {}", this, response);
                 status.withResponse(attributes.toAttributes(response)).setComplete();
             }
         }

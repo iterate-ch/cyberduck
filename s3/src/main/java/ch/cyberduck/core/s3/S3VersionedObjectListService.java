@@ -97,9 +97,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         final ThreadPool pool = ThreadPoolFactory.get("list", concurrency);
         try {
             final String prefix = this.createPrefix(directory);
-            if(log.isDebugEnabled()) {
-                log.debug("List with prefix {}", prefix);
-            }
+            log.debug("List with prefix {}", prefix);
             final Path bucket = containerService.getContainer(directory);
             final AttributedList<Path> objects = new AttributedList<>();
             String priorLastKey = null;
@@ -116,9 +114,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
                     final String key = URIEncoder.decode(marker.getKey());
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Skip placeholder key {}", key);
-                        }
+                        log.debug("Skip placeholder key {}", key);
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
@@ -186,9 +182,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 // Only for AWS
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                     if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
-                        if(log.isWarnEnabled()) {
-                            log.warn("No placeholder found for directory {}", directory);
-                        }
+                        log.warn("No placeholder found for directory {}", directory);
                         throw new NotfoundException(directory.getAbsolute());
                     }
                 }

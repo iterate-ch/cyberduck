@@ -62,14 +62,10 @@ public final class TransferQueue {
      * @param t This transfer should respect the settings for maximum number of transfers
      */
     public void add(final Transfer t, final ProgressListener listener) {
-        if(log.isDebugEnabled()) {
-            log.debug("Add transfer {} to queue", t);
-        }
+        log.debug("Add transfer {} to queue", t);
         if(!semaphore.tryAcquire()) {
             // The maximum number of transfers is already reached. Wait for transfer slot.
-            if(log.isInfoEnabled()) {
-                log.info("Queuing transfer {}", t);
-            }
+            log.info("Queuing transfer {}", t);
             listener.message(LocaleFactory.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
             notification.notify(t.getName(), t.getUuid(), "Transfer queued", t.getName());
             semaphore.acquireUninterruptibly();
@@ -81,9 +77,7 @@ public final class TransferQueue {
      * @param t Transfer to drop from queue
      */
     public void remove(final Transfer t) {
-        if(log.isDebugEnabled()) {
-            log.debug("Remove {} from queue", t);
-        }
+        log.debug("Remove {} from queue", t);
         semaphore.release();
         final int size = permits - semaphore.availablePermits() + semaphore.getQueueLength();
         if(0 == size) {
@@ -102,9 +96,7 @@ public final class TransferQueue {
     public void resize(int size) {
         int limit = size == TransferConnectionLimiter.AUTO ?
                 PreferencesFactory.get().getInteger("queue.connections.limit.default") : size;
-        if(log.isDebugEnabled()) {
-            log.debug("Resize queue to {}", limit);
-        }
+        log.debug("Resize queue to {}", limit);
         if(limit < permits) {
             // Reduce number of permits
             semaphore.reducePermits(permits - limit);

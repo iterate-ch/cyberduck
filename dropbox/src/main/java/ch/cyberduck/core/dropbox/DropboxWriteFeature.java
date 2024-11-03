@@ -69,9 +69,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
             final UploadSessionStartUploader start = files.uploadSessionStart();
             new DefaultStreamCloser().close(start.getOutputStream());
             final String sessionId = start.finish().getSessionId();
-            if(log.isDebugEnabled()) {
-                log.debug("Obtained session id {} for upload {}", sessionId, file);
-            }
+            log.debug("Obtained session id {} for upload {}", sessionId, file);
             final UploadSessionAppendV2Uploader uploader = open(files, sessionId, 0L);
             return new SegmentingUploadProxyOutputStream(file, status, files, uploader, sessionId);
         }
@@ -125,9 +123,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
          * Open next chunk
          */
         private void next() throws DbxException {
-            if(log.isDebugEnabled()) {
-                log.debug("Open next segment for upload session {} for file {}", sessionId, file);
-            }
+            log.debug("Open next segment for upload session {} for file {}", sessionId, file);
             // Next segment
             uploader = open(client, sessionId, written);
             // Replace stream
@@ -172,16 +168,12 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
     }
 
     private UploadSessionAppendV2Uploader open(final DbxUserFilesRequests files, final String sessionId, final Long offset) throws DbxException {
-        if(log.isDebugEnabled()) {
-            log.debug("Open next segment for upload session {}", sessionId);
-        }
+        log.debug("Open next segment for upload session {}", sessionId);
         return files.uploadSessionAppendV2(new UploadSessionCursor(sessionId, offset));
     }
 
     private void close(final UploadSessionAppendV2Uploader uploader) throws DbxException, IOException {
-        if(log.isDebugEnabled()) {
-            log.debug("Close uploader {}", uploader);
-        }
+        log.debug("Close uploader {}", uploader);
         uploader.getOutputStream().close();
         uploader.finish();
     }

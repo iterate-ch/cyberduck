@@ -54,9 +54,7 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
         }
         final String cached = super.getFileId(file);
         if(cached != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Return cached fileid {} for file {}", cached, file);
-            }
+            log.debug("Return cached fileid {} for file {}", cached, file);
             return cached;
         }
         if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(file.getParent())) {

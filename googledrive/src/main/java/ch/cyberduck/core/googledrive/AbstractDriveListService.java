@@ -87,9 +87,7 @@ public abstract class AbstractDriveListService implements ListService {
                     .setPageToken(page)
                     .setFields(fields)
                     .setPageSize(pagesize).execute();
-                if(log.isDebugEnabled()) {
-                    log.debug("Chunk of {} retrieved", list.getFiles().size());
-                }
+                log.debug("Chunk of {} retrieved", list.getFiles().size());
                 for(File f : list.getFiles()) {
                     final PathAttributes properties = attributes.toAttributes(f);
                     if(PathAttributes.EMPTY == properties) {
@@ -122,9 +120,7 @@ public abstract class AbstractDriveListService implements ListService {
                 }).size() > 1));
                 listener.chunk(directory, children);
                 page = list.getNextPageToken();
-                if(log.isDebugEnabled()) {
-                    log.debug("Continue with next page token {}", page);
-                }
+                log.debug("Continue with next page token {}", page);
             }
             while(page != null);
             return children;

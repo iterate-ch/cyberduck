@@ -61,13 +61,9 @@ public class S3AuthenticationResponseInterceptor extends DisabledServiceUnavaila
                         // 400 Bad Request (ExpiredToken) The provided token has expired
                         // 400 Bad Request (InvalidToken) The provided token is malformed or otherwise not valid
                         // 400 Bad Request (TokenRefreshRequired) The provided token must be refreshed.
-                        if(log.isWarnEnabled()) {
-                            log.warn("Handle failure {} from response {}", failure, response);
-                        }
+                        log.warn("Handle failure {} from response {}", failure, response);
                         final Credentials credentials = authenticator.get();
-                        if(log.isDebugEnabled()) {
-                            log.debug("Reconfigure client with credentials {}", credentials);
-                        }
+                        log.debug("Reconfigure client with credentials {}", credentials);
                         if(credentials.getTokens().validate()) {
                             session.getClient().setProviderCredentials(new AWSSessionCredentials(
                                     credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),

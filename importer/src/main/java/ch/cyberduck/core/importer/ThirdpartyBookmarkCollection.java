@@ -62,16 +62,12 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
     public void load() throws AccessDeniedException {
         final Local file = this.getFile();
         if(file.exists()) {
-            if(log.isInfoEnabled()) {
-                log.info("Found bookmarks file at {}", file);
-            }
+            log.info("Found bookmarks file at {}", file);
             Checksum current = Checksum.NONE;
             if(file.isFile()) {
                 try {
                     current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
-                    if(log.isDebugEnabled()) {
-                        log.debug("Current checksum for {} is {}", file, current);
-                    }
+                    log.debug("Current checksum for {} is {}", file, current);
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure obtaining checksum for {}", file);
@@ -81,27 +77,19 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
                 // Previously imported
                 final Checksum previous = new Checksum(HashAlgorithm.md5,
                     preferences.getProperty(String.format("%s.checksum", this.getConfiguration())));
-                if(log.isDebugEnabled()) {
-                    log.debug("Saved previous checksum {} for bookmark {}", previous, file);
-                }
+                log.debug("Saved previous checksum {} for bookmark {}", previous, file);
                 if(StringUtils.isNotBlank(previous.hash)) {
                     if(previous.equals(current)) {
-                        if(log.isInfoEnabled()) {
-                            log.info("Skip importing bookmarks from {} with previously saved checksum {}", file, previous);
-                        }
+                        log.info("Skip importing bookmarks from {} with previously saved checksum {}", file, previous);
                     }
                     else {
-                        if(log.isInfoEnabled()) {
-                            log.info("Checksum changed for bookmarks file at {}", file);
-                        }
+                        log.info("Checksum changed for bookmarks file at {}", file);
                         // Should filter existing bookmarks. Skip import
                     }
                 }
                 else {
                     // Skip flagged
-                    if(log.isDebugEnabled()) {
-                        log.debug("Skip importing bookmarks from {}", file);
-                    }
+                    log.debug("Skip importing bookmarks from {}", file);
                 }
             }
             else {
@@ -114,9 +102,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
             }
         }
         else {
-            if(log.isInfoEnabled()) {
-                log.info("No bookmarks file at {}", file);
-            }
+            log.info("No bookmarks file at {}", file);
         }
         // Flag as imported
         super.load();
@@ -162,9 +148,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
         comment.append(MessageFormat.format(LocaleFactory.localizedString("Imported from {0}", "Configuration"),
                 this.getName()));
         bookmark.setComment(comment.toString());
-        if(log.isDebugEnabled()) {
-            log.debug("Create new bookmark from import {}", bookmark);
-        }
+        log.debug("Create new bookmark from import {}", bookmark);
         // Save password if any to Keychain
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isNotBlank(credentials.getPassword())) {
@@ -199,9 +183,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
         for(Iterator<Host> iter = this.iterator(); iter.hasNext(); ) {
             final Host i = iter.next();
             if(bookmarks.find(new AbstractHostCollection.HostComparePredicate(i)).isPresent()) {
-                if(log.isInfoEnabled()) {
-                    log.info("Remove {} from import as we found it in bookmarks", i);
-                }
+                log.info("Remove {} from import as we found it in bookmarks", i);
                 iter.remove();
             }
         }

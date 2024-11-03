@@ -47,9 +47,7 @@ public class GraphFileIdProvider extends CachingFileIdProvider implements FileId
         }
         final String cached = super.getFileId(file);
         if(cached != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Return cached fileid {} for file {}", cached, file);
-            }
+            log.debug("Return cached fileid {} for file {}", cached, file);
             return cached;
         }
         final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(),

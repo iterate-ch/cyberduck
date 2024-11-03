@@ -65,13 +65,9 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
                     rename = LocalFactory.get(local.getParent().getAbsolute(), proposal);
                 }
                 while(rename.exists());
-                if(log.isInfoEnabled()) {
-                    log.info("Rename existing file {} to {}", local, rename);
-                }
+                log.info("Rename existing file {} to {}", local, rename);
                 LocalFactory.get(local.getAbsolute()).rename(rename);
-                if(log.isDebugEnabled()) {
-                    log.debug("Clear exist flag for file {}", local);
-                }
+                log.debug("Clear exist flag for file {}", local);
                 status.setExists(false);
             }
         }

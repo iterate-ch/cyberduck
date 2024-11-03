@@ -49,9 +49,7 @@ public class DefaultTouchFeature<T> implements Touch<T> {
                     TransferStatus.UNKNOWN_LENGTH == status.getLength() ? 0L : status.getLength()), new DisabledConnectionCallback());
             writer.close();
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Received reply {} for creating file {}", status.getResponse(), file);
-                }
+                log.debug("Received reply {} for creating file {}", status.getResponse(), file);
                 return new Path(file).withAttributes(status.getResponse());
             }
             log.warn("Missing status from writer {}", writer);

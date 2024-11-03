@@ -45,9 +45,7 @@ public class SwiftQuotaFeature implements Quota {
         for(Region region : session.getClient().getRegions()) {
             try {
                 final long bytes = session.getClient().getAccountInfo(region).getBytesUsed();
-                if(log.isInfoEnabled()) {
-                    log.info("Add {} used in region {}", bytes, region);
-                }
+                log.info("Add {} used in region {}", bytes, region);
                 used += bytes;
             }
             catch(GenericException e) {

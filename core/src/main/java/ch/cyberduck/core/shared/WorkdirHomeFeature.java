@@ -41,9 +41,7 @@ public class WorkdirHomeFeature extends AbstractHomeFeature {
         if(host.getWorkdir() != null) {
             return new PathDictionary<>().deserialize(host.getWorkdir().serialize(SerializerFactory.get()));
         }
-        if(log.isDebugEnabled()) {
-            log.debug("No workdir set for bookmark {}", host);
-        }
+        log.debug("No workdir set for bookmark {}", host);
         return null;
     }
 }

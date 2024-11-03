@@ -52,9 +52,7 @@ public class TransferPromptListWorker extends Worker<List<TransferItem>> {
 
     @Override
     public List<TransferItem> run(final Session<?> session) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug("List directory {}", directory);
-        }
+        log.debug("List directory {}", directory);
         return transfer.list(session, directory, local, new WorkerListProgressListener(this, listener));
     }
 

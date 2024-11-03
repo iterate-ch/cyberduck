@@ -39,9 +39,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
                 try {
-                    if(log.isWarnEnabled()) {
-                        log.warn("Attempt to refresh OAuth tokens for failure {}", response);
-                    }
+                    log.warn("Attempt to refresh OAuth tokens for failure {}", response);
                     service.save(service.refresh());
                     // Try again
                     return true;

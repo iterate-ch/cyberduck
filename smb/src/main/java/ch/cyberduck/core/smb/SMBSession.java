@@ -166,9 +166,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         @Override
         public void passivateObject(final PooledObject<DiskShareWrapper> object) throws BackgroundException {
             final DiskShareWrapper share = object.getObject();
-            if(log.isDebugEnabled()) {
-                log.debug("Passivate share {}", share);
-            }
+            log.debug("Passivate share {}", share);
             try {
                 lock.unlock();
             }
@@ -182,21 +180,15 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         @Override
         public void activateObject(final PooledObject<DiskShareWrapper> object) {
             final DiskShareWrapper share = object.getObject();
-            if(log.isDebugEnabled()) {
-                log.debug("Obtain lock for share {}", share);
-            }
+            log.debug("Obtain lock for share {}", share);
             lock.lock();
-            if(log.isDebugEnabled()) {
-                log.debug("Obtained lock for share {}", share);
-            }
+            log.debug("Obtained lock for share {}", share);
         }
 
         @Override
         public boolean validateObject(final PooledObject<DiskShareWrapper> object) {
             final DiskShareWrapper share = object.getObject();
-            if(log.isDebugEnabled()) {
-                log.debug("Validate share {}", share);
-            }
+            log.debug("Validate share {}", share);
             final boolean connected = share.get().isConnected();
             if(!connected) {
                 log.warn("Share {} not connected", share);
@@ -248,9 +240,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withTransportLayerFactory(new AsyncDirectTcpTransportFactory<>())
                     .build());
             final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
-            if(log.isDebugEnabled()) {
-                log.debug("Connected to {}", connection.getConnectionContext());
-            }
+            log.debug("Connected to {}", connection.getConnectionContext());
             return connection;
         }
         catch(IOException e) {
@@ -308,13 +298,9 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             finally {
                 lock.unlock();
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Open share {} in thread {}", shareName, Thread.currentThread().getName());
-            }
+            log.debug("Open share {} in thread {}", shareName, Thread.currentThread().getName());
             final DiskShareWrapper wrapper = pool.borrowObject();
-            if(log.isDebugEnabled()) {
-                log.debug("Opened share {} in thread {}", wrapper, Thread.currentThread().getName());
-            }
+            log.debug("Opened share {} in thread {}", wrapper, Thread.currentThread().getName());
             return wrapper;
         }
         catch(BackgroundException e) {
@@ -331,14 +317,10 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         try {
             final GenericObjectPool<DiskShareWrapper> pool = pools.get(shareName);
             if(null != pool) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Release share {} in thread {}", share, Thread.currentThread().getName());
-                }
+                log.debug("Release share {} in thread {}", share, Thread.currentThread().getName());
                 try {
                     pool.returnObject(share);
-                    if(log.isDebugEnabled()) {
-                        log.debug("Released share {} in thread {}", share, Thread.currentThread().getName());
-                    }
+                    log.debug("Released share {} in thread {}", share, Thread.currentThread().getName());
                 }
                 catch(IllegalStateException e) {
                     log.warn("Failure {} releasing share {}", e, share);

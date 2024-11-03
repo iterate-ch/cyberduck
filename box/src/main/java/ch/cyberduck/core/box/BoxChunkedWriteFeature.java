@@ -66,9 +66,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
                             .withOffset(status.getOffset()));
                     final String uploadSessionId = status.getParameters().get(BoxLargeUploadService.UPLOAD_SESSION_ID);
                     final String overall_length = status.getParameters().get(BoxLargeUploadService.OVERALL_LENGTH);
-                    if(log.isDebugEnabled()) {
-                        log.debug("Send range {} for file {}", range, file);
-                    }
+                    log.debug("Send range {} for file {}", range, file);
                     final HttpPut request = new HttpPut(String.format("%s/files/upload_sessions/%s", client.getBasePath(), uploadSessionId));
                     // Must not overlap with the range of a part already uploaded this session.
                     request.addHeader(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
@@ -81,9 +79,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
                             return new JSON().getContext(null).readValue(entity1.getContent(), UploadedPart.class);
                         }
                     }).getPart();
-                    if(log.isDebugEnabled()) {
-                        log.debug("Received response {} for upload of {}", response, file);
-                    }
+                    log.debug("Received response {} for upload of {}", response, file);
                     return new File().size(response.getSize()).sha1(response.getSha1()).id(response.getPartId());
                 }
                 catch(HttpResponseException e) {

@@ -56,9 +56,7 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    if(log.isInfoEnabled()) {
-                        log.info("Check for new profiles after {}", delay);
-                    }
+                    log.info("Check for new profiles after {}", delay);
                     try {
                         synchronize(ProfilesFinder.Visitor.Noop);
                     }

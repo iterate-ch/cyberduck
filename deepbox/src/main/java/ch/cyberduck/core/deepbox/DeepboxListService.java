@@ -198,9 +198,7 @@ public class DeepboxListService implements ListService {
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN)) {
-            if(log.isWarnEnabled()) {
-                log.warn("ACL {} for {} does not include {}", acl, directory, CANLISTCHILDREN);
-            }
+            log.warn("ACL {} for {} does not include {}", acl, directory, CANLISTCHILDREN);
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot download {0}", "Error"), directory.getName())).withFile(directory);
         }
     }

@@ -72,9 +72,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             // ID for the initiated multipart upload.
             final MultipartUpload multipart = session.getClient().multipartStartUpload(
                     destination.getBucketName(), destination);
-            if(log.isDebugEnabled()) {
-                log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
-            }
+            log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
             final long size = status.getLength();
             long remaining = size;
             long offset = 0;
@@ -96,9 +94,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             // could take several minutes to complete. Because a request could fail after the initial 200 OK response
             // has been sent, it is important that you check the response body to determine whether the request succeeded.
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
-            if(log.isDebugEnabled()) {
-                log.debug("Completed multipart upload for {} with checksum {}", complete.getObjectKey(), complete.getEtag());
-            }
+            log.debug("Completed multipart upload for {} with checksum {}", complete.getObjectKey(), complete.getEtag());
             return complete.getVersionId();
         }
         catch(ServiceException e) {
@@ -112,9 +108,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     private Future<MultipartPart> submit(final Path source,
                                          final MultipartUpload multipart,
                                          final int partNumber, final long offset, final long length) {
-        if(log.isInfoEnabled()) {
-            log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, source, offset, length);
-        }
+        log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, source, offset, length);
         return pool.execute(new Callable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
@@ -124,9 +118,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                     final MultipartPart part = session.getClient().multipartUploadPartCopy(multipart, partNumber,
                             bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(), containerService.getKey(source),
                             null, null, null, null, range.getStart(), range.getEnd(), source.attributes().getVersionId());
-                    if(log.isInfoEnabled()) {
-                        log.info("Received response {} for part number {}", part, partNumber);
-                    }
+                    log.info("Received response {} for part number {}", part, partNumber);
                     // Populate part with response data that is accessible via the object's metadata
                     return new MultipartPart(partNumber,
                             null == part.getLastModified() ? new Date(System.currentTimeMillis()) : part.getLastModified(),
