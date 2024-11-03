@@ -312,7 +312,7 @@ public class Profile implements Protocol {
             return Integer.parseInt(v);
         }
         catch(NumberFormatException e) {
-            log.warn(String.format("Port %s is not a number", e.getMessage()));
+            log.warn("Port {} is not a number", e.getMessage());
         }
         return parent.getDefaultPort();
     }
@@ -425,7 +425,7 @@ public class Profile implements Protocol {
             return Scheme.valueOf(v);
         }
         catch(IllegalArgumentException e) {
-            log.warn(String.format("Unknown scheme %s", v));
+            log.warn("Unknown scheme {}", v);
             return null;
         }
     }

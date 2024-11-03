@@ -67,7 +67,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
         // Defer notification until we can be sure no vault is found
         if(!canceled.get() && list.size() < filecount) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Delay chunk notification for file listing of folder %s", folder));
+                log.debug("Delay chunk notification for file listing of folder {}", folder);
             }
             try {
                 super.chunk(folder, list);
@@ -88,7 +88,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
         final Path directory = file.getParent();
         if(config.equals(file.getName()) || masterkey.equals(file.getName())) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Found vault config or masterkey file %s", file));
+                log.info("Found vault config or masterkey file {}", file);
             }
             final Vault vault = lookup.load(session, directory, masterkey, config, pepper);
             if(vault.equals(Vault.DISABLED)) {

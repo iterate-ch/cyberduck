@@ -100,12 +100,12 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 uploadUrl = preferences.getProperty(toUploadUrlPropertyKey(host, file, status));
                 if(StringUtils.isBlank(uploadUrl)) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("No previous upload URL for %s", file));
+                        log.debug("No previous upload URL for {}", file);
                     }
                     throw new NotfoundException(file.getAbsolute());
                 }
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Resume upload to %s for %s from offset %d", uploadUrl, file, status.getOffset()));
+                    log.debug("Resume upload to {} for {} from offset {}", uploadUrl, file, status.getOffset());
                 }
             }
             else {
@@ -141,7 +141,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                     }
                 });
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Save upload URL %s for %s", uploadUrl, file));
+                    log.debug("Save upload URL {} for {}", uploadUrl, file);
                 }
                 preferences.setProperty(toUploadUrlPropertyKey(host, file, status), uploadUrl);
             }
@@ -172,7 +172,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                                 final TransferStatus overall, final String uploadUrl,
                                 final long offset, final long length, final ConnectionCallback callback) throws BackgroundException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Send part of %s with offset %d and length %d", file, offset, length));
+            log.info("Send part of {} with offset {} and length {}", file, offset, length);
         }
         return ConcurrentUtils.constantFuture(new DefaultRetryCallable<>(host, new BackgroundExceptionCallable<Void>() {
             @Override
@@ -191,7 +191,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 final Void response = TusUploadFeature.this.upload(
                         file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Received response %s", response));
+                    log.info("Received response {}", response);
                 }
                 return null;
             }
@@ -205,7 +205,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         final String uploadUrl = preferences.getProperty(property);
         if(StringUtils.isBlank(uploadUrl)) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("No previous upload URL for %s", file));
+                log.debug("No previous upload URL for {}", file);
             }
             return Write.override;
         }
@@ -220,7 +220,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                             if(response.containsHeader(TUS_HEADER_UPLOAD_OFFSET)) {
                                 final Header header = response.getFirstHeader(TUS_HEADER_UPLOAD_OFFSET);
                                 if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Return offset header %s", header));
+                                    log.debug("Return offset header {}", header);
                                 }
                                 return Long.valueOf(header.getValue());
                             }

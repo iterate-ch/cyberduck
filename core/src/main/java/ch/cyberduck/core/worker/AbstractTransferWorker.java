@@ -170,7 +170,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         final Session<?> destination = this.borrow(Connection.destination);
         try {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
+                log.debug("Start transfer with prompt {} and options {}", prompt, options);
             }
             // Determine the filter to match files against
             final TransferAction action = transfer.action(source, destination, options.resumeRequested, options.reloadRequested, prompt,
@@ -181,11 +181,11 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         }
                     });
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Selected transfer action %s", action));
+                log.debug("Selected transfer action {}", action);
             }
             if(action.equals(TransferAction.cancel)) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Transfer %s canceled by user", this));
+                    log.info("Transfer {} canceled by user", this);
                 }
                 throw new TransferCanceledException();
             }
@@ -236,7 +236,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
      */
     public Future<TransferStatus> prepare(final Path file, final Local local, final TransferStatus parent, final TransferAction action) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer status of %s for transfer %s", file, this));
+            log.debug("Find transfer status of {} for transfer {}", file, this);
         }
         if(this.isCanceled()) {
             throw new TransferStatusCanceledException();
@@ -256,7 +256,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         // Only prepare the path it will be actually transferred
                         if(!filter.accept(file, local, parent)) {
                             if(log.isInfoEnabled()) {
-                                log.info(String.format("Skip file %s by filter %s for transfer %s", file, filter, this));
+                                log.info("Skip file {} by filter {} for transfer {}", file, filter, this);
                             }
                             transfer.addSize(0L);
                             transfer.addTransferred(0L);
@@ -264,7 +264,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         }
                         else {
                             if(log.isInfoEnabled()) {
-                                log.info(String.format("Accepted file %s in transfer %s", file, this));
+                                log.info("Accepted file {} in transfer {}", file, this);
                             }
                             // Transfer
                             // Determine transfer status
@@ -293,7 +293,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 }
                             }
                             if(log.isInfoEnabled()) {
-                                log.info(String.format("Determined transfer status %s of %s for transfer %s", status, file, this));
+                                log.info("Determined transfer status {} of {} for transfer {}", status, file, this);
                             }
                             return status;
                         }
@@ -306,7 +306,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         // Prompt to continue or abort for application errors
                         else if(error.prompt(new TransferItem(file, local), parent, e, table.size())) {
                             // Continue
-                            log.warn(String.format("Ignore transfer failure %s", e));
+                            log.warn("Ignore transfer failure {}", e);
                             return null;
                         }
                         else {
@@ -330,7 +330,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             });
         }
         else {
-            log.info(String.format("Skip unchecked file %s for transfer %s", file, this));
+            log.info("Skip unchecked file {} for transfer {}", file, this);
         }
         return null;
     }
@@ -356,7 +356,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         status.validate();
                         if(segment.isComplete()) {
                             if(log.isWarnEnabled()) {
-                                log.warn(String.format("Skip transferring already completed item %s", item));
+                                log.warn("Skip transferring already completed item {}", item);
                             }
                         }
                         else {
@@ -381,7 +381,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         // Recursive
                         if(item.remote.isDirectory()) {
                             if(!cache.isCached(item)) {
-                                log.warn(String.format("Missing entry for %s in cache", item));
+                                log.warn("Missing entry for {} in cache", item);
                             }
                             for(TransferItem f : cache.get(item)) {
                                 // Recursive
@@ -394,7 +394,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
                     private void transferSegment(final TransferStatus segment) throws BackgroundException {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Transfer item %s with status %s", item, segment));
+                            log.debug("Transfer item {} with status {}", item, segment);
                         }
                         final Session<?> s = borrow(Connection.source);
                         final Session<?> d = borrow(Connection.destination);
@@ -408,7 +408,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);
                             release(d, Connection.destination, e);
-                            log.warn(String.format("Failure %s transferring segment %s of %s", e, segment, item));
+                            log.warn("Failure {} transferring segment {} of {}", e, segment, item);
                             // Determine if we should retry depending on failure type
                             if(this.retry(e, progress, new TransferBackgroundActionState(status))) {
                                 final Session<?> source = borrow(Connection.source);
@@ -419,13 +419,13 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                             .withCache(new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")))
                                             .filter(source, destination, TransferAction.resume, progress);
                                     if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Ask filter %s to accept retry for segment %s of %s", resume, segment, item));
+                                        log.debug("Ask filter {} to accept retry for segment {} of {}", resume, segment, item);
                                     }
                                     if(resume.accept(
                                             segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                             segment.getRename().local != null ? segment.getRename().local : item.local, new TransferStatus().exists(true))) {
                                         if(log.isDebugEnabled()) {
-                                            log.debug(String.format("Determine status for retry of %s", segment));
+                                            log.debug("Determine status for retry of {}", segment);
                                         }
                                         final TransferStatus retry;
                                         if(segment.isSegment()) {
@@ -446,7 +446,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                         }
                                         // Retry immediately
                                         if(log.isInfoEnabled()) {
-                                            log.info(String.format("Retry segment %s of %s with status %s", segment, item, retry));
+                                            log.info("Retry segment {} of {} with status {}", segment, item, retry);
                                         }
                                         this.transferSegment(segment
                                                 .withNonces(retry.getNonces())
@@ -463,13 +463,13 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 }
                             }
                             if(log.isDebugEnabled()) {
-                                log.debug(String.format("Cancel retry for segment %s of %s", segment, item));
+                                log.debug("Cancel retry for segment {} of {}", segment, item);
                             }
                             segment.setFailure(e);
                             // Prompt to continue or abort for application errors
                             if(error.prompt(item, segment, e, table.size())) {
                                 // Continue
-                                log.warn(String.format("Ignore transfer failure %s", e));
+                                log.warn("Ignore transfer failure {}", e);
                             }
                             else {
                                 throw new TransferCanceledException(e);
@@ -500,7 +500,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         boolean complete = true;
                         for(TransferStatus segment : segments) {
                             if(!segment.await()) {
-                                log.warn(String.format("Failure to complete segment %s.", segment));
+                                log.warn("Failure to complete segment {}.", segment);
                                 complete = false;
                             }
                         }
@@ -522,7 +522,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                         }
                         else {
-                            log.warn(String.format("Skip concatenating segments for failed transfer %s", status));
+                            log.warn("Skip concatenating segments for failed transfer {}", status);
                             status.setFailure(new ConnectionCanceledException());
                         }
                     }
@@ -540,7 +540,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             });
         }
         else {
-            log.warn(String.format("Skip file %s with unknown transfer status", item));
+            log.warn("Skip file {} with unknown transfer status", item);
         }
         return ConcurrentUtils.constantFuture(null);
     }

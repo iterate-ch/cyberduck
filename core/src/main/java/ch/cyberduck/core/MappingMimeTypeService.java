@@ -39,19 +39,19 @@ public class MappingMimeTypeService implements MimeTypeService {
             final ClassLoader loader = MappingMimeTypeService.class.getClassLoader();
             final Enumeration<URL> resources = loader.getResources(MIME_FILE);
             if(!resources.hasMoreElements()) {
-                log.warn(String.format("No file %s in classpath %s", MIME_FILE, loader));
+                log.warn("No file {} in classpath {}", MIME_FILE, loader);
             }
             while(resources.hasMoreElements()) {
                 final URL url = resources.nextElement();
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Loading MIME types from %s", url));
+                    log.info("Loading MIME types from {}", url);
                 }
                 types.loadAndReplaceMimetypes(url.openStream());
                 break;
             }
         }
         catch(IOException e) {
-            log.error(String.format("Failure loading core.mime.types. %s", e.getMessage()));
+            log.error("Failure loading core.mime.types. {}", e.getMessage());
         }
     }
 

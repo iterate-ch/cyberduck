@@ -50,7 +50,7 @@ public class WriteTimestampWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Timestamp feature = session.getFeature(Timestamp.class);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
+            log.debug("Run with feature {}", feature);
         }
         final TransferStatus status = new TransferStatus()
                 .withCreated(created)

@@ -256,17 +256,17 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
     private static final class LoggingErrorHandler implements ErrorHandler {
         @Override
         public void warning(final SAXParseException e) throws SAXException {
-            log.warn(String.format("Parser warning %s", e));
+            log.warn("Parser warning {}", e);
         }
 
         @Override
         public void error(final SAXParseException e) throws SAXException {
-            log.error(String.format("Parser error %s", e));
+            log.error("Parser error {}", e);
         }
 
         @Override
         public void fatalError(final SAXParseException e) throws SAXException {
-            log.error(String.format("Fatal parser error %s", e));
+            log.error("Fatal parser error {}", e);
             throw e;
         }
     }

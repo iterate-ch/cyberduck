@@ -116,7 +116,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
             if(!handleShowingUpdate) {
                 for(Handler handler : handlers) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Notify handler %s with update %s", handler, item));
+                        log.debug("Notify handler {} with update {}", handler, item);
                     }
                     if(handler.handle(new Update(item.versionString(), item.displayVersionString()))) {
                         break;
@@ -130,7 +130,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
             if(updater.automaticallyDownloadsUpdates()) {
                 for(Handler handler : handlers) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Notify handler %s with update %s", handler, item));
+                        log.debug("Notify handler {} with update {}", handler, item);
                     }
                     if(handler.handle(new Update(item.versionString(), item.displayVersionString()))) {
                         break;
@@ -143,7 +143,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
         public void updaterWillRelaunchApplication(final SPUUpdater updater) {
             for(Handler handler : handlers) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Notify handler %s for application relaunch", handler));
+                    log.debug("Notify handler {} for application relaunch", handler);
                 }
                 handler.quit();
             }

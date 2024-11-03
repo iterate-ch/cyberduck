@@ -74,14 +74,14 @@ public class TripleCryptKeyPair {
         else {
             if(credentials.isSaved()) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Save encryption password for %s", bookmark));
+                    log.info("Save encryption password for {}", bookmark);
                 }
                 try {
                     keychain.addPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
                             toAccountName(bookmark), credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
-                    log.error(String.format("Failure %s saving credentials for %s in password store", e, bookmark));
+                    log.error("Failure {} saving credentials for {} in password store", e, bookmark);
                 }
             }
             return credentials;

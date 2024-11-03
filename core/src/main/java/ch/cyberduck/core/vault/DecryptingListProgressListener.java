@@ -55,7 +55,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     public void visit(final AttributedList<Path> list, final int index, final Path f) {
         if(skip.accept(f)) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Skip decrypting %s", f));
+                log.debug("Skip decrypting {}", f);
             }
             list.remove(index);
             return;
@@ -65,7 +65,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
             list.set(index, vault.decrypt(session, f));
         }
         catch(BackgroundException e) {
-            log.error(String.format("Failure %s decrypting %s", e, f));
+            log.error("Failure {} decrypting {}", e, f);
             list.remove(index);
         }
     }

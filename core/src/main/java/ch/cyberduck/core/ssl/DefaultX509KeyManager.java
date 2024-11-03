@@ -75,7 +75,7 @@ public class DefaultX509KeyManager extends AbstractX509KeyManager implements X50
             return _manager;
         }
         catch(CertificateException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
-            log.error(String.format("Initialization of key store failed. %s", e.getMessage()));
+            log.error("Initialization of key store failed. {}", e.getMessage());
             throw new IOException(e);
         }
     }
@@ -109,7 +109,7 @@ public class DefaultX509KeyManager extends AbstractX509KeyManager implements X50
             }
         }
         catch(IOException e) {
-            log.warn(String.format("Failure listing aliases. %s", e.getMessage()));
+            log.warn("Failure listing aliases. {}", e.getMessage());
             return Collections.emptyList();
         }
         return list;

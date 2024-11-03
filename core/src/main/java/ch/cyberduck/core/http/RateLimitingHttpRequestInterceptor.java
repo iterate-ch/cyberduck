@@ -32,11 +32,11 @@ public class RateLimitingHttpRequestInterceptor implements HttpRequestIntercepto
     @Override
     public void process(final org.apache.http.HttpRequest request, final HttpContext context) {
         if(!limiter.tryAcquire()) {
-            log.warn(String.format("Wait for rate limiting lock from %s", limiter));
+            log.warn("Wait for rate limiting lock from {}", limiter);
             // Acquires a single permit blocking until the request can be granted
             final double time = limiter.acquire();
             if(log.isInfoEnabled()) {
-                log.info(String.format("Proceed after waiting %s seconds from %s", time, limiter));
+                log.info("Proceed after waiting {} seconds from {}", time, limiter);
             }
         }
     }

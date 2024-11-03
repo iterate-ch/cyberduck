@@ -44,12 +44,12 @@ public class AttributesWorker extends Worker<PathAttributes> {
     @Override
     public PathAttributes run(final Session<?> session) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Read latest attributes for file %s", file));
+            log.debug("Read latest attributes for file {}", file);
         }
         final AttributesFinder find = new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class));
         final PathAttributes attr = find.find(file);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Return %s for file %s", attr, file));
+            log.debug("Return {} for file {}", attr, file);
         }
         return attr;
     }

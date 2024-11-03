@@ -33,7 +33,7 @@ public class BrickCredentialsConfigurator implements CredentialsConfigurator {
         if(StringUtils.isBlank(host.getCredentials().getToken())) {
             final Credentials credentials = new Credentials(host.getCredentials());
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Set new random token for %s", host));
+                log.debug("Set new random token for {}", host);
             }
             credentials.setToken(new AlphanumericRandomStringService().random());
             return credentials;

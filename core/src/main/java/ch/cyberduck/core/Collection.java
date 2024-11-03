@@ -73,7 +73,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         final List<E> temporary = new ArrayList<>();
         for(E item : c) {
             if(temporary.contains(item)) {
-                log.warn(String.format("Skip adding duplicate %s", item));
+                log.warn("Skip adding duplicate {}", item);
                 continue;
             }
             temporary.add(item);
@@ -92,7 +92,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         final List<E> temporary = new ArrayList<>();
         for(E item : c) {
             if(temporary.contains(item)) {
-                log.warn(String.format("Skip adding duplicate %s", item));
+                log.warn("Skip adding duplicate {}", item);
                 continue;
             }
             temporary.add(item);
@@ -109,7 +109,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public boolean add(E item) {
         if(this.contains(item)) {
-            log.warn(String.format("Skip adding duplicate %s", item));
+            log.warn("Skip adding duplicate {}", item);
             return false;
         }
         if(super.add(item)) {
@@ -122,7 +122,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public void add(int row, E item) {
         if(this.contains(item)) {
-            log.warn(String.format("Skip adding duplicate %s", item));
+            log.warn("Skip adding duplicate {}", item);
             return;
         }
         super.add(row, item);

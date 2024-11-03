@@ -63,7 +63,7 @@ public class GraphMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(status.isExists()) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
+                log.warn("Delete file {} to be replaced with {}", renamed, file);
             }
             delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
         }

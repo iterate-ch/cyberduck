@@ -164,11 +164,11 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
         public void close() throws IOException {
             try {
                 if(close.get()) {
-                    log.warn(String.format("Skip double close of stream %s", this));
+                    log.warn("Skip double close of stream {}", this);
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
+                    log.warn("Skip closing with previous failure {}", canceled.get());
                     return;
                 }
                 if(null == ref) {
@@ -187,7 +187,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                         throw new IOException(e.getMessage(), new BrickExceptionMappingService().map("Upload {0} failed", e, file));
                     }
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Completed multipart upload for %s", file));
+                        log.debug("Completed multipart upload for {}", file);
                     }
                 }
             }

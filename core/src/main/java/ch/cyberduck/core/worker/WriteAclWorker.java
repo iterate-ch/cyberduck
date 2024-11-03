@@ -77,7 +77,7 @@ public class WriteAclWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final AclPermission feature = session.getFeature(AclPermission.class);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
+            log.debug("Run with feature {}", feature);
         }
         for(Path file : files) {
             this.write(session, feature, file);

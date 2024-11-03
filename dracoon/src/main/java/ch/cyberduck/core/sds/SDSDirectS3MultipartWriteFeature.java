@@ -106,7 +106,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                     .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("upload started for %s with response %s", file, createFileUploadResponse));
+                log.debug("upload started for {} with response {}", file, createFileUploadResponse);
             }
             final MultipartOutputStream proxy = new MultipartOutputStream(createFileUploadResponse, file, status);
             return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, partsize),
@@ -174,12 +174,12 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                                             // Upload complete
                                             if(response.containsHeader("ETag")) {
                                                 if(log.isInfoEnabled()) {
-                                                    log.info(String.format("Received response %s for part number %d", response, partNumber));
+                                                    log.info("Received response {} for part number {}", response, partNumber);
                                                 }
                                                 return Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
                                             }
                                             else {
-                                                log.error(String.format("Missing ETag in response %s", response));
+                                                log.error("Missing ETag in response {}", response);
                                                 throw new InteroperabilityException(response.getStatusLine().getReasonPhrase());
                                             }
                                         default:
@@ -225,7 +225,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
         public void close() throws IOException {
             try {
                 if(close.get()) {
-                    log.warn(String.format("Skip double close of stream %s", this));
+                    log.warn("Skip double close of stream {}", this);
                     return;
                 }
                 if(null != canceled.get()) {
@@ -249,7 +249,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                 completed.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
                         new S3FileUploadPart().partEtag(value.hash).partNumber(key)));
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Complete file upload with %s for %s", completeS3FileUploadRequest, file));
+                    log.debug("Complete file upload with {} for {}", completeS3FileUploadRequest, file);
                 }
                 new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                 // Polling

@@ -107,7 +107,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                             request.addHeader(new BasicHeader(HttpHeaders.IF_MATCH, status.getRemote().getETag()));
                         }
                         else {
-                            log.warn(String.format("Missing remote attributes in transfer status to read current ETag for %s", file));
+                            log.warn("Missing remote attributes in transfer status to read current ETag for {}", file);
                         }
                     }
                     final Files files = session.getClient().execute(request, new BoxClientErrorResponseHandler<Files>() {
@@ -117,7 +117,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                         }
                     });
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Received response %s for upload of %s", files, file));
+                        log.debug("Received response {} for upload of {}", files, file);
                     }
                     if(files.getEntries().stream().findFirst().isPresent()) {
                         return files.getEntries().stream().findFirst().get();

@@ -58,7 +58,7 @@ public class ProgressAlertController extends AlertController {
     @Override
     public void loadBundle() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Load alert for message %s", message));
+            log.debug("Load alert for message {}", message);
         }
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);

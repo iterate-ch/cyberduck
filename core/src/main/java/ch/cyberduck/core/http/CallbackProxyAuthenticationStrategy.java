@@ -119,7 +119,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                                 break;
                         }
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Use provider %s for challenge %s", provider, challenge));
+                            log.debug("Use provider {} for challenge {}", provider, challenge);
                         }
                         final AuthScheme authScheme = provider.create(context);
                         authScheme.processChallenge(challenge);
@@ -129,7 +129,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                             authScheme.getRealm(),
                             authScheme.getSchemeName());
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Add authentication options for scheme %s", authPrefs));
+                            log.debug("Add authentication options for scheme {}", authPrefs);
                         }
                         options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(
                             null == clientContext.getCredentialsProvider() ? new BasicCredentialsProvider() : clientContext.getCredentialsProvider()).getCredentials(authScope)));
@@ -169,7 +169,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             return options;
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Authentication schemes in the order of preference: %s", authPrefs));
+            log.debug("Authentication schemes in the order of preference: {}", authPrefs);
         }
         for(final String id : authPrefs) {
             final Header challenge = challenges.get(id.toLowerCase(Locale.ROOT));
@@ -185,7 +185,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             }
             else {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Challenge for %s authentication scheme not available", id));
+                    log.debug("Challenge for {} authentication scheme not available", id);
                     // Try again
                 }
             }
@@ -200,7 +200,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
         if(null != credentials) {
             clientContext.removeAttribute(PROXY_CREDENTIALS_INPUT_ID);
             if(log.isInfoEnabled()) {
-                log.info(String.format("Save passphrase for proxy %s", authhost));
+                log.info("Save passphrase for proxy {}", authhost);
             }
             keychain.addCredentials(authhost.toURI(), credentials.getUsername(), credentials.getPassword());
         }

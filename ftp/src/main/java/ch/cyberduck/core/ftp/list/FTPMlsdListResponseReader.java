@@ -55,7 +55,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
         for(String line : replies) {
             final Map<String, Map<String, String>> file = this.parseFacts(line);
             if(null == file) {
-                log.error(String.format("Error parsing line %s", line));
+                log.error("Error parsing line {}", line);
                 continue;
             }
             for(Map.Entry<String, Map<String, String>> f : file.entrySet()) {
@@ -71,7 +71,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                 // charset    -- Character set per IANA registry (if not UTF-8)
                 final Map<String, String> facts = f.getValue();
                 if(!facts.containsKey("type")) {
-                    log.error(String.format("No type fact in line %s", line));
+                    log.error("No type fact in line {}", line);
                     continue;
                 }
                 final Path parsed;
@@ -95,17 +95,17 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                         }
                     }
                     else {
-                        log.warn(String.format("Missing symbolic link target for type %s in line %s", facts.get("type"), line));
+                        log.warn("Missing symbolic link target for type {} in line {}", facts.get("type"), line);
                         continue;
                     }
                 }
                 else {
-                    log.warn(String.format("Ignored type %s in line %s", facts.get("type"), line));
+                    log.warn("Ignored type {} in line {}", facts.get("type"), line);
                     continue;
                 }
                 if(!success) {
                     if(parsed.isDirectory() && directory.getName().equals(name)) {
-                        log.warn(String.format("Possibly bogus response line %s", line));
+                        log.warn("Possibly bogus response line {}", line);
                     }
                     else {
                         success = true;
@@ -113,7 +113,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                 }
                 if(name.equals(".") || name.equals("..")) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Skip %s", name));
+                        log.debug("Skip {}", name);
                     }
                     continue;
                 }
@@ -190,16 +190,16 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
             return parsed.getTime();
         }
         catch(InvalidDateException e) {
-            log.warn("Failed to parse timestamp:" + e.getMessage());
+            log.warn("Failed to parse timestamp:{}", e.getMessage());
             try {
                 final Date parsed = new MDTMMillisecondsDateFormatter().parse(timestamp);
                 return parsed.getTime();
             }
             catch(InvalidDateException f) {
-                log.warn("Failed to parse timestamp:" + f.getMessage());
+                log.warn("Failed to parse timestamp:{}", f.getMessage());
             }
         }
-        log.error(String.format("Failed to parse timestamp %s", timestamp));
+        log.error("Failed to parse timestamp {}", timestamp);
         return -1;
     }
 
@@ -257,7 +257,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
             file.put(filename, facts);
             return file;
         }
-        log.warn(String.format("No match for %s", line));
+        log.warn("No match for {}", line);
         return null;
     }
 

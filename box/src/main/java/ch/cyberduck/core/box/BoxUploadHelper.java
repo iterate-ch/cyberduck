@@ -124,7 +124,7 @@ public class BoxUploadHelper {
                     request.addHeader(new BasicHeader(HttpHeaders.IF_MATCH, overall.getRemote().getETag()));
                 }
                 else {
-                    log.warn(String.format("Missing remote attributes in transfer status to read current ETag for %s", file));
+                    log.warn("Missing remote attributes in transfer status to read current ETag for {}", file);
                 }
             }
             return session.getClient().execute(request, new BoxClientErrorResponseHandler<Files>() {
@@ -132,7 +132,7 @@ public class BoxUploadHelper {
                 public Files handleResponse(final HttpResponse response) throws IOException {
                     if(response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Wait for server to process chunks with response %s", response));
+                            log.debug("Wait for server to process chunks with response {}", response);
                         }
                         this.flush(file, response, uploadSessionId);
                         return session.getClient().execute(request, this);
@@ -154,8 +154,7 @@ public class BoxUploadHelper {
                         final HttpGet request = new HttpGet(String.format("%s/files/upload_sessions/%s", client.getBasePath(), uploadSessionId));
                         uploadSession = new JSON().getContext(null).readValue(session.getClient().execute(request).getEntity().getContent(), UploadSession.class);
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Server processed %d of %d parts",
-                                    uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts()));
+                            log.debug("Server processed {} of {} parts", uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts());
                         }
                     }
                     while(!Objects.equals(uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts()));

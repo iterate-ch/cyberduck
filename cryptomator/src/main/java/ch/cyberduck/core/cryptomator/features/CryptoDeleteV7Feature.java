@@ -67,13 +67,13 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                             EnumSet.of(AbstractPath.Type.file));
                     try {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Deleting directory id backup file %s", backup));
+                            log.debug("Deleting directory id backup file {}", backup);
                         }
                         proxy.delete(Collections.singletonList(backup), prompt, callback);
                     }
                     catch(NotfoundException | AccessDeniedException e) {
                         if(log.isDebugEnabled()) {
-                            log.error(String.format("Failure %s deleting directory id backup file %s", e, encrypt));
+                            log.error("Failure {} deleting directory id backup file {}", e, encrypt);
                         }
                     }
                 }
@@ -82,7 +82,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                 }
                 catch(NotfoundException | AccessDeniedException e) {
                     if(f.isDirectory()) {
-                        log.error(String.format("Failure %s deleting directory %s", e, encrypt));
+                        log.error("Failure {} deleting directory {}", e, encrypt);
                     }
                     else {
                         throw e;
@@ -92,12 +92,12 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                 if(f.isDirectory()) {
                     final Path metadataFile = new Path(metadata, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file));
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add metadata file %s", metadataFile));
+                        log.debug("Add metadata file {}", metadataFile);
                     }
                     metadataFiles.add(metadataFile);
                     metadataFiles.add(metadata);
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add metadata folder %s", metadata));
+                        log.debug("Add metadata folder {}", metadata);
                     }
                     vault.getDirectoryProvider().delete(f);
                 }
@@ -105,7 +105,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                     filenameProvider.invalidate(filenameProvider.inflate(session, metadata.getName()));
                     final Path metadataFile = filenameProvider.resolve(metadata.getName());
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add metadata file %s", metadata));
+                        log.debug("Add metadata file {}", metadata);
                     }
                     metadataFiles.add(metadataFile);
                 }
@@ -115,13 +115,13 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                     proxy.delete(metadataFiles, prompt, callback);
                 }
                 catch(NotfoundException e) {
-                    log.error(String.format("Failure %s deleting file %s", e, metadataFiles));
+                    log.error("Failure {} deleting file {}", e, metadataFiles);
                 }
             }
         }
         for(Path f : files.keySet()) {
             if(f.equals(vault.getHome())) {
-                log.warn(String.format("Recursively delete vault %s", f));
+                log.warn("Recursively delete vault {}", f);
                 final List<Path> metadata = new ArrayList<>();
                 if(!proxy.isRecursive()) {
                     final Find find = session._getFeature(Find.class);

@@ -92,7 +92,7 @@ public abstract class Session<C> implements TranscriptListener {
 
     public Session<?> withListener(final TranscriptListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Add listener %s", listener));
+            log.debug("Add listener {}", listener);
         }
         listeners.add(listener);
         return this;
@@ -144,13 +144,13 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public C open(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback login, final CancelCallback cancel) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Connection will open to %s", host));
+            log.debug("Connection will open to {}", host);
         }
         // Update status flag
         state = State.opening;
         client = this.connect(proxy, key, login, cancel);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Connection did open to %s", host));
+            log.debug("Connection did open to {}", host);
         }
         // Update status flag
         state = State.open;
@@ -172,7 +172,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public void close() throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Connection will close to %s", host));
+            log.debug("Connection will close to {}", host);
         }
         try {
             switch(state) {
@@ -185,7 +185,7 @@ public abstract class Session<C> implements TranscriptListener {
         finally {
             state = State.closed;
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Connection did close to %s", host));
+                log.debug("Connection did close to {}", host);
             }
         }
     }
@@ -201,7 +201,7 @@ public abstract class Session<C> implements TranscriptListener {
         finally {
             state = State.closed;
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Connection did close to %s", host));
+                log.debug("Connection did close to {}", host);
             }
         }
     }

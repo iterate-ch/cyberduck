@@ -78,7 +78,7 @@ public class B2ObjectListService implements ListService {
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("List directory %s with marker %s", directory, marker));
+                    log.debug("List directory {} with marker {}", directory, marker);
                 }
                 final B2ListFilesResponse response;
                 if(versioning.isEnabled()) {
@@ -106,7 +106,7 @@ public class B2ObjectListService implements ListService {
             while(marker.hasNext());
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("No placeholder found for directory %s", directory));
+                    log.warn("No placeholder found for directory {}", directory);
                 }
                 throw new NotfoundException(directory.getAbsolute());
             }
@@ -134,7 +134,7 @@ public class B2ObjectListService implements ListService {
             }
             if(directory.isFile()) {
                 if(!StringUtils.equals(directory.getName(), PathNormalizer.name(info.getFileName()))) {
-                    log.warn(String.format("Skip %s not matching %s", info, directory.getName()));
+                    log.warn("Skip {} not matching {}", info, directory.getName());
                     continue;
                 }
             }

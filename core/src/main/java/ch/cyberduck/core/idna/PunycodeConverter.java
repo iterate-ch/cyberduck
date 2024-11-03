@@ -48,7 +48,7 @@ public class PunycodeConverter {
                 final String idn = IDN.toASCII(StringUtils.strip(hostname));
                 if(log.isDebugEnabled()) {
                     if(!StringUtils.equals(StringUtils.strip(hostname), idn)) {
-                        log.debug(String.format("IDN hostname for %s is %s", hostname, idn));
+                        log.debug("IDN hostname for {} is {}", hostname, idn);
                     }
                 }
                 if(StringUtils.isNotEmpty(idn)) {

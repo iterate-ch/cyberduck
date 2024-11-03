@@ -1971,7 +1971,7 @@ public class InfoController extends ToolbarWindowController {
                             transferAcceleration = session.getFeature(TransferAcceleration.class).getStatus(file);
                         }
                         catch(InteroperabilityException | ConflictException e) {
-                            log.warn(String.format("Ignore failure %s reading transfer acceleration", e));
+                            log.warn("Ignore failure {} reading transfer acceleration", e);
                             // 405 The specified method is not allowed against this resource
                         }
                     }
@@ -2297,7 +2297,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
         }
-        log.warn(String.format("Invalid octal field input %s", octalField.stringValue()));
+        log.warn("Invalid octal field input {}", octalField.stringValue());
         return null;
     }
 

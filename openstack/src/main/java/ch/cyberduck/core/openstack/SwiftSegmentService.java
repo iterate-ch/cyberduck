@@ -103,7 +103,7 @@ public class SwiftSegmentService {
                         segment.attributes().setModificationDate(dateParser.parse(s.getLastModified()).getTime());
                     }
                     catch(InvalidDateException e) {
-                        log.warn(String.format("%s is not ISO 8601 format %s", s.getLastModified(), e.getMessage()));
+                        log.warn("{} is not ISO 8601 format {}", s.getLastModified(), e.getMessage());
                     }
                     if(StringUtils.isNotBlank(s.getMd5sum())) {
                         segment.attributes().setChecksum(Checksum.parse(s.getMd5sum()));

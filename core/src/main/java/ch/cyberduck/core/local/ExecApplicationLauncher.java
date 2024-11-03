@@ -43,7 +43,7 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
             return true;
         }
         catch(IOException e) {
-            log.warn(String.format("Failure launching application %s", e.getMessage()));
+            log.warn("Failure launching application {}", e.getMessage());
             return false;
         }
     }
@@ -60,7 +60,7 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
                         return true;
                     }
                     catch(InterruptedException e) {
-                        log.warn(String.format("Failure waiting for application %s to exit", process));
+                        log.warn("Failure waiting for application {} to exit", process);
                         return false;
                     }
                 }
@@ -68,7 +68,7 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
             return true;
         }
         catch(IOException e) {
-            log.warn(String.format("Failure launching application %s", e.getMessage()));
+            log.warn("Failure launching application {}", e.getMessage());
             return false;
         }
     }
@@ -80,7 +80,7 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
             return true;
         }
         catch(IOException e) {
-            log.warn(String.format("Failure launching application %s", e.getMessage()));
+            log.warn("Failure launching application {}", e.getMessage());
             return false;
         }
     }

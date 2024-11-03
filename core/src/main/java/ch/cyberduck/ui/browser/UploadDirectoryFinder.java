@@ -46,7 +46,7 @@ public class UploadDirectoryFinder implements DirectoryFinder {
         }
         final Local directory = LocalFactory.get(preferences.getProperty("local.user.home"));
         if(log.isInfoEnabled()) {
-            log.info(String.format("Suggest default upload folder %s for bookmark %s", directory, bookmark));
+            log.info("Suggest default upload folder {} for bookmark {}", directory, bookmark);
         }
         return directory;
 
@@ -58,7 +58,7 @@ public class UploadDirectoryFinder implements DirectoryFinder {
             return;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Save default upload folder %s for bookmark %s", directory, bookmark));
+            log.info("Save default upload folder {} for bookmark {}", directory, bookmark);
         }
         bookmark.setUploadFolder(directory);
         if(collection.contains(bookmark)) {

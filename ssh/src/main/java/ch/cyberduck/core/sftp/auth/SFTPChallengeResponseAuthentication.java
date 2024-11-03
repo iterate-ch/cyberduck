@@ -58,7 +58,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
     @Override
     public Boolean authenticate(final Host bookmark, final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using challenge response authentication for %s", bookmark));
+            log.debug("Login using challenge response authentication for {}", bookmark);
         }
         final AtomicBoolean canceled = new AtomicBoolean();
         final AtomicBoolean publickey = new AtomicBoolean();
@@ -81,7 +81,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                 @Override
                 public void init(final Resource resource, final String name, final String instruction) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Initialize with name '%s' and instruction '%s'", name, instruction));
+                        log.debug("Initialize with name '{}' and instruction '{}'", name, instruction);
                     }
                     if(StringUtils.isNotBlank(instruction)) {
                         this.instruction = instruction;
@@ -94,19 +94,18 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                 @Override
                 public char[] getResponse(final String prompt, final boolean echo) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Reply to challenge name '%s' with instruction '%s' and prompt '%s'",
-                                name, instruction, prompt));
+                        log.debug("Reply to challenge name '{}' with instruction '{}' and prompt '{}'", name, instruction, prompt);
                     }
                     if(!flag.get() && DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Prompt '%s' matches %s", prompt, DEFAULT_PROMPT_PATTERN));
+                            log.debug("Prompt '{}' matches {}", prompt, DEFAULT_PROMPT_PATTERN);
                         }
                         if(StringUtils.isNotBlank(credentials.getPassword())) {
                             flag.set(true);
                             return credentials.getPassword().toCharArray();
                         }
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Prompt for password input with %s", callback));
+                            log.debug("Prompt for password input with {}", callback);
                         }
                         try {
                             final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
@@ -134,7 +133,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                     }
                     else {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Prompt for additional credentials with prompt %s", prompt));
+                            log.debug("Prompt for additional credentials with prompt {}", prompt);
                         }
                         final StringAppender message = new StringAppender().append(instruction).append(prompt);
                         // Properly handle an instruction field with embedded newlines.  They should also

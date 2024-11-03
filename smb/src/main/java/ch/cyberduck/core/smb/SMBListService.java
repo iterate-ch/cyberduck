@@ -64,7 +64,7 @@ public class SMBListService implements ListService {
                 final String filename = f.getFileName();
                 if(filename.equals(".") || filename.equals("..")) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Skip %s", f.getFileName()));
+                        log.debug("Skip {}", f.getFileName());
                     }
                     continue;
                 }

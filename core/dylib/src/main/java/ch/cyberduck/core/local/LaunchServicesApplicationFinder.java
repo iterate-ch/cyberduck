@@ -141,7 +141,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             else {
                 final NSBundle bundle = NSBundle.bundleWithPath(path);
                 if(null == bundle) {
-                    log.error(String.format("Loading bundle %s failed", path));
+                    log.error("Loading bundle {} failed", path);
                     defaultApplicationCache.put(extension, Application.notfound);
                 }
                 else {
@@ -164,7 +164,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             return applicationNameCache.get(search);
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find application for %s", search));
+            log.debug("Find application for {}", search);
         }
         final String identifier;
         final String name;
@@ -174,27 +174,27 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                 path = workspace.absolutePathForAppBundleWithIdentifier(search);
             }
             else {
-                log.warn(String.format("Cannot determine installation path for bundle identifier %s. Try with name.", search));
+                log.warn("Cannot determine installation path for bundle identifier {}. Try with name.", search);
                 path = workspace.fullPathForApplication(search);
             }
             if(StringUtils.isNotBlank(path)) {
                 final NSBundle app = NSBundle.bundleWithPath(path);
                 if(null == app) {
-                    log.error(String.format("Loading bundle %s failed", path));
+                    log.error("Loading bundle {} failed", path);
                     identifier = search;
                     name = FilenameUtils.removeExtension(new FinderLocal(path).getDisplayName());
                 }
                 else {
                     NSDictionary dict = app.infoDictionary();
                     if(null == dict) {
-                        log.error(String.format("Loading application dictionary for bundle %s failed", path));
+                        log.error("Loading application dictionary for bundle {} failed", path);
                         applicationNameCache.put(search, Application.notfound);
                         return null;
                     }
                     else {
                         final NSObject bundlename = dict.objectForKey("CFBundleName");
                         if(null == bundlename) {
-                            log.warn(String.format("No CFBundleName in bundle %s", path));
+                            log.warn("No CFBundleName in bundle {}", path);
                             name = FilenameUtils.removeExtension(new FinderLocal(path).getDisplayName());
                         }
                         else {
@@ -202,7 +202,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                         }
                         final NSObject bundleIdentifier = dict.objectForKey("CFBundleIdentifier");
                         if(null == bundleIdentifier) {
-                            log.warn(String.format("No CFBundleName in bundle %s", path));
+                            log.warn("No CFBundleName in bundle {}", path);
                             identifier = search;
                         }
                         else {
@@ -213,7 +213,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                 }
             }
             else {
-                log.warn(String.format("Cannot determine installation path for %s", search));
+                log.warn("Cannot determine installation path for {}", search);
                 applicationNameCache.put(search, Application.notfound);
                 return Application.notfound;
             }

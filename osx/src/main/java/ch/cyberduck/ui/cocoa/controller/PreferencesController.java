@@ -426,7 +426,7 @@ public class PreferencesController extends ToolbarWindowController {
                     }
                 }
                 else {
-                    log.error(String.format("Loading bundle %s failed", path));
+                    log.error("Loading bundle {} failed", path);
                 }
             }
         }
@@ -732,7 +732,7 @@ public class PreferencesController extends ToolbarWindowController {
             p = new Permission(preferences.getInteger("queue.upload.permissions.folder.default"));
         }
         if(null == p) {
-            log.error("No selected item for:" + sender);
+            log.error("No selected item for:{}", sender);
             return;
         }
         Permission.Action ownerPerm = p.getUser();
@@ -772,7 +772,7 @@ public class PreferencesController extends ToolbarWindowController {
             p = new Permission(preferences.getInteger("queue.download.permissions.folder.default"));
         }
         if(null == p) {
-            log.error("No selected item for:" + sender);
+            log.error("No selected item for:{}", sender);
             return;
         }
         Permission.Action ownerPerm = p.getUser();
@@ -2004,7 +2004,7 @@ public class PreferencesController extends ToolbarWindowController {
         }
         else {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
+                log.debug("Default Protocol Handler for {}:{}", protocol, defaultHandler);
             }
             for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol.name())) {
                 defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
@@ -2182,7 +2182,7 @@ public class PreferencesController extends ToolbarWindowController {
         final String feed = preferences.getProperty("update.feed");
         NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
         if(-1 == selected.intValue()) {
-            log.warn(String.format("Invalid feed setting %s", feed));
+            log.warn("Invalid feed setting {}", feed);
             this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject("release"));
         }
         else {
@@ -2478,7 +2478,7 @@ public class PreferencesController extends ToolbarWindowController {
                     final Local file = LocalFactory.get(LogDirectoryFinderFactory.get().find().getAbsolute(), String.format("%s.log", StringUtils.replaceChars(StringUtils.lowerCase(
                             preferences.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
                     if(!RevealServiceFactory.get().reveal(file)) {
-                        log.warn(String.format("Failure reveal log file %s", file));
+                        log.warn("Failure reveal log file {}", file);
                     }
                 }
                 finally {

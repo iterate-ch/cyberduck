@@ -109,7 +109,7 @@ public class FileBuffer implements Buffer {
                 }
             }
             catch(IOException e) {
-                log.warn(String.format("Failure truncating file %s to %d", temporary, length));
+                log.warn("Failure truncating file {} to {}", temporary, length);
             }
         }
     }
@@ -124,7 +124,7 @@ public class FileBuffer implements Buffer {
                 }
             }
             catch(IOException e) {
-                log.error(String.format("Failure closing buffer %s", this));
+                log.error("Failure closing buffer {}", this);
             }
             finally {
                 try {
@@ -132,7 +132,7 @@ public class FileBuffer implements Buffer {
                     file = null;
                 }
                 catch(AccessDeniedException | NotfoundException e) {
-                    log.warn(String.format("Failure removing temporary file %s for buffer %s. Schedule for delete on exit.", temporary, this));
+                    log.warn("Failure removing temporary file {} for buffer {}. Schedule for delete on exit.", temporary, this);
                     Paths.get(temporary.getAbsolute()).toFile().deleteOnExit();
                 }
             }

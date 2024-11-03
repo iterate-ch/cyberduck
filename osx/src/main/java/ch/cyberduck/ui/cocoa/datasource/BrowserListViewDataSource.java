@@ -47,7 +47,7 @@ public class BrowserListViewDataSource extends BrowserTableDataSource implements
     public void render(final NSTableView view, final List<Path> folders) {
         super.render(view, folders);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Reload table view %s for changes files %s", view, folders));
+            log.debug("Reload table view {} for changes files {}", view, folders);
         }
         view.reloadData();
     }

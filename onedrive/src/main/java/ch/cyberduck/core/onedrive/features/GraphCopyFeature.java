@@ -63,7 +63,7 @@ public class GraphCopyFeature implements Copy {
         }
         if(status.isExists()) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                log.warn("Delete file {} to be replaced with {}", target, file);
             }
             new GraphDeleteFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
@@ -71,10 +71,10 @@ public class GraphCopyFeature implements Copy {
         copyOperation.copy(targetItem);
         final DriveItem item = session.getItem(file);
         try {
-            Files.copy(item, copyOperation).await(statusObject -> log.info(String.format("Copy Progress Operation %s progress %f status %s",
+            Files.copy(item, copyOperation).await(statusObject -> log.info("Copy Progress Operation {} progress {} status {}",
                 statusObject.getOperation(),
                 statusObject.getPercentage(),
-                statusObject.getStatus())));
+                statusObject.getStatus()));
             listener.sent(status.getLength());
             target.attributes().setFileId(null);
             final PathAttributes attr = attributes.find(target);

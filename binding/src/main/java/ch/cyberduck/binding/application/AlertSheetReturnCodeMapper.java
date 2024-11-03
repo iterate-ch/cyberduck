@@ -46,7 +46,7 @@ public final class AlertSheetReturnCodeMapper {
             case NSAlert.NSAlertThirdButtonReturn:
                 return SheetCallback.ALTERNATE_OPTION;
         }
-        log.warn(String.format("Unknown return code %d", option));
+        log.warn("Unknown return code {}", option);
         return SheetCallback.DEFAULT_OPTION;
     }
 

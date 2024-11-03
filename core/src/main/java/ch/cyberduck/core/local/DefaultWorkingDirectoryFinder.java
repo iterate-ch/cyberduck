@@ -31,7 +31,7 @@ public class DefaultWorkingDirectoryFinder implements WorkingDirectoryFinder {
     public Local find() {
         final Local folder = LocalFactory.get(System.getProperty("user.dir"));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Determined folder %s as working directory", folder));
+            log.debug("Determined folder {} as working directory", folder);
         }
         return folder;
     }

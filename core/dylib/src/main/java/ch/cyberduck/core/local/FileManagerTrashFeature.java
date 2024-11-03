@@ -32,7 +32,7 @@ public class FileManagerTrashFeature implements Trash {
     @Override
     public void trash(final Local file) throws LocalAccessDeniedException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Move %s to Trash", file));
+            log.debug("Move {} to Trash", file);
         }
         final ObjCObjectByReference error = new ObjCObjectByReference();
         if(!NSFileManager.defaultManager().trashItemAtURL_resultingItemURL_error(

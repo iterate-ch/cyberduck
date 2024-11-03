@@ -121,7 +121,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                                 final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus overall, final String uploadSessionId, final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Submit %s to queue with offset %d and length %d", file, offset, length));
+            log.info("Submit {} to queue with offset {} and length {}", file, offset, length);
         }
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Part>() {
@@ -142,7 +142,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 final File response = BoxLargeUploadService.this.upload(
                         file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Received response %s for part %d", response, partNumber));
+                    log.info("Received response {} for part {}", response, partNumber);
                 }
                 return new Part(response, status);
             }

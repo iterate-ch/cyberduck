@@ -65,13 +65,13 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                     // Workaround for #2410. STAT only returns ls of directory itself
                     // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
                     if(directory.getName().equals(name)) {
-                        log.warn(String.format("Skip %s matching parent directory name", f.getName()));
+                        log.warn("Skip {} matching parent directory name", f.getName());
                         continue;
                     }
                     if(name.contains(String.valueOf(Path.DELIMITER))) {
                         if(!name.startsWith(directory.getAbsolute() + Path.DELIMITER)) {
                             // Workaround for #2434.
-                            log.warn(String.format("Skip %s with delimiter in name", name));
+                            log.warn("Skip {} with delimiter in name", name);
                             continue;
                         }
                     }
@@ -80,7 +80,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
             success = true;
             if(name.equals(".") || name.equals("..")) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Skip %s", f.getName()));
+                    log.debug("Skip {}", f.getName());
                 }
                 continue;
             }
@@ -91,7 +91,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                     // Symbolic link target may be an absolute or relative path
                     final String target = f.getLink();
                     if(StringUtils.isBlank(target)) {
-                        log.warn(String.format("Missing symbolic link target for %s", parsed));
+                        log.warn("Missing symbolic link target for {}", parsed);
                         final EnumSet<Path.Type> type = parsed.getType();
                         type.remove(Path.Type.symboliclink);
                     }

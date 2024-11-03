@@ -42,7 +42,7 @@ public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter>
                 constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, timezone.getClass());
             }
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", timezone.getClass()));
+                log.warn("No matching constructor for parameter {}", timezone.getClass());
                 // Call default constructor for disabled implementations
                 return clazz.getDeclaredConstructor().newInstance();
             }

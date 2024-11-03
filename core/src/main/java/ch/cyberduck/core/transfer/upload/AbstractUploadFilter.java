@@ -114,7 +114,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Prepare %s", file));
+            log.debug("Prepare {}", file);
         }
         final TransferStatus status = new TransferStatus()
                 .hidden(!hidden.accept(file))
@@ -162,7 +162,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                                 file.getName(), new AlphanumericRandomStringService().random()), file.getType());
                 if(feature.isSupported(file, renamed)) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Set temporary filename %s", renamed));
+                        log.debug("Set temporary filename {}", renamed);
                     }
                     // Set target name after transfer
                     status.withRename(renamed).withDisplayname(file);
@@ -171,7 +171,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     // Keep exist flag for subclasses to determine additional rename strategy
                 }
                 else {
-                    log.warn(String.format("Cannot use temporary filename for upload with missing rename support for %s", file));
+                    log.warn("Cannot use temporary filename for upload with missing rename support for {}", file);
                 }
             }
             status.withMime(new MappingMimeTypeService().getMime(file.getName()));
@@ -313,7 +313,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                             if(feature != null && feature.getConfiguration(file).isEnabled()) {
                                 if(feature.save(file)) {
                                     if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Clear exist flag for file %s", file));
+                                        log.debug("Clear exist flag for file {}", file);
                                     }
                                     status.exists(false).getDisplayname().exists(false);
                                 }
@@ -324,7 +324,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(status.getRename().remote != null) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Clear exist flag for file %s", local));
+                log.debug("Clear exist flag for file {}", local);
             }
             // Reset exist flag after subclass hae applied strategy
             status.setExists(false);
@@ -335,7 +335,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     public void complete(final Path file, final Local local,
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
+            log.debug("Complete {} with status {}", file.getAbsolute(), status);
         }
         if(status.isComplete()) {
             if(!Permission.EMPTY.equals(status.getPermission())) {
@@ -386,7 +386,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(status.getDisplayname().remote != null) {
                     final Move move = session.getFeature(Move.class);
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Rename file %s to %s", file, status.getDisplayname().remote));
+                        log.info("Rename file {} to {}", file, status.getDisplayname().remote);
                     }
                     move.move(file, status.getDisplayname().remote, new TransferStatus(status).exists(status.getDisplayname().exists),
                             new Delete.DisabledCallback(), new DisabledConnectionCallback());

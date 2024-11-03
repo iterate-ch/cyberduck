@@ -95,7 +95,7 @@ public class EditOpenWorker extends Worker<Transfer> {
     @Override
     public Transfer run(final Session<?> session) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run edit action for editor %s", file));
+            log.debug("Run edit action for editor {}", file);
         }
         // Delete any existing file which might be used by a watch editor already
         final TransferOptions options = new TransferOptions();
@@ -105,7 +105,7 @@ public class EditOpenWorker extends Worker<Transfer> {
                 listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
         worker.run(session);
         if(!download.isComplete()) {
-            log.warn(String.format("File size changed for %s", file));
+            log.warn("File size changed for {}", file);
         }
         try {
             editor.edit(application, file, local, watcher, quit);

@@ -44,13 +44,13 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_PRECONDITION_FAILED:
                 try {
-                    log.warn(String.format("Invalidate OAuth tokens due to failed precondition %s", response));
+                    log.warn("Invalidate OAuth tokens due to failed precondition {}", response);
                     service.save(service.authorize());
                     // Try again
                     return true;
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Failure %s refreshing OAuth tokens", e));
+                    log.warn("Failure {} refreshing OAuth tokens", e);
                 }
         }
         return false;

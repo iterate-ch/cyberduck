@@ -68,7 +68,7 @@ public final class URIEncoder {
                 new String[]{"%20", "%2A", "~", "@"});
         }
         catch(UnsupportedEncodingException e) {
-            log.warn(String.format("Failure %s encoding input %s", e, input));
+            log.warn("Failure {} encoding input {}", e, input);
             return input;
         }
     }
@@ -78,7 +78,7 @@ public final class URIEncoder {
             return URLDecoder.decode(input, StandardCharsets.UTF_8.name());
         }
         catch(UnsupportedEncodingException | IllegalArgumentException e) {
-            log.warn(String.format("Failure %s decoding input %s", e, input));
+            log.warn("Failure {} decoding input {}", e, input);
             return input;
         }
     }

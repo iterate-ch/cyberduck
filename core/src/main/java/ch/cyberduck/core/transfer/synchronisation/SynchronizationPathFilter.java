@@ -85,8 +85,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             case remote:
                 if(action.equals(TransferAction.upload)) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s with comparison result %s because action is %s",
-                            file, Comparison.remote, action));
+                        log.info("Skip file {} with comparison result {} because action is {}", file, Comparison.remote, action);
                     }
                     return false;
                 }
@@ -95,8 +94,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             case local:
                 if(action.equals(TransferAction.download)) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s with comparison result %s because action is %s",
-                            file, Comparison.local, action));
+                        log.info("Skip file {} with comparison result {} because action is {}", file, Comparison.local, action);
                     }
                     return false;
                 }

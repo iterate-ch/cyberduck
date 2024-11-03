@@ -75,7 +75,7 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
         }
         if(workdir.attributes().getQuota() != SDSQuotaFeature.unknown) {
             if(workdir.attributes().getQuota().available <= workdir.attributes().getSize() + new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize")) {
-                log.warn(String.format("Quota %d exceeded with %d in %s", workdir.attributes().getQuota().available, workdir.attributes().getSize(), workdir));
+                log.warn("Quota {} exceeded with {} in {}", workdir.attributes().getQuota().available, workdir.attributes().getSize(), workdir);
                 throw new QuotaException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
             }
         }

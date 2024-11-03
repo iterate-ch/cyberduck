@@ -86,12 +86,12 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
                     final Scanner scanner = new Scanner(line);
                     scanner.useDelimiter("=");
                     if(!scanner.hasNext()) {
-                        log.warn("Missing key in line:" + line);
+                        log.warn("Missing key in line:{}", line);
                         continue;
                     }
                     final String name = scanner.next().toLowerCase(Locale.ROOT);
                     if(!scanner.hasNext()) {
-                        log.warn("Missing value in line:" + line);
+                        log.warn("Missing value in line:{}", line);
                         continue;
                     }
                     final String value = scanner.next();
@@ -106,7 +106,7 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
                             current.getCredentials().setUsername(value);
                             break;
                         default:
-                            log.warn(String.format("Ignore property %s", name));
+                            log.warn("Ignore property {}", name);
                             break;
                     }
                 }

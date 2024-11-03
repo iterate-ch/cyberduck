@@ -39,7 +39,7 @@ public final class QuartzQuickLook implements QuickLook {
     @Override
     public void select(final List<Local> files) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Select files for %s", files));
+            log.debug("Select files for {}", files);
         }
         previews.clear();
         for(final Local selected : files) {
@@ -79,12 +79,12 @@ public final class QuartzQuickLook implements QuickLook {
     public void open() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Order front panel %s", panel));
+            log.debug("Order front panel {}", panel);
         }
         panel.makeKeyAndOrderFront(null);
         panel.setDataSource(model.id());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Reload data for panel %s", panel));
+            log.debug("Reload data for panel {}", panel);
         }
         panel.reloadData();
     }
@@ -94,7 +94,7 @@ public final class QuartzQuickLook implements QuickLook {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         if(null != panel.currentController()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Order out panel %s", panel));
+                log.debug("Order out panel {}", panel);
             }
             panel.setDataSource(null);
             panel.orderOut(null);

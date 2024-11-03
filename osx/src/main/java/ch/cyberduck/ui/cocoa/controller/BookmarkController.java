@@ -195,7 +195,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         else {
             final Protocol selected = protocols.forName(sender.selectedItem().representedObject());
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Protocol selection changed to %s", selected));
+                log.debug("Protocol selection changed to {}", selected);
             }
             bookmark.setProtocol(selected);
             final String hostname = HostnameConfiguratorFactory.get(selected).getHostname(bookmark.getHostname());

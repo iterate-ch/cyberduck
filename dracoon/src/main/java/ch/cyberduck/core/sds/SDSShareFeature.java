@@ -75,7 +75,7 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
             case download: {
                 if(file.isDirectory()) {
                     if(SDSAttributesAdapter.isEncrypted(file.attributes())) {
-                        log.warn(String.format("Not supported for file %s in encrypted room", file));
+                        log.warn("Not supported for file {} in encrypted room", file);
                         // In encrypted rooms only files can be shared
                         return false;
                     }
@@ -83,20 +83,20 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
                 final Acl.Role role = SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE;
                 final boolean found = new SDSPermissionsFeature(session, nodeid).containsRole(file, role);
                 if(!found) {
-                    log.warn(String.format("Not supported for file %s with missing role %s", file, role));
+                    log.warn("Not supported for file {} with missing role {}", file, role);
                 }
                 return found;
             }
             case upload: {
                 // An upload account can be created for directories and rooms only
                 if(!file.isDirectory()) {
-                    log.warn(String.format("Not supported for file %s", file));
+                    log.warn("Not supported for file {}", file);
                     return false;
                 }
                 final Acl.Role role = SDSPermissionsFeature.UPLOAD_SHARE_ROLE;
                 final boolean found = new SDSPermissionsFeature(session, nodeid).containsRole(file, role);
                 if(!found) {
-                    log.warn(String.format("Not supported for file %s with missing role %s", file, role));
+                    log.warn("Not supported for file {} with missing role {}", file, role);
                 }
                 return found;
             }
@@ -108,11 +108,11 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
     public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, CreateDownloadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Create download share for %s", file));
+                log.debug("Create download share for {}", file);
             }
             if(null == options) {
                 options = new CreateDownloadShareRequest();
-                log.warn(String.format("Use default share options %s", options));
+                log.warn("Use default share options {}", options);
             }
             final Long fileid = Long.parseLong(nodeid.getVersionId(file));
             final Host bookmark = session.getHost();
@@ -181,11 +181,11 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
     public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Create upload share for %s", file));
+                log.debug("Create upload share for {}", file);
             }
             if(null == options) {
                 options = new CreateUploadShareRequest();
-                log.warn(String.format("Use default share options %s", options));
+                log.warn("Use default share options {}", options);
             }
             final Host bookmark = session.getHost();
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(

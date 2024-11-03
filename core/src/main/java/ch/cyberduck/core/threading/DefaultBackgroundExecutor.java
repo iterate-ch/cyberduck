@@ -64,7 +64,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     @Override
     public <T> Future<T> execute(final Controller controller, final BackgroundActionRegistry registry, final BackgroundAction<T> action) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run action %s in background", action));
+            log.debug("Run action {} in background", action);
         }
         // Add action to registry of controller. Will be removed automatically when stopped
         registry.add(action);
@@ -74,12 +74,12 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
             try {
                 final Future<T> task = concurrentExecutor.execute(command);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Scheduled background runnable %s for execution", action));
+                    log.info("Scheduled background runnable {} for execution", action);
                 }
                 return task;
             }
             catch(RejectedExecutionException e) {
-                log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
+                log.error("Error scheduling background task {} for execution. {}", action, e.getMessage());
                 action.cancel();
                 action.cleanup();
                 return ConcurrentUtils.constantFuture(null);
@@ -93,7 +93,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     @Override
     public void shutdown() {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Terminating concurrent executor thread pool %s", concurrentExecutor));
+            log.info("Terminating concurrent executor thread pool {}", concurrentExecutor);
         }
         concurrentExecutor.shutdown(false);
     }

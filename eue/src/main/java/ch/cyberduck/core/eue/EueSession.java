@@ -149,7 +149,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                 if(hint.isPresent()) {
                     // Any response can contain this header. If this happens, a client should take measures to
                     // reduce its request rate. We advise to wait two seconds before sending the next request.
-                    log.warn(String.format("Retrieved throttle warning %s", hint.get()));
+                    log.warn("Retrieved throttle warning {}", hint.get());
                     final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                         @Override
                         public void validate() {
@@ -157,7 +157,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
 
                         @Override
                         public void progress(final Integer seconds) {
-                            log.warn(String.format("Pause for %d seconds because of traffic hint", seconds));
+                            log.warn("Pause for {} seconds because of traffic hint", seconds);
                         }
                     }, new HostPreferences(host).getInteger("eue.limit.hint.second"));
                     pause.await();
@@ -195,7 +195,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                         final JsonObject json = element.getAsJsonObject();
                         final URI uri = URI.create(json.getAsJsonObject("serviceTarget").getAsJsonPrimitive("uri").getAsString());
                         if(log.isInfoEnabled()) {
-                            log.info(String.format("Set base path to %s", url));
+                            log.info("Set base path to {}", url);
                         }
                         this.setBasePath(uri.toString());
                     }
@@ -211,7 +211,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     client.execute(new HttpPost(host.getProperty("pacs.url")));
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Ignore failure %s running Personal Agent Context Service (PACS) request", e));
+                    log.warn("Ignore failure {} running Personal Agent Context Service (PACS) request", e);
                 }
             }
             if(StringUtils.isNotBlank(new HostPreferences(host).getProperty("cryptomator.vault.name.default"))) {
@@ -221,7 +221,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     host.setProperty("cryptomator.enable", String.valueOf(true));
                 }
                 catch(NotfoundException e) {
-                    log.warn(String.format("Disable vault features with no existing vault found at %s", vault));
+                    log.warn("Disable vault features with no existing vault found at {}", vault);
                     // Disable vault features
                     host.setProperty("cryptomator.enable", String.valueOf(false));
                 }

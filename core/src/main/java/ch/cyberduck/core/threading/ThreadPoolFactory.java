@@ -59,7 +59,7 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
                         prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
             }
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", handler.getClass()));
+                log.warn("No matching constructor for parameter {}", handler.getClass());
                 // Call default constructor for disabled implementations
                 return clazz.getDeclaredConstructor().newInstance();
             }

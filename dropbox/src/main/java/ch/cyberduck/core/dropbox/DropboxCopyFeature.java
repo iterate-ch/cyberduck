@@ -53,7 +53,7 @@ public class DropboxCopyFeature implements Copy {
         try {
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                    log.warn("Delete file {} to be replaced with {}", target, file);
                 }
                 new DropboxDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
             }

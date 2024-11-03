@@ -58,7 +58,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                         new RandomNonceGenerator(vault.getNonceSize()) :
                         new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength()));
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Using %s", nonces));
+                    log.debug("Using {}", nonces);
                 }
                 status.setNonces(nonces);
             }

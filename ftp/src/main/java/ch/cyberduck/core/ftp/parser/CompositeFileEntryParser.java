@@ -40,7 +40,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
     @Override
     public FTPFile parseFTPEntry(final String line) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Parse %s", line));
+            log.debug("Parse {}", line);
         }
         if(current != null) {
             final FTPFile parsed = current.parseFTPEntry(line);
@@ -48,7 +48,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
                 return parsed;
             }
             if(log.isInfoEnabled()) {
-                log.info(String.format("Switching parser implementation because %s failed", current));
+                log.info("Switching parser implementation because {} failed", current);
             }
             current = null;
         }
@@ -57,12 +57,12 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
             if(matched != null) {
                 current = parser;
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Caching %s parser implementation", current));
+                    log.info("Caching {} parser implementation", current);
                 }
                 return matched;
             }
         }
-        log.warn(String.format("Failure parsing line %s", line));
+        log.warn("Failure parsing line {}", line);
         return null;
     }
 

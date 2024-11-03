@@ -109,7 +109,7 @@ public class EueShareFeature implements Share<ShareCreationRequestModel, ShareCr
                     session.userShares().add(shareCreationResponseEntry.getEntity());
                     return shareCreationResponseEntry.getEntity();
                 default:
-                    log.warn(String.format("Failure %s creating share for %s", shareCreationResponseEntry, file));
+                    log.warn("Failure {} creating share for {}", shareCreationResponseEntry, file);
                     if(null == shareCreationResponseEntry.getEntity()) {
                         throw new EueExceptionMappingService().map(new ApiException(shareCreationResponseEntry.getReason(),
                                 null, shareCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));

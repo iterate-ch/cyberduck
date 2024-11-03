@@ -109,7 +109,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         properties.setGetBufferSize(preferences.getInteger("connection.chunksize"));
         properties.setPutBufferSize(preferences.getInteger("connection.chunksize"));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure client %s with properties %s", client, properties));
+            log.debug("Configure client {} with properties {}", client, properties);
         }
         client.getIrodsSession().setJargonProperties(properties);
         client.getIrodsSession().setX509TrustManager(trust);
@@ -139,7 +139,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
             account.setPassword(credentials.getPassword());
             final AuthResponse response = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(account);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Connected to %s", response.getStartupResponse()));
+                log.debug("Connected to {}", response.getStartupResponse());
             }
             if(!response.isSuccessful()) {
                 throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(

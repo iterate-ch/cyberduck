@@ -148,7 +148,7 @@ public class S3Protocol extends AbstractProtocol {
                 return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(protocol.getAuthorization());
             }
             catch(IllegalArgumentException e) {
-                log.warn(String.format("Unsupported authentication context %s", protocol.getAuthorization()));
+                log.warn("Unsupported authentication context {}", protocol.getAuthorization());
                 return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
                         PreferencesFactory.get().getProperty("s3.signature.version"));
             }

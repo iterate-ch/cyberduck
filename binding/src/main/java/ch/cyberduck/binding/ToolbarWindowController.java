@@ -216,7 +216,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         final NSToolbarItem toolbarItem = cache.get(itemIdentifier);
         final NSTabViewItem tab = tabView.tabViewItemAtIndex(tabView.indexOfTabViewItemWithIdentifier(itemIdentifier));
         if(null == tab) {
-            log.warn(String.format("No tab for toolbar item %s", itemIdentifier));
+            log.warn("No tab for toolbar item {}", itemIdentifier);
             return null;
         }
         final Map<Label, NSView> panels = this.getPanels();

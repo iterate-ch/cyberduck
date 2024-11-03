@@ -52,7 +52,7 @@ public class DefaultInetAddressReachability extends DisabledReachability {
         }
         catch(IOException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Failure opening ICMP socket for %s", bookmark));
+                log.warn("Failure opening ICMP socket for {}", bookmark);
             }
             throw new DefaultIOExceptionMappingService().map(e);
         }

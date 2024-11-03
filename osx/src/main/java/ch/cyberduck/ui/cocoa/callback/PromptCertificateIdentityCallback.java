@@ -78,7 +78,7 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
                 // Use the identity method to obtain the identity chosen by the user.
                 final SecIdentityRef identityRef = panel.identity();
                 if(null == identityRef) {
-                    log.warn(String.format("No identity selected for %s", hostname));
+                    log.warn("No identity selected for {}", hostname);
                     throw new ConnectionCanceledException();
                 }
                 try {

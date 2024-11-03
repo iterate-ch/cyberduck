@@ -50,7 +50,7 @@ public class PathAttributesHomeFeature implements Home {
         final Path home = proxy.find();
         try {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Read attributes for %s", home));
+                log.debug("Read attributes for {}", home);
             }
             if(Home.ROOT == home) {
                 return home;
@@ -62,20 +62,20 @@ public class PathAttributesHomeFeature implements Home {
             switch(session.getHost().getProtocol().getType()) {
                 case ftp:
                     if(log.isWarnEnabled()) {
-                        log.warn(String.format("Ignore failure %s retrieving attributes for %s", e, home));
+                        log.warn("Ignore failure {} retrieving attributes for {}", e, home);
                     }
                     // Ignore 550 Directory Not Found for FTP
                     return home;
                 default:
                     if(log.isWarnEnabled()) {
-                        log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
+                        log.warn("Failure {} retrieving attributes for {}", e, home);
                     }
                     throw e;
             }
         }
         catch(AccessDeniedException | InteroperabilityException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
+                log.warn("Failure {} retrieving attributes for {}", e, home);
             }
             return home;
         }

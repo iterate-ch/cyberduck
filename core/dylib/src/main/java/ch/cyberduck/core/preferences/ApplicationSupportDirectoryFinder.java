@@ -46,11 +46,11 @@ public class ApplicationSupportDirectoryFinder implements SupportDirectoryFinder
         else {
             final String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
             if(log.isInfoEnabled()) {
-                log.info(String.format("Found application support directory in %s", directory));
+                log.info("Found application support directory in {}", directory);
             }
             final Local folder = new FinderLocal(directory, application);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Use folder %s for application support directory", folder));
+                log.debug("Use folder {} for application support directory", folder);
             }
             return folder;
         }

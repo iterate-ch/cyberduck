@@ -98,7 +98,7 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                     password = bookmark.getCredentials().getPassword();
                 }
                 if(null == password) {
-                    log.warn(String.format("No password found for %s", bookmark));
+                    log.warn("No password found for {}", bookmark);
                     return DescriptiveUrl.EMPTY;
                 }
                 response = new PasswordTokenRequest(new ApacheHttpTransport(client),
@@ -116,7 +116,7 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
             }
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Failure %s retrieving authenticated URL for %s", e, bookmark));
+            log.warn("Failure {} retrieving authenticated URL for {}", e, bookmark);
             return DescriptiveUrl.EMPTY;
         }
     }

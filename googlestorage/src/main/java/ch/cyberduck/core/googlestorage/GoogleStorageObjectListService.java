@@ -112,7 +112,7 @@ public class GoogleStorageObjectListService implements ListService {
                         final String key = object.getName();
                         if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                             if(log.isDebugEnabled()) {
-                                log.debug(String.format("Skip placeholder key %s", key));
+                                log.debug("Skip placeholder key {}", key);
                             }
                             hasDirectoryPlaceholder = true;
                             continue;
@@ -170,7 +170,7 @@ public class GoogleStorageObjectListService implements ListService {
                             objects.add(Uninterruptibles.getUninterruptibly(f));
                         }
                         catch(ExecutionException e) {
-                            log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
+                            log.warn("Listing versioned objects failed with execution failure {}", e.getMessage());
                             for(Throwable cause : ExceptionUtils.getThrowableList(e)) {
                                 Throwables.throwIfInstanceOf(cause, BackgroundException.class);
                             }
@@ -185,7 +185,7 @@ public class GoogleStorageObjectListService implements ListService {
             while(page != null);
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("No placeholder found for directory %s", directory));
+                    log.warn("No placeholder found for directory {}", directory);
                 }
                 throw new NotfoundException(directory.getAbsolute());
             }

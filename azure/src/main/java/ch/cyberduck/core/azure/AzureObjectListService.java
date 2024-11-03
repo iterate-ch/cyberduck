@@ -88,7 +88,7 @@ public class AzureObjectListService implements ListService {
                 for(ListBlobItem object : result.getResults()) {
                     if(new SimplePathPredicate(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip placeholder key %s", object));
+                            log.debug("Skip placeholder key {}", object);
                         }
                         hasDirectoryPlaceholder = true;
                         continue;
@@ -115,7 +115,7 @@ public class AzureObjectListService implements ListService {
             while(result.getHasMoreResults());
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("No placeholder found for directory %s", directory));
+                    log.warn("No placeholder found for directory {}", directory);
                 }
                 throw new NotfoundException(directory.getAbsolute());
             }

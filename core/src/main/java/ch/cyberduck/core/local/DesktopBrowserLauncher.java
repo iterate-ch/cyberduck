@@ -33,7 +33,7 @@ public class DesktopBrowserLauncher implements BrowserLauncher {
                 Desktop.getDesktop().browse(URI.create(url));
             }
             catch(IOException e) {
-                log.warn(String.format("Failure opening URL %s with browser", url));
+                log.warn("Failure opening URL {} with browser", url);
                 return false;
             }
             return true;

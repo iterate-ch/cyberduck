@@ -33,7 +33,7 @@ public class ChainedServiceUnavailableRetryStrategy implements ServiceUnavailabl
         for(ServiceUnavailableRetryStrategy strategy : chain) {
             if(strategy.retryRequest(response, executionCount, context)) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Retry for response %s determined by %s", response, strategy));
+                    log.warn("Retry for response {} determined by {}", response, strategy);
                 }
                 return true;
             }

@@ -242,7 +242,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         }
                     }
                     else {
-                        log.warn(String.format("Failure to parse software version %s", version));
+                        log.warn("Failure to parse software version {}", version);
                     }
                 }
                 credentials = authorizationService.validate();
@@ -254,7 +254,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         try {
             account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Authenticated as user %s", account));
+                log.debug("Authenticated as user {}", account);
             }
         }
         catch(ApiException e) {
@@ -281,7 +281,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Failure reading software version. %s", e.getMessage()));
+            log.warn("Failure reading software version. {}", e.getMessage());
             isS3DirectUploadSupported = true;
         }
         host.setProperty("sds.upload.s3.enable", String.valueOf(isS3DirectUploadSupported));
@@ -300,10 +300,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.error("No available key pair algorithm with status required found.");
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading key pair version. %s", new SDSExceptionMappingService(nodeid).map(e)));
+            log.warn("Ignore failure reading key pair version. {}", new SDSExceptionMappingService(nodeid).map(e));
         }
         catch(UnknownVersionException e) {
-            log.warn(String.format("Ignore failure reading required key pair algorithm. %s", new TripleCryptExceptionMappingService().map(e)));
+            log.warn("Ignore failure reading required key pair algorithm. {}", new TripleCryptExceptionMappingService().map(e));
         }
         return UserKeyPair.Version.RSA2048;
     }
@@ -324,7 +324,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(StringUtils.EMPTY, null);
                 if(pairs.size() == 0) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("No keypair found for user %s", user));
+                        log.debug("No keypair found for user {}", user);
                     }
                     return;
                 }
@@ -339,7 +339,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
                     final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Attempt to unlock deprecated private key %s", keypair.getUserPrivateKey()));
+                        log.debug("Attempt to unlock deprecated private key {}", keypair.getUserPrivateKey());
                     }
                     deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
                     keyPairDeprecated.set(deprecated);
@@ -348,7 +348,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
                     final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Attempt to unlock and migrate deprecated private key %s", keypair.getUserPrivateKey()));
+                        log.debug("Attempt to unlock and migrate deprecated private key {}", keypair.getUserPrivateKey());
                     }
                     deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
                     final UserKeyPair newPair = Crypto.generateUserKeyPair(requiredKeyPairVersion, deprecatedCredentials.getPassword().toCharArray());
@@ -369,7 +369,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(keyPair.get());
             if(deprecatedCredentials != null) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Attempt to unlock private key with passphrase from deprecated private key %s", keypair.getUserPrivateKey()));
+                    log.debug("Attempt to unlock private key with passphrase from deprecated private key {}", keypair.getUserPrivateKey());
                 }
                 if(Crypto.checkUserKeyPair(keypair, deprecatedCredentials.getPassword().toCharArray())) {
                     new TripleCryptKeyPair().unlock(prompt, host, keypair, deprecatedCredentials.getPassword());
@@ -380,7 +380,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             else {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Attempt to unlock private key %s", keypair.getUserPrivateKey()));
+                    log.debug("Attempt to unlock private key {}", keypair.getUserPrivateKey());
                 }
                 new TripleCryptKeyPair().unlock(prompt, host, keypair);
             }
@@ -389,7 +389,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             throw new TripleCryptExceptionMappingService().map(e);
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure unlocking user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
+            log.warn("Ignore failure unlocking user key pair. {}", new SDSExceptionMappingService(nodeid).map(e));
         }
         catch(LoginCanceledException e) {
             log.warn("Ignore cancel unlocking triple crypt private key pair");
@@ -410,7 +410,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null)));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure updating user info. %s", new SDSExceptionMappingService(nodeid).map(e)));
+                log.warn("Failure updating user info. {}", new SDSExceptionMappingService(nodeid).map(e));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -439,10 +439,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
-                    log.debug(String.format("User does not have a keypair for version %s", UserKeyPair.Version.RSA2048.getValue()));
+                    log.debug("User does not have a keypair for version {}", UserKeyPair.Version.RSA2048.getValue());
                 }
                 else {
-                    log.warn(String.format("Failure updating user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
+                    log.warn("Failure updating user key pair. {}", new SDSExceptionMappingService(nodeid).map(e));
                     throw new SDSExceptionMappingService(nodeid).map(e);
                 }
             }
@@ -456,7 +456,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, requiredKeyPairVersion.getValue(), null));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure updating user key pair for required algorithm. %s", e.getMessage()));
+                log.warn("Failure updating user key pair for required algorithm. {}", e.getMessage());
                 // fallback
                 final UserKeyPairContainer keyPairDeprecated = this.keyPairDeprecated();
                 if(null == keyPairDeprecated) {
@@ -473,11 +473,11 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             try {
                 softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Server version %s", softwareVersion.get()));
+                    log.info("Server version {}", softwareVersion.get());
                 }
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure %s updating software version", new SDSExceptionMappingService(nodeid).map(e)));
+                log.warn("Failure {} updating software version", new SDSExceptionMappingService(nodeid).map(e));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -491,7 +491,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading system defaults", new SDSExceptionMappingService(nodeid).map(e)));
+                log.warn("Failure {} reading system defaults", new SDSExceptionMappingService(nodeid).map(e));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -505,7 +505,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading configuration", new SDSExceptionMappingService(nodeid).map(e)));
+                log.warn("Failure {} reading configuration", new SDSExceptionMappingService(nodeid).map(e));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -522,7 +522,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     }
                     catch(ApiException e) {
                         // Precondition: Right "Config Read" required.
-                        log.warn(String.format("Failure %s reading configuration", new SDSExceptionMappingService(nodeid).map(e)));
+                        log.warn("Failure {} reading configuration", new SDSExceptionMappingService(nodeid).map(e));
                         throw new SDSExceptionMappingService(nodeid).map(e);
                     }
                 }

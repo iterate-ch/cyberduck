@@ -152,7 +152,7 @@ public final class EueUploadHelper {
                 case HttpStatus.SC_CREATED:
                     break;
                 default:
-                    log.warn(String.format("Failure %s creating file %s", resourceCreationResponseEntry, filename));
+                    log.warn("Failure {} creating file {}", resourceCreationResponseEntry, filename);
                     if(null == resourceCreationResponseEntry.getEntity()) {
                         throw new EueExceptionMappingService().map(new ApiException(resourceCreationResponseEntry.getReason(),
                                 null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));

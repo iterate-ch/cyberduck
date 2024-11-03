@@ -49,12 +49,12 @@ public class CachingFindFeature implements Find {
             final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
             if(found != null) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Found %s in cache", file));
+                    log.debug("Found {} in cache", file);
                 }
                 return true;
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Cached directory listing does not contain %s", file));
+                log.debug("Cached directory listing does not contain {}", file);
             }
             return false;
         }

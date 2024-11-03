@@ -52,7 +52,7 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
             @Override
             public void callback(final String code) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Callback with code %s", code));
+                    log.info("Callback with code {}", code);
                 }
                 if(!StringUtils.isBlank(code)) {
                     authenticationCode.set(code);
@@ -62,7 +62,7 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
         });
         this.open(authorizationCodeUrl);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Await callback from custom scheme %s and state %s", redirectUri, state));
+            log.info("Await callback from custom scheme {} and state {}", redirectUri, state);
         }
         prompt.await(signal, bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
                 LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
@@ -78,18 +78,18 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
         if(StringUtils.equalsIgnoreCase(Scheme.https.name(), handler)
                 || StringUtils.equalsIgnoreCase(Scheme.http.name(), handler)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Skip registering %s", redirectUri));
+                log.warn("Skip registering {}", redirectUri);
             }
             final String defaultHandler = PreferencesFactory.get().getProperty("oauth.handler.scheme");
             if(log.isInfoEnabled()) {
-                log.info(String.format("Register OAuth handler %s", defaultHandler));
+                log.info("Register OAuth handler {}", defaultHandler);
             }
             schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
                     Collections.singletonList(defaultHandler));
         }
         else {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Register OAuth handler %s", handler));
+                log.info("Register OAuth handler {}", handler);
             }
             schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
                     Collections.singletonList(handler));

@@ -132,7 +132,7 @@ public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
                 @Override
                 public void close() throws IOException {
                     if(close.get()) {
-                        log.warn(String.format("Skip double close of stream %s", this));
+                        log.warn("Skip double close of stream {}", this);
                         return;
                     }
                     try {

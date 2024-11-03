@@ -68,13 +68,13 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
                                 return true;
                             }
                             catch(B2ApiException | IOException e) {
-                                log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
+                                log.warn("Attempt to renew expired auth token failed. {}", e.getMessage());
                             }
                         }
                     }
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Failure parsing response entity from %s", response));
+                    log.warn("Failure parsing response entity from {}", response);
                 }
         }
         return false;

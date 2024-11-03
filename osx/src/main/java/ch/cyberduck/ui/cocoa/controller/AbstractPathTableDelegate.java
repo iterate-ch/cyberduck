@@ -91,7 +91,7 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
             case checksum:
                 return new ChecksumComparator(ascending);
             default:
-                log.error(String.format("Unknown column identifier %s", identifier));
+                log.error("Unknown column identifier {}", identifier);
                 return new NullComparator<Path>();
         }
     }

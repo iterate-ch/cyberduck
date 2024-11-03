@@ -47,7 +47,7 @@ public class DefaultX509TrustManager extends AbstractX509TrustManager {
             system = (javax.net.ssl.X509TrustManager) trustmanagers[0];
         }
         catch(NoSuchAlgorithmException | KeyStoreException e) {
-            log.error(String.format("Initialization of trust store failed. %s", e.getMessage()));
+            log.error("Initialization of trust store failed. {}", e.getMessage());
             throw new IOException(e);
         }
         return this;
@@ -71,7 +71,7 @@ public class DefaultX509TrustManager extends AbstractX509TrustManager {
             if(log.isDebugEnabled()) {
                 log.debug("Server certificate chain:");
                 for(int i = 0; i < certs.length; i++) {
-                    log.debug(String.format("X509Certificate[%d]=%s", i, certs[i]));
+                    log.debug("X509Certificate[{}]={}", i, certs[i]);
                 }
             }
         }

@@ -71,7 +71,7 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
                             current = new Host(protocols.forScheme(Scheme.ftp));
                             break;
                         default:
-                            log.warn(String.format("Unsupported type: %s", type));
+                            log.warn("Unsupported type: {}", type);
                             break;
                     }
                     break;

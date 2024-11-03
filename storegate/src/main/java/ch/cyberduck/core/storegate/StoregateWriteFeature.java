@@ -200,7 +200,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
     }
 
     protected void cancel(final Path file, final String location) throws BackgroundException {
-        log.warn(String.format("Cancel failed upload %s for %s", location, file));
+        log.warn("Cancel failed upload {} for {}", location, file);
         try {
             final HttpDelete delete = new HttpDelete(location);
             session.getClient().getClient().execute(delete);

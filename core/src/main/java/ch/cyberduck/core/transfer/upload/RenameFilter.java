@@ -67,10 +67,10 @@ public class RenameFilter extends AbstractUploadFilter {
             }
             while(find.find(status.getRename().remote));
             if(log.isInfoEnabled()) {
-                log.info(String.format("Changed upload target from %s to %s", file, status.getRename().remote));
+                log.info("Changed upload target from {} to {}", file, status.getRename().remote);
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Clear exist flag for file %s", file));
+                log.debug("Clear exist flag for file {}", file);
             }
             status.setExists(false);
         }
@@ -86,7 +86,7 @@ public class RenameFilter extends AbstractUploadFilter {
                 }
             }
             if(log.isInfoEnabled()) {
-                log.info(String.format("Changed upload target from %s to %s", file, status.getRename().remote));
+                log.info("Changed upload target from {} to {}", file, status.getRename().remote);
             }
         }
         return status;

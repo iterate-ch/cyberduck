@@ -54,7 +54,7 @@ public class MacUniqueIdService implements UniqueIdService {
         while(interfaces.hasMoreElements()) {
             final NetworkInterface n = interfaces.nextElement();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Found network interface %s", n));
+                log.debug("Found network interface {}", n);
             }
             if(n.getHardwareAddress() != null) {
                 return this.toHex(n.getHardwareAddress());

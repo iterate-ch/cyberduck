@@ -55,13 +55,13 @@ public class VaultRegistryListService implements ListService {
             final Vault vault = registry.find(session, directory);
             if(vault.contains(directory)) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Found vault %s", vault));
+                    log.debug("Found vault {}", vault);
                 }
                 return vault.getFeature(session, ListService.class, proxy).list(directory, listener);
             }
             if(autodetect) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Look for vault in %s", directory));
+                    log.debug("Look for vault in {}", directory);
                 }
                 return new VaultFinderListService(session, proxy, lookup, listener).list(directory, listener);
             }
@@ -69,7 +69,7 @@ public class VaultRegistryListService implements ListService {
         }
         catch(VaultUnlockCancelException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Canceled loading vault %s with failure %s", e.getVault(), e));
+                log.warn("Canceled loading vault {} with failure {}", e.getVault(), e);
             }
             return proxy.list(directory, listener);
         }

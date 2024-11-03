@@ -56,7 +56,7 @@ public class TerminalTransferPrompt implements TransferPrompt {
             switch(transfer) {
                 case download:
                     if(item.local.isDirectory()) {
-                        log.warn(String.format("Skip prompt for directory %s", item));
+                        log.warn("Skip prompt for directory {}", item);
                         return TransferAction.overwrite;
                     }
                     input = console.readLine("%nThe local file %s already exists. Choose what action to take:%n%s%nAction %s: ",

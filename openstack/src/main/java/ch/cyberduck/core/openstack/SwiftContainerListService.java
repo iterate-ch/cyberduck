@@ -55,7 +55,7 @@ public class SwiftContainerListService implements RootListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List containers for %s", session));
+            log.debug("List containers for {}", session);
         }
         try {
             final AttributedList<Path> containers = new AttributedList<>();
@@ -64,7 +64,7 @@ public class SwiftContainerListService implements RootListService {
             for(final Region r : client.getRegions()) {
                 if(region.getIdentifier() != null) {
                     if(!StringUtils.equals(r.getRegionId(), region.getIdentifier())) {
-                        log.warn(String.format("Skip region %s", r));
+                        log.warn("Skip region {}", r);
                         continue;
                     }
                 }
@@ -87,7 +87,7 @@ public class SwiftContainerListService implements RootListService {
                 }
                 catch(GenericException e) {
                     if(e.getHttpStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
-                        log.warn(String.format("Ignore failure %s for region %s", e, region));
+                        log.warn("Ignore failure {} for region {}", e, region);
                         continue;
                     }
                     throw e;

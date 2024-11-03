@@ -42,7 +42,7 @@ public class WorkdirHomeFeature extends AbstractHomeFeature {
             return new PathDictionary<>().deserialize(host.getWorkdir().serialize(SerializerFactory.get()));
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("No workdir set for bookmark %s", host));
+            log.debug("No workdir set for bookmark {}", host);
         }
         return null;
     }

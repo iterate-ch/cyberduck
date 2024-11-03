@@ -39,24 +39,24 @@ public class MigratingSupportDirectoryFinder implements SupportDirectoryFinder {
     public SupportDirectoryFinder setup() {
         final Local appdata = proxy.find();
         if(appdata.exists()) {
-            log.debug(String.format("Application support folder %s already exists", appdata));
+            log.debug("Application support folder {} already exists", appdata);
         }
         else {
             final Local previous = deprecated.find();
             if(previous.exists()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Migrate application support folder from %s to %s", previous, appdata));
+                    log.warn("Migrate application support folder from {} to {}", previous, appdata);
                 }
                 try {
                     // Rename folder recursively
                     previous.rename(appdata);
                 }
                 catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure %s migrating %s to application group directory %s", e, previous, appdata));
+                    log.warn("Failure {} migrating {} to application group directory {}", e, previous, appdata);
                 }
             }
             else {
-                log.debug(String.format("No previous application support folder found in %s", previous));
+                log.debug("No previous application support folder found in {}", previous);
             }
         }
         return this;

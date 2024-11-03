@@ -76,7 +76,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             NSObject plist = bundle.infoDictionary().objectForKey(property);
             if(null == plist) {
                 if(log.isTraceEnabled()) {
-                    log.trace(String.format("No default value for property %s", property));
+                    log.trace("No default value for property {}", property);
                 }
                 return null;
             }
@@ -108,14 +108,14 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         if(value.isKindOfClass(NSArray.CLASS)) {
             return StringUtils.join(this.toList(Rococoa.cast(value, NSArray.class)), LIST_SEPERATOR);
         }
-        log.warn(String.format("Unknown type for property %s", property));
+        log.warn("Unknown type for property {}", property);
         return value.toString();
     }
 
     @Override
     public void setProperty(final String property, final String value) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Set property %s for key %s", value, property));
+            log.info("Set property {} for key {}", value, property);
         }
         if(StringUtils.isNotEmpty(value)) {
             // Sets the value of the default identified by defaultName in the standard application domain.
@@ -146,7 +146,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
     @Override
     public void deleteProperty(final String property) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Delete property %s", property));
+            log.debug("Delete property {}", property);
         }
         store.removeObjectForKey(property);
         cache.remove(property);
@@ -188,7 +188,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
                     this.setDefault("tmp.dir", directory.getAbsolute());
                 }
                 catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure creating temporary directory %s", directory));
+                    log.warn("Failure creating temporary directory {}", directory);
                 }
             }
             if(bundle.objectForInfoDictionaryKey("CFBundleShortVersionString") != null) {

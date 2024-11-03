@@ -194,12 +194,12 @@ public class DeepboxListService implements ListService {
         final Acl acl = directory.attributes().getAcl();
         if(Acl.EMPTY == acl) {
             // Missing initialization
-            log.warn(String.format("Unknown ACLs on %s", directory));
+            log.warn("Unknown ACLs on {}", directory);
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANLISTCHILDREN)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("ACL %s for %s does not include %s", acl, directory, CANLISTCHILDREN));
+                log.warn("ACL {} for {} does not include {}", acl, directory, CANLISTCHILDREN);
             }
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot download {0}", "Error"), directory.getName())).withFile(directory);
         }

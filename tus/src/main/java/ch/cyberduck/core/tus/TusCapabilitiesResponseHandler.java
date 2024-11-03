@@ -39,7 +39,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_NO_CONTENT:
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Support for resumable uploads detected from %s", response));
+                    log.debug("Support for resumable uploads detected from {}", response);
                 }
                 if(response.containsHeader(TusCapabilities.TUS_HEADER_RESUMABLE)) {
                     if(response.containsHeader(TusCapabilities.TUS_HEADER_VERSION)) {
@@ -49,7 +49,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                 if(response.containsHeader(TusCapabilities.TUS_HEADER_EXTENSION)) {
                     for(String extension : StringUtils.split(response.getFirstHeader(TusCapabilities.TUS_HEADER_EXTENSION).getValue(), ",")) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Support extension %s", extension));
+                            log.debug("Support extension {}", extension);
                         }
                         if(StringUtils.equals(Extension.checksum.name(), StringUtils.strip(extension))) {
                             if(response.containsHeader(TusCapabilities.TUS_HEADER_CHECKSUM_ALGORITHM)) {
@@ -59,7 +59,7 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                                         break;
                                     }
                                     catch(IllegalArgumentException e) {
-                                        log.warn(String.format("No support for checksum algorithm %s", algorithm));
+                                        log.warn("No support for checksum algorithm {}", algorithm);
                                     }
                                 }
                             }
@@ -69,14 +69,14 @@ public class TusCapabilitiesResponseHandler implements ResponseHandler<TusCapabi
                                 capabilities.withExtension(Extension.valueOf(StringUtils.remove(extension, '-')));
                             }
                             catch(IllegalArgumentException e) {
-                                log.warn(String.format("No support for extension %s", extension));
+                                log.warn("No support for extension {}", extension);
                             }
                         }
                     }
                 }
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Determined capabilities %s", capabilities));
+            log.debug("Determined capabilities {}", capabilities);
         }
         return capabilities;
     }

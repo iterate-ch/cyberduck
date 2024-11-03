@@ -45,7 +45,7 @@ public class S3BucketCreateService {
 
     public void create(final Path bucket, final String region) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create bucket %s in region %s", bucket, region));
+            log.debug("Create bucket {} in region {}", bucket, region);
         }
         if(!new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
             if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {

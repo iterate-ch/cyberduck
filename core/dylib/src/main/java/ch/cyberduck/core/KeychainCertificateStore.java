@@ -69,14 +69,14 @@ public final class KeychainCertificateStore implements CertificateStore {
         final PointerByReference reference = new PointerByReference();
         err = SecurityFunctions.library.SecTrustCreateWithCertificates(toDEREncodedCertificates(certificates), policyRef, reference);
         if(errSecSuccess != err) {
-            log.error(String.format("SecTrustCreateWithCertificates returning error %d", err));
+            log.error("SecTrustCreateWithCertificates returning error {}", err);
             throw new CertificateException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
         }
         final SecTrustRef trustRef = new SecTrustRef(reference.getValue());
         final SecTrustResultType trustResultType = new SecTrustResultType();
         err = SecurityFunctions.library.SecTrustEvaluate(trustRef, trustResultType);
         if(errSecSuccess != err) {
-            log.error(String.format("SecTrustEvaluate returning error %d", err));
+            log.error("SecTrustEvaluate returning error {}", err);
             throw new CertificateException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
         }
         FoundationKitFunctions.library.CFRelease(trustRef);
@@ -87,7 +87,7 @@ public final class KeychainCertificateStore implements CertificateStore {
                 return true;
             default:
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Evaluated recoverable trust result failure %d", trustResultType.getValue()));
+                    log.debug("Evaluated recoverable trust result failure {}", trustResultType.getValue());
                 }
                 try {
                     prompt.prompt(hostname, certificates);
@@ -118,7 +118,7 @@ public final class KeychainCertificateStore implements CertificateStore {
         int err;
         err = SecurityFunctions.library.SecIdentityCopyCertificate(identityRef, reference);
         if(errSecSuccess != err) {
-            log.error(String.format("SecIdentityCopyCertificate returning error %d", err));
+            log.error("SecIdentityCopyCertificate returning error {}", err);
             throw new CertificateException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
         }
         final SecCertificateRef certificateRef = new SecCertificateRef(reference.getValue());
@@ -127,7 +127,7 @@ public final class KeychainCertificateStore implements CertificateStore {
         final X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(
                 Base64.decodeBase64(dataRef.base64Encoding())));
         if(log.isDebugEnabled()) {
-            log.info(String.format("Selected certificate %s", selected));
+            log.info("Selected certificate {}", selected);
         }
         FoundationKitFunctions.library.CFRelease(certificateRef);
         return selected;
@@ -140,13 +140,13 @@ public final class KeychainCertificateStore implements CertificateStore {
                 final SecCertificateRef certificateRef = SecurityFunctions.library.SecCertificateCreateWithData(null,
                         NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded())));
                 if(null == certificateRef) {
-                    log.error(String.format("Error converting from ASN.1 DER encoded certificate %s", certificate));
+                    log.error("Error converting from ASN.1 DER encoded certificate {}", certificate);
                     continue;
                 }
                 certs.addObject(certificateRef);
             }
             catch(CertificateEncodingException e) {
-                log.error(String.format("Failure %s retrieving encoded certificate", e));
+                log.error("Failure {} retrieving encoded certificate", e);
             }
         }
         return certs;

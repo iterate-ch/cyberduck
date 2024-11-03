@@ -137,7 +137,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Saved segment %s with checksum %s", segment, checksum));
+                            log.debug("Saved segment {} with checksum {}", segment, checksum);
                         }
                         final StorageObject stored = new StorageObject(containerService.getKey(segment));
                         stored.setMd5sum(checksum);
@@ -166,11 +166,11 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
             // then create or update the manifest.
             try {
                 if(close.get()) {
-                    log.warn(String.format("Skip double close of stream %s", this));
+                    log.warn("Skip double close of stream {}", this);
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
+                    log.warn("Skip closing with previous failure {}", canceled.get());
                     return;
                 }
                 if(completed.isEmpty()) {
@@ -184,7 +184,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                     // Static Large Object
                     final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
+                        log.debug("Creating SLO manifest {} for {}", manifest, file);
                     }
                     final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
                                     containerService.getContainer(file)),

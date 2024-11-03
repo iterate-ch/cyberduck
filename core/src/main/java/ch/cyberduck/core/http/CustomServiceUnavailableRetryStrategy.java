@@ -49,7 +49,7 @@ public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavail
         // Proxy to chain
         if(super.retryRequest(response, executionCount, context)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Allow retry for response %s if repeatable", response));
+                log.warn("Allow retry for response {} if repeatable", response);
             }
             return true;
         }

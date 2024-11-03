@@ -56,7 +56,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         // Run recursively
         final Search feature = session.getFeature(Search.class);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
+            log.debug("Run with feature {}", feature);
         }
         return this.search(feature, directory);
     }
@@ -90,7 +90,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             for(final Path f : list) {
                 if(f.isDirectory()) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Recursively search in %s", f));
+                        log.debug("Recursively search in {}", f);
                     }
                     final AttributedList<Path> children = this.search(search, f);
                     list.addAll(children);

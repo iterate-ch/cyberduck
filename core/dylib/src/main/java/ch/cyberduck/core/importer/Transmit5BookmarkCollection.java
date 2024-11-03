@@ -130,7 +130,7 @@ public class Transmit5BookmarkCollection extends ThirdpartyBookmarkCollection {
 
         }
         if(null == protocol) {
-            log.warn(String.format("Unable to determine protocol for %s", identifier));
+            log.warn("Unable to determine protocol for {}", identifier);
             return;
         }
         final Host host = new Host(protocol, hostname, new Credentials(bookmark.stringForKey("com_panic_transmit_username")));
@@ -142,7 +142,7 @@ public class Transmit5BookmarkCollection extends ThirdpartyBookmarkCollection {
                 host.setPort(Integer.parseInt(port));
             }
             catch(NumberFormatException e) {
-                log.warn(String.format("Ignore invalid port number %s", port));
+                log.warn("Ignore invalid port number {}", port);
             }
         }
         this.add(host);

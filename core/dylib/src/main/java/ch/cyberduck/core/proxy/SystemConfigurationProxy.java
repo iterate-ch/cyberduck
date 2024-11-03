@@ -39,7 +39,7 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
         final String route = this.findNative(target);
         if(null == route) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("No proxy configuration found for target %s", target));
+                log.info("No proxy configuration found for target {}", target);
             }
             // Direct
             return Proxy.DIRECT;
@@ -53,11 +53,11 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
                         proxy.getHost(), proxy.getPort());
             }
             catch(IllegalArgumentException e) {
-                log.warn(String.format("Unsupported scheme for proxy %s", proxy));
+                log.warn("Unsupported scheme for proxy {}", proxy);
             }
         }
         catch(URISyntaxException e) {
-            log.warn(String.format("Invalid proxy configuration %s", route));
+            log.warn("Invalid proxy configuration {}", route);
         }
         return Proxy.DIRECT;
     }

@@ -53,7 +53,7 @@ public class TouchWorker extends Worker<Path> {
     public Path run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
+            log.debug("Run with feature {}", feature);
         }
         final TransferStatus status = new TransferStatus()
                 .withLength(0L)

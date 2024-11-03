@@ -44,7 +44,7 @@ public class SkipFilter extends AbstractDownloadFilter {
         if(local.isFile()) {
             if(local.exists()) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Skip file %s", file));
+                    log.info("Skip file {}", file);
                 }
                 return false;
             }

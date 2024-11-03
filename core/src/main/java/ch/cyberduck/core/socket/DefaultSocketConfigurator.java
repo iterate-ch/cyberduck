@@ -54,7 +54,7 @@ public class DefaultSocketConfigurator implements SocketConfigurator {
         }
         final int timeout = connectionTimeout.getTimeout();
         if(log.isInfoEnabled()) {
-            log.info(String.format("Set timeout to %ds for socket %s", timeout, socket));
+            log.info("Set timeout to {}s for socket {}", timeout, socket);
         }
         socket.setSoTimeout(timeout * 1000);
         if(preferences.getBoolean("connection.socket.linger")) {

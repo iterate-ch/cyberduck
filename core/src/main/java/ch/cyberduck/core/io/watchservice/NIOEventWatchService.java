@@ -42,7 +42,7 @@ public class NIOEventWatchService implements RegisterWatchService {
         }
         final WatchKey key = folder.register(monitor, events, modifiers);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Registered for events for %s", key));
+            log.info("Registered for events for {}", key);
         }
         return key;
     }

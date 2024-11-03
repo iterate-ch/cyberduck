@@ -50,7 +50,7 @@ public class DownloadShareWorker<Options> extends Worker<DescriptiveUrl> {
     public DescriptiveUrl run(final Session<?> session) throws BackgroundException {
         final Share<Options, Void> provider = session.getFeature(Share.class);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", provider));
+            log.debug("Run with feature {}", provider);
         }
         final Set<Share.Sharee> sharees = provider.getSharees(Share.Type.download);
         if(!sharees.stream().filter(s -> !s.equals(Share.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {

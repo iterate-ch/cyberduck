@@ -52,7 +52,7 @@ public class DeepboxCopyFeature implements Copy {
         try {
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                    log.warn("Delete file {} to be replaced with {}", target, file);
                 }
                 new DeepboxTrashFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }

@@ -70,7 +70,7 @@ public class SDSBatchDeleteFeature implements Delete {
             catch(ApiException e) {
                 switch(e.getCode()) {
                     case 400:
-                        log.warn(String.format("Ignore failure %s", e));
+                        log.warn("Ignore failure {}", e);
                         new SDSDeleteFeature(session, nodeid).delete(files, prompt, callback);
                         break;
                     default:

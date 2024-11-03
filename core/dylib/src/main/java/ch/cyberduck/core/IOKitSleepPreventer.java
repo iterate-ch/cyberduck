@@ -41,7 +41,7 @@ public final class IOKitSleepPreventer implements SleepPreventer {
         synchronized(lock) {
             final String assertion = this.createAssertion(reason);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Created sleep assertion %s", assertion));
+                log.debug("Created sleep assertion {}", assertion);
             }
             return assertion;
         }
@@ -53,7 +53,7 @@ public final class IOKitSleepPreventer implements SleepPreventer {
     public void release(final String id) {
         synchronized(lock) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Release sleep assertion %s", id));
+                log.debug("Release sleep assertion {}", id);
             }
             this.releaseAssertion(id);
         }

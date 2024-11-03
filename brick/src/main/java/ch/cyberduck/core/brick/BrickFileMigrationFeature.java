@@ -74,7 +74,7 @@ public class BrickFileMigrationFeature {
                             signal.countDown();
                             return;
                         default:
-                            log.warn(String.format("Wait for copy to complete with current status %s", migration));
+                            log.warn("Wait for copy to complete with current status {}", migration);
                             break;
                     }
                 }

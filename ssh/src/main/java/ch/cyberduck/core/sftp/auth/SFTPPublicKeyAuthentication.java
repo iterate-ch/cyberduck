@@ -66,7 +66,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
         final Credentials credentials = bookmark.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Login using public key authentication with credentials %s", credentials));
+                log.debug("Login using public key authentication with credentials {}", credentials);
             }
             final Local privKey = credentials.getIdentity();
             final Local pubKey;
@@ -76,7 +76,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
                         new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8), true);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Reading private key %s with key format %s", privKey, format));
+                    log.info("Reading private key {} with key format {}", privKey, format);
                 }
                 switch(format) {
                     case PKCS8:

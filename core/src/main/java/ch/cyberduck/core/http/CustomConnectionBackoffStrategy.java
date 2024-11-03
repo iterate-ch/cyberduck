@@ -35,13 +35,13 @@ public class CustomConnectionBackoffStrategy extends DefaultServiceUnavailableRe
     public boolean shouldBackoff(final Throwable t) {
         if(t instanceof SocketTimeoutException) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Backoff for timeout failure %s", t));
+                log.warn("Backoff for timeout failure {}", t);
             }
             return true;
         }
         if(t instanceof ConnectException) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Backoff for connect failure %s", t));
+                log.warn("Backoff for connect failure {}", t);
             }
             return true;
         }
@@ -52,7 +52,7 @@ public class CustomConnectionBackoffStrategy extends DefaultServiceUnavailableRe
     public boolean shouldBackoff(final HttpResponse response) {
         if(this.evaluate(response)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Backoff for reply %s", response));
+                log.warn("Backoff for reply {}", response);
             }
             return true;
         }

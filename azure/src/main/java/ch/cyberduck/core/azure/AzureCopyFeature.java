@@ -72,7 +72,7 @@ public class AzureCopyFeature implements Copy {
             final String id = target.startCopy(s,
                     AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, context);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
+                log.debug("Started copy for {} with copy operation ID {}", copy, id);
             }
             listener.sent(status.getLength());
             return copy;

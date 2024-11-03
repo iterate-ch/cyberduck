@@ -104,7 +104,7 @@ public class SwiftObjectListService implements ListService {
                         if(chunk.stream().filter(object -> SwiftDirectoryFeature.DIRECTORY_MIME_TYPE.equals(object.getMimeType()))
                                 .map(StorageObject::getName).noneMatch(key -> key.equals(containerService.getKey(directory)))) {
                             if(log.isWarnEnabled()) {
-                                log.warn(String.format("No placeholder found for directory %s", directory));
+                                log.warn("No placeholder found for directory {}", directory);
                             }
                             throw new NotfoundException(directory.getAbsolute());
                         }

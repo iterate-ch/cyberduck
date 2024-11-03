@@ -57,7 +57,7 @@ public class TripleCryptWriteFeature implements Write<Node> {
         try {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Read file key for file %s", file));
+                log.debug("Read file key for file {}", file);
             }
             if(null == status.getFilekey()) {
                 status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());

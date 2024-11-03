@@ -72,7 +72,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
         config.setMantaKeyPath(identity.getAbsolute());
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Reading private key %s with key format %s", identity, format));
+            log.info("Reading private key {} with key format {}", identity, format);
         }
         provider.init(
                 new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),

@@ -87,7 +87,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         if(value.isKindOfClass(NSDictionary.CLASS)) {
             return Rococoa.cast(value, NSDictionary.class);
         }
-        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        log.warn("Unexpected value type for serialized key {}", key);
         return null;
     }
 
@@ -113,7 +113,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
             }
             return list;
         }
-        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        log.warn("Unexpected value type for serialized key {}", key);
         return null;
     }
 
@@ -134,7 +134,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
             }
             return list;
         }
-        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        log.warn("Unexpected value type for serialized key {}", key);
         return null;
     }
 }

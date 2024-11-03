@@ -51,7 +51,7 @@ public class SystemConfigurationReachability implements Reachability {
 
         public void notify(final NSNotification notification) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Received notification %s", notification));
+                log.debug("Received notification {}", notification);
             }
             proxy.change();
         }
@@ -87,7 +87,7 @@ public class SystemConfigurationReachability implements Reachability {
         final SystemConfigurationReachability.Native monitor = SystemConfigurationReachability.Native.monitorForUrl(url);
         final int flags = monitor.getFlags();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Determined reachability flags %s for %s", flags, url));
+            log.debug("Determined reachability flags {} for {}", flags, url);
         }
         final boolean reachable = (flags & Native.kSCNetworkReachabilityFlagsReachable) == Native.kSCNetworkReachabilityFlagsReachable;
         final boolean connectionRequired = (flags & Native.kSCNetworkReachabilityFlagsConnectionRequired) == Native.kSCNetworkReachabilityFlagsConnectionRequired;

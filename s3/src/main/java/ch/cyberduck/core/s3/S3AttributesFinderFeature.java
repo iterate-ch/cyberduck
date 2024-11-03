@@ -60,7 +60,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         if(containerService.isContainer(file)) {
             final PathAttributes attributes = new PathAttributes();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Read location for bucket %s", file));
+                log.debug("Read location for bucket {}", file);
             }
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
@@ -83,7 +83,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 switch(e.getResponseCode()) {
                     case 405:
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Mark file %s as delete marker", file));
+                            log.debug("Mark file {} as delete marker", file);
                         }
                         // Only DELETE method is allowed for delete markers
                         attr = new PathAttributes();
@@ -95,7 +95,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             }
             if(StringUtils.isNotBlank(attr.getVersionId())) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Determine if %s is latest version for %s", attr.getVersionId(), file));
+                    log.debug("Determine if {} is latest version for {}", attr.getVersionId(), file);
                 }
                 // Determine if latest version
                 try {
@@ -103,7 +103,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                             bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file))).getVersionId();
                     if(null != latest) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Found later version %s for %s", latest, file));
+                            log.debug("Found later version {} for {}", latest, file);
                         }
                         // Duplicate if not latest version
                         attr.setDuplicate(!latest.equals(attr.getVersionId()));
@@ -124,7 +124,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         catch(NotfoundException e) {
             if(file.isDirectory()) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Search for common prefix %s", file));
+                    log.debug("Search for common prefix {}", file);
                 }
                 // File may be marked as placeholder but no placeholder file exists. Check for common prefix returned.
                 try {

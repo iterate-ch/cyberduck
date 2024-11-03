@@ -62,7 +62,7 @@ public class EueCopyFeature implements Copy {
             final EueApiClient client = new EueApiClient(session);
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Trash file %s to be replaced with %s", target, file));
+                    log.warn("Trash file {} to be replaced with {}", target, file);
                 }
                 new EueTrashFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
             }
@@ -94,7 +94,7 @@ public class EueCopyFeature implements Copy {
                             fileid.cache(target, EueResourceIdProvider.getResourceIdFromResourceUri(resourceCopyResponseEntry.getHeaders().getLocation()));
                             break;
                         default:
-                            log.warn(String.format("Failure %s copying file %s", resourceCopyResponseEntries, file));
+                            log.warn("Failure {} copying file {}", resourceCopyResponseEntries, file);
                             throw new EueExceptionMappingService().map(new ApiException(resourceCopyResponseEntry.getReason(),
                                     null, resourceCopyResponseEntry.getStatusCode(), client.getResponseHeaders()));
                     }
@@ -120,7 +120,7 @@ public class EueCopyFeature implements Copy {
                             case HttpStatus.SC_CREATED:
                                 break;
                             default:
-                                log.warn(String.format("Failure %s renaming file %s", resourceMoveResponseEntry, file));
+                                log.warn("Failure {} renaming file {}", resourceMoveResponseEntry, file);
                                 throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
                                         null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
                         }

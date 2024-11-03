@@ -56,7 +56,7 @@ public class BoxMoveFeature implements Move {
         try {
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
+                    log.warn("Delete file {} to be replaced with {}", renamed, file);
                 }
                 new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }

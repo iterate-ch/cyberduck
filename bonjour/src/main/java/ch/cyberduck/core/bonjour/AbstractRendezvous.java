@@ -170,7 +170,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
                        final String user, final String password, final String path) {
         final Protocol protocol = this.getProtocol(fullname);
         if(null == protocol) {
-            log.warn(String.format("Unknown service type for %s", fullname));
+            log.warn("Unknown service type for {}", fullname);
             return;
         }
         final Host host = new Host(protocol, hostname, port);
@@ -205,7 +205,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
         if(fullname.contains(SERVICE_TYPE_SMB)) {
             return protocols.forScheme(Scheme.smb);
         }
-        log.warn(String.format("Cannot find service type in %s", fullname));
+        log.warn("Cannot find service type in {}", fullname);
         return null;
     }
 
@@ -215,7 +215,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
      */
     protected void add(final String fullname, final Host host) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Add resolved host %s for full name %s", host, fullname));
+            log.debug("Add resolved host {} for full name {}", host, fullname);
         }
         if(null == services.put(fullname, host)) {
             notifier.serviceResolved(fullname, host);
@@ -224,7 +224,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
 
     protected void remove(final String identifier) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Remove host with identifier %s", identifier));
+            log.debug("Remove host with identifier {}", identifier);
         }
         final Host host = services.remove(identifier);
         if(null == host) {

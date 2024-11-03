@@ -27,7 +27,7 @@ public final class DisabledVaultLookupListener implements VaultLookupListener {
 
     @Override
     public Vault load(final Session session, final Path directory, final String masterkey, final String config, final byte[] pepper) {
-        log.warn(String.format("Ignore vault %s", directory));
+        log.warn("Ignore vault {}", directory);
         return Vault.DISABLED;
     }
 }

@@ -122,7 +122,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             }
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Ignore failure reading keys from KMS. %s", e.getMessage()));
+            log.warn("Ignore failure reading keys from KMS. {}", e.getMessage());
             keys.add(SSE_KMS_DEFAULT);
         }
         return keys;

@@ -98,7 +98,7 @@ public class TransferCollection extends Collection<Transfer> {
             preferences.deleteProperty(String.format("%s%s", prefix, transfer.getUuid()));
         }
         catch(AccessDeniedException | NotfoundException e) {
-            log.error(String.format("Failure removing transfer %s", e.getMessage()));
+            log.error("Failure removing transfer {}", e.getMessage());
         }
         finally {
             super.collectionItemRemoved(transfer);
@@ -133,7 +133,7 @@ public class TransferCollection extends Collection<Transfer> {
 
     protected void save(final Transfer transfer) {
         if(this.isLocked()) {
-            log.debug(String.format("Skip saving transfer %s while loading", transfer));
+            log.debug("Skip saving transfer {} while loading", transfer);
         }
         else {
             this.lock();
@@ -143,12 +143,12 @@ public class TransferCollection extends Collection<Transfer> {
                 }
                 final Local f = this.getFile(transfer);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Save transfer %s", f));
+                    log.info("Save transfer {}", f);
                 }
                 writer.write(transfer, f);
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
+                log.warn("Failure saving item in collection {}", e.getMessage());
             }
             finally {
                 this.unlock();
@@ -159,7 +159,7 @@ public class TransferCollection extends Collection<Transfer> {
     @Override
     public void load() throws AccessDeniedException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Reloading %s", folder.getAbsolute()));
+            log.info("Reloading {}", folder.getAbsolute());
         }
         this.lock();
         try {
@@ -189,7 +189,7 @@ public class TransferCollection extends Collection<Transfer> {
                     this.add(transfer);
                 }
                 catch(AccessDeniedException e) {
-                    log.error(String.format("Failure reading transfer from %s. %s", f, e.getMessage()));
+                    log.error("Failure reading transfer from {}. {}", f, e.getMessage());
                 }
             }
             // Sort using previously built index
@@ -211,7 +211,7 @@ public class TransferCollection extends Collection<Transfer> {
         final List<Transfer> temporary = new ArrayList<>();
         for(Transfer transfer : c) {
             if(temporary.contains(transfer)) {
-                log.warn(String.format("Reset UUID of duplicate in collection for %s", transfer));
+                log.warn("Reset UUID of duplicate in collection for {}", transfer);
                 transfer.setUuid(new UUIDRandomStringService().random());
             }
             temporary.add(transfer);

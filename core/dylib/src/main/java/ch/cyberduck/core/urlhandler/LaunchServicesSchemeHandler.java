@@ -59,10 +59,10 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
     public void setDefaultHandler(final Application application, final List<String> schemes) {
         for(String scheme : schemes) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Register handler for %s", scheme));
+                log.debug("Register handler for {}", scheme);
             }
             if(0 != LaunchServicesLibrary.library.LSSetDefaultHandlerForURLScheme(scheme, application.getIdentifier())) {
-                log.error(String.format("Failure setting default handler for scheme %s", scheme));
+                log.error("Failure setting default handler for scheme {}", scheme);
             }
         }
     }
@@ -81,7 +81,7 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
         if(url != null) {
             final NSBundle bundle = NSBundle.bundleWithPath(url.path());
             if(null == bundle) {
-                log.warn(String.format("Failure loading bundle for path %s", url.path()));
+                log.warn("Failure loading bundle for path {}", url.path());
                 return Application.notfound;
             }
             final Application application = applicationFinder.getDescription(bundle.bundleIdentifier());
@@ -102,7 +102,7 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
             final NSURL url = Rococoa.cast(next, NSURL.class);
             final NSBundle bundle = NSBundle.bundleWithPath(url.path());
             if(null == bundle) {
-                log.warn(String.format("Failure loading bundle for path %s", url.path()));
+                log.warn("Failure loading bundle for path {}", url.path());
                 continue;
             }
             final Application application = applicationFinder.getDescription(bundle.bundleIdentifier());

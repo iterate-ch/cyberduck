@@ -50,7 +50,7 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
                     credentials.setUsername(nameSamCompatible);
                 }
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Configure %s with username %s", host, credentials));
+                    log.debug("Configure {} with username {}", host, credentials);
                 }
                 return credentials;
             }

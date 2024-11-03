@@ -39,7 +39,7 @@ public class DefaultServiceUnavailableRetryStrategy implements ServiceUnavailabl
         final boolean retry = this.evaluate(response);
         if(retry) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Allow retry for response %s if repeatable", response));
+                log.warn("Allow retry for response {} if repeatable", response);
             }
         }
         return retry;

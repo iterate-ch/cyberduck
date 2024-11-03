@@ -130,7 +130,7 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
                                 StringUtils.lowerCase(StringUtils.split(v, ":")[1])));
                     }
                     catch(IllegalArgumentException e) {
-                        log.warn(String.format("Unsupported checksum %s", v));
+                        log.warn("Unsupported checksum {}", v);
                     }
                 }
             }

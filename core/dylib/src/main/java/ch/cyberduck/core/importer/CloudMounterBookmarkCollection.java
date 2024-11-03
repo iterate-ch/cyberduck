@@ -93,7 +93,7 @@ public class CloudMounterBookmarkCollection extends ThirdpartyBookmarkCollection
 
             }
             if(null == protocol) {
-                log.warn(String.format("Unable to determine protocol for %s", identifier));
+                log.warn("Unable to determine protocol for {}", identifier);
                 continue;
             }
             final NSDictionary details = bookmark.objectForKey("MountFSOptions");

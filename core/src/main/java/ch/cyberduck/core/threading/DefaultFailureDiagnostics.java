@@ -50,7 +50,7 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
     @Override
     public Type determine(final BackgroundException failure) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Determine cause for failure %s", failure));
+            log.debug("Determine cause for failure {}", failure);
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(failure instanceof UnsupportedException) {

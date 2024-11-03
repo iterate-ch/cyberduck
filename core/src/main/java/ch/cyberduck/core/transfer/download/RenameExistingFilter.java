@@ -53,7 +53,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
         if(status.isExists()) {
             if(local.attributes().getSize() == 0) {
                 // Placeholder from drag operation
-                log.warn(String.format("Skip renaming placeholder file %s", local));
+                log.warn("Skip renaming placeholder file {}", local);
             }
             else {
                 Local rename;
@@ -66,11 +66,11 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
                 }
                 while(rename.exists());
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Rename existing file %s to %s", local, rename));
+                    log.info("Rename existing file {} to {}", local, rename);
                 }
                 LocalFactory.get(local.getAbsolute()).rename(rename);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Clear exist flag for file %s", local));
+                    log.debug("Clear exist flag for file {}", local);
                 }
                 status.setExists(false);
             }

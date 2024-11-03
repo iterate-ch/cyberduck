@@ -72,7 +72,7 @@ public class TripleCryptReadFeature implements Read {
                         Crypto.createFileDecryptionCipher(plainFileKey), plainFileKey.getTag());
             }
             catch(InvalidFileKeyException e) {
-                log.warn(String.format("Failure %s  decrypting file key for %s. Invalidate cache", e, file));
+                log.warn("Failure {}  decrypting file key for {}. Invalidate cache", e, file);
                 session.resetUserKeyPairs();
                 final UserKeyPair userKeyPair = this.getUserKeyPair(encFileKey);
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), this.unlock(callback, userKeyPair).getPassword().toCharArray());
@@ -103,7 +103,7 @@ public class TripleCryptReadFeature implements Read {
         final UserKeyPairContainer keyPairContainer = session.getKeyPairForFileKey(encFileKey.getVersion());
         final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt to unlock private key %s", userKeyPair.getUserPrivateKey()));
+            log.debug("Attempt to unlock private key {}", userKeyPair.getUserPrivateKey());
         }
         return userKeyPair;
     }

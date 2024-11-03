@@ -46,13 +46,13 @@ public class SwiftQuotaFeature implements Quota {
             try {
                 final long bytes = session.getClient().getAccountInfo(region).getBytesUsed();
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Add %d used in region %s", bytes, region));
+                    log.info("Add {} used in region {}", bytes, region);
                 }
                 used += bytes;
             }
             catch(GenericException e) {
                 if(e.getHttpStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
-                    log.warn(String.format("Ignore failure %s for region %s", e, region));
+                    log.warn("Ignore failure {} for region {}", e, region);
                     continue;
                 }
                 throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e,

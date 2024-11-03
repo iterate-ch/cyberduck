@@ -83,17 +83,17 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
                 try {
                     if(this.accelerate(bucket, callback)) {
                         if(log.isInfoEnabled()) {
-                            log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", bucket, accelerationService));
+                            log.info("Tunnel upload for file {} through accelerated endpoint {}", bucket, accelerationService);
                         }
                         accelerationService.configure(true, bucket);
                         break;
                     }
                     else {
-                        log.warn(String.format("Transfer acceleration disabled for %s", bucket));
+                        log.warn("Transfer acceleration disabled for {}", bucket);
                     }
                 }
                 catch(NotfoundException | InteroperabilityException | AccessDeniedException e) {
-                    log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
+                    log.warn("Ignore failure reading S3 accelerate configuration. {}", e.getMessage());
                 }
             }
             else {
@@ -108,12 +108,12 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
                 return false;
         }
         if(accelerationService.getStatus(bucket)) {
-            log.info(String.format("S3 transfer acceleration enabled for file %s", bucket));
+            log.info("S3 transfer acceleration enabled for file {}", bucket);
             return true;
         }
         if(new HostPreferences(session.getHost()).getBoolean("s3.accelerate.prompt")) {
             if(accelerationService.prompt(session.getHost(), bucket, prompt)) {
-                log.info(String.format("S3 transfer acceleration enabled for file %s", bucket));
+                log.info("S3 transfer acceleration enabled for file {}", bucket);
                 return true;
             }
         }

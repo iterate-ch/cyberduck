@@ -153,12 +153,12 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
                 attributes.setModificationDate(iso8601DateFormatter.parse(lastModified).getTime());
             }
             catch(InvalidDateException e) {
-                log.warn(String.format("%s is not ISO 8601 format %s", lastModified, e.getMessage()));
+                log.warn("{} is not ISO 8601 format {}", lastModified, e.getMessage());
                 try {
                     attributes.setModificationDate(rfc1123DateFormatter.parse(lastModified).getTime());
                 }
                 catch(InvalidDateException f) {
-                    log.warn(String.format("%s is not RFC 1123 format %s", lastModified, f.getMessage()));
+                    log.warn("{} is not RFC 1123 format {}", lastModified, f.getMessage());
                 }
             }
         }
@@ -173,7 +173,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
             attributes.setModificationDate(Double.valueOf(Double.parseDouble(lastModified) * 1000).longValue());
         }
         catch(NumberFormatException e) {
-            log.warn(String.format("%s is not in UNIX Epoch time stamp format %s", lastModified, e.getMessage()));
+            log.warn("{} is not in UNIX Epoch time stamp format {}", lastModified, e.getMessage());
         }
         if(StringUtils.isNotBlank(metadata.getETag())) {
             final String etag = RegExUtils.removePattern(metadata.getETag(), "\"");

@@ -42,7 +42,7 @@ public final class PreferencesFactory {
         preferences.configureLogging(preferences.getProperty("logging"));
         final Logger log = LogManager.getLogger(PreferencesFactory.class);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Running version %s", preferences.getVersion()));
+            log.info("Running version {}", preferences.getVersion());
         }
     }
 

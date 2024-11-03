@@ -55,7 +55,7 @@ public class SearchFilter implements Filter<Path> {
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Skip %s not matching %s", file.getAbsolute(), input));
+            log.debug("Skip {} not matching {}", file.getAbsolute(), input);
         }
         return false;
     }
@@ -93,7 +93,7 @@ public class SearchFilter implements Filter<Path> {
             return Pattern.compile(pattern.toString());
         }
         catch(PatternSyntaxException e) {
-            log.warn(String.format("Failure %s compiling pattern %s", e, pattern));
+            log.warn("Failure {} compiling pattern {}", e, pattern);
             return Pattern.compile(Pattern.quote(input));
         }
     }

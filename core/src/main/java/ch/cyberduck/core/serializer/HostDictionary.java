@@ -63,7 +63,7 @@ public class HostDictionary<T> {
         final Deserializer<T> dict = factory.create(serialized);
         Object protocolObj = dict.stringForKey("Protocol");
         if(protocolObj == null) {
-            log.warn(String.format("Missing protocol key in %s", dict));
+            log.warn("Missing protocol key in {}", dict);
             return null;
         }
         final Protocol protocol;
@@ -199,7 +199,7 @@ public class HostDictionary<T> {
             return bookmark;
         }
         else {
-            log.warn(String.format("No protocol registered for identifier %s", protocolObj));
+            log.warn("No protocol registered for identifier {}", protocolObj);
             return null;
         }
     }

@@ -60,7 +60,7 @@ public class DriveReadFeature implements Read {
         if(file.isPlaceholder()) {
             final DescriptiveUrl link = new DriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
             if(DescriptiveUrl.EMPTY.equals(link)) {
-                log.warn(String.format("Missing web link for file %s", file));
+                log.warn("Missing web link for file {}", file);
                 return new NullInputStream(file.attributes().getSize());
             }
             // Write web link file
@@ -79,7 +79,7 @@ public class DriveReadFeature implements Read {
                     header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
                 }
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Add range header %s for file %s", header, file));
+                    log.debug("Add range header {} for file {}", header, file);
                 }
                 headers.setRange(header);
                 // Disable compression

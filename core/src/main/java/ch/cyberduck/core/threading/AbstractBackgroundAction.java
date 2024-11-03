@@ -51,7 +51,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     @Override
     public void cancel() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Cancel background task %s", this));
+            log.debug("Cancel background task {}", this);
         }
         final Iterator<BackgroundActionListener> iter = listeners.iterator();
         for(BackgroundActionListener listener : listeners) {
@@ -79,7 +79,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     @Override
     public void prepare() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Prepare background task %s", this));
+            log.debug("Prepare background task {}", this);
         }
         for(BackgroundActionListener listener : listeners) {
             listener.start(this);
@@ -90,7 +90,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     @Override
     public void finish() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Finish background task %s", this));
+            log.debug("Finish background task {}", this);
         }
         for(BackgroundActionListener listener : listeners) {
             listener.stop(this);
@@ -106,7 +106,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     @Override
     public T call() throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run background task %s", this));
+            log.debug("Run background task {}", this);
         }
         return this.run();
     }

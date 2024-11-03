@@ -39,7 +39,7 @@ public class CteraCookieInterceptor implements HttpResponseInterceptor {
             if(StringUtils.equals(CteraAuthenticationHandler.AUTH_PATH, clientContext.getRequest().getRequestLine().getUri()) &&
                     response.getStatusLine().getStatusCode() == HttpStatus.SC_OK &&
                     HttpPost.METHOD_NAME.equals(clientContext.getRequest().getRequestLine().getMethod())) {
-                log.debug(String.format("Accept cookie %s from login response", response.getFirstHeader("Set-Cookie")));
+                log.debug("Accept cookie {} from login response", response.getFirstHeader("Set-Cookie"));
             }
             else {
                 response.removeHeaders("Set-Cookie");

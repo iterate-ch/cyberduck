@@ -65,7 +65,7 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Trans
                     }
                     while(false);//(upload.exists());
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Changed name from %s to %s", filename, remote.getName()));
+                        log.info("Changed name from {} to {}", filename, remote.getName());
                     }
                     upload.remote = remote;
                 }

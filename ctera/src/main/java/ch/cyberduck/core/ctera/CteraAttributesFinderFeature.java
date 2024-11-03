@@ -115,20 +115,20 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         final Acl acl = file.attributes().getAcl();
         if(acl == Acl.EMPTY) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Missing ACL for %s", file));
+                log.warn("Missing ACL for {}", file);
             }
             return;
         }
         final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser());
         if(null == roles) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Missing user in acl %s", acl));
+                log.warn("Missing user in acl {}", acl);
             }
             return;
         }
         if(!roles.contains(role)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("ACL %s for %s does not include %s", acl, file, role));
+                log.warn("ACL {} for {} does not include {}", acl, file, role);
             }
             if(role == READPERMISSION) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),

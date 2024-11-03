@@ -63,15 +63,15 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Try to acquire semaphore for %s", session));
+                    log.debug("Try to acquire semaphore for {}", session);
                 }
                 // Pairing token no longer valid
                 if(!semaphore.tryAcquire()) {
-                    log.warn(String.format("Skip pairing because semaphore cannot be aquired for %s", session));
+                    log.warn("Skip pairing because semaphore cannot be aquired for {}", session);
                     return false;
                 }
                 try {
-                    log.warn(String.format("Run pairing flow for %s", session));
+                    log.warn("Run pairing flow for {}", session);
                     // Blocks until pairing is complete or canceled
                     final Credentials credentials = session.pair(session.getHost(), prompt, prompt, new BackgroundActionRegistryCancelCallback(cancel),
                             LocaleFactory.localizedString("You've been logged out", "Brick"),
@@ -82,11 +82,11 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                     return true;
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Failure %s trying to refresh pairing after error response %s", e, response));
+                    log.warn("Failure {} trying to refresh pairing after error response {}", e, response);
                 }
                 finally {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Release semaphore for %s", session));
+                        log.debug("Release semaphore for {}", session);
                     }
                     semaphore.release();
                 }

@@ -127,13 +127,13 @@ public class UploadTransfer extends Transfer {
     public List<TransferItem> list(final Session<?> session, final Path remote,
                                    final Local directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List children for %s", directory));
+            log.debug("List children for {}", directory);
         }
         if(directory.isSymbolicLink()) {
             final Symlink symlink = session.getFeature(Symlink.class);
             if(new UploadSymlinkResolver(symlink, roots).resolve(directory)) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Do not list children for symbolic link %s", directory));
+                    log.debug("Do not list children for symbolic link {}", directory);
                 }
                 // We can resolve the target of the symbolic link and will create a link on the remote system
                 // using the symlink feature of the session
@@ -151,7 +151,7 @@ public class UploadTransfer extends Transfer {
     @Override
     public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter transfer with action %s and options %s", action, options));
+            log.debug("Filter transfer with action {} and options {}", action, options);
         }
         final Symlink symlink = source.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
@@ -166,7 +166,7 @@ public class UploadTransfer extends Transfer {
             attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class));
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Determined features %s and %s", find, attributes));
+            log.debug("Determined features {} and {}", find, attributes);
         }
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
@@ -190,7 +190,7 @@ public class UploadTransfer extends Transfer {
     public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action with prompt %s", prompt));
+            log.debug("Find transfer action with prompt {}", prompt);
         }
         if(resumeRequested) {
             // Force resume by user or retry of failed transfer
@@ -220,7 +220,7 @@ public class UploadTransfer extends Transfer {
                     return prompt.prompt(upload);
                 }
             }
-            // No files exist yet therefore it is most straightforward to use the overwrite action
+            // No files exist, yet therefore it is most straightforward to use the overwrite action
             return TransferAction.overwrite;
         }
         return action;
@@ -232,11 +232,11 @@ public class UploadTransfer extends Transfer {
         final Bulk<?> feature = source.getFeature(Bulk.class);
         final Object id = feature.pre(Type.upload, files, callback);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
+            log.debug("Obtained bulk id {} for transfer {}", id, this);
         }
         super.pre(source, destination, files, filter, error, progress, callback);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter for directories in transfer %s", this));
+            log.debug("Filter for directories in transfer {}", this);
         }
         // Create all directories first
         final List<Map.Entry<TransferItem, TransferStatus>> directories = files.entrySet().stream()
@@ -262,7 +262,7 @@ public class UploadTransfer extends Transfer {
             final TransferStatus status = entry.getValue();
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Skip existing directory %s", file));
+                    log.warn("Skip existing directory {}", file);
                 }
                 continue;
             }
@@ -279,7 +279,7 @@ public class UploadTransfer extends Transfer {
             catch(BackgroundException e) {
                 if(error.prompt(entry.getKey(), status, e, files.size())) {
                     // Continue
-                    log.warn(String.format("Ignore transfer failure %s", e));
+                    log.warn("Ignore transfer failure {}", e);
                 }
                 else {
                     throw new TransferCanceledException(e);
@@ -301,11 +301,11 @@ public class UploadTransfer extends Transfer {
             if(entry.isPresent()) {
                 final Map.Entry<TransferItem, TransferStatus> item = entry.get();
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Prompt with failure %s for item %s only", e, item.getKey()));
+                    log.warn("Prompt with failure {} for item {} only", e, item.getKey());
                 }
                 if(error.prompt(item.getKey(), item.getValue(), e, files.size())) {
                     // Continue
-                    log.warn(String.format("Ignore transfer failure %s", e));
+                    log.warn("Ignore transfer failure {}", e);
                 }
                 else {
                     throw new TransferCanceledException(e);
@@ -333,7 +333,7 @@ public class UploadTransfer extends Transfer {
                          final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Transfer file %s with options %s and status %s", file, options, segment));
+            log.debug("Transfer file {} with options {} and status {}", file, options, segment);
         }
         if(local.isSymbolicLink()) {
             final Symlink feature = source.getFeature(Symlink.class);
@@ -344,7 +344,7 @@ public class UploadTransfer extends Transfer {
                 final String target = symlinkResolver.relativize(local.getAbsolute(),
                         local.getSymlinkTarget().getAbsolute());
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Create symbolic link from %s to %s", file, target));
+                    log.debug("Create symbolic link from {} to {}", file, target);
                 }
                 feature.symlink(file, target);
                 return;

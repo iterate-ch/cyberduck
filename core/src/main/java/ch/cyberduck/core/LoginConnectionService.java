@@ -88,7 +88,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         if(session.isConnected()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Skip opening connection for session %s", session));
+                log.debug("Skip opening connection for session {}", session);
             }
             // Connection already open
             return false;
@@ -126,7 +126,7 @@ public class LoginConnectionService implements ConnectionService {
                     resolver.resolve(hostname, cancel);
                 }
                 catch(ResolveFailedException e) {
-                    log.warn(String.format("DNS resolver failed for %s", hostname));
+                    log.warn("DNS resolver failed for {}", hostname);
                     throw e;
                 }
             }

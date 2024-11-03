@@ -45,7 +45,7 @@ public class RevertWorker extends Worker<List<Path>> {
     public List<Path> run(final Session<?> session) throws BackgroundException {
         final Versioning feature = session.getFeature(Versioning.class);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
+            log.debug("Run with feature {}", feature);
         }
         for(Path file : files) {
             if(this.isCanceled()) {

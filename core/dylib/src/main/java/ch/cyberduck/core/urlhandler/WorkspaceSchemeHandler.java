@@ -63,14 +63,14 @@ public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
                     @Override
                     public void didFinishWithError(final NSError error) {
                         if(error != null) {
-                            log.warn(String.format("Setting scheme handler returned with error %s", error));
+                            log.warn("Setting scheme handler returned with error {}", error);
                         }
                         lock.countDown();
                     }
                 });
                 proxy.setDefaultHandler(NSURL.fileURLWithPath(path), scheme, callback.id());
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Await result from %s", proxy));
+                    log.info("Await result from {}", proxy);
                 }
                 Uninterruptibles.awaitUninterruptibly(lock);
             }
@@ -83,11 +83,11 @@ public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
         if(url != null) {
             final NSBundle bundle = NSBundle.bundleWithPath(url.path());
             if(null == bundle) {
-                log.warn(String.format("Failure loading bundle from path %s", url.path()));
+                log.warn("Failure loading bundle from path {}", url.path());
                 return Application.notfound;
             }
             if(null == bundle.bundleIdentifier()) {
-                log.warn(String.format("Missing CFBundleIdentifier for bundle at path %s", url.path()));
+                log.warn("Missing CFBundleIdentifier for bundle at path {}", url.path());
                 return Application.notfound;
             }
             final Application application = finder.getDescription(bundle.bundleIdentifier());
@@ -108,11 +108,11 @@ public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
             final NSURL url = Rococoa.cast(next, NSURL.class);
             final NSBundle bundle = NSBundle.bundleWithPath(url.path());
             if(null == bundle) {
-                log.warn(String.format("Failure loading bundle for path %s", url.path()));
+                log.warn("Failure loading bundle for path {}", url.path());
                 continue;
             }
             if(null == bundle.bundleIdentifier()) {
-                log.warn(String.format("Missing CFBundleIdentifier for bundle at path %s", url.path()));
+                log.warn("Missing CFBundleIdentifier for bundle at path {}", url.path());
                 continue;
             }
             final Application application = finder.getDescription(bundle.bundleIdentifier());

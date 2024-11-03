@@ -81,7 +81,7 @@ public class RegexLocale implements Locale {
                     this.load(table);
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Failure loading properties from %s.strings. %s", table, e.getMessage()));
+                    log.warn("Failure loading properties from {}.strings. {}", table, e.getMessage());
                 }
                 finally {
                     tables.add(table);

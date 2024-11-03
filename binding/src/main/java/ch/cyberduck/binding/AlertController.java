@@ -69,7 +69,7 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     @Override
     public void callback(final int returncode) {
-        log.warn(String.format("Ignore return code %d", returncode));
+        log.warn("Ignore return code {}", returncode);
     }
 
     @Override

@@ -87,12 +87,12 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                     Scanner scanner = new Scanner(line);
                     scanner.useDelimiter("=");
                     if(!scanner.hasNext()) {
-                        log.warn("Missing key in line:" + line);
+                        log.warn("Missing key in line:{}", line);
                         continue;
                     }
                     String name = scanner.next().toLowerCase(Locale.ROOT);
                     if(!scanner.hasNext()) {
-                        log.warn("Missing value in line:" + line);
+                        log.warn("Missing value in line:{}", line);
                         continue;
                     }
                     String value = scanner.next();
@@ -108,7 +108,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                 current.setPort(Integer.parseInt(value));
                             }
                             catch(NumberFormatException e) {
-                                log.warn("Invalid Port:" + e.getMessage());
+                                log.warn("Invalid Port:{}", e.getMessage());
                             }
                             break;
                         case "fsprotocol":
@@ -127,7 +127,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                 current.setPort(-1);
                             }
                             catch(NumberFormatException e) {
-                                log.warn("Unknown Protocol:" + e.getMessage());
+                                log.warn("Unknown Protocol:{}", e.getMessage());
                             }
                             break;
                     }

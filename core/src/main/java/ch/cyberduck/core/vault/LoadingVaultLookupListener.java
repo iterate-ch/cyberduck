@@ -44,13 +44,13 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             }
             final Vault vault = VaultFactory.get(directory, masterkey, config, pepper);
             if(log.isInfoEnabled()) {
-                log.info(String.format("Loading vault %s for session %s", vault, session));
+                log.info("Loading vault {} for session {}", vault, session);
             }
             try {
                 registry.add(vault.load(session, prompt));
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure %s loading vault %s", e, vault));
+                log.warn("Failure {} loading vault {}", e, vault);
                 throw new VaultUnlockCancelException(vault, e);
             }
             return vault;

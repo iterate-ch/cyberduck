@@ -45,14 +45,14 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
                 constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
             }
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
+                log.warn("No matching constructor for parameter {}", c.getClass());
                 // Call default constructor for disabled implementations
                 return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(c);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
             return new DisabledTransferErrorCallback();
         }
     }

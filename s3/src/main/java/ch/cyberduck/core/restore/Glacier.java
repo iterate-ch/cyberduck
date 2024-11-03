@@ -95,7 +95,7 @@ public class Glacier implements Restore {
         }
         catch(ConflictException e) {
             // 409 when restore is in progress
-            log.warn(String.format("Restore for %s already in progress %s", file, e));
+            log.warn("Restore for {} already in progress {}", file, e);
         }
     }
 

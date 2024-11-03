@@ -131,7 +131,7 @@ public class Permission implements Serializable {
             this.fromInteger(Integer.valueOf(Integer.toString(mode), 8));
         }
         catch(NumberFormatException e) {
-            log.warn(String.format("Failure parsing %s", mode));
+            log.warn("Failure parsing {}", mode);
             this.set(Permission.EMPTY);
         }
     }
@@ -229,7 +229,7 @@ public class Permission implements Serializable {
             this.fromInteger(n);
         }
         catch(StringIndexOutOfBoundsException e) {
-            log.warn(String.format("Failure parsing %s", symbol));
+            log.warn("Failure parsing {}", symbol);
             this.set(Permission.EMPTY);
         }
     }

@@ -85,7 +85,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         }
         if(failure instanceof SSLHandshakeException) {
             if(ExceptionUtils.getRootCause(failure) instanceof CertificateException) {
-                log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
+                log.warn("Ignore certificate failure {} and drop connection", failure.getMessage());
                 // Server certificate not accepted
                 return new ConnectionCanceledException(failure);
             }

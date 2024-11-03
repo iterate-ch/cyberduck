@@ -88,18 +88,17 @@ public class SDSCopyFeature implements Copy {
         }
         if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
             // If source xor target is encrypted data room we cannot use server side copy
-            log.warn(String.format("Cannot use server side copy with source container %s and target container %s",
-                    containerService.getContainer(source), containerService.getContainer(target)));
+            log.warn("Cannot use server side copy with source container {} and target container {}", containerService.getContainer(source), containerService.getContainer(target));
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(!StringUtils.equals(source.getName(), target.getName())) {
             // Cannot rename node to be copied at the same time
-            log.warn(String.format("Deny copy of %s for changed name %s", source, target.getName()));
+            log.warn("Deny copy of {} for changed name {}", source, target.getName());
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(Objects.equals(source.getParent(), target.getParent())) {
             // Nodes must not have the same parent
-            log.warn(String.format("Deny copy of %s to %s", source, target));
+            log.warn("Deny copy of {} to {}", source, target);
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
     }

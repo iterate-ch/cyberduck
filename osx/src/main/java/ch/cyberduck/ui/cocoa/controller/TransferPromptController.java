@@ -185,7 +185,7 @@ public abstract class TransferPromptController extends SheetController implement
     @Override
     public TransferAction prompt(final TransferItem file) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Prompt for transfer action of %s", transfer));
+            log.debug("Prompt for transfer action of {}", transfer);
         }
         new SheetInvoker(this, parent, this).beginSheet();
         return action;
@@ -194,7 +194,7 @@ public abstract class TransferPromptController extends SheetController implement
     @Override
     public void callback(final int returncode) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Callback with return code %d", returncode));
+            log.debug("Callback with return code {}", returncode);
         }
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.cancel;

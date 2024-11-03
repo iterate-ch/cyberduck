@@ -60,7 +60,7 @@ public class CryptoUrlProvider implements UrlProvider {
             return set;
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Failure encrypting filename. %s", e.getMessage()));
+            log.warn("Failure encrypting filename. {}", e.getMessage());
             return DescriptiveUrlBag.empty();
         }
     }

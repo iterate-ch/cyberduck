@@ -99,7 +99,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     protected URI getOrigin(final Path container, final Distribution.Method method) {
         final URI url = URI.create(String.format("%s%s", new DefaultWebUrlProvider().toUrl(origin).getUrl(), PathNormalizer.normalize(origin.getDefaultPath(), true)));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Use origin %s for distribution %s", url, method));
+            log.debug("Use origin {} for distribution {}", url, method);
         }
         return url;
     }

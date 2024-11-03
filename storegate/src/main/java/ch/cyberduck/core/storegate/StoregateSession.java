@@ -154,13 +154,13 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                                 final JsonObject json = element.getAsJsonObject();
                                 final URI url = URI.create(json.getAsJsonPrimitive("web_url_api").getAsString());
                                 if(log.isInfoEnabled()) {
-                                    log.info(String.format("Set base path to %s", url));
+                                    log.info("Set base path to {}", url);
                                 }
                                 client.setBasePath(StringUtils.removeEnd(url.toString(), String.valueOf(Path.DELIMITER)));
                             }
                         }
                         catch(JsonParseException | IllegalArgumentException e) {
-                            log.warn(String.format("Ignore failure %s", e));
+                            log.warn("Ignore failure {}", e);
                         }
                         break;
                     case HttpStatus.SC_FORBIDDEN:
@@ -179,7 +179,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Authenticated for user %s", me));
+                log.debug("Authenticated for user {}", me);
             }
             credentials.setUsername(me.getUsername());
             // Get root folders

@@ -71,12 +71,12 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
                     Scanner scanner = new Scanner(line);
                     scanner.useDelimiter("=");
                     if(!scanner.hasNext()) {
-                        log.warn("Missing key in line:" + line);
+                        log.warn("Missing key in line:{}", line);
                         continue;
                     }
                     String name = scanner.next().toLowerCase(Locale.ROOT);
                     if(!scanner.hasNext()) {
-                        log.warn("Missing value in line:" + line);
+                        log.warn("Missing value in line:{}", line);
                         continue;
                     }
                     String value = scanner.next();
@@ -89,7 +89,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
                                 current.setPort(Integer.parseInt(value));
                             }
                             catch(NumberFormatException e) {
-                                log.warn("Invalid Port:" + e.getMessage());
+                                log.warn("Invalid Port:{}", e.getMessage());
                             }
                             break;
                         case "path":

@@ -73,7 +73,7 @@ public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
                     fileid.cache(folder, resourceId);
                     return folder;
                 default:
-                    log.warn(String.format("Failure %s creating folder %s", resourceCreationResponseEntry, folder));
+                    log.warn("Failure {} creating folder {}", resourceCreationResponseEntry, folder);
                     final ResourceCreationResponseEntryEntity entity = resourceCreationResponseEntry.getEntity();
                     if(null == entity) {
                         throw new EueExceptionMappingService().map(new ApiException(resourceCreationResponseEntry.getReason(),

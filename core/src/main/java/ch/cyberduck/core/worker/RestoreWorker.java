@@ -48,7 +48,7 @@ public class RestoreWorker extends Worker<List<Path>> {
     public List<Path> run(final Session<?> session) throws BackgroundException {
         final Restore feature = session.getFeature(Restore.class);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
+            log.debug("Run with feature {}", feature);
         }
         for(Path file : files) {
             if(this.isCanceled()) {

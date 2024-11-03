@@ -96,7 +96,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     @Override
     public void clear() {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Close %d registered vaults", this.size()));
+            log.info("Close {} registered vaults", this.size());
         }
         this.forEach(Vault::close);
         super.clear();
@@ -107,7 +107,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Found vault %s for file %s", vault, file));
+                    log.debug("Found vault {} for file {}", vault, file);
                 }
                 return vault;
             }

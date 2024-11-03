@@ -155,7 +155,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                                           final TransferStatus overall, final String url, final Integer partNumber,
                                           final long offset, final long length, final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
+            log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         }
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<TransferStatus>() {
@@ -173,7 +173,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 BrickUploadFeature.super.upload(
                         file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Received response for part number %d", partNumber));
+                    log.info("Received response for part number {}", partNumber);
                 }
                 return status;
             }

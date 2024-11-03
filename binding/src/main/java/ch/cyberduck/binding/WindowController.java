@@ -118,7 +118,7 @@ public abstract class WindowController extends BundleController implements NSWin
     @Delegate
     public void windowDidBecomeKey(final NSNotification notification) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Become key for window %s", window));
+            log.debug("Become key for window {}", window);
         }
     }
 
@@ -126,7 +126,7 @@ public abstract class WindowController extends BundleController implements NSWin
     @Delegate
     public void windowDidResignKey(final NSNotification notification) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Resign key for window %s", window));
+            log.debug("Resign key for window {}", window);
         }
     }
 
@@ -134,7 +134,7 @@ public abstract class WindowController extends BundleController implements NSWin
     @Delegate
     public void windowDidBecomeMain(final NSNotification notification) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Become main for window %s", window));
+            log.debug("Become main for window {}", window);
         }
     }
 
@@ -142,21 +142,21 @@ public abstract class WindowController extends BundleController implements NSWin
     @Delegate
     public void windowDidResignMain(final NSNotification notification) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Resign main for window %s", window));
+            log.debug("Resign main for window {}", window);
         }
     }
 
     @Delegate
     public void windowWillEnterFullScreen(final NSNotification notification) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Enter full screen for window %s", window));
+            log.debug("Enter full screen for window {}", window);
         }
     }
 
     @Delegate
     public void windowWillExitFullScreen(final NSNotification notification) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Exit full screen for window %s", window));
+            log.debug("Exit full screen for window {}", window);
         }
     }
 
@@ -169,7 +169,7 @@ public abstract class WindowController extends BundleController implements NSWin
     @Delegate
     public void windowWillBeginSheet(final NSNotification notification) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Attach sheet for window %s", window));
+            log.debug("Attach sheet for window {}", window);
         }
     }
 
@@ -190,7 +190,7 @@ public abstract class WindowController extends BundleController implements NSWin
     public void windowWillClose(final NSNotification notification) {
         window.endEditingFor(null);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Window will close %s", notification));
+            log.debug("Window will close {}", notification);
         }
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
             listener.windowWillClose();
@@ -294,7 +294,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public void printOperationDidRun_success_contextInfo(NSPrintOperation op, boolean success, ID contextInfo) {
         if(!success) {
-            log.warn(String.format("Printing failed for context %s", contextInfo));
+            log.warn("Printing failed for context {}", contextInfo);
         }
     }
 }

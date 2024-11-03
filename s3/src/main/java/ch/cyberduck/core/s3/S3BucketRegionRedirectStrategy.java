@@ -48,7 +48,7 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
         if(response.containsHeader("x-amz-bucket-region")) {
             final Header header = response.getFirstHeader("x-amz-bucket-region");
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Received redirect response %s with %s", response, header));
+                log.warn("Received redirect response {} with {}", response, header);
             }
             if(service.getDisableDnsBuckets()) {
                 final String message = String.format("Virtual host style requests are disabled but received redirect response %s with x-amz-bucket-region %s",
@@ -64,17 +64,17 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
                     host.getProtocol().getRegions().stream().map(location -> region).toArray(String[]::new));
             final HttpUriRequest redirect = RequestBuilder.copy(request).setUri(uri).build();
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Retry request with URI %s", redirect.getURI()));
+                log.warn("Retry request with URI {}", redirect.getURI());
             }
             final String bucketName = ServiceUtils.findBucketNameInHostOrPath(redirect.getURI(),
                     RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Determined bucket %s from request %s", bucketName, request));
+                log.debug("Determined bucket {} from request {}", bucketName, request);
             }
             // Update cache with new region
             if(bucketName != null) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Cache region %s for bucket %s", region, bucketName));
+                    log.debug("Cache region {} for bucket {}", region, bucketName);
                 }
                 service.getRegionEndpointCache().putRegionForBucketName(bucketName, region);
             }

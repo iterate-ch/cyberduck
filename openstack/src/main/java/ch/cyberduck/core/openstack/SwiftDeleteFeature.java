@@ -101,7 +101,7 @@ public class SwiftDeleteFeature implements Delete {
                         }
                         catch(GenericException e) {
                             if(new SwiftExceptionMappingService().map(e) instanceof NotfoundException) {
-                                log.warn(String.format("Ignore missing placeholder object %s", file));
+                                log.warn("Ignore missing placeholder object {}", file);
                             }
                             else {
                                 throw e;

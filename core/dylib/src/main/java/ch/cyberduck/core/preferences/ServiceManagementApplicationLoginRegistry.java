@@ -46,11 +46,10 @@ public class ServiceManagementApplicationLoginRegistry implements ApplicationLog
         final Local helper = new FinderLocal(new BundleApplicationResourcesFinder().find().getParent(),
                 String.format("Library/LoginItems/%s.app", application.getName()));
         if(!finder.register(helper)) {
-            log.warn(String.format("Failed to register %s (%s) with launch services", helper,
-                    finder.getDescription(application.getIdentifier())));
+            log.warn("Failed to register {} ({}) with launch services", helper, finder.getDescription(application.getIdentifier()));
         }
         if(!ServiceManagementFunctions.library.SMLoginItemSetEnabled(application.getIdentifier(), true)) {
-            log.warn(String.format("Failed to register %s as login item", application));
+            log.warn("Failed to register {} as login item", application);
             return false;
         }
         return true;
@@ -59,7 +58,7 @@ public class ServiceManagementApplicationLoginRegistry implements ApplicationLog
     @Override
     public boolean unregister(final Application application) {
         if(!ServiceManagementFunctions.library.SMLoginItemSetEnabled(application.getIdentifier(), false)) {
-            log.warn(String.format("Failed to remove %s as login item", application));
+            log.warn("Failed to remove {} as login item", application);
             return false;
         }
         return true;

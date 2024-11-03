@@ -70,7 +70,7 @@ public class DAVReadFeature implements Read {
                 header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Add range header %s for file %s", header, file));
+                log.debug("Add range header {} for file {}", header, file);
             }
             headers.add(new BasicHeader(HttpHeaders.RANGE, header));
             // Disable compression
@@ -93,7 +93,7 @@ public class DAVReadFeature implements Read {
                     if(stream.getCode() == HttpStatus.SC_OK) {
                         if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
                             if(stream.getLength() != status.getLength()) {
-                                log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
+                                log.warn("Range header not supported. Skipping {} bytes in file {}.", status.getOffset(), file);
                                 stream.skip(status.getOffset());
                             }
                         }

@@ -70,7 +70,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
     public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
         if(++count > retry) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Cancel retry for failure %s after %d counts", failure, retry));
+                log.warn("Cancel retry for failure {} after {} counts", failure, retry);
             }
             return false;
         }
@@ -79,7 +79,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
         switch(diagnostics.determine(failure)) {
             case network:
                 if(!ReachabilityFactory.get().isReachable(host)) {
-                    log.warn(String.format("Cancel retry for failure %s with host %s not reachable", failure, host));
+                    log.warn("Cancel retry for failure {} with host {} not reachable", failure, host);
                     return false;
                 }
                 delay = backoff;
@@ -92,12 +92,12 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 }
             default:
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("No retry for failure %s", failure));
+                    log.warn("No retry for failure {}", failure);
                 }
                 return false;
         }
         if(log.isWarnEnabled()) {
-            log.warn(String.format("Retry for failure %s with delay of %ds", failure, delay));
+            log.warn("Retry for failure {} with delay of {}s", failure, delay);
         }
         if(delay > 0) {
             final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
@@ -105,7 +105,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 public void validate() throws ConnectionCanceledException {
                     if(cancel.isCanceled()) {
                         if(log.isWarnEnabled()) {
-                            log.warn(String.format("Abort pausing retry after failure %s", failure));
+                            log.warn("Abort pausing retry after failure {}", failure);
                         }
                         throw new ConnectionCanceledException();
                     }

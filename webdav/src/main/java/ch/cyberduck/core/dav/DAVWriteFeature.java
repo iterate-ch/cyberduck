@@ -79,7 +79,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
             if(expect) {
                 if(null != status.getLockId()) {
                     // Handle 412 Precondition Failed with expired token
-                    log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
+                    log.warn("Retry failure {} with lock id {} removed", e, status.getLockId());
                     return this.write(file, this.toHeaders(file, status.withLockId(null), expect), status);
                 }
             }
@@ -88,7 +88,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
         catch(InteroperabilityException e) {
             if(expect) {
                 // Handle 417 Expectation Failed
-                log.warn(String.format("Retry failure %s with Expect: Continue removed", e));
+                log.warn("Retry failure {} with Expect: Continue removed", e);
                 return this.write(file, this.toHeaders(file, status.withLockId(null), false), status);
             }
             throw e;
@@ -107,7 +107,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
             final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
                     status.getOffset() + status.getLength());
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Add range header %s for file %s", header, file));
+                log.debug("Add range header {} for file {}", header, file);
             }
             headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
         }

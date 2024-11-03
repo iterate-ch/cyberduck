@@ -85,7 +85,7 @@ public class DropboxSearchFeature implements Search {
                 type = EnumSet.of(Path.Type.directory);
             }
             else {
-                log.warn(String.format("Skip file %s", metadata));
+                log.warn("Skip file {}", metadata);
                 return true;
             }
             list.add(new Path(metadata.getPathDisplay(), type, attributes.toAttributes(metadata)));

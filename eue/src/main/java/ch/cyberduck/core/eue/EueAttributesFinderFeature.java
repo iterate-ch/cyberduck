@@ -95,7 +95,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             switch(e.getCode()) {
                 case HttpStatus.SC_NOT_MODIFIED:
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("No changes for file %s with ETag %s", file, file.attributes().getETag()));
+                        log.debug("No changes for file {} with ETag {}", file, file.attributes().getETag());
                     }
                     return file.attributes();
             }

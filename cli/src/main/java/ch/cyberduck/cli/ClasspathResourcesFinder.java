@@ -34,7 +34,7 @@ public class ClasspathResourcesFinder implements ApplicationResourcesFinder {
         final String current = new File(URI.create(ClasspathResourcesFinder.class.getProtectionDomain().getCodeSource().getLocation().toString())).getPath();
         final Local parent = LocalFactory.get(current).getParent();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Use folder %s for application resources directory", parent));
+            log.debug("Use folder {} for application resources directory", parent);
         }
         return parent;
     }

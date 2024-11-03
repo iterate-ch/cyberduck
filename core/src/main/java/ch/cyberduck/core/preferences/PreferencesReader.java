@@ -50,18 +50,18 @@ public interface PreferencesReader {
                 continue;
             }
             if(!m.contains("=")) {
-                log.warn(String.format("Invalid header %s", m));
+                log.warn("Invalid header {}", m);
                 continue;
             }
             int split = m.indexOf('=');
             String key = m.substring(0, split);
             if(StringUtils.isBlank(key)) {
-                log.warn(String.format("Missing key in %s", m));
+                log.warn("Missing key in {}", m);
                 continue;
             }
             String value = m.substring(split + 1);
             if(StringUtils.isEmpty(value)) {
-                log.warn(String.format("Missing value in %s", m));
+                log.warn("Missing value in {}", m);
                 continue;
             }
             table.put(key, value);

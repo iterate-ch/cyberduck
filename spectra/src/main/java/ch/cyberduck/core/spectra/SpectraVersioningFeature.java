@@ -93,10 +93,10 @@ public class SpectraVersioningFeature implements Versioning {
             final VersioningConfiguration current = this.getConfiguration(container);
             if(configuration.isEnabled()) {
                 if(current.isEnabled()) {
-                    log.debug(String.format("Versioning already enabled for bucket %s", container));
+                    log.debug("Versioning already enabled for bucket {}", container);
                 }
                 else {
-                    log.debug(String.format("Enable bucket versioning for %s", container));
+                    log.debug("Enable bucket versioning for {}", container);
                     final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
                     final GetBucketSpectraS3Response bucket = client.getBucketSpectraS3(new GetBucketSpectraS3Request(container.getName()));
                     final UUID id = bucket.getBucketResult().getDataPolicyId();
@@ -104,7 +104,7 @@ public class SpectraVersioningFeature implements Versioning {
                 }
             }
             else {
-                log.warn(String.format("Disable bucket versioning for %s is not supported", container));
+                log.warn("Disable bucket versioning for {} is not supported", container);
             }
             cache.remove(container);
         }

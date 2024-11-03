@@ -40,7 +40,7 @@ public class ExpiringObjectHolder<T> {
             return object;
         }
         if(log.isWarnEnabled()) {
-            log.warn(String.format("Expired object %s", object));
+            log.warn("Expired object {}", object);
         }
         return object = null;
     }

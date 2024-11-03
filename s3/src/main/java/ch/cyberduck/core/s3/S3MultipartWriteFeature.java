@@ -67,7 +67,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
             multipart = session.getClient().multipartStartUpload(
                     bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Multipart upload started for %s with ID %s", multipart.getObjectKey(), multipart.getUploadId()));
+                log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
             }
             multipart.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         }
@@ -82,7 +82,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
             public StorageObject getStatus() {
                 if(proxy.getResponse() != null) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Received response %s", proxy.getResponse()));
+                        log.debug("Received response {}", proxy.getResponse());
                     }
                     object.setContentLength(proxy.getOffset());
                     object.setETag(proxy.getResponse().getEtag());
@@ -160,7 +160,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
+                            log.debug("Saved object {} with checksum {}", file, part.getETag());
                         }
                         return new MultipartPart(partNumber,
                                 null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
@@ -188,11 +188,11 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         public void close() throws IOException {
             try {
                 if(close.get()) {
-                    log.warn(String.format("Skip double close of stream %s", this));
+                    log.warn("Skip double close of stream {}", this);
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
+                    log.warn("Skip closing with previous failure {}", canceled.get());
                     return;
                 }
                 if(completed.isEmpty()) {
@@ -200,11 +200,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                 }
                 final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Completed multipart upload for %s with checksum %s",
-                            complete.getObjectKey(), complete.getEtag()));
+                    log.debug("Completed multipart upload for {} with checksum {}", complete.getObjectKey(), complete.getEtag());
                 }
                 if(file.getType().contains(Path.Type.encrypted)) {
-                    log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+                    log.warn("Skip checksum verification for {} with client side encryption enabled", file);
                 }
                 else {
                     if(S3Session.isAwsHostname(session.getHost().getHostname())) {

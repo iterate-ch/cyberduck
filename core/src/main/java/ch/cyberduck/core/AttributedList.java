@@ -168,13 +168,13 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     public AttributedList<E> filter(final AttributedList<E> filtered, final Comparator<E> comparator, final Filter<E> filter) {
         if(null != comparator) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Sort list %s with comparator %s", this, comparator));
+                log.debug("Sort list {} with comparator {}", this, comparator);
             }
             filtered.impl.sort(comparator);
         }
         if(null != filter) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Filter list %s with filter %s", this, filter));
+                log.debug("Filter list {} with filter {}", this, filter);
             }
             filtered.impl.removeIf(e -> !filter.accept(e));
         }

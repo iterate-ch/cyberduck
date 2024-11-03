@@ -75,7 +75,7 @@ public class DAVMetadataFeature implements Headers {
                 throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(InteroperabilityException | NotfoundException i) {
-                log.warn(String.format("Failure to obtain attributes of %s. %s", file, i));
+                log.warn("Failure to obtain attributes of {}. {}", file, i);
                 // Workaround for #8902
                 return Collections.emptyMap();
             }
@@ -88,7 +88,7 @@ public class DAVMetadataFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Write metadata %s for file %s", status, file));
+            log.debug("Write metadata {} for file {}", status, file);
         }
         try {
             final List<Element> props = new ArrayList<>();

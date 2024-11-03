@@ -29,12 +29,12 @@ public class RevisionComparisonService implements ComparisonService {
             if(local.getRevision().equals(remote.getRevision())) {
                 // No conflict. Proceed with overwrite
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Equal revision %s", remote.getRevision()));
+                    log.debug("Equal revision {}", remote.getRevision());
                 }
                 return Comparison.equal;
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Local revision %s not equal remote %s", local.getRevision(), remote.getRevision()));
+                log.debug("Local revision {} not equal remote {}", local.getRevision(), remote.getRevision());
             }
             return Comparison.notequal;
         }

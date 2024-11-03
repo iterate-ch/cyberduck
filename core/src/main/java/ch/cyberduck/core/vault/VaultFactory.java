@@ -46,15 +46,14 @@ public class VaultFactory extends Factory<Vault> {
             final Constructor<? extends Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
                     directory.getClass(), masterkey.getClass(), config.getClass(), pepper.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameters %s %s %s %s",
-                        directory.getClass(), masterkey.getClass(), config.getClass(), pepper.getClass()));
+                log.warn("No matching constructor for parameters {} {} {} {}", directory.getClass(), masterkey.getClass(), config.getClass(), pepper.getClass());
                 // Call default constructor for disabled implementations
                 return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(directory, masterkey, config, pepper);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
             return Vault.DISABLED;
         }
     }
@@ -64,14 +63,14 @@ public class VaultFactory extends Factory<Vault> {
             final Constructor<? extends Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
                     directory.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", directory.getClass()));
+                log.warn("No matching constructor for parameter {}", directory.getClass());
                 // Call default constructor for disabled implementations
                 return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(directory);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
             return Vault.DISABLED;
         }
     }

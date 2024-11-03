@@ -91,7 +91,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                 catch(InteroperabilityException | ConflictException i) {
                     // PROPFIND Method not allowed
                     if(log.isWarnEnabled()) {
-                        log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
+                        log.warn("Failure with PROPFIND request for {}. {}", file, i.getMessage());
                     }
                     final PathAttributes attr = this.head(file);
                     if(PathAttributes.EMPTY == attr) {
@@ -117,7 +117,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
             attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
         }
         catch(InvalidDateException p) {
-            log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
+            log.warn("{} is not RFC 1123 format {}", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage());
         }
         if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
             // Set size unless response is compressed
@@ -169,7 +169,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                         }
                         else {
                             if(log.isDebugEnabled()) {
-                                log.debug(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE));
+                                log.debug("Missing value for property {}", DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
                             }
                             if(resource.getModified() != null) {
                                 attributes.setModificationDate(resource.getModified().getTime());
@@ -182,7 +182,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                     }
                 }
                 catch(InvalidDateException e) {
-                    log.warn(String.format("Failure parsing property %s with value %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, value));
+                    log.warn("Failure parsing property {} with value {}", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, value);
                     if(resource.getModified() != null) {
                         attributes.setModificationDate(resource.getModified().getTime());
                     }
@@ -190,7 +190,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
             }
             else {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
+                    log.debug("Missing value for property {}", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
                 }
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());
@@ -199,7 +199,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
             // Validate value with fallback to server side modified date
             if(attributes.getModificationDate() == 0) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Invalid value for property %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
+                    log.debug("Invalid value for property {}", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
                 }
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());

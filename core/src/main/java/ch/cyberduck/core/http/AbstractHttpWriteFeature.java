@@ -118,7 +118,7 @@ public abstract class AbstractHttpWriteFeature<R> implements HttpWriteFeature<R>
         final Thread t = factory.newThread(target);
         t.start();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Wait for response of %s", command));
+            log.debug("Wait for response of {}", command);
         }
         // Wait for output stream to become available
         Interruptibles.await(streamOpen, ConnectionCanceledException.class);

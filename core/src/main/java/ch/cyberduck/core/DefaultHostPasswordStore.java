@@ -37,16 +37,16 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public String findLoginPassword(final Host bookmark) {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
-            log.warn(String.format("Missing hostname in %s", bookmark));
+            log.warn("Missing hostname in {}", bookmark);
             return null;
         }
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn(String.format("Missing hostname in %s", bookmark));
+            log.warn("Missing hostname in {}", bookmark);
             return null;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Fetching login password from keychain for %s", bookmark));
+            log.info("Fetching login password from keychain for {}", bookmark);
         }
         final String password;
         try {
@@ -54,12 +54,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                     bookmark.getHostname(), credentials.getUsername());
         }
         catch(LocalAccessDeniedException e) {
-            log.warn(String.format("Failure %s searching in keychain", e));
+            log.warn("Failure {} searching in keychain", e);
             return null;
         }
         if(null == password) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Password not found in keychain for %s", bookmark));
+                log.info("Password not found in keychain for {}", bookmark);
             }
         }
         return password;
@@ -68,11 +68,11 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public String findLoginToken(final Host bookmark) {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
-            log.warn(String.format("Missing hostname in %s", bookmark));
+            log.warn("Missing hostname in {}", bookmark);
             return null;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Fetching login token from keychain for %s", bookmark));
+            log.info("Fetching login token from keychain for {}", bookmark);
         }
         final Credentials credentials = bookmark.getCredentials();
         // Find token named like "Shared Access Signature (SAS) Token"
@@ -83,12 +83,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             bookmark.getProtocol().getTokenPlaceholder() : String.format("%s (%s)", bookmark.getProtocol().getTokenPlaceholder(), credentials.getUsername()));
         }
         catch(LocalAccessDeniedException e) {
-            log.warn(String.format("Failure %s searching in keychain", e));
+            log.warn("Failure {} searching in keychain", e);
             return null;
         }
         if(null == token) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Token not found in keychain for %s", bookmark));
+                log.info("Token not found in keychain for {}", bookmark);
             }
         }
         return token;
@@ -103,16 +103,16 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public String findPrivateKeyPassphrase(final Host bookmark) {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
-            log.warn(String.format("Missing hostname in %s", bookmark));
+            log.warn("Missing hostname in {}", bookmark);
             return null;
         }
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn(String.format("Missing username in %s", bookmark));
+            log.warn("Missing username in {}", bookmark);
             return null;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Fetching private key passphrase from keychain for %s", bookmark));
+            log.info("Fetching private key passphrase from keychain for {}", bookmark);
         }
         if(credentials.isPublicKeyAuthentication()) {
             final Local key = credentials.getIdentity();
@@ -128,13 +128,13 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 }
                 if(null == passphrase) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Passphrase not found in keychain for %s", key));
+                        log.info("Passphrase not found in keychain for {}", key);
                     }
                 }
                 return passphrase;
             }
             catch(LocalAccessDeniedException e) {
-                log.warn(String.format("Failure %s searching in keychain", e));
+                log.warn("Failure {} searching in keychain", e);
                 return null;
             }
         }
@@ -146,16 +146,16 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public OAuthTokens findOAuthTokens(final Host bookmark) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Fetching OAuth tokens from keychain for %s", bookmark));
+            log.info("Fetching OAuth tokens from keychain for {}", bookmark);
         }
         final String[] descriptors = getOAuthPrefix(bookmark);
         for(String prefix : descriptors) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Search with prefix %s", prefix));
+                log.debug("Search with prefix {}", prefix);
             }
             final String hostname = getOAuthHostname(bookmark);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Search with hostname %s", hostname));
+                log.debug("Search with hostname {}", hostname);
             }
             try {
                 final String expiry = this.getPassword(getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
@@ -169,14 +169,14 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                                 String.format("%s OIDC Id Token", prefix)));
                 if(tokens.validate()) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Return tokens %s for %s", tokens, bookmark));
+                        log.debug("Return tokens {} for {}", tokens, bookmark);
                     }
                     return tokens;
                 }
                 // Continue with deprecated descriptors
             }
             catch(LocalAccessDeniedException e) {
-                log.warn(String.format("Failure %s searching in keychain", e));
+                log.warn("Failure {} searching in keychain", e);
                 return OAuthTokens.EMPTY;
             }
         }
@@ -229,7 +229,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         final Credentials credentials = bookmark.getCredentials();
         final Protocol protocol = bookmark.getProtocol();
         if(log.isInfoEnabled()) {
-            log.info(String.format("Save credentials %s for bookmark %s", credentials, bookmark));
+            log.info("Save credentials {} for bookmark {}", credentials, bookmark);
         }
         if(credentials.isPublicKeyAuthentication()) {
             this.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
@@ -237,11 +237,11 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         if(credentials.isPasswordAuthentication()) {
             if(StringUtils.isEmpty(credentials.getUsername())) {
-                log.warn(String.format("No username in credentials for bookmark %s", bookmark.getHostname()));
+                log.warn("No username in credentials for bookmark {}", bookmark.getHostname());
                 return;
             }
             if(StringUtils.isEmpty(credentials.getPassword())) {
-                log.warn(String.format("No password in credentials for bookmark %s", bookmark.getHostname()));
+                log.warn("No password in credentials for bookmark {}", bookmark.getHostname());
                 return;
             }
             this.addPassword(protocol.getScheme(), bookmark.getPort(),
@@ -284,7 +284,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public void delete(final Host bookmark) throws LocalAccessDeniedException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Delete password for bookmark %s", bookmark));
+            log.info("Delete password for bookmark {}", bookmark);
         }
         final Credentials credentials = bookmark.getCredentials();
         final Protocol protocol = bookmark.getProtocol();
@@ -293,7 +293,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         if(protocol.isPasswordConfigurable()) {
             if(StringUtils.isEmpty(credentials.getUsername())) {
-                log.warn(String.format("No username in credentials for bookmark %s", bookmark.getHostname()));
+                log.warn("No username in credentials for bookmark {}", bookmark.getHostname());
                 return;
             }
             this.deletePassword(protocol.getScheme(), bookmark.getPort(), bookmark.getHostname(),

@@ -37,7 +37,7 @@ public class ProxyController extends AbstractController {
      */
     public void invalidate() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Invalidate controller %s", this));
+            log.debug("Invalidate controller {}", this);
         }
         proxy.invalidate();
     }

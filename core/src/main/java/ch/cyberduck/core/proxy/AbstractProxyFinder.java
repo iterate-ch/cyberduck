@@ -40,7 +40,7 @@ public abstract class AbstractProxyFinder implements ProxyFinder {
             return hostname.matches(regex);
         }
         catch(PatternSyntaxException e) {
-            log.warn("Failed converting wildcard to regular expression:" + e.getMessage());
+            log.warn("Failed converting wildcard to regular expression:{}", e.getMessage());
         }
         return false;
     }

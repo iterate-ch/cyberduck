@@ -125,7 +125,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             this.setSwallowedExceptionListener(new SwallowedExceptionListener() {
                 @Override
                 public void onSwallowException(final Exception e) {
-                    log.warn(String.format("Ignore failure %s", e));
+                    log.warn("Ignore failure {}", e);
                 }
             });
         }
@@ -167,14 +167,14 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         public void passivateObject(final PooledObject<DiskShareWrapper> object) throws BackgroundException {
             final DiskShareWrapper share = object.getObject();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Passivate share %s", share));
+                log.debug("Passivate share {}", share);
             }
             try {
                 lock.unlock();
             }
             catch(IllegalMonitorStateException e) {
                 // Not held by current thread
-                log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                log.error("Lock {} not held by current thread {}", lock, Thread.currentThread().getName());
                 throw new DefaultExceptionMappingService().map(e);
             }
         }
@@ -183,11 +183,11 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         public void activateObject(final PooledObject<DiskShareWrapper> object) {
             final DiskShareWrapper share = object.getObject();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Obtain lock for share %s", share));
+                log.debug("Obtain lock for share {}", share);
             }
             lock.lock();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Obtained lock for share %s", share));
+                log.debug("Obtained lock for share {}", share);
             }
         }
 
@@ -195,17 +195,17 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         public boolean validateObject(final PooledObject<DiskShareWrapper> object) {
             final DiskShareWrapper share = object.getObject();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Validate share %s", share));
+                log.debug("Validate share {}", share);
             }
             final boolean connected = share.get().isConnected();
             if(!connected) {
-                log.warn(String.format("Share %s not connected", share));
+                log.warn("Share {} not connected", share);
                 try {
                     lock.unlock();
                 }
                 catch(IllegalMonitorStateException e) {
                     // Not held by current thread
-                    log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                    log.error("Lock {} not held by current thread {}", lock, Thread.currentThread().getName());
                 }
             }
             return connected;
@@ -220,7 +220,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     }
                     catch(IllegalMonitorStateException e) {
                         // Not held by current thread
-                        log.error(String.format("Lock %s not held by current thread %s", lock, Thread.currentThread().getName()));
+                        log.error("Lock {} not held by current thread {}", lock, Thread.currentThread().getName());
                         throw new DefaultExceptionMappingService().map(e);
                     }
             }
@@ -249,7 +249,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .build());
             final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Connected to %s", connection.getConnectionContext()));
+                log.debug("Connected to {}", connection.getConnectionContext());
             }
             return connection;
         }
@@ -301,7 +301,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             try {
                 pool = pools.getOrDefault(shareName, new DiskSharePool(shareName));
                 if(pool.getNumIdle() == 0) {
-                    log.warn(String.format("No idle share for %s with %d active", shareName, pool.getNumActive()));
+                    log.warn("No idle share for {} with {} active", shareName, pool.getNumActive());
                 }
                 pools.putIfAbsent(shareName, pool);
             }
@@ -309,11 +309,11 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                 lock.unlock();
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Open share %s in thread %s", shareName, Thread.currentThread().getName()));
+                log.debug("Open share {} in thread {}", shareName, Thread.currentThread().getName());
             }
             final DiskShareWrapper wrapper = pool.borrowObject();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Opened share %s in thread %s", wrapper, Thread.currentThread().getName()));
+                log.debug("Opened share {} in thread {}", wrapper, Thread.currentThread().getName());
             }
             return wrapper;
         }
@@ -332,16 +332,16 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             final GenericObjectPool<DiskShareWrapper> pool = pools.get(shareName);
             if(null != pool) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Release share %s in thread %s", share, Thread.currentThread().getName()));
+                    log.debug("Release share {} in thread {}", share, Thread.currentThread().getName());
                 }
                 try {
                     pool.returnObject(share);
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Released share %s in thread %s", share, Thread.currentThread().getName()));
+                        log.debug("Released share {} in thread {}", share, Thread.currentThread().getName());
                     }
                 }
                 catch(IllegalStateException e) {
-                    log.warn(String.format("Failure %s releasing share %s", e, share));
+                    log.warn("Failure {} releasing share {}", e, share);
                     throw new BackgroundException(e);
                 }
             }
@@ -372,7 +372,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             client.close();
         }
         catch(IOException e) {
-            log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
+            log.warn("Ignore disconnect failure {}", e.getMessage());
         }
         super.disconnect();
 

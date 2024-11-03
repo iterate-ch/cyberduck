@@ -53,7 +53,7 @@ public class S3BucketListService implements RootListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List containers for %s", session));
+            log.debug("List containers for {}", session);
         }
         try {
             final AttributedList<Path> buckets = new AttributedList<>();
@@ -79,7 +79,7 @@ public class S3BucketListService implements RootListService {
                             location = b.getLocation();
                         }
                         if(!StringUtils.equals(location, region.getIdentifier())) {
-                            log.warn(String.format("Skip bucket %s in region %s", bucket, location));
+                            log.warn("Skip bucket {} in region {}", bucket, location);
                             continue;
                         }
                         attr.setRegion(location);

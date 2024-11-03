@@ -48,7 +48,7 @@ public class SkipFilter extends AbstractUploadFilter {
             if(local.isFile()) {
                 if(find.find(file)) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s", file));
+                        log.info("Skip file {}", file);
                     }
                     return false;
                 }

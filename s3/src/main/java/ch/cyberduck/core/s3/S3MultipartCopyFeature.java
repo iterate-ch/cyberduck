@@ -73,8 +73,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             final MultipartUpload multipart = session.getClient().multipartStartUpload(
                     destination.getBucketName(), destination);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Multipart upload started for %s with ID %s",
-                        multipart.getObjectKey(), multipart.getUploadId()));
+                log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
             }
             final long size = status.getLength();
             long remaining = size;
@@ -98,8 +97,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             // has been sent, it is important that you check the response body to determine whether the request succeeded.
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Completed multipart upload for %s with checksum %s",
-                        complete.getObjectKey(), complete.getEtag()));
+                log.debug("Completed multipart upload for {} with checksum {}", complete.getObjectKey(), complete.getEtag());
             }
             return complete.getVersionId();
         }
@@ -115,7 +113,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                                          final MultipartUpload multipart,
                                          final int partNumber, final long offset, final long length) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, source, offset, length));
+            log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, source, offset, length);
         }
         return pool.execute(new Callable<MultipartPart>() {
             @Override
@@ -127,7 +125,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                             bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(), containerService.getKey(source),
                             null, null, null, null, range.getStart(), range.getEnd(), source.attributes().getVersionId());
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Received response %s for part number %d", part, partNumber));
+                        log.info("Received response {} for part number {}", part, partNumber);
                     }
                     // Populate part with response data that is accessible via the object's metadata
                     return new MultipartPart(partNumber,

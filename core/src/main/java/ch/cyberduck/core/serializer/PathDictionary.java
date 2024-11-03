@@ -52,7 +52,7 @@ public class PathDictionary<T> {
                     type.add(Path.Type.valueOf(t));
                 }
                 catch(IllegalArgumentException e) {
-                    log.warn(String.format("Unknown type %s", t));
+                    log.warn("Unknown type {}", t);
                 }
             }
         }

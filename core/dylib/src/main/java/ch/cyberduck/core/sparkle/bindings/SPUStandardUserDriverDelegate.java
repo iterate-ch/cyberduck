@@ -77,7 +77,7 @@ public interface SPUStandardUserDriverDelegate {
      */
     default boolean standardUserDriverShouldHandleShowingScheduledUpdate_andInImmediateFocus(SUAppcastItem update, boolean immediateFocus) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Should handle showing scheduled update %s", update));
+            log.debug("Should handle showing scheduled update {}", update);
         }
         return true;
     }
@@ -92,7 +92,7 @@ public interface SPUStandardUserDriverDelegate {
      */
     default void standardUserDriverWillHandleShowingUpdate_forUpdate_state(boolean handleShowingUpdate, SUAppcastItem update, SPUUserUpdateState state) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Will handle showing scheduled update %s", update));
+            log.debug("Will handle showing scheduled update {}", update);
         }
     }
 
@@ -106,7 +106,7 @@ public interface SPUStandardUserDriverDelegate {
      */
     default void standardUserDriverDidReceiveUserAttentionForUpdate(SUAppcastItem update) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Did receive user attention for update %s", update));
+            log.debug("Did receive user attention for update {}", update);
         }
     }
 

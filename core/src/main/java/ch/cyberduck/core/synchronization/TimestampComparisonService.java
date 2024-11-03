@@ -30,18 +30,18 @@ public class TimestampComparisonService implements ComparisonService {
         if(-1L != local.getModificationDate() && -1L != remote.getModificationDate()) {
             if(Timestamp.toSeconds(local.getModificationDate()) < Timestamp.toSeconds(remote.getModificationDate())) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Local modification date %d is earlier than remote %d", local.getModificationDate(), remote.getModificationDate()));
+                    log.debug("Local modification date {} is earlier than remote {}", local.getModificationDate(), remote.getModificationDate());
                 }
                 return Comparison.remote;
             }
             if(Timestamp.toSeconds(local.getModificationDate()) > Timestamp.toSeconds(remote.getModificationDate())) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Local modification date %d is newer than remote %d", local.getModificationDate(), remote.getModificationDate()));
+                    log.debug("Local modification date {} is newer than remote {}", local.getModificationDate(), remote.getModificationDate());
                 }
                 return Comparison.local;
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Equal modification date %s", remote.getModificationDate()));
+                log.debug("Equal modification date {}", remote.getModificationDate());
             }
             return Comparison.equal;
         }

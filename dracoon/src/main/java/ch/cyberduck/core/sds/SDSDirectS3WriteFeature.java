@@ -71,14 +71,14 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
                                 // Upload complete
                                 if(response.containsHeader("ETag")) {
                                     if(log.isInfoEnabled()) {
-                                        log.info(String.format("Received response %s for part number %d", response, status.getPart()));
+                                        log.info("Received response {} for part number {}", response, status.getPart());
                                     }
                                     return new Node()
                                             .type(Node.TypeEnum.FILE)
                                             .hash(Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"')).hash);
                                 }
                                 else {
-                                    log.error(String.format("Missing ETag in response %s", response));
+                                    log.error("Missing ETag in response {}", response);
                                     throw new InteroperabilityException(response.getStatusLine().getReasonPhrase());
                                 }
                             default:

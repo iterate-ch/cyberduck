@@ -56,7 +56,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder, Attribu
                 // Retrieve the namespace ID for a users home folder and team root folder
                 final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set root namespace %s", account.getRootInfo().getRootNamespaceId()));
+                    log.debug("Set root namespace {}", account.getRootInfo().getRootNamespaceId());
                 }
                 return new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId());
             }
@@ -97,7 +97,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder, Attribu
             final String sharedFolderId = folder.getSharedFolderId();
             if(sharedFolderId != null) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set file id %s for shared folder %s", sharedFolderId, folder));
+                    log.debug("Set file id {} for shared folder {}", sharedFolderId, folder);
                 }
                 attributes.setFileId(sharedFolderId);
             }

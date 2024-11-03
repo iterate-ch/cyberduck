@@ -52,7 +52,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
             return alias;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Determined hostname %s from alias %s from %s", hostname, alias, configuration));
+            log.info("Determined hostname {} from alias {} from {}", hostname, alias, configuration);
         }
         return hostname;
     }

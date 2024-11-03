@@ -63,7 +63,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
         final Map<TransferItem, TransferStatus> status = new HashMap<>();
         final TransferPathFilter filter = transfer.filter(session, session, action, listener);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter cache %s with filter %s", cache, filter));
+            log.debug("Filter cache {} with filter {}", cache, filter);
         }
         // Unordered list
         for(Map.Entry<CacheReference<TransferItem>, AttributedList<TransferItem>> entry : cache.asMap().entrySet()) {

@@ -51,7 +51,7 @@ public class LocalFindFeature implements Find {
                     }
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Failure obtaining canonical file reference for %s", file));
+                    log.warn("Failure obtaining canonical file reference for {}", file);
                 }
             }
         }

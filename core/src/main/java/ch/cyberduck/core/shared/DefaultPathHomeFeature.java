@@ -42,7 +42,7 @@ public class DefaultPathHomeFeature extends AbstractHomeFeature {
             return PathNormalizer.compose(ROOT, host.getDefaultPath());
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("No default path set for bookmark %s", host));
+            log.debug("No default path set for bookmark {}", host);
         }
         // No default path configured
         return null;

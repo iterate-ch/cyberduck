@@ -73,7 +73,7 @@ public class HttpReachability implements Reachability {
     @Override
     public void test(final Host bookmark) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Test reachability for %s", bookmark));
+            log.debug("Test reachability for {}", bookmark);
         }
         final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
                 new DefaultTrustManagerHostnameCallback(bookmark), store);
@@ -89,7 +89,7 @@ public class HttpReachability implements Reachability {
             final HttpRequestBase resource = new HttpHead(new HostUrlProvider().withUsername(false).withPath(true).get(bookmark));
             final CloseableHttpResponse response = client.execute(resource);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Received response %s", response));
+                log.debug("Received response {}", response);
             }
             EntityUtils.consume(response.getEntity());
             switch(response.getStatusLine().getStatusCode()) {
@@ -98,7 +98,7 @@ public class HttpReachability implements Reachability {
                 case HttpStatus.SC_SERVICE_UNAVAILABLE:
                 case HttpStatus.SC_GATEWAY_TIMEOUT:
                     if(log.isWarnEnabled()) {
-                        log.warn(String.format("HTTP error %s determined offline status", response));
+                        log.warn("HTTP error {} determined offline status", response);
                     }
                     throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(response.getStatusLine().getStatusCode(),
                             response.getStatusLine().getReasonPhrase()));
@@ -106,7 +106,7 @@ public class HttpReachability implements Reachability {
         }
         catch(ClientProtocolException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Ignore HTTP error response %s", e));
+                log.warn("Ignore HTTP error response {}", e);
             }
         }
         catch(SSLException e) {
@@ -116,25 +116,25 @@ public class HttpReachability implements Reachability {
             catch(ConnectionCanceledException c) {
                 // Certificate error only
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Ignore SSL failure %s", e));
+                    log.warn("Ignore SSL failure {}", e);
                 }
             }
         }
         catch(SocketException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Failure %s opening socket for %s", e, bookmark));
+                log.warn("Failure {} opening socket for {}", e, bookmark);
             }
             throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(IOException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Generic failure %s for %s", e, bookmark));
+                log.warn("Generic failure {} for {}", e, bookmark);
             }
             throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(IllegalArgumentException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Parsing URI %s: %s", bookmark, e));
+                log.warn("Parsing URI {}: {}", bookmark, e);
             }
             throw new DefaultExceptionMappingService().map(e);
         }

@@ -75,7 +75,7 @@ public class GoogleStorageVersioningFeature implements Versioning {
                 throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
             catch(AccessDeniedException l) {
-                log.warn(String.format("Missing permission to read versioning configuration for %s %s", bucket, e.getMessage()));
+                log.warn("Missing permission to read versioning configuration for {} {}", bucket, e.getMessage());
                 return VersioningConfiguration.empty();
             }
         }

@@ -67,7 +67,7 @@ public class ProfileDictionary<T> {
             // Return default registered protocol specification as parent
             Protocol parent = protocols.forName(protocols.find(filter), protocol, null);
             if(null == parent) {
-                log.error(String.format("Unknown protocol %s in profile. Try fallback with no predicate in lookup", protocol));
+                log.error("Unknown protocol {} in profile. Try fallback with no predicate in lookup", protocol);
                 parent = protocols.forName(protocols.find(p -> true), protocol, null);
             }
             if(null == parent) {

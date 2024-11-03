@@ -130,7 +130,7 @@ public class TripleCryptEncryptingInputStream extends ProxyInputStream {
                 status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
             }
             else {
-                log.warn(String.format("Skip setting tag in file key already found in %s", status));
+                log.warn("Skip setting tag in file key already found in {}", status);
             }
         }
     }

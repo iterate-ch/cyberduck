@@ -83,7 +83,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         if(CANNED_BUCKET_OWNER_READ.getCannedString().equals(identifier)) {
             return Acl.CANNED_BUCKET_OWNER_READ;
         }
-        log.warn(String.format("Unknown canned ACL identifier %s", identifier));
+        log.warn("Unknown canned ACL identifier {}", identifier);
         return Acl.EMPTY;
     }
 

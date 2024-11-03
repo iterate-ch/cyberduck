@@ -33,7 +33,7 @@ public class HostnameReachability implements Reachability {
         final String hostname = configurator.getHostname(bookmark.getHostname());
         if(StringUtils.isBlank(hostname)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Missing hostname in %s", bookmark));
+                log.warn("Missing hostname in {}", bookmark);
             }
             throw new ResolveFailedException();
         }

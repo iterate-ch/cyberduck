@@ -108,13 +108,13 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public void delete() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Delete edited file %s", temporary));
+            log.debug("Delete edited file {}", temporary);
         }
         try {
             temporary.delete();
         }
         catch(AccessDeniedException | NotfoundException e) {
-            log.warn(String.format("Failure trashing edited file %s. %s", temporary, e.getMessage()));
+            log.warn("Failure trashing edited file {}. {}", temporary, e.getMessage());
         }
     }
 
@@ -127,7 +127,7 @@ public abstract class AbstractEditor implements Editor {
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, file,
                 temporary, progress, quit, listener, notification);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Download file for edit %s", temporary));
+            log.debug("Download file for edit {}", temporary);
         }
         return worker;
     }
@@ -146,11 +146,11 @@ public abstract class AbstractEditor implements Editor {
             @Override
             public void callback() {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Received quit event for application %s", application));
+                    log.debug("Received quit event for application {}", application);
                 }
                 quit.callback();
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Close editor for %s", file));
+                    log.debug("Close editor for {}", file);
                 }
                 close();
                 delete();
@@ -160,10 +160,10 @@ public abstract class AbstractEditor implements Editor {
             checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(temporary.getInputStream(), new TransferStatus());
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Error computing checksum for %s. %s", temporary, e));
+            log.warn("Error computing checksum for {}. {}", temporary, e);
         }
         if(!finder.isInstalled(application)) {
-            log.warn(String.format("No editor application configured for %s", temporary));
+            log.warn("No editor application configured for {}", temporary);
             if(launcher.open(temporary)) {
                 this.watch(application, temporary, listener, callback);
             }
@@ -197,23 +197,23 @@ public abstract class AbstractEditor implements Editor {
             current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(temporary.getInputStream(), new TransferStatus());
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Error computing checksum for %s. %s", temporary, e));
+            log.warn("Error computing checksum for {}. {}", temporary, e);
             return Worker.empty();
         }
         if(current.equals(checksum)) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("File %s not modified with checksum %s", temporary, current));
+                log.info("File {} not modified with checksum {}", temporary, current);
             }
         }
         else {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Save new checksum %s for file %s", current, temporary));
+                log.info("Save new checksum {} for file {}", current, temporary);
             }
             // Store current checksum
             checksum = current;
             final Worker<Transfer> worker = new EditSaveWorker(host, this, file, temporary, error, progress, notification);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Upload changes for %s", temporary));
+                log.debug("Upload changes for {}", temporary);
             }
             return worker;
         }

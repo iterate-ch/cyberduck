@@ -112,7 +112,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                         current.setPort(-1);
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Unknown protocol:" + e.getMessage());
+                        log.warn("Unknown protocol:{}", e.getMessage());
                     }
                     break;
                 case "Port":
@@ -120,7 +120,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                         current.setPort(Integer.parseInt(elementText));
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Invalid Port:" + e.getMessage());
+                        log.warn("Invalid Port:{}", e.getMessage());
                     }
                     break;
                 case "User":
@@ -135,7 +135,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                         }
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Invalid Logontype:" + e.getMessage());
+                        log.warn("Invalid Logontype:{}", e.getMessage());
                     }
                     break;
                 case "Pass":

@@ -62,7 +62,7 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
                 }
                 final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Cache distribution %s", distribution));
+                    log.info("Cache distribution {}", distribution);
                 }
                 distributions.add(distribution);
             }

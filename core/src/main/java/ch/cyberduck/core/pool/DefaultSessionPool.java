@@ -97,14 +97,14 @@ public class DefaultSessionPool implements SessionPool {
 
         @Override
         public boolean evict(final EvictionConfig config, final PooledObject<Session<?>> underTest, final int idleCount) {
-            log.warn(String.format("Evict idle session %s from pool", underTest));
+            log.warn("Evict idle session {} from pool", underTest);
             return true;
         }
     }
 
     public DefaultSessionPool withMinIdle(final int count) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure with min idle %d", count));
+            log.debug("Configure with min idle {}", count);
         }
         pool.setMinIdle(count);
         return this;
@@ -112,7 +112,7 @@ public class DefaultSessionPool implements SessionPool {
 
     public DefaultSessionPool withMaxIdle(final int count) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure with max idle %d", count));
+            log.debug("Configure with max idle {}", count);
         }
         pool.setMaxIdle(count);
         return this;
@@ -120,7 +120,7 @@ public class DefaultSessionPool implements SessionPool {
 
     public DefaultSessionPool withMaxTotal(final int count) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure with max total %d", count));
+            log.debug("Configure with max total {}", count);
         }
         pool.setMaxTotal(count);
         return this;
@@ -130,17 +130,17 @@ public class DefaultSessionPool implements SessionPool {
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         final int numActive = pool.getNumActive();
         if(numActive > POOL_WARNING_THRESHOLD) {
-            log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, this));
+            log.warn("Possibly large number of open connections ({}) in pool {}", numActive, this);
         }
         try {
             while(!callback.isCanceled()) {
                 try {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Borrow session from pool %s", this));
+                        log.info("Borrow session from pool {}", this);
                     }
                     final Session<?> session = pool.borrowObject();
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Borrowed session %s from pool %s", session, this));
+                        log.info("Borrowed session {} from pool {}", session, this);
                     }
                     if(DISCONNECTED == features) {
                         features = new StatelessSessionPool(connect, session, transcript, registry);
@@ -156,23 +156,23 @@ public class DefaultSessionPool implements SessionPool {
                     }
                     final Throwable cause = e.getCause();
                     if(null == cause) {
-                        log.warn(String.format("Timeout borrowing session from pool %s. Wait for another %dms", this, BORROW_MAX_WAIT_INTERVAL));
+                        log.warn("Timeout borrowing session from pool {}. Wait for another {}ms", this, BORROW_MAX_WAIT_INTERVAL);
                         // Timeout
                         continue;
                     }
                     if(cause instanceof BackgroundException) {
                         final BackgroundException failure = (BackgroundException) cause;
-                        log.warn(String.format("Failure %s obtaining connection for %s", failure, this));
+                        log.warn("Failure {} obtaining connection for {}", failure, this);
                         if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
                             final int max = Math.max(1, pool.getMaxIdle() - 1);
-                            log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
+                            log.warn("Lower maximum idle pool size to {} connections.", max);
                             pool.setMaxIdle(max);
                             // Clear pool from idle connections
                             pool.clear();
                         }
                         throw failure;
                     }
-                    log.error(String.format("Borrowing session from pool %s failed with %s", this, e));
+                    log.error("Borrowing session from pool {} failed with {}", this, e);
                     throw new DefaultExceptionMappingService().map(cause);
                 }
             }
@@ -192,18 +192,18 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public void release(final Session<?> session, final BackgroundException failure) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Release session %s to pool", session));
+            log.info("Release session {} to pool", session);
         }
         try {
             if(null != failure) {
                 if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                    log.warn(String.format("Invalidate session %s in pool after failure %s", session, failure));
+                    log.warn("Invalidate session {} in pool after failure {}", session, failure);
                     try {
                         // Activation of this method decrements the active count and attempts to destroy the instance
                         pool.invalidateObject(session.removeListener(transcript));
                     }
                     catch(Exception e) {
-                        log.warn(String.format("Failure invalidating session %s in pool. %s", session, e.getMessage()));
+                        log.warn("Failure invalidating session {} in pool. {}", session, e.getMessage());
                     }
                 }
                 else {
@@ -215,14 +215,14 @@ public class DefaultSessionPool implements SessionPool {
             }
         }
         catch(IllegalStateException e) {
-            log.warn(String.format("Failed to release session %s. %s", session, e.getMessage()));
+            log.warn("Failed to release session {}. {}", session, e.getMessage());
         }
     }
 
     @Override
     public void evict() {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Clear idle connections in pool %s", this));
+            log.info("Clear idle connections in pool {}", this);
         }
         pool.clear();
     }
@@ -231,13 +231,13 @@ public class DefaultSessionPool implements SessionPool {
     public void shutdown() {
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Close connection pool %s", this));
+                log.info("Close connection pool {}", this);
             }
             this.evict();
             pool.close();
         }
         catch(Exception e) {
-            log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
+            log.warn("Failure closing connection pool {}", e.getMessage());
         }
         finally {
             registry.clear();

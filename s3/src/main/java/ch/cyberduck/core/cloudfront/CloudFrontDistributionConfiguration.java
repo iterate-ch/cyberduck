@@ -117,7 +117,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final Path container = session.getFeature(PathContainerService.class).getContainer(file);
         try {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("List %s distributions", method));
+                log.debug("List {} distributions", method);
             }
             final AmazonCloudFront client = this.client(container);
             if(method.equals(Distribution.STREAMING)) {
@@ -179,7 +179,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             if(null == distribution.getId()) {
                 // No existing configuration
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("No existing distribution found for method %s", distribution.getMethod()));
+                    log.debug("No existing distribution found for method {}", distribution.getMethod());
                 }
                 if(distribution.getMethod().equals(Distribution.STREAMING)) {
                     distribution.setId(this.createStreamingDistribution(container, distribution).getId());
@@ -326,7 +326,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     protected StreamingDistribution createStreamingDistribution(final Path container, final Distribution distribution)
         throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new %s distribution", distribution));
+            log.debug("Create new {} distribution", distribution);
         }
         final AmazonCloudFront client = this.client(container);
         final URI origin = this.getOrigin(container, distribution.getMethod());
@@ -340,7 +340,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
             false, new S3Protocol().getDefaultHostname());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
+            log.debug("Set logging target for {} to {}", distribution, loggingTarget);
         }
         config.setLogging(new StreamingLoggingConfig()
             .withEnabled(distribution.isLogging())
@@ -353,7 +353,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution)
         throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new %s distribution", distribution));
+            log.debug("Create new {} distribution", distribution);
         }
         final AmazonCloudFront client = this.client(container);
         final URI origin = this.getOrigin(container, distribution.getMethod());
@@ -383,7 +383,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
             false, new S3Protocol().getDefaultHostname());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
+            log.debug("Set logging target for {} to {}", distribution, loggingTarget);
         }
         config.setLogging(new LoggingConfig()
             .withEnabled(distribution.isLogging())
@@ -438,7 +438,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
                 false, new S3Protocol().getDefaultHostname());
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
+                log.debug("Set logging target for {} to {}", distribution, loggingTarget);
             }
             config.setLogging(new LoggingConfig()
                 .withEnabled(distribution.isLogging())
@@ -457,7 +457,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
+            log.debug("Update {} distribution with origin {}", distribution, origin);
         }
         final AmazonCloudFront client = this.client(container);
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
@@ -470,7 +470,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
                 false, new S3Protocol().getDefaultHostname());
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
+                log.debug("Set logging target for {} to {}", distribution, loggingTarget);
             }
             config.setLogging(new LoggingConfig()
                 .withEnabled(distribution.isLogging())
@@ -486,7 +486,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
+            log.debug("Update {} distribution with origin {}", distribution, origin);
         }
         final AmazonCloudFront client = this.client(container);
         final GetStreamingDistributionConfigResult response = client.getStreamingDistributionConfig(new GetStreamingDistributionConfigRequest(distribution.getId()));
@@ -499,7 +499,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
                 false, new S3Protocol().getDefaultHostname());
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
+                log.debug("Set logging target for {} to {}", distribution, loggingTarget);
             }
             config.setLogging(new StreamingLoggingConfig()
                 .withEnabled(distribution.isLogging())
@@ -514,7 +514,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
+            log.debug("Update {} distribution with origin {}", distribution, origin);
         }
         final AmazonCloudFront client = this.client(container);
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
@@ -526,7 +526,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
             false, new S3Protocol().getDefaultHostname());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
+            log.debug("Set logging target for {} to {}", distribution, loggingTarget);
         }
         config.setLogging(new LoggingConfig()
             .withEnabled(distribution.isLogging())
@@ -541,7 +541,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
+            log.debug("Update {} distribution with origin {}", distribution, origin);
         }
         final AmazonCloudFront client = this.client(container);
         client.deleteDistribution(new DeleteDistributionRequest(distribution.getId(), distribution.getEtag()));
@@ -551,7 +551,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
+            log.debug("Update {} distribution with origin {}", distribution, origin);
         }
         final AmazonCloudFront client = this.client(container);
         client.deleteStreamingDistribution(new DeleteStreamingDistributionRequest(distribution.getId(), distribution.getEtag()));
@@ -595,7 +595,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                         new DisabledListProgressListener()).toList());
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+                    log.warn("Failure listing buckets. {}", e.getMessage());
                 }
             }
             return distribution;

@@ -104,7 +104,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
                     sharees.addAll(session.getClient().execute(resource, new OcsShareeResponseHandler()));
                 }
                 catch(HttpResponseException e) {
-                    log.warn(String.format("Failure %s retrieving sharees", e));
+                    log.warn("Failure {} retrieving sharees", e);
                     return Collections.emptySet();
                 }
                 catch(IOException e) {

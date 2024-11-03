@@ -120,7 +120,7 @@ public class Transmit3BookmarkCollection extends ThirdpartyBookmarkCollection {
         }
         String protocolstring = favorite.protocol();
         if(StringUtils.isBlank(protocolstring)) {
-            log.warn("Unknown protocol:" + protocolstring);
+            log.warn("Unknown protocol:{}", protocolstring);
             return;
         }
         Protocol protocol;
@@ -145,7 +145,7 @@ public class Transmit3BookmarkCollection extends ThirdpartyBookmarkCollection {
                 protocol = protocols.forScheme(Scheme.davs);
                 break;
             default:
-                log.warn(String.format("Unknown protocol %s", protocolstring));
+                log.warn("Unknown protocol {}", protocolstring);
                 return;
         }
         Host bookmark = new Host(protocol, server, port);

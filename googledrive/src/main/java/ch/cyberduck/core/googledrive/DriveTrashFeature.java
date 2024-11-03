@@ -52,7 +52,7 @@ public class DriveTrashFeature implements Trash {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path f : files.keySet()) {
             if(f.isPlaceholder()) {
-                log.warn(String.format("Ignore placeholder %s", f));
+                log.warn("Ignore placeholder {}", f);
                 continue;
             }
             try {
@@ -61,7 +61,7 @@ public class DriveTrashFeature implements Trash {
                 }
                 else {
                     if(f.attributes().isHidden()) {
-                        log.warn(String.format("Delete file %s already in trash", f));
+                        log.warn("Delete file {} already in trash", f);
                         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(f), prompt, callback);
                         continue;
                     }

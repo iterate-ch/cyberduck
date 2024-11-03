@@ -64,7 +64,7 @@ public class CteraTouchFeature extends DAVTouchFeature {
 
     public static boolean validate(final String filename) {
         if(StringUtils.containsAny(filename, '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
-            log.warn(String.format("Validation failed for target name %s", filename));
+            log.warn("Validation failed for target name {}", filename);
             return false;
         }
         return true;

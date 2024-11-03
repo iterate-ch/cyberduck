@@ -32,7 +32,7 @@ public class CredentialsCleanupService implements Pairing {
     @Override
     public void delete(final Host bookmark) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Delete credentials for %s in keychain %s", bookmark, keychain));
+            log.debug("Delete credentials for {} in keychain {}", bookmark, keychain);
         }
         keychain.delete(bookmark);
     }

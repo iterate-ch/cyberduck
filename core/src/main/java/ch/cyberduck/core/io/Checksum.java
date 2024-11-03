@@ -99,7 +99,7 @@ public final class Checksum {
                 }
                 break;
             default:
-                log.warn(String.format("Failure to detect algorithm for checksum %s", hash));
+                log.warn("Failure to detect algorithm for checksum {}", hash);
         }
         return Checksum.NONE;
     }

@@ -63,7 +63,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
                 return found;
             }
         }
-        log.warn(String.format("Local only profile %s", next));
+        log.warn("Local only profile {}", next);
         return Optional.empty();
     }
 }

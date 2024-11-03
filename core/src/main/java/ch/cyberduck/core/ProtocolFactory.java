@@ -93,7 +93,7 @@ public final class ProtocolFactory {
 
     public void register(Protocol... protocols) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Register protocols %s", Arrays.toString(protocols)));
+            log.info("Register protocols {}", Arrays.toString(protocols));
         }
         // Order determines list in connection dropdown
         Collections.addAll(registered, protocols);
@@ -108,7 +108,7 @@ public final class ProtocolFactory {
         // Load thirdparty protocols
         this.load(new LocalProfilesFinder(this, profiles, BUNDLED_PROFILE_PREDICATE));
         if(registered.isEmpty()) {
-            log.error(String.format("No connection profiles in %s or %s", bundle, profiles));
+            log.error("No connection profiles in {} or {}", bundle, profiles);
         }
     }
 
@@ -125,7 +125,7 @@ public final class ProtocolFactory {
             }
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Failure %s reading profiles from %s", finder, e));
+            log.warn("Failure {} reading profiles from {}", finder, e);
         }
     }
 
@@ -143,7 +143,7 @@ public final class ProtocolFactory {
                 return null;
             }
             if(log.isInfoEnabled()) {
-                log.info(String.format("Register profile %s", profile));
+                log.info("Register profile {}", profile);
             }
             registered.add(profile);
             preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled",
@@ -152,7 +152,7 @@ public final class ProtocolFactory {
                 new DefaultLocalDirectoryFeature().mkdir(profiles);
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Save profile %s to %s", profile, profiles));
+                log.debug("Save profile {} to {}", profile, profiles);
             }
             if(!file.isChild(profiles)) {
                 final Local target = LocalFactory.get(profiles, file.getName());
@@ -162,7 +162,7 @@ public final class ProtocolFactory {
             return file;
         }
         catch(AccessDeniedException e) {
-            log.error(String.format("Failure %s reading profile %s", e, file));
+            log.error("Failure {} reading profile {}", e, file);
             return null;
         }
     }
@@ -178,7 +178,7 @@ public final class ProtocolFactory {
                     profile.getProtocol().getIdentifier(), profile.getProvider())), false);
         }
         else {
-            log.warn(String.format("Failure removing protocol %s", profile));
+            log.warn("Failure removing protocol {}", profile);
         }
     }
 
@@ -267,9 +267,9 @@ public final class ProtocolFactory {
         }
         if(null == match) {
             if(enabled.isEmpty()) {
-                log.error(String.format("List of registered protocols in %s is empty", this));
+                log.error("List of registered protocols in {} is empty", this);
             }
-            log.warn(String.format("Missing registered protocol for identifier %s", identifier));
+            log.warn("Missing registered protocol for identifier {}", identifier);
         }
         return match;
     }

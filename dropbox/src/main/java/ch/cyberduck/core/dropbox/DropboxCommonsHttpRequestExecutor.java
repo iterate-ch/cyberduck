@@ -141,7 +141,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                     entity.getStream().close();
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Failure closing stream for %s. %s", url, e.getMessage()));
+                    log.warn("Failure closing stream for {}. {}", url, e.getMessage());
                 }
             }
 

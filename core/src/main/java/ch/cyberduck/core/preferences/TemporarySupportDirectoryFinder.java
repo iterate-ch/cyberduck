@@ -31,7 +31,7 @@ public class TemporarySupportDirectoryFinder implements SupportDirectoryFinder {
     public Local find() {
         final Local folder = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Use folder %s for application support directory", folder));
+            log.debug("Use folder {} for application support directory", folder);
         }
         return folder;
     }

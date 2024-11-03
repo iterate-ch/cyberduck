@@ -80,7 +80,7 @@ public class FTPAttributesFinderFeature extends VoidAttributesAdapter implements
             }
         }
         catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
-            log.warn(String.format("Failure reading attributes for %s. %s", file, f.getMessage()));
+            log.warn("Failure reading attributes for {}. {}", file, f.getMessage());
             return new DefaultAttributesFinderFeature(session).find(file, listener);
         }
     }

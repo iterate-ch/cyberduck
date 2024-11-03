@@ -49,7 +49,7 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
             final BrickApiClient client = new BrickApiClient(session);
             if(status.isExists()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                    log.warn("Delete file {} to be replaced with {}", target, file);
                 }
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }

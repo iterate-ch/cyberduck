@@ -48,14 +48,14 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
             final Constructor<TransferPrompt> constructor = ConstructorUtils
                     .getMatchingAccessibleConstructor(name, c.getClass(), transfer.getClass(), source.getClass(), destination.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
+                log.warn("No matching constructor for parameter {}", c.getClass());
                 // Call default constructor for disabled implementations
                 return name.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(c, transfer, source, destination);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
-            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
             return new DisabledTransferPrompt();
         }
     }

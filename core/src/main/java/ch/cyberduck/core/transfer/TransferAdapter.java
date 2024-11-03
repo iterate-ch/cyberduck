@@ -26,14 +26,14 @@ public class TransferAdapter implements TransferListener {
     @Override
     public void transferDidStart(final Transfer transfer) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Start transfer %s", transfer));
+            log.debug("Start transfer {}", transfer);
         }
     }
 
     @Override
     public void transferDidStop(final Transfer transfer) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Stop transfer %s", transfer));
+            log.debug("Stop transfer {}", transfer);
         }
     }
 

@@ -54,15 +54,15 @@ public class ChecksumFilter extends AbstractCopyFilter {
                         if(Checksum.NONE != targetAttributes.getChecksum()) {
                             if(Objects.equals(source.attributes().getChecksum(), targetAttributes.getChecksum())) {
                                 if(log.isInfoEnabled()) {
-                                    log.info(String.format("Skip file %s with checksum %s", source, targetAttributes.getChecksum()));
+                                    log.info("Skip file {} with checksum {}", source, targetAttributes.getChecksum());
                                 }
                                 return false;
                             }
-                            log.warn(String.format("Checksum mismatch for %s and %s", source, target));
+                            log.warn("Checksum mismatch for {} and {}", source, target);
                         }
                         else {
                             if(log.isInfoEnabled()) {
-                                log.info(String.format("Skip file %s with remote size %d", source, targetAttributes.getSize()));
+                                log.info("Skip file {} with remote size {}", source, targetAttributes.getSize());
                             }
                             // No need to resume completed transfers
                             return false;

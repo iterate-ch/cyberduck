@@ -45,7 +45,7 @@ public class UploadRegexFilter implements Filter<Local> {
     public boolean accept(final Local file) {
         if(pattern.matcher(file.getName()).matches()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Skip %s excluded with regex", file));
+                log.debug("Skip {} excluded with regex", file);
             }
             return false;
         }

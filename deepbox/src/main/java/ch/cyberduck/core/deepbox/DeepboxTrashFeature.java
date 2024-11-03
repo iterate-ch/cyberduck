@@ -79,20 +79,20 @@ public class DeepboxTrashFeature implements Trash {
         final Acl acl = file.attributes().getAcl();
         if(Acl.EMPTY == acl) {
             // Missing initialization
-            log.warn(String.format("Unknown ACLs on %s", file));
+            log.warn("Unknown ACLs on {}", file);
             return;
         }
         if(new DeepboxPathContainerService(session, fileid).isInTrash(file)) {
             if(!acl.get(new Acl.CanonicalUser()).contains(CANPURGE)) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANPURGE));
+                    log.warn("ACL {} for {} does not include {}", acl, file, CANPURGE);
                 }
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
             }
         }
         else if(!acl.get(new Acl.CanonicalUser()).contains(CANDELETE)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANDELETE));
+                log.warn("ACL {} for {} does not include {}", acl, file, CANDELETE);
             }
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }

@@ -104,7 +104,7 @@ public class BrickPairingSchedulerFeature {
             resource.setHeader(HttpHeaders.ACCEPT, "application/json");
             resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             if(log.isInfoEnabled()) {
-                log.info(String.format("Fetch credentials for paring key %s from %s", token, resource));
+                log.info("Fetch credentials for paring key {} from {}", token, resource);
             }
             final JsonObject json = session.getClient().execute(resource, new AbstractResponseHandler<JsonObject>() {
                 @Override
@@ -119,8 +119,7 @@ public class BrickPairingSchedulerFeature {
                     final JsonPrimitive nickname = json.getAsJsonPrimitive("nickname");
                     if(StringUtils.isNotBlank(host.getNickname())) {
                         if(!StringUtils.equals(host.getNickname(), nickname.getAsString())) {
-                            log.warn(String.format("Mismatch of nickname. Previously authorized as %s and now paired as %s",
-                                host.getNickname(), nickname.getAsString()));
+                            log.warn("Mismatch of nickname. Previously authorized as {} and now paired as {}", host.getNickname(), nickname.getAsString());
                             callback.close(null);
                             throw new LoginCanceledException();
                         }
@@ -148,7 +147,7 @@ public class BrickPairingSchedulerFeature {
                         host.setHostname(new URI(server).getHost());
                     }
                     catch(URISyntaxException e) {
-                        log.warn(String.format("Failure%s to parse server value %s as URI", e, server));
+                        log.warn("Failure{} to parse server value {} as URI", e, server);
                     }
                 }
             }
@@ -160,7 +159,7 @@ public class BrickPairingSchedulerFeature {
         catch(HttpResponseException e) {
             switch(e.getStatusCode()) {
                 case HttpStatus.SC_NOT_FOUND:
-                    log.warn(String.format("Missing login for pairing key %s", token));
+                    log.warn("Missing login for pairing key {}", token);
                     cancel.verify();
                     break;
                 default:

@@ -148,7 +148,7 @@ public class SyncTransfer extends Transfer {
     @Override
     public TransferPathFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter transfer with action %s", action));
+            log.debug("Filter transfer with action {}", action);
         }
         final Find find = new CachingFindFeature(source, cache,
             source.getFeature(Find.class, new DefaultFindFeature(source)));
@@ -192,7 +192,7 @@ public class SyncTransfer extends Transfer {
     public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Children for %s", directory));
+            log.debug("Children for {}", directory);
         }
         final Set<TransferItem> children = new HashSet<>();
         final Find finder = new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session)));
@@ -209,7 +209,7 @@ public class SyncTransfer extends Transfer {
     public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action with prompt %s", prompt));
+            log.debug("Find transfer action with prompt {}", prompt);
         }
         if(resumeRequested) {
             if(action.equals(TransferAction.callback)) {
@@ -226,7 +226,7 @@ public class SyncTransfer extends Transfer {
                          final TransferOptions options, final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Transfer file %s with options %s", file, options));
+            log.debug("Transfer file {} with options {}", file, options);
         }
         switch(comparison.compare(file, local, progressListener)) {
             case remote:

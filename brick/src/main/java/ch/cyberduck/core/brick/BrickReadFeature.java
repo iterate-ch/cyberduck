@@ -68,7 +68,7 @@ public class BrickReadFeature implements Read {
                     header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
                 }
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Add range header %s for file %s", header, file));
+                    log.debug("Add range header {} for file {}", header, file);
                 }
                 request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
                 // Disable compression

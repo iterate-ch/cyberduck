@@ -65,7 +65,7 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
                 }
                 catch(NotfoundException | AccessDeniedException e) {
                     if(f.isDirectory()) {
-                        log.error(String.format("Failure %s deleting directory %s", e, encrypt));
+                        log.error("Failure {} deleting directory {}", e, encrypt);
                     }
                     else {
                         throw e;
@@ -75,7 +75,7 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
                 if(f.isDirectory()) {
                     // Delete metadata file for directory
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add metadata file %s", metadata));
+                        log.debug("Add metadata file {}", metadata);
                     }
                     metadataFiles.add(metadata);
                     vault.getDirectoryProvider().delete(f);
@@ -84,7 +84,7 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
                     filenameProvider.invalidate(filenameProvider.inflate(session, metadata.getName()));
                     final Path metadataFile = filenameProvider.resolve(metadata.getName());
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add metadata file %s", metadata));
+                        log.debug("Add metadata file {}", metadata);
                     }
                     metadataFiles.add(metadataFile);
                 }
@@ -95,7 +95,7 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
         }
         for(Path f : files.keySet()) {
             if(f.equals(vault.getHome())) {
-                log.warn(String.format("Recursively delete vault %s", f));
+                log.warn("Recursively delete vault {}", f);
                 final List<Path> metadata = new ArrayList<>();
                 if(!proxy.isRecursive()) {
                     final Find find = session._getFeature(Find.class);

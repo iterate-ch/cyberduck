@@ -46,7 +46,7 @@ public class RecursiveSearchFilter extends NullFilter<Path> {
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter %s", file));
+            log.debug("Filter {}", file);
         }
         return false;
     }

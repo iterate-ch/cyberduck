@@ -98,13 +98,13 @@ public class B2Session extends HttpSession<B2ApiClient> {
             if(new HostPreferences(host).getBoolean("b2.upload.largeobject.auto")) {
                 final int recommendedPartSize = response.getRecommendedPartSize();
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set large upload part size to %d", recommendedPartSize));
+                    log.debug("Set large upload part size to {}", recommendedPartSize);
                 }
                 host.setProperty("b2.upload.largeobject.size", String.valueOf(recommendedPartSize));
                 host.setProperty("b2.copy.largeobject.size", String.valueOf(recommendedPartSize));
                 final int absoluteMinimumPartSize = response.getAbsoluteMinimumPartSize();
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set large upload minimum part size to %d", absoluteMinimumPartSize));
+                    log.debug("Set large upload minimum part size to {}", absoluteMinimumPartSize);
                 }
                 host.setProperty("b2.upload.largeobject.size.minimum", String.valueOf(absoluteMinimumPartSize));
             }

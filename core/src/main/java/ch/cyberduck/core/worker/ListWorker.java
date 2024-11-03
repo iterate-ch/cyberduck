@@ -61,14 +61,14 @@ public class ListWorker extends Worker<AttributedList<Path>> {
             else {
                 final ListService service = session.getFeature(ListService.class);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Run with feature %s", service));
+                    log.debug("Run with feature {}", service);
                 }
                 list = service.list(directory, listener);
                 if(list.isEmpty()) {
                     listener.chunk(directory, list);
                 }
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Notify listener %s", listener));
+                    log.debug("Notify listener {}", listener);
                 }
             }
             listener.finish(directory, list, Optional.empty());
@@ -76,14 +76,14 @@ public class ListWorker extends Worker<AttributedList<Path>> {
         }
         catch(ListCanceledException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Return partial directory listing for %s", directory));
+                log.warn("Return partial directory listing for {}", directory);
             }
             listener.finish(directory, e.getChunk(), Optional.of(e));
             return e.getChunk();
         }
         catch(BackgroundException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Notify listener for %s with error %s", directory, e));
+                log.warn("Notify listener for {} with error {}", directory, e);
             }
             listener.finish(directory, AttributedList.emptyList(), Optional.of(e));
             throw e;
@@ -159,7 +159,7 @@ public class ListWorker extends Worker<AttributedList<Path>> {
         @Override
         public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Retrieved chunk of %d items in %s", list.size(), this.directory));
+                log.info("Retrieved chunk of {} items in {}", list.size(), this.directory);
             }
             if(worker.isCanceled()) {
                 throw new ListCanceledException(list);

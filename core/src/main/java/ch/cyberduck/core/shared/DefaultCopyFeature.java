@@ -63,11 +63,11 @@ public class DefaultCopyFeature implements Copy {
         new StreamCopier(status, status).withListener(listener).transfer(in, out);
         if(!PathAttributes.EMPTY.equals(status.getResponse())) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Received reply %s for creating file %s", status.getResponse(), target));
+                log.debug("Received reply {} for creating file {}", status.getResponse(), target);
             }
             return new Path(target).withAttributes(status.getResponse());
         }
-        log.warn(String.format("Missing status from writer %s", writer));
+        log.warn("Missing status from writer {}", writer);
         return target;
     }
 

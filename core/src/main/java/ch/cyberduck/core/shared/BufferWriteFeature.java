@@ -67,7 +67,7 @@ public class BufferWriteFeature implements MultipartWrite<Void> {
             public void close() throws IOException {
                 try {
                     if(close.get()) {
-                        log.warn(String.format("Skip double close of stream %s", this));
+                        log.warn("Skip double close of stream {}", this);
                         return;
                     }
                     // Reset offset in transfer status because data was already streamed
@@ -84,7 +84,7 @@ public class BufferWriteFeature implements MultipartWrite<Void> {
                                 try {
                                     IOUtils.copy(new BufferInputStream(buffer), out);
                                     out.close();
-                                    log.info(String.format("Completed upload for %s with status %s", file, range));
+                                    log.info("Completed upload for {} with status {}", file, range);
                                     return null;
                                 }
                                 catch(IOException e) {

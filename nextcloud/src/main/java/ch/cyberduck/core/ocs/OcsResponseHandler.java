@@ -55,7 +55,7 @@ public abstract class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
             }
         }
         catch(NumberFormatException e) {
-            log.warn(String.format("Failure parsing status code in response %s", error));
+            log.warn("Failure parsing status code in response {}", error);
         }
         return super.handleResponse(response);
     }

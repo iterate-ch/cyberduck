@@ -51,7 +51,7 @@ public class BrowserOutlineViewDataSource extends BrowserTableDataSource impleme
     public void render(final NSTableView view, final List<Path> folders) {
         super.render(view, folders);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Reload table view %s for changes files %s", view, folders));
+            log.debug("Reload table view {} for changes files {}", view, folders);
         }
         if(controller.isMounted()) {
             final NSOutlineView outline = (NSOutlineView) view;
@@ -86,7 +86,7 @@ public class BrowserOutlineViewDataSource extends BrowserTableDataSource impleme
     @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
         if(log.isTraceEnabled()) {
-            log.trace("outlineViewIsItemExpandable:" + item);
+            log.trace("outlineViewIsItemExpandable:{}", item);
         }
         if(null == item) {
             return false;
@@ -104,7 +104,7 @@ public class BrowserOutlineViewDataSource extends BrowserTableDataSource impleme
     @Override
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, final NSObject item) {
         if(log.isTraceEnabled()) {
-            log.trace("outlineView_numberOfChildrenOfItem:" + item);
+            log.trace("outlineView_numberOfChildrenOfItem:{}", item);
         }
         if(controller.isMounted()) {
             if(null == item) {
@@ -113,12 +113,12 @@ public class BrowserOutlineViewDataSource extends BrowserTableDataSource impleme
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if(event != null) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Current application event is %d", event.type()));
+                    log.debug("Current application event is {}", event.type());
                 }
                 if(NSEvent.NSLeftMouseDragged == event.type()) {
                     final int draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null)).intValue();
                     if(draggingColumn != 0) {
-                        log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem for column:" + draggingColumn);
+                        log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem for column:{}", draggingColumn);
                         // See ticket #60
                         return new NSInteger(0);
                     }
@@ -147,7 +147,7 @@ public class BrowserOutlineViewDataSource extends BrowserTableDataSource impleme
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {
         if(log.isTraceEnabled()) {
-            log.trace("outlineView_child_ofItem:" + item);
+            log.trace("outlineView_child_ofItem:{}", item);
         }
         final Path path;
         if(null == item) {
@@ -161,7 +161,7 @@ public class BrowserOutlineViewDataSource extends BrowserTableDataSource impleme
         }
         final AttributedList<Path> children = this.get(path);
         if(index.intValue() >= children.size()) {
-            log.warn(String.format("Index %s out of bound for %s", index, item));
+            log.warn("Index {} out of bound for {}", index, item);
             return null;
         }
         return NSObjectPathReference.get(children.get(index.intValue()));

@@ -49,7 +49,7 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                             capabilities.withLocking(1 == Double.parseDouble(value.data.capabilities.files.locking));
                         }
                         catch(NumberFormatException e) {
-                            log.warn(String.format("Failure parsing %s", value.data.capabilities.files.locking));
+                            log.warn("Failure parsing {}", value.data.capabilities.files.locking);
                         }
                     }
                     if(value.data.capabilities.files.versioning != null) {
@@ -57,14 +57,14 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                             capabilities.withVersioning(1 == Integer.parseInt(value.data.capabilities.files.versioning));
                         }
                         catch(NumberFormatException e) {
-                            log.warn(String.format("Failure parsing %s", value.data.capabilities.files.versioning));
+                            log.warn("Failure parsing {}", value.data.capabilities.files.versioning);
                         }
                     }
                 }
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Determined OCS capabilities %s", capabilities));
+            log.debug("Determined OCS capabilities {}", capabilities);
         }
         return capabilities;
     }

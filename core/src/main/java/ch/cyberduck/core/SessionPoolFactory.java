@@ -87,14 +87,14 @@ public class SessionPoolFactory {
             case stateful:
                 if(Arrays.asList(usage).contains(Usage.browser)) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Create new stateful connection pool for %s", bookmark));
+                        log.info("Create new stateful connection pool for {}", bookmark);
                     }
                     final Session<?> session = SessionFactory.create(new Host(bookmark).withCredentials(new Credentials(bookmark.getCredentials())), trust, key);
                     return new StatefulSessionPool(connect, session, transcript, registry);
                 }
                 // Break through to default pool
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Create new pooled connection pool for %s", bookmark));
+                    log.info("Create new pooled connection pool for {}", bookmark);
                 }
                 final HostPreferences preferences = new HostPreferences(bookmark);
                 return new DefaultSessionPool(connect, trust, key, registry, transcript, bookmark)
@@ -104,7 +104,7 @@ public class SessionPoolFactory {
             default:
                 // Stateless protocol
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Create new stateless connection pool for %s", bookmark));
+                    log.info("Create new stateless connection pool for {}", bookmark);
                 }
                 final Session<?> session = SessionFactory.create(bookmark, trust, key);
                 return new StatelessSessionPool(connect, session, transcript, registry);

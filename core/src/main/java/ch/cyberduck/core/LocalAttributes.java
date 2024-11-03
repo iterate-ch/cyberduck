@@ -49,7 +49,7 @@ public class LocalAttributes extends Attributes {
             return Files.getLastModifiedTime(Paths.get(path)).toMillis();
         }
         catch(IOException e) {
-            log.warn(String.format("Failure getting timestamp of %s. %s", path, e.getMessage()));
+            log.warn("Failure getting timestamp of {}. {}", path, e.getMessage());
             return -1L;
         }
     }
@@ -88,7 +88,7 @@ public class LocalAttributes extends Attributes {
             return Files.size(Paths.get(path));
         }
         catch(IOException e) {
-            log.warn(String.format("Failure getting size of %s. %s", path, e.getMessage()));
+            log.warn("Failure getting size of {}. {}", path, e.getMessage());
             return -1L;
         }
     }

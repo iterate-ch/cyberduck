@@ -81,7 +81,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             context = SSLContext.getInstance("TLSv1.3");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, seeder);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
+                log.debug("Using SSL context with protocol {}", context.getProtocol());
             }
             factory = context.getSocketFactory();
         }
@@ -99,7 +99,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         if(socket instanceof SSLSocket) {
             try {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Configure SSL parameters with protocols %s", Arrays.toString(protocols)));
+                    log.debug("Configure SSL parameters with protocols {}", Arrays.toString(protocols));
                 }
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
                 final List<String> ciphers = Arrays.asList(((SSLSocket) socket).getEnabledCipherSuites());
@@ -109,12 +109,11 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 }
                 ((SSLSocket) socket).setEnabledCipherSuites(ciphers.toArray(new String[ciphers.size()]));
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Enabled cipher suites %s",
-                        Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
+                    log.info("Enabled cipher suites {}", Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites()));
                 }
             }
             catch(Exception e) {
-                log.warn(String.format("Failed to configure SSL parameters %s", e.getMessage()));
+                log.warn("Failed to configure SSL parameters {}", e.getMessage());
             }
         }
     }
@@ -136,7 +135,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         final Socket socket = f.create();
         this.configure(socket, protocols);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Handshake for socket %s", socket));
+            log.debug("Handshake for socket {}", socket);
         }
         return socket;
     }

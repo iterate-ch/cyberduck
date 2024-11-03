@@ -50,12 +50,12 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
             final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
             if(null != found) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Return cached attributes %s for %s", found.attributes(), file));
+                    log.debug("Return cached attributes {} for {}", found.attributes(), file);
                 }
                 return found.attributes();
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Cached directory listing does not contain %s", file));
+                log.debug("Cached directory listing does not contain {}", file);
             }
             throw new NotfoundException(file.getAbsolute());
         }

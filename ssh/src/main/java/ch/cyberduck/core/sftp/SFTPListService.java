@@ -120,16 +120,16 @@ public class SFTPListService implements ListService {
                 catch(SFTPException e) {
                     final BackgroundException reason = new SFTPExceptionMappingService().map(e);
                     if(reason instanceof NotfoundException) {
-                        log.warn(String.format("Cannot find symbolic link target of %s. %s", file, reason.toString()));
+                        log.warn("Cannot find symbolic link target of {}. {}", file, reason.toString());
                     }
                     else if(reason instanceof AccessDeniedException) {
-                        log.warn(String.format("Cannot find symbolic link target of %s. %s", file, reason.toString()));
+                        log.warn("Cannot find symbolic link target of {}. {}", file, reason.toString());
                     }
                     else if(reason instanceof InteroperabilityException) {
-                        log.warn(String.format("Cannot find symbolic link target of %s. %s", file, reason.toString()));
+                        log.warn("Cannot find symbolic link target of {}. {}", file, reason.toString());
                     }
                     else {
-                        log.warn(String.format("Unknown failure reading symbolic link target of %s. %s", file, reason.toString()));
+                        log.warn("Unknown failure reading symbolic link target of {}. {}", file, reason.toString());
                         throw reason;
                     }
                     type = Path.Type.file;
@@ -141,7 +141,7 @@ public class SFTPListService implements ListService {
                 file.setSymlinkTarget(target);
             }
             catch(IOException e) {
-                log.warn(String.format("Failure to read symbolic link of %s. %s", file, e.getMessage()));
+                log.warn("Failure to read symbolic link of {}. {}", file, e.getMessage());
                 return false;
             }
         }

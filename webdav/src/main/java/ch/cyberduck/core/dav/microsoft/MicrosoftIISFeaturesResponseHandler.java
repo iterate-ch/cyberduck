@@ -42,7 +42,7 @@ public final class MicrosoftIISFeaturesResponseHandler extends ValidatingRespons
         if(Arrays.stream(response.getAllHeaders()).anyMatch(header ->
                 HttpHeaders.SERVER.equals(header.getName()) && StringUtils.contains(header.getValue(), "Microsoft-IIS"))) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Microsoft-IIS backend detected in response %s", response));
+                log.info("Microsoft-IIS backend detected in response {}", response);
             }
             capabilities.withIIS(true);
         }

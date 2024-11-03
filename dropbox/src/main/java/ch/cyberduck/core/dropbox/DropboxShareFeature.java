@@ -66,7 +66,7 @@ public class DropboxShareFeature implements Share<Void, Void> {
                         .createSharedLinkWithSettings(containerService.getKey(file),
                                 settings);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Created shared link %s", share));
+                    log.debug("Created shared link {}", share);
                 }
                 return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
@@ -84,7 +84,7 @@ public class DropboxShareFeature implements Share<Void, Void> {
                         .listSharedLinksBuilder().withDirectOnly(true).withPath(containerService.getKey(file)).start().getLinks();
                 for(SharedLinkMetadata link : links) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Return existing shared link %s", link));
+                        log.debug("Return existing shared link {}", link);
                     }
                     final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file)).modifySharedLinkSettings(link.getUrl(),
                             settings);

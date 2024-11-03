@@ -197,7 +197,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set new value %s for item %s", value, item));
+            log.debug("Set new value {} for item {}", value, item);
         }
         if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
@@ -219,7 +219,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             return null;
         }
         if(log.isTraceEnabled()) {
-            log.trace("objectValueForItem:" + item.getAbsolute());
+            log.trace("objectValueForItem:{}", item.getAbsolute());
         }
         if(identifier.equals(BrowserColumn.icon.name())) {
             return this.iconForPath(item);
@@ -231,7 +231,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             return value;
         }
         if(log.isTraceEnabled()) {
-            log.trace(String.format("Lookup failed for %s in cache", key));
+            log.trace("Lookup failed for {} in cache", key);
         }
         if(identifier.equals(BrowserColumn.filename.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
@@ -348,7 +348,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     @Override
     public NSUInteger draggingSourceOperationMaskForLocal(final boolean local) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Request dragging source operation mask for local %s", local));
+            log.debug("Request dragging source operation mask for local {}", local);
         }
         if(local) {
             // Move or copy within the browser
@@ -366,7 +366,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     public boolean acceptDrop(final NSTableView view, final Path destination, final NSDraggingInfo info) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Accept drop for destination %s", destination));
+            log.debug("Accept drop for destination {}", destination);
         }
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
@@ -451,7 +451,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     public NSUInteger validateDrop(final NSTableView view, final Path destination, final NSInteger row, final NSDraggingInfo info) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Validate drop for destination %s", destination));
+            log.debug("Validate drop for destination {}", destination);
         }
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             // Dragging URLs to mount new session
@@ -468,7 +468,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                             return NSDraggingInfo.NSDragOperationCopy;
                         }
                         else {
-                            log.warn(String.format("Protocol not supported for URL %s", elements.objectAtIndex(new NSUInteger(i)).toString()));
+                            log.warn("Protocol not supported for URL {}", elements.objectAtIndex(new NSUInteger(i)).toString());
                         }
                     }
                 }
@@ -509,7 +509,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Drag operation mask is %d", info.draggingSourceOperationMask().intValue()));
+                log.debug("Drag operation mask is {}", info.draggingSourceOperationMask().intValue());
             }
             this.setDropRowAndDropOperation(view, destination, row);
             final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
@@ -554,14 +554,14 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
         }
         else if(destination.isDirectory()) {
-            log.debug("setDropRowAndDropOperation:" + row.intValue());
+            log.debug("setDropRowAndDropOperation:{}", row.intValue());
             view.setDropRow(row, NSTableView.NSTableViewDropOn);
         }
     }
 
     public boolean writeItemsToPasteBoard(final NSTableView view, final List<Path> selected, final NSPasteboard pboard) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Write items to pasteboard %s", pboard));
+            log.debug("Write items to pasteboard {}", pboard);
         }
         if(controller.isMounted()) {
             if(selected.size() > 0) {
@@ -594,7 +594,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
                     NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.doubleValue() - 16, dragPosition.y.doubleValue() - 16), new NSSize(32, 32));
                     if(!view.dragPromisedFilesOfTypes(NSMutableArray.arrayWithObject(fileTypes.iterator().next()), imageRect, this.id(), true, event)) {
-                        log.warn(String.format("Failure for drag promise operation of %s", event));
+                        log.warn("Failure for drag promise operation of {}", event);
                         return false;
                     }
                     return true;
@@ -607,7 +607,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     @Override
     public void draggedImage_beganAt(final NSImage image, final NSPoint point) {
         if(log.isTraceEnabled()) {
-            log.trace("draggedImage_beganAt:" + point);
+            log.trace("draggedImage_beganAt:{}", point);
         }
     }
 
@@ -617,7 +617,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     @Override
     public void draggedImage_endedAt_operation(final NSImage image, final NSPoint point, final NSUInteger operation) {
         if(log.isTraceEnabled()) {
-            log.trace("draggedImage_endedAt_operation:" + operation);
+            log.trace("draggedImage_endedAt_operation:{}", operation);
         }
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
@@ -634,7 +634,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     @Override
     public void draggedImage_movedTo(final NSImage image, final NSPoint point) {
         if(log.isTraceEnabled()) {
-            log.trace("draggedImage_movedTo:" + point);
+            log.trace("draggedImage_movedTo:{}", point);
         }
     }
 
@@ -648,7 +648,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Return names of promised files dropped at %s", url));
+            log.debug("Return names of promised files dropped at {}", url);
         }
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
@@ -676,7 +676,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                             }
                         }
                         catch(AccessDeniedException e) {
-                            log.warn(String.format("Failure creating file %s %s", file, e.getMessage()));
+                            log.warn("Failure creating file {} {}", file, e.getMessage());
                         }
                     }
                 }

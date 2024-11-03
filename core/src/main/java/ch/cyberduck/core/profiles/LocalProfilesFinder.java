@@ -61,7 +61,7 @@ public class LocalProfilesFinder implements ProfilesFinder {
     public Set<ProfileDescription> find(final Visitor visitor) throws AccessDeniedException {
         if(directory.exists()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Load profiles from %s", directory));
+                log.debug("Load profiles from {}", directory);
             }
             return directory.list().filter(new ProfileFilter()).toList().stream()
                     .map(file -> visitor.visit(new LocalProfileDescription(protocols, parent, file))).collect(Collectors.toSet());

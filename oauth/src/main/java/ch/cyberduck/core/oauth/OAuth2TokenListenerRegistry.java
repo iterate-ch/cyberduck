@@ -34,7 +34,7 @@ public class OAuth2TokenListenerRegistry {
 
     public void register(final String state, final OAuth2TokenListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Register listener for state %s", state));
+            log.debug("Register listener for state {}", state);
         }
         listeners.put(state, listener);
     }
@@ -42,12 +42,12 @@ public class OAuth2TokenListenerRegistry {
     public void notify(final String state, final String token) {
         final OAuth2TokenListener listener = listeners.get(state);
         if(null == listener) {
-            log.error(String.format("Missing listener for state %s", state));
+            log.error("Missing listener for state {}", state);
             return;
         }
         listeners.remove(state);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Notify listener for state %s with token %s", state, token));
+            log.debug("Notify listener for state {} with token {}", state, token);
         }
         listener.callback(token);
     }

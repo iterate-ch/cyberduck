@@ -66,15 +66,15 @@ public class ResumeFilter extends AbstractUploadFilter {
                                 final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
                                 if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
                                     if(log.isInfoEnabled()) {
-                                        log.info(String.format("Skip file %s with checksum %s", file, attributes.getChecksum()));
+                                        log.info("Skip file {} with checksum {}", file, attributes.getChecksum());
                                     }
                                     return false;
                                 }
-                                log.warn(String.format("Checksum mismatch for %s and %s", file, local));
+                                log.warn("Checksum mismatch for {} and {}", file, local);
                             }
                             else {
                                 if(log.isInfoEnabled()) {
-                                    log.info(String.format("Skip file %s with remote size %d", file, attributes.getSize()));
+                                    log.info("Skip file {} with remote size {}", file, attributes.getSize());
                                 }
                                 // No need to resume completed transfers
                                 return false;
@@ -99,7 +99,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                 status.setLength(status.getLength() - append.offset);
                 status.setOffset(append.offset);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Resume file %s at offset %d and remaining length %d", file, status.getOffset(), status.getLength()));
+                    log.debug("Resume file {} at offset {} and remaining length {}", file, status.getOffset(), status.getLength());
                 }
             }
         }

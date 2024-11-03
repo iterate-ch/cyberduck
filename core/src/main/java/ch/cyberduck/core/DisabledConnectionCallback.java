@@ -32,7 +32,7 @@ public class DisabledConnectionCallback implements ConnectionCallback {
     @Override
     public void warn(final Host bookmark, final String title, final String message,
                      final String continueButton, final String disconnectButton, final String preference) throws ConnectionCanceledException {
-        log.warn(String.format("Ignore prompt %s for %s", message, bookmark));
+        log.warn("Ignore prompt {} for {}", message, bookmark);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DisabledConnectionCallback implements ConnectionCallback {
 
     @Override
     public void close(final String input) {
-        log.warn(String.format("Ignore close with input %s", input));
+        log.warn("Ignore close with input {}", input);
     }
 
     @Override

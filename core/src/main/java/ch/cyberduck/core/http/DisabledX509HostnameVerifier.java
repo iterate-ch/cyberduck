@@ -11,7 +11,7 @@ public class DisabledX509HostnameVerifier implements HostnameVerifier {
 
     @Override
     public boolean verify(final String host, final SSLSession sslSession) {
-        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+        log.debug("Hostname verification disabled for {} handled in system trust manager", host);
         return true;
     }
 }

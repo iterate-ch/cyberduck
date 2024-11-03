@@ -176,7 +176,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         try {
             final Me me = new UserRestControllerApi(client).usersMe(null, null);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Authenticated for user %s", me));
+                log.debug("Authenticated for user {}", me);
             }
             credentials.setUsername(me.getEmail());
         }

@@ -69,12 +69,12 @@ public class SMBRootListService implements ListService {
                 // An SRVSVC_HANDLE pointer that identifies the server.
                 final RPCTransport transport = SMBTransportFactories.SRVSVC.getTransport(context);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Obtained transport %s", transport));
+                    log.debug("Obtained transport {}", transport);
                 }
                 final ServerService lookup = new ServerService(transport);
                 final List<NetShareInfo0> info = lookup.getShares0();
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Retrieved share info %s", info));
+                    log.debug("Retrieved share info {}", info);
                 }
                 final AttributedList<Path> result = new AttributedList<>();
                 for(final String s : info.stream().map(NetShareInfo::getNetName).collect(Collectors.toSet())) {
@@ -84,7 +84,7 @@ public class SMBRootListService implements ListService {
                     }
                     catch(NotfoundException | AccessDeniedException | UnsupportedException e) {
                         if(log.isWarnEnabled()) {
-                            log.warn(String.format("Skip unsupported share %s with failure %s", s, e));
+                            log.warn("Skip unsupported share {} with failure {}", s, e);
                         }
                     }
                     listener.chunk(directory, result);
@@ -93,7 +93,7 @@ public class SMBRootListService implements ListService {
             }
             catch(SMB2Exception e) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Failure %s getting share info from server", e));
+                    log.warn("Failure {} getting share info from server", e);
                 }
                 final Credentials name = prompt.prompt(session.getHost(),
                         LocaleFactory.localizedString("SMB Share"),
@@ -102,7 +102,7 @@ public class SMBRootListService implements ListService {
                                 .passwordPlaceholder(LocaleFactory.localizedString("SMB Share"))
                                 .password(false));
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Connect to share %s from user input", name.getPassword()));
+                    log.debug("Connect to share {} from user input", name.getPassword());
                 }
                 final Path share = new Path(name.getPassword(), EnumSet.of(Path.Type.directory, Path.Type.volume));
                 final AttributedList<Path> result = new AttributedList<>(Collections.singleton(share.withAttributes(new SMBAttributesFinderFeature(session).find(share))));

@@ -78,7 +78,7 @@ public interface SPUUpdaterDelegate {
      */
     default void updater_didFindValidUpdate(SPUUpdater updater, SUAppcastItem item) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Did find update %s", item));
+            log.debug("Did find update {}", item);
         }
     }
 
@@ -101,7 +101,7 @@ public interface SPUUpdaterDelegate {
      */
     default void updater_didDownloadUpdate(SPUUpdater updater, SUAppcastItem item) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Did download update %s", item));
+            log.debug("Did download update {}", item);
         }
     }
 
@@ -113,7 +113,7 @@ public interface SPUUpdaterDelegate {
      */
     default void updater_willInstallUpdate(SPUUpdater updater, SUAppcastItem item) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Will install update %s", item));
+            log.debug("Will install update {}", item);
         }
     }
 
@@ -138,7 +138,7 @@ public interface SPUUpdaterDelegate {
      */
     default void updater_didAbortWithError(SPUUpdater updater, NSError error) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Did abort with error %s", error));
+            log.debug("Did abort with error {}", error);
         }
     }
 }

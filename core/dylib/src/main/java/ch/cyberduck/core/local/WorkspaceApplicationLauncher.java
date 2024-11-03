@@ -36,7 +36,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     public boolean open(final Local file) {
         synchronized(NSWorkspace.class) {
             if(!workspace.openFile(file.getAbsolute())) {
-                log.warn(String.format("Error opening file %s", file));
+                log.warn("Error opening file {}", file);
                 return false;
             }
             return true;
@@ -52,7 +52,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
                     return true;
                 }
             }
-            log.warn(String.format("Error opening file %s with application %s", file, application));
+            log.warn("Error opening file {} with application {}", file, application);
             return false;
         }
     }

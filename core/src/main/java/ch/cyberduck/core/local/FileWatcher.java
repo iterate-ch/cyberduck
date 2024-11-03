@@ -79,12 +79,12 @@ public final class FileWatcher {
     public CountDownLatch register(final Local folder, final Filter<Local> filter, final FileWatcherListener listener) throws IOException {
         if(registered.contains(folder)) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Skip duplicate registration for %s in %s", folder, monitor));
+                log.warn("Skip duplicate registration for {} in {}", folder, monitor);
             }
             return new CountDownLatch(0);
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Register folder %s watching with filter %s", folder, filter));
+            log.debug("Register folder {} watching with filter {}", folder, filter);
         }
         final WatchKey key = monitor.register(Paths.get(folder.getAbsolute()), new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         if(!key.isValid()) {
@@ -101,13 +101,13 @@ public final class FileWatcher {
                     try {
                         lock.countDown();
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Wait for key from watch service %s", monitor));
+                            log.debug("Wait for key from watch service {}", monitor);
                         }
                         key = monitor.take();
                     }
                     catch(ClosedWatchServiceException e) {
                         if(log.isWarnEnabled()) {
-                            log.warn(String.format("Exit watching folder %s for closed monitor %s", folder, monitor));
+                            log.warn("Exit watching folder {} for closed monitor {}", folder, monitor);
                         }
                         // If this watch service is closed
                         return true;
@@ -116,15 +116,15 @@ public final class FileWatcher {
                         return false;
                     }
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Retrieved key %s from watch service %s", key, monitor));
+                        log.debug("Retrieved key {} from watch service {}", key, monitor);
                     }
                     for(WatchEvent<?> event : key.pollEvents()) {
                         final WatchEvent.Kind<?> kind = event.kind();
                         if(log.isInfoEnabled()) {
-                            log.info(String.format("Detected file system event %s", kind.name()));
+                            log.info("Detected file system event {}", kind.name());
                         }
                         if(kind == OVERFLOW) {
-                            log.error(String.format("Overflow event for %s", folder));
+                            log.error("Overflow event for {}", folder);
                             continue;
                         }
                         // The filename is the context of the event. May be absolute or relative path name.
@@ -132,7 +132,7 @@ public final class FileWatcher {
                             callback(folder, event, listener);
                         }
                         else {
-                            log.warn(String.format("Ignored file system event for unknown file %s", event.context()));
+                            log.warn("Ignored file system event for unknown file {}", event.context());
                         }
                     }
                     // Reset the key -- this step is critical to receive further watch events.
@@ -140,7 +140,7 @@ public final class FileWatcher {
                     if(!valid) {
                         // The key is no longer valid and the loop can exit.
                         if(log.isWarnEnabled()) {
-                            log.warn(String.format("Exit watching folder %s", folder));
+                            log.warn("Exit watching folder {}", folder);
                         }
                         return true;
                     }
@@ -160,7 +160,7 @@ public final class FileWatcher {
     private void callback(final Local folder, final WatchEvent<?> event, final FileWatcherListener l) {
         final WatchEvent.Kind<?> kind = event.kind();
         if(log.isInfoEnabled()) {
-            log.info(String.format("Process file system event %s for %s", kind.name(), event.context()));
+            log.info("Process file system event {} for {}", kind.name(), event.context());
         }
         if(ENTRY_MODIFY == kind) {
             l.fileWritten(normalize(folder, event.context().toString()));
@@ -172,7 +172,7 @@ public final class FileWatcher {
             l.fileCreated(normalize(folder, event.context().toString()));
         }
         else {
-            log.debug(String.format("Ignored file system event %s for %s", kind.name(), event.context()));
+            log.debug("Ignored file system event {} for {}", kind.name(), event.context());
         }
     }
 

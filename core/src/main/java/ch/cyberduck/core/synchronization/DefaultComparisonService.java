@@ -62,14 +62,14 @@ public class DefaultComparisonService implements ComparisonService {
         switch(type) {
             case directory:
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Compare local attributes %s with remote %s using %s", local, remote, directories));
+                    log.debug("Compare local attributes {} with remote {} using {}", local, remote, directories);
                 }
                 return directories.compare(type, local, remote);
             case symboliclink:
                 return symlinks.compare(type, local, remote);
             default:
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Compare local attributes %s with remote %s using %s", local, remote, files));
+                    log.debug("Compare local attributes {} with remote {} using {}", local, remote, files);
                 }
                 return files.compare(type, local, remote);
         }

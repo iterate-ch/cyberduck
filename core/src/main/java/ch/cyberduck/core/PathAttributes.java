@@ -273,7 +273,7 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(vault != null) {
             if(vault.attributes() == this) {
-                log.debug(String.format("Skip serializing vault attribute %s to avoid recursion", vault));
+                log.debug("Skip serializing vault attribute {} to avoid recursion", vault);
             }
             else {
                 dict.setObjectForKey(vault, "Vault");

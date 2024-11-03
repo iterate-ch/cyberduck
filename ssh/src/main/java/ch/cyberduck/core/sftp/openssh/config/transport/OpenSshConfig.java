@@ -115,7 +115,7 @@ public class OpenSshConfig {
             if(!isHostMatch(e.getKey(), hostName)) {
                 continue;
             }
-            log.debug("Found host match in SSH config:" + e.getValue());
+            log.debug("Found host match in SSH config:{}", e.getValue());
             h.copyFrom(e.getValue());
         }
         if(h.port == 0) {
@@ -138,7 +138,7 @@ public class OpenSshConfig {
                 }
             }
             catch(AccessDeniedException | IOException none) {
-                log.warn(String.format("Failure reading %s", configuration));
+                log.warn("Failure reading {}", configuration);
                 hosts = Collections.emptyMap();
             }
             lastModified = mtime;

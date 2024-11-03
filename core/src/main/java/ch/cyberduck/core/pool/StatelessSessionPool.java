@@ -65,7 +65,7 @@ public class StatelessSessionPool implements SessionPool {
     public void release(final Session<?> conn, final BackgroundException failure) {
         if(failure != null) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Keep connection %s alive with failure %s", conn, failure));
+                log.warn("Keep connection {} alive with failure {}", conn, failure);
             }
         }
     }
@@ -78,7 +78,7 @@ public class StatelessSessionPool implements SessionPool {
                 session.close();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Ignore failure %s closing connection", e));
+                log.warn("Ignore failure {} closing connection", e);
             }
             finally {
                 session.removeListener(transcript);
@@ -98,7 +98,7 @@ public class StatelessSessionPool implements SessionPool {
                 session.close();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure %s closing session", e));
+                log.warn("Failure {} closing session", e);
             }
             finally {
                 registry.clear();

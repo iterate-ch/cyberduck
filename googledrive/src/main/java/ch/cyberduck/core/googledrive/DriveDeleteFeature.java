@@ -45,7 +45,7 @@ public class DriveDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path f : files.keySet()) {
             if(f.isPlaceholder()) {
-                log.warn(String.format("Ignore placeholder %s", f));
+                log.warn("Ignore placeholder {}", f);
                 continue;
             }
             callback.delete(f);
@@ -56,7 +56,7 @@ public class DriveDeleteFeature implements Delete {
                 else {
                     if(f.attributes().isDuplicate()) {
                         if(log.isWarnEnabled()) {
-                            log.warn(String.format("Delete file %s already in trash", f));
+                            log.warn("Delete file {} already in trash", f);
                         }
                         // Permanently deletes a file version
                         session.getClient().revisions().delete(fileid.getFileId(f), f.attributes().getVersionId()).execute();

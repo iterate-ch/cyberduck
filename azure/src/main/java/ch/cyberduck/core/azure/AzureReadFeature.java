@@ -87,7 +87,7 @@ public class AzureReadFeature implements Read {
                 @Override
                 protected void handleIOException(final IOException e) throws IOException {
                     if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
-                        log.warn(String.format("Ignore failure %s", e));
+                        log.warn("Ignore failure {}", e);
                         return;
                     }
                     final Throwable cause = ExceptionUtils.getRootCause(e);

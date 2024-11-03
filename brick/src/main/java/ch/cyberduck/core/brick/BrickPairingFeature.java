@@ -63,7 +63,7 @@ public class BrickPairingFeature implements Pairing {
         try {
             final String token = store.findLoginPassword(bookmark);
             if(StringUtils.isNotBlank(token)) {
-                log.warn(String.format("Delete pairing for %s", bookmark));
+                log.warn("Delete pairing for {}", bookmark);
                 final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
                         new DefaultTrustManagerHostnameCallback(bookmark), CertificateStoreFactory.get());
                 final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
@@ -79,7 +79,7 @@ public class BrickPairingFeature implements Pairing {
                 resource.setHeader(HttpHeaders.ACCEPT, "application/json");
                 resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Delete paring key %s", token));
+                    log.info("Delete paring key {}", token);
                 }
                 client.execute(resource, new ResponseHandler<Void>() {
                     @Override

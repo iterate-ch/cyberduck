@@ -36,7 +36,7 @@ public class ApplescriptTerminalService implements TerminalService {
                 application = finder.find(".command");
                 break;
             default:
-                log.warn(String.format("Unsupported application %s assigned", finder.find(".command")));
+                log.warn("Unsupported application {} assigned", finder.find(".command"));
                 application = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
         }
         if(!finder.isInstalled(application)) {
@@ -48,14 +48,14 @@ public class ApplescriptTerminalService implements TerminalService {
             host.getHostname(),
             String.valueOf(host.getPort()), this.escape(workdir.getAbsolute()));
         if(log.isInfoEnabled()) {
-            log.info(String.format("Execute SSH command %s", ssh));
+            log.info("Execute SSH command {}", ssh);
         }
         // Escape
         ssh = StringUtils.replace(ssh, "\\", "\\\\");
         // Escape all " for do script command
         ssh = StringUtils.replace(ssh, "\"", "\\\"");
         if(log.isInfoEnabled()) {
-            log.info("Escaped SSH Command for Applescript:" + ssh);
+            log.info("Escaped SSH Command for Applescript:{}", ssh);
         }
         // Applescript
         final String applescript;
@@ -76,7 +76,7 @@ public class ApplescriptTerminalService implements TerminalService {
             + "\n"
             + "end tell";
         if(log.isInfoEnabled()) {
-            log.info(String.format("Execute AppleScript %s", command));
+            log.info("Execute AppleScript {}", command);
         }
         final NSAppleScript as = NSAppleScript.createWithSource(command);
         final ObjCObjectByReference error = new ObjCObjectByReference();

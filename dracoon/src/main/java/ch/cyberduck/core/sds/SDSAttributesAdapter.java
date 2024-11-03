@@ -156,11 +156,11 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
                                 permission.setUser(Permission.Action.none.or(Permission.Action.read));
                             }
                             else {
-                                log.warn(String.format("Missing read permission for node %s with missing key pair", node));
+                                log.warn("Missing read permission for node {} with missing key pair", node);
                             }
                         }
                         catch(BackgroundException e) {
-                            log.warn(String.format("Ignore failure %s retrieving key pair", e));
+                            log.warn("Ignore failure {} retrieving key pair", e);
                         }
                     }
                     else {
@@ -174,7 +174,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
                     break;
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Map node permissions %s to %s", node.getPermissions(), permission));
+                log.debug("Map node permissions {} to {}", node.getPermissions(), permission);
             }
         }
         return permission;

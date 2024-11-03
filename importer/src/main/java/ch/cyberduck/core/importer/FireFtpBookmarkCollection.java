@@ -116,12 +116,12 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             Scanner scanner = new Scanner(attribute);
             scanner.useDelimiter(":");
             if(!scanner.hasNext()) {
-                log.warn("Missing key in line:" + attribute);
+                log.warn("Missing key in line:{}", attribute);
                 continue;
             }
             String name = scanner.next().toLowerCase(Locale.ROOT);
             if(!scanner.hasNext()) {
-                log.warn("Missing value in line:" + attribute);
+                log.warn("Missing value in line:{}", attribute);
                 continue;
             }
             String value = scanner.next().replaceAll("\"", StringUtils.EMPTY);
@@ -134,7 +134,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                         current.setPort(Integer.parseInt(value));
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Invalid Port:" + e.getMessage());
+                        log.warn("Invalid Port:{}", e.getMessage());
                     }
                     break;
                 case "remotedir":

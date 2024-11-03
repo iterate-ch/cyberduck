@@ -64,7 +64,7 @@ public class MountWorker extends Worker<Path> {
         try {
             final Path home = feature.find();
             if(log.isInfoEnabled()) {
-                log.info(String.format("Mount path %s", home));
+                log.info("Mount path {}", home);
             }
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
@@ -76,7 +76,7 @@ public class MountWorker extends Worker<Path> {
         }
         catch(NotfoundException e) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("Mount failed with %s", e));
+                log.warn("Mount failed with {}", e);
             }
             if(new HostPreferences(session.getHost()).getBoolean("mount.notfound.skipfallback")) {
                 throw e;
@@ -85,7 +85,7 @@ public class MountWorker extends Worker<Path> {
             // to default working directory
             final Path home = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
             if(log.isInfoEnabled()) {
-                log.info(String.format("Fallback to mount path %s", home));
+                log.info("Fallback to mount path {}", home);
             }
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);

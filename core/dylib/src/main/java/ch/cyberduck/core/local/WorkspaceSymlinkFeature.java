@@ -46,7 +46,7 @@ public class WorkspaceSymlinkFeature implements Symlink {
             throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Created symbolic link %s with target %s", file, target));
+            log.debug("Created symbolic link {} with target {}", file, target);
         }
     }
 }

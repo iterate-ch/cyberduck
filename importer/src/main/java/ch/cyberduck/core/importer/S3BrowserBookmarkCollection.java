@@ -78,12 +78,12 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
                     Scanner scanner = new Scanner(line);
                     scanner.useDelimiter(" = ");
                     if(!scanner.hasNext()) {
-                        log.warn("Missing key in line:" + line);
+                        log.warn("Missing key in line:{}", line);
                         continue;
                     }
                     String name = scanner.next().toLowerCase(Locale.ROOT);
                     if(!scanner.hasNext()) {
-                        log.warn("Missing value in line:" + line);
+                        log.warn("Missing value in line:{}", line);
                         continue;
                     }
                     String value = scanner.next();

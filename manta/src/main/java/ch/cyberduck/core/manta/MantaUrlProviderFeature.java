@@ -74,7 +74,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
             }
         }
         catch(IOException e) {
-            log.warn(String.format("Failure creating signed URL for file %s. %s", file, e.getMessage()));
+            log.warn("Failure creating signed URL for file {}. {}", file, e.getMessage());
         }
         return list;
     }

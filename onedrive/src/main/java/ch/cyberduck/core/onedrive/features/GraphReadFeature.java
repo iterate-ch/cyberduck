@@ -59,7 +59,7 @@ public class GraphReadFeature implements Read {
             if(file.getType().contains(Path.Type.placeholder)) {
                 final DescriptiveUrl link = new GraphUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
                 if(DescriptiveUrl.EMPTY.equals(link)) {
-                    log.warn(String.format("Missing web link for file %s", file));
+                    log.warn("Missing web link for file {}", file);
                     return new NullInputStream(file.attributes().getSize());
                 }
                 // Write web link file
@@ -77,7 +77,7 @@ public class GraphReadFeature implements Read {
                         header = String.format("%d-%d", range.getStart(), range.getEnd());
                     }
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add range header %s for file %s", header, file));
+                        log.debug("Add range header {} for file {}", header, file);
                     }
                     if(file.attributes().isDuplicate()) {
                         return Files.downloadVersion(target, file.attributes().getVersionId(), header);

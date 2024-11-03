@@ -54,7 +54,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     @Override
     public Session create() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new session for host %s in pool", bookmark));
+            log.debug("Create new session for host {} in pool", bookmark);
         }
         return SessionFactory.create(bookmark, trust, key).withRegistry(registry);
     }
@@ -68,7 +68,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     public void activateObject(final PooledObject<Session> p) throws BackgroundException {
         final Session session = p.getObject();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Activate session %s", session));
+            log.debug("Activate session {}", session);
         }
         connect.check(session, new DisabledCancelCallback());
     }
@@ -77,7 +77,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     public void passivateObject(final PooledObject<Session> p) {
         final Session session = p.getObject();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Pause session %s", session));
+            log.debug("Pause session {}", session);
         }
     }
 
@@ -85,7 +85,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     public void destroyObject(final PooledObject<Session> p) throws BackgroundException {
         final Session session = p.getObject();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Destroy session %s", session));
+            log.debug("Destroy session {}", session);
         }
         connect.close(session);
     }

@@ -76,7 +76,7 @@ public class CompareFilter extends AbstractDownloadFilter {
             switch(comparison) {
                 case local:
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s with comparison %s", file, comparison));
+                        log.info("Skip file {} with comparison {}", file, comparison);
                     }
                     return false;
                 case equal:
@@ -84,13 +84,13 @@ public class CompareFilter extends AbstractDownloadFilter {
                         return true;
                     }
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s with comparison %s", file, comparison));
+                        log.info("Skip file {} with comparison {}", file, comparison);
                     }
                     return false;
                 case remote:
                     return true;
             }
-            log.warn(String.format("Invalid comparison result %s", comparison));
+            log.warn("Invalid comparison result {}", comparison);
         }
         return false;
     }

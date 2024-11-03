@@ -405,7 +405,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     protected void setFilter(final Filter<Path> filter) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set path filter to %s", filter));
+            log.debug("Set path filter to {}", filter);
         }
         if(null == filter) {
             this.searchField.setStringValue(StringUtils.EMPTY);
@@ -494,7 +494,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void reload(final Path workdir, final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Reload data with selected files %s", selected));
+            log.debug("Reload data with selected files {}", selected);
         }
         for(final Path folder : folders) {
             if(folder.getName().startsWith(".")) {
@@ -577,11 +577,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final NSTableView browser = this.getSelectedBrowserView();
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Select row for reference %s", file));
+            log.debug("Select row for reference {}", file);
         }
         int row = model.indexOf(browser, file);
         if(-1 == row) {
-            log.warn(String.format("Failed to find row for %s", file));
+            log.warn("Failed to find row for {}", file);
             return;
         }
         final NSInteger index = new NSInteger(row);
@@ -1178,7 +1178,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         final NSInteger draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null));
                         if(draggingColumn.intValue() != 0) {
                             if(log.isDebugEnabled()) {
-                                log.debug(String.format("Returning false to #outlineViewShouldExpandItem for column %s", draggingColumn));
+                                log.debug("Returning false to #outlineViewShouldExpandItem for column {}", draggingColumn);
                             }
                             // See ticket #60
                             return false;
@@ -2252,7 +2252,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     this.window, this.id(), Foundation.selector("certificateSheetDidEnd:returnCode:contextInfo:"), null, certs, true);
         }
         catch(CertificateException e) {
-            log.warn(String.format("Failure decoding certificate %s", e.getMessage()));
+            log.warn("Failure decoding certificate {}", e.getMessage());
         }
     }
 
@@ -2621,7 +2621,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                                     final NSPasteboard pboard = NSPasteboard.generalPasteboard();
                                                     pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
                                                     if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
-                                                        log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
+                                                        log.error("Error writing URL to {}", NSPasteboard.StringPboardType);
                                                     }
                                             }
                                         }
@@ -2667,7 +2667,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                                     final NSPasteboard pboard = NSPasteboard.generalPasteboard();
                                                     pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
                                                     if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
-                                                        log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
+                                                        log.error("Error writing URL to {}", NSPasteboard.StringPboardType);
                                                     }
                                             }
                                         }
@@ -3033,7 +3033,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * can send and receive data of that type.
      */
     public ID validRequestorForSendType_returnType(String sendType, String returnType) {
-        log.debug("validRequestorForSendType_returnType:" + sendType + "," + returnType);
+        log.debug("validRequestorForSendType_returnType:{},{}", sendType, returnType);
         if(StringUtils.isNotEmpty(sendType)) {
             // Cannot send any data type
             return null;
@@ -3281,7 +3281,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void setWorkdir(final Path directory, final List<Path> selected) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set working directory to %s", directory));
+            log.debug("Set working directory to {}", directory);
         }
         // Remove any custom file filter
         this.setFilter(SearchFilterFactory.create(showHiddenFiles));
@@ -3313,7 +3313,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void mount(final Host bookmark) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Mount session for %s", bookmark));
+            log.debug("Mount session for {}", bookmark);
         }
         this.unmount(new Runnable() {
             @Override
@@ -3394,7 +3394,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public boolean unmount(final SheetCallback callback, final Runnable disconnected) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Unmount session %s", pool));
+            log.debug("Unmount session {}", pool);
         }
         if(this.isConnected()) {
             if(preferences.getBoolean("browser.disconnect.confirm")) {
@@ -3612,7 +3612,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String itemIdentifier, boolean inserted) {
         if(log.isDebugEnabled()) {
-            log.debug("toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar:" + itemIdentifier);
+            log.debug("toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar:{}", itemIdentifier);
         }
         return browserToolbarFactory.create(itemIdentifier);
     }
@@ -3781,7 +3781,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(row < browserOutlineView.numberOfRows().intValue()) {
                 return cache.lookup(new NSObjectPathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
             }
-            log.warn(String.format("No item at row %d", row));
+            log.warn("No item at row {}", row);
             return null;
         }
     }
@@ -3820,7 +3820,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(row < children.size()) {
                 return children.get(row);
             }
-            log.warn(String.format("No item at row %d", row));
+            log.warn("No item at row {}", row);
             return null;
         }
     }

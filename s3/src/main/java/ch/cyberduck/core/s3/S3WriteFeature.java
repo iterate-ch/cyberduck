@@ -79,7 +79,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     client.putObjectWithRequestEntityImpl(
                             bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object, entity, status.getParameters());
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Saved object %s with checksum %s", file, object.getETag()));
+                        log.debug("Saved object {} with checksum {}", file, object.getETag());
                     }
                 }
                 catch(ServiceException e) {
@@ -132,7 +132,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         if(!Acl.EMPTY.equals(status.getAcl())) {
             if(status.getAcl().isCanned()) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set canned ACL %s for %s", status.getAcl(), file));
+                    log.debug("Set canned ACL {} for {}", status.getAcl(), file);
                 }
                 object.setAcl(acl.toAcl(status.getAcl()));
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL

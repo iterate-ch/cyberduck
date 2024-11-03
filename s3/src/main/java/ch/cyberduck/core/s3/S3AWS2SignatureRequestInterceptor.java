@@ -50,14 +50,14 @@ public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws IOException {
         if(!session.getClient().isAuthenticatedConnection()) {
-            log.warn(String.format("Skip authentication request %s", request));
+            log.warn("Skip authentication request {}", request);
             return;
         }
         final ProviderCredentials credentials = session.getClient().getProviderCredentials();
         final String bucketName;
         if(context.getAttribute("bucket") == null) {
             if(log.isWarnEnabled()) {
-                log.warn(String.format("No bucket name in context %s", context));
+                log.warn("No bucket name in context {}", context);
             }
             bucketName = StringUtils.EMPTY;
         }
@@ -65,7 +65,7 @@ public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor
             bucketName = context.getAttribute("bucket").toString();
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Use bucket name %s from context", bucketName));
+            log.debug("Use bucket name {} from context", bucketName);
         }
         final URI uri;
         try {

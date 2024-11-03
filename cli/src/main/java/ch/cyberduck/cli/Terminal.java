@@ -169,7 +169,7 @@ public class Terminal {
         );
         this.options = options;
         if(log.isInfoEnabled()) {
-            log.info(String.format("Parsed options %s from input %s", options, input));
+            log.info("Parsed options {} from input {}", options, input);
         }
         this.input = input;
         this.cache = new PathCache(preferences.getInteger("browser.cache.size"));
@@ -247,7 +247,7 @@ public class Terminal {
             try {
                 final Profile profile = ProfileReaderFactory.get().read(LocalFactory.get(file));
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Register profile %s", profile));
+                    log.debug("Register profile {}", profile);
                 }
                 protocols.register(profile);
             }
@@ -305,7 +305,7 @@ public class Terminal {
                     vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));
                 }
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Attempting to load vault from %s", vault));
+                    log.debug("Attempting to load vault from {}", vault);
                 }
                 try {
                     this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVaultRegistry(),

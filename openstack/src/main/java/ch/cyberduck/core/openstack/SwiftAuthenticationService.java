@@ -158,7 +158,7 @@ public class SwiftAuthenticationService {
             return requests;
         }
         else {
-            log.warn(String.format("Unknown context version in %s. Default to v1 authentication.", context));
+            log.warn("Unknown context version in {}. Default to v1 authentication.", context);
             // Default to 1.0
             return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
                 bookmark.getCredentials().getUsername(), bookmark.getCredentials().getPassword()));

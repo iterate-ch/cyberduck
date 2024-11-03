@@ -75,13 +75,13 @@ public class ProxySocketFactory extends SocketFactory {
     protected SocketFactory factory() {
         final Proxy proxy = proxyFinder.find(new ProxyHostUrlProvider().get(host));
         if(!types.contains(proxy.getType())) {
-            log.warn(String.format("Use of %s proxy is disabled for socket factory %s", proxy.getType(), this));
+            log.warn("Use of {} proxy is disabled for socket factory {}", proxy.getType(), this);
             return new DefaultSocketFactory();
         }
         switch(proxy.getType()) {
             case SOCKS:
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Configured to use SOCKS proxy %s", proxy));
+                    log.info("Configured to use SOCKS proxy {}", proxy);
                 }
                 final java.net.Proxy socksProxy = new java.net.Proxy(
                     java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
@@ -89,7 +89,7 @@ public class ProxySocketFactory extends SocketFactory {
             case HTTP:
             case HTTPS:
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Configured to use HTTP proxy %s", proxy));
+                    log.info("Configured to use HTTP proxy {}", proxy);
                 }
                 final java.net.Proxy httpProxy = new java.net.Proxy(
                     java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));

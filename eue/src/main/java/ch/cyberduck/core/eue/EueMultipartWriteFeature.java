@@ -152,7 +152,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                 final byte[] content = Arrays.copyOfRange(b, off, len);
                 if(0L == offset && content.length < new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold")) {
                     final EueWriteFeature writer = new EueWriteFeature(session, fileid);
-                    log.warn(String.format("Cancel chunked upload for %s", file));
+                    log.warn("Cancel chunked upload for {}", file);
                     writer.cancel(uploadUri);
                     final TransferStatus status = new TransferStatus(overall).withLength(content.length);
                     final HttpResponseOutputStream<EueWriteFeature.Chunk> stream = writer.write(file,
@@ -223,11 +223,11 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
         public void close() throws IOException {
             try {
                 if(close.get()) {
-                    log.warn(String.format("Skip double close of stream %s", this));
+                    log.warn("Skip double close of stream {}", this);
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
+                    log.warn("Skip closing with previous failure {}", canceled.get());
                     return;
                 }
                 // Skip complete if previously switched to simple upload because of smaller chunk size
@@ -237,7 +237,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                     }
                     else {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Complete chunked upload for %s", file));
+                            log.debug("Complete chunked upload for {}", file);
                         }
                         try {
                             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
@@ -245,7 +245,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                                     .getCompletedUploadResponse(uploadUri, offset, cdash64);
                             if(!StringUtils.equals(cdash64, completedUploadResponse.getCdash64())) {
                                 if(file.getType().contains(Path.Type.encrypted)) {
-                                    log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+                                    log.warn("Skip checksum verification for {} with client side encryption enabled", file);
                                 }
                                 else {
                                     throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),

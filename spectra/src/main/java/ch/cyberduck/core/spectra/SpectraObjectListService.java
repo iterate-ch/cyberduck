@@ -85,7 +85,7 @@ public class SpectraObjectListService extends S3AbstractListService {
                     final String key = object.getKey();
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip placeholder key %s", key));
+                            log.debug("Skip placeholder key {}", key);
                         }
                         hasDirectoryPlaceholder = true;
                         continue;
@@ -97,7 +97,7 @@ public class SpectraObjectListService extends S3AbstractListService {
                     final String key = object.getKey();
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip placeholder key %s", key));
+                            log.debug("Skip placeholder key {}", key);
                         }
                         hasDirectoryPlaceholder = true;
                         continue;
@@ -134,7 +134,7 @@ public class SpectraObjectListService extends S3AbstractListService {
             while(truncated);
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("No placeholder found for directory %s", directory));
+                    log.warn("No placeholder found for directory {}", directory);
                 }
                 throw new NotfoundException(directory.getAbsolute());
             }

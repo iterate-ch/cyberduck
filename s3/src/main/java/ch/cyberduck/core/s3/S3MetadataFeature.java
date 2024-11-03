@@ -69,7 +69,7 @@ public class S3MetadataFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Write metadata %s for file %s", status, file));
+            log.debug("Write metadata {} for file {}", status, file);
         }
         try {
             final S3Object target = new S3Object(containerService.getKey(file));
@@ -82,7 +82,7 @@ public class S3MetadataFeature implements Headers {
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure %s", e));
+                log.warn("Ignore failure {}", e);
             }
             final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
             if(storageClassFeature != null) {

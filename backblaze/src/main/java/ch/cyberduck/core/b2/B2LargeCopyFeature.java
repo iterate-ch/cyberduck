@@ -108,7 +108,7 @@ public class B2LargeCopyFeature implements Copy {
                 // Submit to queue
                 parts.add(this.submit(pool, source, response.getFileId(), status, partNumber, offset, length, callback));
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Part %s submitted with size %d and offset %d", partNumber, length, offset));
+                    log.debug("Part {} submitted with size {} and offset {}", partNumber, length, offset);
                 }
                 remaining -= length;
                 offset += length;
@@ -130,7 +130,7 @@ public class B2LargeCopyFeature implements Copy {
             }
             session.getClient().finishLargeFileUpload(response.getFileId(), checksums.toArray(new String[checksums.size()]));
             if(log.isInfoEnabled()) {
-                log.info(String.format("Finished large file upload %s with %d parts", target, completed.size()));
+                log.info("Finished large file upload {} with {} parts", target, completed.size());
             }
             fileid.cache(target, response.getFileId());
             return target.withAttributes(new PathAttributes(source.attributes()).withVersionId(response.getFileId()));
@@ -151,7 +151,7 @@ public class B2LargeCopyFeature implements Copy {
                                                 final int partNumber, final Long offset, final Long length,
                                                 final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
+            log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         }
         return pool.execute(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
             @Override

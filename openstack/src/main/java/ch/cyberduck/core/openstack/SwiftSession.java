@@ -98,7 +98,7 @@ public class SwiftSession extends HttpSession<Client> {
                 try {
                     final AuthenticationRequest auth = iter.next();
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Attempt authentication with %s", auth));
+                        log.info("Attempt authentication with {}", auth);
                     }
                     client.authenticate(auth);
                     break;
@@ -172,7 +172,7 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == DistributionConfiguration.class) {
             for(Region region : accounts.keySet()) {
                 if(null == region.getCDNManagementUrl()) {
-                    log.warn(String.format("Missing CDN Management URL for region %s", region.getRegionId()));
+                    log.warn("Missing CDN Management URL for region {}", region.getRegionId());
                     return null;
                 }
             }
@@ -181,7 +181,7 @@ public class SwiftSession extends HttpSession<Client> {
                 public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
                     final Distribution distribution = super.read(container, method, prompt);
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Cache distribution %s", distribution));
+                        log.debug("Cache distribution {}", distribution);
                     }
                     // Replace previously cached value
                     final Set<Distribution> cached = distributions.getOrDefault(container, new HashSet<>());

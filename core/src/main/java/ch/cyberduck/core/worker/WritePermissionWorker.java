@@ -89,7 +89,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final UnixPermission feature = session.getFeature(UnixPermission.class);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
+            log.debug("Run with feature {}", feature);
         }
         for(Path file : files) {
             if(this.isCanceled()) {
