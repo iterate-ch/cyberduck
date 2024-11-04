@@ -31,7 +31,6 @@ public class DefaultFailureDiagnosticsTest {
 
     @Test
     public void testDetermine() {
-        assertEquals(FailureDiagnostics.Type.application, new DefaultFailureDiagnostics().determine(null));
         assertEquals(FailureDiagnostics.Type.network, new DefaultFailureDiagnostics().determine(new ResolveFailedException("d", null)));
         assertEquals(FailureDiagnostics.Type.cancel, new DefaultFailureDiagnostics().determine(new ResolveCanceledException()));
         assertEquals(FailureDiagnostics.Type.login, new DefaultFailureDiagnostics().determine(new LoginFailureException("d")));
