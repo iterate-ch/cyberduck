@@ -69,7 +69,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     @Test
     public void testSetupConnectionVirtualHost() throws Exception {
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(virtualhost, new HttpConnectionPoolBuilder(virtualhost.getHost(),
-                new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), session.getHost().getHostname()),
+                new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), virtualhost.getHost().getHostname()),
                 new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), new DisabledLoginCallback()));
         final RegionEndpointCache cache = service.getRegionEndpointCache();
         cache.clear();

@@ -272,7 +272,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
         final String name = new AlphanumericRandomStringService().random();
         final TransferStatus status = new TransferStatus();
-        final Path file = new S3TouchFeature(virtualhost, new S3AccessControlListFeature(session)).touch(
+        final Path file = new S3TouchFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).touch(
                 new Path(name, EnumSet.of(Path.Type.file)), status);
         final PathAttributes attributes = f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
         assertEquals(0L, attributes.getSize());
