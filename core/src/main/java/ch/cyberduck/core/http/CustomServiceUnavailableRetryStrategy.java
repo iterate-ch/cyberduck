@@ -39,8 +39,7 @@ public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavail
 
     public CustomServiceUnavailableRetryStrategy(final Host host, final int executionCount, final ServiceUnavailableRetryStrategy... chain) {
         super(new ChainedServiceUnavailableRetryStrategy(new ExecutionCountServiceUnavailableRetryStrategy(
-                executionCount, new DefaultServiceUnavailableRetryStrategy(host)),
-                new ChainedServiceUnavailableRetryStrategy(chain)));
+                executionCount, new DefaultServiceUnavailableRetryStrategy(host)), new ChainedServiceUnavailableRetryStrategy(chain)));
         this.host = host;
     }
 
