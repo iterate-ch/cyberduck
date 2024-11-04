@@ -125,7 +125,7 @@ public class DAVClient extends SardineImpl {
                 resources.add(new DavResource(response));
             }
             catch(URISyntaxException e) {
-                log.warn(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
+                log.warn("Ignore resource with invalid URI {}", response.getHref().get(0));
             }
         }
         return resources;

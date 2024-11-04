@@ -177,7 +177,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             }
             catch(FileSystemException e) {
                 // Too many levels of symbolic links
-                log.warn(String.format("Failure resolving symlink target for %s. %s", path, e.getMessage()));
+                log.warn("Failure resolving symlink target for {}. {}", path, e.getMessage());
                 throw new LocalNotfoundException(MessageFormat.format("Failure to read attributes of {0}", this.getName()), e);
             }
             // For a link that actually points to something (either a file or a directory),
@@ -370,12 +370,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public void copy(final Local copy, final CopyOptions options) throws AccessDeniedException {
         if(copy.equals(this)) {
-            log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
+            log.warn("{} and {} are identical. Not copied.", this.getName(), copy.getName());
         }
         else {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Copy to %s with options %s", copy, options));
-            }
+            log.debug("Copy to {} with options {}", copy, options);
             FileChannel in = null;
             FileChannel out = null;
             try {
@@ -484,9 +482,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public Object lock(final boolean interactive) throws AccessDeniedException {
-        if(log.isWarnEnabled()) {
-            log.warn(String.format("No lock support in %s", this));
-        }
+        log.warn("No lock support in {}", this);
         return null;
     }
 

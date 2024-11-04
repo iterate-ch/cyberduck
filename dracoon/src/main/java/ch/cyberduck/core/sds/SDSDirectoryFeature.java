@@ -108,7 +108,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
             if(!new HostPreferences(session.getHost()).getBoolean("sds.create.dataroom.enable")) {
-                log.warn(String.format("Disallow creating new top level data room %s", filename));
+                log.warn("Disallow creating new top level data room {}", filename);
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
             }
         }

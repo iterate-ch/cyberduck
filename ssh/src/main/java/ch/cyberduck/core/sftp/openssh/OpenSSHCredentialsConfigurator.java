@@ -51,17 +51,13 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
             final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
             if(StringUtils.isNotBlank(entry.getUser())) {
                 if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Using username %s from %s", entry, configuration));
-                    }
+                    log.info("Using username {} from {}", entry, configuration);
                     credentials.setUsername(entry.getUser());
                 }
             }
             if(!credentials.isPublicKeyAuthentication()) {
                 if(null != entry.getIdentityFile()) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Using identity %s from %s", entry, configuration));
-                    }
+                    log.info("Using identity {} from {}", entry, configuration);
                     credentials.setIdentity(entry.getIdentityFile());
                 }
                 else {
@@ -69,17 +65,13 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                     if(new HostPreferences(host).getBoolean("ssh.authentication.publickey.default.enable")) {
                         final Local rsa = LocalFactory.get(new HostPreferences(host).getProperty("ssh.authentication.publickey.default.rsa"));
                         if(rsa.exists()) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Using RSA default host key %s from %s", rsa, configuration));
-                            }
+                            log.info("Using RSA default host key {} from {}", rsa, configuration);
                             credentials.setIdentity(rsa);
                         }
                         else {
                             final Local dsa = LocalFactory.get(new HostPreferences(host).getProperty("ssh.authentication.publickey.default.dsa"));
                             if(dsa.exists()) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Using DSA default host key %s from %s", dsa, configuration));
-                                }
+                                log.info("Using DSA default host key {} from {}", dsa, configuration);
                                 credentials.setIdentity(dsa);
                             }
                         }

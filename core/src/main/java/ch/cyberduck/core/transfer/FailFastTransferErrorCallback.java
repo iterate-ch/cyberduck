@@ -33,12 +33,12 @@ public class FailFastTransferErrorCallback implements TransferErrorCallback {
     public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
         if(pending == 0) {
             // Fail fast when first item in queue fails preparing
-            log.warn(String.format("Cancel %s with no pending file after failure %s", item, failure));
+            log.warn("Cancel {} with no pending file after failure {}", item, failure);
             throw failure;
         }
         if(pending == 1) {
             // Fail fast when transferring single file
-            log.warn(String.format("Cancel %s with no pending file after failure %s", item, failure));
+            log.warn("Cancel {} with no pending file after failure {}", item, failure);
             throw failure;
         }
         return proxy.prompt(item, status, failure, pending);

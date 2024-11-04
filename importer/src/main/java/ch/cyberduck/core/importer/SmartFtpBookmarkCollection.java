@@ -108,9 +108,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
 
         @Override
         public void endElement(String name, String elementText) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("endElement:%s,%s", name, elementText));
-            }
+            log.debug("endElement:{},{}", name, elementText);
             switch(name) {
                 case "Host":
                     current.setHostname(elementText);
@@ -133,7 +131,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                         current.setPort(-1);
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Unknown Protocol:" + e.getMessage());
+                        log.warn("Unknown Protocol:{}", e.getMessage());
                     }
                     break;
                 case "Port":
@@ -141,7 +139,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                         current.setPort(Integer.parseInt(elementText));
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Invalid Port:" + e.getMessage());
+                        log.warn("Invalid Port:{}", e.getMessage());
                     }
                     break;
                 case "LastConnect":
@@ -149,7 +147,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                         current.setTimestamp(new ISO8601DateFormatter().parse(elementText));
                     }
                     catch(InvalidDateException e) {
-                        log.warn(String.format("Failed to parse timestamp from %s %s", elementText, e.getMessage()));
+                        log.warn("Failed to parse timestamp from {} {}", elementText, e.getMessage());
                     }
                     break;
                 case "User":
@@ -170,7 +168,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                         }
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Invalid connect mode:" + e.getMessage());
+                        log.warn("Invalid connect mode:{}", e.getMessage());
                     }
                     break;
                 case "Description":

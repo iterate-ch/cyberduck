@@ -198,9 +198,7 @@ public abstract class Transfer implements Serializable {
      * @param bytesPerSecond Maximum number of bytes to transfer by second
      */
     public void setBandwidth(final float bytesPerSecond) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Throttle bandwidth to %s bytes per second", bytesPerSecond));
-        }
+        log.debug("Throttle bandwidth to {} bytes per second", bytesPerSecond);
         bandwidth.setRate(bytesPerSecond);
     }
 
@@ -328,7 +326,7 @@ public abstract class Transfer implements Serializable {
                 }
             }
             catch(LocalAccessDeniedException e) {
-                log.warn(String.format("Failure obtaining lock for %s. %s", item.local, e));
+                log.warn("Failure obtaining lock for {}. {}", item.local, e);
             }
         }
     }
@@ -400,9 +398,7 @@ public abstract class Transfer implements Serializable {
      * Recalculate the size of the <code>queue</code>
      */
     public synchronized void reset() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Reset status for %s", this));
-        }
+        log.debug("Reset status for {}", this);
         transferred = null;
         size = null;
         reset = true;
@@ -443,9 +439,7 @@ public abstract class Transfer implements Serializable {
         if(bytes > 0) {
             size.addAndGet(bytes);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Size set to %d bytes", size.get()));
-        }
+        log.debug("Size set to {} bytes", size.get());
     }
 
     /**
@@ -465,9 +459,7 @@ public abstract class Transfer implements Serializable {
         }
         // Allow decrement for failed segments
         transferred.addAndGet(bytes);
-        if(log.isTraceEnabled()) {
-            log.trace(String.format("Transferred set to %d bytes", transferred.get()));
-        }
+        log.trace("Transferred set to {} bytes", transferred.get());
     }
 
     public String getUuid() {

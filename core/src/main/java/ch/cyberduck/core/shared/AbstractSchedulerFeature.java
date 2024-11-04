@@ -54,14 +54,14 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<Void> {
                 }
             }
             catch(LoginFailureException | ConnectionCanceledException e) {
-                log.warn("Cancel processing scheduled task after failure %s", e);
+                log.warn("Cancel processing scheduled task after failure {}", e.getMessage());
                 this.shutdown();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                log.warn("Failure processing scheduled task. {}", e.getMessage(), e);
             }
             catch(Exception e) {
-                log.error(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                log.error("Failure processing scheduled task {}", e.getMessage(), e);
                 this.shutdown();
             }
         }, period, TimeUnit.MILLISECONDS);
@@ -72,9 +72,7 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<Void> {
 
     @Override
     public void shutdown() {
-        if(log.isDebugEnabled()) {
-            log.debug("Shutting down scheduler thread pool");
-        }
+        log.debug("Shutting down scheduler thread pool");
         scheduler.shutdown();
     }
 }

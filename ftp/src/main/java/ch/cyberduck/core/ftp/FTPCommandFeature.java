@@ -39,9 +39,7 @@ public class FTPCommandFeature implements Command {
 
     @Override
     public void send(final String command, final ProgressListener progress, final TranscriptListener transcript) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Send command %s", command));
-        }
+        log.debug("Send command {}", command);
         progress.message(command);
         final ProtocolCommandListener listener = new LoggingProtocolCommandListener(transcript);
         try {

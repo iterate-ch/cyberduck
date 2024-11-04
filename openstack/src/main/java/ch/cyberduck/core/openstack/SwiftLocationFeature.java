@@ -112,11 +112,11 @@ public class SwiftLocationFeature implements Location {
                         cache.put(container, new SwiftRegion(client.getContainerInfo(r, container.getName()).getRegion().getRegionId()));
                     }
                     catch(ContainerNotFoundException | AuthorizationException e) {
-                        log.warn(String.format("Failure finding container %s in region %s", container, r.getRegionId()));
+                        log.warn("Failure finding container {} in region {}", container, r.getRegionId());
                     }
                     catch(GenericException e) {
                         if(e.getHttpStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
-                            log.warn(String.format("Ignore failure %s for region %s", e, region));
+                            log.warn("Ignore failure {} for region {}", e, region);
                             continue;
                         }
                         throw new SwiftExceptionMappingService().map(e);

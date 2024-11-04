@@ -72,7 +72,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         if(value instanceof NSDictionary) {
             return (NSDictionary) value;
         }
-        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        log.warn("Unexpected value type for serialized key {}", key);
         return null;
     }
 
@@ -94,13 +94,13 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
                     list.add((T) next.toString());
                 }
                 else {
-                    log.warn(String.format("Ignore content of type %s", next));
+                    log.warn("Ignore content of type {}", next);
                 }
 
             }
             return list;
         }
-        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        log.warn("Unexpected value type for serialized key {}", key);
         return null;
     }
 
@@ -118,7 +118,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
             }
             return map;
         }
-        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        log.warn("Unexpected value type for serialized key {}", key);
         return null;
     }
 

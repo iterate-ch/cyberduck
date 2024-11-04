@@ -59,7 +59,7 @@ public class S3LoggingFeature implements Logging {
             final StorageBucketLoggingStatus status
                     = session.getClient().getBucketLoggingStatusImpl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             if(null == status) {
-                log.warn(String.format("Failure parsing logging status for %s", bucket));
+                log.warn("Failure parsing logging status for {}", bucket);
                 return LoggingConfiguration.empty();
             }
             final LoggingConfiguration configuration = new LoggingConfiguration(status.isLoggingEnabled(),
@@ -74,7 +74,7 @@ public class S3LoggingFeature implements Logging {
                     configuration.setContainers(new S3BucketListService(session).list(Home.ROOT, new DisabledListProgressListener()).toList());
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+                    log.warn("Failure listing buckets. {}", e.getMessage());
                     configuration.setContainers(Collections.singletonList(bucket));
                 }
             }
@@ -85,7 +85,7 @@ public class S3LoggingFeature implements Logging {
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read logging configuration for %s %s", bucket.getName(), e.getMessage()));
+                log.warn("Missing permission to read logging configuration for {} {}", bucket.getName(), e.getMessage());
                 return LoggingConfiguration.empty();
             }
         }

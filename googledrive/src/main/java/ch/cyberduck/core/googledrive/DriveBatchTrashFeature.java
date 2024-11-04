@@ -68,7 +68,7 @@ public class DriveBatchTrashFeature implements Trash {
                     }
                     else {
                         if(f.attributes().isHidden()) {
-                            log.warn(String.format("Delete file %s already in trash", f));
+                            log.warn("Delete file {} already in trash", f);
                             new DriveBatchDeleteFeature(session, fileid).queue(f, batch, callback, failures);
                             continue;
                         }
@@ -110,7 +110,7 @@ public class DriveBatchTrashFeature implements Trash {
 
         @Override
         public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) {
-            log.warn(String.format("Failure trashing %s. %s", file, e.getMessage()));
+            log.warn("Failure trashing {}. {}", file, e.getMessage());
             failures.add(new DefaultHttpResponseExceptionMappingService().map(
                     new HttpResponseException(e.getCode(), e.getMessage())));
         }

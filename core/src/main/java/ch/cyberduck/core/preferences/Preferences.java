@@ -231,9 +231,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     protected void setDefaults(final Properties props) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set default properties %s", props));
-        }
+        log.debug("Set default properties {}", props);
         for(Map.Entry<Object, Object> property : props.entrySet()) {
             this.setDefault(property.getKey().toString(), property.getValue().toString());
         }
@@ -241,9 +239,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
     protected void setDefaults(final Local defaults) {
         if(defaults.exists()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Load defaults from %s", defaults));
-            }
+            log.debug("Load defaults from {}", defaults);
             final Properties props = new Properties();
             try (final InputStream in = defaults.getInputStream()) {
                 props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
@@ -256,9 +252,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     private void loadDefaults(final String name) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Load defaults from %s", name));
-        }
+        log.debug("Load defaults from {}", name);
         final InputStream in = Preferences.class.getResourceAsStream(String.format("/%s", name));
         if(in != null) {
             try {
@@ -312,9 +306,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         final BouncyCastleProvider provider = new BouncyCastleProvider();
         // Add missing factory. http://bouncy-castle.1462172.n4.nabble.com/Keychain-issue-as-of-version-1-53-follow-up-tc4659509.html
         provider.put("Alg.Alias.SecretKeyFactory.PBE", "PBEWITHSHAAND3-KEYTRIPLEDES-CBC");
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Install provider %s at position %d", provider, position));
-        }
+        log.info("Install provider {} at position {}", provider, position);
         Security.insertProviderAt(provider, position);
 
         System.setProperty("jdk.tls.useExtendedMasterSecret", String.valueOf(false));
@@ -388,9 +380,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
                         return "log4j.xml".equals(file.getName());
                     }
                 })) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Using log4j configuration from %s", log4jxml));
-                    }
+                    log.info("Using log4j configuration from {}", log4jxml);
                     return log4jxml.getInputStream();
                 }
             }
@@ -407,9 +397,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
             configuration = Preferences.class.getClassLoader().getResource(file);
         }
         if(null != configuration) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Using log4j configuration from %s", configuration));
-            }
+            log.debug("Using log4j configuration from {}", configuration);
             try {
                 return configuration.openStream();
             }
@@ -443,9 +431,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
                         withCustomActions(new Action[]{new AbstractAction() {
                             @Override
                             public boolean execute() {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Running version %s", getVersion()));
-                                }
+                                log.info("Running version {}", getVersion());
                                 return true;
                             }
                         }, deleteAction}).build())

@@ -48,7 +48,7 @@ public class GoogleStorageTimestampFeature implements Timestamp {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isVolume()) {
-            log.warn(String.format("Skip setting timestamp for %s", file));
+            log.warn("Skip setting timestamp for {}", file);
             return;
         }
         try {
@@ -73,9 +73,7 @@ public class GoogleStorageTimestampFeature implements Timestamp {
                 }
             }
             if(failure instanceof InteroperabilityException) {
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Retry rewriting file %s with failure %s writing custom time", file, failure));
-                }
+                log.warn("Retry rewriting file {} with failure {} writing custom time", file, failure);
                 // You cannot remove Custom-Time once it's been set on an object. Additionally, the value for Custom-Time cannot
                 // decrease. That is, you cannot set Custom-Time to be an earlier date/time than the existing Custom-Time.
                 // You can, however, effectively remove or reset the Custom-Time by rewriting the object.

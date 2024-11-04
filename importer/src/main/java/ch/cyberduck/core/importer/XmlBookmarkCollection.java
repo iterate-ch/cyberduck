@@ -93,7 +93,7 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
             xr.parse(new InputSource(in));
         }
         catch(SAXException | IOException e) {
-            log.error(String.format("Error reading %s:%s", this.getFile(), e.getMessage()));
+            log.error("Error reading {}:{}", this.getFile(), e.getMessage());
         }
     }
 }

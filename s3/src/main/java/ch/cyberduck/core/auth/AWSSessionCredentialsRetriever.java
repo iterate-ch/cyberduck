@@ -90,7 +90,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
                 return retriever.get();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Ignore failure %s retrieving credentials from %s", e, url));
+                log.warn("Ignore failure {} retrieving credentials from {}", e, url);
                 return host.getCredentials();
             }
         }
@@ -98,9 +98,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
 
     @Override
     public Credentials get() throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure credentials from %s", url));
-        }
+        log.debug("Configure credentials from {}", url);
         final Host address = new HostParser(ProtocolFactory.get()).get(url);
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(address,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, address.getHostname()), key, ProxyFactory.get());
@@ -115,7 +113,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
                         case HttpStatus.SC_OK:
                             final HttpEntity entity = response.getEntity();
                             if(entity == null) {
-                                log.warn(String.format("Missing response entity in %s", response));
+                                log.warn("Missing response entity in {}", response);
                                 throw new ClientProtocolException("Empty response");
                             }
                             else {
@@ -127,7 +125,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
             });
         }
         catch(IOException e) {
-            log.warn(String.format("Failure %s to retrieve session credentials", e));
+            log.warn("Failure {} to retrieve session credentials", e.getMessage());
             throw new LoginFailureException(e.getMessage(), e);
         }
     }
@@ -157,7 +155,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
                         expiration = new ISO8601DateFormatter().parse(value);
                     }
                     catch(InvalidDateException e) {
-                        log.warn(String.format("Failure %s parsing %s", e, value));
+                        log.warn("Failure {} parsing {}", e, value);
                     }
                     break;
             }

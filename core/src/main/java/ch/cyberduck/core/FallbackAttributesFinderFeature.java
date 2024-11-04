@@ -49,7 +49,7 @@ public class FallbackAttributesFinderFeature implements AttributesFinder {
             return standard.find(file, listener);
         }
         catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
-            log.warn(String.format("Failure listing directory %s. %s", file.getParent(), f.getMessage()));
+            log.warn("Failure listing directory {}. {}", file.getParent(), f.getMessage());
             if(fallback instanceof DefaultAttributesFinderFeature) {
                 throw f;
             }

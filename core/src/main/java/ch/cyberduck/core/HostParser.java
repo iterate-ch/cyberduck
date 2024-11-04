@@ -43,9 +43,7 @@ public final class HostParser {
      */
     public static Host parse(final String url) throws HostParserException {
         final Host parsed = new HostParser().get(url);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Parsed %s as %s", url, parsed));
-        }
+        log.debug("Parsed {} as {}", url, parsed);
         return parsed;
     }
 
@@ -111,9 +109,7 @@ public final class HostParser {
         else if(uriType == URITypes.Absolute) {
             parseAbsolute(reader, host, parsedProtocolDecorator);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Parsed %s as %s", url, host));
-        }
+        log.debug("Parsed {} as {}", url, host);
         return host;
     }
 
@@ -249,7 +245,7 @@ public final class HostParser {
             else {
                 if(c != '/') {
                     port = null;
-                    log.warn(String.format("Got %s in port. This is unsupported. Continuing with default port", c));
+                    log.warn("Got {} in port. This is unsupported. Continuing with default port", c);
                     reader.skip(tracker - reader.position);
                 }
                 else {

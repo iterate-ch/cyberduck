@@ -56,7 +56,7 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
             if(errSecItemNotFound == err) {
                 return null;
             }
-            log.error(String.format("Failure reading credentials for %s from keychain", serviceName));
+            log.error("Failure reading credentials for {} from keychain", serviceName);
             throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
         }
     }
@@ -83,20 +83,20 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
                     port, toSecProtocolType(scheme), SecurityFunctions.kSecAuthenticationTypeDefault,
                     null, null, itemRef);
                 if(errSecSuccess != err) {
-                    log.error(String.format("Failure saving credentials for %s in keychain", serviceName));
+                    log.error("Failure saving credentials for {} in keychain", serviceName);
                     throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
                 }
                 err = library.SecKeychainItemModifyContent(new SecKeychainItemRef(itemRef.getValue()), null,
                     password.getBytes(StandardCharsets.UTF_8).length,
                     password.getBytes(StandardCharsets.UTF_8));
                 if(errSecSuccess != err) {
-                    log.error(String.format("Failure modifying credentials for %s in keychain", serviceName));
+                    log.error("Failure modifying credentials for {} in keychain", serviceName);
                     throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
                 }
                 FoundationKitFunctions.library.CFRelease(new SecKeychainItemRef(itemRef.getValue()));
             }
             if(errSecSuccess != err) {
-                log.error(String.format("Failure saving credentials for %s in keychain", serviceName));
+                log.error("Failure saving credentials for {} in keychain", serviceName);
                 throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
             }
         }
@@ -117,7 +117,7 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
             if(errSecSuccess == err) {
                 err = SecurityFunctions.library.SecKeychainItemDelete(itemRef.getValue());
                 if(errSecSuccess != err) {
-                    log.error(String.format("Failure deleting credentials for %s in keychain", serviceName));
+                    log.error("Failure deleting credentials for {} in keychain", serviceName);
                     throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
                 }
                 return;
@@ -125,7 +125,7 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
             if(errSecItemNotFound == err) {
                 return;
             }
-            log.error(String.format("Failure deleting credentials for %s in keychain", serviceName));
+            log.error("Failure deleting credentials for {} in keychain", serviceName);
             throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
         }
     }
@@ -145,7 +145,7 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
             if(errSecItemNotFound == err) {
                 return null;
             }
-            log.error(String.format("Failure reading credentials for %s in keychain", serviceName));
+            log.error("Failure reading credentials for {} in keychain", serviceName);
             throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
         }
     }
@@ -166,7 +166,7 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
                     accountName.getBytes(StandardCharsets.UTF_8).length, accountName.getBytes(StandardCharsets.UTF_8),
                     null, null, itemRef);
                 if(errSecSuccess != err) {
-                    log.error(String.format("Failure saving credentials for %s in keychain", serviceName));
+                    log.error("Failure saving credentials for {} in keychain", serviceName);
                     throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
                 }
                 err = library.SecKeychainItemModifyContent(new SecKeychainItemRef(itemRef.getValue()), null,
@@ -174,12 +174,12 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
                     password.getBytes(StandardCharsets.UTF_8));
                 FoundationKitFunctions.library.CFRelease(new SecKeychainItemRef(itemRef.getValue()));
                 if(errSecSuccess != err) {
-                    log.error(String.format("Failure saving credentials for %s in keychain", serviceName));
+                    log.error("Failure saving credentials for {} in keychain", serviceName);
                     throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
                 }
             }
             if(errSecSuccess != err) {
-                log.error(String.format("Failure saving credentials for %s in keychain", serviceName));
+                log.error("Failure saving credentials for {} in keychain", serviceName);
                 throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
             }
         }
@@ -196,7 +196,7 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
             if(errSecSuccess == err) {
                 err = SecurityFunctions.library.SecKeychainItemDelete(itemRef.getValue());
                 if(errSecSuccess != err) {
-                    log.error(String.format("Failure deleting credentials for %s in keychain", serviceName));
+                    log.error("Failure deleting credentials for {} in keychain", serviceName);
                     throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
                 }
                 return;
@@ -204,7 +204,7 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
             if(errSecItemNotFound == err) {
                 return;
             }
-            log.error(String.format("Failure deleting credentials for %s in keychain", serviceName));
+            log.error("Failure deleting credentials for {} in keychain", serviceName);
             throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
         }
     }

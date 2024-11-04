@@ -49,9 +49,7 @@ public class BackgroundCallable<T> implements Callable<T> {
         }
         catch(BackgroundException e) {
             action.alert(e);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Invoke cleanup for background action %s", action));
-            }
+            log.debug("Invoke cleanup for background action {}", action);
             this.cleanup();
             return false;
         }
@@ -74,35 +72,25 @@ public class BackgroundCallable<T> implements Callable<T> {
 
     @Override
     public T call() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Running background action %s", action));
-        }
+        log.debug("Running background action {}", action);
         final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
         if(action.isCanceled()) {
             // Canceled action yields no result
             return null;
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Prepare background action %s", action));
-        }
+        log.debug("Prepare background action {}", action);
         action.prepare();
         try {
             final T result = this.run();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Return result %s from background action %s", result, action));
-            }
+            log.debug("Return result {} from background action {}", result, action);
             return result;
         }
         finally {
             action.finish();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Invoke cleanup for background action %s", action));
-            }
+            log.debug("Invoke cleanup for background action {}", action);
             // Invoke the cleanup on the main thread to let the action synchronize the user interface
             this.cleanup();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Releasing lock for background runnable %s", action));
-            }
+            log.debug("Releasing lock for background runnable {}", action);
             autorelease.operate();
         }
     }
@@ -110,18 +98,14 @@ public class BackgroundCallable<T> implements Callable<T> {
     protected T run() {
         try {
             // Execute the action of the runnable
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Call background action %s", action));
-            }
+            log.debug("Call background action {}", action);
             return action.call();
         }
         catch(Exception e) {
             this.failure(client, e);
             // Runtime failure
             if(action.alert(new DefaultExceptionMappingService().map(e))) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Retry background action %s", action));
-                }
+                log.debug("Retry background action {}", action);
                 // Retry
                 return this.run();
             }
@@ -135,7 +119,7 @@ public class BackgroundCallable<T> implements Callable<T> {
             trace.initCause(failure);
         }
         catch(IllegalStateException e) {
-            log.warn(String.format("Failure overwriting cause for failure %s with %s", trace, failure));
+            log.warn("Failure overwriting cause for failure {} with {}", trace, failure);
         }
         if(failure instanceof ConnectionCanceledException) {
             log.debug(String.format("Canceled running background task %s", action), trace);

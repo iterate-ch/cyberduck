@@ -49,16 +49,12 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
     @Override
     public String getVersionId(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
-            }
+            log.debug("Return version {} from attributes for file {}", file.attributes().getVersionId(), file);
             return file.attributes().getVersionId();
         }
         final String cached = super.getVersionId(file);
         if(cached != null) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Return cached versionid %s for file %s", cached, file));
-            }
+            log.debug("Return cached versionid {} for file {}", cached, file);
             return cached;
         }
         return this.getNodeId(file, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
@@ -98,9 +94,7 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
                 for(Node node : nodes.getItems()) {
                     // Case-insensitive
                     if(node.getName().equalsIgnoreCase(normalizer.normalize(file.getName()).toString())) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Return node %s for file %s", node.getId(), file));
-                        }
+                        log.info("Return node {} for file {}", node.getId(), file);
                         return this.cache(file, node.getId().toString());
                     }
                 }

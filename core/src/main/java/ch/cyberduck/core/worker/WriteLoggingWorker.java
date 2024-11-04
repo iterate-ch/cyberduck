@@ -49,9 +49,7 @@ public class WriteLoggingWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Logging feature = session.getFeature(Logging.class);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
-        }
+        log.debug("Run with feature {}", feature);
         final PathContainerService container = session.getFeature(PathContainerService.class);
         for(Path file : this.getContainers(container, files)) {
             if(this.isCanceled()) {

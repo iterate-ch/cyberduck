@@ -41,9 +41,7 @@ public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2Authorizati
 
     @Override
     public String prompt(final Host bookmark, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Evaluate redirect URI %s", redirectUri));
-        }
+        log.debug("Evaluate redirect URI {}", redirectUri);
         if(StringUtils.endsWith(URIEncoder.decode(redirectUri), ":oauth")) {
             return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(
                     bookmark, prompt, authorizationCodeUrl, redirectUri, state);
@@ -52,9 +50,7 @@ public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2Authorizati
             return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(
                     bookmark, prompt, authorizationCodeUrl, redirectUri, state);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Prompt for authentication code for state %s", state));
-        }
+        log.debug("Prompt for authentication code for state {}", state);
         return new PromptOAuth2AuthorizationCodeProvider().prompt(
                 bookmark, prompt, authorizationCodeUrl, redirectUri, state);
     }

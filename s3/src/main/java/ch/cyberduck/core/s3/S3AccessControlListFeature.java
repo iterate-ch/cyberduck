@@ -82,9 +82,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             controls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             for(OwnershipControlsConfig.Rule rule : controls.getRules()) {
                 if(rule.getOwnership() == OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Bucket owner enforced policy set with disabled ACLs for bucket %s", bucket));
-                    }
+                    log.debug("Bucket owner enforced policy set with disabled ACLs for bucket {}", bucket);
                     return true;
                 }
             }
@@ -97,7 +95,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 // Ignore or buckets with no x-amz-object-ownership set
             }
             catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read bucket ownership configuration for %s %s", bucket.getName(), e.getMessage()));
+                log.warn("Missing permission to read bucket ownership configuration for {} {}", bucket.getName(), e.getMessage());
             }
         }
         return false;
@@ -251,11 +249,11 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                         Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else {
-                log.warn(String.format("Unsupported user %s", userAndRole.getUser()));
+                log.warn("Unsupported user {}", userAndRole.getUser());
             }
         }
         if(null == list.getOwner()) {
-            log.warn(String.format("Missing owner in %s", acl));
+            log.warn("Missing owner in {}", acl);
             return null;
         }
         return list;
@@ -293,14 +291,14 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         }
         final Acl.Owner owner = new Acl.Owner(list.getOwner().getId(), list.getOwner().getDisplayName());
         if(!owner.isValid()) {
-            log.warn(String.format("Invalid owner %s in ACL", list.getOwner()));
+            log.warn("Invalid owner {} in ACL", list.getOwner());
             return Acl.EMPTY;
         }
         final Acl acl = new Acl(owner, new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString(), false));
         for(GrantAndPermission grant : list.getGrantAndPermissions()) {
             final Acl.Role role = new Acl.Role(grant.getPermission().toString());
             if(null == grant.getGrantee()) {
-                log.warn(String.format("Missing grantee in ACL %s", grant));
+                log.warn("Missing grantee in ACL {}", grant);
                 continue;
             }
             if(grant.getGrantee() instanceof CanonicalGrantee) {

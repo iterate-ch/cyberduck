@@ -100,9 +100,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         try {
             final Credentials credentials = authorizationService.validate();
             final FullAccount account = new DbxUserUsersRequests(client).getCurrentAccount();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Authenticated as user %s", account));
-            }
+            log.debug("Authenticated as user {}", account);
             credentials.setUsername(account.getEmail());
             switch(account.getAccountType()) {
                 // The features listed below are only available to customers on Dropbox Professional, Standard, Advanced, and Enterprise.
@@ -118,9 +116,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             }
             // The Dropbox API Path Root is the folder that an API request operates relative to.
             final PathRoot root = PathRoot.root(account.getRootInfo().getRootNamespaceId());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Set path root to %s", root));
-            }
+            log.debug("Set path root to {}", root);
             this.root = root;
         }
         catch(DbxException e) {

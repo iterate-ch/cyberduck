@@ -57,7 +57,7 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
     @Override
     public void fileWritten(final Local file) {
         if(this.isLocked()) {
-            log.debug(String.format("Skip reading bookmark from %s", file));
+            log.debug("Skip reading bookmark from {}", file);
         }
         else {
             try {
@@ -67,15 +67,13 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
                 if(index != -1) {
                     // Found bookmark with matching UUID
                     if(new HostEditComparator().compare(bookmark, this.get(index)) != 0) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Replace bookmark %s at index %d", bookmark, index));
-                        }
+                        log.debug("Replace bookmark {} at index {}", bookmark, index);
                         this.replace(index, bookmark);
                     }
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading file %s", file));
+                log.warn("Failure reading file {}", file);
             }
         }
     }
@@ -105,12 +103,12 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
     @Override
     public void fileDeleted(final Local file) {
         if(this.isLocked()) {
-            log.debug(String.format("Skip reading bookmark from %s", file));
+            log.debug("Skip reading bookmark from {}", file);
         }
         else {
             final Host bookmark = this.lookup(FilenameUtils.getBaseName(file.getName()));
             if(bookmark != null) {
-                log.warn(String.format("Delete bookmark %s", bookmark));
+                log.warn("Delete bookmark {}", bookmark);
                 this.remove(bookmark);
             }
         }
@@ -119,16 +117,16 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
     @Override
     public void fileCreated(final Local file) {
         if(this.isLocked()) {
-            log.debug(String.format("Skip reading bookmark from %s", file));
+            log.debug("Skip reading bookmark from {}", file);
         }
         else {
             try {
                 final Host bookmark = HostReaderFactory.get().read(file);
-                log.warn(String.format("Add bookmark %s", bookmark));
+                log.warn("Add bookmark {}", bookmark);
                 this.add(bookmark);
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading file %s", file));
+                log.warn("Failure reading file {}", file);
             }
         }
     }

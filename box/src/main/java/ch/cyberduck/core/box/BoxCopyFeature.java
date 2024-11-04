@@ -54,9 +54,7 @@ public class BoxCopyFeature implements Copy {
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             if(status.isExists()) {
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
-                }
+                log.warn("Delete file {} to be replaced with {}", target, file);
                 new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
             if(file.isDirectory()) {

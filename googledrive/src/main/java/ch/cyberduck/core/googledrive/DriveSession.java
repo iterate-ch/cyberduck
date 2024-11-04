@@ -116,9 +116,7 @@ public class DriveSession extends HttpSession<Drive> {
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map(e);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Authenticated as user %s", about.getUser()));
-        }
+        log.debug("Authenticated as user {}", about.getUser());
         credentials.setUsername(about.getUser().getEmailAddress());
     }
 

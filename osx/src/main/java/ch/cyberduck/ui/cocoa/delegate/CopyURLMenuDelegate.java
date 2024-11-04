@@ -71,7 +71,7 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
         final NSPasteboard pboard = NSPasteboard.generalPasteboard();
         pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         if(!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
-            log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
+            log.error("Error writing URL to {}", NSPasteboard.StringPboardType);
         }
     }
 }

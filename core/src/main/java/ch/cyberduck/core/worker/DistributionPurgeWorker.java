@@ -53,13 +53,13 @@ public class DistributionPurgeWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         if(null == cdn) {
-            log.warn(String.format("Missing CDN support in %s", session));
+            log.warn("Missing CDN support in {}", session);
             return false;
         }
         for(Distribution.Method method : methods) {
             final Purge feature = cdn.getFeature(Purge.class, method);
             if(null == feature) {
-                log.warn(String.format("Missing purge support in %s", cdn));
+                log.warn("Missing purge support in {}", cdn);
                 continue;
             }
             final PathContainerService container = session.getFeature(PathContainerService.class);

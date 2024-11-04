@@ -83,9 +83,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
 
     protected Checksum compute(final InputStream in, final StreamCancelation cancel,
                                final long offset, final long length, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Calculate checksum with header %s", header));
-        }
+        log.debug("Calculate checksum with header {}", header);
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream out = new CryptoOutputStream(source, cryptomator.getFileContentCryptor(),

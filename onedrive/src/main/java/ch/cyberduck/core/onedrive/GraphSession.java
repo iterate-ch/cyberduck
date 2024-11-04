@@ -198,13 +198,11 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         try {
             user = Users.get(User.getCurrent(client), new ODataQuery().select(User.Select.values()));
             final String account = user.getUserPrincipalName();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Authenticated as user %s", account));
-            }
+            log.debug("Authenticated as user {}", account);
             credentials.setUsername(account);
         }
         catch(OneDriveAPIException e) {
-            log.warn(String.format("Failure reading current user properties probably missing user.read scope. %s.", e.getMessage()));
+            log.warn("Failure reading current user properties probably missing user.read scope. {}.", e.getMessage());
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

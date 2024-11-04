@@ -51,21 +51,19 @@ public class S3ListService implements ListService {
         if(directory.isRoot()) {
             final String bucket = RequestEntityRestStorageService.findBucketInHostname(session.getHost());
             if(StringUtils.isEmpty(bucket)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("No bucket name in host %s", session.getHost().getHostname()));
-                }
+                log.debug("No bucket name in host {}", session.getHost().getHostname());
                 // List all buckets
                 try {
                     return new S3BucketListService(session).list(directory, listener);
                 }
                 catch(InteroperabilityException e) {
                     // Bucket set in hostname that leads to parser failure for XML reply
-                    log.warn(String.format("Failure %s listing buckets", e));
+                    log.warn("Failure {} listing buckets", e.getMessage());
                     try {
                         return this.listObjects(directory, listener);
                     }
                     catch(BackgroundException ignored) {
-                        log.warn(String.format("Ignore failure %s listing objects", ignored));
+                        log.warn("Ignore failure {} listing objects", ignored.getMessage());
                         // Throw original failure
                         throw e;
                     }
@@ -86,7 +84,7 @@ public class S3ListService implements ListService {
                 objects = new S3VersionedObjectListService(session, acl).list(directory, listener);
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing versioned objects. %s", e));
+                log.warn("Ignore failure listing versioned objects. {}", e.getMessage());
                 objects = new S3ObjectListService(session, acl).list(directory, listener);
             }
         }
@@ -104,7 +102,7 @@ public class S3ListService implements ListService {
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+                log.warn("Ignore failure listing incomplete multipart uploads. {}", e.getMessage());
             }
         }
         return objects;

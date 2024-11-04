@@ -66,9 +66,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
         // Defer notification until we can be sure no vault is found
         if(!canceled.get() && list.size() < filecount) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Delay chunk notification for file listing of folder %s", folder));
-            }
+            log.debug("Delay chunk notification for file listing of folder {}", folder);
             try {
                 super.chunk(folder, list);
             }
@@ -87,9 +85,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException {
         final Path directory = file.getParent();
         if(config.equals(file.getName()) || masterkey.equals(file.getName())) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Found vault config or masterkey file %s", file));
-            }
+            log.info("Found vault config or masterkey file {}", file);
             final Vault vault = lookup.load(session, directory, masterkey, config, pepper);
             if(vault.equals(Vault.DISABLED)) {
                 return;

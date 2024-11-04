@@ -52,9 +52,7 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
     @Override
     public Set<Encryption.Algorithm> run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
-        }
+        log.debug("Run with feature {}", feature);
         final PathContainerService container = session.getFeature(PathContainerService.class);
         final Set<Encryption.Algorithm> keys = new HashSet<>();
         for(Path file : this.getContainers(container, files)) {

@@ -37,7 +37,7 @@ public class CancelTransferErrorCallback implements TransferErrorCallback {
             case cancel:
             case skip:
                 // Interrupt transfer
-                log.warn(String.format("Cancel %s with after failure %s", item, failure));
+                log.warn("Cancel {} with after failure {}", item, failure);
                 return false;
         }
         return proxy.prompt(item, status, failure, pending);

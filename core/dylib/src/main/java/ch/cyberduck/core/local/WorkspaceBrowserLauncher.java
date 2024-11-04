@@ -37,7 +37,7 @@ public class WorkspaceBrowserLauncher implements BrowserLauncher {
                 if(workspace.openURL(NSURL.URLWithString(url))) {
                     return true;
                 }
-                log.warn(String.format("Failure opening URL %s with browser", url));
+                log.warn("Failure opening URL {} with browser", url);
             }
             return false;
         }

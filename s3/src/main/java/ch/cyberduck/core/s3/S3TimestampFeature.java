@@ -48,7 +48,7 @@ public class S3TimestampFeature implements Timestamp {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isVolume()) {
-            log.warn(String.format("Skip setting timestamp for %s", file));
+            log.warn("Skip setting timestamp for {}", file);
             return;
         }
         final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));

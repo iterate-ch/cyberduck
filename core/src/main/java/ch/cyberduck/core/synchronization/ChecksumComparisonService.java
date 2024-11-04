@@ -28,22 +28,18 @@ public class ChecksumComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(Checksum.NONE == remote.getChecksum()) {
-            log.warn(String.format("No remote checksum available for comparison %s", remote));
+            log.warn("No remote checksum available for comparison {}", remote);
             return Comparison.unknown;
         }
         if(Checksum.NONE == local.getChecksum()) {
-            log.warn(String.format("No local checksum available for comparison %s", local));
+            log.warn("No local checksum available for comparison {}", local);
             return Comparison.unknown;
         }
         if(remote.getChecksum().equals(local.getChecksum())) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Equal checksum %s", remote.getChecksum()));
-            }
+            log.debug("Equal checksum {}", remote.getChecksum());
             return Comparison.equal;
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Local checksum %s not equal remote %s", local.getChecksum(), remote.getChecksum()));
-        }
+        log.debug("Local checksum {} not equal remote {}", local.getChecksum(), remote.getChecksum());
         return Comparison.notequal;
     }
 

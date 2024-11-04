@@ -655,9 +655,7 @@ public final class TransferController extends WindowController implements Transf
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Paste download transfer from pasteboard");
-            }
+            log.debug("Paste download transfer from pasteboard");
             final List<TransferItem> downloads = new ArrayList<>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(download, LocalFactory.get(
@@ -793,7 +791,7 @@ public final class TransferController extends WindowController implements Transf
                         LocalTrashFactory.get().trash(l.local);
                     }
                     catch(AccessDeniedException e) {
-                        log.warn(String.format("Failure trashing file %s %s", l.local, e.getMessage()));
+                        log.warn("Failure trashing file {} {}", l.local, e.getMessage());
                     }
                 }
             }

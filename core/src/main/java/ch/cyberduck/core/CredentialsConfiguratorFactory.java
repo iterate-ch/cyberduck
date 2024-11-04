@@ -40,9 +40,7 @@ public final class CredentialsConfiguratorFactory {
             return finder.reload();
         }
         catch(LoginCanceledException e) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Failure %s reloading credentials from %s", e, finder));
-            }
+            log.warn("Failure {} reloading credentials from {}", e, finder);
             return CredentialsConfigurator.DISABLED;
         }
     }

@@ -29,14 +29,10 @@ public class ETagComparisonService implements ComparisonService {
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(null != local.getETag() && null != remote.getETag()) {
             if(StringUtils.equals(local.getETag(), remote.getETag())) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Equal ETag %s", remote.getETag()));
-                }
+                log.debug("Equal ETag {}", remote.getETag());
                 return Comparison.equal;
             }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Local ETag %s not equal remote %s", local.getETag(), remote.getETag()));
-            }
+            log.debug("Local ETag {} not equal remote {}", local.getETag(), remote.getETag());
             return Comparison.notequal;
         }
         return Comparison.unknown;

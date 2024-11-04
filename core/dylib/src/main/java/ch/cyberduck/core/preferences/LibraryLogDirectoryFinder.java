@@ -42,13 +42,9 @@ public class LibraryLogDirectoryFinder implements LogDirectoryFinder {
         }
         else {
             final String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Found library directory in %s", directory));
-            }
+            log.info("Found library directory in {}", directory);
             final Local folder = new FinderLocal(new FinderLocal(directory, "Logs"), application);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Use folder %s for log directory", folder));
-            }
+            log.debug("Use folder {} for log directory", folder);
             return folder;
         }
     }

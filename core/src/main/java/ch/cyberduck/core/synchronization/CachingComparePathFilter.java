@@ -46,15 +46,11 @@ public class CachingComparePathFilter implements ComparePathFilter {
     @Override
     public Comparison compare(final Path file, final Local local, final ProgressListener listener) throws BackgroundException {
         if(!cache.containsKey(new TransferItem(file, local))) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Compare file %s", file));
-            }
+            log.debug("Compare file {}", file);
             cache.put(new TransferItem(file, local), delegate.compare(file, local, listener));
         }
         final Comparison comparison = cache.get(new TransferItem(file, local));
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Return comparison %s for file %s", comparison, file));
-        }
+        log.debug("Return comparison {} for file {}", comparison, file);
         return comparison;
     }
 

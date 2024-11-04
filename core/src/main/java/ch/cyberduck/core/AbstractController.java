@@ -66,7 +66,7 @@ public abstract class AbstractController implements Controller {
     @Override
     public <T> Future<T> background(final BackgroundAction<T> action) {
         if(registry.contains(action)) {
-            log.warn(String.format("Skip duplicate background action %s found in registry", action));
+            log.warn("Skip duplicate background action {} found in registry", action);
             return ConcurrentUtils.constantFuture(null);
         }
         return DefaultBackgroundExecutor.get().execute(this, registry, action);
@@ -80,36 +80,26 @@ public abstract class AbstractController implements Controller {
 
     @Override
     public void start(final BackgroundAction action) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Start action %s", action));
-        }
+        log.debug("Start action {}", action);
     }
 
     @Override
     public void cancel(final BackgroundAction action) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cancel action %s", action));
-        }
+        log.debug("Cancel action {}", action);
     }
 
     @Override
     public void stop(final BackgroundAction action) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Stop action %s", action));
-        }
+        log.debug("Stop action {}", action);
     }
 
     @Override
     public void message(final String message) {
-        if(log.isInfoEnabled()) {
-            log.info(message);
-        }
+        log.info(message);
     }
 
     @Override
     public void log(final Type request, final String message) {
-        if(log.isTraceEnabled()) {
-            log.trace(message);
-        }
+        log.trace(message);
     }
 }

@@ -139,7 +139,7 @@ public abstract class Archive {
                 }
             }
         }
-        log.fatal(String.format("Unknown archive %s", name));
+        log.fatal("Unknown archive {}", name);
         return null;
     }
 

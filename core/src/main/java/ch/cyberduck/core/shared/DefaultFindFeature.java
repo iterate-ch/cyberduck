@@ -48,9 +48,7 @@ public class DefaultFindFeature extends ListFilteringFeature implements Find {
             return found != null;
         }
         catch(NotfoundException e) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Parent directory for file %s not found", file));
-            }
+            log.debug("Parent directory for file {} not found", file);
             return false;
         }
     }

@@ -70,23 +70,23 @@ public class SwiftRegionService {
                 return region;
             }
         }
-        log.warn(String.format("Unknown region %s in authentication context", location));
+        log.warn("Unknown region {} in authentication context", location);
         if(session.getClient().getRegions().isEmpty()) {
             throw new InteroperabilityException("No region found in authentication context");
         }
         for(Region region : session.getClient().getRegions()) {
             if(region.isDefault()) {
-                log.warn(String.format("Fallback to default region %s", region.getRegionId()));
+                log.warn("Fallback to default region {}", region.getRegionId());
                 return region;
             }
         }
         final Region region = session.getClient().getRegions().iterator().next();
-        log.warn(String.format("Fallback to first region %s", region.getRegionId()));
+        log.warn("Fallback to first region {}", region.getRegionId());
         if(null == region.getStorageUrl()) {
             throw new InteroperabilityException(String.format("No storage endpoint found for region %s", region.getRegionId()));
         }
         if(null == region.getCDNManagementUrl()) {
-            log.warn(String.format("No CDN management endpoint found for region %s", region.getRegionId()));
+            log.warn("No CDN management endpoint found for region {}", region.getRegionId());
         }
         return region;
     }

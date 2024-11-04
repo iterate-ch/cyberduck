@@ -65,17 +65,13 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     @Override
     public void cancel() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cancel background action for transfer %s", transfer));
-        }
+        log.debug("Cancel background action for transfer {}", transfer);
         super.cancel();
     }
 
     @Override
     public void finish() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Finish background action for transfer %s", transfer));
-        }
+        log.debug("Finish background action for transfer {}", transfer);
         super.finish();
         queue.remove(transfer);
         source.shutdown();
@@ -84,9 +80,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     @Override
     public void cleanup() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cleanup background action for transfer %s", transfer));
-        }
+        log.debug("Cleanup background action for transfer {}", transfer);
         super.cleanup();
         final TransferCollection collection = TransferCollection.defaultCollection();
         if(PreferencesFactory.get().getBoolean("queue.removeItemWhenComplete")

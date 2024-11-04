@@ -76,9 +76,7 @@ public interface SPUStandardUserDriverDelegate {
      * @return Returning YES is the default behavior and allows the standard user driver to handle showing the update.
      */
     default boolean standardUserDriverShouldHandleShowingScheduledUpdate_andInImmediateFocus(SUAppcastItem update, boolean immediateFocus) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Should handle showing scheduled update %s", update));
-        }
+        log.debug("Should handle showing scheduled update {}", update);
         return true;
     }
 
@@ -91,9 +89,7 @@ public interface SPUStandardUserDriverDelegate {
      * @param state               The user state of the update which includes if the update check was initiated by the user.
      */
     default void standardUserDriverWillHandleShowingUpdate_forUpdate_state(boolean handleShowingUpdate, SUAppcastItem update, SPUUserUpdateState state) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Will handle showing scheduled update %s", update));
-        }
+        log.debug("Will handle showing scheduled update {}", update);
     }
 
     /**
@@ -105,9 +101,7 @@ public interface SPUStandardUserDriverDelegate {
      * @param update The new update that the user gave attention to.
      */
     default void standardUserDriverDidReceiveUserAttentionForUpdate(SUAppcastItem update) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Did receive user attention for update %s", update));
-        }
+        log.debug("Did receive user attention for update {}", update);
     }
 
     /**
@@ -115,8 +109,6 @@ public interface SPUStandardUserDriverDelegate {
      * This may occur after the user has dismissed / skipped a new update or after an update error has occurred.
      */
     default void standardUserDriverWillFinishUpdateSession() {
-        if(log.isDebugEnabled()) {
-            log.debug("Finish update session");
-        }
+        log.debug("Finish update session");
     }
 }

@@ -58,9 +58,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
 
     @Override
     public List<MultipartUpload> find(final Path file) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Finding multipart uploads for %s", file));
-        }
+        log.debug("Finding multipart uploads for {}", file);
         final List<MultipartUpload> uploads = new ArrayList<>();
         // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
         // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
@@ -87,9 +85,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
                 throw failure;
             }
             uploads.addAll(Arrays.asList(chunk.getUploads()));
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), file));
-            }
+            log.info("Found {} previous multipart uploads for {}", uploads.size(), file);
             // Sort with newest upload first in list
             uploads.sort(new Comparator<MultipartUpload>() {
                 @Override
@@ -104,7 +100,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
         while(isTruncated && nextUploadIdMarker != null);
         if(log.isInfoEnabled()) {
             for(MultipartUpload upload : uploads) {
-                log.info(String.format("Found multipart upload %s for %s", upload, file));
+                log.info("Found multipart upload {} for {}", upload, file);
             }
         }
         return uploads;
@@ -112,9 +108,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
 
     @Override
     public List<MultipartPart> list(final MultipartUpload upload) throws BackgroundException {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("List completed parts of %s", upload.getUploadId()));
-        }
+        log.info("List completed parts of {}", upload.getUploadId());
         // This operation lists the parts that have been uploaded for a specific multipart upload.
         try {
             return session.getClient().multipartListParts(upload);
@@ -126,9 +120,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
 
     @Override
     public void delete(final MultipartUpload upload) throws BackgroundException {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Delete multipart upload %s", upload.getUploadId()));
-        }
+        log.info("Delete multipart upload {}", upload.getUploadId());
         try {
             session.getClient().multipartAbortUpload(upload);
         }

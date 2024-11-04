@@ -77,7 +77,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
             log.error(String.format("Cannot read known hosts file %s", file), e);
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Failure reading %s", file));
+            log.warn("Failure reading {}", file);
         }
         finally {
             IOUtils.closeQuietly(in);
@@ -87,7 +87,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     @Override
     public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
         if(null == database) {
-            log.warn(String.format("Missing database %s", database));
+            log.warn("Missing database {}", database);
             return super.verify(host, key);
         }
         final KeyType type = KeyType.fromKey(key);
@@ -105,7 +105,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
                 }
             }
             catch(IOException e) {
-                log.error(String.format("Failure verifying host key entry %s. %s", entry, e.getMessage()));
+                log.error("Failure verifying host key entry {}. {}", entry, e.getMessage());
                 return false;
             }
         }
@@ -128,7 +128,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     @Override
     public void allow(final Host host, final PublicKey key, final boolean persist) {
         if(null == database) {
-            log.warn(String.format("Missing database %s", database));
+            log.warn("Missing database {}", database);
             super.allow(host, key, persist);
         }
         else {
@@ -137,7 +137,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
                 final KeyType type = KeyType.fromKey(key);
                 switch(type) {
                     case UNKNOWN:
-                        log.warn(String.format("Unknown key type %s", key));
+                        log.warn("Unknown key type {}", key);
                         return;
                 }
                 final OpenSSHKnownHosts.HostEntry entry
@@ -151,7 +151,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
                 }
             }
             catch(IOException e) {
-                log.error(String.format("Failure adding host key to database: %s", e.getMessage()));
+                log.error("Failure adding host key to database: {}", e.getMessage());
                 super.allow(host, key, persist);
             }
         }

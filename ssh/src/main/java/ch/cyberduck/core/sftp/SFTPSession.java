@@ -151,7 +151,7 @@ public class SFTPSession extends Session<SSHClient> {
             // Look for jump host configuration
             final Host proxy = new OpenSSHJumpHostConfigurator().getJumphost(host.getHostname());
             if(null != proxy) {
-                log.info(String.format("Connect using jump host configuration %s", proxy));
+                log.info("Connect using jump host configuration {}", proxy);
                 final SSHClient hop = this.toClient(key, configuration);
                 hop.connect(proxy.getHostname(), proxy.getPort());
                 final Credentials proxyCredentials = new OpenSSHCredentialsConfigurator().configure(proxy);
@@ -160,9 +160,7 @@ public class SFTPSession extends Session<SSHClient> {
                 service.validate(proxy, prompt, new LoginOptions(proxy.getProtocol()));
                 // Authenticate with jump host
                 this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Authenticated with jump host %s", proxy));
-                }
+                log.debug("Authenticated with jump host {}", proxy);
                 // Write credentials to keychain
                 service.save(proxy);
                 final DirectConnection tunnel = hop.newDirectConnection(
@@ -207,15 +205,13 @@ public class SFTPSession extends Session<SSHClient> {
         connection.addAlgorithmsVerifier(new AlgorithmsVerifier() {
             @Override
             public boolean verify(final NegotiatedAlgorithms negotiatedAlgorithms) {
-                log.info(String.format("Negotiated algorithms %s", negotiatedAlgorithms));
+                log.info("Negotiated algorithms {}", negotiatedAlgorithms);
                 algorithms = negotiatedAlgorithms;
                 return true;
             }
         });
         final Charset charset = Charset.forName(host.getEncoding());
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Use character encoding %s", charset));
-        }
+        log.debug("Use character encoding {}", charset);
         connection.setRemoteCharset(charset);
         disconnectListener = new StateDisconnectListener();
         final Transport transport = connection.getTransport();
@@ -296,7 +292,7 @@ public class SFTPSession extends Session<SSHClient> {
                                 new WindowsOpenSSHAgentAuthenticator(identityAgent)));
                     }
                     catch(AgentProxyException e) {
-                        log.warn(String.format("Agent proxy failed with %s", e));
+                        log.warn("Agent proxy failed with {}", e.getMessage());
                     }
                     break;
                 default:
@@ -305,7 +301,7 @@ public class SFTPSession extends Session<SSHClient> {
                                 new OpenSSHAgentAuthenticator(identityAgent)));
                     }
                     catch(AgentProxyException e) {
-                        log.warn(String.format("Agent proxy failed with %s", e));
+                        log.warn("Agent proxy failed with {}", e.getMessage());
                     }
                     break;
             }
@@ -324,9 +320,7 @@ public class SFTPSession extends Session<SSHClient> {
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
         final String[] preferred = new OpenSSHPreferredAuthenticationsConfigurator().getPreferred(host.getHostname());
         if(preferred != null) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Filter authentication methods with %s", Arrays.toString(preferred)));
-            }
+            log.debug("Filter authentication methods with {}", Arrays.toString(preferred));
             for(String p : preferred) {
                 final List<AuthenticationProvider<Boolean>> providers = methodsMap.remove(p);
                 if(providers != null) {
@@ -335,48 +329,40 @@ public class SFTPSession extends Session<SSHClient> {
             }
         }
         methodsMap.values().forEach(methods::addAll);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt login with %d authentication methods %s", methods.size(), Arrays.toString(methods.toArray())));
-        }
+        log.debug("Attempt login with {} authentication methods {}", methods.size(), Arrays.toString(methods.toArray()));
         BackgroundException lastFailure = null;
         for(AuthenticationProvider<Boolean> auth : methods) {
             cancel.verify();
             try {
                 // Obtain latest list of allowed methods
                 final Collection<String> allowed = client.getUserAuth().getAllowedMethods();
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Remaining authentication methods %s", Arrays.toString(allowed.toArray())));
-                }
+                log.debug("Remaining authentication methods {}", Arrays.toString(allowed.toArray()));
                 if(!allowed.contains(auth.getMethod())) {
-                    log.warn(String.format("Skip authentication method %s not allowed", auth));
+                    log.warn("Skip authentication method {} not allowed", auth);
                     continue;
                 }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Attempt authentication with credentials %s and authentication method %s", credentials, auth));
-                }
+                log.info("Attempt authentication with credentials {} and authentication method {}", credentials, auth);
                 try {
                     if(auth.authenticate(host, prompt, cancel)) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Authentication succeeded with credentials %s and authentication method %s", credentials, auth));
-                        }
+                        log.info("Authentication succeeded with credentials {} and authentication method {}", credentials, auth);
                         // Success
                         break;
                     }
                     else {
                         // Check if authentication is partial
                         if(client.getUserAuth().hadPartialSuccess()) {
-                            log.info(String.format("Partial login success with credentials %s and authentication method %s", credentials, auth));
+                            log.info("Partial login success with credentials {} and authentication method {}", credentials, auth);
                         }
                         else {
-                            log.warn(String.format("Login refused with credentials %s and authentication method %s", credentials, auth));
+                            log.warn("Login refused with credentials {} and authentication method {}", credentials, auth);
                         }
                         // Continue trying next authentication method
                     }
                 }
                 catch(LoginFailureException e) {
-                    log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
+                    log.warn("Login failed with credentials {} and authentication method {}", credentials, auth);
                     if(!client.isConnected()) {
-                        log.warn(String.format("Server disconnected after failed authentication attempt with method %s", auth));
+                        log.warn("Server disconnected after failed authentication attempt with method {}", auth);
                         // No more connected. When changing the username the connection is closed by the server.
                         throw e;
                     }
@@ -384,8 +370,7 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             }
             catch(IllegalStateException ignored) {
-                log.warn(String.format("Server disconnected with %s while trying authentication method %s",
-                        disconnectListener.getFailure(), auth));
+                log.warn("Server disconnected with {} while trying authentication method {}", disconnectListener.getFailure(), auth);
                 try {
                     if(null == disconnectListener.getFailure()) {
                         throw new ConnectionRefusedException(LocaleFactory.localizedString("Login failed", "Credentials"), ignored);
@@ -440,7 +425,7 @@ public class SFTPSession extends Session<SSHClient> {
             client.close();
         }
         catch(IOException e) {
-            log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
+            log.warn("Ignore disconnect failure {}", e.getMessage());
         }
         super.disconnect();
     }
@@ -523,7 +508,7 @@ public class SFTPSession extends Session<SSHClient> {
 
         @Override
         public void notifyDisconnect(final DisconnectReason reason, final String message) {
-            log.warn(String.format("Disconnected %s", reason));
+            log.warn("Disconnected {}", reason);
             failure = new SSHException(reason, message);
         }
 

@@ -128,9 +128,7 @@ public abstract class NSApplication extends NSObject {
          *                     method of this notification returns the NSApplication object itself.
          */
         default void applicationWillFinishLaunching(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug(notification);
-            }
+            log.debug(notification);
         }
 
         /**
@@ -147,9 +145,7 @@ public abstract class NSApplication extends NSObject {
          *                     method of this notification returns the NSApplication object itself.
          */
         default void applicationDidFinishLaunching(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug(notification);
-            }
+            log.debug(notification);
         }
 
         /**
@@ -169,9 +165,7 @@ public abstract class NSApplication extends NSObject {
         NSUInteger applicationShouldTerminate(NSApplication app);
 
         default void applicationWillTerminate(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug(notification);
-            }
+            log.debug(notification);
         }
 
         /**
@@ -198,9 +192,7 @@ public abstract class NSApplication extends NSObject {
          *                     of this notification returns the NSApplication object itself.
          */
         default void applicationWillBecomeActive(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug(notification);
-            }
+            log.debug(notification);
         }
 
         /**
@@ -210,9 +202,7 @@ public abstract class NSApplication extends NSObject {
          *                     of this notification returns the NSApplication object itself.
          */
         default void applicationDidBecomeActive(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug(notification);
-            }
+            log.debug(notification);
         }
 
         /**
@@ -222,9 +212,7 @@ public abstract class NSApplication extends NSObject {
          *                     of this notification returns the NSApplication object itself.
          */
         default void applicationWillResignActive(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug(notification);
-            }
+            log.debug(notification);
         }
 
         /**
@@ -234,9 +222,7 @@ public abstract class NSApplication extends NSObject {
          *                     of this notification returns the NSApplication object itself.
          */
         default void applicationDidResignActive(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug(notification);
-            }
+            log.debug(notification);
         }
     }
 

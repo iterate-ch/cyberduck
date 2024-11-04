@@ -44,7 +44,7 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
             super.setResponse(attributes.withSize(vault.toCleartextSize(0L, attributes.getSize())));
         }
         catch(CryptoInvalidFilesizeException e) {
-            log.warn(String.format("Failure %s translating file size from response %s", e, attributes));
+            log.warn("Failure {} translating file size from response {}", e, attributes);
         }
     }
 }

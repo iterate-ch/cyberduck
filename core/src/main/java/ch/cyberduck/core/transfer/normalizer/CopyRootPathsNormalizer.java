@@ -45,17 +45,13 @@ public class CopyRootPathsNormalizer implements RootPathsNormalizer<Map<Path, Pa
             for(Iterator<Path> normalizedIter = normalized.keySet().iterator(); normalizedIter.hasNext(); ) {
                 Path n = normalizedIter.next();
                 if(source.isChild(n)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Remove path %s already included by directory", source.getAbsolute()));
-                    }
+                    log.debug("Remove path {} already included by directory", source.getAbsolute());
                     // The selected file is a child of a directory already included
                     duplicate = true;
                     break;
                 }
                 if(n.isChild(source)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Remove path %s already included by directory", n.getAbsolute()));
-                    }
+                    log.debug("Remove path {} already included by directory", n.getAbsolute());
                     // Remove the previously added file as it is a child
                     // of the currently evaluated file
                     normalizedIter.remove();

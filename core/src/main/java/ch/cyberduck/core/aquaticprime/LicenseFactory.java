@@ -58,7 +58,7 @@ public abstract class LicenseFactory extends Factory<License> {
             return list.iterator().next();
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Failure finding receipt %s", e.getMessage()));
+            log.warn("Failure finding receipt {}", e.getMessage());
         }
         return EMPTY_LICENSE;
     }
@@ -144,7 +144,7 @@ public abstract class LicenseFactory extends Factory<License> {
             }
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Failure finding receipt %s", e.getMessage()));
+            log.warn("Failure finding receipt {}", e.getMessage());
         }
         return EMPTY_LICENSE;
     }

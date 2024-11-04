@@ -93,7 +93,7 @@ public abstract class ExpandriveBookmarkCollection extends JsonBookmarkCollectio
                             current.setRegion(this.readNext(name, reader));
                             break;
                         default:
-                            log.warn(String.format("Ignore property %s", name));
+                            log.warn("Ignore property {}", name);
                             reader.skipValue();
                             break;
                     }

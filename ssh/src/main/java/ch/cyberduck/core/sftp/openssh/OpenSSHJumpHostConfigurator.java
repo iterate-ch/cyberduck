@@ -57,9 +57,7 @@ public class OpenSSHJumpHostConfigurator implements JumphostConfigurator {
         if(StringUtils.isBlank(proxyJump)) {
             return null;
         }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Found jump host configuration %s from %s", proxyJump, configuration));
-        }
+        log.info("Found jump host configuration {} from {}", proxyJump, configuration);
         try {
             final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new SFTPProtocol())), new SFTPProtocol()).get(proxyJump);
             // Resolve credentials
@@ -70,7 +68,7 @@ public class OpenSSHJumpHostConfigurator implements JumphostConfigurator {
             return host;
         }
         catch(HostParserException e) {
-            log.warn(String.format("Failure parsing JumpHost directive %s", proxyJump));
+            log.warn("Failure parsing JumpHost directive {}", proxyJump);
             return null;
         }
     }

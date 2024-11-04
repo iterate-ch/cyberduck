@@ -150,13 +150,11 @@ public class ReceiptVerifier implements LicenseVerifier {
                 return false;
             }
             if(!StringUtils.equals(version, StringUtils.trim(bundleVersion))) {
-                log.warn(String.format("Bundle version %s in ASN set does not match", bundleVersion));
+                log.warn("Bundle version {} in ASN set does not match", bundleVersion);
             }
             final byte[] address = HardwareAddressFactory.get().getAddress();
             final String hex = Hex.encodeHexString(address);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Interface en0 %s", hex));
-            }
+            log.debug("Interface en0 {}", hex);
             // Compute the hash of the GUID
             final MessageDigest digest = MessageDigest.getInstance("SHA-1");
             digest.update(address);
@@ -172,9 +170,7 @@ public class ReceiptVerifier implements LicenseVerifier {
             digest.update(bundleIdentifier.getBytes(StandardCharsets.UTF_8));
             final byte[] result = digest.digest();
             if(Arrays.equals(result, hash)) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Valid receipt for GUID %s", hex));
-                }
+                log.info("Valid receipt for GUID {}", hex);
                 return true;
             }
             else {

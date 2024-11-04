@@ -50,7 +50,7 @@ public class DropboxLockFeature implements Lock<String> {
     @Override
     public String lock(final Path file) throws BackgroundException {
         if(!containerService.getContainer(file).getType().contains(Path.Type.shared)) {
-            log.warn(String.format("Skip attempting to lock file %s not in shared folder", file));
+            log.warn("Skip attempting to lock file {} not in shared folder", file);
             throw new UnsupportedException();
         }
         try {
@@ -60,9 +60,7 @@ public class DropboxLockFeature implements Lock<String> {
                     throw this.failure(result);
                 }
                 if(result.isSuccess()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Locked file %s with result %s", file, result.getSuccessValue()));
-                    }
+                    log.debug("Locked file {} with result {}", file, result.getSuccessValue());
                     return String.valueOf(true);
                 }
             }
@@ -81,9 +79,7 @@ public class DropboxLockFeature implements Lock<String> {
                 if(result.isFailure()) {
                     throw failure(result);
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Unlocked file %s with result %s", file, result.getSuccessValue()));
-                }
+                log.debug("Unlocked file {} with result {}", file, result.getSuccessValue());
             }
         }
         catch(DbxException e) {
@@ -92,7 +88,7 @@ public class DropboxLockFeature implements Lock<String> {
     }
 
     protected BackgroundException failure(final LockFileResultEntry result) {
-        log.warn(String.format("Lock failure %s", result.getFailureValue()));
+        log.warn("Lock failure {}", result.getFailureValue());
         switch(result.getFailureValue().tag()) {
             case PATH_LOOKUP:
                 return new NotfoundException(result.getFailureValue().toString());

@@ -79,9 +79,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
     @Override
     public void notify(final String group, final String identifier, final String title, final String description, final String action) {
         if(filter.shouldSuppress()) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
-            }
+            log.warn("Suppressing notification for {}, {}, {}, {}", group, identifier, title, description);
             return;
         }
         final NSUserNotification notification = NSUserNotification.notification();
@@ -101,17 +99,13 @@ public class NotificationCenter extends ProxyController implements NotificationS
             notification.setHasActionButton(true);
             notification.setActionButtonTitle(action);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Schedule notification %s", notification));
-        }
+        log.debug("Schedule notification {}", notification);
         center.scheduleNotification(notification);
     }
 
     @Override
     public void userNotificationCenter_didActivateNotification(final NSUserNotificationCenter center, final NSUserNotification notification) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Did close notification %s with type %s", notification, notification.activationType()));
-        }
+        log.debug("Did close notification {} with type {}", notification, notification.activationType());
         for(Listener listener : listeners) {
             listener.callback(notification.identifier());
         }
@@ -119,7 +113,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
 
     @Override
     public boolean userNotificationCenter_shouldPresentNotification(final NSUserNotificationCenter center, final NSUserNotification notification) {
-        log.warn(String.format("Discarded notification %s without presenting", notification));
+        log.warn("Discarded notification {} without presenting", notification);
         return false;
     }
 }

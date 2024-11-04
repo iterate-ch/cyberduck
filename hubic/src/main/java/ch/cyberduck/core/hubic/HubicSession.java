@@ -67,9 +67,7 @@ public class HubicSession extends SwiftSession {
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = authorizationService.validate();
         try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Attempt authentication with %s", credentials.getOauth()));
-            }
+            log.info("Attempt authentication with {}", credentials.getOauth());
             client.authenticate(new HubicAuthenticationRequest(credentials.getOauth().getAccessToken()), new HubicAuthenticationResponseHandler());
         }
         catch(GenericException e) {

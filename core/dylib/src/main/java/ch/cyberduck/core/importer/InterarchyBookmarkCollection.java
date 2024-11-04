@@ -58,12 +58,12 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
     protected void parse(final ProtocolFactory protocols, final Local file) {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
-            log.error("Invalid bookmark file:" + file);
+            log.error("Invalid bookmark file:{}", file);
             return;
         }
         List<NSDictionary> items = new PlistDeserializer(serialized).listForKey("Children");
         if(null == items) {
-            log.error("Invalid bookmark file:" + file);
+            log.error("Invalid bookmark file:{}", file);
             return;
         }
         for(NSDictionary item : items) {

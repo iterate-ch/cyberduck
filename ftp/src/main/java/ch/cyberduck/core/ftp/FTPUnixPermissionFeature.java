@@ -74,9 +74,7 @@ public class FTPUnixPermissionFeature implements UnixPermission {
     @Override
     public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
         if(failure != null) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Skip setting permission for %s due to previous failure %s", file, failure.getMessage()));
-            }
+            log.debug("Skip setting permission for {} due to previous failure {}", file, failure.getMessage());
             throw failure;
         }
         try {

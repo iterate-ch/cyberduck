@@ -104,12 +104,12 @@ public class DeepboxReadFeature implements Read {
                             signal.countDown();
                             return;
                         default:
-                            log.warn(String.format("Wait for download URL to become ready with current status %s", status));
+                            log.warn("Wait for download URL to become ready with current status {}", status);
                             break;
                     }
                 }
                 catch(ApiException e) {
-                    log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                    log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()));
                     failure.set(new DeepboxExceptionMappingService(fileid).map(e));
                     signal.countDown();
                 }
@@ -152,9 +152,7 @@ public class DeepboxReadFeature implements Read {
                 else {
                     header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Add range header %s for file %s", header, file));
-                }
+                log.debug("Add range header {} for file {}", header, file);
                 request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
                 // Disable compression
                 request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
@@ -186,13 +184,11 @@ public class DeepboxReadFeature implements Read {
         final Acl acl = file.attributes().getAcl();
         if(Acl.EMPTY == acl) {
             // Missing initialization
-            log.warn(String.format("Unknown ACLs on %s", file));
+            log.warn("Unknown ACLs on {}", file);
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANDOWNLOAD)) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("ACL %s for %s does not include %s", acl, file, CANDOWNLOAD));
-            }
+            log.warn("ACL {} for {} does not include {}", acl, file, CANDOWNLOAD);
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot download {0}", "Error"), file.getName())).withFile(file);
         }
     }

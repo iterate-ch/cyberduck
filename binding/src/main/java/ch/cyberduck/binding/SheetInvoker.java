@@ -139,9 +139,7 @@ public class SheetInvoker extends ProxyController {
                     }
                 }
             }, true);
-            if(log.isDebugEnabled()) {
-                log.debug("Await sheet dismiss");
-            }
+            log.debug("Await sheet dismiss");
             // Synchronize on parent controller. Only display one sheet at once.
             Uninterruptibles.awaitUninterruptibly(signal);
             // Close window in case signal was count down prior closing window
@@ -190,7 +188,7 @@ public class SheetInvoker extends ProxyController {
         NSWindow window = parent;
         while(window.attachedSheet() != null) {
             window = window.attachedSheet();
-            log.warn(String.format("Window %s has already sheet %s attached", parent, window));
+            log.warn("Window {} has already sheet {} attached", parent, window);
         }
         return window;
     }

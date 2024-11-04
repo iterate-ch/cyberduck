@@ -86,13 +86,11 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                     try {
                         switch(response.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Received response %s for part number %d", response, status.getPart()));
-                                }
+                                log.info("Received response {} for part number {}", response, status.getPart());
                                 // Upload complete
                                 if(response.containsHeader("ETag")) {
                                     if(file.getType().contains(Path.Type.encrypted)) {
-                                        log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+                                        log.warn("Skip checksum verification for {} with client side encryption enabled", file);
                                     }
                                     else {
                                         if(HashAlgorithm.md5.equals(status.getChecksum().algorithm)) {
@@ -106,9 +104,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                                     }
                                 }
                                 else {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("No ETag header in response available");
-                                    }
+                                    log.debug("No ETag header in response available");
                                 }
                                 return null;
                             default:
@@ -148,7 +144,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                 @Override
                 public void close() throws IOException {
                     if(close.get()) {
-                        log.warn(String.format("Skip double close of stream %s", this));
+                        log.warn("Skip double close of stream {}", this);
                         return;
                     }
                     super.close();

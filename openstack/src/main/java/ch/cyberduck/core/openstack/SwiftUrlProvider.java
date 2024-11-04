@@ -133,7 +133,7 @@ public class SwiftUrlProvider implements UrlProvider {
 
     protected DescriptiveUrl toSignedUrl(final Region region, final Path file, final int seconds) {
         if(!accounts.containsKey(region)) {
-            log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
+            log.warn("No account info for region {} available required to sign temporary URL", region);
             return DescriptiveUrl.EMPTY;
         }
         // OpenStack Swift Temporary URLs (TempURL) required the X-Account-Meta-Temp-URL-Key header be set on the Swift account. Used to sign.
@@ -143,9 +143,7 @@ public class SwiftUrlProvider implements UrlProvider {
             log.warn("Missing X-Account-Meta-Temp-URL-Key header value to sign temporary URL");
             return DescriptiveUrl.EMPTY;
         }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", tempUrlKey));
-        }
+        log.info("Using X-Account-Meta-Temp-URL-Key header value {} to sign", tempUrlKey);
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
         return new PresignedUrl(file, region, tempUrlKey, expiry);

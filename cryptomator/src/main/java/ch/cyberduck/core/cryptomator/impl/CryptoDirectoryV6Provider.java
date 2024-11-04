@@ -68,9 +68,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = prefix + cryptomator.getFileNameCryptor().encryptFilename(CryptorCache.BASE32, filename, directoryId.getBytes(StandardCharsets.UTF_8));
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
-        }
+        log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return cryptomator.getFilenameProvider().deflate(session, ciphertextName);
     }
 
@@ -86,9 +84,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             attributes.withFileId(null);
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Use directory ID '%s' for folder %s", id, directory));
-            }
+            log.debug("Use directory ID '{}' for folder {}", id, directory);
             attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
             final String directoryIdHash = cryptomator.getFileNameCryptor().hashDirectoryId(id);
@@ -112,9 +108,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
                 return cache.get(new SimplePathPredicate(directory));
             }
             try {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Acquire lock for %s", directory));
-                }
+                log.debug("Acquire lock for {}", directory);
                 lock.lock();
                 final String id = this.load(session, directory);
                 cache.put(new SimplePathPredicate(directory), id);
@@ -130,7 +124,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         else {
             final String existing = cache.get(new SimplePathPredicate(directory));
             if(!existing.equals(directoryId)) {
-                log.warn(String.format("Do not override already cached id %s with %s", existing, directoryId));
+                log.warn("Do not override already cached id {} with {}", existing, directoryId);
             }
         }
         return cache.get(new SimplePathPredicate(directory));
@@ -142,14 +136,12 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
         // Read directory id from file
         try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Read directory ID for folder %s from %s", directory, ciphertextName));
-            }
+            log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
             final Path metadataFile = new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted));
             return new ContentReader(session).read(metadataFile);
         }
         catch(NotfoundException e) {
-            log.warn(String.format("Missing directory ID for folder %s", directory));
+            log.warn("Missing directory ID for folder {}", directory);
             return random.random();
         }
     }

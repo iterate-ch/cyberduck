@@ -86,16 +86,14 @@ public class EditSaveWorker extends Worker<Transfer> {
 
     @Override
     public Transfer run(final Session<?> session) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Run upload action for editor %s", editor));
-        }
+        log.debug("Run upload action for editor {}", editor);
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, session, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
                 listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
         worker.run(session);
         if(!upload.isComplete()) {
-            log.warn(String.format("File size changed for %s", file));
+            log.warn("File size changed for {}", file);
         }
         else {
             // Update known remote file size

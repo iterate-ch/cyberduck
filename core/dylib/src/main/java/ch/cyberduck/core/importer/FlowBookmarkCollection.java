@@ -144,7 +144,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                 host.setPort(-1);
             }
             catch(NumberFormatException e) {
-                log.warn("Unknown protocol:" + e.getMessage());
+                log.warn("Unknown protocol:{}", e.getMessage());
             }
         }
         this.add(host);

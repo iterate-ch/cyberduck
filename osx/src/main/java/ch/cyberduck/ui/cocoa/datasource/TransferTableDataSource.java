@@ -135,7 +135,7 @@ public class TransferTableDataSource extends ListDataSource {
     @Override
     public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(final NSTableView view, final NSDraggingInfo draggingInfo,
                                                                                final NSInteger row, final NSUInteger operation) {
-        log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
+        log.debug("tableViewValidateDrop:row:{},operation:{}", row, operation);
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
@@ -160,7 +160,7 @@ public class TransferTableDataSource extends ListDataSource {
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String droppedText = draggingInfo.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if(StringUtils.isNotBlank(droppedText)) {
-                log.info("NSPasteboard.StringPboardType:" + droppedText);
+                log.info("NSPasteboard.StringPboardType:{}", droppedText);
                 final DownloadController c = new DownloadController(droppedText);
                 c.beginSheet(TransferControllerFactory.get());
                 return true;

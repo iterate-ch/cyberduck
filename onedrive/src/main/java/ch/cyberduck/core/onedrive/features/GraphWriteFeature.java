@@ -125,15 +125,13 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
                         try {
                             final OneDriveJsonObject reply = upload.uploadFragment(header, content);
                             if(reply instanceof DriveItem.Metadata) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Completed upload for %s", file));
-                                }
+                                log.info("Completed upload for {}", file);
                                 final String id = session.getFileId(((DriveItem.Metadata) reply));
                                 fileid.cache(file, id);
                                 response.set((DriveItem.Metadata) reply);
                             }
                             else {
-                                log.debug(String.format("Uploaded fragment %s for file %s", header, file));
+                                log.debug("Uploaded fragment {} for file {}", header, file);
                             }
                         }
                         catch(OneDriveAPIException e) {
@@ -156,11 +154,11 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
         public void close() throws IOException {
             try {
                 if(close.get()) {
-                    log.warn(String.format("Skip double close of stream %s", this));
+                    log.warn("Skip double close of stream {}", this);
                     return;
                 }
                 if(0L == offset) {
-                    log.warn(String.format("Abort upload session %s with no completed parts", upload));
+                    log.warn("Abort upload session {} with no completed parts", upload);
                     // Use touch feature for empty file upload
                     upload.cancelUpload();
                     new GraphTouchFeature(session, fileid).touch(file, overall);

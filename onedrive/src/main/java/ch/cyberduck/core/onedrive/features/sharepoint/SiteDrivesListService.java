@@ -42,9 +42,7 @@ public class SiteDrivesListService extends AbstractDriveListService {
     @Override
     protected Iterator<Drive.Metadata> getIterator(final Path directory) throws BackgroundException {
         final Site site = session.getSite(directory.getParent());
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Return drives for site %s", site));
-        }
+        log.debug("Return drives for site {}", site);
         return Drives.getDrives(site);
     }
 }

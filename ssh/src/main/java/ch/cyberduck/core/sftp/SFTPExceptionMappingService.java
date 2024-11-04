@@ -110,7 +110,7 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
     public BackgroundException map(final IOException e, final StringBuilder buffer, final DisconnectReason reason) {
         final String failure = buffer.toString();
         if(DisconnectReason.HOST_KEY_NOT_VERIFIABLE.equals(reason)) {
-            log.warn(String.format("Failure verifying host key. %s", failure));
+            log.warn("Failure verifying host key. {}", failure);
             // Host key dismissed by user
             return new ConnectionCanceledException(e);
         }

@@ -32,7 +32,7 @@ public abstract class JsonBookmarkCollection extends ThirdpartyBookmarkCollectio
         }
         else {
             reader.skipValue();
-            log.warn(String.format("No value for key %s", name));
+            log.warn("No value for key {}", name);
             return null;
         }
     }

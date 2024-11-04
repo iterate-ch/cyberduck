@@ -125,7 +125,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     result = new Path(deepbox, boxName, type, segment.attributes());
                 }
                 else {
-                    log.warn(String.format("Folder %s does not match pattern %s", combined, SHARED.pattern()));
+                    log.warn("Folder {} does not match pattern {}", combined, SHARED.pattern());
                     return file;
                 }
             }
@@ -161,9 +161,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         }
         final String cached = super.getFileId(normalized);
         if(cached != null) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Return cached fileid %s for file %s", cached, normalized));
-            }
+            log.debug("Return cached fileid {} for file {}", cached, normalized);
             return cached;
         }
         // The DeepBox API is ID-based and not path-based.

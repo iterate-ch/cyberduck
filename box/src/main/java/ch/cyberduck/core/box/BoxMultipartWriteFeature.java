@@ -64,9 +64,7 @@ public class BoxMultipartWriteFeature implements Write<File> {
     @Override
     public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final UploadSession uploadSession = new BoxUploadHelper(session, fileid).createUploadSession(status, file);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Obtained session %s for file %s", uploadSession, file));
-        }
+        log.debug("Obtained session {} for file {}", uploadSession, file);
         final BoxOutputStream proxy = new BoxOutputStream(file, uploadSession, status);
         return new HttpResponseOutputStream<File>(new MemorySegementingOutputStream(proxy,
                 uploadSession.getPartSize().intValue()), new BoxAttributesFinderFeature(session, fileid), status) {
@@ -109,9 +107,7 @@ public class BoxMultipartWriteFeature implements Write<File> {
                 final HttpRange range = HttpRange.withStatus(new TransferStatus()
                         .withLength(content.length)
                         .withOffset(byteCounter.getSent()));
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Send range %s for file %s", range, file));
-                }
+                log.debug("Send range {} for file {}", range, file);
                 final HttpPut request = new HttpPut(String.format("https://upload.box.com/api/2.0/files/upload_sessions/%s", uploadSession.getId()));
                 // Must not overlap with the range of a part already uploaded this session.
                 request.addHeader(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
@@ -135,7 +131,7 @@ public class BoxMultipartWriteFeature implements Write<File> {
         @Override
         public void close() throws IOException {
             if(close.get()) {
-                log.warn(String.format("Skip double close of stream %s", this));
+                log.warn("Skip double close of stream {}", this);
                 return;
             }
             try {

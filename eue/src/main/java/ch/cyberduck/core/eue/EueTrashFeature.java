@@ -68,7 +68,7 @@ public class EueTrashFeature implements Trash {
             for(Path f : files.keySet()) {
                 switch(fileid.getFileId(f.getParent())) {
                     case EueResourceIdProvider.TRASH:
-                        log.warn(String.format("Delete file %s already in trash", f));
+                        log.warn("Delete file {} already in trash", f);
                         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(fileid.getFileId(f)));
                         break;
                     default:
@@ -92,7 +92,7 @@ public class EueTrashFeature implements Trash {
                                 case HttpStatus.SC_OK:
                                     break;
                                 default:
-                                    log.warn(String.format("Failure %s trashing resource %s", resourceMoveResponseEntries, resourceMoveResponseEntry));
+                                    log.warn("Failure {} trashing resource {}", resourceMoveResponseEntries, resourceMoveResponseEntry);
                                     final ResourceCreationResponseEntryEntity entity = resourceMoveResponseEntry.getEntity();
                                     if(null == entity) {
                                         throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),

@@ -70,7 +70,7 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
                         new DisabledListProgressListener()).toList());
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+                log.warn("Failure listing buckets. {}", e.getMessage());
             }
             return configuration;
         }
@@ -79,7 +79,7 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
                 throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
             catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read logging configuration for %s %s", bucket.getName(), e.getMessage()));
+                log.warn("Missing permission to read logging configuration for {} {}", bucket.getName(), e.getMessage());
                 return LoggingConfiguration.empty();
             }
         }

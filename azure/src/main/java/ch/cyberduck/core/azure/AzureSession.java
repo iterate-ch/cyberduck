@@ -125,9 +125,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             final Proxy proxy = proxyfinder.find(new ProxyHostUrlProvider().get(host));
             switch(proxy.getType()) {
                 case SOCKS: {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Configured to use SOCKS proxy %s", proxyfinder));
-                    }
+                    log.info("Configured to use SOCKS proxy {}", proxyfinder);
                     final java.net.Proxy socksProxy = new java.net.Proxy(
                             java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
                     context.setProxy(socksProxy);
@@ -135,9 +133,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                 }
                 case HTTP:
                 case HTTPS: {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Configured to use HTTP proxy %s", proxyfinder));
-                    }
+                    log.info("Configured to use HTTP proxy {}", proxyfinder);
                     final java.net.Proxy httpProxy = new java.net.Proxy(
                             java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
                     context.setProxy(httpProxy);
@@ -167,7 +163,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             // Success
         }
         catch(NotfoundException e) {
-            log.warn(String.format("Ignore failure %s", e));
+            log.warn("Ignore failure {}", e.getMessage());
         }
     }
 

@@ -105,9 +105,7 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
         if(capabilities.extensions.contains(Extension.checksum)) {
             return ChecksumComputeFactory.get(capabilities.hashAlgorithm);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("No checksum support in capabilities %s", capabilities));
-        }
+        log.debug("No checksum support in capabilities {}", capabilities);
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }
 }

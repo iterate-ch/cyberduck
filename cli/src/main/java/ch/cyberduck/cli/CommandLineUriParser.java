@@ -58,9 +58,7 @@ public class CommandLineUriParser {
         if(input.hasOption(TerminalOptionsBuilder.Params.udt.name())) {
             host.setTransfer(Host.TransferType.udt);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Parsed %s as %s", uri, host));
-        }
+        log.debug("Parsed {} as {}", uri, host);
         return host;
     }
 }

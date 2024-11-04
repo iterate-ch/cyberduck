@@ -38,9 +38,7 @@ public class ExecutionCountServiceUnavailableRetryStrategy extends ChainedServic
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         if(executionCount > maxExecutionCount) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
-            }
+            log.warn("Skip retry for response {} after {} executions", response, executionCount);
             return false;
         }
         return super.retryRequest(response, executionCount, context);

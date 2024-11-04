@@ -82,9 +82,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         }
         catch(LoginFailureException e) {
             // Expired STS tokens
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Failure %s authorizing. Retry with refreshed OAuth tokens", e));
-            }
+            log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
             return this.tokens = this.authorize(oauth.refresh(oidc));
         }
     }
@@ -94,14 +92,12 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         if(tokens.isExpired()) {
             try {
                 this.refresh(oauth.getTokens());
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Authorizing service request with STS tokens %s", tokens));
-                }
+                log.info("Authorizing service request with STS tokens {}", tokens);
                 session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
                         tokens.getSessionToken()));
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure %s refreshing STS tokens %s", e, tokens));
+                log.warn("Failure {} refreshing STS tokens {}", e, tokens);
                 // Follow-up error 401 handled in error interceptor
             }
         }

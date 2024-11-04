@@ -110,15 +110,11 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 final String awsAccessIdKey = basicProfile.getAwsAccessIdKey();
                 // Matching access key or profile name
                 if(StringUtils.equals(profileName, profile)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Found matching profile %s for profile name %s", profile, profileName));
-                    }
+                    log.debug("Found matching profile {} for profile name {}", profile, profileName);
                     return true;
                 }
                 else if(StringUtils.equals(awsAccessIdKey, profile)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Found matching profile %s for access key %s", profile, awsAccessIdKey));
-                    }
+                    log.debug("Found matching profile {} for access key {}", profile, awsAccessIdKey);
                     return true;
                 }
                 return false;
@@ -141,7 +137,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     ).getPassword();
                 }
                 catch(LoginCanceledException e) {
-                    log.warn(String.format("Canceled MFA prompt for profile %s", basicProfile));
+                    log.warn("Canceled MFA prompt for profile {}", basicProfile);
                     return credentials;
                 }
             }
@@ -156,15 +152,13 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 durationSeconds = null;
             }
             if(basicProfile.isRoleBasedProfile()) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Configure credentials from role based profile %s", basicProfile.getProfileName()));
-                }
+                log.debug("Configure credentials from role based profile {}", basicProfile.getProfileName());
                 if(StringUtils.isBlank(basicProfile.getRoleSourceProfile())) {
-                    log.warn(String.format("Missing source profile reference in profile %s", basicProfile.getProfileName()));
+                    log.warn("Missing source profile reference in profile {}", basicProfile.getProfileName());
                     return credentials;
                 }
                 else if(!profiles.containsKey(basicProfile.getRoleSourceProfile())) {
-                    log.warn(String.format("Missing source profile with name %s", basicProfile.getRoleSourceProfile()));
+                    log.warn("Missing source profile with name {}", basicProfile.getRoleSourceProfile());
                     return credentials;
                 }
                 else {
@@ -206,14 +200,10 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                                     // (15 minutes) up to the maximum session duration setting for the role (which can be a maximum of 43200). This is an
                                     // optional parameter and by default, the value is set to 3600 seconds.
                             );
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
-                    }
+                    log.debug("Request {} from {}", assumeRoleRequest, service);
                     try {
                         final AssumeRoleResult assumeRoleResult = service.assumeRole(assumeRoleRequest);
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Set credentials from %s", assumeRoleResult));
-                        }
+                        log.debug("Set credentials from {}", assumeRoleResult);
                         credentials.setTokens(new TemporaryAccessTokens(
                                 assumeRoleResult.getCredentials().getAccessKeyId(),
                                 assumeRoleResult.getCredentials().getSecretAccessKey(),
@@ -221,15 +211,13 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                                 assumeRoleResult.getCredentials().getExpiration().getTime()));
                     }
                     catch(AWSSecurityTokenServiceException e) {
-                        log.warn(e.getErrorMessage(), e);
+                        log.warn(e.getErrorMessage());
                         return credentials;
                     }
                 }
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Configure credentials from basic profile %s", basicProfile.getProfileName()));
-                }
+                log.debug("Configure credentials from basic profile {}", basicProfile.getProfileName());
                 final Map<String, String> profileProperties = basicProfile.getProperties();
                 if(profileProperties.containsKey("sso_start_url") || profileProperties.containsKey("sso_session")) {
                     // Read cached SSO credentials
@@ -243,9 +231,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 }
                 if(tokenCode != null) {
                     // Obtain session token
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Get session token from credentials in profile %s", basicProfile.getProfileName()));
-                    }
+                    log.debug("Get session token from credentials in profile {}", basicProfile.getProfileName());
                     final AWSSecurityTokenService service = this.getTokenService(host,
                             host.getRegion(),
                             basicProfile.getAwsAccessIdKey(),
@@ -258,14 +244,10 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                             // Specify this value if the IAM user has a policy that requires MFA authentication
                             .withSerialNumber(basicProfile.getPropertyValue("mfa_serial"))
                             .withDurationSeconds(durationSeconds);
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
-                    }
+                    log.debug("Request {} from {}", sessionTokenRequest, service);
                     try {
                         final GetSessionTokenResult sessionTokenResult = service.getSessionToken(sessionTokenRequest);
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Set credentials from %s", sessionTokenResult));
-                        }
+                        log.debug("Set credentials from {}", sessionTokenResult);
                         return credentials.withTokens(new TemporaryAccessTokens(
                                 sessionTokenResult.getCredentials().getAccessKeyId(),
                                 sessionTokenResult.getCredentials().getSecretAccessKey(),
@@ -273,13 +255,11 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                                 sessionTokenResult.getCredentials().getExpiration().getTime()));
                     }
                     catch(AWSSecurityTokenServiceException e) {
-                        log.warn(e.getErrorMessage(), e);
+                        log.warn(e.getErrorMessage());
                         return credentials;
                     }
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set credentials from profile %s", basicProfile.getProfileName()));
-                }
+                log.debug("Set credentials from profile {}", basicProfile.getProfileName());
                 return credentials
                         .withTokens(new TemporaryAccessTokens(
                                 basicProfile.getAwsAccessIdKey(),
@@ -291,7 +271,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
         }
         else {
-            log.warn(String.format("No matching configuration for profile %s in %s", profile, profiles));
+            log.warn("No matching configuration for profile {} in {}", profile, profiles);
         }
         return credentials;
     }
@@ -301,9 +281,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         // See https://docs.aws.amazon.com/sdkref/latest/guide/creds-config-files.html for configuration behavior
         final Local configFile = LocalFactory.get(directory, "config");
         final Local credentialsFile = LocalFactory.get(directory, "credentials");
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Load profiles from %s and %s", configFile, credentialsFile));
-        }
+        log.debug("Load profiles from {} and {}", configFile, credentialsFile);
         // Profile can be null. The default profile from the configuration will be loaded
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
         final Map<String, Map<String, String>> allProfileProperties = new HashMap<>();
@@ -325,7 +303,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
         }
         catch(AccessDeniedException | IllegalArgumentException | IOException e) {
-            log.warn(String.format("Failure reading %s and %s", configFile, credentialsFile), e);
+            log.warn(String.format("Failure reading %s and %s", configFile, credentialsFile));
             return this;
         }
         if(allProfileProperties.isEmpty()) {
@@ -373,11 +351,9 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             final String cachedCredentialsJson = String.format("%s.json", hash);
             final Local cachedCredentialsFile =
                     LocalFactory.get(LocalFactory.get(LocalFactory.get(directory, "cli"), "cache"), cachedCredentialsJson);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempting to read SSO credentials from %s", cachedCredentialsFile.getAbsolute()));
-            }
+            log.debug("Attempting to read SSO credentials from {}", cachedCredentialsFile.getAbsolute());
             if(!cachedCredentialsFile.exists()) {
-                log.warn(String.format("Missing file %s with cached SSO credentials.", cachedCredentialsFile.getAbsolute()));
+                log.warn("Missing file {} with cached SSO credentials.", cachedCredentialsFile.getAbsolute());
                 return null;
             }
             try (InputStream in = cachedCredentialsFile.getInputStream()) {
@@ -395,7 +371,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
         }
         catch(IOException | AccessDeniedException e) {
-            log.warn("Failure retrieving SSO credentials.", e);
+            log.warn("Failure retrieving SSO credentials. {}", e.getMessage());
             return null;
         }
     }
@@ -475,9 +451,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             if(!file.exists()) {
                 return new LinkedHashMap<>();
             }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Reading AWS file %s", file));
-            }
+            log.debug("Reading AWS file {}", file);
             try (InputStream inputStream = file.getInputStream(); Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
                 run(scanner);
                 return new LinkedHashMap<>(allProfileProperties);
@@ -514,7 +488,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             Map<String, String> properties = allProfileProperties.get(profileName);
 
             if(properties.containsKey(propertyKey)) {
-                log.warn("Duplicate property values for [" + propertyKey + "].");
+                log.warn("Duplicate property values for [{}].", propertyKey);
             }
 
             properties.put(propertyKey, propertyValue);

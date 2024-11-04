@@ -52,9 +52,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
     @Override
     public Map<String, String> run(final Session<?> session) throws BackgroundException {
         final Metadata feature = session.getFeature(Metadata.class);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
-        }
+        log.debug("Run with feature {}", feature);
         // Map for metadata entry key > File & Metadata Values
         final Map<String, Map<Path, String>> graphMetadata = new HashMap<>();
         for(Path next : files) {

@@ -52,9 +52,7 @@ public abstract class CachingVersionIdProvider implements VersionIdProvider {
      * @return Input parameter
      */
     public String cache(final Path file, final String id) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cache %s for file %s", id, file));
-        }
+        log.debug("Cache {} for file {}", id, file);
         if(null == id) {
             cache.remove(this.toPredicate(file));
             file.attributes().setVersionId(null);
@@ -68,7 +66,7 @@ public abstract class CachingVersionIdProvider implements VersionIdProvider {
         }
         else {
             if(file.attributes().isDuplicate()) {
-                log.warn(String.format("Skip caching for previous version %s", file));
+                log.warn("Skip caching for previous version {}", file);
                 return id;
             }
             cache.put(this.toPredicate(file), id);

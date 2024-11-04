@@ -48,9 +48,7 @@ public class SFTPCommandFeature implements Command {
 
     @Override
     public void send(final String command, final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Send command %s", command));
-        }
+        log.debug("Send command {}", command);
         final Session sess;
         try {
             sess = session.getClient().startSession();
@@ -94,9 +92,7 @@ public class SFTPCommandFeature implements Command {
                     throw new InteroperabilityException(error.toString());
                 }
                 else {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Command %s returned no errors", command));
-                    }
+                    log.info("Command {} returned no errors", command);
                 }
             }
             finally {

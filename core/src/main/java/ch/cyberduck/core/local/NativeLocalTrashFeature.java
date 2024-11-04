@@ -36,7 +36,7 @@ public class NativeLocalTrashFeature implements Trash {
             FileUtils.getInstance().moveToTrash(new File(file.getAbsolute()));
         }
         catch(IOException e) {
-            log.warn(String.format("Failed to move %s to Trash", file.getName()));
+            log.warn("Failed to move {} to Trash", file.getName());
             new DefaultLocalTrashFeature().trash(file);
         }
     }

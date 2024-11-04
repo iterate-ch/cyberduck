@@ -67,13 +67,9 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     protected static Jets3tProperties toProperties(final Host bookmark, final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion) {
         final Jets3tProperties properties = new Jets3tProperties();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure for endpoint %s", bookmark));
-        }
+        log.debug("Configure for endpoint {}", bookmark);
         if(InetAddressUtils.isIPv4Address(bookmark.getHostname()) || InetAddressUtils.isIPv6Address(bookmark.getHostname())) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Disable virtual host style requests for hostname %s", bookmark.getHostname()));
-            }
+            log.warn("Disable virtual host style requests for hostname {}", bookmark.getHostname());
             properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
         else {
@@ -148,9 +144,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         // Apply default configuration
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             if(StringUtils.isNotBlank(host.getRegion())) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Apply default region %s to endpoint", host.getRegion()));
-                }
+                log.debug("Apply default region {} to endpoint", host.getRegion());
                 // Apply default region
                 endpoint = createRegionSpecificEndpoint(host, host.getRegion());
             }
@@ -159,9 +153,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     // Only for AWS set endpoint to region specific
                     if(preferences.getBoolean(String.format("s3.transferacceleration.%s.enable", bucketName))) {
                         // Already set to accelerated endpoint
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Use accelerated endpoint %s", S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME));
-                        }
+                        log.debug("Use accelerated endpoint {}", S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME);
                         endpoint = S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME;
                     }
                     else {
@@ -174,19 +166,17 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                     final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
                                     if(Location.unknown == region) {
                                         // Missing permission or not supported
-                                        log.warn(String.format("Failure determining bucket location for %s", bucketName));
+                                        log.warn("Failure determining bucket location for {}", bucketName);
                                         endpoint = host.getHostname();
                                     }
                                     else {
-                                        if(log.isDebugEnabled()) {
-                                            log.debug(String.format("Determined region %s for bucket %s", region, bucketName));
-                                        }
+                                        log.debug("Determined region {} for bucket {}", region, bucketName);
                                         endpoint = createRegionSpecificEndpoint(host, region.getIdentifier());
                                     }
                                 }
                                 catch(BackgroundException e) {
                                     // Ignore failure reading location for bucket
-                                    log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
+                                    log.error("Failure {} determining bucket location for {}", e, bucketName);
                                     endpoint = createRegionSpecificEndpoint(host, preferences.getProperty("s3.location"));
                                 }
                             }
@@ -195,9 +185,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 }
             }
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set endpoint to %s", endpoint));
-        }
+        log.debug("Set endpoint to {}", endpoint);
         // Virtual host style endpoint including bucket name
         String hostname = endpoint;
         String resource = String.valueOf(Path.DELIMITER);
@@ -221,9 +209,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         }
         final HttpUriRequest request;
         // Prefix endpoint with bucket name for actual hostname
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set hostname to %s", hostname));
-        }
+        log.debug("Set hostname to {}", hostname);
         final String virtualPath;
         // Allow for non-standard virtual directory paths on the server-side
         if(StringUtils.isNotBlank(host.getProtocol().getContext()) && !Scheme.isURL(host.getProtocol().getContext())) {
@@ -245,9 +231,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         catch(ServiceException e) {
             throw new S3ServiceException(e);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set URL to %s", url));
-        }
+        log.debug("Set URL to {}", url);
         switch(method) {
             case PUT:
                 request = new HttpPut(url);
@@ -281,9 +265,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         final PreferencesReader preferences = new HostPreferences(host);
         final String endpoint = preferences.getBoolean("s3.endpoint.dualstack.enable")
                 ? preferences.getProperty("s3.endpoint.format.ipv6") : preferences.getProperty("s3.endpoint.format.ipv4");
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Apply region %s to endpoint %s", region, endpoint));
-        }
+        log.debug("Apply region {} to endpoint {}", region, endpoint);
         return String.format(endpoint, region);
     }
 
@@ -435,9 +417,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
      */
     public static String findBucketInHostname(final Host host) {
         if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("No default hostname set in %s", host.getProtocol()));
-            }
+            log.debug("No default hostname set in {}", host.getProtocol());
             return null;
         }
         final String hostname = host.getHostname();
@@ -445,9 +425,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
             return null;
         }
         if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Find bucket name in %s", hostname));
-            }
+            log.debug("Find bucket name in {}", hostname);
             return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
         }
         return null;

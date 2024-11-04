@@ -69,9 +69,7 @@ public class FSEventWatchService extends AbstractWatchService {
         = new NamedThreadFactory("fsevent");
 
     public FSEventWatchService() {
-        if(log.isDebugEnabled()) {
-            log.debug("Create new watch service");
-        }
+        log.debug("Create new watch service");
     }
 
     private static final int kFSEventStreamCreateFlagNone = 0x00000000;
@@ -86,9 +84,7 @@ public class FSEventWatchService extends AbstractWatchService {
                              final WatchEvent.Kind<?>[] events,
                              final WatchEvent.Modifier... modifiers)
         throws IOException {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Register file %s for events %s", folder, Arrays.toString(events)));
-        }
+        log.info("Register file {} for events {}", folder, Arrays.toString(events));
         final Pointer[] values = {
             CFStringRef.toCFString(folder.toString()).getPointer()};
 

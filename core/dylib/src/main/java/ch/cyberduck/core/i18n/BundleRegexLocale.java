@@ -41,7 +41,7 @@ public class BundleRegexLocale extends BundleLocale {
 
             }
             catch(IllegalArgumentException e) {
-                log.warn(String.format("Failure to parse default language set. %s", e.getMessage()));
+                log.warn("Failure to parse default language set. {}", e.getMessage());
             }
         }
     }

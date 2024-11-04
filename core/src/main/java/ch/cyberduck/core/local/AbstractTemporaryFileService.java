@@ -71,20 +71,18 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
                 f.delete();
             }
             catch(AccessDeniedException | NotfoundException e) {
-                log.warn(String.format("Failure deleting file %s in shutdown hook. %s", f, e.getMessage()));
+                log.warn("Failure deleting file {} in shutdown hook. {}", f, e.getMessage());
             }
         }
     }
 
     protected Local create(final Local folder, final String filename) {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Creating intermediate folder %s", folder));
-            }
+            log.debug("Creating intermediate folder {}", folder);
             folder.mkdir();
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Failure %s creating intermediate folder", e));
+            log.warn("Failure {} creating intermediate folder", e.getMessage());
             return this.delete(LocalFactory.get(temp,
                     String.format("%s-%s", new AlphanumericRandomStringService().random(), filename)));
         }

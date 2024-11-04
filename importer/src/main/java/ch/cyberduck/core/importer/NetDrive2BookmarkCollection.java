@@ -100,7 +100,7 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                             break;
 
                         default:
-                            log.warn(String.format("Ignore property %s", name));
+                            log.warn("Ignore property {}", name);
                             reader.skipValue();
                             break;
                     }

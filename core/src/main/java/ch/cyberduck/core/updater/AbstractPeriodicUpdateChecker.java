@@ -62,14 +62,12 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
 
     @Override
     public Duration register() {
-        log.info(String.format("Register update checker hook after %s", delay));
+        log.info("Register update checker hook after {}", delay);
         try {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Check for new updates after %s", delay));
-                    }
+                    log.debug("Check for new updates after {}", delay);
                     preferences.setProperty("update.check.timestamp", System.currentTimeMillis());
                     controller.invoke(new DefaultMainAction() {
                         @Override
@@ -82,7 +80,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
             return delay;
         }
         catch(IllegalStateException e) {
-            log.warn(String.format("Failure scheduling timer. %s", e.getMessage()));
+            log.warn("Failure scheduling timer. {}", e.getMessage());
             return Duration.ZERO;
         }
     }
@@ -115,9 +113,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
             }
             url.append(URIEncoder.encode(arg.getKey())).append("=").append(URIEncoder.encode(arg.getValue()));
         }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Setting update feed to %s", url));
-        }
+        log.info("Setting update feed to {}", url);
         return url.toString();
     }
 }

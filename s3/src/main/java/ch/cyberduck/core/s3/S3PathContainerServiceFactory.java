@@ -42,7 +42,7 @@ public class S3PathContainerServiceFactory extends Factory<PathContainerService>
         try {
             final Constructor<? extends PathContainerService> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, host.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", host.getClass()));
+                log.warn("No matching constructor for parameter {}", host.getClass());
                 // Call default constructor for disabled implementations
                 return clazz.getDeclaredConstructor().newInstance();
             }

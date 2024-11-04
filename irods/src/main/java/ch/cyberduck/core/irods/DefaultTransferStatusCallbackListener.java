@@ -43,9 +43,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
 
     @Override
     public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Progress with %s", t));
-        }
+        log.debug("Progress with {}", t);
         final long bytes = t.getBytesTransfered() - listener.getSent();
         switch(t.getTransferType()) {
             case GET:
@@ -64,9 +62,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
             }
         }
         catch(ConnectionCanceledException e) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Set canceled for block %s", block));
-            }
+            log.debug("Set canceled for block {}", block);
             block.setCancelled(true);
             return FileStatusCallbackResponse.SKIP;
         }

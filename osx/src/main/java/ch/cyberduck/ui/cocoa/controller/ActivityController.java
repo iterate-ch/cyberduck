@@ -86,19 +86,17 @@ public final class ActivityController extends WindowController {
 
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Add background action %s", action));
-            }
+            log.debug("Add background action {}", action);
             tasks.put(action, new TaskController(action));
             reload();
         }
 
         @Override
         public void collectionItemRemoved(final BackgroundAction action) {
-            log.debug(String.format("Remove background action %s", action));
+            log.debug("Remove background action {}", action);
             final TaskController controller = tasks.remove(action);
             if(null == controller) {
-                log.warn(String.format("Failed to find controller for action %s", action));
+                log.warn("Failed to find controller for action {}", action);
                 return;
             }
             controller.invalidate();

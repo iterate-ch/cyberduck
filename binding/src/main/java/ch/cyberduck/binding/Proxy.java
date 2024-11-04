@@ -62,16 +62,12 @@ public class Proxy {
 
     public void invoke(final Runnable runnable, final Object lock, final boolean wait) {
         if(NSThread.isMainThread()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Already on main thread. Invoke %s directly.", runnable));
-            }
+            log.debug("Already on main thread. Invoke {} directly.", runnable);
             runnable.run();
             return;
         }
         synchronized(lock) {
-            if(log.isTraceEnabled()) {
-                log.trace(String.format("Invoke runnable %s on main thread", runnable));
-            }
+            log.trace("Invoke runnable {} on main thread", runnable);
             try {
                 //Defer to main thread
                 Foundation.runOnMainThread(runnable, wait);

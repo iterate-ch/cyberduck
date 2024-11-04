@@ -44,9 +44,7 @@ public class FTPUTIMETimestampFeature implements Timestamp {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         if(failure != null) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Skip setting timestamp for %s due to previous failure %s", file, failure.getMessage()));
-            }
+            log.debug("Skip setting timestamp for {} due to previous failure {}", file, failure.getMessage());
             throw new FTPExceptionMappingService().map("Cannot change timestamp of {0}", failure, file);
         }
         try {

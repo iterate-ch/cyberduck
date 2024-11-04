@@ -63,9 +63,7 @@ public class MountWorker extends Worker<Path> {
     protected Path list(final Session<?> session, final Home feature) throws BackgroundException {
         try {
             final Path home = feature.find();
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Mount path %s", home));
-            }
+            log.info("Mount path {}", home);
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path
@@ -75,18 +73,14 @@ public class MountWorker extends Worker<Path> {
             return home;
         }
         catch(NotfoundException e) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("Mount failed with %s", e));
-            }
+            log.warn("Mount failed with {}", e.getMessage());
             if(new HostPreferences(session.getHost()).getBoolean("mount.notfound.skipfallback")) {
                 throw e;
             }
             // The default path does not exist or is not readable due to possible permission issues. Fallback
             // to default working directory
             final Path home = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Fallback to mount path %s", home));
-            }
+            log.info("Fallback to mount path {}", home);
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of working directory

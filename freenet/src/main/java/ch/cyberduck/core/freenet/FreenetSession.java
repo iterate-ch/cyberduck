@@ -68,7 +68,7 @@ public class FreenetSession extends DAVSession {
             });
         }
         catch(LocalAccessDeniedException | ChecksumException e) {
-            log.warn(String.format("Failure %s retrieving MAC address", e));
+            log.warn("Failure {} retrieving MAC address", e.getMessage());
             final String identifier = new MD5ChecksumCompute().compute(System.getProperty("user.name")).hash;
             configuration.addInterceptorLast(new HttpRequestInterceptor() {
                 @Override

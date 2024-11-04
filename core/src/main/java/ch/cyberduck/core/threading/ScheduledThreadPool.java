@@ -93,9 +93,7 @@ public class ScheduledThreadPool {
     }
 
     public void shutdown() {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Shutdown pool %s", pool));
-        }
+        log.info("Shutdown pool {}", pool);
         pool.shutdown();
     }
 }

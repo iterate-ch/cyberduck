@@ -53,7 +53,7 @@ public class VaultRegistryFactory extends Factory<VaultRegistry> {
             final Constructor<? extends VaultRegistry> constructor = ConstructorUtils
                     .getMatchingAccessibleConstructor(clazz, keychain.getClass(), callback.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameters %s,%s", keychain.getClass(), callback.getClass()));
+                log.warn("No matching constructor for parameters {},{}", keychain.getClass(), callback.getClass());
                 // Call default constructor for disabled implementations
                 return clazz.getDeclaredConstructor().newInstance();
             }
@@ -61,7 +61,7 @@ public class VaultRegistryFactory extends Factory<VaultRegistry> {
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException |
               NoSuchMethodException e) {
-            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
             return VaultRegistry.DISABLED;
         }
     }

@@ -50,9 +50,7 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
             lookup = preferences.getProperty(this.toFormat(host, key, false));
         }
         if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Accepted host key %s matching %s", key, lookup));
-            }
+            log.info("Accepted host key {} matching {}", key, lookup);
             return true;
         }
         final boolean accept;

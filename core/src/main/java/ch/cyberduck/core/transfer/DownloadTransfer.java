@@ -116,14 +116,10 @@ public class DownloadTransfer extends Transfer {
     @Override
     public List<TransferItem> list(final Session<?> session, final Path directory,
                                    final Local local, final ListProgressListener listener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("List children for %s", directory));
-        }
+        log.debug("List children for {}", directory);
         if(directory.isSymbolicLink()
                 && new DownloadSymlinkResolver(roots).resolve(directory)) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Do not list children for symbolic link %s", directory));
-            }
+            log.debug("Do not list children for symbolic link {}", directory);
             return Collections.emptyList();
         }
         else {
@@ -146,9 +142,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter transfer with action %s and options %s", action, options));
-        }
+        log.debug("Filter transfer with action {} and options {}", action, options);
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
         final Find find;
         final AttributesFinder attributes;
@@ -160,9 +154,7 @@ public class DownloadTransfer extends Transfer {
             find = new CachingFindFeature(source, cache, source.getFeature(Find.class));
             attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class));
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Determined features %s and %s", find, attributes));
-        }
+        log.debug("Determined features {} and {}", find, attributes);
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
@@ -187,9 +179,7 @@ public class DownloadTransfer extends Transfer {
     @Override
     public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action with prompt %s", prompt));
-        }
+        log.debug("Find transfer action with prompt {}", prompt);
         if(resumeRequested) {
             // Force resume by user or retry of failed transfer
             return TransferAction.resume;
@@ -235,18 +225,14 @@ public class DownloadTransfer extends Transfer {
                     final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener progress, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
         final Object id = feature.pre(Type.download, files, callback);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
-        }
+        log.debug("Obtained bulk id {} for transfer {}", id, this);
         super.pre(source, destination, files, filter, error, progress, callback);
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
             final Path file = entry.getKey().remote;
             if(file.isDirectory()) {
                 final TransferStatus status = entry.getValue();
                 if(status.isExists()) {
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Skip existing directory %s", file));
-                    }
+                    log.warn("Skip existing directory {}", file);
                     continue;
                 }
                 final Local local = entry.getKey().local;
@@ -262,7 +248,7 @@ public class DownloadTransfer extends Transfer {
                 catch(AccessDeniedException e) {
                     if(error.prompt(entry.getKey(), status, e, files.size())) {
                         // Continue
-                        log.warn(String.format("Ignore transfer failure %s", e));
+                        log.warn("Ignore transfer failure {}", e.getMessage());
                     }
                     else {
                         throw new TransferCanceledException(e);
@@ -284,12 +270,10 @@ public class DownloadTransfer extends Transfer {
             final Optional<Map.Entry<TransferItem, TransferStatus>> entry = files.entrySet().stream().findFirst();
             if(entry.isPresent()) {
                 final Map.Entry<TransferItem, TransferStatus> item = entry.get();
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Prompt with failure %s for item %s only", e, item.getKey()));
-                }
+                log.warn("Prompt with failure {} for item {} only", e, item.getKey());
                 if(error.prompt(item.getKey(), item.getValue(), e, files.size())) {
                     // Continue
-                    log.warn(String.format("Ignore transfer failure %s", e));
+                    log.warn("Ignore transfer failure {}", e.getMessage());
                 }
                 else {
                     throw new TransferCanceledException(e);
@@ -302,17 +286,13 @@ public class DownloadTransfer extends Transfer {
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
                          final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Transfer file %s with options %s and status %s", file, options, segment));
-        }
+        log.debug("Transfer file {} with options {} and status {}", file, options, segment);
         if(file.isSymbolicLink()) {
             if(symlinkResolver.resolve(file)) {
                 // Make relative symbolic link
                 final String target = symlinkResolver.relativize(file.getAbsolute(),
                         file.getSymlinkTarget().getAbsolute());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Create symbolic link from %s to %s", local, target));
-                }
+                log.debug("Create symbolic link from {} to {}", local, target);
                 final Symlink symlink = LocalSymlinkFactory.get();
                 symlink.symlink(local, target);
                 return;

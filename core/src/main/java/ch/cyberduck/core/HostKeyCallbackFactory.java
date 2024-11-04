@@ -39,7 +39,7 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
                 final Constructor<? extends HostKeyCallback> constructor
                         = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
                 if(null == constructor) {
-                    log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
+                    log.warn("No matching constructor for parameter {}", controller.getClass());
                     // Call default constructor for disabled implementations
                     return clazz.getDeclaredConstructor().newInstance();
                 }
@@ -47,7 +47,7 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
             }
             catch(InstantiationException | InvocationTargetException | IllegalAccessException |
                   NoSuchMethodException e) {
-                log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+                log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
                 return new DisabledHostKeyCallback();
             }
         }

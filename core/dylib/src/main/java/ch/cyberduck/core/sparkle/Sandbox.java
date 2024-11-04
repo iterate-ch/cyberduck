@@ -31,9 +31,7 @@ public final class Sandbox {
     }
 
     public static Sandbox get() {
-        if(log.isDebugEnabled()) {
-            log.debug("Obtain sandbox environment with requirement com.apple.security.app-sandbox");
-        }
+        log.debug("Obtain sandbox environment with requirement com.apple.security.app-sandbox");
         return new Sandbox();
     }
 

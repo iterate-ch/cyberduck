@@ -109,7 +109,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             client.disconnect();
         }
         catch(IOException e) {
-            log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
+            log.warn("Ignore disconnect failure {}", e.getMessage());
         }
         super.disconnect();
     }
@@ -241,7 +241,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 if(StandardCharsets.UTF_8.name().equals(host.getEncoding())) {
                     if(client.hasFeature("UTF8")) {
                         if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
-                            log.warn(String.format("Failed to negotiate UTF-8 charset %s", client.getReplyString()));
+                            log.warn("Failed to negotiate UTF-8 charset {}", client.getReplyString());
                         }
                     }
                 }
@@ -252,9 +252,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 else {
                     zone = host.getTimezone();
                 }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Reset parser to timezone %s", zone));
-                }
+                log.info("Reset parser to timezone {}", zone);
                 String system = StringUtils.EMPTY; //Unknown
                 try {
                     system = client.getSystemType();
@@ -263,7 +261,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     }
                 }
                 catch(IOException e) {
-                    log.warn(String.format("SYST command failed %s", e.getMessage()));
+                    log.warn("SYST command failed {}", e.getMessage());
                 }
                 listService = new FTPListService(this, system, zone);
                 if(client.hasFeature(FTPCmd.MFMT.getCommand())) {

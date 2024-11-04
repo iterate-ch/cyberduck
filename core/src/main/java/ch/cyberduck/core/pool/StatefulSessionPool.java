@@ -49,13 +49,11 @@ public class StatefulSessionPool extends StatelessSessionPool {
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Acquire lock for connection %s", session));
-            }
+            log.debug("Acquire lock for connection {}", session);
             lock.lock();
         }
         catch(IllegalMonitorStateException e) {
-            log.warn(String.format("Failure acquiring lock for %s", session));
+            log.warn("Failure acquiring lock for {}", session);
             throw new ConnectionCanceledException(e);
         }
         return super.borrow(callback);
@@ -66,27 +64,23 @@ public class StatefulSessionPool extends StatelessSessionPool {
         try {
             if(failure != null) {
                 if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Close session %s after failure %s", session, failure));
-                    }
+                    log.warn("Close session {} after failure {}", session, failure);
                     try {
                         connect.close(conn);
                     }
                     catch(final BackgroundException e) {
-                        log.warn(String.format("Ignore failure %s closing connection", e));
+                        log.warn("Ignore failure {} closing connection", e.getMessage());
                     }
                 }
             }
         }
         finally {
             try {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Release lock for connection %s", session));
-                }
+                log.debug("Release lock for connection {}", session);
                 lock.unlock();
             }
             catch(IllegalMonitorStateException ignored) {
-                log.warn(String.format("Failure releasing lock for %s", session));
+                log.warn("Failure releasing lock for {}", session);
             }
         }
     }
@@ -98,7 +92,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
             lock.unlock();
         }
         catch(IllegalMonitorStateException ignored) {
-            log.warn(String.format("Failure releasing lock for %s", session));
+            log.warn("Failure releasing lock for {}", session);
         }
     }
 
@@ -109,7 +103,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
             lock.unlock();
         }
         catch(IllegalMonitorStateException ignored) {
-            log.warn(String.format("Failure releasing lock for %s", session));
+            log.warn("Failure releasing lock for {}", session);
         }
     }
 

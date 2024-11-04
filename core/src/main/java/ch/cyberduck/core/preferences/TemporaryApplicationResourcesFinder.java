@@ -32,9 +32,7 @@ public class TemporaryApplicationResourcesFinder implements ApplicationResources
     @Override
     public Local find() {
         final Local folder = LocalFactory.get(preferences.getProperty("tmp.dir"));
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Use folder %s for application resources directory", folder));
-        }
+        log.debug("Use folder {} for application resources directory", folder);
         return folder;
     }
 }

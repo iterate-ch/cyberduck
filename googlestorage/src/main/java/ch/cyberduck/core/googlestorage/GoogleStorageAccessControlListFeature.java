@@ -89,7 +89,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
                 }
             }
             else {
-                log.warn(String.format("Missing IAM configuration for bucket %s", bucket));
+                log.warn("Missing IAM configuration for bucket {}", bucket);
             }
             return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
         }
@@ -98,7 +98,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
                 throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(AccessDeniedException p) {
-                log.warn(String.format("Missing permission to read bucket IAM configuration for %s %s", bucket.getName(), e.getMessage()));
+                log.warn("Missing permission to read bucket IAM configuration for {} {}", bucket.getName(), e.getMessage());
                 return Acl.EMPTY;
             }
         }
@@ -262,7 +262,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
                 control.setEmail(userAndRole.getUser().getIdentifier());
             }
             else {
-                log.warn(String.format("Unsupported user %s", userAndRole.getUser()));
+                log.warn("Unsupported user {}", userAndRole.getUser());
             }
             list.add(control);
         }
@@ -318,7 +318,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
                 control.setEmail(userAndRole.getUser().getIdentifier());
             }
             else {
-                log.warn(String.format("Unsupported user %s", userAndRole.getUser()));
+                log.warn("Unsupported user {}", userAndRole.getUser());
             }
             list.add(control);
         }

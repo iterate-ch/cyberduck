@@ -51,13 +51,13 @@ public class SDSDeleteFeature implements Delete {
             try {
                 if(file.attributes().isDuplicate()) {
                     // Already trashed
-                    log.warn(String.format("Delete file %s already in trash", file));
+                    log.warn("Delete file {} already in trash", file);
                     new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(Collections.singletonList(
                             Long.parseLong(nodeid.getVersionId(file)))), StringUtils.EMPTY);
                 }
                 else if(file.attributes().getVerdict() == PathAttributes.Verdict.malicious) {
                     // Delete malicious file
-                    log.warn(String.format("Delete file %s marked as malicious", file));
+                    log.warn("Delete file {} marked as malicious", file);
                     new NodesApi(session.getClient()).removeMaliciousFile(
                             Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY);
                 }

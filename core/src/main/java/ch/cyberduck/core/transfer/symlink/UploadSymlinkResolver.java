@@ -53,9 +53,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
             // Only create symbolic link if target is included in the upload
             for(TransferItem root : files) {
                 if(this.findTarget(target, root.local)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Resolved target %s for %s", target, file));
-                    }
+                    log.debug("Resolved target {} for {}", target, file);
                     return true;
                 }
             }

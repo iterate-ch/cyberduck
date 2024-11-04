@@ -42,7 +42,7 @@ public class S3BucketHostnameTrustManager extends ThreadLocalHostnameDelegatingT
         final Matcher matcher = pattern.matcher(hostname);
         if(matcher.matches()) {
             final String simple = matcher.group(2);
-            log.warn(String.format("Rewrite hostname target to %s", simple));
+            log.warn("Rewrite hostname target to {}", simple);
             return simple;
         }
         return hostname;

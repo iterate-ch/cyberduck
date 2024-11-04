@@ -52,9 +52,7 @@ public abstract class CachingFileIdProvider implements FileIdProvider {
      * @return Input parameter
      */
     public String cache(final Path file, final String id) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cache %s for file %s", id, file));
-        }
+        log.debug("Cache {} for file {}", id, file);
         if(null == id) {
             cache.remove(this.toPredicate(file));
             file.attributes().setFileId(null);

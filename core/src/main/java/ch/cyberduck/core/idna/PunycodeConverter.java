@@ -48,7 +48,7 @@ public class PunycodeConverter {
                 final String idn = IDN.toASCII(StringUtils.strip(hostname));
                 if(log.isDebugEnabled()) {
                     if(!StringUtils.equals(StringUtils.strip(hostname), idn)) {
-                        log.debug(String.format("IDN hostname for %s is %s", hostname, idn));
+                        log.debug("IDN hostname for {} is {}", hostname, idn);
                     }
                 }
                 if(StringUtils.isNotEmpty(idn)) {
@@ -56,7 +56,7 @@ public class PunycodeConverter {
                 }
             }
             catch(IllegalArgumentException e) {
-                log.warn(String.format("Failed to convert hostname %s to IDNA", hostname), e);
+                log.warn("Failure {} to convert hostname {} to IDNA", e.getMessage(), hostname);
             }
         }
         return StringUtils.strip(hostname);

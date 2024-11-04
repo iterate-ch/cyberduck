@@ -292,9 +292,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         else if(!pasteboard.isEmpty()) {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Drag operation mask is %d", info.draggingSourceOperationMask().intValue()));
-            }
+            log.debug("Drag operation mask is {}", info.draggingSourceOperationMask().intValue());
             // We accept any file promise within the bounds
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 return NSDraggingInfo.NSDragOperationCopy;
@@ -315,9 +313,7 @@ public class BookmarkTableDataSource extends ListDataSource {
     public boolean tableView_acceptDrop_row_dropOperation(final NSTableView view, final NSDraggingInfo info,
                                                           final NSInteger row, final NSUInteger operation) {
         NSPasteboard draggingPasteboard = info.draggingPasteboard();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Accept drop at row %s", row));
-        }
+        log.debug("Accept drop at row {}", row);
         view.deselectAll(null);
         final AbstractHostCollection source = this.getSource();
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
@@ -357,7 +353,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                                 view.scrollRowToVisible(row);
                             }
                             catch(AccessDeniedException e) {
-                                log.error(String.format("Failure reading bookmark from %s. %s", f, e.getMessage()));
+                                log.error("Failure reading bookmark from {}. {}", f, e.getMessage());
                                 continue;
                             }
                         }
@@ -460,9 +456,7 @@ public class BookmarkTableDataSource extends ListDataSource {
      */
     @Override
     public void draggedImage_endedAt_operation(final NSImage image, final NSPoint point, final NSUInteger operation) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Drop finished with operation %s", operation));
-        }
+        log.debug("Drop finished with operation {}", operation);
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deleteBookmarkButtonClicked(null);
         }
@@ -506,7 +500,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.doubleValue() - 16, dragPosition.y.doubleValue() - 16), new NSSize(32, 32));
             // Writing a promised file of the host as a bookmark file to the clipboard
             if(!view.dragPromisedFilesOfTypes(NSArray.arrayWithObject("duck"), imageRect, this.id(), true, event)) {
-                log.warn(String.format("Failure for drag promise operation of %s", event));
+                log.warn("Failure for drag promise operation of {}", event);
                 return false;
             }
             return true;
@@ -524,9 +518,7 @@ public class BookmarkTableDataSource extends ListDataSource {
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Query promised files dropped dat destination %s", dropDestination.path()));
-        }
+        log.debug("Query promised files dropped dat destination {}", dropDestination.path());
         final NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != dropDestination) {
             for(Host bookmark : pasteboard) {

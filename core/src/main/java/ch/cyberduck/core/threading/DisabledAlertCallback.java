@@ -29,9 +29,7 @@ public class DisabledAlertCallback implements AlertCallback {
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        if(log.isWarnEnabled()) {
-            log.warn(String.format("Ignore failure %s", failure));
-        }
+        log.warn("Ignore failure {}", failure.getMessage());
         return false;
     }
 }

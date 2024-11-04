@@ -66,9 +66,7 @@ public class GoogleStorageMetadataFeature implements Headers {
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Write metadata %s for file %s", status, file));
-        }
+        log.debug("Write metadata {} for file {}", status, file);
         try {
             final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
                     new StorageObject().setMetadata(status.getMetadata()));

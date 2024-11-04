@@ -121,12 +121,12 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
         final Scanner scanner = new Scanner(line);
         scanner.useDelimiter("=");
         if(!scanner.hasNext()) {
-            log.warn("Missing key in line:" + line);
+            log.warn("Missing key in line:{}", line);
             return false;
         }
         String name = scanner.next().toLowerCase(Locale.ROOT);
         if(!scanner.hasNext()) {
-            log.warn("Missing value in line:" + line);
+            log.warn("Missing value in line:{}", line);
             return false;
         }
         String value = scanner.next().replaceAll("\"", StringUtils.EMPTY);
@@ -145,7 +145,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                     current.setPort(-1);
                 }
                 catch(NumberFormatException e) {
-                    log.warn("Unknown Protocol:" + e.getMessage());
+                    log.warn("Unknown Protocol:{}", e.getMessage());
                 }
                 break;
             case "host":
@@ -156,7 +156,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                     current.setPort(Integer.parseInt(value));
                 }
                 catch(NumberFormatException e) {
-                    log.warn("Invalid Port:" + e.getMessage());
+                    log.warn("Invalid Port:{}", e.getMessage());
                 }
                 break;
             case "dir":

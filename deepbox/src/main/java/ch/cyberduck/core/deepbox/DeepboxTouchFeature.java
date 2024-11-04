@@ -51,13 +51,11 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Node> {
         final Acl acl = workdir.attributes().getAcl();
         if(Acl.EMPTY == acl) {
             // Missing initialization
-            log.warn(String.format("Unknown ACLs on %s", workdir));
+            log.warn("Unknown ACLs on {}", workdir);
             return;
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANADDCHILDREN)) {
-            if(log.isWarnEnabled()) {
-                log.warn(String.format("ACL %s for %s does not include %s", acl, workdir, CANADDCHILDREN));
-            }
+            log.warn("ACL {} for {} does not include {}", acl, workdir, CANADDCHILDREN);
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
     }

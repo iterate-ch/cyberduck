@@ -114,9 +114,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Prepare %s", file));
-        }
+        log.debug("Prepare {}", file);
         final TransferStatus status = new TransferStatus();
         if(parent.isExists()) {
             if(local.exists()) {
@@ -193,7 +191,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         status.setAcl(attributes.getAcl());
         if(options.segments) {
             if(!session.getFeature(Read.class).offset(file)) {
-                log.warn(String.format("Reading with offsets not supported for %s", file));
+                log.warn("Reading with offsets not supported for {}", file);
             }
             else {
                 if(file.isFile()) {
@@ -203,11 +201,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         space = Files.getFileStore(Paths.get(local.getParent().getAbsolute())).getUsableSpace();
                     }
                     catch(IOException e) {
-                        log.warn(String.format("Failure to determine disk space for %s", file.getParent()));
+                        log.warn("Failure to determine disk space for {}", file.getParent());
                     }
                     long threshold = preferences.getLong("queue.download.segments.threshold");
                     if(status.getLength() * 2 > space) {
-                        log.warn(String.format("Insufficient free disk space %d for segmented download of %s", space, file));
+                        log.warn("Insufficient free disk space {} for segmented download of {}", space, file);
                     }
                     else if(status.getLength() > threshold) {
                         // if file is smaller than threshold do not attempt to segment
@@ -233,9 +231,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                                     .withOffset(offset)
                                     .withLength(length)
                                     .withRename(segmentFile);
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
-                            }
+                            log.debug("Adding status {} for segment {}", segmentStatus, segmentFile);
                             segments.add(segmentStatus);
                             remaining -= length;
                             offset += length;
@@ -263,22 +259,16 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     @Override
     public void complete(final Path file, final Local local,
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
-        }
+        log.debug("Complete {} with status {}", file.getAbsolute(), status);
         if(status.isSegment()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Skip completion for single segment %s", status));
-            }
+            log.debug("Skip completion for single segment {}", status);
             return;
         }
         if(status.isComplete()) {
             if(status.isSegmented()) {
                 // Obtain ordered list of segments to reassemble
                 final List<TransferStatus> segments = status.getSegments();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Compile %d segments to file %s", segments.size(), local));
-                }
+                log.info("Compile {} segments to file {}", segments.size(), local);
                 if(local.exists()) {
                     local.delete();
                 }
@@ -286,26 +276,18 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     final TransferStatus segmentStatus = iterator.next();
                     // Segment
                     final Local segmentFile = segmentStatus.getRename().local;
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Append segment %s to %s", segmentFile, local));
-                    }
+                    log.info("Append segment {} to {}", segmentFile, local);
                     segmentFile.copy(local, new Local.CopyOptions().append(true));
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Delete segment %s", segmentFile));
-                    }
+                    log.info("Delete segment {}", segmentFile);
                     segmentFile.delete();
                     if(!iterator.hasNext()) {
                         final Local folder = segmentFile.getParent();
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Remove segment folder %s", folder));
-                        }
+                        log.info("Remove segment folder {}", folder);
                         folder.delete();
                     }
                 }
             }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Run completion for file %s with status %s", local, status));
-            }
+            log.debug("Run completion for file {} with status {}", local, status);
             if(file.isFile()) {
                 // Bounce Downloads folder dock icon by sending download finished notification
                 launcher.bounce(local);
@@ -328,7 +310,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                             }
                         }
                         catch(LocalAccessDeniedException e) {
-                            log.warn(String.format("Failure to quarantine file %s. %s", file, e.getMessage()));
+                            log.warn("Failure to quarantine file {}. {}", file, e.getMessage());
                         }
                         break;
                     }
@@ -343,9 +325,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     // Make sure the owner can always read and write.
                     status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write));
                 }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Updating permissions of %s to %s", local, status.getPermission()));
-                }
+                log.info("Updating permissions of {} to {}", local, status.getPermission());
                 try {
                     local.attributes().setPermission(status.getPermission());
                 }
@@ -355,9 +335,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 }
             }
             if(status.getModified() != null) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Updating timestamp of %s to %d", local, status.getModified()));
-                }
+                log.info("Updating timestamp of {} to {}", local, status.getModified());
                 try {
                     local.attributes().setModificationDate(status.getModified());
                 }
@@ -369,7 +347,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 if(options.checksum) {
                     if(file.getType().contains(Path.Type.decrypted)) {
-                        log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+                        log.warn("Skip checksum verification for {} with client side encryption enabled", file);
                     }
                     else {
                         final Checksum checksum = status.getChecksum();
@@ -390,9 +368,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
             if(file.isFile()) {
                 if(status.getDisplayname().local != null) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Rename file %s to %s", file, status.getDisplayname().local));
-                    }
+                    log.info("Rename file {} to {}", file, status.getDisplayname().local);
                     local.rename(status.getDisplayname().local);
                 }
                 if(options.open) {

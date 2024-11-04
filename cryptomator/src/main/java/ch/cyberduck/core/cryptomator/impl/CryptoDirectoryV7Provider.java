@@ -55,9 +55,7 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String ciphertextName = cryptomator.getFileNameCryptor().encryptFilename(BaseEncoding.base64Url(),
             filename, directoryId.getBytes(StandardCharsets.UTF_8)) + EXTENSION_REGULAR;
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
-        }
+        log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return cryptomator.getFilenameProvider().deflate(session, ciphertextName);
     }
 
@@ -68,14 +66,12 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
         final Path metadataParent = new Path(parent, ciphertextName, EnumSet.of(Path.Type.directory));
         // Read directory id from file
         try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Read directory ID for folder %s from %s", directory, ciphertextName));
-            }
+            log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
             final Path metadataFile = new Path(metadataParent, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file, Path.Type.encrypted));
             return new ContentReader(session).read(metadataFile);
         }
         catch(NotfoundException e) {
-            log.warn(String.format("Missing directory ID for folder %s", directory));
+            log.warn("Missing directory ID for folder {}", directory);
             return random.random();
         }
     }

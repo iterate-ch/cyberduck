@@ -54,20 +54,14 @@ public class DefaultWatchEditor extends AbstractEditor {
 
     @Override
     protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Register %s in file watcher %s", temporary, watcher));
-        }
+        log.debug("Register {} in file watcher {}", temporary, watcher);
         Uninterruptibles.awaitUninterruptibly(watcher.register(temporary, listener));
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Successfully registered %s in file watcher %s", temporary, watcher));
-        }
+        log.debug("Successfully registered {} in file watcher {}", temporary, watcher);
     }
 
     @Override
     public void close() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Close watcher %s", watcher));
-        }
+        log.debug("Close watcher {}", watcher);
         watcher.close();
     }
 }

@@ -554,9 +554,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return;
             }
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Mounting default bookmark %s", bookmark));
-        }
+        log.debug("Mounting default bookmark {}", bookmark);
         controller.mount(bookmark);
     }
 
@@ -579,9 +577,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Override
     public boolean application_openFile(final NSApplication app, final String filename) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Open file %s", filename));
-        }
+        log.debug("Open file {}", filename);
         final Local f = LocalFactory.get(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
@@ -591,7 +587,7 @@ public class MainController extends BundleController implements NSApplication.De
                     return true;
                 }
                 catch(AccessDeniedException e) {
-                    log.error(String.format("Failure reading bookmark from %s. %s", f, e.getMessage()));
+                    log.error("Failure reading bookmark from {}. {}", f, e.getMessage());
                     return false;
                 }
             }
@@ -645,9 +641,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
                 try {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Register profile %s", f));
-                    }
+                    log.debug("Register profile {}", f);
                     final Local copy = ProtocolFactory.get().register(f);
                     if(copy != null) {
                         final Profile profile = ProfileReaderFactory.get().read(copy);
@@ -656,7 +650,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
                 catch(AccessDeniedException e) {
-                    log.error(String.format("Failure reading profile from %s. %s", f, e));
+                    log.error("Failure reading profile from {}. {}", f, e);
                     return false;
                 }
             }
@@ -819,9 +813,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public boolean application_openTempFile(NSApplication app, String filename) {
-        if(log.isDebugEnabled()) {
-            log.debug("applicationOpenTempFile:" + filename);
-        }
+        log.debug("applicationOpenTempFile:{}", filename);
         return this.application_openFile(app, filename);
     }
 
@@ -832,9 +824,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public boolean applicationShouldOpenUntitledFile(NSApplication sender) {
-        if(log.isDebugEnabled()) {
-            log.debug("applicationShouldOpenUntitledFile");
-        }
+        log.debug("applicationShouldOpenUntitledFile");
         return preferences.getBoolean("browser.open.untitled");
     }
 
@@ -843,9 +833,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public boolean applicationOpenUntitledFile(NSApplication app) {
-        if(log.isDebugEnabled()) {
-            log.debug("applicationOpenUntitledFile");
-        }
+        log.debug("applicationOpenUntitledFile");
         return false;
     }
 
@@ -863,9 +851,8 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public boolean applicationShouldHandleReopen_hasVisibleWindows(final NSApplication app, final boolean visibleWindowsFound) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Should handle reopen with windows %s", visibleWindowsFound));
-        }        // While an application is open, the Dock icon has a symbol below it.
+        // While an application is open, the Dock icon has a symbol below it.
+        log.debug("Should handle reopen with windows {}", visibleWindowsFound);
         // When a user clicks an open application’s icon in the Dock, the application
         // becomes active and all open unminimized windows are brought to the front;
         // minimized document windows remain in the Dock. If there are no unminimized
@@ -930,9 +917,7 @@ public class MainController extends BundleController implements NSApplication.De
             @Override
             public void cleanup() {
                 for(Host host : sessions) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("New browser for saved session %s", host));
-                    }
+                    log.info("New browser for saved session {}", host);
                     final BrowserController browser = newDocument(true, host.getUuid());
                     browser.mount(host);
                 }
@@ -1005,9 +990,7 @@ public class MainController extends BundleController implements NSApplication.De
             final String[] schemes = protocol.getSchemes();
             for(String scheme : schemes) {
                 if(Arrays.stream(Scheme.values()).filter(Predicate.isEqual(Scheme.s3).negate()).noneMatch(s -> s.name().equals(scheme))) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Register custom scheme %s", scheme));
-                    }
+                    log.info("Register custom scheme {}", scheme);
                     schemeHandler.setDefaultHandler(new Application(preferences.getProperty("application.identifier")), Collections.singletonList(scheme));
                 }
             }
@@ -1042,9 +1025,7 @@ public class MainController extends BundleController implements NSApplication.De
         // Import thirdparty bookmarks.
         this.background(new ImporterBackgroundAction(bookmarks, bookmarksSemaphore));
         final CrashReporter reporter = CrashReporter.create();
-        if(log.isInfoEnabled()) {
-            log.info("Check for crash report");
-        }
+        log.info("Check for crash report");
         reporter.checkForCrash(preferences.getProperty("website.crash"));
         if(updater.hasUpdatePrivileges()) {
             if(preferences.getBoolean("update.check")) {
@@ -1068,9 +1049,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Action
     public void serviceUploadFileUrl_(final NSPasteboard pboard, final String userData) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("serviceUploadFileUrl_: with user data %s", userData));
-        }
+        log.debug("serviceUploadFileUrl_: with user data {}", userData);
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
@@ -1096,9 +1075,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public NSUInteger applicationShouldTerminate(final NSApplication app) {
-        if(log.isDebugEnabled()) {
-            log.debug("Application should quit with notification");
-        }
+        log.debug("Application should quit with notification");
         // Determine if there are any running transfers
         final NSUInteger result = TransferControllerFactory.applicationShouldTerminate(app);
         if(!result.equals(NSApplication.NSTerminateNow)) {
@@ -1159,9 +1136,7 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     public NSUInteger applicationShouldTerminateAfterDonationPrompt(final NSApplication app) {
-        if(log.isDebugEnabled()) {
-            log.debug("applicationShouldTerminateAfterDonationPrompt");
-        }
+        log.debug("applicationShouldTerminateAfterDonationPrompt");
         if(!displayDonationPrompt) {
             // Already displayed
             return NSApplication.NSTerminateNow;
@@ -1178,9 +1153,7 @@ public class MainController extends BundleController implements NSApplication.De
             nextreminder.setTimeInMillis(preferences.getLong("donate.reminder.date"));
             // Display prompt every n days
             nextreminder.add(Calendar.DAY_OF_YEAR, preferences.getInteger("donate.reminder.interval"));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Next reminder %s", nextreminder.getTime().toString()));
-            }
+            log.debug("Next reminder {}", nextreminder.getTime().toString());
             if(nextreminder.getTime().after(new Date(System.currentTimeMillis()))) {
                 // Do not display if shown in the reminder interval
                 return NSApplication.NSTerminateNow;
@@ -1205,9 +1178,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public void applicationWillTerminate(NSNotification notification) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Application will quit with notification %s", notification));
-        }
+        log.debug("Application will quit with notification {}", notification);
         this.invalidate();
         OAuth2TokenListenerRegistry.get().shutdown();
         // Clear temporary files
@@ -1249,7 +1220,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Action
     public void handleGetURLEvent_withReplyEvent(NSAppleEventDescriptor event, NSAppleEventDescriptor reply) {
-        log.debug(String.format("Received URL from event %s", event));
+        log.debug("Received URL from event {}", event);
         final NSAppleEventDescriptor param = event.paramDescriptorForKeyword(keyAEResult);
         if(null == param) {
             log.error("No URL parameter");
@@ -1273,9 +1244,7 @@ public class MainController extends BundleController implements NSApplication.De
                     action = StringUtils.substringAfter(url, "://oauth");
                 }
                 if(null != action) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Handle %s as OAuth callback", url));
-                    }
+                    log.debug("Handle {} as OAuth callback", url);
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String state = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
@@ -1342,9 +1311,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Action
     public void workspaceWillPowerOff(NSNotification notification) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Workspace will power off with notification %s", notification));
-        }
+        log.debug("Workspace will power off with notification {}", notification);
     }
 
     /**
@@ -1355,16 +1322,12 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Action
     public void workspaceWillLogout(NSNotification notification) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Workspace will logout with notification %s", notification));
-        }
+        log.debug("Workspace will logout with notification {}", notification);
     }
 
     @Action
     public void workspaceWillSleep(NSNotification notification) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Workspace will sleep with notification %s", notification));
-        }
+        log.debug("Workspace will sleep with notification {}", notification);
     }
 
     private static final class ImporterBackgroundAction extends AbstractBackgroundAction<Void> {
@@ -1392,16 +1355,14 @@ public class MainController extends BundleController implements NSApplication.De
         public Void run() {
             for(ThirdpartyBookmarkCollection t : collections) {
                 if(!t.isInstalled()) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("No application installed for %s", t.getBundleIdentifier()));
-                    }
+                    log.info("No application installed for {}", t.getBundleIdentifier());
                     continue;
                 }
                 try {
                     t.load();
                 }
                 catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure %s loading bookmarks from %s", e, t));
+                    log.warn("Failure {} loading bookmarks from {}", e, t);
                 }
                 if(t.isEmpty()) {
                     // Flag as imported

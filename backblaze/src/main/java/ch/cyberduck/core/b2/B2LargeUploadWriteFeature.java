@@ -133,9 +133,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                             new ByteArrayEntity(content, off, len),
                             checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
                             overall.getMime(), fileinfo);
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Upload finished for %s with response %s", file, response));
-                    }
+                    log.debug("Upload finished for {} with response {}", file, response);
                     fileid.cache(file, response.getFileId());
                     finishLargeFileResponse.set(response);
                     close.set(true);
@@ -144,14 +142,10 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     if(0 == partNumber) {
                         startLargeFileResponse.set(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file)),
                                 containerService.getKey(file), overall.getMime(), fileinfo));
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Multipart upload started for %s with ID %s", file, startLargeFileResponse.get().getFileId()));
-                        }
+                        log.debug("Multipart upload started for {} with ID {}", file, startLargeFileResponse.get().getFileId());
                     }
                     final int segment = ++partNumber;
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Write segment %d for %s", segment, file));
-                    }
+                    log.debug("Write segment {} for {}", segment, file);
                     completed.add(new DefaultRetryCallable<B2UploadPartResponse>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
                         @Override
                         public B2UploadPartResponse call() throws BackgroundException {
@@ -194,11 +188,11 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
         public void close() throws IOException {
             try {
                 if(close.get()) {
-                    log.warn(String.format("Skip double close of stream %s", this));
+                    log.warn("Skip double close of stream {}", this);
                     return;
                 }
                 if(null != canceled.get()) {
-                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
+                    log.warn("Skip closing with previous failure {}", canceled.get().toString());
                     return;
                 }
                 if(completed.isEmpty()) {
@@ -218,9 +212,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     }
                     final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(
                             startLargeFileResponse.get().getFileId(), checksums.toArray(new String[checksums.size()]));
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
-                    }
+                    log.info("Finished large file upload {} with {} parts", file, completed.size());
                     fileid.cache(file, response.getFileId());
                     finishLargeFileResponse.set(response);
                 }

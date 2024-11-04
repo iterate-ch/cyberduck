@@ -65,9 +65,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                     // Get the key manager factory for the default algorithm.
                     final Preferences preferences = PreferencesFactory.get();
                     type = preferences.getProperty("connection.ssl.keystore.type");
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Load default store of type %s", type));
-                    }
+                    log.info("Load default store of type {}", type);
                     if(StringUtils.isBlank(type)) {
                         type = KeyStore.getDefaultType();
                     }
@@ -82,13 +80,11 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 catch(Exception e) {
                     try {
                         log.error(String.format("Could not load default store of type %s", type), e);
-                        if(log.isInfoEnabled()) {
-                            log.info("Load default store of default type");
-                        }
+                        log.info("Load default store of default type");
                         store = KeyStore.getInstance(KeyStore.getDefaultType());
                     }
                     catch(KeyStoreException ex) {
-                        log.error(String.format("Initialization of key store failed. %s", e.getMessage()));
+                        log.error("Initialization of key store failed. {}", e.getMessage());
                         throw new ConcurrentException(e);
                     }
                 }
@@ -96,7 +92,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                     store.load(null, null);
                 }
                 catch(IOException | NoSuchAlgorithmException | CertificateException e) {
-                    log.error(String.format("Loading of key store failed. %s", e.getMessage()));
+                    log.error("Loading of key store failed. {}", e.getMessage());
                     throw new ConcurrentException(e);
                 }
                 return store;
@@ -124,22 +120,18 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             final Enumeration<String> aliases = keystore.get().aliases();
             while(aliases.hasMoreElements()) {
                 final String alias = aliases.nextElement();
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Alias in Keychain %s", alias));
-                }
+                log.debug("Alias in Keychain {}", alias);
                 if(keystore.get().isKeyEntry(alias)) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Found private key for %s", alias));
-                    }
+                    log.info("Found private key for {}", alias);
                     list.add(alias);
                 }
                 else {
-                    log.warn(String.format("Missing private key for alias %s", alias));
+                    log.warn("Missing private key for alias {}", alias);
                 }
             }
         }
         catch(ConcurrentException | KeyStoreException e) {
-            log.error(String.format("Keystore not loaded %s", e.getMessage()));
+            log.error("Keystore not loaded {}", e.getMessage());
         }
         list.sort(String::compareTo);
         return list;
@@ -157,10 +149,10 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             // returns the first element of the certificate chain of that key entry
             final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
             if(null == cert) {
-                log.warn(String.format("Failed to retrieve certificate for alias %s", alias));
+                log.warn("Failed to retrieve certificate for alias {}", alias);
                 continue;
             }
-            log.info(String.format("Add X509 certificate entry %s to list", cert));
+            log.info("Add X509 certificate entry {} to list", cert);
             list.add(alias);
         }
         if(list.isEmpty()) {
@@ -185,12 +177,9 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             }
         }
         catch(ConcurrentException | KeyStoreException e) {
-            log.error(String.format("Keystore not loaded %s", e.getMessage()));
+            log.error("Keystore not loaded {}", e.getMessage());
         }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("No matching certificate found for alias %s and issuers %s",
-                    alias, Arrays.toString(issuers)));
-        }
+        log.info("No matching certificate found for alias {} and issuers {}", alias, Arrays.toString(issuers));
         return null;
     }
 
@@ -201,21 +190,17 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             try {
                 final String alias = bookmark.getCredentials().getCertificate();
                 if(StringUtils.isNotBlank(alias)) {
-                    log.info(String.format("Return saved certificate alias %s for host %s", alias, bookmark));
+                    log.info("Return saved certificate alias {} for host {}", alias, bookmark);
                     return alias;
                 }
                 selected = callback.choose(prompt, keyTypes, issuers, bookmark);
             }
             catch(ConnectionCanceledException e) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("No certificate selected for socket %s", socket));
-                }
+                log.info("No certificate selected for socket {}", socket);
                 return null;
             }
             if(null == selected) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("No certificate selected for socket %s", socket));
-                }
+                log.info("No certificate selected for socket {}", socket);
                 // Disconnect
                 return null;
             }
@@ -223,20 +208,18 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             if(null != aliases) {
                 for(String alias : aliases) {
                     if(keystore.get().getCertificate(alias).equals(selected)) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
-                        }
+                        log.info("Selected certificate alias {} for certificate {}", alias, selected);
                         bookmark.getCredentials().setCertificate(alias);
                         return alias;
                     }
                 }
             }
-            log.warn(String.format("No matching alias found for selected certificate %s", selected));
+            log.warn("No matching alias found for selected certificate {}", selected);
             // Return null if there are no matches
             return null;
         }
         catch(ConcurrentException | KeyStoreException e) {
-            log.error(String.format("Keystore not loaded %s", e.getMessage()));
+            log.error("Keystore not loaded {}", e.getMessage());
         }
         // Return null if there are no matches
         return null;
@@ -248,7 +231,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             final List<X509Certificate> result = new ArrayList<>();
             final Certificate[] chain = keystore.get().getCertificateChain(alias);
             if(null == chain) {
-                log.warn(String.format("No certificate chain for alias %s", alias));
+                log.warn("No certificate chain for alias {}", alias);
                 // Return null if the alias can't be found
                 return null;
             }
@@ -260,7 +243,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 }
             }
             if(result.isEmpty()) {
-                log.warn(String.format("No certificate chain for alias %s", alias));
+                log.warn("No certificate chain for alias {}", alias);
                 final Certificate cert = keystore.get().getCertificate(alias);
                 if(null == cert) {
                     // Return null if the alias can't be found
@@ -274,7 +257,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             return result.toArray(new X509Certificate[result.size()]);
         }
         catch(ConcurrentException | KeyStoreException e) {
-            log.error(String.format("Keystore not loaded %s", e.getMessage()));
+            log.error("Keystore not loaded {}", e.getMessage());
         }
         return null;
     }
@@ -288,17 +271,17 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                     return (PrivateKey) key;
                 }
                 else {
-                    log.warn(String.format("Key %s for alias %s is not a private key", key, alias));
+                    log.warn("Key {} for alias {} is not a private key", key, alias);
                 }
             }
             else {
-                log.warn(String.format("Alias %s is not a key entry", alias));
+                log.warn("Alias {} is not a key entry", alias);
             }
         }
         catch(ConcurrentException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
-            log.error(String.format("Keystore not loaded %s", e.getMessage()));
+            log.error("Keystore not loaded {}", e.getMessage());
         }
-        log.warn(String.format("No private key for alias %s", alias));
+        log.warn("No private key for alias {}", alias);
         // Return null if the alias can't be found
         return null;
     }

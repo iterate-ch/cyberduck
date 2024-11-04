@@ -154,9 +154,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
 
     @Action
     public void menuItemClicked(NSMenuItem sender) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Menu item clicked %s", sender));
-        }
+        log.debug("Menu item clicked {}", sender);
         callback.selected(sender);
     }
 

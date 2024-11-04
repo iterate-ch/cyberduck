@@ -107,13 +107,13 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
                         current.setPort(-1);
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Unknown protocol:" + e.getMessage());
+                        log.warn("Unknown protocol:{}", e.getMessage());
                     }
                     try {
                         current.setPort(Integer.parseInt(attrs.getValue("port")));
                     }
                     catch(NumberFormatException e) {
-                        log.warn("Invalid Port:" + e.getMessage());
+                        log.warn("Invalid Port:{}", e.getMessage());
                     }
                     break;
             }

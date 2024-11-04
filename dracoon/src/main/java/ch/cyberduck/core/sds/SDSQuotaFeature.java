@@ -46,7 +46,7 @@ public class SDSQuotaFeature implements Quota {
             final Path home = new DefaultHomeFinderService(session).find();
             if(!home.isRoot()) {
                 if(SDSQuotaFeature.unknown == home.attributes().getQuota()) {
-                    log.warn(String.format("No quota set for node %s", home));
+                    log.warn("No quota set for node {}", home);
                 }
                 else {
                     return home.attributes().getQuota();

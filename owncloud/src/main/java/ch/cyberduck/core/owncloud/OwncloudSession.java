@@ -136,7 +136,7 @@ public class OwncloudSession extends DAVSession {
                 }
             }
             catch(JWTDecodeException e) {
-                log.warn(String.format("Failure %s decoding JWT %s", e, oauth.getIdToken()));
+                log.warn("Failure {} decoding JWT {}", e, oauth.getIdToken());
             }
         }
         super.login(prompt, cancel);

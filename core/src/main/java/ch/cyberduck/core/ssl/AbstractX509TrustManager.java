@@ -43,7 +43,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
     protected void accept(final List<X509Certificate> certs) {
         if(log.isTraceEnabled()) {
             for(X509Certificate cert : certs) {
-                log.trace(String.format("Certificate %s trusted", cert.toString()));
+                log.trace("Certificate {} trusted", cert.toString());
             }
         }
         accepted.clear();

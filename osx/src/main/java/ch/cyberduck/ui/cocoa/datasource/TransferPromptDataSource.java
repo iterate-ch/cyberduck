@@ -126,7 +126,7 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
     public TransferStatus getStatus(final TransferItem file) {
         if(!status.containsKey(file)) {
             // Transfer filter background task has not yet finished
-            log.warn(String.format("Unknown transfer status for %s", file));
+            log.warn("Unknown transfer status for {}", file);
             return new TransferStatus();
         }
         return status.get(file);

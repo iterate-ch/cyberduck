@@ -89,22 +89,22 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
     public boolean containsRole(final Path file, final Acl.Role role) {
         if(Acl.EMPTY == file.attributes().getAcl()) {
             // Missing initialization
-            log.warn(String.format("Unknown ACLs on %s", file));
+            log.warn("Unknown ACLs on {}", file);
             return true;
         }
         if(file.attributes().getAcl().isEmpty()) {
             // No permissions for Home room
-            log.warn(String.format("No ACLs found for %s", file));
+            log.warn("No ACLs found for {}", file);
             return false;
         }
         final Set<Acl.Role> roles = file.attributes().getAcl().get(new Acl.CanonicalUser());
         if(null == roles) {
-            log.warn(String.format("Missing roles in ACL for %s", file));
+            log.warn("Missing roles in ACL for {}", file);
             return false;
         }
         final boolean found = roles.contains(role);
         if(!found) {
-            log.warn(String.format("Missing role %s in ACL for %s", role, file));
+            log.warn("Missing role {} in ACL for {}", role, file);
         }
         return found;
     }

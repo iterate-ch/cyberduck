@@ -311,9 +311,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      */
     public void setOffset(final long bytes) {
         offset.set(bytes);
-        if(log.isTraceEnabled()) {
-            log.trace(String.format("Offset set to %d bytes", bytes));
-        }
+        log.trace("Offset set to {} bytes", bytes);
     }
 
     public TransferStatus withOffset(final long bytes) {

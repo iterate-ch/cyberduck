@@ -42,7 +42,7 @@ public class BookmarkCollection extends MonitorFolderHostCollection {
                 LocalTrashFactory.get().trash(file);
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure removing bookmark %s", e.getMessage()));
+                log.warn("Failure removing bookmark {}", e.getMessage());
             }
             super.collectionItemRemoved(bookmark);
         }

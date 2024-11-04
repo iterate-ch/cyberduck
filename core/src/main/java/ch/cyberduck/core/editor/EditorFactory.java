@@ -110,7 +110,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
         // The default application set by launch services to open files of the given type
         final Application editor = finder.find(filename);
         if(!finder.isInstalled(editor)) {
-            log.warn(String.format("No editor found for %s", filename));
+            log.warn("No editor found for {}", filename);
             // Use default editor if not applicable application found which handles this file type
             return application;
         }
@@ -124,9 +124,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
      * in the Preferences
      */
     public static List<Application> getEditors(final String filename) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Find installed editors for file %s", filename));
-        }
+        log.debug("Find installed editors for file {}", filename);
         final List<Application> editors = new ArrayList<>(
                 finder.findAll(filename));
         // Add the application set as the default editor in the Preferences to be always

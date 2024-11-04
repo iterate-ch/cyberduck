@@ -32,9 +32,7 @@ public class UserHomeSupportDirectoryFinder implements SupportDirectoryFinder {
     @Override
     public Local find() {
         final Local folder = LocalFactory.get(LocalFactory.get(preferences.getProperty("local.user.home")), ".duck");
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Use folder %s for application support directory", folder));
-        }
+        log.debug("Use folder {} for application support directory", folder);
         return folder;
     }
 }

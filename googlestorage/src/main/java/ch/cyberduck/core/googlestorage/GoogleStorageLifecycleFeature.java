@@ -123,7 +123,7 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
                 throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, container);
             }
             catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", container, e.getMessage()));
+                log.warn("Missing permission to read lifecycle configuration for {} {}", container, e.getMessage());
                 return LifecycleConfiguration.empty();
             }
         }

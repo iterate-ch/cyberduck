@@ -69,9 +69,7 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
         panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
         panel.setPolicies(policyRef);
         panel.setShowsHelp(true);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Display trust panel for controller %s", controller));
-        }
+        log.debug("Display trust panel for controller {}", controller);
         final int option = this.prompt(panel, trustRef);
         FoundationKitFunctions.library.CFRelease(trustRef);
         FoundationKitFunctions.library.CFRelease(policyRef);

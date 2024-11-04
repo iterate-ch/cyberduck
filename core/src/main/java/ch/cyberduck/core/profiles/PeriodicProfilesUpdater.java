@@ -51,25 +51,23 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
 
     @Override
     public void register() {
-        log.info(String.format("Register profiles checker hook after %s", delay));
+        log.info("Register profiles checker hook after {}", delay);
         try {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Check for new profiles after %s", delay));
-                    }
+                    log.info("Check for new profiles after {}", delay);
                     try {
                         synchronize(ProfilesFinder.Visitor.Noop);
                     }
                     catch(BackgroundException e) {
-                        log.warn(String.format("Failure %s refreshing profiles", e));
+                        log.warn("Failure {} refreshing profiles", e.getMessage());
                     }
                 }
             }, 0L, delay.toMillis());
         }
         catch(IllegalStateException e) {
-            log.warn(String.format("Failure scheduling timer. %s", e.getMessage()));
+            log.warn("Failure scheduling timer. {}", e.getMessage());
         }
     }
 

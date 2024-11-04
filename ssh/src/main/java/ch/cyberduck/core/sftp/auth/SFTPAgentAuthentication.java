@@ -68,11 +68,9 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
 
     @Override
     public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using agent %s for %s", agent, bookmark));
-        }
+        log.debug("Login using agent {} for {}", agent, bookmark);
         if(agent.getIdentities().isEmpty()) {
-            log.warn(String.format("Skip authentication with agent %s with no identity available", agent));
+            log.warn("Skip authentication with agent {} with no identity available", agent);
             return false;
         }
         final Collection<Identity> identities;
@@ -81,9 +79,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
             if(configuration.isPublicKeyAuthentication()) {
                 try {
                     final Local setting = configuration.getIdentity();
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Only read specific key %s from SSH agent with IdentitiesOnly configuration", setting));
-                    }
+                    log.warn("Only read specific key {} from SSH agent with IdentitiesOnly configuration", setting);
                     final Identity identity = isPrivateKey(setting) ?
                             identityFromPrivateKey(setting) :
                             identityFromPublicKey(setting);
@@ -91,7 +87,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                         identities = Collections.singleton(identity);
                     }
                     else {
-                        log.warn(String.format("Missing public key for %s", setting));
+                        log.warn("Missing public key for {}", setting);
                         identities = Collections.emptyList();
                     }
                 }
@@ -100,7 +96,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                 }
             }
             else {
-                log.warn(String.format("Missing IdentityFile configuration for %s", bookmark));
+                log.warn("Missing IdentityFile configuration for {}", bookmark);
                 identities = Collections.emptyList();
             }
         }
@@ -139,9 +135,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                 if(identity.getComment() != null) {
                     final String candidate = new String(identity.getComment(), StandardCharsets.UTF_8);
                     if(selected.getAbsolute().equals(candidate)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Matching identity %s found", candidate));
-                        }
+                        log.debug("Matching identity {} found", candidate);
                         return Collections.singletonList(identity);
                     }
                 }
@@ -161,7 +155,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         if(pubKey != null) {
             return identityFromPublicKey(LocalFactory.get(pubKey.getAbsolutePath()));
         }
-        log.warn(String.format("Unable to find public key file for identity %s", identity));
+        log.warn("Unable to find public key file for identity {}", identity);
         return null;
     }
 
@@ -176,7 +170,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                 }
             }
         }
-        log.warn(String.format("Failure reading public key %s", identity));
+        log.warn("Failure reading public key {}", identity);
         return null;
     }
 }

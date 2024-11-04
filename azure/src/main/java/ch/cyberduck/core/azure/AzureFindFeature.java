@@ -83,9 +83,7 @@ public class AzureFindFeature implements Find {
                         }
                     }
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Search for common prefix %s", file));
-                }
+                log.debug("Search for common prefix {}", file);
                 // Check for common prefix
                 try {
                     new AzureObjectListService(session, context).list(file, new CancellingListProgressListener());

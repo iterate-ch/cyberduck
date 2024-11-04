@@ -124,7 +124,7 @@ public class FTPClient extends FTPSClient {
                     }
                 }
                 else {
-                    log.warn(String.format("SSL session %s for socket %s is not rejoinable", session, socket));
+                    log.warn("SSL session {} for socket {} is not rejoinable", session, socket);
                 }
             }
         }

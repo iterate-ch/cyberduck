@@ -118,22 +118,18 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
 
     public CteraTokens validate() throws BackgroundException {
         if(tokens.validate()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Authorize with saved tokens %s", tokens));
-            }
+            log.debug("Authorize with saved tokens {}", tokens);
         }
         else {
             tokens = this.attach();
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Authorize with tokens %s", tokens));
-        }
+        log.debug("Authorize with tokens {}", tokens);
         try {
             this.authorize();
         }
         catch(AccessDeniedException e) {
             // Try to re-authenticate with new tokens
-            log.warn(String.format("Failure %s authorizing with tokens %s", e, tokens));
+            log.warn("Failure {} authorizing with tokens {}", e, tokens);
             tokens = this.attach();
             this.authorize();
         }
@@ -146,9 +142,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
      * @return Same tokens saved
      */
     public CteraTokens save(final CteraTokens tokens) throws LocalAccessDeniedException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Save new tokens %s for %s", tokens, host));
-        }
+        log.debug("Save new tokens {} for {}", tokens, host);
         host.getCredentials()
                 .withToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()))
                 .withSaved(new LoginOptions().save);
@@ -158,15 +152,11 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
 
     private CteraTokens attach() throws BackgroundException {
         if(info.hasWebSSO) {
-            if(log.isDebugEnabled()) {
-                log.debug("Start new flow attaching device with activation code");
-            }
+            log.debug("Start new flow attaching device with activation code");
             return this.attachDeviceWithActivationCode(this.startWebSSOFlow());
         }
         else {
-            if(log.isDebugEnabled()) {
-                log.debug("Start new flow attaching device with username and password");
-            }
+            log.debug("Start new flow attaching device with username and password");
             return this.attachDeviceWithUsernamePassword(username, password);
         }
     }
@@ -183,13 +173,11 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
                 @Override
                 public Void handleResponse(final HttpResponse response) throws IOException {
                     if(!response.containsHeader("Set-Cookie")) {
-                        log.warn(String.format("No cookie in response %s", response));
+                        log.warn("No cookie in response {}", response);
                     }
                     else {
                         final Header header = response.getFirstHeader("Set-Cookie");
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Received cookie %s", header));
-                        }
+                        log.debug("Received cookie {}", header);
                     }
                     return super.handleResponse(response);
                 }
@@ -236,9 +224,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
         final CountDownLatch signal = new CountDownLatch(1);
         final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
         registry.register(StringUtils.EMPTY, code -> {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Callback with code %s", code));
-            }
+            log.info("Callback with code {}", code);
             if(!StringUtils.isBlank(code)) {
                 activationCode.set(code);
             }
@@ -250,9 +236,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
                 new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost()), CteraProtocol.CTERA_REDIRECT_URI
         );
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Open browser with URL %s", url));
-        }
+        log.debug("Open browser with URL {}", url);
         if(!BrowserLauncherFactory.get().open(url)) {
             throw new LoginCanceledException(new LocalAccessDeniedException(String.format("Failed to launch web browser for %s", url)));
         }
@@ -354,13 +338,13 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_MOVED_TEMPORARILY:
                 try {
-                    log.info(String.format("Attempt to refresh cookie for failure %s", response));
+                    log.info("Attempt to refresh cookie for failure {}", response);
                     this.save(this.validate());
                     // Try again
                     return true;
                 }
                 catch(BackgroundException e) {
-                    log.error(String.format("Failure refreshing cookie. %s", e));
+                    log.error("Failure refreshing cookie. {}", e.getMessage());
                     return false;
                 }
         }

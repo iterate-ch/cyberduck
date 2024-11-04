@@ -36,7 +36,7 @@ public class DefaultTrustManagerHostnameCallback implements TrustManagerHostname
     @Override
     public String getTarget() {
         if(StringUtils.isBlank(host.getHostname())) {
-            log.error(String.format("Missing hostname to validate in %s", host));
+            log.error("Missing hostname to validate in {}", host);
         }
         return new PunycodeConverter().convert(host.getHostname());
     }

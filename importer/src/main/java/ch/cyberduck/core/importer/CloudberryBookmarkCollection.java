@@ -59,7 +59,7 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
                             current = new Host(protocols.forType(Protocol.Type.s3));
                             break;
                         default:
-                            log.warn("Unsupported connection type:" + type);
+                            log.warn("Unsupported connection type:{}", type);
                             break;
                     }
                     break;

@@ -158,9 +158,7 @@ public class HttpConnectionPoolBuilder {
                     case HTTP:
                     case HTTPS:
                         final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Setup proxy %s", h));
-                        }
+                        log.info("Setup proxy {}", h);
                         return h;
                 }
                 return null;
@@ -243,9 +241,7 @@ public class HttpConnectionPoolBuilder {
     }
 
     public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Setup connection pool with registry %s", registry));
-        }
+        log.debug("Setup connection pool with registry {}", registry);
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
         manager.setMaxTotal(new HostPreferences(host).getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(new HostPreferences(host).getInteger("http.connections.route"));

@@ -50,7 +50,7 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
             }
             return f;
         }
-        log.warn(String.format("Lookup failed for %s in cache", reference));
+        log.warn("Lookup failed for {} in cache", reference);
         return null;
     }
 
@@ -102,9 +102,7 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
     public AttributedList<T> get(final T key) {
         final AttributedList<T> children = impl.get(this.reference(key));
         if(null == children) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("No cache for %s", key));
-            }
+            log.debug("No cache for {}", key);
             return AttributedList.emptyList();
         }
         return children;
@@ -116,9 +114,7 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * @return Previous cached version
      */
     public AttributedList<T> put(final T key, final AttributedList<T> children) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Caching %s", key));
-        }
+        log.debug("Caching {}", key);
         final AttributedList<T> replaced = impl.get(this.reference(key));
         impl.put(this.reference(key), children);
         if(null == replaced) {
@@ -146,16 +142,12 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * @param reference Path reference
      */
     public void invalidate(final T reference) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Invalidate %s", reference));
-        }
+        log.info("Invalidate {}", reference);
         if(this.containsKey(reference)) {
             this.get(reference).attributes().setInvalid(true);
         }
         else {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("No cache for %s", reference));
-            }
+            log.debug("No cache for {}", reference);
         }
     }
 
@@ -163,9 +155,7 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * Clear all cached directory listings
      */
     public void clear() {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Clear cache %s", this));
-        }
+        log.info("Clear cache {}", this);
         impl.clear();
     }
 

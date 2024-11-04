@@ -46,9 +46,7 @@ public class BoxFileidProvider extends CachingFileIdProvider implements FileIdPr
         }
         final String cached = super.getFileId(file);
         if(cached != null) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Return cached fileid %s for file %s", cached, file));
-            }
+            log.debug("Return cached fileid {} for file {}", cached, file);
             return cached;
         }
         if(file.isRoot()) {

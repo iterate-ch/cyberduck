@@ -71,7 +71,7 @@ public class S3DefaultDeleteFeature implements Delete {
                                 bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
                     }
                     catch(NotfoundException ignored) {
-                        log.warn(String.format("Ignore failure deleting multipart upload %s", file));
+                        log.warn("Ignore failure deleting multipart upload {}", file);
                     }
                 }
                 else {

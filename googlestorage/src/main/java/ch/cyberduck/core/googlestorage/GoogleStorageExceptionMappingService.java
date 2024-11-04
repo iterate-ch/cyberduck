@@ -106,7 +106,7 @@ public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMapp
             }
             catch(IOException exception) {
                 // it would be bad to throw an exception while throwing an exception
-                log.warn(String.format("Ignore failure %s parsing error reply from %s", exception, response));
+                log.warn("Ignore failure {} parsing error reply from {}", exception, response);
             }
         }
         return response.getStatusLine().getReasonPhrase();

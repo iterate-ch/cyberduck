@@ -62,16 +62,14 @@ public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderF
                     attributes.setModificationDate(rfc1123.parse(value).getTime());
                 }
                 catch(InvalidDateException e) {
-                    log.warn(String.format("Failure parsing property %s with value %s", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE, value));
+                    log.warn("Failure parsing property {} with value {}", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE, value);
                     if(resource.getModified() != null) {
                         attributes.setModificationDate(resource.getModified().getTime());
                     }
                 }
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Missing value for property %s", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE));
-                }
+                log.debug("Missing value for property {}", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());
                 }

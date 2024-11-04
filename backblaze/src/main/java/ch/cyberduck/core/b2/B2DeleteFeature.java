@@ -72,7 +72,7 @@ public class B2DeleteFeature implements Delete {
                         placeholder = fileid.getVersionId(file);
                     }
                     catch(NotfoundException e) {
-                        log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e, file));
+                        log.warn("Ignore failure {} deleting placeholder file for {}", e, file);
                         continue;
                     }
                     if(null == placeholder) {
@@ -82,7 +82,7 @@ public class B2DeleteFeature implements Delete {
                         session.getClient().deleteFileVersion(containerService.getKey(file), placeholder);
                     }
                     catch(B2ApiException e) {
-                        log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
+                        log.warn("Ignore failure {} deleting placeholder file for {}", e.getMessage(), file);
                     }
                     catch(IOException e) {
                         throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -92,15 +92,13 @@ public class B2DeleteFeature implements Delete {
                     try {
                         if(!versioning.isEnabled() || null == file.attributes().getVersionId()) {
                             // Add hide marker
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Add hide marker %s of %s", file.attributes().getVersionId(), file));
-                            }
+                            log.debug("Add hide marker {} of {}", file.attributes().getVersionId(), file);
                             try {
                                 session.getClient().hideFile(fileid.getVersionId(containerService.getContainer(file)), containerService.getKey(file));
                             }
                             catch(B2ApiException e) {
                                 if("already_hidden".equalsIgnoreCase(e.getCode())) {
-                                    log.warn(String.format("Ignore failure %s hiding file %s already hidden", e.getMessage(), file));
+                                    log.warn("Ignore failure {} hiding file {} already hidden", e.getMessage(), file);
                                 }
                                 else {
                                     throw e;
@@ -109,9 +107,7 @@ public class B2DeleteFeature implements Delete {
                         }
                         else {
                             // Delete specific version
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Delete version %s of %s", file.attributes().getVersionId(), file));
-                            }
+                            log.debug("Delete version {} of {}", file.attributes().getVersionId(), file);
                             session.getClient().deleteFileVersion(containerService.getKey(file), file.attributes().getVersionId());
                         }
                     }

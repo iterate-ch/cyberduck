@@ -55,9 +55,7 @@ public class S3FindFeature implements Find {
         try {
             if(containerService.isContainer(file)) {
                 try {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Test if bucket %s is accessible", file));
-                    }
+                    log.debug("Test if bucket {} is accessible", file);
                     return session.getClient().isBucketAccessible(containerService.getContainer(file).getName());
                 }
                 catch(ServiceException e) {
@@ -69,9 +67,7 @@ public class S3FindFeature implements Find {
                 return true;
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Search for common prefix %s", file));
-                }
+                log.debug("Search for common prefix {}", file);
                 // Check for common prefix
                 try {
                     new S3ObjectListService(session, acl).list(file, new CancellingListProgressListener(), String.valueOf(Path.DELIMITER), 1);

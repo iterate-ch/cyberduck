@@ -89,9 +89,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                     if(file.isDirectory()) {
                         final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
                         if(failure instanceof NotfoundException) {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Search for common prefix %s", file));
-                            }
+                            log.debug("Search for common prefix {}", file);
                             // File may be marked as placeholder but no placeholder file exists. Check for common prefix returned.
                             try {
                                 new GoogleStorageObjectListService(session).list(file, new CancellingListProgressListener(), String.valueOf(Path.DELIMITER), 1, VersioningConfiguration.empty());

@@ -42,9 +42,7 @@ public class CalendarService implements DateDomainService<Calendar> {
      */
     @Override
     public Calendar asDate(final long timestamp, final Instant precision) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Convert timestamp %d to calendar with precision %s", timestamp, precision));
-        }
+        log.debug("Convert timestamp {} to calendar with precision {}", timestamp, precision);
         Calendar c = Calendar.getInstance(tz);
         c.setTimeInMillis(timestamp);
         if(precision == Instant.MILLISECOND) {

@@ -74,9 +74,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         try {
             final String prefix = this.createPrefix(directory);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("List with prefix %s", prefix));
-            }
+            log.debug("List with prefix {}", prefix);
             // If this optional, Unicode string parameter is included with your request,
             // then keys that contain the same string between the prefix and the first
             // occurrence of the delimiter will be rolled up into a single result
@@ -97,9 +95,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 for(StorageObject object : chunk.getObjects()) {
                     final String key = URIEncoder.decode(object.getKey());
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip placeholder key %s", key));
-                        }
+                        log.debug("Skip placeholder key {}", key);
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
@@ -122,9 +118,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Handle common prefix %s", common));
-                    }
+                    log.debug("Handle common prefix {}", common);
                     final String key = StringUtils.chomp(URIEncoder.decode(common), String.valueOf(Path.DELIMITER));
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         continue;
@@ -150,9 +144,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 // Only for AWS
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                     if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
-                        if(log.isWarnEnabled()) {
-                            log.warn(String.format("No placeholder found for directory %s", directory));
-                        }
+                        log.warn("No placeholder found for directory {}", directory);
                         throw new NotfoundException(directory.getAbsolute());
                     }
                 }

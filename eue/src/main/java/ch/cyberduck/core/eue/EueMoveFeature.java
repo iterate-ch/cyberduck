@@ -62,9 +62,7 @@ public class EueMoveFeature implements Move {
             final String resourceId = fileid.getFileId(file);
             if(status.isExists()) {
                 if(!resourceId.equals(fileid.getFileId(target))) {
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Trash file %s to be replaced with %s", target, file));
-                    }
+                    log.warn("Trash file {} to be replaced with {}", target, file);
                     new EueTrashFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, delete);
                 }
             }
@@ -96,7 +94,7 @@ public class EueMoveFeature implements Move {
                             case HttpStatus.SC_OK:
                                 break;
                             default:
-                                log.warn(String.format("Failure %s moving file %s", resourceMoveResponseEntries, file));
+                                log.warn("Failure {} moving file {}", resourceMoveResponseEntries, file);
                                 final ResourceCreationResponseEntryEntity entity = resourceMoveResponseEntry.getEntity();
                                 if(null == entity) {
                                     throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
@@ -126,7 +124,7 @@ public class EueMoveFeature implements Move {
                             case HttpStatus.SC_CREATED:
                                 break;
                             default:
-                                log.warn(String.format("Failure %s renaming file %s", resourceMoveResponseEntry, file));
+                                log.warn("Failure {} renaming file {}", resourceMoveResponseEntry, file);
                                 throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
                                         null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
                         }

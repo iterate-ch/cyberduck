@@ -49,7 +49,7 @@ public abstract class Factory<T> {
                 this.clazz = (Class<? extends T>) Class.forName(c);
             }
             else {
-                log.warn(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
+                log.warn("No implementation given for factory {}", this.getClass().getSimpleName());
                 this.clazz = null;
             }
         }

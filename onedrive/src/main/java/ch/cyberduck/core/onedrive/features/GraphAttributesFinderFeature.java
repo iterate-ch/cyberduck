@@ -60,7 +60,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
             url = new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http);
         }
         catch(URISyntaxException e) {
-            log.warn(String.format("Cannot create URI of WebURL: %s", metadata.getWebUrl()), e);
+            log.warn("Cannot create URI of WebURL: {}", metadata.getWebUrl(), e);
         }
         return Optional.ofNullable(url);
     }

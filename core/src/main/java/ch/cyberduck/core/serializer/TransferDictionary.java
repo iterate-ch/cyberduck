@@ -145,11 +145,11 @@ public class TransferDictionary<T> {
                 // Verify we have valid items
                 for(TransferItem item : roots) {
                     if(null == item.remote) {
-                        log.warn(String.format("Missing remote in transfer item %s", item));
+                        log.warn("Missing remote in transfer item {}", item);
                         return null;
                     }
                     if(null == item.local) {
-                        log.warn(String.format("Missing local in transfer item %s", item));
+                        log.warn("Missing local in transfer item {}", item);
                         return null;
                     }
                 }
@@ -204,7 +204,7 @@ public class TransferDictionary<T> {
                 }
                 break;
             default:
-                log.warn(String.format("Unknown transfer type %s", kindObj));
+                log.warn("Unknown transfer type {}", kindObj);
                 return null;
         }
         final Object uuidObj = dict.stringForKey("UUID");

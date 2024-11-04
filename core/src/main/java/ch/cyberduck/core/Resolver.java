@@ -81,12 +81,10 @@ public final class Resolver {
                             resolved.set(filtered);
                         }
                     }
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Resolved %s to %s", hostname, Arrays.toString(resolved.get().toArray())));
-                    }
+                    log.info("Resolved {} to {}", hostname, Arrays.toString(resolved.get().toArray()));
                 }
                 catch(UnknownHostException e) {
-                    log.warn(String.format("Failed resolving %s", hostname));
+                    log.warn("Failed resolving {}", hostname);
                     failure.set(e);
                 }
                 finally {
@@ -95,7 +93,7 @@ public final class Resolver {
             }
         });
         resolver.start();
-        log.debug(String.format("Waiting for resolving of %s", hostname));
+        log.debug("Waiting for resolving of {}", hostname);
         // Wait for #run to finish
         while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofMillis(500))) {
             try {
@@ -113,7 +111,7 @@ public final class Resolver {
         }
         if(null == resolved.get()) {
             if(null == failure.get()) {
-                log.warn(String.format("Canceled resolving %s", hostname));
+                log.warn("Canceled resolving {}", hostname);
                 throw new ResolveCanceledException(MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname));
             }
             throw new ResolveFailedException(

@@ -117,7 +117,7 @@ public class FTPListService implements ListService {
     }
 
     protected void remove(final Command command) {
-        log.warn(String.format("Remove %s from listing strategies", command));
+        log.warn("Remove {} from listing strategies", command);
         implementations.remove(command);
     }
 

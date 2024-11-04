@@ -77,9 +77,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
 
     @Override
     public Set<ProfileDescription> find(final Visitor visitor) throws BackgroundException {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Fetch profiles from %s", session.getHost()));
-        }
+        log.info("Fetch profiles from {}", session.getHost());
         final ProfileFilter filter = new ProfileFilter();
         final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
                 new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
@@ -104,9 +102,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                                     });
                             if(filter.accept(file, local, new TransferStatus().exists(true))) {
                                 final Read read = session.getFeature(Read.class);
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Download profile %s", file));
-                                }
+                                log.info("Download profile {}", file);
                                 // Read latest version
                                 try (InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
                                         // Read latest version

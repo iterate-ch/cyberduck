@@ -50,16 +50,12 @@ public class NamedThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(final Runnable action) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Create thread for runnable %s", action));
-        }
+        log.debug("Create thread for runnable {}", action);
         final Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 action.run();
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Finished execution of runnable %s", action));
-                }
+                log.debug("Finished execution of runnable {}", action);
             }
         });
         thread.setDaemon(true);

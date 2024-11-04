@@ -94,7 +94,7 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     public T lookup(final CacheReference<T> reference) {
         final T value = reverse.get(reference);
         if(MISSING_ITEM == value) {
-            log.warn(String.format("Lookup failed for %s in reverse cache", reference));
+            log.warn("Lookup failed for {} in reverse cache", reference);
             return null;
         }
         return value;

@@ -41,9 +41,7 @@ public class CreateSymlinkWorker extends Worker<Path> {
     public Path run(final Session<?> session) throws BackgroundException {
         // Symlink pointing to existing target file
         final Symlink feature = session.getFeature(Symlink.class);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Run with feature %s", feature));
-        }
+        log.debug("Run with feature {}", feature);
         feature.symlink(link, target);
         return link;
     }

@@ -93,7 +93,7 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                 }
                 // Equal size
                 if(Checksum.NONE.equals(remote.getChecksum())) {
-                    log.warn(String.format("Missing checksum for %s", file));
+                    log.warn("Missing checksum for {}", file);
                 }
                 else {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));

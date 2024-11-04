@@ -40,12 +40,11 @@ public abstract class AbstractX509KeyManager extends X509ExtendedKeyManager impl
      */
     protected boolean matches(final Certificate c, final String[] keyTypes, final Principal[] issuers) {
         if(!(c instanceof X509Certificate)) {
-            log.warn(String.format("Certificate %s is not of type X509", c));
+            log.warn("Certificate {} is not of type X509", c);
             return false;
         }
         if(!Arrays.asList(keyTypes).contains(c.getPublicKey().getAlgorithm())) {
-            log.warn(String.format("Key type %s does not match any of %s", c.getPublicKey().getAlgorithm(),
-                    Arrays.toString(keyTypes)));
+            log.warn("Key type {} does not match any of {}", c.getPublicKey().getAlgorithm(), Arrays.toString(keyTypes));
             return false;
         }
         if(null == issuers || Arrays.asList(issuers).isEmpty()) {
@@ -54,7 +53,7 @@ public abstract class AbstractX509KeyManager extends X509ExtendedKeyManager impl
         }
         final X500Principal issuer = ((X509Certificate) c).getIssuerX500Principal();
         if(!Arrays.asList(issuers).contains(issuer)) {
-            log.warn(String.format("Issuer %s does not match", issuer));
+            log.warn("Issuer {} does not match", issuer);
             return false;
         }
         return true;

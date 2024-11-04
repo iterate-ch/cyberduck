@@ -85,7 +85,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
         try {
             final LifecycleConfig status = session.getClient().getLifecycleConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             if(null == status) {
-                log.warn(String.format("Failure parsing lifecycle config for %s", bucket));
+                log.warn("Failure parsing lifecycle config for {}", bucket);
                 return LifecycleConfiguration.empty();
             }
             Integer transition = null;
@@ -108,7 +108,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
             catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", bucket, e.getMessage()));
+                log.warn("Missing permission to read lifecycle configuration for {} {}", bucket, e.getMessage());
                 return LifecycleConfiguration.empty();
             }
         }

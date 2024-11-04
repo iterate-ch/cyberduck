@@ -54,9 +54,7 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
 
     @Override
     public void flush() throws IOException {
-        if(log.isWarnEnabled()) {
-            log.warn(String.format("Flush stream %s", proxy));
-        }
+        log.warn("Flush stream {}", proxy);
         this.flush(true);
     }
 
@@ -85,7 +83,7 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
     @Override
     public void close() throws IOException {
         if(close.get()) {
-            log.warn(String.format("Skip double close of stream %s", this));
+            log.warn("Skip double close of stream {}", this);
             return;
         }
         try {

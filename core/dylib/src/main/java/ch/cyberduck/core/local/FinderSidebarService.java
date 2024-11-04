@@ -48,16 +48,14 @@ public class FinderSidebarService implements SidebarService {
 
     @Override
     public void add(final Local file, final String name) throws LocalAccessDeniedException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Add %s to %s", file, this.forList(list)));
-        }
+        log.debug("Add {} to {}", file, this.forList(list));
         if(!this.containsItem(file.getAbsolute(), this.forList(list))) {
             if(!this.addItem(file.getAbsolute(), name, this.forList(list))) {
                 throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)));
             }
         }
         else {
-            log.warn(String.format("Skip adding %s to %s", file, this.forList(list)));
+            log.warn("Skip adding {} to {}", file, this.forList(list));
         }
     }
 
@@ -69,9 +67,7 @@ public class FinderSidebarService implements SidebarService {
 
     @Override
     public void remove(final Local file) throws LocalAccessDeniedException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Remove %s in %s", file, this.forList(list)));
-        }
+        log.debug("Remove {} in {}", file, this.forList(list));
         if(!this.removeItem(file.getAbsolute(), this.forList(list))) {
             throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, this.forList(list)));
         }

@@ -81,12 +81,8 @@ public class SFTPWriteFeature implements Write<Void> {
             }
             final RemoteFile handle = session.sftp().open(file.getAbsolute(), flags);
             final int maxUnconfirmedWrites = this.getMaxUnconfirmedWrites(status);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Using %d unconfirmed writes", maxUnconfirmedWrites));
-            }
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", status.getOffset()));
-            }
+            log.info("Using {} unconfirmed writes", maxUnconfirmedWrites);
+            log.info("Skipping {} bytes", status.getOffset());
             // Open stream at offset
             return new VoidStatusOutputStream(new ChunkedOutputStream(handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
                 private final AtomicBoolean close = new AtomicBoolean();
@@ -94,7 +90,7 @@ public class SFTPWriteFeature implements Write<Void> {
                 @Override
                 public void close() throws IOException {
                     if(close.get()) {
-                        log.warn(String.format("Skip double close of stream %s", this));
+                        log.warn("Skip double close of stream {}", this);
                         return;
                     }
                     try {

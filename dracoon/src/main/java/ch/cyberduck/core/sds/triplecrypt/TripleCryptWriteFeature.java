@@ -56,9 +56,7 @@ public class TripleCryptWriteFeature implements Write<Node> {
     public StatusOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Read file key for file %s", file));
-            }
+            log.debug("Read file key for file {}", file);
             if(null == status.getFilekey()) {
                 status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
             }

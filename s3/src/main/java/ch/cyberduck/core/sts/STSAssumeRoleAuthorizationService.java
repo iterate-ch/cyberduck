@@ -85,9 +85,7 @@ public class STSAssumeRoleAuthorizationService {
         }
         try {
             final AssumeRoleWithSAMLResult result = service.assumeRoleWithSAML(request);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Received assume role identity result %s", result));
-            }
+            log.debug("Received assume role identity result {}", result);
             final Credentials credentials = bookmark.getCredentials();
             final TemporaryAccessTokens tokens = new TemporaryAccessTokens(result.getCredentials().getAccessKeyId(),
                     result.getCredentials().getSecretAccessKey(),
@@ -103,9 +101,7 @@ public class STSAssumeRoleAuthorizationService {
 
     public TemporaryAccessTokens authorize(final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Assume role with OIDC Id token for %s", bookmark));
-        }
+        log.debug("Assume role with OIDC Id token for {}", bookmark);
         final String webIdentityToken = this.getWebIdentityToken(oauth);
         request.setWebIdentityToken(webIdentityToken);
         final HostPreferences preferences = new HostPreferences(bookmark);
@@ -121,9 +117,7 @@ public class STSAssumeRoleAuthorizationService {
         else {
             if(StringUtils.EMPTY.equals(preferences.getProperty("s3.assumerole.rolearn"))) {
                 // When defined in connection profile but with empty value
-                if(log.isDebugEnabled()) {
-                    log.debug("Prompt for Role ARN");
-                }
+                log.debug("Prompt for Role ARN");
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -139,7 +133,7 @@ public class STSAssumeRoleAuthorizationService {
             sub = JWT.decode(webIdentityToken).getSubject();
         }
         catch(JWTDecodeException e) {
-            log.warn(String.format("Failure %s decoding JWT %s", e, webIdentityToken));
+            log.warn("Failure {} decoding JWT {}", e, webIdentityToken);
             throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname"))) {
@@ -150,18 +144,14 @@ public class STSAssumeRoleAuthorizationService {
                 request.setRoleSessionName(sub);
             }
             else {
-                log.warn(String.format("Missing subject in decoding JWT %s", webIdentityToken));
+                log.warn("Missing subject in decoding JWT {}", webIdentityToken);
                 request.setRoleSessionName(new AsciiRandomStringService().random());
             }
         }
         try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Use request %s", request));
-            }
+            log.debug("Use request {}", request);
             final AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(request);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Received assume role identity result %s", result));
-            }
+            log.debug("Received assume role identity result {}", result);
             return new TemporaryAccessTokens(result.getCredentials().getAccessKeyId(),
                     result.getCredentials().getSecretAccessKey(),
                     result.getCredentials().getSessionToken(),

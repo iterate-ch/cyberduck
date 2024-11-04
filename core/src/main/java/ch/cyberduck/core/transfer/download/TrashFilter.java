@@ -49,9 +49,7 @@ public class TrashFilter extends AbstractDownloadFilter {
     @Override
     public void apply(Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(status.isExists()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Trash file %s", local));
-            }
+            log.info("Trash file {}", local);
             try {
                 feature.trash(local);
             }

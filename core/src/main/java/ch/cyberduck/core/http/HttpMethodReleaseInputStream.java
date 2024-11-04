@@ -51,7 +51,7 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
         this.response = response;
         if(null != response.getEntity()) {
             if(TransferStatus.UNKNOWN_LENGTH == response.getEntity().getContentLength()) {
-                log.warn(String.format("Discard length in transfer status for unknown content length in response %s", response));
+                log.warn("Discard length in transfer status for unknown content length in response {}", response);
                 // Decompressing entity with unknown content length
                 status.setLength(TransferStatus.UNKNOWN_LENGTH);
             }
@@ -68,7 +68,7 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
     @Override
     public void close() throws IOException {
         if(close.get()) {
-            log.warn(String.format("Skip double close of stream %s", this));
+            log.warn("Skip double close of stream {}", this);
             return;
         }
         try {

@@ -68,12 +68,12 @@ public class BoxListService implements ListService {
                         StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
                 for(Object entry : items.getEntries()) {
                     if(!(entry instanceof Map)) {
-                        log.error(String.format("Unexpected entry %s", entry));
+                        log.error("Unexpected entry {}", entry);
                         continue;
                     }
                     final Object type = ((Map) entry).get("type");
                     if(!(type instanceof String)) {
-                        log.error(String.format("Missing type %s", type));
+                        log.error("Missing type {}", type);
                         continue;
                     }
                     switch(type.toString()) {

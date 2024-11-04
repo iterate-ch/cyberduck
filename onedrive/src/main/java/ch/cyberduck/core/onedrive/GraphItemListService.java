@@ -42,9 +42,7 @@ public class GraphItemListService extends AbstractItemListService {
     @Override
     protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
         final DriveItem folder = session.getItem(directory);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Return files for folder %s", folder));
-        }
+        log.debug("Return files for folder {}", folder);
         // getQuery(null): return new ODataQuery with default set of parameters
         // require listing Publication/VersionId
         return Files.getFiles(folder, session.getQuery(null).top(new HostPreferences(session.getHost()).getInteger("onedrive.listing.chunksize")));

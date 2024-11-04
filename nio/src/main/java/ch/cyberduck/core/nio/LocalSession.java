@@ -117,7 +117,7 @@ public class LocalSession extends Session<FileSystem> {
             lock = LocalFactory.get(this.toPath(home).toString()).lock(true);
         }
         catch(LocalAccessDeniedException e) {
-            log.debug(String.format("Ignore failure obtaining lock for %s", home));
+            log.debug("Ignore failure obtaining lock for {}", home);
         }
     }
 

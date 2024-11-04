@@ -75,9 +75,7 @@ public abstract class SheetController extends WindowController implements SheetC
      */
     @Action
     public void closeSheet(final NSButton sender) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Close sheet with button %s", sender.title()));
-        }
+        log.debug("Close sheet with button {}", sender.title());
         final int option = new AlertSheetReturnCodeMapper().getOption(sender);
         this.closeSheetWithOption(option);
     }

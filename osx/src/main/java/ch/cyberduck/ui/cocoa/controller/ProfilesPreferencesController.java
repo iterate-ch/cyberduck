@@ -181,7 +181,7 @@ public class ProfilesPreferencesController extends BundleController {
                 );
             }
             catch(BackgroundException e) {
-                log.error(String.format("Failure %s retrieving profiles", e));
+                log.error("Failure {} retrieving profiles", e.getMessage());
             }
         }
     }

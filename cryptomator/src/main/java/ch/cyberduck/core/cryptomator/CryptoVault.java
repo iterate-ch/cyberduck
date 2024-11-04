@@ -145,7 +145,7 @@ public class CryptoVault implements Vault {
                         new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
             }
             catch(LocalAccessDeniedException e) {
-                log.error(String.format("Failure %s saving credentials for %s in password store", e, bookmark));
+                log.error("Failure {} saving credentials for {} in password store", e, bookmark);
             }
         }
         final String passphrase = credentials.getPassword();
@@ -160,9 +160,7 @@ public class CryptoVault implements Vault {
         catch(IOException e) {
             throw new VaultException("Failure creating master key", e);
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Write master key to %s", masterkey));
-        }
+        log.debug("Write master key to {}", masterkey);
         // Obtain non encrypted directory writer
         final Directory<?> directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus().withRegion(region);
@@ -192,9 +190,7 @@ public class CryptoVault implements Vault {
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Create vault root directory at %s", secondLevel));
-        }
+        log.debug("Create vault root directory at {}", secondLevel);
         directory.mkdir(dataDir, status);
         directory.mkdir(firstLevel, status);
         directory.mkdir(secondLevel, status);
@@ -209,7 +205,7 @@ public class CryptoVault implements Vault {
     @Override
     public synchronized CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
         if(this.isUnlocked()) {
-            log.warn(String.format("Skip unlock of open vault %s", this));
+            log.warn("Skip unlock of open vault {}", this);
             return this;
         }
         final Host bookmark = session.getHost();
@@ -229,9 +225,7 @@ public class CryptoVault implements Vault {
             return parseVaultConfigFromJWT(token).withMasterkeyFile(this.readMasterkeyFile(session, masterkey));
         }
         catch(NotfoundException e) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Ignore failure reading %s", config));
-            }
+            log.debug("Ignore failure reading {}", config);
             final MasterkeyFile mkfile = this.readMasterkeyFile(session, masterkey);
             return new VaultConfig(mkfile.version,
                     mkfile.version == VAULT_VERSION_DEPRECATED ?
@@ -252,9 +246,7 @@ public class CryptoVault implements Vault {
     }
 
     private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path masterkey) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Read master key %s", masterkey));
-        }
+        log.debug("Read master key {}", masterkey);
         try (Reader reader = new ContentReader(session).getReader(masterkey)) {
             return MasterkeyFile.read(reader);
         }
@@ -294,9 +286,7 @@ public class CryptoVault implements Vault {
         try {
             this.open(vaultConfig, credentials.getPassword());
             if(credentials.isSaved()) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Save passphrase for %s", masterkey));
-                }
+                log.info("Save passphrase for {}", masterkey);
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                         new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
@@ -311,9 +301,7 @@ public class CryptoVault implements Vault {
     @Override
     public synchronized void close() {
         if(this.isUnlocked()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Close vault with cryptor %s", cryptor));
-            }
+            log.info("Close vault with cryptor {}", cryptor);
             if(cryptor != null) {
                 cryptor.destroy();
             }
@@ -372,9 +360,7 @@ public class CryptoVault implements Vault {
                         final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         this.vaultVersion = vaultConfig.version;
         final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Initialized crypto provider %s", provider));
-        }
+        log.debug("Initialized crypto provider {}", provider);
         vaultConfig.verify(masterKey.getEncoded(), VAULT_VERSION);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
@@ -421,11 +407,11 @@ public class CryptoVault implements Vault {
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
-                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
+                log.warn("Skip file {} because it is marked as an internal vault path", file);
                 return file;
             }
             if(new SimplePathPredicate(file).test(home)) {
-                log.warn(String.format("Skip vault home %s because the root has no metadata file", file));
+                log.warn("Skip vault home {} because the root has no metadata file", file);
                 return file;
             }
             final Path parent;
@@ -459,7 +445,7 @@ public class CryptoVault implements Vault {
         }
         else {
             if(file.getType().contains(Path.Type.encrypted)) {
-                log.warn(String.format("Skip file %s because it is already marked as an encrypted path", file));
+                log.warn("Skip file {} because it is already marked as an encrypted path", file);
                 return file;
             }
             if(file.getType().contains(Path.Type.vault)) {
@@ -480,11 +466,11 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
-            log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+            log.warn("Skip file {} because it is already marked as an decrypted path", file);
             return file;
         }
         if(file.getType().contains(Path.Type.vault)) {
-            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
+            log.warn("Skip file {} because it is marked as an internal vault path", file);
             return file;
         }
         final Path inflated = this.inflate(session, file);

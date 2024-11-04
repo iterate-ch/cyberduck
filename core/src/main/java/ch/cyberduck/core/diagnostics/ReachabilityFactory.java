@@ -58,7 +58,7 @@ public class ReachabilityFactory extends Factory<Reachability> {
                 case sftp:
                     final Host jumphost = JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname());
                     if(null != jumphost) {
-                        log.warn(String.format("Run reachablity check for jump host %s", jumphost));
+                        log.warn("Run reachablity check for jump host {}", jumphost);
                         new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).test(jumphost);
                         return;
                     }

@@ -72,7 +72,7 @@ public abstract class Worker<T> {
     }
 
     public void cancel() {
-        log.warn(String.format("Cancel worker %s", this));
+        log.warn("Cancel worker {}", this);
         canceled.set(true);
     }
 

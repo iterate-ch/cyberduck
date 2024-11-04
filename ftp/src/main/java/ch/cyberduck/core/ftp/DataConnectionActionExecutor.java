@@ -63,7 +63,7 @@ public class DataConnectionActionExecutor {
             return action.execute();
         }
         catch(ConnectionTimeoutException failure) {
-            log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
+            log.warn("Timeout opening data socket {}", failure.getMessage());
             // Expect 421 response
             session.getClient().completePendingCommand();
             // Fallback handling
@@ -72,21 +72,21 @@ public class DataConnectionActionExecutor {
                     return this.fallback(action);
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
+                    log.warn("Connect mode fallback failed with {}", e.getMessage());
                     // Throw original error message
                 }
             }
             throw failure;
         }
         catch(InteroperabilityException | NotfoundException | AccessDeniedException failure) {
-            log.warn(String.format("Server denied data socket operation with %s", failure.getMessage()));
+            log.warn("Server denied data socket operation with {}", failure.getMessage());
             // Fallback handling
             if(enabled) {
                 try {
                     return this.fallback(action);
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
+                    log.warn("Connect mode fallback failed with {}", e.getMessage());
                     // Throw original error message
                 }
             }

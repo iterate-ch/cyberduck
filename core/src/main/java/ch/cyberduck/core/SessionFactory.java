@@ -36,21 +36,17 @@ public final class SessionFactory {
     }
 
     public static Session<?> create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Create session for %s", host));
-        }
+        log.debug("Create session for {}", host);
         final Protocol protocol = host.getProtocol();
         final String prefix = protocol.getPrefix();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Load class with prefix %s", prefix));
-        }
+        log.debug("Load class with prefix {}", prefix);
         try {
             final Class<Session> name = (Class<Session>) Class.forName(String.format("%sSession", prefix));
             final Constructor<Session> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
                     host.getClass(), trust.getClass(), key.getClass());
             final Session<?> session;
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s, %s, %s", host.getClass(), trust.getClass(), key.getClass()));
+                log.warn("No matching constructor for parameter {}, {}, {}", host.getClass(), trust.getClass(), key.getClass());
                 final Constructor<Session> fallback = ConstructorUtils.getMatchingAccessibleConstructor(name,
                         host.getClass());
                 if(fallback == null) {

@@ -58,7 +58,7 @@ public class DeepboxRestoreFeature implements Restore {
                 final Acl acl = file.attributes().getAcl();
                 if(Acl.EMPTY == acl) {
                     // Missing initialization
-                    log.warn(String.format("Unknown ACLs on %s", file));
+                    log.warn("Unknown ACLs on {}", file);
                     return true;
                 }
                 return acl.get(new Acl.CanonicalUser()).contains(CANREVERT);

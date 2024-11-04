@@ -63,19 +63,15 @@ public class ResumeFilter extends AbstractDownloadFilter {
                     if(Checksum.NONE != attributes.getChecksum()) {
                         final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
                         if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Skip file %s with checksum %s", file, attributes.getChecksum()));
-                            }
+                            log.info("Skip file {} with checksum {}", file, attributes.getChecksum());
                             return false;
                         }
                         else {
-                            log.warn(String.format("Checksum mismatch for %s and %s", file, local));
+                            log.warn("Checksum mismatch for {} and {}", file, local);
                         }
                     }
                     else {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Skip file %s with local size %d", file, local.attributes().getSize()));
-                        }
+                        log.info("Skip file {} with local size {}", file, local.attributes().getSize());
                         // No need to resume completed transfers
                         return false;
                     }
@@ -92,9 +88,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
             for(TransferStatus segmentStatus : status.getSegments()) {
                 final Local segmentFile = segmentStatus.getRename().local;
                 if(segmentFile.exists()) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Determine if part %s can be skipped", segmentStatus));
-                    }
+                    log.info("Determine if part {} can be skipped", segmentStatus);
                     if(segmentFile.attributes().getSize() == segmentStatus.getLength()) {
                         segmentStatus.setComplete();
                         status.setLength(status.getLength() - segmentStatus.getLength());

@@ -53,28 +53,24 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
         for(Region region : session.getClient().getRegions()) {
             try {
                 final AccountInfo info = session.getClient().getAccountInfo(region);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Signing key is %s", info.getTempUrlKey()));
-                }
+                log.info("Signing key is {}", info.getTempUrlKey());
                 if(StringUtils.isBlank(info.getTempUrlKey())) {
                     // Update account info setting temporary URL key
                     try {
                         final String key = new AsciiRandomStringService().random();
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Set acccount temp URL key to %s", key));
-                        }
+                        log.debug("Set acccount temp URL key to {}", key);
                         session.getClient().updateAccountMetadata(region, Collections.singletonMap("X-Account-Meta-Temp-URL-Key", key));
                         info.setTempUrlKey(key);
                     }
                     catch(GenericException e) {
-                        log.warn(String.format("Ignore failure %s updating account metadata", e));
+                        log.warn("Ignore failure {} updating account metadata", e.getMessage());
                     }
                 }
                 accounts.put(region, info);
             }
             catch(GenericException e) {
                 if(e.getHttpStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
-                    log.warn(String.format("Ignore failure %s for region %s", e, region));
+                    log.warn("Ignore failure {} for region {}", e, region);
                     continue;
                 }
                 throw new SwiftExceptionMappingService().map(e);

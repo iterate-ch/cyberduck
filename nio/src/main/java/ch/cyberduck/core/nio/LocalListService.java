@@ -71,7 +71,7 @@ public class LocalListService implements ListService {
                     }
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Failure reading attributes for %s", n));
+                    log.warn("Failure reading attributes for {}", n);
                 }
             }
         }
@@ -98,7 +98,7 @@ public class LocalListService implements ListService {
                 file.setSymlinkTarget(target);
             }
             catch(IOException e) {
-                log.warn(String.format("Failure to read symbolic link of %s. %s", file, e.getMessage()));
+                log.warn("Failure to read symbolic link of {}. {}", file, e.getMessage());
                 return false;
             }
         }

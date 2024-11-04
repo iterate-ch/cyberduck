@@ -97,7 +97,7 @@ public class DeleteWorker extends Worker<List<Path>> {
         final Delete delete;
         if(trash) {
             if(null == session.getFeature(Trash.class)) {
-                log.warn(String.format("No trash feature available for %s", session));
+                log.warn("No trash feature available for {}", session);
                 delete = session.getFeature(Delete.class);
             }
             else {
@@ -129,9 +129,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                             final Path f = iter.next();
                             if(versioning.getConfiguration(f).isEnabled()) {
                                 if(versioning.save(f)) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Skip deleting %s", f));
-                                    }
+                                    log.debug("Skip deleting {}", f);
                                     iter.remove();
                                 }
                             }
@@ -163,15 +161,15 @@ public class DeleteWorker extends Worker<List<Path>> {
             if(null != file.attributes().getVersionId()) {
                 if(file.attributes().isDuplicate()) {
                     // Delete previous versions or pending upload
-                    log.warn(String.format("Delete version %s", file));
+                    log.warn("Delete version {}", file);
                 }
                 else {
                     if(file.getType().contains(Path.Type.upload)) {
-                        log.warn(String.format("Delete pending upload %s", file));
+                        log.warn("Delete pending upload {}", file);
                     }
                     else {
                         // Add delete marker
-                        log.warn(String.format("Nullify version to add delete marker for %s", file));
+                        log.warn("Nullify version to add delete marker for {}", file);
                         file.attributes().setVersionId(null);
                     }
                 }

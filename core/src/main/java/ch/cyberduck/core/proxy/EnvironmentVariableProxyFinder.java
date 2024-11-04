@@ -25,7 +25,7 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
                         return new Proxy(Proxy.Type.SOCKS, uri.getHost(), uri.getPort());
                     }
                     catch(URISyntaxException e) {
-                        log.warn(String.format("Invalid URL in ftp_proxy environment variable. %s", ftp_proxy));
+                        log.warn("Invalid URL in ftp_proxy environment variable. {}", ftp_proxy);
                     }
                 }
                 break;
@@ -37,7 +37,7 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
                         return new Proxy(Proxy.Type.HTTP, uri.getHost(), uri.getPort());
                     }
                     catch(URISyntaxException e) {
-                        log.warn(String.format("Invalid URL in ftp_proxy environment variable. %s", http_proxy));
+                        log.warn("Invalid URL in ftp_proxy environment variable. {}", http_proxy);
                     }
                 }
                 break;
@@ -49,7 +49,7 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
                         return new Proxy(Proxy.Type.HTTP, uri.getHost(), uri.getPort());
                     }
                     catch(URISyntaxException e) {
-                        log.warn(String.format("Invalid URL in ftp_proxy environment variable. %s", https_proxy));
+                        log.warn("Invalid URL in ftp_proxy environment variable. {}", https_proxy);
                     }
                 }
                 break;

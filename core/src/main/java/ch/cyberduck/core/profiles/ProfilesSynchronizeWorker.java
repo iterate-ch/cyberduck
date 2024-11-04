@@ -90,7 +90,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
             final Optional<ProfileDescription> match = matcher.compare(local);
             if(match.isPresent()) {
                 // Found matching checksum for profile in remote list which is not marked as latest version
-                log.warn(String.format("Override %s with latest profile verison %s", local, match));
+                log.warn("Override {} with latest profile verison {}", local, match);
                 // Remove previous version
                 local.getProfile().ifPresent(registry::unregister);
                 // Register updated profile by copying temporary file to application support
@@ -98,18 +98,14 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
                     final Local copy = registry.register(value);
                     if(null != copy) {
                         final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Add synched profile %s", d));
-                        }
+                        log.debug("Add synched profile {}", d);
                         returned.add(d);
                         visitor.visit(d);
                     }
                 });
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Add local only profile %s", local));
-                }
+                log.debug("Add local only profile {}", local);
                 returned.add(local);
                 visitor.visit(local);
             }
@@ -119,9 +115,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
             if(description.isLatest()) {
                 // Check if not already added previously when syncing with local list
                 if(!returned.contains(description)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add remote profile %s", description));
-                    }
+                    log.debug("Add remote profile {}", description);
                     returned.add(description);
                     visitor.visit(description);
                 }

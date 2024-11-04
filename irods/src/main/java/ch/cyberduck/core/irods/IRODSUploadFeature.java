@@ -87,11 +87,11 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                 final ChecksumValue value = checksum.computeChecksumOnDataObject(f);
                 final Checksum fingerprint = Checksum.parse(value.getChecksumStringValue());
                 if(null == fingerprint) {
-                    log.warn(String.format("Unsupported checksum algorithm %s", value.getChecksumEncoding()));
+                    log.warn("Unsupported checksum algorithm {}", value.getChecksumEncoding());
                 }
                 else {
                     if(file.getType().contains(Path.Type.encrypted)) {
-                        log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+                        log.warn("Skip checksum verification for {} with client side encryption enabled", file);
                     }
                     else {
                         final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), new TransferStatus(status));
