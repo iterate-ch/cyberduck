@@ -143,44 +143,47 @@ public class RequestEntityRestStorageService extends RestS3Service {
         String endpoint = host.getHostname();
         // Apply default configuration
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
-            if(StringUtils.isNotBlank(host.getRegion())) {
-                log.debug("Apply default region {} to endpoint", host.getRegion());
-                // Apply default region
-                endpoint = createRegionSpecificEndpoint(host, host.getRegion());
-            }
-            else {
-                if(StringUtils.isNotBlank(bucketName)) {
-                    // Only for AWS set endpoint to region specific
-                    if(preferences.getBoolean(String.format("s3.transferacceleration.%s.enable", bucketName))) {
-                        // Already set to accelerated endpoint
-                        log.debug("Use accelerated endpoint {}", S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME);
-                        endpoint = S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME;
-                    }
-                    else {
-                        // Only attempt to determine region specific endpoint if virtual host style requests are enabled
-                        if(!this.getDisableDnsBuckets()) {
-                            // Check if not already request to query bucket location
-                            if(requestParameters == null || !requestParameters.containsKey("location")) {
-                                try {
-                                    // Determine region for bucket using cache
-                                    final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
-                                    if(Location.unknown == region) {
-                                        // Missing permission or not supported
-                                        log.warn("Failure determining bucket location for {}", bucketName);
-                                        endpoint = host.getHostname();
-                                    }
-                                    else {
-                                        log.debug("Determined region {} for bucket {}", region, bucketName);
-                                        endpoint = createRegionSpecificEndpoint(host, region.getIdentifier());
-                                    }
+            if(StringUtils.isNotBlank(bucketName)) {
+                // Only for AWS set endpoint to region specific
+                if(preferences.getBoolean(String.format("s3.transferacceleration.%s.enable", bucketName))) {
+                    // Already set to accelerated endpoint
+                    log.debug("Use accelerated endpoint {}", S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME);
+                    endpoint = S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME;
+                }
+                else {
+                    // Only attempt to determine region specific endpoint if virtual host style requests are enabled
+                    if(!this.getDisableDnsBuckets()) {
+                        // Check if not already request to query bucket location
+                        if(requestParameters == null || !requestParameters.containsKey("location")) {
+                            try {
+                                // Determine region for bucket using cache
+                                final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
+                                if(Location.unknown == region) {
+                                    // Missing permission or not supported
+                                    log.warn("Failure determining bucket location for {}", bucketName);
+                                    endpoint = host.getHostname();
                                 }
-                                catch(BackgroundException e) {
-                                    // Ignore failure reading location for bucket
-                                    log.error("Failure {} determining bucket location for {}", e, bucketName);
-                                    endpoint = createRegionSpecificEndpoint(host, preferences.getProperty("s3.location"));
+                                else {
+                                    log.debug("Determined region {} for bucket {}", region, bucketName);
+                                    endpoint = createRegionSpecificEndpoint(host, region.getIdentifier());
                                 }
                             }
+                            catch(BackgroundException e) {
+                                // Ignore failure reading location for bucket
+                                log.error("Failure {} determining bucket location for {}", e, bucketName);
+                                endpoint = createRegionSpecificEndpoint(host, preferences.getProperty("s3.location"));
+                            }
                         }
+                    }
+                }
+            }
+            else {
+                if(StringUtils.isNotBlank(host.getRegion())) {
+                    // Only attempt to determine region specific endpoint if virtual host style requests are enabled
+                    if(!this.getDisableDnsBuckets()) {
+                        log.debug("Apply default region {} to endpoint", host.getRegion());
+                        // Apply default region
+                        endpoint = createRegionSpecificEndpoint(host, host.getRegion());
                     }
                 }
             }
