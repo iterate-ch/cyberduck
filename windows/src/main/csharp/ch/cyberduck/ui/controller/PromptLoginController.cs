@@ -79,7 +79,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     throw new LoginCanceledException();
                 }
             };
-            _browser.Invoke(d);
+            _browser.Invoke(d, true);
             //Proceed nevertheless.
         }
 
@@ -106,7 +106,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     throw new LoginCanceledException();
                 }
             };
-            _browser.Invoke(d);
+            _browser.Invoke(d, true);
             return credentials;
         }
 
