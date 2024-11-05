@@ -279,7 +279,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             shares = new SMBRootListService(this, prompt, session = client.authenticate(context));
         }
         catch(SMBRuntimeException e) {
-            throw new SMBExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"), e);
+            throw new SMBExceptionMappingService().map(e);
         }
     }
 
