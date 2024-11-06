@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -24,7 +23,7 @@ import java.util.Map;
 
 @Optional
 public interface Metadata {
-    Map<String, String> getDefault(Local local);
+    Map<String, String> getDefault();
 
     Map<String, String> getMetadata(Path file) throws BackgroundException;
 

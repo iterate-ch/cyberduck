@@ -15,7 +15,6 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -25,7 +24,7 @@ import java.util.Map;
 
 public class DisabledHeadersFeature implements Headers {
     @Override
-    public Map<String, String> getDefault(final Local local) {
+    public Map<String, String> getDefault() {
         return Collections.emptyMap();
     }
 

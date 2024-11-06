@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
@@ -39,7 +38,7 @@ public class B2MetadataFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault(final Local file) {
+    public Map<String, String> getDefault() {
         return new HostPreferences(session.getHost()).getMap("b2.metadata.default");
     }
 

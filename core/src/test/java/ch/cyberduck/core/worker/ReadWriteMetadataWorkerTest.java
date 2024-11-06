@@ -17,7 +17,6 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -122,7 +121,7 @@ public class ReadWriteMetadataWorkerTest {
                     return (T) new Metadata() {
 
                         @Override
-                        public Map<String, String> getDefault(Local local) {
+                        public Map<String, String> getDefault() {
                             return Collections.emptyMap();
                         }
 

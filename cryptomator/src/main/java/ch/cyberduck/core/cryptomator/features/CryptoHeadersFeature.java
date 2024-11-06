@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,8 +37,8 @@ public class CryptoHeadersFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault(final Local local) {
-        return delegate.getDefault(local);
+    public Map<String, String> getDefault() {
+        return delegate.getDefault();
     }
 
     @Override
