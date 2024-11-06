@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.shared.DefaultAclFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.acl.Permission;
@@ -40,7 +39,7 @@ import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
 
-public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermission, Location {
+public class B2BucketTypeFeature implements AclPermission, Location {
 
     private final PathContainerService containerService
             = new B2PathContainerService();

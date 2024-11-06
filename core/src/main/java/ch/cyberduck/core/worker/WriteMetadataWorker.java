@@ -76,6 +76,9 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Metadata feature = session.getFeature(Metadata.class);
+        if(null == feature) {
+            return false;
+        }
         log.debug("Run with feature {}", feature);
         for(Path file : files) {
             if(this.isCanceled()) {

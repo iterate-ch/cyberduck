@@ -15,10 +15,13 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
@@ -63,16 +66,35 @@ public interface AclPermission {
      */
     List<Acl.Role> getAvailableAclRoles(List<Path> files);
 
-    /**
-     * @param file  Remote file
-     * @param local File on local disk
-     * @return Default ACL to set for file
-     */
-    Acl getDefault(Path file, Local local) throws BackgroundException;
+    Preferences preferences = PreferencesFactory.get();
 
     /**
-     * @param type File or folder
-     * @return Default ACL for new file or folder
+     * @param file Remote file
+     * @return Default ACL to set for file
      */
-    Acl getDefault(EnumSet<Path.Type> type) throws BackgroundException;
+    default Acl getDefault(final Path type) throws BackgroundException {
+        if(preferences.getBoolean("queue.upload.permissions.default")) {
+            if(type.getType().contains(Path.Type.file)) {
+                return toAcl(new Permission(preferences.getInteger("queue.upload.permissions.file.default")));
+            }
+            else {
+                return toAcl(new Permission(preferences.getInteger("queue.upload.permissions.folder.default")));
+            }
+        }
+        return Acl.EMPTY;
+    }
+
+    static Acl toAcl(final Permission permission) {
+        final Acl acl = new Acl();
+        if(permission.getOther().implies(Permission.Action.read)) {
+            acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
+        }
+        if(permission.getGroup().implies(Permission.Action.read)) {
+            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
+        }
+        if(permission.getGroup().implies(Permission.Action.write)) {
+            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
+        }
+        return acl;
+    }
 }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
@@ -39,7 +38,7 @@ public class DriveMetadataFeature implements Metadata {
     }
 
     @Override
-    public Map<String, String> getDefault(final Local local) {
+    public Map<String, String> getDefault() {
         return Collections.emptyMap();
     }
 

@@ -74,6 +74,9 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Redundancy feature = session.getFeature(Redundancy.class);
+        if(null == feature) {
+            return false;
+        }
         log.debug("Run with feature {}", feature);
         for(Path file : files) {
             if(this.isCanceled()) {

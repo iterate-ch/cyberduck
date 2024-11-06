@@ -7,7 +7,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.shared.DefaultAclFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class WriteAclWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(Class<T> type) {
                 if(type.equals(AclPermission.class)) {
-                    return (T) new DefaultAclFeature() {
+                    return (T) new AclPermission() {
                         @Override
                         public Acl getPermission(final Path file) {
                             fail();
@@ -78,7 +77,7 @@ public class WriteAclWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(Class<T> type) {
                 if(type.equals(AclPermission.class)) {
-                    return (T) new DefaultAclFeature() {
+                    return (T) new AclPermission() {
                         @Override
                         public Acl getPermission(final Path file) {
                             fail();
@@ -122,7 +121,7 @@ public class WriteAclWorkerTest {
                        @SuppressWarnings("unchecked")
                        public <T> T _getFeature(Class<T> type) {
                            if(type.equals(AclPermission.class)) {
-                               return (T) new DefaultAclFeature() {
+                               return (T) new AclPermission() {
                                    @Override
                                    public Acl getPermission(final Path file) {
                                        fail();

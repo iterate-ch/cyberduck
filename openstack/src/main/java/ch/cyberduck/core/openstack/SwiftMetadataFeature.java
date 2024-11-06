@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -55,7 +54,7 @@ public class SwiftMetadataFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault(final Local local) {
+    public Map<String, String> getDefault() {
         return new HostPreferences(session.getHost()).getMap("openstack.metadata.default");
     }
 

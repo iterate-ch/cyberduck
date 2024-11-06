@@ -16,7 +16,6 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -26,7 +25,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.shared.DefaultAclFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +46,7 @@ import com.google.api.services.storage.model.ObjectAccessControl;
 import com.google.api.services.storage.model.ObjectAccessControls;
 import com.google.api.services.storage.model.StorageObject;
 
-public class GoogleStorageAccessControlListFeature extends DefaultAclFeature implements AclPermission {
+public class GoogleStorageAccessControlListFeature implements AclPermission {
     private static final Logger log = LogManager.getLogger(GoogleStorageAccessControlListFeature.class);
 
     public static final Set<? extends Acl> CANNED_LIST = new LinkedHashSet<>(Arrays.asList(
@@ -70,12 +67,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     }
 
     @Override
-    public Acl getDefault(final EnumSet<Path.Type> type) {
-        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
-    }
-
-    @Override
-    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
+    public Acl getDefault(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
         try {
             final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());

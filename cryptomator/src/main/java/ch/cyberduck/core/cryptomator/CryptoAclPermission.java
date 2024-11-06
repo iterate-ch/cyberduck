@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -60,13 +59,8 @@ public class CryptoAclPermission implements AclPermission {
     }
 
     @Override
-    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
-        return delegate.getDefault(file, local);
-    }
-
-    @Override
-    public Acl getDefault(final EnumSet<Path.Type> type) throws BackgroundException {
-        return delegate.getDefault(type);
+    public Acl getDefault(final Path file) throws BackgroundException {
+        return delegate.getDefault(file);
     }
 
     @Override

@@ -67,7 +67,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);
         assertEquals(Acl.EMPTY, acl);
-        assertEquals(Acl.EMPTY, f.getDefault(container, null));
+        assertEquals(Acl.EMPTY, f.getDefault(container));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(new Path(container,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(Acl.EMPTY, f.getPermission(test));

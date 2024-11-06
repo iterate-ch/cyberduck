@@ -15,7 +15,6 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,8 +37,8 @@ public class VaultRegistryHeadersFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault(final Local local) {
-        return proxy.getDefault(local);
+    public Map<String, String> getDefault() {
+        return proxy.getDefault();
     }
 
     @Override

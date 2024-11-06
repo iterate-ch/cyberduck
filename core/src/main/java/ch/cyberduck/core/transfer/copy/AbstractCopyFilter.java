@@ -128,14 +128,14 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                 catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
                     final AclPermission targetFeature = targetSession.getFeature(AclPermission.class);
                     if(targetFeature != null) {
-                        status.setAcl(targetFeature.getDefault(file.getType()));
+                        status.setAcl(targetFeature.getDefault(file));
                     }
                 }
             }
             else {
                 final AclPermission targetFeature = targetSession.getFeature(AclPermission.class);
                 if(targetFeature != null) {
-                    status.setAcl(targetFeature.getDefault(file.getType()));
+                    status.setAcl(targetFeature.getDefault(file));
                 }
             }
         }
