@@ -50,6 +50,9 @@ public class WriteLifecycleWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Lifecycle feature = session.getFeature(Lifecycle.class);
+        if(null == feature) {
+            return false;
+        }
         log.debug("Run with feature {}", feature);
         final PathContainerService container = session.getFeature(PathContainerService.class);
         for(Path file : this.getContainers(container, files)) {

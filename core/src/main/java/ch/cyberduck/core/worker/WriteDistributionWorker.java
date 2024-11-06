@@ -53,6 +53,9 @@ public class WriteDistributionWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
+        if(null == feature) {
+            return false;
+        }
         log.debug("Run with feature {}", feature);
         final PathContainerService container = session.getFeature(PathContainerService.class);
         for(Path file : this.getContainers(container, files)) {
