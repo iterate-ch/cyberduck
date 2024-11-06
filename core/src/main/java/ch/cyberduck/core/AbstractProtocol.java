@@ -539,7 +539,7 @@ public abstract class AbstractProtocol implements Protocol {
             return (T) new DefaultComparisonService(this);
         }
         if(type == HostnameConfigurator.class) {
-            return (T) new HostnameConfigurator.DefaultHostnameConfigurator(this);
+            return (T) HostnameConfigurator.DISABLED;
         }
         if(type == CredentialsConfigurator.class) {
             return (T) CredentialsConfigurator.DISABLED;
