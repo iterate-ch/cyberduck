@@ -74,7 +74,9 @@ public class NextcloudSession extends DAVSession {
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         super.login(prompt, cancel);
         try {
-            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
+            final OcsCapabilitiesRequest request = new OcsCapabilitiesRequest(host);
+            log.debug("Query OCS capabilities at {}", request);
+            client.execute(request, new OcsCapabilitiesResponseHandler(ocs));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
