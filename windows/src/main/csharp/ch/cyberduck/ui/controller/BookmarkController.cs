@@ -217,7 +217,6 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 _host.setHostname(input);
-                _host.setPort(HostnameConfiguratorFactory.get(_host.getProtocol()).getPort(input));
                 _host.setCredentials(CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host));
             }
 
