@@ -15,6 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
@@ -164,8 +165,8 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
             canonicalStringBuf.append("/");
         }
         else {
-            canonicalStringBuf.append(
-                    SignatureUtils.awsV4EncodeURI(absolutePath, false));
+            // double url-encode the resource path
+            canonicalStringBuf.append(URIEncoder.encode(absolutePath));
         }
         canonicalStringBuf.append("\n");
 
