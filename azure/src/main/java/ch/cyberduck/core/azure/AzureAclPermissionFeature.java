@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.shared.DefaultAclFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.acl.Permission;
@@ -55,7 +54,7 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
  * <p/>
  * No public read access: Container and blob data can be read by the account owner only.
  */
-public class AzureAclPermissionFeature extends DefaultAclFeature implements AclPermission {
+public class AzureAclPermissionFeature implements AclPermission {
 
     private final AzureSession session;
 

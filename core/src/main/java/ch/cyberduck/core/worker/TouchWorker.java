@@ -77,7 +77,7 @@ public class TouchWorker extends Worker<Path> {
             }
             final AclPermission acl = session.getFeature(AclPermission.class);
             if(acl != null) {
-                status.setAcl(acl.getDefault(EnumSet.of(Path.Type.file)));
+                status.setAcl(acl.getDefault(file));
             }
         }
         final Path result = feature.touch(file, status);

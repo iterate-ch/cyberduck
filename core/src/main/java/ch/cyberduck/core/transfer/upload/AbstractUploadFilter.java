@@ -201,11 +201,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                         status.setAcl(feature.getPermission(file));
                     }
                     catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setAcl(feature.getDefault(file, local));
+                        status.setAcl(feature.getDefault(file));
                     }
                 }
                 else {
-                    status.setAcl(feature.getDefault(file, local));
+                    status.setAcl(feature.getDefault(file));
                 }
             }
             else {

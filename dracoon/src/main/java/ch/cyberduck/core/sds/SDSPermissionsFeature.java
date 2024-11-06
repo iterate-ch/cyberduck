@@ -19,7 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.shared.DefaultAclFeature;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class SDSPermissionsFeature extends DefaultAclFeature {
+public class SDSPermissionsFeature implements AclPermission {
 
     private static final Logger log = LogManager.getLogger(SDSPermissionsFeature.class);
 

@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -30,7 +29,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.shared.DefaultAclFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,12 +46,11 @@ import org.jets3t.service.model.StorageOwner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class S3AccessControlListFeature extends DefaultAclFeature implements AclPermission {
+public class S3AccessControlListFeature implements AclPermission {
     private static final Logger log = LogManager.getLogger(S3AccessControlListFeature.class);
 
     public static final Set<? extends Acl> CANNED_LIST = new LinkedHashSet<>(Arrays.asList(
@@ -102,7 +99,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     }
 
     @Override
-    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
+    public Acl getDefault(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
         if(cache.contains(bucket)) {
             return cache.get(bucket);
@@ -114,11 +111,6 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         final Acl preference = Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
         cache.put(bucket, preference);
         return preference;
-    }
-
-    @Override
-    public Acl getDefault(final EnumSet<Path.Type> type) {
-        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
     }
 
     @Override

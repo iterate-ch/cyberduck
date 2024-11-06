@@ -66,7 +66,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
             }
             final AclPermission acl = session.getFeature(AclPermission.class);
             if(acl != null) {
-                status.setAcl(acl.getDefault(EnumSet.of(Path.Type.directory)));
+                status.setAcl(acl.getDefault(folder));
             }
         }
         status.setRegion(region);
