@@ -38,6 +38,8 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -109,9 +111,8 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
         // Generate AWS-flavoured ISO8601 timestamp string
         final String timestampISO8601 = message.getFirstHeader(S3_ALTERNATE_DATE).getValue();
         // Canonical request string
-        final String canonicalRequestString =
-                SignatureUtils.awsV4BuildCanonicalRequestString(uri,
-                        request.getRequestLine().getMethod(), this.getHeaders(request), requestPayloadHexSHA256Hash);
+        final String canonicalRequestString = awsV4BuildCanonicalRequestString(uri,
+                request.getRequestLine().getMethod(), this.getHeaders(request), requestPayloadHexSHA256Hash);
         // String to sign
         final String stringToSign = SignatureUtils.awsV4BuildStringToSign(
                 session.getSignatureVersion().toString(), canonicalRequestString,
@@ -145,5 +146,92 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
             headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())), StringUtils.trim(header.getValue()));
         }
         return headers;
+    }
+
+    public static String awsV4BuildCanonicalRequestString(
+            URI uri, String httpMethod, Map<String, String> headersMap,
+            String requestPayloadHexSha256Hash) {
+        StringBuilder canonicalStringBuf = new StringBuilder();
+
+        // HTTP Request method: GET, POST etc
+        canonicalStringBuf
+                .append(httpMethod)
+                .append("\n");
+
+        // Canonical URI: URI-encoded version of the absolute path
+        String absolutePath = uri.getPath();
+        if(absolutePath.isEmpty()) {
+            canonicalStringBuf.append("/");
+        }
+        else {
+            canonicalStringBuf.append(
+                    SignatureUtils.awsV4EncodeURI(absolutePath, false));
+        }
+        canonicalStringBuf.append("\n");
+
+        // Canonical query string
+        String query = uri.getRawQuery();
+        if(query == null || query.isEmpty()) {
+            canonicalStringBuf.append("\n");
+        }
+        else {
+            // Parse and sort query parameters and values from query string
+            SortedMap<String, String> sortedQueryParameters =
+                    new TreeMap<>();
+            for(String paramPair : query.split("&")) {
+                String[] paramNameValue = paramPair.split("=", 2);
+                String name = paramNameValue[0];
+                String value = "";
+                if(paramNameValue.length > 1) {
+                    value = paramNameValue[1];
+                }
+                // Add parameters to sorting map, URI-encoded appropriately
+                sortedQueryParameters.put(
+                        name,
+                        value.replace("/", "%2F"));
+            }
+            // Add query parameters to canonical string
+            boolean isPriorParam = false;
+            for(Map.Entry<String, String> entry : sortedQueryParameters.entrySet()) {
+                if(isPriorParam) {
+                    canonicalStringBuf.append("&");
+                }
+                canonicalStringBuf
+                        .append(entry.getKey())
+                        .append("=")
+                        .append(entry.getValue());
+                isPriorParam = true;
+            }
+            canonicalStringBuf.append("\n");
+        }
+
+        // Canonical Headers
+        SortedMap<String, String> sortedHeaders = new TreeMap<>(headersMap);
+        sortedHeaders.remove(HttpHeaders.EXPECT.toLowerCase());
+        for(Map.Entry<String, String> entry : sortedHeaders.entrySet()) {
+            canonicalStringBuf
+                    .append(entry.getKey())
+                    .append(":")
+                    .append(entry.getValue())
+                    .append("\n");
+        }
+        canonicalStringBuf.append("\n");
+
+        // Signed headers
+        boolean isPriorSignedHeader = false;
+        for(Map.Entry<String, String> entry : sortedHeaders.entrySet()) {
+            if(isPriorSignedHeader) {
+                canonicalStringBuf.append(";");
+            }
+            canonicalStringBuf.append(entry.getKey());
+            isPriorSignedHeader = true;
+        }
+        canonicalStringBuf.append("\n");
+
+        // Hashed Payload.
+        canonicalStringBuf
+                .append(requestPayloadHexSha256Hash);
+
+        return canonicalStringBuf.toString();
     }
 }
