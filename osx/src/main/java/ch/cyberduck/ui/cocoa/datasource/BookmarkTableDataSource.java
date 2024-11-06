@@ -424,20 +424,13 @@ public class BookmarkTableDataSource extends ListDataSource {
             else {
                 int insert = row.intValue();
                 for(Host bookmark : pasteboard) {
-                    int previous = source.indexOf(bookmark);
-                    if(previous == insert) {
+                    int sourceIndex = source.indexOf(bookmark);
+                    if(sourceIndex == insert) {
                         // No need to move
                         continue;
                     }
-                    source.remove(previous);
-                    int moved;
-                    if(previous < insert) {
-                        moved = insert - 1;
-                    }
-                    else {
-                        moved = insert;
-                    }
-                    source.add(moved, bookmark);
+                    int destIndex = sourceIndex < insert ? insert - 1 : insert;
+                    source.move(sourceIndex, destIndex);
                 }
                 for(Host bookmark : pasteboard) {
                     int index = source.indexOf(bookmark);

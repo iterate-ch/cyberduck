@@ -136,6 +136,14 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         }
     }
 
+    public void move(int from, int to) {
+        final E item = super.remove(from);
+        this.add(to, item);
+        for(CollectionListener<E> listener : listeners) {
+            listener.collectionItemChanged(item);
+        }
+    }
+
     @Override
     public void clear() {
         for(Iterator<E> iter = this.iterator(); iter.hasNext(); ) {
