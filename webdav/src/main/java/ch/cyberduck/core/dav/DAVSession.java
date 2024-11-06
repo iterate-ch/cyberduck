@@ -163,7 +163,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return;
         }
         try {
-            final Path home = new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host)).find();
+            final Path home = this.getFeature(Home.class).find();
             final HttpHead head = new HttpHead(new DAVPathEncoder().encode(home));
             try {
                 client.execute(head, new MicrosoftIISFeaturesResponseHandler(capabilities));
