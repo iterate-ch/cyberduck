@@ -34,10 +34,10 @@ public abstract class DefaultAclFeature implements AclPermission {
     public Acl getDefault(final EnumSet<Path.Type> type) {
         if(preferences.getBoolean("queue.upload.permissions.default")) {
             if(type.contains(Path.Type.file)) {
-                return this.toAcl(new Permission(preferences.getInteger("queue.upload.permissions.file.default")));
+                return toAcl(new Permission(preferences.getInteger("queue.upload.permissions.file.default")));
             }
             else {
-                return this.toAcl(new Permission(preferences.getInteger("queue.upload.permissions.folder.default")));
+                return toAcl(new Permission(preferences.getInteger("queue.upload.permissions.folder.default")));
             }
         }
         return Acl.EMPTY;
@@ -49,10 +49,10 @@ public abstract class DefaultAclFeature implements AclPermission {
             return this.getDefault(local.getType());
         }
         // Read permissions from local file
-        return this.toAcl(local.attributes().getPermission());
+        return toAcl(local.attributes().getPermission());
     }
 
-    private Acl toAcl(final Permission permission) {
+    public static Acl toAcl(final Permission permission) {
         final Acl acl = new Acl();
         if(permission.getOther().implies(Permission.Action.read)) {
             acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
