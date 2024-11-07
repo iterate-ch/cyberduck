@@ -356,7 +356,7 @@ public abstract class TransferPromptController extends SheetController implement
                 final TransferItem file = cache.lookup(new NSObjectTransferItemReference(item));
                 final TransferStatus status = browserModel.getStatus(file);
                 if(identifier.equals(TransferPromptDataSource.Column.include.name())) {
-                    cell.setEnabled(!status.isRejected() && status.isExists());
+                    cell.setEnabled(!status.isRejected());
                 }
                 if(identifier.equals(TransferPromptDataSource.Column.filename.name())) {
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(file.remote, 16));
