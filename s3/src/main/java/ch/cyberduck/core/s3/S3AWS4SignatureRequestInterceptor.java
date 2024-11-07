@@ -83,6 +83,7 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
             if(host != null) {
                 try {
                     region = SignatureUtils.awsRegionForRequest(new URI(host.toURI()));
+                    log.debug("Determined region {} from URI {}", region, host.toURI());
                 }
                 catch(URISyntaxException e) {
                     throw new IOException(e);
@@ -95,9 +96,11 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
         }
         if(null == region) {
             region = session.getHost().getRegion();
+            log.debug("Determined region {} from {}", region, session.getHost());
         }
         if(null == region) {
             region = new HostPreferences(session.getHost()).getProperty("s3.location");
+            log.debug("Determined region {} from defaults", region);
         }
         final HttpUriRequest message = (HttpUriRequest) request;
         String requestPayloadHexSHA256Hash =

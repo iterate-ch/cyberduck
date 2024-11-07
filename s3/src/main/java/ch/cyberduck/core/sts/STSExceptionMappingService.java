@@ -21,18 +21,17 @@ import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
-import com.amazonaws.services.securitytoken.model.InvalidIdentityTokenException;
 
 public class STSExceptionMappingService implements ExceptionMappingService<AWSSecurityTokenServiceException> {
 
     @Override
     public BackgroundException map(final AWSSecurityTokenServiceException e) {
-        if(e instanceof com.amazonaws.services.securitytoken.model.ExpiredTokenException) {
+        if("RequestExpired".equals(e.getErrorCode())) {
             // The web identity token that was passed is expired or is not valid. Get a new identity token from the identity
             // provider and then retry the request.
             return new ExpiredTokenException(e.getErrorMessage(), e);
         }
-        if(e instanceof InvalidIdentityTokenException) {
+        if("InvalidClientTokenId".equals(e.getErrorCode())) {
             // The web identity token that was passed could not be validated by Amazon Web Services. Get a new identity token from
             // the identity provider and then retry the request.
             return new ExpiredTokenException(e.getErrorMessage(), e);

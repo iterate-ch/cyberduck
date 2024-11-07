@@ -272,7 +272,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
         final String name = new AlphanumericRandomStringService().random();
         final TransferStatus status = new TransferStatus();
-        final Path file = new S3TouchFeature(virtualhost, new S3AccessControlListFeature(session)).touch(
+        final Path file = new S3TouchFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).touch(
                 new Path(name, EnumSet.of(Path.Type.file)), status);
         final PathAttributes attributes = f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
         assertEquals(0L, attributes.getSize());
@@ -283,6 +283,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testDetermineRegionVirtualHostStyle() throws Exception {
+        assertEquals("eu-west-3", virtualhost.getClient().getRegionEndpointCache().getRegionForBucketName(""));
+        assertEquals("eu-west-3", virtualhost.getClient().getRegionEndpointCache().getRegionForBucketName("test-eu-west-3-cyberduck"));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost));
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // No region is cached and must be determined although HEAD request will not allow S3 to return correct region to use in AWS4 signature

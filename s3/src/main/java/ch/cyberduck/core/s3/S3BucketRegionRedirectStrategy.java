@@ -24,6 +24,10 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
 import org.apache.http.client.RedirectException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
@@ -39,6 +43,12 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
     private final Host host;
 
     public S3BucketRegionRedirectStrategy(final RequestEntityRestStorageService service, final Host host) {
+        super(new String[] {
+                HttpHead.METHOD_NAME,
+                HttpGet.METHOD_NAME,
+                HttpPost.METHOD_NAME,
+                HttpPut.METHOD_NAME
+        });
         this.service = service;
         this.host = host;
     }

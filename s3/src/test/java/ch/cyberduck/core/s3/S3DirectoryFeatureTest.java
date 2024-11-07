@@ -283,7 +283,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         assertTrue(new DefaultFindFeature(virtualhost).find(test));
         assertTrue(new S3ObjectListService(virtualhost, acl).list(test, new DisabledListProgressListener()).isEmpty());
-        new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

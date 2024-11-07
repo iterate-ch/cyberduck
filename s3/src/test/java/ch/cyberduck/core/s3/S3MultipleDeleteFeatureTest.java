@@ -68,7 +68,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     @Test
     public void testDeleteFileVirtualHost() throws Exception {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         new S3TouchFeature(virtualhost, acl).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         new S3MultipleDeleteFeature(virtualhost, acl).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
