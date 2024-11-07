@@ -15,7 +15,6 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,8 +38,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -112,8 +109,9 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
         // Generate AWS-flavoured ISO8601 timestamp string
         final String timestampISO8601 = message.getFirstHeader(S3_ALTERNATE_DATE).getValue();
         // Canonical request string
-        final String canonicalRequestString = awsV4BuildCanonicalRequestString(uri,
-                request.getRequestLine().getMethod(), this.getHeaders(request), requestPayloadHexSHA256Hash);
+        final String canonicalRequestString =
+                SignatureUtils.awsV4BuildCanonicalRequestString(uri,
+                        request.getRequestLine().getMethod(), this.getHeaders(request), requestPayloadHexSHA256Hash);
         // String to sign
         final String stringToSign = SignatureUtils.awsV4BuildStringToSign(
                 session.getSignatureVersion().toString(), canonicalRequestString,
@@ -147,86 +145,5 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
             headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())), StringUtils.trim(header.getValue()));
         }
         return headers;
-    }
-
-    public static String awsV4BuildCanonicalRequestString(final URI uri, final String httpMethod, final Map<String, String> headersMap, final String requestPayloadHexSha256Hash) {
-        final StringBuilder canonical = new StringBuilder();
-
-        // HTTP Request method: GET, POST etc
-        canonical
-                .append(httpMethod)
-                .append('\n');
-
-        // Canonical URI: URI-encoded version of the absolute path
-        String absolutePath = uri.getPath();
-        if(absolutePath.isEmpty()) {
-            canonical.append('/');
-        }
-        else {
-            // double url-encode the resource path
-            canonical.append(URIEncoder.encode(absolutePath));
-        }
-        canonical.append('\n');
-
-        // Canonical query string
-        final String query = uri.getRawQuery();
-        if(query == null || query.isEmpty()) {
-            canonical.append('\n');
-        }
-        else {
-            // Parse and sort query parameters and values from query string
-            final SortedMap<String, String> sortedQueryParameters = new TreeMap<>();
-            for(String paramPair : query.split("&")) {
-                final String[] paramNameValue = paramPair.split("=", 2);
-                final String name = paramNameValue[0];
-                String value = "";
-                if(paramNameValue.length > 1) {
-                    value = paramNameValue[1];
-                }
-                // Add parameters to sorting map, URI-encoded appropriately
-                sortedQueryParameters.put(name, value.replace("/", "%2F"));
-            }
-            // Add query parameters to canonical string
-            boolean isPriorParam = false;
-            for(Map.Entry<String, String> entry : sortedQueryParameters.entrySet()) {
-                if(isPriorParam) {
-                    canonical.append('&');
-                }
-                canonical
-                        .append(entry.getKey())
-                        .append('=')
-                        .append(entry.getValue());
-                isPriorParam = true;
-            }
-            canonical.append('\n');
-        }
-
-        // Canonical Headers
-        SortedMap<String, String> sortedHeaders = new TreeMap<>(headersMap);
-        sortedHeaders.remove(HttpHeaders.EXPECT.toLowerCase());
-        for(Map.Entry<String, String> entry : sortedHeaders.entrySet()) {
-            canonical
-                    .append(entry.getKey())
-                    .append(":")
-                    .append(entry.getValue())
-                    .append('\n');
-        }
-        canonical.append('\n');
-
-        // Signed headers
-        boolean isPriorSignedHeader = false;
-        for(Map.Entry<String, String> entry : sortedHeaders.entrySet()) {
-            if(isPriorSignedHeader) {
-                canonical.append(";");
-            }
-            canonical.append(entry.getKey());
-            isPriorSignedHeader = true;
-        }
-        canonical.append('\n');
-
-        // Hashed Payload.
-        canonical.append(requestPayloadHexSha256Hash);
-
-        return canonical.toString();
     }
 }
