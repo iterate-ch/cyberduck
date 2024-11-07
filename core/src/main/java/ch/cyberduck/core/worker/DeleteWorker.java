@@ -117,7 +117,7 @@ public class DeleteWorker extends Worker<List<Path>> {
         }
         // Iterate again to delete any files that can be omitted when recursive operation is supported
         if(delete.isRecursive()) {
-            recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
+            recursive.keySet().removeIf(f -> !f.getType().contains(Path.Type.decrypted) && recursive.keySet().stream().anyMatch(f::isChild));
         }
         final HostPreferences preferences = new HostPreferences(session.getHost());
         if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.delete.enable")) {
@@ -177,7 +177,7 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
         }
         else if(file.isDirectory()) {
-            if(!delete.isRecursive()) {
+            if(!delete.isRecursive() || file.getType().contains(Path.Type.decrypted)) {
                 for(Path child : list.list(file, listener).filter(filter)) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
