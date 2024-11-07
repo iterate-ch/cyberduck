@@ -52,7 +52,7 @@ public abstract class AbstractChecksumCompute implements ChecksumCompute {
         try {
             byte[] buffer = new byte[16384];
             int bytesRead;
-            while((bytesRead = in.read(buffer, 0, buffer.length)) != -1) {
+            while((bytesRead = in.read(buffer, 0, buffer.length)) != IOUtils.EOF) {
                 cancelation.validate();
                 md.update(buffer, 0, bytesRead);
             }
