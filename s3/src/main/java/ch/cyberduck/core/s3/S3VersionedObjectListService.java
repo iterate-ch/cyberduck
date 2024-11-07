@@ -148,7 +148,10 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(),
                             PathNormalizer.name(key), EnumSet.of(Path.Type.file), attr);
                     if(metadata) {
-                        f.withAttributes(attributes.find(f));
+                        // Method Not Allowed for delete marker
+                        if(!marker.isDeleteMarker()) {
+                            f.withAttributes(attributes.find(f));
+                        }
                     }
                     objects.add(f);
                     lastKey = key;
