@@ -17,7 +17,6 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -46,11 +45,6 @@ public class LocalTouchFeature implements Touch {
             }
         }
         return file;
-    }
-
-    @Override
-    public Touch withWriter(final Write writer) {
-        return this;
     }
 }
 

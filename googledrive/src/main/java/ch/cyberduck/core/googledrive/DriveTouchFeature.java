@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -69,11 +68,6 @@ public class DriveTouchFeature implements Touch<VersionId> {
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Cannot create {0}", e, file);
         }
-    }
-
-    @Override
-    public DriveTouchFeature withWriter(final Write<VersionId> writer) {
-        return this;
     }
 
     @Override

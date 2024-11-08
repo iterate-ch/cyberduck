@@ -22,7 +22,6 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -53,10 +52,5 @@ public class BrickTouchFeature implements Touch<FileEntity> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
-    }
-
-    @Override
-    public Touch<FileEntity> withWriter(final Write<FileEntity> writer) {
-        return this;
     }
 }
