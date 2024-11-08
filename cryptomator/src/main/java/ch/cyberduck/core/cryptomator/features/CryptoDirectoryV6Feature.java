@@ -91,11 +91,6 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public CryptoDirectoryV6Feature<Reply> withWriter(final Write<Reply> writer) {
-        return this;
-    }
-
-    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoDirectoryFeature{");
         sb.append("proxy=").append(delegate);

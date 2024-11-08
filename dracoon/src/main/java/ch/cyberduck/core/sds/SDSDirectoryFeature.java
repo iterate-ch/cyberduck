@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -119,10 +118,5 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
         if(!permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
-    }
-
-    @Override
-    public Directory<VersionId> withWriter(final Write<VersionId> writer) {
-        return this;
     }
 }

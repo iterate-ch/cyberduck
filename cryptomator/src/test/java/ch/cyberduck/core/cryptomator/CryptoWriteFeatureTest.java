@@ -20,7 +20,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
@@ -47,11 +46,6 @@ public class CryptoWriteFeatureTest {
                         public Path mkdir(final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
-                        }
-
-                        @Override
-                        public Directory withWriter(final Write writer) {
-                            return this;
                         }
                     };
                 }
@@ -89,11 +83,6 @@ public class CryptoWriteFeatureTest {
                         public Path mkdir(final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
-                        }
-
-                        @Override
-                        public Directory withWriter(final Write writer) {
-                            return this;
                         }
                     };
                 }

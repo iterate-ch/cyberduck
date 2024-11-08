@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -53,10 +52,5 @@ public class DAVDirectoryFeature implements Directory<String> {
             throw new HttpExceptionMappingService().map(e, folder);
         }
         return folder;
-    }
-
-    @Override
-    public DAVDirectoryFeature withWriter(final Write<String> writer) {
-        return this;
     }
 }

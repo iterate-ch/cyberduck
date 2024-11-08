@@ -24,7 +24,6 @@ import ch.cyberduck.core.box.io.swagger.client.model.FoldersParent;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -51,11 +50,6 @@ public class BoxDirectoryFeature implements Directory {
         catch(ApiException e) {
             throw new BoxExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);
         }
-    }
-
-    @Override
-    public Directory withWriter(final Write writer) {
-        return this;
     }
 
     @Override

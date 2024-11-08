@@ -31,7 +31,6 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -83,11 +82,6 @@ public class MoveWorkerTest {
                         @Override
                         public Path mkdir(final Path folder, final TransferStatus status) {
                             return folder;
-                        }
-
-                        @Override
-                        public Directory<Void> withWriter(final Write<Void> writer) {
-                            return this;
                         }
                     };
                 }
@@ -155,8 +149,8 @@ public class MoveWorkerTest {
             }
         };
         final MoveWorker worker = new MoveWorker(
-            Collections.singletonMap(new Path("/t", EnumSet.of(Path.Type.directory)), new Path("/t2", EnumSet.of(Path.Type.directory))),
-            new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+                Collections.singletonMap(new Path("/t", EnumSet.of(Path.Type.directory)), new Path("/t2", EnumSet.of(Path.Type.directory))),
+                new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         final Collection<Path> targets = worker.run(session).values();
         assertEquals(4, targets.size());
         assertTrue(targets.contains(new Path("/t2", EnumSet.of(Path.Type.directory))));

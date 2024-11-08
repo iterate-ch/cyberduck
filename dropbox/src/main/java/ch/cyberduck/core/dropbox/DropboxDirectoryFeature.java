@@ -21,7 +21,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -44,7 +43,7 @@ public class DropboxDirectoryFeature implements Directory<String> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFolderResult result = new DbxUserFilesRequests(session.getClient(folder.getParent()))
-                .createFolderV2(containerService.getKey(folder), false);
+                    .createFolderV2(containerService.getKey(folder), false);
             return folder.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
@@ -57,10 +56,5 @@ public class DropboxDirectoryFeature implements Directory<String> {
         if(!DropboxTouchFeature.validate(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
         }
-    }
-
-    @Override
-    public DropboxDirectoryFeature withWriter(final Write<String> writer) {
-        return this;
     }
 }

@@ -57,7 +57,9 @@ public interface Directory<Reply> {
     /**
      * Retrieve write implementation for implementations using placeholder files for folders
      */
-    Directory<Reply> withWriter(Write<Reply> writer);
+    default Directory<Reply> withWriter(Write<Reply> writer) {
+        return this;
+    }
 
     /**
      * @throws AccessDeniedException Permission failure for target directory
