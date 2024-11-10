@@ -250,11 +250,6 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         }
     }
 
-    @Override
-    public <T> T getFeature(final Class<T> type) {
-        return super.getFeature(type);
-    }
-
     public String getBasePath() {
         return basePath;
     }
