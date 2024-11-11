@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -53,7 +54,6 @@ import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
@@ -222,7 +222,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
             virtualPath = StringUtils.EMPTY;
         }
         if(objectKey != null) {
-            resource += RestUtils.encodeUrlPath(objectKey, "/");
+            resource += URIEncoder.encode(objectKey);
         }
         // Construct a URL representing a connection for the S3 resource.
         String url;

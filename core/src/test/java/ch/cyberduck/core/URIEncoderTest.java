@@ -34,4 +34,10 @@ public class URIEncoderTest {
         assertEquals("a/p", URIEncoder.encode("a/p"));
         assertEquals("a/p/", URIEncoder.encode("a/p/"));
     }
+
+    @Test
+    public void testEncodeEmoji() {
+        assertEquals("a/%F0%9F%9A%80", URIEncoder.encode("a/\uD83D\uDE80"));
+        assertEquals("a/\uD83D\uDE80", URIEncoder.decode("a/%F0%9F%9A%80"));
+    }
 }
