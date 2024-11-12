@@ -73,7 +73,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     protected Find find;
     protected AttributesFinder attribute;
-    protected UploadFilterOptions options;
+    private final UploadFilterOptions options;
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                                 final UploadFilterOptions options) {
@@ -94,11 +94,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public AbstractUploadFilter withAttributes(final AttributesFinder attributes) {
         this.attribute = attributes;
-        return this;
-    }
-
-    public AbstractUploadFilter withOptions(final UploadFilterOptions options) {
-        this.options = options;
         return this;
     }
 

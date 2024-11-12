@@ -77,7 +77,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private final IconService icon = IconServiceFactory.get();
 
     protected AttributesFinder attribute;
-    private DownloadFilterOptions options;
+    private final DownloadFilterOptions options;
 
     protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
         this.symlinkResolver = symlinkResolver;
@@ -95,11 +95,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     @Override
     public AbstractDownloadFilter withAttributes(final AttributesFinder attributes) {
         this.attribute = attributes;
-        return this;
-    }
-
-    public AbstractDownloadFilter withOptions(final DownloadFilterOptions options) {
-        this.options = options;
         return this;
     }
 

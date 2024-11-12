@@ -38,7 +38,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.core.worker.Worker;
@@ -73,14 +72,9 @@ public class EditSaveWorker extends Worker<Transfer> {
                                          final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.overwrite;
             }
-
-            @Override
-            public AbstractUploadFilter filter(final Session<?> session, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-                return super.filter(session, destination, action, listener).withOptions(new UploadFilterOptions(host)
-                        .withVersioning(PreferencesFactory.get().getBoolean("editor.upload.file.versioning"))
-                        .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
-            }
-        };
+        }.withOptions(new UploadFilterOptions(bookmark)
+                .withVersioning(PreferencesFactory.get().getBoolean("editor.upload.file.versioning"))
+                .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
         this.listener = listener;
     }
 
