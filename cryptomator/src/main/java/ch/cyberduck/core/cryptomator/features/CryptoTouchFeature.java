@@ -71,11 +71,6 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     }
 
     @Override
-    public CryptoTouchFeature<Reply> withWriter(final Write<Reply> writer) {
-        return this;
-    }
-
-    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoTouchFeature{");
         sb.append("proxy=").append(proxy);

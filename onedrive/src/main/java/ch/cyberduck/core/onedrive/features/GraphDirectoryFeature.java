@@ -22,7 +22,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -68,10 +67,5 @@ public class GraphDirectoryFeature implements Directory<Void> {
         if(!session.isAccessible(workdir)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }
-    }
-
-    @Override
-    public Directory<Void> withWriter(final Write writer) {
-        return this;
     }
 }

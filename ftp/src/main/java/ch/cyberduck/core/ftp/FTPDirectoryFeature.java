@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.net.ftp.FTPReply;
@@ -59,10 +58,5 @@ public class FTPDirectoryFeature implements Directory<Integer> {
     @Override
     public void preflight(final Path workdir, final String filename) {
         // Skip checking permission mask
-    }
-
-    @Override
-    public FTPDirectoryFeature withWriter(final Write writer) {
-        return this;
     }
 }

@@ -33,7 +33,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -424,11 +423,6 @@ public class CryptoVaultTest {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }
-
-                        @Override
-                        public Directory withWriter(final Write writer) {
-                            return this;
-                        }
                     };
                 }
                 return super._getFeature(type);
@@ -452,11 +446,6 @@ public class CryptoVaultTest {
                         public Path mkdir(final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
-                        }
-
-                        @Override
-                        public Directory withWriter(final Write writer) {
-                            return this;
                         }
                     };
                 }
@@ -502,11 +491,6 @@ public class CryptoVaultTest {
                         public Path mkdir(final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
-                        }
-
-                        @Override
-                        public Directory withWriter(final Write writer) {
-                            return this;
                         }
                     };
                 }
@@ -557,11 +541,6 @@ public class CryptoVaultTest {
                         @Override
                         public boolean isSupported(final Path workdir, final String name) {
                             throw new UnsupportedOperationException();
-                        }
-
-                        @Override
-                        public Directory withWriter(final Write writer) {
-                            return this;
                         }
                     };
                 }

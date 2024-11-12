@@ -20,7 +20,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
@@ -40,17 +39,12 @@ public class IRODSTouchFeature implements Touch {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final int descriptor = fs.createFile(file.getAbsolute(),
-                DataObjInp.OpenFlags.WRITE_TRUNCATE, DataObjInp.DEFAULT_CREATE_MODE);
+                    DataObjInp.OpenFlags.WRITE_TRUNCATE, DataObjInp.DEFAULT_CREATE_MODE);
             fs.fileClose(descriptor, false);
             return file;
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot create {0}", e, file);
         }
-    }
-
-    @Override
-    public Touch withWriter(final Write writer) {
-        return this;
     }
 }

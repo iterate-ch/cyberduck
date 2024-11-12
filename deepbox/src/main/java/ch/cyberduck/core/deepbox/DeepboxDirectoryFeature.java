@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -88,11 +87,6 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);
         }
-    }
-
-    @Override
-    public Directory<VersionId> withWriter(final Write<VersionId> writer) {
-        return this;
     }
 
     @Override

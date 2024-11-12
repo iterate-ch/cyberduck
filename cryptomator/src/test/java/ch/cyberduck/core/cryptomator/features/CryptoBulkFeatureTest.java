@@ -27,7 +27,6 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,11 +57,6 @@ public class CryptoBulkFeatureTest {
                         @Override
                         public Path mkdir(final Path folder, final TransferStatus status) {
                             return folder;
-                        }
-
-                        @Override
-                        public Directory withWriter(final Write writer) {
-                            return this;
                         }
                     };
                 }
@@ -136,11 +130,6 @@ public class CryptoBulkFeatureTest {
                         @Override
                         public Path mkdir(final Path folder, final TransferStatus status) {
                             return folder;
-                        }
-
-                        @Override
-                        public Directory withWriter(final Write writer) {
-                            return this;
                         }
                     };
                 }

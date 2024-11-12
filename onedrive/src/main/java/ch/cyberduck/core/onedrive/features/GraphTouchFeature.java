@@ -24,7 +24,6 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -70,10 +69,5 @@ public class GraphTouchFeature implements Touch<DriveItem.Metadata> {
         if(!session.isAccessible(workdir)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
-    }
-
-    @Override
-    public Touch<DriveItem.Metadata> withWriter(final Write writer) {
-        return this;
     }
 }

@@ -21,7 +21,6 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFolderRequest;
@@ -54,11 +53,6 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);
         }
-    }
-
-    @Override
-    public Directory<VersionId> withWriter(final Write<VersionId> writer) {
-        return this;
     }
 
     @Override

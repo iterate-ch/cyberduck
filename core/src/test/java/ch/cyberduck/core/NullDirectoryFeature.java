@@ -17,17 +17,11 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class NullDirectoryFeature implements Directory {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         return folder;
-    }
-
-    @Override
-    public Directory withWriter(final Write writer) {
-        return this;
     }
 }

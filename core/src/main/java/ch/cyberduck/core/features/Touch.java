@@ -43,7 +43,9 @@ public interface Touch<Reply> {
         }
     }
 
-    Touch<Reply> withWriter(Write<Reply> writer);
+    default Touch<Reply> withWriter(Write<Reply> writer) {
+        return this;
+    }
 
     /**
      * @throws AccessDeniedException Permission failure for target directory

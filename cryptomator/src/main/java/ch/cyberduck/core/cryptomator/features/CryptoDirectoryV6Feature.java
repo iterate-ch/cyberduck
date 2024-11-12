@@ -62,8 +62,8 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
         new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
         final Path intermediate = encrypt.getParent();
-        if(!find.find(intermediate)) {
-            delegate.mkdir(intermediate, new TransferStatus().withRegion(status.getRegion()));
+        if(!session._getFeature(Find.class).find(intermediate)) {
+            session._getFeature(Directory.class).mkdir(intermediate, new TransferStatus().withRegion(status.getRegion()));
         }
         // Write header
         final FileHeader header = vault.getFileHeaderCryptor().create();
@@ -88,11 +88,6 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         delegate.preflight(workdir, filename);
-    }
-
-    @Override
-    public CryptoDirectoryV6Feature<Reply> withWriter(final Write<Reply> writer) {
-        return this;
     }
 
     @Override

@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -79,12 +78,6 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
             throw new DriveExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);
         }
     }
-
-    @Override
-    public DriveDirectoryFeature withWriter(final Write<VersionId> writer) {
-        return this;
-    }
-
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
