@@ -602,7 +602,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _host.setProtocol(selected);
 
-                var hostname = HostnameConfiguratorFactory.get(selected).getHostname(_host.getHostname());
+                var hostname = HostnameConfiguratorFactory.get(selected).getHostname(selected.getDefaultHostname());
                 if (Utils.IsNotBlank(hostname))
                 {
                     // Prefill with default hostname
