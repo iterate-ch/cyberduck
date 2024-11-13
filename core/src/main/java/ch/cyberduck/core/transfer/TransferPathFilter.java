@@ -23,17 +23,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 
 public interface TransferPathFilter {
 
     /**
-     * @param file   File
-     * @param parent Parent transfer status
+     * @param file     File
+     * @param parent   Parent transfer status
+     * @param progress
      * @return True if file should be transferred
      */
-    boolean accept(Path file, Local local, TransferStatus parent) throws BackgroundException;
+    boolean accept(Path file, Local local, TransferStatus parent, ProgressListener progress) throws BackgroundException;
 
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its
@@ -59,7 +58,7 @@ public interface TransferPathFilter {
      * @throws BackgroundException
      */
     void apply(Path file, Local local, TransferStatus status, ProgressListener listener)
-        throws BackgroundException;
+            throws BackgroundException;
 
     /**
      * Post processing of completed transfer.
@@ -70,9 +69,4 @@ public interface TransferPathFilter {
      */
     void complete(Path file, Local local,
                   TransferStatus status, ProgressListener listener) throws BackgroundException;
-
-    TransferPathFilter withFinder(Find finder);
-
-    TransferPathFilter withAttributes(AttributesFinder attributes);
-
 }

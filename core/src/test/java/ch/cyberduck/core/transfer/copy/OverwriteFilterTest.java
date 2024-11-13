@@ -32,7 +32,7 @@ public class OverwriteFilterTest {
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         AbstractCopyFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())),
                 new NullSession(new Host(new TestProtocol())), files);
-        assertTrue(f.accept(source, null, new TransferStatus()));
+        assertTrue(f.accept(source, null, new TransferStatus(), new DisabledProgressListener()));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class OverwriteFilterTest {
                 return super._getFeature(type);
             }
         }, files);
-        assertTrue(f.accept(source, null, new TransferStatus().exists(true)));
+        assertTrue(f.accept(source, null, new TransferStatus().exists(true), new DisabledProgressListener()));
         final TransferStatus status = f.prepare(source, null, new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(status.isExists());
     }

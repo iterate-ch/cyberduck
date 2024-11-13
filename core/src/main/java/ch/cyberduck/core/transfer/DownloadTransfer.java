@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -34,7 +33,6 @@ import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
@@ -144,36 +142,33 @@ public class DownloadTransfer extends Transfer {
     public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         log.debug("Filter transfer with action {} and options {}", action, options);
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
-        final Find find;
         final AttributesFinder attributes;
         if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
-            find = new CachingFindFeature(source, cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
             attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         }
         else {
-            find = new CachingFindFeature(source, cache, source.getFeature(Find.class));
             attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class));
         }
-        log.debug("Determined features {} and {}", find, attributes);
+        log.debug("Determined feature {}", attributes);
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new ResumeFilter(resolver, source, attributes, options);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new RenameFilter(resolver, source, attributes, options);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new RenameExistingFilter(resolver, source, attributes, options);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new SkipFilter(resolver, source, attributes, options);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new TrashFilter(resolver, source, attributes, options);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, options, listener).withFinder(find).withAttributes(attributes);
+            return new CompareFilter(resolver, source, options);
         }
-        return new OverwriteFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+        return new OverwriteFilter(resolver, source, attributes, options);
     }
 
     @Override

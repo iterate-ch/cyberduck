@@ -36,57 +36,47 @@ import org.apache.logging.log4j.Logger;
 public class CompareFilter extends AbstractDownloadFilter {
     private static final Logger log = LogManager.getLogger(CompareFilter.class);
 
-    private final ProgressListener listener;
     private final ComparePathFilter comparison;
 
-    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final ProgressListener listener) {
-        this(symlinkResolver, session, new DownloadFilterOptions(session.getHost()), listener);
+    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
+        this(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
-    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                         final DownloadFilterOptions options,
-                         final ProgressListener listener) {
-        this(symlinkResolver, session, options, listener, new DefaultComparePathFilter(session));
+    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute) {
+        this(symlinkResolver, session, find, attribute, new DefaultComparePathFilter(session, find, attribute), new DownloadFilterOptions(session.getHost()));
     }
 
-    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                         final DownloadFilterOptions options, final ProgressListener listener,
-                         final ComparePathFilter comparison) {
-        super(symlinkResolver, session, options);
-        this.listener = listener;
+    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
+        this(symlinkResolver, session, new DefaultComparePathFilter(session), options);
+    }
+
+    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final ComparePathFilter comparison, final DownloadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), comparison, options);
+    }
+
+    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final ComparePathFilter comparison, final DownloadFilterOptions options) {
+        super(symlinkResolver, session, attribute, options);
         this.comparison = comparison;
     }
 
     @Override
-    public AbstractDownloadFilter withFinder(final Find finder) {
-        comparison.withFinder(finder);
-        return super.withFinder(finder);
-    }
-
-    @Override
-    public AbstractDownloadFilter withAttributes(final AttributesFinder attributes) {
-        comparison.withAttributes(attributes);
-        return super.withAttributes(attributes);
-    }
-
-    @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
-        if(super.accept(file, local, parent)) {
-            final Comparison comparison = this.comparison.compare(file, local, listener);
-            switch(comparison) {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
+        if(super.accept(file, local, parent, progress)) {
+            final Comparison result = comparison.compare(file, local, progress);
+            switch(result) {
                 case local:
-                    log.info("Skip file {} with comparison {}", file, comparison);
+                    log.info("Skip file {} with result {}", file, result);
                     return false;
                 case equal:
                     if(file.isDirectory()) {
                         return true;
                     }
-                    log.info("Skip file {} with comparison {}", file, comparison);
+                    log.info("Skip file {} with result {}", file, result);
                     return false;
                 case remote:
                     return true;
             }
-            log.warn("Invalid comparison result {}", comparison);
+            log.warn("Invalid result result {}", result);
         }
         return false;
     }

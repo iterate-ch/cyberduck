@@ -35,7 +35,6 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -76,30 +75,23 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private final ApplicationLauncher launcher = ApplicationLauncherFactory.get();
     private final IconService icon = IconServiceFactory.get();
 
-    protected AttributesFinder attribute;
+    private final AttributesFinder attribute;
     private final DownloadFilterOptions options;
 
     protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
-        this.symlinkResolver = symlinkResolver;
+        this(symlinkResolver, session, session.getFeature(AttributesFinder.class), options);
+    }
+
+    public AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final AttributesFinder attribute, final DownloadFilterOptions options) {
         this.session = session;
+        this.symlinkResolver = symlinkResolver;
+        this.attribute = attribute;
         this.options = options;
-        this.attribute = session.getFeature(AttributesFinder.class);
         this.preferences = new HostPreferences(session.getHost());
     }
 
     @Override
-    public AbstractDownloadFilter withFinder(final Find finder) {
-        return this;
-    }
-
-    @Override
-    public AbstractDownloadFilter withAttributes(final AttributesFinder attributes) {
-        this.attribute = attributes;
-        return this;
-    }
-
-    @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final Local volume = local.getVolume();
         if(!volume.exists()) {
             throw new NotfoundException(String.format("Volume %s not mounted", volume.getAbsolute()));

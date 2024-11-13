@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
@@ -46,7 +47,7 @@ public class SkipFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 
     @Test
@@ -56,19 +57,23 @@ public class SkipFilterTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return AttributedList.emptyList();
             }
-        });
-        f.withAttributes(new AttributesFinder() {
+        }, new Find() {
+            @Override
+            public boolean find(final Path file, final ListProgressListener listener) {
+                return false;
+            }
+        }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 return file.attributes();
             }
-        });
+        }, new UploadFilterOptions(new Host(new TestProtocol())));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal("a") {
             @Override
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 
     @Test(expected = NotfoundException.class)
@@ -78,18 +83,22 @@ public class SkipFilterTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return AttributedList.emptyList();
             }
-        });
-        f.withAttributes(new AttributesFinder() {
+        }, new Find() {
+            @Override
+            public boolean find(final Path file, final ListProgressListener listener) {
+                return false;
+            }
+        }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 return file.attributes();
             }
-        });
+        }, new UploadFilterOptions(new Host(new TestProtocol())));
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal("a") {
             @Override
             public boolean exists() {
                 return false;
             }
-        }, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 }

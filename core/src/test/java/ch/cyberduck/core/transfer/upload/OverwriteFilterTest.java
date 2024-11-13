@@ -12,6 +12,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -37,8 +38,8 @@ public class OverwriteFilterTest {
                                  public boolean exists() {
                                      return false;
                                  }
-                             }, new TransferStatus()
-        ));
+                             }, new TransferStatus(),
+                new DisabledProgressListener()));
     }
 
     @Test(expected = NotfoundException.class)
@@ -51,8 +52,8 @@ public class OverwriteFilterTest {
                                  public boolean exists() {
                                      return false;
                                  }
-                             }, new TransferStatus()
-        ));
+                             }, new TransferStatus(),
+                new DisabledProgressListener()));
     }
 
     @Test
@@ -66,7 +67,7 @@ public class OverwriteFilterTest {
                 return true;
             }
 
-        }, new TransferStatus()));
+        }, new TransferStatus(), new DisabledProgressListener()));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)) {
                             }, new NullLocal("t") {
 
@@ -75,8 +76,8 @@ public class OverwriteFilterTest {
                                     return true;
                                 }
 
-                            }, new TransferStatus()
-        ));
+                            }, new TransferStatus(),
+                new DisabledProgressListener()));
     }
 
     @Test
@@ -156,9 +157,8 @@ public class OverwriteFilterTest {
                 return false;
             }
         };
-        final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(host),
+        final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(host), find, attributes,
             new UploadFilterOptions(host).withTemporary(true));
-        f.withFinder(find).withAttributes(attributes);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(found.get());
         f.apply(file, new NullLocal("t"), status, new DisabledProgressListener());
@@ -173,32 +173,46 @@ public class OverwriteFilterTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testOverrideDirectoryWithFile() throws Exception {
-        final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol()))).withFinder(
-            new Find() {
-                @Override
-                public boolean find(final Path file, final ListProgressListener listener) {
-                    if(file.getType().contains(Path.Type.file)) {
-                        return false;
+        final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())),
+                new Find() {
+                    @Override
+                    public boolean find(final Path file, final ListProgressListener listener) {
+                        if(file.getType().contains(Path.Type.file)) {
+                            return false;
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            }
+                },
+                new AttributesFinder() {
+                    @Override
+                    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+                        return file.attributes();
+                    }
+                },
+                new UploadFilterOptions(new Host(new TestProtocol()))
         );
         f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "f"), new TransferStatus().exists(true), new DisabledProgressListener());
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testOverrideFileWithDirectory() throws Exception {
-        final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol()))).withFinder(
-            new Find() {
-                @Override
-                public boolean find(final Path file, final ListProgressListener listener) {
-                    if(file.getType().contains(Path.Type.file)) {
-                        return true;
+        final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())),
+                new Find() {
+                    @Override
+                    public boolean find(final Path file, final ListProgressListener listener) {
+                        if(file.getType().contains(Path.Type.file)) {
+                            return true;
+                        }
+                        return false;
                     }
-                    return false;
-                }
-            }
+                },
+                new AttributesFinder() {
+                    @Override
+                    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+                        return file.attributes();
+                    }
+                },
+                new UploadFilterOptions(new Host(new TestProtocol()))
         );
         f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true), new DisabledProgressListener());
     }

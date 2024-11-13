@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -36,25 +37,33 @@ import org.apache.logging.log4j.Logger;
 public class ResumeFilter extends AbstractDownloadFilter {
     private static final Logger log = LogManager.getLogger(ResumeFilter.class);
 
+    private final AttributesFinder attribute;
     private final Download download;
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
-    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                        final DownloadFilterOptions options) {
-        this(symlinkResolver, session, options, session.getFeature(Download.class));
+    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(AttributesFinder.class), session.getFeature(Download.class), options);
     }
 
-    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                        final DownloadFilterOptions options, final Download download) {
-        super(symlinkResolver, session, options);
+    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final AttributesFinder attribute, final DownloadFilterOptions options) {
+        this(symlinkResolver, session, attribute, session.getFeature(Download.class), options);
+    }
+
+    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final Download download, final DownloadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(AttributesFinder.class), download, options);
+    }
+
+    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final AttributesFinder attribute, final Download download, final DownloadFilterOptions options) {
+        super(symlinkResolver, session, attribute, options);
+        this.attribute = attribute;
         this.download = download;
     }
 
     @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         if(local.isFile()) {
             if(local.exists()) {
                 // Read remote attributes
@@ -78,7 +87,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                 }
             }
         }
-        return super.accept(file, local, parent);
+        return super.accept(file, local, parent, progress);
     }
 
     @Override

@@ -14,6 +14,8 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
@@ -45,7 +47,7 @@ public class ResumeFilterTest {
                     }
                 };
             }
-        }, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 
     @Test
@@ -88,14 +90,14 @@ public class ResumeFilterTest {
                 };
             }
 
-        }, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 
     @Test
     public void testPrepareNoAppend() throws Exception {
         final Host host = new Host(new TestProtocol());
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(host),
-            new UploadFilterOptions(host).withTemporary(true));
+                new UploadFilterOptions(host).withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(7L);
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
@@ -108,14 +110,16 @@ public class ResumeFilterTest {
     @Test
     public void testPrepareAppend() throws Exception {
         final Host host = new Host(new TestProtocol());
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(host) {
+        final NullSession session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final Path f = new Path("t", EnumSet.of(Path.Type.file));
                 f.attributes().setSize(7L);
                 return new AttributedList<>(Collections.singletonList(f));
             }
-        }, new UploadFilterOptions(host).withTemporary(true));
+        };
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session, new DefaultFindFeature(session),
+                new DefaultAttributesFinderFeature(session), new UploadFilterOptions(host).withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(t, new NullLocal("t") {
             @Override
@@ -152,8 +156,8 @@ public class ResumeFilterTest {
                 return list;
             }
         };
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions(host).withTemporary(true), new NullUploadFeature());
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session, new DefaultFindFeature(session),
+                new DefaultAttributesFinderFeature(session), new NullUploadFeature(), new UploadFilterOptions(host).withTemporary(true));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertFalse(f.accept(t, new NullLocal("t") {
@@ -176,7 +180,7 @@ public class ResumeFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 
     @Test
@@ -186,13 +190,14 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                    .withAttributes(new PathAttributes().withSize(2L))));
+                        .withAttributes(new PathAttributes().withSize(2L))));
                 listener.chunk(folder, list);
                 return list;
             }
         };
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions(host).withTemporary(true), new NullUploadFeature());
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session, new DefaultFindFeature(session),
+                new DefaultAttributesFinderFeature(session),
+                new NullUploadFeature(), new UploadFilterOptions(host).withTemporary(true));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {
@@ -216,7 +221,7 @@ public class ResumeFilterTest {
                 return true;
             }
         };
-        assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
+        assertTrue(f.accept(t, l, new TransferStatus().exists(true), new DisabledProgressListener()));
         // Remaining length to transfer is 1
         assertEquals(1L, f.prepare(t, l, new TransferStatus().exists(true), new DisabledProgressListener()).getLength());
         // Skip first 2 bytes
@@ -230,13 +235,13 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                    .withAttributes(new PathAttributes().withSize(4L))));
+                        .withAttributes(new PathAttributes().withSize(4L))));
                 listener.chunk(folder, list);
                 return list;
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature()));
+                new DefaultUploadFeature<>(new NullWriteFeature()), new UploadFilterOptions(host).withTemporary(true));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {
@@ -260,7 +265,7 @@ public class ResumeFilterTest {
                 return true;
             }
         };
-        assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
+        assertTrue(f.accept(t, l, new TransferStatus().exists(true), new DisabledProgressListener()));
         assertFalse(f.prepare(t, l, new TransferStatus().exists(true), new DisabledProgressListener()).isAppend());
     }
 }

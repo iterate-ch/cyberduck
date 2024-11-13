@@ -35,7 +35,7 @@ public class ResumeFilterTest {
             public boolean isFile() {
                 return false;
             }
-        }, new TransferStatus()));
+        }, new TransferStatus(), new DisabledProgressListener()));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ResumeFilterTest {
             public boolean exists() {
                 return false;
             }
-        }, new TransferStatus()));
+        }, new TransferStatus(), new DisabledProgressListener()));
     }
 
     @Test
@@ -56,12 +56,12 @@ public class ResumeFilterTest {
         final Host host = new Host(new TestProtocol());
         final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-            new DownloadFilterOptions(host), new DefaultDownloadFeature(session.getFeature(Read.class)) {
-            @Override
-            public boolean offset(final Path file) {
-                return true;
-            }
-        });
+                new DefaultDownloadFeature(session.getFeature(Read.class)) {
+                    @Override
+                    public boolean offset(final Path file) {
+                        return true;
+                    }
+                }, new DownloadFilterOptions(host));
         Path p = new Path("a", EnumSet.of(Path.Type.file));
         final NullLocal local = new NullLocal("~/Downloads", "a") {
             @Override
@@ -96,12 +96,12 @@ public class ResumeFilterTest {
         final Host host = new Host(new TestProtocol());
         final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-            new DownloadFilterOptions(host), new DefaultDownloadFeature(session.getFeature(Read.class)) {
-            @Override
-            public boolean offset(final Path file) {
-                return true;
-            }
-        });
+                new DefaultDownloadFeature(session.getFeature(Read.class)) {
+                    @Override
+                    public boolean offset(final Path file) {
+                        return true;
+                    }
+                }, new DownloadFilterOptions(host));
         Path p = new Path("a", EnumSet.of(Path.Type.directory));
         final NullLocal local = new NullLocal("a") {
             @Override
@@ -128,12 +128,12 @@ public class ResumeFilterTest {
         final Host host = new Host(new TestProtocol());
         final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-            new DownloadFilterOptions(host), new DefaultDownloadFeature(session.getFeature(Read.class)) {
-            @Override
-            public boolean offset(final Path file) {
-                return true;
-            }
-        });
+                new DefaultDownloadFeature(session.getFeature(Read.class)) {
+                    @Override
+                    public boolean offset(final Path file) {
+                        return true;
+                    }
+                }, new DownloadFilterOptions(host));
         Path p = new Path("a", EnumSet.of(Path.Type.directory));
         final NullLocal local = new NullLocal("a") {
             @Override

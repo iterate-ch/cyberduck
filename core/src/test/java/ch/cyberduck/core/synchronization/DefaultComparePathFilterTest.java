@@ -51,12 +51,12 @@ public class DefaultComparePathFilterTest {
                 return true;
             }
         };
-        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol()))) {
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), find, attributes) {
             @Override
             protected Checksum checksum(final HashAlgorithm algorithm, final Local local) {
                 return new Checksum(HashAlgorithm.md5, "a");
             }
-        }.withFinder(find).withAttributes(attributes);
+        };
         final String path = new AlphanumericRandomStringService().random();
         assertEquals(Comparison.equal, s.compare(new Path(path, EnumSet.of(Path.Type.file)), new NullLocal(path) {
             @Override
@@ -83,8 +83,12 @@ public class DefaultComparePathFilterTest {
                 return true;
             }
         };
-        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
-        }).withFinder(find);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), find, new AttributesFinder() {
+            @Override
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
+                return file.attributes();
+            }
+        });
         assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -104,8 +108,12 @@ public class DefaultComparePathFilterTest {
                 return false;
             }
         };
-        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
-        }).withFinder(find);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), find, new AttributesFinder() {
+            @Override
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
+                return file.attributes();
+            }
+        });
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -125,8 +133,12 @@ public class DefaultComparePathFilterTest {
                 return true;
             }
         };
-        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
-        }).withFinder(find);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), find, new AttributesFinder() {
+            @Override
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
+                return file.attributes();
+            }
+        });
         assertEquals(Comparison.remote, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -174,12 +186,12 @@ public class DefaultComparePathFilterTest {
                 };
             }
         };
-        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol()))) {
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), find, attributes) {
             @Override
             protected Checksum checksum(final HashAlgorithm algorithm, final Local local) {
                 return new Checksum(HashAlgorithm.md5, "a");
             }
-        }.withFinder(find).withAttributes(attributes);
+        };
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {

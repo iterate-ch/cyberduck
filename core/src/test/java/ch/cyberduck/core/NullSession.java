@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
@@ -66,6 +67,9 @@ public class NullSession extends Session<Void> implements ListService {
         }
         if(type == Directory.class) {
             return (T) new NullDirectoryFeature();
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new NullAttributesFinder();
         }
         return super._getFeature(type);
     }

@@ -71,34 +71,25 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     private final SymlinkResolver<Local> symlinkResolver;
     private final Filter<Path> hidden = SearchFilterFactory.HIDDEN_FILTER;
 
-    protected Find find;
-    protected AttributesFinder attribute;
+    private final Find find;
+    private final AttributesFinder attribute;
     private final UploadFilterOptions options;
 
-    public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
-                                final UploadFilterOptions options) {
-        this.symlinkResolver = symlinkResolver;
+    public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), options);
+    }
+
+    public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
         this.session = session;
+        this.symlinkResolver = symlinkResolver;
+        this.find = find;
+        this.attribute = attribute;
         this.options = options;
-        this.find = session.getFeature(Find.class);
-        this.attribute = session.getFeature(AttributesFinder.class);
         this.preferences = new HostPreferences(session.getHost());
     }
 
     @Override
-    public AbstractUploadFilter withFinder(final Find finder) {
-        this.find = finder;
-        return this;
-    }
-
-    @Override
-    public AbstractUploadFilter withAttributes(final AttributesFinder attributes) {
-        this.attribute = attributes;
-        return this;
-    }
-
-    @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         if(!local.exists()) {
             // Local file is no more here
             throw new LocalNotfoundException(local.getAbsolute());

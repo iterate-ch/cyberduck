@@ -20,8 +20,11 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
@@ -35,16 +38,29 @@ import java.util.Objects;
 public class ChecksumFilter extends AbstractCopyFilter {
     private static final Logger log = LogManager.getLogger(ChecksumFilter.class);
 
+    private final Find find;
+    private final AttributesFinder attribute;
+
     public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
-        super(source, destination, files);
+        this(source, destination, files, new UploadFilterOptions(destination.getHost()));
     }
 
     public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final UploadFilterOptions options) {
-        super(source, destination, files, options);
+        this(source, destination, files, destination.getFeature(Find.class), destination.getFeature(AttributesFinder.class), options);
+    }
+
+    public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find find, final AttributesFinder attribute) {
+        this(source, destination, files, find, attribute, new UploadFilterOptions(destination.getHost()));
+    }
+
+    public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
+        super(source, destination, files, find, attribute, options);
+        this.find = find;
+        this.attribute = attribute;
     }
 
     @Override
-    public boolean accept(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path source, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final Path target = files.get(source);
         if(source.isFile()) {
             if(parent.isExists()) {

@@ -10,13 +10,12 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
@@ -30,7 +29,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 
 import org.junit.Test;
 
@@ -196,6 +194,9 @@ public class SingleTransferWorkerTest {
                 return AttributedList.emptyList();
             }
         };
+        final PathCache cache = new PathCache(2);
+        cache.put(root.getParent(), new AttributedList<>(Collections.singletonList(root)));
+        cache.put(root, new AttributedList<>(Collections.singletonList(child)));
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
@@ -209,25 +210,8 @@ public class SingleTransferWorkerTest {
                     assertFalse(segment.isExists());
                 }
             }
-
-            @Override
-            public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-                return super.filter(source, destination, action, listener).withAttributes(new AttributesFinder() {
-                    @Override
-                    public PathAttributes find(final Path file, final ListProgressListener listener) {
-                        return file.attributes();
-                    }
-                });
-            }
-        };
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<>();
-                children.add(child);
-                return children;
-            }
-        };
+        }.withCache(cache);
+        final NullSession session = new NullSession(new Host(new TestProtocol()));
         final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {

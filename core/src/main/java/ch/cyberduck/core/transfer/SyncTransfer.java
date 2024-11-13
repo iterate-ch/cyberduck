@@ -76,10 +76,10 @@ public class SyncTransfer extends Transfer {
     private TransferAction action;
 
     private Cache<Path> cache
-        = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private final Map<TransferItem, Comparison> comparisons = Collections.synchronizedMap(new LRUMap<>(
-        PreferencesFactory.get().getInteger("transfer.cache.size")));
+            PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final TransferItem item) {
         this(host, item, TransferAction.callback);
@@ -87,7 +87,7 @@ public class SyncTransfer extends Transfer {
 
     public SyncTransfer(final Host host, final TransferItem item, final TransferAction action) {
         super(host, Collections.singletonList(item),
-            new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
+                new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
         this.upload = new UploadTransfer(host, roots).withCache(cache);
         this.download = new DownloadTransfer(host, roots).withCache(cache);
         this.item = item;
@@ -136,7 +136,7 @@ public class SyncTransfer extends Transfer {
     @Override
     public String getName() {
         return this.getRoot().remote.getName()
-            + " \u2194 " /*left-right arrow*/ + this.getRoot().local.getName();
+                + " \u2194 " /*left-right arrow*/ + this.getRoot().local.getName();
     }
 
     @Override
@@ -149,22 +149,15 @@ public class SyncTransfer extends Transfer {
     public TransferPathFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         log.debug("Filter transfer with action {}", action);
         final Find find = new CachingFindFeature(source, cache,
-            source.getFeature(Find.class, new DefaultFindFeature(source)));
+                source.getFeature(Find.class, new DefaultFindFeature(source)));
         final AttributesFinder attributes = new CachingAttributesFinderFeature(source, cache,
-            source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+                source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         // Set chosen action (upload, download, mirror) from prompt
-        comparison = new CachingComparePathFilter(new DefaultComparePathFilter(source))
-                .withCache(comparisons)
-                .withAttributes(attributes)
-                .withFinder(find);
+        comparison = new CachingComparePathFilter(comparisons, new DefaultComparePathFilter(source, find, attributes));
         return new SynchronizationPathFilter(comparison,
-            download.filter(source, destination, TransferAction.overwrite, listener)
-                .withAttributes(attributes)
-                .withFinder(find),
-            upload.filter(source, destination, TransferAction.overwrite, listener)
-                .withAttributes(attributes)
-                .withFinder(find),
-            action
+                download.filter(source, destination, TransferAction.overwrite, listener),
+                upload.filter(source, destination, TransferAction.overwrite, listener),
+                action
         );
     }
 

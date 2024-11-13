@@ -30,46 +30,32 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.Map;
 
 public class DefaultComparePathFilter implements ComparePathFilter {
     private static final Logger log = LogManager.getLogger(DefaultComparePathFilter.class);
 
-    private Find finder;
-    private AttributesFinder attribute;
-
+    private final Find finder;
+    private final AttributesFinder attribute;
     private final ComparisonService comparison;
 
     public DefaultComparePathFilter(final Session<?> session) {
-        this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
-        this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
-        this.comparison = session.getFeature(ComparisonService.class);
+        this(session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class));
     }
 
-    @Override
-    public ComparePathFilter withFinder(final Find finder) {
+    public DefaultComparePathFilter(final Session<?> session, final Find finder, final AttributesFinder attribute) {
+        this(finder, attribute, session.getFeature(ComparisonService.class));
+    }
+
+    public DefaultComparePathFilter(final Find finder, final AttributesFinder attribute, final ComparisonService comparison) {
         this.finder = finder;
-        return this;
-    }
-
-    @Override
-    public ComparePathFilter withAttributes(final AttributesFinder attribute) {
         this.attribute = attribute;
-        return this;
-    }
-
-    @Override
-    public ComparePathFilter withCache(final Map<TransferItem, Comparison> cache) {
-        return this;
+        this.comparison = comparison;
     }
 
     @Override
