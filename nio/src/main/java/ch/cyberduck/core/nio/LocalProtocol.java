@@ -18,6 +18,7 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.io.IOCase;
@@ -25,6 +26,9 @@ import org.apache.commons.io.IOCase;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class LocalProtocol extends AbstractProtocol {
 
     private static String LOCAL_HOSTNAME;

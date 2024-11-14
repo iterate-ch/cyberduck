@@ -17,8 +17,12 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class DropboxProtocol extends AbstractProtocol {
 
     @Override

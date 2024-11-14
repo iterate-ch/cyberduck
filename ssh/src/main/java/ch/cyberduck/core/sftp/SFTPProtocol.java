@@ -22,6 +22,7 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.JumphostConfigurator;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
@@ -29,6 +30,9 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class SFTPProtocol extends AbstractProtocol {
 
     private final CredentialsConfigurator credentials = new OpenSSHCredentialsConfigurator();

@@ -15,6 +15,11 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Protocol;
+
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class SharepointSiteProtocol extends GraphProtocol {
     @Override
     public String getIdentifier() {

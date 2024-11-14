@@ -18,12 +18,16 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class SMBProtocol extends AbstractProtocol {
 
     @Override

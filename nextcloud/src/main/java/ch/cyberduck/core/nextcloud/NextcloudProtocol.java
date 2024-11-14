@@ -17,6 +17,7 @@ package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -24,6 +25,9 @@ import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.ETagComparisonService;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class NextcloudProtocol extends AbstractProtocol {
 
     @Override
