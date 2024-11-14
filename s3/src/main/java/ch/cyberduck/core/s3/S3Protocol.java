@@ -42,7 +42,9 @@ import java.util.stream.Collectors;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.google.auto.service.AutoService;
 
+@AutoService(Protocol.class)
 public class S3Protocol extends AbstractProtocol {
     private static final Logger log = LogManager.getLogger(S3Protocol.class);
 

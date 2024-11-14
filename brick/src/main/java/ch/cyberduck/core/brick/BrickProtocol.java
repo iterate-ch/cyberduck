@@ -19,9 +19,13 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Pairing;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class BrickProtocol extends AbstractProtocol {
 
     @Override

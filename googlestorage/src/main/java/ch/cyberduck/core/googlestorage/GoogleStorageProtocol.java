@@ -21,6 +21,7 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.synchronization.ChainedComparisonService;
@@ -38,6 +39,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public final class GoogleStorageProtocol extends AbstractProtocol {
 
     @Override
