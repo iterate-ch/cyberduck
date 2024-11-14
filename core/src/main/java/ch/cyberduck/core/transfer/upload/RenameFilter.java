@@ -35,6 +35,8 @@ import org.apache.logging.log4j.Logger;
 public class RenameFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(RenameFilter.class);
 
+    private final UploadFilterOptions options;
+
     public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
@@ -49,6 +51,7 @@ public class RenameFilter extends AbstractUploadFilter {
 
     public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
         super(symlinkResolver, session, find, attribute, options);
+        this.options = options;
     }
 
     @Override
