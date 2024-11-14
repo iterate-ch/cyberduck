@@ -51,7 +51,6 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.NotificationRendezvousListener;
 import ch.cyberduck.core.bonjour.Rendezvous;
 import ch.cyberduck.core.bonjour.RendezvousFactory;
-import ch.cyberduck.core.ctera.CteraProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
@@ -1259,7 +1258,7 @@ public class MainController extends BundleController implements NSApplication.De
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
                     oauth.notify(state, code);
                 }
-                else if(StringUtils.startsWith(url, CteraProtocol.CTERA_REDIRECT_URI)) {
+                else if(StringUtils.startsWith(url, String.format("%s:websso", PreferencesFactory.get().getProperty("oauth.handler.scheme")))) {
                     action = StringUtils.removeStart(url, String.format("%s:", preferences.getProperty("oauth.handler.scheme")));
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String code = StringUtils.EMPTY;

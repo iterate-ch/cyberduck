@@ -431,7 +431,7 @@ namespace Ch.Cyberduck.Ui.Controller
             static bool Find(Uri result, out string state, out string code)
             {
                 (state, code) = (default, default);
-                if (result.OriginalString.StartsWith(CteraProtocol.CTERA_REDIRECT_URI))
+                if (result.OriginalString.StartsWith(String.Format("{0}:websso", PreferencesFactory.get().getProperty("oauth.handler.scheme"))))
                 {
                     var query = HttpUtility.ParseQueryString(result.Query);
                     (state, code) = (default, query.Get("ActivationCode"));
