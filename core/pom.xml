@@ -140,6 +140,11 @@
             <artifactId>fast-md5</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service-annotations</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
