@@ -106,7 +106,7 @@ public class TerminalPreferences extends Preferences {
             this.setDefault("queue.upload.permissions.file.default", permission.getMode());
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.debug.name())) {
-            this.setLogging("debug");
+            this.configureLogging("debug");
         }
         return this;
     }
