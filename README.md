@@ -3,7 +3,7 @@
 [![GitHub commit](https://img.shields.io/github/last-commit/iterate-ch/cyberduck)](https://github.com/iterate-ch/cyberduck/commits/master)
 [![GitHub license](https://img.shields.io/badge/license-GPL-blue.svg)](https://raw.githubusercontent.com/iterate-ch/cyberduck/master/LICENSE)
 [![Build Status](https://github.com/iterate-ch/cyberduck/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/iterate-ch/cyberduck/actions)
-[![Twitter](https://img.shields.io/badge/twitter-@cyberduckapp-blue.svg?style=flat)](http://twitter.com/cyberduckapp)
+[![Mastodon](https://img.shields.io/mastodon/follow/109698908353278292?domain=https%3A%2F%2Ffosstodon.org%2F&style=flat)](https://fosstodon.org/@cyberduck)
 [![Gurubase](https://img.shields.io/badge/Gurubase-Ask%20Cyberduck%20Guru-006BFF)](https://gurubase.io/g/cyberduck)
 
 This is the development home for Cyberduck, a libre file transfer client for macOS and Windows. Command line interface (CLI) for Linux, macOS and Windows. The core libraries are used in [Mountain Duck](https://mountainduck.io/).
