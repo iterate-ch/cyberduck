@@ -324,6 +324,7 @@ public class DeepboxListService implements ListService {
                 final Path shared = new Path(directory, containerService.getPinnedLocalization(SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
                 if(!new SharedWithMeListService(companyId).list(shared, listener).isEmpty()) {
                     list.add(shared);
+                    listener.chunk(directory, list);
                 }
                 return list;
             }
