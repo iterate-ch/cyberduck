@@ -129,8 +129,17 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         this.collectionItemAdded(item);
     }
 
-    public void replace(int row, E item) {
-        this.set(row, item);
+    public E set(int row, E item) {
+        final E previous = super.set(row, item);
+        for(CollectionListener<E> listener : listeners) {
+            listener.collectionItemChanged(item);
+        }
+        return previous;
+    }
+
+    public void move(int from, int to) {
+        final E item = super.remove(from);
+        this.add(to, item);
         for(CollectionListener<E> listener : listeners) {
             listener.collectionItemChanged(item);
         }
