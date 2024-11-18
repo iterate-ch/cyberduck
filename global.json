@@ -1,6 +1,6 @@
 {
   "msbuild-sdks": {
-    "IKVM.NET.Sdk": "8.11.0-dev.50",
+    "IKVM.NET.Sdk": "8.11.0-dev.176",
     "Microsoft.Build.NoTargets": "3.7.56",
     "Microsoft.Build.Traversal": "4.1.0"
   }
