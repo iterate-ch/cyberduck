@@ -19,8 +19,10 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -31,22 +33,25 @@ public class SkipFilter extends AbstractDownloadFilter {
     private static final Logger log = LogManager.getLogger(SkipFilter.class);
 
     public SkipFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
+        this(symlinkResolver, session, session.getFeature(AttributesFinder.class), new DownloadFilterOptions(session.getHost()));
     }
 
-    public SkipFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                      final DownloadFilterOptions options) {
-        super(symlinkResolver, session, options);
+    public SkipFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(AttributesFinder.class), options);
+    }
+
+    public SkipFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final AttributesFinder attribute, final DownloadFilterOptions options) {
+        super(symlinkResolver, session, attribute, options);
     }
 
     @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         if(local.isFile()) {
             if(local.exists()) {
                 log.info("Skip file {}", file);
                 return false;
             }
         }
-        return super.accept(file, local, parent);
+        return super.accept(file, local, parent, progress);
     }
 }

@@ -19,8 +19,11 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -36,14 +39,19 @@ public class SkipFilter extends AbstractUploadFilter {
 
     public SkipFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                       final UploadFilterOptions options) {
-        super(symlinkResolver, session, options);
+        this(symlinkResolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), options);
+    }
+
+    public SkipFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
+                      final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
+        super(symlinkResolver, session, find, attribute, options);
     }
 
     /**
      * Skip files that already exist on the server.
      */
     @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         if(parent.isExists()) {
             if(local.isFile()) {
                 if(find.find(file)) {
@@ -52,6 +60,6 @@ public class SkipFilter extends AbstractUploadFilter {
                 }
             }
         }
-        return super.accept(file, local, parent);
+        return super.accept(file, local, parent, progress);
     }
 }

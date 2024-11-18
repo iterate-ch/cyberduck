@@ -179,12 +179,12 @@ public class DownloadTransferTest {
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> d, final TransferAction action, final ProgressListener listener) {
                 return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                    new NullTransferSession(new Host(new TestProtocol())), new DownloadFilterOptions(host), new DefaultDownloadFeature(source.getFeature(Read.class)) {
+                        new NullTransferSession(new Host(new TestProtocol())), new DefaultDownloadFeature(source.getFeature(Read.class)) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;
                     }
-                });
+                }, new DownloadFilterOptions(host));
             }
         };
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),

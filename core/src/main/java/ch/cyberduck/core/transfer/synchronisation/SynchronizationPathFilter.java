@@ -23,8 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -78,7 +76,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         switch(comparison.compare(file, local, new DisabledProgressListener())) {
             case equal:
                 return file.isDirectory();
@@ -88,14 +86,14 @@ public class SynchronizationPathFilter implements TransferPathFilter {
                     return false;
                 }
                 // Include for mirror and download. Ask the download delegate for inclusion
-                return downloadFilter.accept(file, local, parent);
+                return downloadFilter.accept(file, local, parent, progress);
             case local:
                 if(action.equals(TransferAction.download)) {
                     log.info("Skip file {} with comparison result {} because action is {}", file, Comparison.local, action);
                     return false;
                 }
                 // Include for mirror and download. Ask the upload delegate for inclusion
-                return uploadFilter.accept(file, local, parent);
+                return uploadFilter.accept(file, local, parent, progress);
         }
         // Not equal
         return false;
@@ -124,19 +122,5 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             case local:
                 uploadFilter.complete(file, local, status, listener);
         }
-    }
-
-    @Override
-    public TransferPathFilter withFinder(final Find finder) {
-        downloadFilter.withFinder(finder);
-        uploadFilter.withFinder(finder);
-        return this;
-    }
-
-    @Override
-    public TransferPathFilter withAttributes(final AttributesFinder attributes) {
-        downloadFilter.withAttributes(attributes);
-        uploadFilter.withAttributes(attributes);
-        return null;
     }
 }

@@ -161,21 +161,21 @@ public class UploadTransfer extends Transfer {
         }
         log.debug("Determined features {} and {}", find, attributes);
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new ResumeFilter(resolver, source, find, attributes, options);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new RenameFilter(resolver, source, find, attributes, options);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new RenameExistingFilter(resolver, source, find, attributes, options);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+            return new SkipFilter(resolver, source, find, attributes, options);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, options, listener).withFinder(find).withAttributes(attributes);
+            return new CompareFilter(resolver, source, find, attributes, options);
         }
-        return new OverwriteFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
+        return new OverwriteFilter(resolver, source, find, attributes, options);
     }
 
     @Override

@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -56,19 +55,5 @@ public interface UnixPermission {
             }
         }
         return Permission.EMPTY;
-    }
-
-    /**
-     * @param file File on local disk
-     * @return Default mask to set for file
-     */
-    default Permission getDefault(final Local file) {
-        if(preferences.getBoolean("queue.upload.permissions.default")) {
-            return this.getDefault(file.getType());
-        }
-        else {
-            // Read permissions from local file
-            return file.attributes().getPermission();
-        }
     }
 }

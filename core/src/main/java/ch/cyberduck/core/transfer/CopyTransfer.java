@@ -175,9 +175,9 @@ public class CopyTransfer extends Transfer {
         final AttributesFinder attributes = new CachingAttributesFinderFeature(destination, cache,
                 destination.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(destination)));
         if(action.equals(TransferAction.comparison)) {
-            return new ChecksumFilter(source, destination, mapping).withFinder(find).withAttributes(attributes);
+            return new ChecksumFilter(source, destination, mapping, find, attributes);
         }
-        return new OverwriteFilter(source, destination, mapping).withFinder(find).withAttributes(attributes);
+        return new OverwriteFilter(source, destination, mapping, find, attributes);
     }
 
     @Override

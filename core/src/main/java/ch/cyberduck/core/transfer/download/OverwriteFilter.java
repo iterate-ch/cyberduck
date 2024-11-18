@@ -19,16 +19,21 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 public class OverwriteFilter extends AbstractDownloadFilter {
 
     public OverwriteFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
+        this(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
-    public OverwriteFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                           final DownloadFilterOptions options) {
-        super(symlinkResolver, session, options);
+    public OverwriteFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(AttributesFinder.class), options);
     }
+
+    public OverwriteFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final AttributesFinder attribute, final DownloadFilterOptions options) {
+        super(symlinkResolver, session, attribute, options);
+    }
+
 }

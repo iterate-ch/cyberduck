@@ -15,7 +15,6 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
@@ -55,7 +54,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
      */
     public ProfilesSynchronizeWorker(final ProtocolFactory registry, final ProfilesFinder.Visitor visitor) {
         this(registry, LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-            PreferencesFactory.get().getProperty("profiles.folder.name")), visitor);
+                PreferencesFactory.get().getProperty("profiles.folder.name")), visitor);
     }
 
     public ProfilesSynchronizeWorker(final ProtocolFactory registry, final Local directory, final ProfilesFinder.Visitor visitor) {
@@ -127,6 +126,6 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
     }
 
     protected CompareFilter filter(final Session<?> session) {
-        return new CompareFilter(new DisabledDownloadSymlinkResolver(), session, new DisabledProgressListener());
+        return new CompareFilter(new DisabledDownloadSymlinkResolver(), session);
     }
 }

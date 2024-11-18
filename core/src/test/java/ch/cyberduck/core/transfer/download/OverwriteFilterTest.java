@@ -28,7 +28,7 @@ public class OverwriteFilterTest {
         OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
-        assertTrue(f.accept(p, new NullLocal("a"), new TransferStatus()));
+        assertTrue(f.accept(p, new NullLocal("a"), new TransferStatus(), new DisabledProgressListener()));
     }
 
     @Test
@@ -39,13 +39,13 @@ public class OverwriteFilterTest {
             public boolean exists() {
                 return false;
             }
-        }, new TransferStatus()));
+        }, new TransferStatus(), new DisabledProgressListener()));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus()));
+        }, new TransferStatus(), new DisabledProgressListener()));
     }
 
     @Test

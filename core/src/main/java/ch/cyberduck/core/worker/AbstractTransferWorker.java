@@ -246,7 +246,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         // Determine transfer filter implementation from selected overwrite action
                         final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
                         // Only prepare the path it will be actually transferred
-                        if(!filter.accept(file, local, parent)) {
+                        if(!filter.accept(file, local, parent, progress)) {
                             log.info("Skip file {} by filter {} for transfer {}", file, filter, this);
                             transfer.addSize(0L);
                             transfer.addTransferred(0L);
@@ -403,7 +403,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     log.debug("Ask filter {} to accept retry for segment {} of {}", resume, segment, item);
                                     if(resume.accept(
                                             segment.getRename().remote != null ? segment.getRename().remote : item.remote,
-                                            segment.getRename().local != null ? segment.getRename().local : item.local, new TransferStatus().exists(true))) {
+                                            segment.getRename().local != null ? segment.getRename().local : item.local, new TransferStatus().exists(true), progress)) {
                                         log.debug("Determine status for retry of {}", segment);
                                         final TransferStatus retry;
                                         if(segment.isSegment()) {

@@ -43,13 +43,12 @@ public class CompareFilterTest {
     public void testAcceptEqual() throws Exception {
         final Host host = new Host(new TestProtocol());
         final CompareFilter filter = new CompareFilter(new DisabledUploadSymlinkResolver(),
-            new NullSession(host), new UploadFilterOptions(host), new DisabledProgressListener(),
-            new DefaultComparePathFilter(new NullSession(host)) {
-                @Override
-                public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
-                    return Comparison.equal;
-                }
+                new NullSession(host), new DefaultComparePathFilter(new NullSession(host)) {
+            @Override
+            public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
+                return Comparison.equal;
             }
+        }, new UploadFilterOptions(host)
         );
         final Path file = new Path("/", EnumSet.of(Path.Type.file));
         assertFalse(filter.accept(file, new NullLocal("t") {
@@ -57,20 +56,20 @@ public class CompareFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 
     @Test
     public void testAcceptDirectory() throws Exception {
         final Host host = new Host(new TestProtocol());
         final CompareFilter filter = new CompareFilter(new DisabledUploadSymlinkResolver(),
-            new NullSession(host), new UploadFilterOptions(host), new DisabledProgressListener(),
-                new DefaultComparePathFilter(new NullSession(host)) {
-                    @Override
-                    public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
-                        return Comparison.equal;
-                    }
-                });
+                new NullSession(host), new DefaultComparePathFilter(new NullSession(host)) {
+            @Override
+            public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
+                return Comparison.equal;
+            }
+        }, new UploadFilterOptions(host)
+        );
         assertTrue(
                 filter.accept(new Path("/n", EnumSet.of(Path.Type.directory)), new NullLocal("/n") {
                             @Override
@@ -78,6 +77,6 @@ public class CompareFilterTest {
                                 return true;
                             }
                         },
-                        new TransferStatus().exists(true)));
+                        new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 }

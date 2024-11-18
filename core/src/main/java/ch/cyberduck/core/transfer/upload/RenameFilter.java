@@ -22,6 +22,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -33,16 +35,20 @@ import org.apache.logging.log4j.Logger;
 public class RenameFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(RenameFilter.class);
 
-    private final UploadFilterOptions options;
-
     public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
 
-    public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
-                        final UploadFilterOptions options) {
-        super(symlinkResolver, session, options);
-        this.options = options;
+    public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), options);
+    }
+
+    public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute) {
+        this(symlinkResolver, session, find, attribute, new UploadFilterOptions(session.getHost()));
+    }
+
+    public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
+        super(symlinkResolver, session, find, attribute, options);
     }
 
     @Override

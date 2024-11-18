@@ -42,34 +42,35 @@ public class CompareFilterTest {
     @Test
     public void testAcceptEqual() throws Exception {
         final CompareFilter filter = new CompareFilter(new DisabledDownloadSymlinkResolver(),
-            new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(new Host(new TestProtocol())), new DisabledProgressListener(),
-            new DefaultComparePathFilter(
-                    new NullSession(new Host(new TestProtocol()))) {
-                @Override
-                public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
-                    return Comparison.equal;
-                }
-            }
+                new NullSession(new Host(new TestProtocol())),
+                new DefaultComparePathFilter(
+                        new NullSession(new Host(new TestProtocol()))) {
+                    @Override
+                    public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
+                        return Comparison.equal;
+                    }
+                }, new DownloadFilterOptions(new Host(new TestProtocol()))
         );
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), "f");
-        assertFalse(filter.accept(file, local, new TransferStatus().exists(true)));
+        assertFalse(filter.accept(file, local, new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 
 
     @Test
     public void testAcceptDirectory() throws Exception {
         final CompareFilter filter = new CompareFilter(new DisabledDownloadSymlinkResolver(),
-            new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(new Host(new TestProtocol())), new DisabledProgressListener(),
-            new DefaultComparePathFilter(
-                    new NullSession(new Host(new TestProtocol()))) {
-                @Override
-                public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
-                    return Comparison.equal;
-                }
-            });
+                new NullSession(new Host(new TestProtocol())),
+                new DefaultComparePathFilter(
+                        new NullSession(new Host(new TestProtocol()))) {
+                    @Override
+                    public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
+                        return Comparison.equal;
+                    }
+                }, new DownloadFilterOptions(new Host(new TestProtocol()))
+        );
         assertTrue(
                 filter.accept(new Path("/n", EnumSet.of(Path.Type.directory)), new NullLocal("/n"),
-                        new TransferStatus().exists(true)));
+                        new TransferStatus().exists(true), new DisabledProgressListener()));
     }
 }

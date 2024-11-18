@@ -419,12 +419,7 @@ public class UploadTransferTest {
                 segment.setComplete();
                 set.set(true);
             }
-
-            @Override
-            public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-                return super.filter(source, destination, action, listener).withOptions(new UploadFilterOptions(host).withTemporary(true));
-            }
-        };
+        }.withOptions(new UploadFilterOptions(host).withTemporary(true));
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
             new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override

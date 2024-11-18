@@ -1,5 +1,6 @@
 package ch.cyberduck.core.transfer.download;
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -26,8 +27,8 @@ public class SkipFilterTest {
                                 public boolean exists() {
                                     return false;
                                 }
-                            }, new TransferStatus().exists(true)
-                )
+                            }, new TransferStatus().exists(true),
+                        new DisabledProgressListener())
         );
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)) {
                              }, new NullLocal("a", "b") {
@@ -35,8 +36,8 @@ public class SkipFilterTest {
                                  public boolean exists() {
                                      return true;
                                  }
-                             }, new TransferStatus().exists(true)
-                )
+                             }, new TransferStatus().exists(true),
+                        new DisabledProgressListener())
         );
     }
 
@@ -59,8 +60,8 @@ public class SkipFilterTest {
                                 public boolean exists() {
                                     return true;
                                 }
-                            }, new TransferStatus().exists(true)
-                )
+                            }, new TransferStatus().exists(true),
+                        new DisabledProgressListener())
         );
     }
 }

@@ -24,6 +24,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -39,12 +40,15 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
     private static final Logger log = LogManager.getLogger(RenameExistingFilter.class);
 
     public RenameExistingFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
+        this(symlinkResolver, session, session.getFeature(AttributesFinder.class), new DownloadFilterOptions(session.getHost()));
     }
 
-    public RenameExistingFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                                final DownloadFilterOptions options) {
-        super(symlinkResolver, session, options);
+    public RenameExistingFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(AttributesFinder.class), options);
+    }
+
+    public RenameExistingFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final AttributesFinder attribute, final DownloadFilterOptions options) {
+        super(symlinkResolver, session, attribute, options);
     }
 
     @Override
@@ -59,9 +63,9 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
                 Local rename;
                 do {
                     String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.download.file.rename.format"),
-                        FilenameUtils.getBaseName(file.getName()),
-                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(local.getDelimiter(), '-').replace(':', '-'),
-                        StringUtils.isNotBlank(file.getExtension()) ? String.format(".%s", file.getExtension()) : StringUtils.EMPTY);
+                            FilenameUtils.getBaseName(file.getName()),
+                            UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(local.getDelimiter(), '-').replace(':', '-'),
+                            StringUtils.isNotBlank(file.getExtension()) ? String.format(".%s", file.getExtension()) : StringUtils.EMPTY);
                     rename = LocalFactory.get(local.getParent().getAbsolute(), proposal);
                 }
                 while(rename.exists());

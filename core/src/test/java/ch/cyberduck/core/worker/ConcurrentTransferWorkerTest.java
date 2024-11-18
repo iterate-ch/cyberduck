@@ -163,7 +163,7 @@ public class ConcurrentTransferWorkerTest {
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return new AbstractDownloadFilter(new DisabledDownloadSymlinkResolver(), source, null) {
                     @Override
-                    public boolean accept(final Path file, final Local local, final TransferStatus parent) {
+                    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) {
                         assertFalse(transferred.contains(file));
                         return true;
                     }
