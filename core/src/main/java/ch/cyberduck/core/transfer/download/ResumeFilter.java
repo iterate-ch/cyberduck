@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 public class ResumeFilter extends AbstractDownloadFilter {
     private static final Logger log = LogManager.getLogger(ResumeFilter.class);
 
-    private final AttributesFinder attribute;
     private final Download download;
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
@@ -58,7 +57,6 @@ public class ResumeFilter extends AbstractDownloadFilter {
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final AttributesFinder attribute, final Download download, final DownloadFilterOptions options) {
         super(symlinkResolver, session, attribute, options);
-        this.attribute = attribute;
         this.download = download;
     }
 

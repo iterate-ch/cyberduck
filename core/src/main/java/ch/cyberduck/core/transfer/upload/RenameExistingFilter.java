@@ -42,7 +42,6 @@ import java.text.MessageFormat;
 public class RenameExistingFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(RenameExistingFilter.class);
 
-    private final Find find;
     private final Move move;
 
     public RenameExistingFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
@@ -60,7 +59,6 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     public RenameExistingFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                                 final Find find, final AttributesFinder attribute, final Move move, final UploadFilterOptions options) {
         super(symlinkResolver, session, find, attribute, options);
-        this.find = find;
         this.move = move;
     }
 

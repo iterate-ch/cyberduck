@@ -60,9 +60,9 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
 
     private final Filter<Path> hidden = SearchFilterFactory.HIDDEN_FILTER;
 
-    private final Find find;
-    private final AttributesFinder attribute;
-    private final UploadFilterOptions options;
+    protected final Find find;
+    protected final AttributesFinder attribute;
+    protected final UploadFilterOptions options;
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         this(source, destination, files, new UploadFilterOptions(destination.getHost()));

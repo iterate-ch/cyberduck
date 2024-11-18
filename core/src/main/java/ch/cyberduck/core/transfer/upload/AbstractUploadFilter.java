@@ -71,9 +71,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     private final SymlinkResolver<Local> symlinkResolver;
     private final Filter<Path> hidden = SearchFilterFactory.HIDDEN_FILTER;
 
-    private final Find find;
-    private final AttributesFinder attribute;
-    private final UploadFilterOptions options;
+    protected final Find find;
+    protected final AttributesFinder attribute;
+    protected final UploadFilterOptions options;
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         this(symlinkResolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), options);

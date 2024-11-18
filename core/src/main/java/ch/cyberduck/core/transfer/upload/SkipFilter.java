@@ -32,7 +32,6 @@ import org.apache.logging.log4j.Logger;
 
 public class SkipFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(SkipFilter.class);
-    private final Find find;
 
     public SkipFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
@@ -46,7 +45,6 @@ public class SkipFilter extends AbstractUploadFilter {
     public SkipFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                       final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
         super(symlinkResolver, session, find, attribute, options);
-        this.find = find;
     }
 
     /**

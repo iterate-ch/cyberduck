@@ -38,9 +38,6 @@ import java.util.Objects;
 public class ChecksumFilter extends AbstractCopyFilter {
     private static final Logger log = LogManager.getLogger(ChecksumFilter.class);
 
-    private final Find find;
-    private final AttributesFinder attribute;
-
     public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         this(source, destination, files, new UploadFilterOptions(destination.getHost()));
     }
@@ -55,8 +52,6 @@ public class ChecksumFilter extends AbstractCopyFilter {
 
     public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
         super(source, destination, files, find, attribute, options);
-        this.find = find;
-        this.attribute = attribute;
     }
 
     @Override

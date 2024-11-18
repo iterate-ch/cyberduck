@@ -75,10 +75,10 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private final ApplicationLauncher launcher = ApplicationLauncherFactory.get();
     private final IconService icon = IconServiceFactory.get();
 
-    private final AttributesFinder attribute;
-    private final DownloadFilterOptions options;
+    protected final AttributesFinder attribute;
+    protected final DownloadFilterOptions options;
 
-    protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
+    public AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
         this(symlinkResolver, session, session.getFeature(AttributesFinder.class), options);
     }
 

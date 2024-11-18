@@ -39,8 +39,6 @@ import org.apache.logging.log4j.Logger;
 public class ResumeFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(ResumeFilter.class);
 
-    private final Find find;
-    private final AttributesFinder attribute;
     private final Upload<?> upload;
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
@@ -61,8 +59,6 @@ public class ResumeFilter extends AbstractUploadFilter {
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final Upload<?> upload, final UploadFilterOptions options) {
         super(symlinkResolver, session, find, attribute, options);
-        this.find = find;
-        this.attribute = attribute;
         this.upload = upload;
     }
 
