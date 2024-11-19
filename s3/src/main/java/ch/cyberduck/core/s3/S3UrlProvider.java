@@ -110,7 +110,7 @@ public class S3UrlProvider implements UrlProvider {
         // AWS services require specifying an Amazon S3 bucket using S3://bucket
         list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
                 containerService.getContainer(file).getName(),
-                file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
+                file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", containerService.getKey(file)))),
                 DescriptiveUrl.Type.provider,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
         // Filter by matching container name
