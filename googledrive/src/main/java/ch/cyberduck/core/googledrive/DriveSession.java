@@ -37,7 +37,6 @@ import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -50,11 +49,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-import com.google.api.client.http.HttpBackOffUnsuccessfulResponseHandler;
-import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.About;
 
@@ -88,22 +84,6 @@ public class DriveSession extends HttpSession<Drive> {
         return new Drive.Builder(transport, new GsonFactory(), new UserAgentHttpRequestInitializer(ua))
                 .setApplicationName(ua.get())
                 .build();
-    }
-
-    /**
-     * Retry with backoff for any server error reply
-     */
-    private static final class GoogleDriveHttpRequestInitializer extends UserAgentHttpRequestInitializer {
-        public GoogleDriveHttpRequestInitializer(final UseragentProvider provider) {
-            super(provider);
-        }
-
-        @Override
-        public void initialize(final HttpRequest request) {
-            super.initialize(request);
-            request.setUnsuccessfulResponseHandler(new HttpBackOffUnsuccessfulResponseHandler(new ExponentialBackOff())
-                    .setBackOffRequired(HttpBackOffUnsuccessfulResponseHandler.BackOffRequired.ON_SERVER_ERROR));
-        }
     }
 
     @Override
