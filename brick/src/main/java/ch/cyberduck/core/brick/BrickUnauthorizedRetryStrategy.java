@@ -39,12 +39,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRetryStrategy implements HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(BrickUnauthorizedRetryStrategy.class);
 
-    private final Semaphore semaphore = new Semaphore(1);
+    private final ReentrantLock lock = new ReentrantLock();
     private final HostPasswordStore store = PasswordStoreFactory.get();
     private final BrickSession session;
     private final LoginCallback prompt;
@@ -64,7 +64,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 log.debug("Try to acquire semaphore for {}", session);
                 // Pairing token no longer valid
-                if(!semaphore.tryAcquire()) {
+                if(!lock.tryLock()) {
                     log.warn("Skip pairing because semaphore cannot be aquired for {}", session);
                     return false;
                 }
@@ -84,7 +84,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                 }
                 finally {
                     log.debug("Release semaphore for {}", session);
-                    semaphore.release();
+                    lock.unlock();
                 }
         }
         return false;

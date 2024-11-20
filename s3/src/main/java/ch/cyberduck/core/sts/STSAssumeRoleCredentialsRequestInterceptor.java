@@ -16,10 +16,8 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -38,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.auth0.jwt.JWT;
@@ -49,12 +48,13 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAuthorizationService implements S3CredentialsStrategy, HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleCredentialsRequestInterceptor.class);
 
+    private final ReentrantLock lock = new ReentrantLock();
+
     /**
      * Currently valid tokens
      */
     private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
 
-    private final HostPasswordStore store = PasswordStoreFactory.get();
     /**
      * Handle authentication with OpenID connect retrieving token for STS
      */
@@ -77,6 +77,7 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     }
 
     public TemporaryAccessTokens refresh(final OAuthTokens oidc) throws BackgroundException {
+        lock.lock();
         try {
             return this.tokens = this.authorize(oidc);
         }
@@ -85,21 +86,30 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
             log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
             return this.tokens = this.authorize(oauth.refresh(oidc));
         }
+        finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        if(tokens.isExpired()) {
-            try {
-                this.refresh(oauth.getTokens());
-                log.info("Authorizing service request with STS tokens {}", tokens);
-                session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
-                        tokens.getSessionToken()));
+        lock.lock();
+        try {
+            if(tokens.isExpired()) {
+                try {
+                    this.refresh(oauth.getTokens());
+                    log.info("Authorizing service request with STS tokens {}", tokens);
+                    session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
+                            tokens.getSessionToken()));
+                }
+                catch(BackgroundException e) {
+                    log.warn("Failure {} refreshing STS tokens {}", e, tokens);
+                    // Follow-up error 401 handled in error interceptor
+                }
             }
-            catch(BackgroundException e) {
-                log.warn("Failure {} refreshing STS tokens {}", e, tokens);
-                // Follow-up error 401 handled in error interceptor
-            }
+        }
+        finally {
+            lock.unlock();
         }
     }
 

@@ -71,6 +71,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,6 +85,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     public static final String ATTACH_DEVICE_ACTIVATION_CODE_PATH = "/ServicesPortal/public/users?format=jsonext";
     public static final String ATTACH_DEVICE_USERNAME_PATH = "/ServicesPortal/public/users/%s?format=jsonext";
 
+    private final ReentrantLock lock = new ReentrantLock();
     private final CteraSession session;
     private final Host host;
     private final LoginCallback prompt;
@@ -117,23 +119,29 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     }
 
     public CteraTokens validate() throws BackgroundException {
-        if(tokens.validate()) {
-            log.debug("Authorize with saved tokens {}", tokens);
-        }
-        else {
-            tokens = this.attach();
-        }
-        log.debug("Authorize with tokens {}", tokens);
+        lock.lock();
         try {
-            this.authorize();
+            if(tokens.validate()) {
+                log.debug("Authorize with saved tokens {}", tokens);
+            }
+            else {
+                tokens = this.attach();
+            }
+            log.debug("Authorize with tokens {}", tokens);
+            try {
+                this.authorize();
+            }
+            catch(AccessDeniedException e) {
+                // Try to re-authenticate with new tokens
+                log.warn("Failure {} authorizing with tokens {}", e, tokens);
+                tokens = this.attach();
+                this.authorize();
+            }
+            return tokens;
         }
-        catch(AccessDeniedException e) {
-            // Try to re-authenticate with new tokens
-            log.warn("Failure {} authorizing with tokens {}", e, tokens);
-            tokens = this.attach();
-            this.authorize();
+        finally {
+            lock.unlock();
         }
-        return tokens;
     }
 
     /**
@@ -162,37 +170,43 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     }
 
     public void authorize() throws BackgroundException {
-        final HttpPost login = new HttpPost(AUTH_PATH);
+        lock.lock();
         try {
-            login.setEntity(
-                    new StringEntity(String.format("j_username=device%%5c%s&j_password=%s",
-                            tokens.getDeviceId(), tokens.getSharedSecret()), ContentType.APPLICATION_FORM_URLENCODED
-                    )
-            );
-            session.getClient().execute(login, new AbstractResponseHandler<Void>() {
-                @Override
-                public Void handleResponse(final HttpResponse response) throws IOException {
-                    if(!response.containsHeader("Set-Cookie")) {
-                        log.warn("No cookie in response {}", response);
+            final HttpPost login = new HttpPost(AUTH_PATH);
+            try {
+                login.setEntity(
+                        new StringEntity(String.format("j_username=device%%5c%s&j_password=%s",
+                                tokens.getDeviceId(), tokens.getSharedSecret()), ContentType.APPLICATION_FORM_URLENCODED
+                        )
+                );
+                session.getClient().execute(login, new AbstractResponseHandler<Void>() {
+                    @Override
+                    public Void handleResponse(final HttpResponse response) throws IOException {
+                        if(!response.containsHeader("Set-Cookie")) {
+                            log.warn("No cookie in response {}", response);
+                        }
+                        else {
+                            final Header header = response.getFirstHeader("Set-Cookie");
+                            log.debug("Received cookie {}", header);
+                        }
+                        return super.handleResponse(response);
                     }
-                    else {
-                        final Header header = response.getFirstHeader("Set-Cookie");
-                        log.debug("Received cookie {}", header);
-                    }
-                    return super.handleResponse(response);
-                }
 
-                @Override
-                public Void handleEntity(final HttpEntity entity) {
-                    return null;
-                }
-            });
+                    @Override
+                    public Void handleEntity(final HttpEntity entity) {
+                        return null;
+                    }
+                });
+            }
+            catch(HttpResponseException e) {
+                throw new DefaultHttpResponseExceptionMappingService().map(e);
+            }
+            catch(IOException e) {
+                throw new HttpExceptionMappingService().map(e);
+            }
         }
-        catch(HttpResponseException e) {
-            throw new DefaultHttpResponseExceptionMappingService().map(e);
-        }
-        catch(IOException e) {
-            throw new HttpExceptionMappingService().map(e);
+        finally {
+            lock.unlock();
         }
     }
 
