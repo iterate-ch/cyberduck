@@ -1,4 +1,4 @@
-package ch.cyberduck.core.dav;
+package ch.cyberduck.core.dav.microsoft;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -21,8 +21,14 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.dav.AbstractDAVTest;
+import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
+import ch.cyberduck.core.dav.DAVCopyFeature;
+import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.dav.DAVDirectoryFeature;
+import ch.cyberduck.core.dav.DAVLockFeature;
+import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -41,7 +47,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DAVCopyFeatureTest extends AbstractDAVTest {
+public class MicrosoftIISDAVCopyFeatureTest extends AbstractMicrosoftIISDAVTest {
 
     @Test
     public void testCopyFile() throws Exception {
@@ -50,8 +56,8 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertEquals(new DAVAttributesFinderFeature(session).find(test), new DAVAttributesFinderFeature(session).find(copy));
-        assertTrue(new DAVFindFeature(session).find(test));
-        assertTrue(new DAVFindFeature(session).find(copy));
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(copy));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -59,8 +65,15 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
     @Test
     public void testCopyWithLock() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertThrows(InteroperabilityException.class, () -> new DAVLockFeature(session).lock(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final String lock = new DAVLockFeature(session).lock(test);
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
+        final Path target = new DAVCopyFeature(session).copy(test,
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLockId(lock), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(target));
+        assertEquals(test.attributes(), target.attributes());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(target, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -80,6 +93,24 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
     }
 
     @Test
+    public void testCopyWithLockToExistingFile() throws Exception {
+        final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new DAVDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DAVTouchFeature(session).touch(test, new TransferStatus());
+        final String lock = new DAVLockFeature(session).lock(test);
+        final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DAVTouchFeature(session).touch(copy, new TransferStatus());
+        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(true).withLockId(lock), new DisabledConnectionCallback(), new DisabledStreamListener());
+        final Find find = new DefaultFindFeature(session);
+        assertTrue(find.find(test));
+        assertTrue(find.find(copy));
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(copy, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testCopyDirectory() throws Exception {
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final String name = new AlphanumericRandomStringService().random();
@@ -90,9 +121,9 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         new DAVDirectoryFeature(session).mkdir(copy, new TransferStatus());
         assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().exists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
         new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new DAVFindFeature(session).find(file));
-        assertTrue(new DAVFindFeature(session).find(copy));
-        assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(file));
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(copy));
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
         new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
