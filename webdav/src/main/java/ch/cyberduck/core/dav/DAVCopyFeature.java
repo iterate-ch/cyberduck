@@ -48,7 +48,7 @@ public class DAVCopyFeature implements Copy {
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
-            if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
+            if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
                 // Indicate that the client has knowledge of that state token
                 session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists(),
                         Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
