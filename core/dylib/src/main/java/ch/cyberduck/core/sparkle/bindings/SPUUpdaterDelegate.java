@@ -45,9 +45,7 @@ public interface SPUUpdaterDelegate {
      * @param updater The updater instance.
      * @return YES if the updater should be relaunched, otherwise NO if it shouldn’t.
      */
-    default boolean updaterShouldRelaunchApplication(SPUUpdater updater) {
-        return true;
-    }
+    boolean updaterShouldRelaunchApplication(SPUUpdater updater);
 
     /**
      * Called immediately before relaunching.
@@ -64,9 +62,7 @@ public interface SPUUpdaterDelegate {
      * @param updater The updater instance.
      * @return YES if the updater should prompt for permission to check for new updates automatically, otherwise NO
      */
-    default boolean updaterShouldPromptForPermissionToCheckForUpdates(SPUUpdater updater) {
-        return false;
-    }
+    boolean updaterShouldPromptForPermissionToCheckForUpdates(SPUUpdater updater);
 
     /**
      * Called when a new valid update is found by the update driver.

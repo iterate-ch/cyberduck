@@ -143,5 +143,15 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
         public String feedURLStringForUpdater(final ID updater) {
             return SparklePeriodicUpdateChecker.this.getFeedUrl();
         }
+
+        @Override
+        public boolean updaterShouldRelaunchApplication(SPUUpdater updater) {
+            return true;
+        }
+
+        @Override
+        public boolean updaterShouldPromptForPermissionToCheckForUpdates(SPUUpdater updater) {
+            return false;
+        }
     }
 }
