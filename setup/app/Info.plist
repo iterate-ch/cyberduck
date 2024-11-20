@@ -259,9 +259,9 @@
             </dict>
         </array>
         <key>CFBundleVersion</key>
-        <string>0</string>
+        <string>${REVISION}</string>
         <key>CFBundleShortVersionString</key>
-    	<string>0</string>
+    	<string>${VERSION}</string>
         <key>LSApplicationCategoryType</key>
         <string>public.app-category.productivity</string>
         <key>Runtime</key>
