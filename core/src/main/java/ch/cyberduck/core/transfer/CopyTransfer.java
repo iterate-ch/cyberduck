@@ -198,11 +198,6 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
-        final Bulk<?> download = source.getFeature(Bulk.class);
-        {
-            final Object id = download.pre(Type.download, files, callback);
-            log.debug("Obtained bulk id {} for transfer {}", id, this);
-        }
         final Bulk<?> upload = destination.getFeature(Bulk.class);
         {
             final Map<TransferItem, TransferStatus> targets = new HashMap<>();
@@ -212,14 +207,15 @@ public class CopyTransfer extends Transfer {
             final Object id = upload.pre(Type.upload, targets, callback);
             log.debug("Obtained bulk id {} for transfer {}", id, this);
         }
+        final Bulk<?> download = source.getFeature(Bulk.class);
+        {
+            final Object id = download.pre(Type.download, files, callback);
+            log.debug("Obtained bulk id {} for transfer {}", id, this);
+        }
     }
 
     @Override
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
-        final Bulk<?> download = source.getFeature(Bulk.class);
-        {
-            download.post(Type.download, files, callback);
-        }
         final Bulk<?> upload = destination.getFeature(Bulk.class);
         {
             final Map<TransferItem, TransferStatus> targets = new HashMap<>();
@@ -227,6 +223,10 @@ public class CopyTransfer extends Transfer {
                 targets.put(new TransferItem(mapping.get(entry.getKey().remote)), entry.getValue());
             }
             upload.post(Type.upload, targets, callback);
+        }
+        final Bulk<?> download = source.getFeature(Bulk.class);
+        {
+            download.post(Type.download, files, callback);
         }
     }
 
