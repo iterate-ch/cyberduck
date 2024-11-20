@@ -53,7 +53,7 @@ public class DAVMoveFeature implements Move {
                 // Indicate that the client has knowledge of that state token
                 session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target,
                         status.isExists(),
-                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+                        Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(file), status.getLockId())));
             }
             else {
                 session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target,

@@ -51,7 +51,7 @@ public class DAVCopyFeature implements Copy {
             if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
                 // Indicate that the client has knowledge of that state token
                 session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists(),
-                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+                        Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(source), status.getLockId())));
             }
             else {
                 session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists());
