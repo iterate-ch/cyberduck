@@ -259,9 +259,9 @@
             </dict>
         </array>
         <key>CFBundleVersion</key>
-        <string>${REVISION}</string>
+        <string>0</string>
         <key>CFBundleShortVersionString</key>
-    	<string>${VERSION}</string>
+    	<string>0</string>
         <key>LSApplicationCategoryType</key>
         <string>public.app-category.productivity</string>
         <key>Runtime</key>
@@ -294,6 +294,8 @@
         <true/>
         <key>SUFeedURL</key>
         <string>${SPARKLEFEED}</string>
+        <key>SUEnableAutomaticChecks</key>
+        <false/>
         #endif
         <key>NSServices</key>
         <array>
