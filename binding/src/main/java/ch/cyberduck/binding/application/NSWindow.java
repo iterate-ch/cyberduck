@@ -151,6 +151,16 @@ public abstract class NSWindow extends NSResponder {
      */
     public static final int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
 
+    /**
+     * If set, at least part of the window is visible; if not set, the entire window is occluded.
+     * A window that has a nonrectangular shape can be entirely occluded onscreen, but if its bounding
+     * box falls into a visible region, the window is considered to be visible. Note that a completely
+     * transparent window may also be considered visible.
+     *
+     * @since macOS 10.9+
+     */
+    public static final int NSWindowOcclusionStateVisible = 1 << 1;
+
     /// enum values
     public interface NSWindowLevel {
         int NSNormalWindowLevel = 0;
@@ -275,7 +285,7 @@ public abstract class NSWindow extends NSResponder {
 
     public static void setAllowsAutomaticWindowTabbing(boolean automatic) {
         if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(
-            Foundation.selector("setAllowsAutomaticWindowTabbing:"))) {
+                Foundation.selector("setAllowsAutomaticWindowTabbing:"))) {
             CLASS.setAllowsAutomaticWindowTabbing(automatic);
         }
     }
@@ -910,6 +920,14 @@ public abstract class NSWindow extends NSResponder {
      * <i>native declaration : :361</i>
      */
     public abstract boolean isVisible();
+
+    /**
+     * When the value of this property is NSWindowOcclusionStateVisible, at least part of the window
+     * is visible; otherwise, the window is fully occluded.
+     *
+     * @return The occlusion state of the window.
+     */
+    public abstract int occlusionState();
 
     /**
      * Original signature : <code>BOOL isKeyWindow()</code><br>
@@ -1690,6 +1708,10 @@ public abstract class NSWindow extends NSResponder {
     public static final String WindowWillCloseNotification = "NSWindowWillCloseNotification";
     public static final String WindowWillMiniaturizeNotification = "NSWindowWillMiniaturizeNotification";
     public static final String WindowWillMoveNotification = "NSWindowWillMoveNotification";
+    /**
+     * A notification that the window object’s occlusion state changed.
+     */
+    public static final String WindowDidChangeOcclusionStateNotification = "NSWindowDidChangeOcclusionStateNotification";
 
     public abstract void addTitlebarAccessoryViewController(NSTitlebarAccessoryViewController controller);
 
