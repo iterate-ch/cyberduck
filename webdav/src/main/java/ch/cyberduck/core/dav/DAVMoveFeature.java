@@ -21,6 +21,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Lock;
@@ -60,7 +61,7 @@ public class DAVMoveFeature implements Move {
                         status.isExists());
             }
             // Copy original file attributes
-            return renamed.withAttributes(file.attributes());
+            return renamed.withAttributes(new PathAttributes(file.attributes()).withLockId(null));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot rename {0}", e, file);
