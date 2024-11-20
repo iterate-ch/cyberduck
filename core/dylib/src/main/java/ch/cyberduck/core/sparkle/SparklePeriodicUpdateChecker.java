@@ -109,7 +109,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
 
         @Override
         public void standardUserDriverWillHandleShowingUpdate_forUpdate_state(final boolean handleShowingUpdate, final SUAppcastItem item, final SPUUserUpdateState state) {
-            if(!handleShowingUpdate) {
+            if(!state.userInitiated()) {
                 for(Handler handler : handlers) {
                     log.debug("Notify handler {} with update {}", handler, item);
                     if(handler.handle(new Update(item.versionString(), item.displayVersionString()))) {

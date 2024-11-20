@@ -22,5 +22,5 @@ public abstract class SPUUserUpdateState extends NSObject {
     /**
      * @return Indicates whether the update check was initiated by the user.
      */
-    abstract boolean userInitiated();
+    public abstract boolean userInitiated();
 }
