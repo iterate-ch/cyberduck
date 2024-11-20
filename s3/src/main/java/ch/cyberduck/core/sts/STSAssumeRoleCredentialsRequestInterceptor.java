@@ -16,10 +16,8 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -54,7 +52,6 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
      */
     private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
 
-    private final HostPasswordStore store = PasswordStoreFactory.get();
     /**
      * Handle authentication with OpenID connect retrieving token for STS
      */
