@@ -112,7 +112,7 @@ public class S3UrlProvider implements UrlProvider {
                 containerService.getContainer(file).getName(),
                 file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", containerService.getKey(file)))),
                 DescriptiveUrl.Type.provider,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "AWS CLI")));
         // Filter by matching container name
         final Optional<Set<Distribution>> filtered = distributions.entrySet().stream().filter(entry ->
                         new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
