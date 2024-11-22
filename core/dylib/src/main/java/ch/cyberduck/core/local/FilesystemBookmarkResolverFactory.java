@@ -15,20 +15,15 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Factory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-public class FilesystemBookmarkResolverFactory extends Factory<FilesystemBookmarkResolver<NSURL>> {
-    private static final Logger log = LogManager.getLogger(FilesystemBookmarkResolverFactory.class);
+public class FilesystemBookmarkResolverFactory<Bookmark, Resolved> extends Factory<FilesystemBookmarkResolver<Bookmark, Resolved>> {
 
     private FilesystemBookmarkResolverFactory() {
         super("factory.bookmarkresolver.class");
     }
 
-    public static FilesystemBookmarkResolver<NSURL> get() {
-        return new FilesystemBookmarkResolverFactory().create();
+    public static <Bookmark, Resolved> FilesystemBookmarkResolver<Bookmark, Resolved> get() {
+        return new FilesystemBookmarkResolverFactory<Bookmark, Resolved>().create();
     }
 }

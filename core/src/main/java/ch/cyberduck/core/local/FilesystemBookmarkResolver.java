@@ -21,7 +21,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-public interface FilesystemBookmarkResolver<B> {
+public interface FilesystemBookmarkResolver<Bookmark, Resolved> {
 
     /**
      * Retain access to file-system resources with security-scoped bookmark.
@@ -30,15 +30,18 @@ public interface FilesystemBookmarkResolver<B> {
      * @return Security-scoped bookmark
      * @throws AccessDeniedException Failure resolving bookmark for file
      */
-    String create(Local file) throws AccessDeniedException;
+    Bookmark create(Local file) throws AccessDeniedException;
 
     /**
      * Resolve the security-scoped bookmark
      *
-     * @param file        File outside of sandbox
-     * @param interactive Allow prompt
+     * @param file File outside of sandbox
      * @return Reference to file by bookmark
      * @throws AccessDeniedException Failure resolving bookmark for file
      */
-    B resolve(Local file, final boolean interactive) throws AccessDeniedException;
+    Resolved resolve(Bookmark file) throws AccessDeniedException;
+
+    default Bookmark prompt(Local file) throws AccessDeniedException {
+        return null;
+    }
 }

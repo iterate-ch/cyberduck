@@ -68,6 +68,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * Absolute path in local file system
      */
     private String path;
+    private String bookmark;
 
     public Local(final String parent, final String name) {
         this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
@@ -114,7 +115,11 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     @Override
     public <T> T serialize(final Serializer<T> dict) {
-        dict.setStringForKey(path, "Path");
+        dict.setStringForKey(this.getAbbreviatedPath(), "Path");
+        final String bookmark = this.getBookmark();
+        if(bookmark != null) {
+            dict.setStringForKey(bookmark, "Bookmark");
+        }
         return dict.getSerialized();
     }
 
@@ -266,14 +271,17 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * @return Security scoped bookmark outside of sandbox to store in preferences
+     * @return Application scoped bookmark to access outside of sandbox
      */
     public String getBookmark() {
-        return path;
+        return bookmark;
     }
 
+    /**
+     * @param data Security scoped bookmark to save for later retrieval of file reference or null to remove
+     */
     public void setBookmark(final String data) {
-        //
+        this.bookmark = data;
     }
 
     public Local withBookmark(final String data) {
