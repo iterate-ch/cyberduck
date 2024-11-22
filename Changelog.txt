@@ -1,8 +1,18 @@
 Cyberduck
 https://cyberduck.io/
 
-9.0.4
-- [Bugfix] Multipart uploads fail to buckets with '.' character in name (#16401)
+9.1.0
+- [Bugfix] Multipart uploads fail to buckets with '.' character in name (S3) (#16401)
+- [Bugfix] Usability improvements entering connection details (#15200)
+- [Bugfix] Set "Show Hidden Files"shortcut to "⌘ ⇧ ." as in Finder (macOS) (#16459)
+- [Bugfix] Do not require GroupMember.Read.All permission (Microsoft OneDrive, SharePoint) (#16564)
+- [Bugfix] Do not require storage.buckets.list permission to access bucket (Google Storage) (#16565)
+- [Bugfix] Test credentials using sts:GetCallerIdentity (AWS S3) (#16565)
+- [Bugfix] Cannot exclude files in transfer prompt for existing files (macOS) (#16503)
+- [Bugfix] Files not removed in vault when deleting folder (Cryptomator) (Box, Dropbox, Google Drive, OneDrive, WebDAV, SMB) (#14101)
+- [Bugfix] Access files with double-byte character in key (S3) (#13407)
+- [Bugfix] Failure uploading nested folders to vault (Cryptomator) (Azure, Backblaze B2, Google Storage, OpenStack Swift) (#15489)
+- [Bugfix] Error copying files between vaults (Cryptomator) (#15422)
 
 9.0.3
 - [Bugfix] Registration key prompt in browser window regardless of registration (Windows) (#16326)
