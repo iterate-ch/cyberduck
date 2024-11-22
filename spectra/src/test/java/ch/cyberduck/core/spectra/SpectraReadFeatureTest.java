@@ -84,7 +84,7 @@ public class SpectraReadFeatureTest extends AbstractSpectraTest {
     }
 
     @Test
-    public void testOffsetSupport() {
+    public void testOffsetSupport() throws Exception {
         assertFalse(new SpectraReadFeature(session).offset(null));
     }
 }

@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
+import java.util.EnumSet;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoException;
@@ -107,7 +108,7 @@ public class TripleCryptReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(final Path file) {
-        return false;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.noneOf(Flags.class);
     }
 }

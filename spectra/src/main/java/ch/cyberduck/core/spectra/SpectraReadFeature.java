@@ -30,6 +30,7 @@ import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public class SpectraReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(final Path file) {
-        return false;
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.noneOf(Flags.class);
     }
 }
