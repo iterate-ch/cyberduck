@@ -18,17 +18,20 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.serializer.LocalDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.dd.plist.NSDictionary;
 
 import static org.junit.Assert.*;
 
@@ -53,7 +56,7 @@ public class FinderLocalTest {
 
     @Test
     public void testEqual() throws Exception {
-        final String name = UUID.randomUUID().toString();
+        final String name = new AlphanumericRandomStringService().random();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
         new DefaultLocalTouchFeature().touch(l);
@@ -68,14 +71,14 @@ public class FinderLocalTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testReadNoFile() throws Exception {
-        final String name = UUID.randomUUID().toString();
+        final String name = new AlphanumericRandomStringService().random();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         l.getInputStream();
     }
 
     @Test
     public void testNoCaseSensitive() throws Exception {
-        final String name = UUID.randomUUID().toString();
+        final String name = new AlphanumericRandomStringService().random();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         new DefaultLocalTouchFeature().touch(l);
         assertTrue(l.exists());
@@ -91,7 +94,7 @@ public class FinderLocalTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testListNotFound() throws Exception {
-        final String name = UUID.randomUUID().toString();
+        final String name = new AlphanumericRandomStringService().random();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         l.list();
     }
@@ -109,7 +112,7 @@ public class FinderLocalTest {
 
     @Test
     public void testWriteUnixPermission() throws Exception {
-        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         new DefaultLocalTouchFeature().touch(l);
         final Permission permission = new Permission(644);
         l.attributes().setPermission(permission);
@@ -119,7 +122,7 @@ public class FinderLocalTest {
 
     @Test
     public void testMkdir() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         new DefaultLocalDirectoryFeature().mkdir(l);
         assertTrue(l.exists());
         new DefaultLocalDirectoryFeature().mkdir(l);
@@ -133,28 +136,21 @@ public class FinderLocalTest {
     }
 
     @Test
-    public void testBookmark() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("user.dir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
-        assertNull(l.getBookmark());
-        new DefaultLocalTouchFeature().touch(l);
-        assertNotNull(l.getBookmark());
-        assertEquals(l.getBookmark(), l.getBookmark());
-        l.delete();
-    }
-
-    @Test
-    public void testBookmarkSaved() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+    public void testBookmarkSerialize() {
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         assertNull(l.getBookmark());
         l.setBookmark("a");
         assertEquals("a", l.getBookmark());
-        assertNotNull(l.getOutputStream(false));
-        assertNotNull(l.getInputStream());
+        final NSDictionary dict = l.serialize(SerializerFactory.get());
+        assertTrue(dict.containsKey("Bookmark"));
+        assertEquals("a", dict.objectForKey("Bookmark").toString());
+        final Local deserialized = new LocalDictionary<NSDictionary>().deserialize(dict);
+        assertEquals("a", deserialized.getBookmark());
     }
 
     @Test(expected = NotfoundException.class)
     public void testSymlinkTargetNotfound() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         try {
             assertNull(l.getSymlinkTarget());
         }
@@ -184,12 +180,12 @@ public class FinderLocalTest {
 
     @Test
     public void testSkipSecurityScopeBookmarkInTemporary() throws Exception {
-        final FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver()) {
+        final FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random()) {
             @Override
             public NSURL lock(final boolean interactive) throws AccessDeniedException {
-                final NSURL lock = super.lock(interactive);
+                final NSURL lock = super.lock(interactive, new AliasFilesystemBookmarkResolver());
                 assertNull(lock);
-                return lock;
+                return null;
             }
         };
         new DefaultLocalTouchFeature().touch(l);
@@ -201,10 +197,10 @@ public class FinderLocalTest {
     @Test
     public void testReleaseSecurityScopeBookmarkInputStreamClose() throws Exception {
         final AtomicBoolean released = new AtomicBoolean(false);
-        final FinderLocal l = new FinderLocal(System.getProperty("user.dir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver()) {
+        final FinderLocal l = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random()) {
             @Override
             public NSURL lock(final boolean interactive) throws AccessDeniedException {
-                final NSURL lock = super.lock(interactive);
+                final NSURL lock = super.lock(interactive, new AliasFilesystemBookmarkResolver());
                 assertNotNull(lock);
                 return lock;
             }
@@ -224,16 +220,16 @@ public class FinderLocalTest {
 
     @Test
     public void testLockNoSuchFile() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         assertNull(l.lock(false));
     }
 
     @Test
     public void testLockTemporary() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         new DefaultLocalTouchFeature().touch(l);
         try {
-            final NSURL lock = l.lock(false);
+            final NSURL lock = l.lock(false, new AliasFilesystemBookmarkResolver());
             assertNull(lock);
             l.release(lock);
         }
@@ -244,10 +240,10 @@ public class FinderLocalTest {
 
     @Test
     public void testLockUserdir() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("user.dir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
+        FinderLocal l = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random());
         new DefaultLocalTouchFeature().touch(l);
         try {
-            final NSURL lock = l.lock(false);
+            final NSURL lock = l.lock(false, new AliasFilesystemBookmarkResolver());
             assertNotNull(lock);
             l.release(lock);
         }
@@ -263,14 +259,14 @@ public class FinderLocalTest {
 
     @Test
     public void testIsSymbolicLink() {
-        assertFalse(new FinderLocal(UUID.randomUUID().toString()).isSymbolicLink());
+        assertFalse(new FinderLocal(new AlphanumericRandomStringService().random()).isSymbolicLink());
         assertTrue(new FinderLocal("/tmp").isSymbolicLink());
     }
 
     @Test
     public void testMoveFolder() throws Exception {
-        final String name = UUID.randomUUID().toString();
-        final String newname = UUID.randomUUID().toString();
+        final String name = new AlphanumericRandomStringService().random();
+        final String newname = new AlphanumericRandomStringService().random();
         new DefaultLocalDirectoryFeature().mkdir(new FinderLocal(name));
         new FinderLocal(name).rename(new FinderLocal(newname));
         assertFalse(new FinderLocal(name).exists());
