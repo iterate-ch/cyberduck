@@ -145,6 +145,6 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp);
+        return EnumSet.of(Flags.timestamp, Flags.checksum, Flags.mime);
     }
 }

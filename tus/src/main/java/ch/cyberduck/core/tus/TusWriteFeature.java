@@ -42,6 +42,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import static ch.cyberduck.core.tus.TusCapabilities.*;
 
@@ -107,5 +108,10 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
         }
         log.debug("No checksum support in capabilities {}", capabilities);
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.checksum, Flags.mime);
     }
 }

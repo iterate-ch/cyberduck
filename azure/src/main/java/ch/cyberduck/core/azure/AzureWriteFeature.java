@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import com.microsoft.azure.storage.AccessCondition;
@@ -185,5 +186,10 @@ public class AzureWriteFeature implements Write<Void> {
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.checksum, Flags.mime);
     }
 }

@@ -44,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 
 import com.fasterxml.jackson.databind.ObjectReader;
 
@@ -136,5 +137,10 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
             }
         };
         return this.write(file, status, command);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.checksum, Flags.mime);
     }
 }
