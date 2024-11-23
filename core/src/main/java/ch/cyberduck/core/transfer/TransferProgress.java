@@ -28,10 +28,7 @@ public final class TransferProgress {
     private final Double speed;
 
     public TransferProgress(final Long size, final Long transferred) {
-        this.size = size;
-        this.transferred = transferred;
-        this.progress = StringUtils.EMPTY;
-        this.speed = -1d;
+        this(size, transferred, StringUtils.EMPTY, -1d);
     }
 
     public TransferProgress(final Long size, final Long transferred, final String progress, final Double speed) {
