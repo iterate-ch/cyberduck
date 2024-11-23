@@ -31,7 +31,7 @@ import java.math.RoundingMode;
 
 public class IconUpdateStreamListener extends BytecountStreamListener {
 
-    private final IconService icon = IconServiceFactory.get();
+    private final IconService icon;
     private final TransferStatus status;
     private final Local file;
 
@@ -39,7 +39,12 @@ public class IconUpdateStreamListener extends BytecountStreamListener {
     private int step = 0;
 
     public IconUpdateStreamListener(final StreamListener delegate, final TransferStatus status, final Local file) {
+        this(IconServiceFactory.get(), delegate, status, file);
+    }
+
+    public IconUpdateStreamListener(final IconService icon, final StreamListener delegate, final TransferStatus status, final Local file) {
         super(delegate);
+        this.icon = icon;
         this.status = status;
         this.file = file;
     }

@@ -21,6 +21,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.unicode.NFDNormalizer;
@@ -31,7 +32,7 @@ public final class WorkspaceIconService implements IconService {
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
-    protected boolean update(final Local file, final NSImage icon) {
+    public boolean update(final Local file, final NSImage icon) {
         synchronized(NSWorkspace.class) {
             // Specify 0 if you want to generate icons in all available icon representation formats
             if(workspace.setIcon_forFile_options(icon, file.getAbsolute(), new NSUInteger(0))) {
@@ -44,12 +45,16 @@ public final class WorkspaceIconService implements IconService {
 
     @Override
     public boolean set(final Local file, final TransferProgress status) {
-        int fraction = (int) (status.getTransferred() / (status.getTransferred() + status.getSize()) * 10);
-        return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", ++fraction)));
+        if(status.getSize() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
+            int fraction = (int) (status.getTransferred() / (status.getTransferred() + status.getSize()) * 10);
+            return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", ++fraction)));
+        }
+        return false;
     }
 
     @Override
     public boolean remove(final Local file) {
+        // The Finder will display the default icon for this file type
         return this.update(file, null);
     }
 }

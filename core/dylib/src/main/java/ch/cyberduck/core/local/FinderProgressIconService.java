@@ -24,9 +24,16 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class FinderProgressIconService implements IconService {
 
+    private NSProgress progress;
+
     @Override
     public boolean set(final Local file, final TransferProgress status) {
-        NSProgress progress = NSProgress.currentProgress();
+        if(TransferStatus.UNKNOWN_LENGTH == status.getSize()) {
+            return false;
+        }
+        if(TransferStatus.UNKNOWN_LENGTH == status.getTransferred()) {
+            return false;
+        }
         if(null == progress) {
             progress = NSProgress.progressWithTotalUnitCount(status.getSize());
             progress.setKind(NSProgress.NSProgressKindFile);
@@ -35,26 +42,16 @@ public class FinderProgressIconService implements IconService {
             progress.setUserInfoObject_forKey(NSString.stringWithString(NSProgress.NSProgressFileOperationKindDownloading), NSProgress.NSProgressFileOperationKindKey);
             progress.setUserInfoObject_forKey(NSURL.fileURLWithPath(file.getAbsolute()), NSProgress.NSProgressFileURLKey);
             progress.publish();
-            progress.becomeCurrentWithPendingUnitCount(status.getSize() - status.getTransferred());
         }
-        if(TransferStatus.UNKNOWN_LENGTH == status.getSize()) {
-            return false;
-        }
-        if(TransferStatus.UNKNOWN_LENGTH == status.getTransferred()) {
-            return false;
-        }
-        progress.setTotalUnitCount(status.getSize());
         progress.setCompletedUnitCount(status.getTransferred());
         return true;
     }
 
     @Override
     public boolean remove(final Local file) {
-        final NSProgress progress = NSProgress.currentProgress();
         if(null == progress) {
             return false;
         }
-        progress.resignCurrent();
         progress.unpublish();
         return true;
     }
