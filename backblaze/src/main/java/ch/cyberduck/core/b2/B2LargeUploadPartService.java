@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -121,7 +122,7 @@ public class B2LargeUploadPartService {
             Integer startPartNumber = null;
             do {
                 final B2ListPartsResponse response = session.getClient().listParts(
-                        fileid, startPartNumber, null);
+                        fileid, startPartNumber, new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"));
                 completed.addAll(response.getFiles());
                 startPartNumber = response.getNextPartNumber();
             }
