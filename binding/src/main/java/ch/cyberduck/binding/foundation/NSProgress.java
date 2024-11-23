@@ -261,30 +261,71 @@ public abstract class NSProgress extends NSObject {
     public abstract void setUserInfoObject_forKey(NSObject objectOrNil, String key);
 
     /**
+     * Set this value when the kind property is NSProgressKindFile to describe the kind of file operation.
+     *
+     * @param kind The kind of file operation for the progress object.
+     * @since macOS 10.13+
+     */
+    public abstract void setFileOperationKind(String kind);
+
+    /**
+     * Set this value for a progress that you publish to subscribers that register for updates using addSubscriberForFileURL:withPublishingHandler:.
+     *
+     * @param url A URL that represents the file for the current progress object.
+     * @since macOS 10.13+
+     */
+    public abstract void setFileURL(NSURL url);
+
+    /**
+     * If present, NSProgress presents additional information in its localized description by setting a value in the userInfo dictionary.
+     *
+     * @param throughput A value that represents the speed of data processing, in bytes per second.
+     * @since macOS 10.13+
+     */
+    public abstract void setThroughput(NSNumber throughput);
+
+    /**
      * The value that indicates that the progress is tracking a file operation.
      * If you set this value for the progress kind, set a value in the user info dictionary for the NSProgressFileOperationKindKey.
+     * @since macOS 10.9+
      */
     public static final String NSProgressKindFile = "NSProgressKindFile";
     /**
      * A key with a corresponding value that indicates the kind of file operation a progress object represents.
+     * @since macOS 10.9+
      */
     public static final String NSProgressFileOperationKindKey = "NSProgressFileOperationKindKey";
-    public static final String NSProgressFileDownloadingSourceURLKey = "NSProgressFileDownloadingSourceURLKey";
+    /**
+     * A key with a corresponding value that represents the file URL of a file operation for the progress object.
+     *
+     * @since macOS 10.9+
+     */
     public static final String NSProgressFileURLKey = "NSProgressFileURLKey";
     /**
      * The progress is tracking a file upload operation.
+     * @since macOS 10.9+
      */
     public static final String NSProgressFileOperationKindUploading = "NSProgressFileOperationKindUploading";
     /**
      * The progress is tracking a file download operation.
+     *
+     * @since macOS 10.9+
      */
     public static final String NSProgressFileOperationKindDownloading = "NSProgressFileOperationKindDownloading";
     /**
+     * The progress is tracking file decompression after a download.
+     *
+     * @since macOS 10.9+
+     */
+    public static final String NSProgressFileOperationKindDecompressingAfterDownloading = "NSProgressFileOperationKindDecompressingAfterDownloading";
+    /**
      * A key with a corresponding value that represents the time remaining, in seconds.
+     * @since macOS 10.9+
      */
     public static final String NSProgressEstimatedTimeRemainingKey = "NSProgressEstimatedTimeRemainingKey";
     /**
      * A key with a corresponding value that indicates the speed of data processing, in bytes per second.
+     * @since macOS 10.9+
      */
     public static final String NSProgressThroughputKey = "NSProgressThroughputKey";
 }

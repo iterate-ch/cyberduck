@@ -16,7 +16,6 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.binding.foundation.NSProgress;
-import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.transfer.TransferProgress;
@@ -39,8 +38,8 @@ public class FinderProgressIconService implements IconService {
             progress.setKind(NSProgress.NSProgressKindFile);
             progress.setCancellable(false);
             progress.setPausable(false);
-            progress.setUserInfoObject_forKey(NSString.stringWithString(NSProgress.NSProgressFileOperationKindDownloading), NSProgress.NSProgressFileOperationKindKey);
-            progress.setUserInfoObject_forKey(NSURL.fileURLWithPath(file.getAbsolute()), NSProgress.NSProgressFileURLKey);
+            progress.setFileOperationKind(NSProgress.NSProgressFileOperationKindDownloading);
+            progress.setFileURL(NSURL.fileURLWithPath(file.getAbsolute()));
             progress.publish();
         }
         progress.setCompletedUnitCount(status.getTransferred());
