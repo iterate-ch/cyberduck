@@ -26,23 +26,23 @@ public class FinderProgressIconService implements IconService {
     private NSProgress progress;
 
     @Override
-    public boolean set(final Local file, final TransferProgress status) {
-        if(TransferStatus.UNKNOWN_LENGTH == status.getSize()) {
+    public boolean set(final Local file, final TransferProgress progress) {
+        if(TransferStatus.UNKNOWN_LENGTH == progress.getSize()) {
             return false;
         }
-        if(TransferStatus.UNKNOWN_LENGTH == status.getTransferred()) {
+        if(TransferStatus.UNKNOWN_LENGTH == progress.getTransferred()) {
             return false;
         }
-        if(null == progress) {
-            progress = NSProgress.progressWithTotalUnitCount(status.getSize());
-            progress.setKind(NSProgress.NSProgressKindFile);
-            progress.setCancellable(false);
-            progress.setPausable(false);
-            progress.setFileOperationKind(NSProgress.NSProgressFileOperationKindDownloading);
-            progress.setFileURL(NSURL.fileURLWithPath(file.getAbsolute()));
-            progress.publish();
+        if(null == this.progress) {
+            this.progress = NSProgress.progressWithTotalUnitCount(progress.getSize());
+            this.progress.setKind(NSProgress.NSProgressKindFile);
+            this.progress.setCancellable(false);
+            this.progress.setPausable(false);
+            this.progress.setFileOperationKind(NSProgress.NSProgressFileOperationKindDownloading);
+            this.progress.setFileURL(NSURL.fileURLWithPath(file.getAbsolute()));
+            this.progress.publish();
         }
-        progress.setCompletedUnitCount(status.getTransferred());
+        this.progress.setCompletedUnitCount(progress.getTransferred());
         return true;
     }
 

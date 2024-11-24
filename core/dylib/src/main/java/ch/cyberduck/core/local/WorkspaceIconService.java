@@ -44,9 +44,9 @@ public final class WorkspaceIconService implements IconService {
     }
 
     @Override
-    public boolean set(final Local file, final TransferProgress status) {
-        if(status.getSize() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
-            int fraction = (int) (status.getTransferred() / (status.getTransferred() + status.getSize()) * 10);
+    public boolean set(final Local file, final TransferProgress progress) {
+        if(progress.getSize() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
+            int fraction = (int) (progress.getTransferred() / (progress.getTransferred() + progress.getSize()) * 10);
             return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", ++fraction)));
         }
         return false;
