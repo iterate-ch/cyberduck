@@ -281,8 +281,8 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
-                         final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                         final TransferStatus overall, final TransferStatus segment, final ConnectionCallback prompt,
+                         final ProgressListener progress, final StreamListener listener) throws BackgroundException {
         log.debug("Transfer file {} with options {} and status {}", file, options, segment);
         if(file.isSymbolicLink()) {
             if(symlinkResolver.resolve(file)) {
@@ -296,7 +296,7 @@ public class DownloadTransfer extends Transfer {
             }
         }
         if(file.isFile()) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
+            progress.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
                     file.getName()));
             final Local folder = local.getParent();
             if(!folder.exists()) {
@@ -306,7 +306,7 @@ public class DownloadTransfer extends Transfer {
             final Download download = source.getFeature(Download.class);
             final IconService icon = IconServiceFactory.get();
             download.download(file, local, bandwidth, this.options.icon ?
-                    new IconUpdateStreamListener(icon, streamListener, segment, local) : streamListener, segment, connectionCallback);
+                    new IconUpdateStreamListener(icon, listener, segment, local) : listener, segment, prompt);
             // Remove custom icon if complete
             if(segment.isComplete()) {
                 icon.remove(local);

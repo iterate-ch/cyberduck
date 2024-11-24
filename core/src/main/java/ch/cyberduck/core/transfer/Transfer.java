@@ -360,22 +360,20 @@ public abstract class Transfer implements Serializable {
     /**
      * The actual transfer implementation
      *
-     * @param source             Connection to source server of transfer
-     * @param destination        Connection to target server of transfer
-     * @param file               Remote file path
-     * @param local              Local file reference
-     * @param options            Quarantine option
-     * @param overall            Overall transfer status
-     * @param segment            Segment transfer status
-     * @param connectionCallback Prompt for alerts to user
-     * @param progressListener   Progress messages listener
-     * @param streamListener     Byte count listener
+     * @param source      Connection to source server of transfer
+     * @param destination Connection to target server of transfer
+     * @param file        Remote file path
+     * @param local       Local file reference
+     * @param options     Quarantine option
+     * @param overall     Overall transfer status
+     * @param segment     Segment transfer status
+     * @param prompt      Prompt for alerts to user
+     * @param progress    Progress messages listener
+     * @param listener      Byte count listener
      */
     public abstract void transfer(Session<?> source, Session<?> destination, Path file, Local local,
-                                  TransferOptions options, final TransferStatus overall, TransferStatus segment,
-                                  ConnectionCallback connectionCallback,
-                                  ProgressListener progressListener,
-                                  StreamListener streamListener) throws BackgroundException;
+                                  TransferOptions options, TransferStatus overall, TransferStatus segment,
+                                  ConnectionCallback prompt, ProgressListener progress, StreamListener listener) throws BackgroundException;
 
     public void start() {
         state = State.running;

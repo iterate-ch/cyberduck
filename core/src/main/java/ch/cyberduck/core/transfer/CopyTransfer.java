@@ -233,10 +233,10 @@ public class CopyTransfer extends Transfer {
     @Override
     public void transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
-                         final ConnectionCallback connectionCallback,
-                         final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                         final ConnectionCallback prompt,
+                         final ProgressListener progress, final StreamListener listener) throws BackgroundException {
         log.debug("Transfer file {} with options {}", source, options);
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
+        progress.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), mapping.get(source).getName()));
         if(source.isDirectory()) {
             if(!segment.isExists()) {
@@ -248,7 +248,7 @@ public class CopyTransfer extends Transfer {
         else {
             // Transfer
             final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-            feature.copy(source, mapping.get(source), segment, connectionCallback, streamListener);
+            feature.copy(source, mapping.get(source), segment, prompt, listener);
         }
     }
 
