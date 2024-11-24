@@ -175,8 +175,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         status.setAcl(attributes.getAcl());
         if(options.segments) {
-            if(!session.getFeature(Read.class).offset(file)) {
-                log.warn("Reading with offsets not supported for {}", file);
+            final Read read = session.getFeature(Read.class);
+            if(!read.offset(file)) {
+                log.warn("Reading with offset not supported with {} for {}", read, file);
             }
             else {
                 if(file.isFile()) {
