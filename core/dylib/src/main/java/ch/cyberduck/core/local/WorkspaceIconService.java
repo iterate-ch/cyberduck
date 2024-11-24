@@ -1,21 +1,18 @@
 package ch.cyberduck.core.local;
 
 /*
- * Copyright (c) 2012 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.binding.application.NSImage;
@@ -28,9 +25,15 @@ import ch.cyberduck.core.unicode.NFDNormalizer;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public final class WorkspaceIconService implements IconService {
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+
+    // An integer between 0 and 9
+    private int step = 0;
 
     public boolean update(final Local file, final NSImage icon) {
         synchronized(NSWorkspace.class) {
@@ -46,8 +49,12 @@ public final class WorkspaceIconService implements IconService {
     @Override
     public boolean set(final Local file, final TransferProgress progress) {
         if(progress.getSize() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
-            int fraction = (int) (progress.getTransferred() / (progress.getTransferred() + progress.getSize()) * 10);
-            return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", ++fraction)));
+            final int fraction = new BigDecimal(progress.getTransferred()).divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN).multiply(BigDecimal.TEN).intValue();
+            if(fraction >= step) {
+                // Another 10 percent of the file has been transferred
+                return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", step = fraction)));
+            }
+            return false;
         }
         return false;
     }

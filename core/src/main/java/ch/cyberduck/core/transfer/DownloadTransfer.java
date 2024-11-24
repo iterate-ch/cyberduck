@@ -39,7 +39,7 @@ import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.transfer.download.DownloadRegexPriorityComparator;
-import ch.cyberduck.core.transfer.download.IconUpdateStreamListener;
+import ch.cyberduck.core.transfer.download.IconServiceStreamListener;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.RenameExistingFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
@@ -306,7 +306,7 @@ public class DownloadTransfer extends Transfer {
             final Download download = source.getFeature(Download.class);
             final IconService icon = IconServiceFactory.get();
             download.download(file, local, bandwidth, this.options.icon ?
-                    new IconUpdateStreamListener(icon, listener, segment, local) : listener, segment, prompt);
+                    new IconServiceStreamListener(icon, listener, segment, local) : listener, segment, prompt);
             // Remove custom icon if complete
             if(segment.isComplete()) {
                 icon.remove(local);
