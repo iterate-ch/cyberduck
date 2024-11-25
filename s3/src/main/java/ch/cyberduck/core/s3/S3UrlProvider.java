@@ -17,19 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.HostWebUrlProvider;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -201,7 +189,14 @@ public class S3UrlProvider implements UrlProvider {
 
         @Override
         public String getUrl() {
-            final String secret = store.findLoginPassword(session.getHost());
+            final String secret;
+            final Credentials credentials = CredentialsConfiguratorFactory.get(session.getHost().getProtocol()).configure(session.getHost());
+            if(credentials.isPasswordAuthentication()) {
+                secret = credentials.getPassword();
+            }
+            else {
+                secret = store.findLoginPassword(session.getHost());
+            }
             if(StringUtils.isBlank(secret)) {
                 log.warn("No secret found in password store required to sign temporary URL");
                 return DescriptiveUrl.EMPTY.getUrl();
