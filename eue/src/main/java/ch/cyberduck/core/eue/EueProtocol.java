@@ -16,11 +16,15 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.ETagComparisonService;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class EueProtocol extends AbstractProtocol {
 
     @Override

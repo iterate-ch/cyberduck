@@ -17,9 +17,13 @@ package ch.cyberduck.core.hubic;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class HubicProtocol extends AbstractProtocol {
 
     @Override
