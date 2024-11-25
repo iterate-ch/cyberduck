@@ -304,9 +304,9 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            final IconService.Icon icon = IconServiceFactory.iconFor(local);
+            final IconService.Icon icon = IconServiceFactory.iconFor(segment.isSegment() ? folder : local);
             download.download(file, local, bandwidth, this.options.icon ?
-                    new IconServiceStreamListener(icon, listener, segment) : listener, segment, prompt);
+                    new IconServiceStreamListener(this, icon, listener) : listener, segment, prompt);
             // Remove custom icon if complete
             if(segment.isComplete()) {
                 icon.remove();
