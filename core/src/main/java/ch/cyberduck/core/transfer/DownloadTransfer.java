@@ -304,12 +304,12 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            final IconService icon = IconServiceFactory.get();
+            final IconService.Icon icon = IconServiceFactory.get().get(local);
             download.download(file, local, bandwidth, this.options.icon ?
-                    new IconServiceStreamListener(icon, listener, segment, local) : listener, segment, prompt);
+                    new IconServiceStreamListener(icon, listener, segment) : listener, segment, prompt);
             // Remove custom icon if complete
             if(segment.isComplete()) {
-                icon.remove(local);
+                icon.remove();
             }
         }
     }

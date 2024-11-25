@@ -30,12 +30,36 @@ import java.math.RoundingMode;
 
 public final class WorkspaceIconService implements IconService {
 
-    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+    private static final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
-    // An integer between 0 and 9
-    private int step = 0;
+    @Override
+    public Icon get(final Local file) {
+        return new Icon() {
+            // An integer between 0 and 9
+            private int step = 0;
 
-    public boolean update(final Local file, final NSImage icon) {
+            @Override
+            public boolean update(final TransferProgress progress) {
+                if(progress.getSize() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
+                    final int fraction = new BigDecimal(progress.getTransferred()).divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN).multiply(BigDecimal.TEN).intValue();
+                    if(fraction >= step) {
+                        // Another 10 percent of the file has been transferred
+                        return WorkspaceIconService.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", step = fraction)));
+                    }
+                    return false;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean remove() {
+                // The Finder will display the default icon for this file type
+                return WorkspaceIconService.update(file, null);
+            }
+        };
+    }
+
+    public static boolean update(final Local file, final NSImage icon) {
         synchronized(NSWorkspace.class) {
             // Specify 0 if you want to generate icons in all available icon representation formats
             if(workspace.setIcon_forFile_options(icon, file.getAbsolute(), new NSUInteger(0))) {
@@ -44,24 +68,5 @@ public final class WorkspaceIconService implements IconService {
             }
             return false;
         }
-    }
-
-    @Override
-    public boolean set(final Local file, final TransferProgress progress) {
-        if(progress.getSize() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
-            final int fraction = new BigDecimal(progress.getTransferred()).divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN).multiply(BigDecimal.TEN).intValue();
-            if(fraction >= step) {
-                // Another 10 percent of the file has been transferred
-                return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", step = fraction)));
-            }
-            return false;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean remove(final Local file) {
-        // The Finder will display the default icon for this file type
-        return this.update(file, null);
     }
 }

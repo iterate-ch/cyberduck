@@ -206,7 +206,7 @@ public class S3UrlProvider implements UrlProvider {
                 secret = store.findLoginPassword(session.getHost());
             }
             if(StringUtils.isBlank(secret)) {
-                log.warn("No secret found in password store required to sign temporary URL");
+                log.error("No secret found in password store required to sign temporary URL");
                 return DescriptiveUrl.EMPTY.getUrl();
             }
             String region = session.getHost().getRegion();

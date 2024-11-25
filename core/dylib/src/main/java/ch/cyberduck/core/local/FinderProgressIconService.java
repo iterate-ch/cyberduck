@@ -23,35 +23,41 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class FinderProgressIconService implements IconService {
 
-    private NSProgress progress;
-
     @Override
-    public boolean set(final Local file, final TransferProgress progress) {
-        if(TransferStatus.UNKNOWN_LENGTH == progress.getSize()) {
-            return false;
-        }
-        if(TransferStatus.UNKNOWN_LENGTH == progress.getTransferred()) {
-            return false;
-        }
-        if(null == this.progress) {
-            this.progress = NSProgress.progressWithTotalUnitCount(progress.getSize());
-            this.progress.setKind(NSProgress.NSProgressKindFile);
-            this.progress.setCancellable(false);
-            this.progress.setPausable(false);
-            this.progress.setFileOperationKind(NSProgress.NSProgressFileOperationKindDownloading);
-            this.progress.setFileURL(NSURL.fileURLWithPath(file.getAbsolute()));
-            this.progress.publish();
-        }
-        this.progress.setCompletedUnitCount(progress.getTransferred());
-        return true;
+    public Icon get(final Local file) {
+        return new FinderProgressIcon(file);
     }
 
-    @Override
-    public boolean remove(final Local file) {
-        if(null == progress) {
-            return false;
+    private static final class FinderProgressIcon implements Icon {
+        private final NSProgress progress;
+
+        public FinderProgressIcon(final Local file) {
+            progress = NSProgress.discreteProgressWithTotalUnitCount(0L);
+            progress.setKind(NSProgress.NSProgressKindFile);
+            progress.setCancellable(false);
+            progress.setPausable(false);
+            progress.setFileOperationKind(NSProgress.NSProgressFileOperationKindDownloading);
+            progress.setFileURL(NSURL.fileURLWithPath(file.getAbsolute()));
+            progress.publish();
         }
-        progress.unpublish();
-        return true;
+
+        @Override
+        public boolean update(final TransferProgress status) {
+            if(TransferStatus.UNKNOWN_LENGTH == status.getSize()) {
+                return false;
+            }
+            if(TransferStatus.UNKNOWN_LENGTH == status.getTransferred()) {
+                return false;
+            }
+            progress.setTotalUnitCount(status.getSize());
+            progress.setCompletedUnitCount(status.getTransferred());
+            return true;
+        }
+
+        @Override
+        public boolean remove() {
+            progress.unpublish();
+            return true;
+        }
     }
 }

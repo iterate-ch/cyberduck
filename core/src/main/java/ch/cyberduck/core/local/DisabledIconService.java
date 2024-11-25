@@ -22,13 +22,21 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.transfer.TransferProgress;
 
 public final class DisabledIconService implements IconService {
-    @Override
-    public boolean set(final Local file, final TransferProgress progress) {
-        return false;
-    }
+
+    private static final Icon disabled = new Icon() {
+        @Override
+        public boolean update(final TransferProgress progress) {
+            return false;
+        }
+
+        @Override
+        public boolean remove() {
+            return false;
+        }
+    };
 
     @Override
-    public boolean remove(final Local file) {
-        return false;
+    public Icon get(final Local file) {
+        return disabled;
     }
 }
