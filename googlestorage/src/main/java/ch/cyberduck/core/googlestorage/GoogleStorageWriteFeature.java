@@ -194,7 +194,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp);
+        return EnumSet.of(Flags.timestamp, Flags.acl, Flags.mime);
     }
 
     @Override

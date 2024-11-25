@@ -24,6 +24,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 /**
  * Read file from server
@@ -43,7 +44,10 @@ public interface Read {
      * @return True if read with offset is supported
      */
     default boolean offset(Path file) throws BackgroundException {
-        return true;
+        if(this.features(file).contains(Flags.offset)) {
+            return true;
+        }
+        return false;
 
     }
 
@@ -52,5 +56,19 @@ public interface Read {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),
                     file.getName())).withFile(file);
         }
+    }
+
+    /**
+     * @return Supported features
+     */
+    default EnumSet<Flags> features(Path file) {
+        return EnumSet.of(Flags.offset);
+    }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        offset
     }
 }

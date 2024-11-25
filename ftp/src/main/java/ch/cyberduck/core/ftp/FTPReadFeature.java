@@ -31,15 +31,25 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FTPReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(FTPReadFeature.class);
 
     private final FTPSession session;
+    /**
+     * Server process supports RESTart in STREAM mode
+     */
+    private final boolean rest;
 
     public FTPReadFeature(final FTPSession session) {
+        this(session, true);
+    }
+
+    public FTPReadFeature(final FTPSession session, final boolean rest) {
         this.session = session;
+        this.rest = rest;
     }
 
     @Override
@@ -70,14 +80,8 @@ public class FTPReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(final Path file) throws BackgroundException {
-        // Where a server process supports RESTart in STREAM mode
-        try {
-            return session.getClient().hasFeature("REST", "STREAM");
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Download {0} failed", e, file);
-        }
+    public EnumSet<Flags> features(final Path file) {
+        return rest ? EnumSet.of(Flags.offset) : EnumSet.noneOf(Flags.class);
     }
 
     private final class ReadReplyInputStream extends ProxyInputStream {

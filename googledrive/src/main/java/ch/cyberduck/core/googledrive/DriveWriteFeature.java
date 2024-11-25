@@ -67,7 +67,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp);
+        return EnumSet.of(Flags.timestamp, Flags.mime);
     }
 
     @Override

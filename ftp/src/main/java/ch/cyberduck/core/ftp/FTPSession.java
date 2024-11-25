@@ -71,6 +71,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     private final PreferencesReader preferences
             = new HostPreferences(host);
 
+    private Read read;
     private Timestamp timestamp;
     private UnixPermission permission;
     private Symlink symlink;
@@ -263,6 +264,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 catch(IOException e) {
                     log.warn("SYST command failed {}", e.getMessage());
                 }
+                read = new FTPReadFeature(this, client.hasFeature("REST", "STREAM"));
                 listService = new FTPListService(this, system, zone);
                 if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
                     timestamp = new FTPMFMTTimestampFeature(this);
@@ -302,7 +304,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new FTPDeleteFeature(this);
         }
         if(type == Read.class) {
-            return (T) new FTPReadFeature(this);
+            return (T) read;
         }
         if(type == Upload.class) {
             return (T) new FTPUploadFeature(this);

@@ -41,6 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
     private static final Logger log = LogManager.getLogger(BoxChunkedWriteFeature.class);
@@ -101,5 +102,10 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new SHA1ChecksumCompute();
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.checksum);
     }
 }

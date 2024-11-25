@@ -143,6 +143,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp);
+        return EnumSet.of(Flags.timestamp, Flags.checksum, Flags.mime);
     }
 }

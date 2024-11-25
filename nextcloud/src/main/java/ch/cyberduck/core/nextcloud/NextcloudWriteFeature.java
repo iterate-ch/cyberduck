@@ -60,6 +60,6 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp);
+        return EnumSet.of(Flags.timestamp, Flags.checksum);
     }
 }

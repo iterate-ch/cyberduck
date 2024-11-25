@@ -161,6 +161,22 @@ public interface Write<Reply> {
         /**
          * Random writes with arbitrary offset and length
          */
-        random
+        random,
+        /**
+         * Set permissions on upload
+         */
+        permission,
+        /**
+         * Set ACL on upload
+         */
+        acl,
+        /**
+         * Setting checksum on upload to allow verification on server
+         */
+        checksum,
+        /**
+         * Set MIME type on upload
+         */
+        mime
     }
 }
