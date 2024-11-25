@@ -85,6 +85,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             final List<UserFileKeySetRequest> processed = new ArrayList<>();
             // Null when operating from scheduler. File reference is set for post upload.
             final Long fileId = file != null ? Long.parseLong(nodeid.getVersionId(file)) : null;
+            final HashMap<UserKeyPairContainer, Credentials> passphrases = new HashMap<>();
             UserFileKeySetBatchRequest request;
             do {
                 log.debug("Request a list of missing file keys for file {}", file);
@@ -94,7 +95,6 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 final Map<Long, List<UserUserPublicKey>> userPublicKeys = missingKeys.getUsers().stream().collect(groupingBy(UserUserPublicKey::getId));
                 final Map<Long, List<FileFileKeys>> files = missingKeys.getFiles().stream().collect(groupingBy(FileFileKeys::getId));
                 for(UserIdFileIdItem item : missingKeys.getItems()) {
-                    final HashMap<UserKeyPairContainer, Credentials> passphrases = new HashMap<>();
                     for(FileFileKeys fileKey : files.get(item.getFileId())) {
                         final EncryptedFileKey encryptedFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(fileKey.getFileKeyContainer());
                         final UserKeyPairContainer keyPairForDecryption = session.getKeyPairForFileKey(encryptedFileKey.getVersion());
