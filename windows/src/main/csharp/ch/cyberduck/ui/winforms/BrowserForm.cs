@@ -905,6 +905,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             cryptomatorToolStripButton.ToolTipText = title;
             cryptomatorToolStripMenuItem1.Text = title;
             cryptomatorToolbarMenuItem.Text = title;
+            cryptomatorBrowserContextMenuItem.Text = title;
         }
 
         public bool SearchEnabled
