@@ -19,10 +19,14 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public final class IRODSProtocol extends AbstractProtocol {
 
     @Override

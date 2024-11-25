@@ -20,10 +20,14 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class FTPTLSProtocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {

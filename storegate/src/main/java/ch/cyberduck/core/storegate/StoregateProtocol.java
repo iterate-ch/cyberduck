@@ -16,8 +16,12 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class StoregateProtocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {

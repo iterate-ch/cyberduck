@@ -20,6 +20,7 @@ using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.cryptomator.random;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.serviceloader;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.AquaticPrime;
 using Ch.Cyberduck.Core.Date;
@@ -56,6 +57,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             base.setFactories();
 
+            this.setDefault("factory.autoserviceloader.class",
+                typeof(AppContextServiceLoader).AssemblyQualifiedName);
             this.setDefault("factory.supportdirectoryfinder.class",
                 typeof(RoamingSupportDirectoryFinder).AssemblyQualifiedName);
             this.setDefault("factory.localsupportdirectoryfinder.class",

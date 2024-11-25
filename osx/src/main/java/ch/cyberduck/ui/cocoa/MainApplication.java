@@ -19,40 +19,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.azure.AzureProtocol;
-import ch.cyberduck.core.b2.B2Protocol;
-import ch.cyberduck.core.box.BoxProtocol;
-import ch.cyberduck.core.brick.BrickProtocol;
-import ch.cyberduck.core.ctera.CteraProtocol;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.deepbox.DeepboxProtocol;
-import ch.cyberduck.core.dropbox.DropboxProtocol;
-import ch.cyberduck.core.eue.EueProtocol;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.googledrive.DriveProtocol;
-import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
-import ch.cyberduck.core.hubic.HubicProtocol;
-import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.logging.LoggerPrintStream;
-import ch.cyberduck.core.manta.MantaProtocol;
-import ch.cyberduck.core.nextcloud.NextcloudProtocol;
-import ch.cyberduck.core.nio.LocalProtocol;
-import ch.cyberduck.core.onedrive.OneDriveProtocol;
-import ch.cyberduck.core.onedrive.SharepointProtocol;
-import ch.cyberduck.core.onedrive.SharepointSiteProtocol;
-import ch.cyberduck.core.openstack.SwiftProtocol;
-import ch.cyberduck.core.owncloud.OwncloudProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sds.SDSProtocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.smb.SMBProtocol;
-import ch.cyberduck.core.spectra.SpectraProtocol;
-import ch.cyberduck.core.storegate.StoregateProtocol;
+import ch.cyberduck.core.serviceloader.AutoServiceLoaderFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.controller.MainController;
@@ -83,38 +55,9 @@ public final class MainApplication {
             PreferencesFactory.set(preferences);
 
             final ProtocolFactory protocols = ProtocolFactory.get();
-            protocols.register(
-                    new FTPProtocol(),
-                    new FTPTLSProtocol(),
-                    new SFTPProtocol(),
-                    new DAVProtocol(),
-                    new DAVSSLProtocol(),
-                    new SMBProtocol(),
-                    new SwiftProtocol(),
-                    new S3Protocol(),
-                    new GoogleStorageProtocol(),
-                    new AzureProtocol(),
-                    new IRODSProtocol(),
-                    new SpectraProtocol(),
-                    new B2Protocol(),
-                    new DropboxProtocol(),
-                    new DriveProtocol(),
-                    new HubicProtocol(),
-                    new OneDriveProtocol(),
-                    new SharepointProtocol(),
-                    new SharepointSiteProtocol(),
-                    new LocalProtocol(),
-                    new MantaProtocol(),
-                    new SDSProtocol(),
-                    new StoregateProtocol(),
-                    new BrickProtocol(),
-                    new NextcloudProtocol(),
-                    new OwncloudProtocol(),
-                    new CteraProtocol(),
-                    new BoxProtocol(),
-                    new EueProtocol(),
-                    new DeepboxProtocol()
-            );
+            for(Protocol p : AutoServiceLoaderFactory.<Protocol>get().load(Protocol.class)) {
+                protocols.register(p);
+            }
             protocols.load();
             final MainController c = new MainController();
             // Must implement NSApplicationDelegate protocol

@@ -16,54 +16,26 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.azure.AzureProtocol;
-import ch.cyberduck.core.b2.B2Protocol;
-import ch.cyberduck.core.box.BoxProtocol;
-import ch.cyberduck.core.brick.BrickProtocol;
 import ch.cyberduck.core.cdn.Distribution;
-import ch.cyberduck.core.ctera.CteraProtocol;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.deepbox.DeepboxProtocol;
-import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.googledrive.DriveProtocol;
-import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
-import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.LoggerPrintStream;
-import ch.cyberduck.core.manta.MantaProtocol;
-import ch.cyberduck.core.nextcloud.NextcloudProtocol;
-import ch.cyberduck.core.nio.LocalProtocol;
-import ch.cyberduck.core.onedrive.OneDriveProtocol;
-import ch.cyberduck.core.onedrive.SharepointProtocol;
-import ch.cyberduck.core.onedrive.SharepointSiteProtocol;
-import ch.cyberduck.core.openstack.SwiftProtocol;
-import ch.cyberduck.core.owncloud.OwncloudProtocol;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sds.SDSProtocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.smb.SMBProtocol;
-import ch.cyberduck.core.spectra.SpectraProtocol;
+import ch.cyberduck.core.serviceloader.AutoServiceLoaderFactory;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
-import ch.cyberduck.core.storegate.StoregateProtocol;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
@@ -135,38 +107,9 @@ public class Terminal {
     public Terminal(final ProtocolFactory protocols, final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.protocols = protocols;
         this.preferences = defaults.withDefaults(input);
-        this.protocols.register(
-                new FTPProtocol(),
-                new FTPTLSProtocol(),
-                new SFTPProtocol(),
-                new DAVProtocol(),
-                new DAVSSLProtocol(),
-                new SMBProtocol(),
-                new SwiftProtocol(),
-                new S3Protocol(),
-                new GoogleStorageProtocol(),
-                new AzureProtocol(),
-                new IRODSProtocol(),
-                new SpectraProtocol(),
-                new B2Protocol(),
-                new DriveProtocol(),
-                new HubicProtocol(),
-                new DropboxProtocol(),
-                new DropboxProtocol(),
-                new OneDriveProtocol(),
-                new SharepointProtocol(),
-                new SharepointSiteProtocol(),
-                new LocalProtocol(),
-                new SDSProtocol(),
-                new MantaProtocol(),
-                new StoregateProtocol(),
-                new BrickProtocol(),
-                new NextcloudProtocol(),
-                new OwncloudProtocol(),
-                new CteraProtocol(),
-                new BoxProtocol(),
-                new DeepboxProtocol()
-        );
+        for(Protocol p : AutoServiceLoaderFactory.<Protocol>get().load(Protocol.class)) {
+            protocols.register(p);
+        }
         this.options = options;
         log.info("Parsed options {} from input {}", options, input);
         this.input = input;

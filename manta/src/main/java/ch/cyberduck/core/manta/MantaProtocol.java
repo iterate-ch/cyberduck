@@ -16,8 +16,12 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(Protocol.class)
 public class MantaProtocol extends AbstractProtocol {
 
     @Override

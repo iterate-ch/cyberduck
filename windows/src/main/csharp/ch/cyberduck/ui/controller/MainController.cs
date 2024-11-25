@@ -18,42 +18,18 @@
 
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
-using ch.cyberduck.core.azure;
-using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
-using ch.cyberduck.core.box;
-using ch.cyberduck.core.brick;
 using ch.cyberduck.core.ctera;
-using ch.cyberduck.core.dav;
-using ch.cyberduck.core.deepbox;
-using ch.cyberduck.core.dropbox;
-using ch.cyberduck.core.eue;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.googledrive;
-using ch.cyberduck.core.googlestorage;
-using ch.cyberduck.core.hubic;
 using ch.cyberduck.core.importer;
-using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.manta;
-using ch.cyberduck.core.nextcloud;
-using ch.cyberduck.core.nio;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.oauth;
-using ch.cyberduck.core.onedrive;
-using ch.cyberduck.core.openstack;
-using ch.cyberduck.core.owncloud;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
-using ch.cyberduck.core.s3;
-using ch.cyberduck.core.sds;
 using ch.cyberduck.core.serializer;
-using ch.cyberduck.core.sftp;
-using ch.cyberduck.core.smb;
-using ch.cyberduck.core.spectra;
-using ch.cyberduck.core.storegate;
+using ch.cyberduck.core.serviceloader;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
@@ -150,12 +126,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             }
 
-            protocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(), new SMBProtocol(),
-                new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(), new SharepointSiteProtocol(),
-                new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol(), new OwncloudProtocol(), new CteraProtocol(), new BoxProtocol(), new EueProtocol(),
-                new DeepboxProtocol());
+            foreach(Protocol p in AutoServiceLoaderFactory.get().load(typeof(Protocol)))
+            {
+                protocolFactory.register(p);
+            }
+
             protocolFactory.load();
             
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
