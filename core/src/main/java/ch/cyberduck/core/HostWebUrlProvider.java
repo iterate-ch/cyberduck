@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
-import java.net.URI;
+import org.apache.commons.lang3.StringUtils;
 
 public class HostWebUrlProvider implements UrlProvider {
 
@@ -32,12 +32,9 @@ public class HostWebUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         final DescriptiveUrl base = new DefaultWebUrlProvider().toUrl(host);
-        list.add(new DescriptiveUrl(URI.create(String.format("%s%s", base.getUrl(), URIEncoder.encode(
+        list.add(new DescriptiveUrl(String.format("%s%s", StringUtils.stripEnd(base.getUrl(), String.valueOf(Path.DELIMITER)), URIEncoder.encode(
                 PathNormalizer.normalize(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))
-            ))).normalize(),
-                base.getType(),
-                base.getHelp())
-        );
+        )), base.getType(), base.getHelp()));
         return list;
     }
 }

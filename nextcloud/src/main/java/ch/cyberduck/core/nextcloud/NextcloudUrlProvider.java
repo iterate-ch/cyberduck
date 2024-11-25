@@ -24,7 +24,6 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
 
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Locale;
 
@@ -39,8 +38,8 @@ public class NextcloudUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        list.add(new DescriptiveUrl(URI.create(String.format("%s%s",
-            new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(file.getAbsolute()))),
+        list.add(new DescriptiveUrl(String.format("%s%s",
+                new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(file.getAbsolute())),
             DescriptiveUrl.Type.provider,
             MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
         return list;

@@ -48,7 +48,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
             {
                 final Duration expiresIn = Duration.ofMinutes(1);
                 list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn).toString(),
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
@@ -57,7 +57,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
             {
                 final Duration expiresIn = Duration.ofHours(1);
                 list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn).toString(),
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
@@ -66,7 +66,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
             {
                 final Duration expiresIn = Duration.ofDays(1);
                 list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn).toString(),
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",

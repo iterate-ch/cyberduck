@@ -26,7 +26,6 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.URI;
 import java.util.Collections;
 
 public class EueShareUrlProvider implements UrlProvider {
@@ -60,7 +59,7 @@ public class EueShareUrlProvider implements UrlProvider {
         if(null == shareCreationResponse) {
             return DescriptiveUrl.EMPTY;
         }
-        return new DescriptiveUrl(URI.create(EueShareFeature.toBrandedUri(shareCreationResponse.getGuestURI(),
-                host.getProperty("share.hostname"))), DescriptiveUrl.Type.signed);
+        return new DescriptiveUrl(EueShareFeature.toBrandedUri(shareCreationResponse.getGuestURI(),
+                host.getProperty("share.hostname")), DescriptiveUrl.Type.signed);
     }
 }

@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Share;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -56,7 +55,7 @@ public class DropboxTemporaryUrlProvider implements Share<Void, Void> {
             // Determine expiry time for URL
             final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             expiry.add(Calendar.HOUR, 4);
-            return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.signed,
+            return new DescriptiveUrl(link, DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3"))
                     + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                     UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
@@ -72,7 +71,7 @@ public class DropboxTemporaryUrlProvider implements Share<Void, Void> {
         try {
             log.debug("Create temporary upload link for {}", file);
             final String link = new DbxUserFilesRequests(session.getClient(file)).getTemporaryUploadLink(new CommitInfo(containerService.getKey(file))).getLink();
-            return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
+            return new DescriptiveUrl(link, DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);

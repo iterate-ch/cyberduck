@@ -37,7 +37,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Share;
 
-import java.net.URI;
 import java.text.MessageFormat;
 
 public class BoxShareFeature implements Share {
@@ -81,7 +80,7 @@ public class BoxShareFeature implements Share {
                     new FilesFileIdaddSharedLinkBody()
                             .sharedLink(new FilesfileIdaddSharedLinkSharedLink().permissions(new FilesfileIdSharedLinkPermissions().canDownload(true))
                                     .password(password)));
-            return new DescriptiveUrl(URI.create(link.getSharedLink().getDownloadUrl()), DescriptiveUrl.Type.signed);
+            return new DescriptiveUrl(link.getSharedLink().getDownloadUrl(), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new BoxExceptionMappingService(fileid).map(e);
@@ -97,7 +96,7 @@ public class BoxShareFeature implements Share {
                     new FoldersFolderIdaddSharedLinkBody()
                             .sharedLink(new FoldersfolderIdaddSharedLinkSharedLink().permissions(new FoldersfolderIdaddSharedLinkSharedLinkPermissions().canDownload(false))
                                     .password(password)));
-            return new DescriptiveUrl(URI.create(link.getSharedLink().getUrl()), DescriptiveUrl.Type.signed);
+            return new DescriptiveUrl(link.getSharedLink().getUrl(), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new BoxExceptionMappingService(fileid).map(e);

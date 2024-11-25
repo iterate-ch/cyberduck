@@ -44,7 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -154,17 +153,17 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
             final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(session.softwareVersion().getRestApiVersion());
             if(matcher.matches()) {
                 if(new Version(matcher.group(1)).compareTo(new Version("4.26")) < 0) {
-                    return new DescriptiveUrl(URI.create(String.format("%s://%s/#/public/shares-downloads/%s",
+                    return new DescriptiveUrl(String.format("%s://%s/#/public/shares-downloads/%s",
                             bookmark.getProtocol().getScheme(),
                             bookmark.getHostname(),
-                            share.getAccessKey())),
+                            share.getAccessKey()),
                             DescriptiveUrl.Type.signed, help);
                 }
             }
-            return new DescriptiveUrl(URI.create(String.format("%s://%s/public/download-shares/%s",
+            return new DescriptiveUrl(String.format("%s://%s/public/download-shares/%s",
                     bookmark.getProtocol().getScheme(),
                     bookmark.getHostname(),
-                    share.getAccessKey())),
+                    share.getAccessKey()),
                     DescriptiveUrl.Type.signed, help);
         }
         catch(ApiException e) {
@@ -199,17 +198,17 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
             final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(session.softwareVersion().getRestApiVersion());
             if(matcher.matches()) {
                 if(new Version(matcher.group(1)).compareTo(new Version("4.26")) < 0) {
-                    return new DescriptiveUrl(URI.create(String.format("%s://%s/#/public/shares-uploads/%s",
+                    return new DescriptiveUrl(String.format("%s://%s/#/public/shares-uploads/%s",
                             bookmark.getProtocol().getScheme(),
                             bookmark.getHostname(),
-                            share.getAccessKey())),
+                            share.getAccessKey()),
                             DescriptiveUrl.Type.signed, help);
                 }
             }
-            return new DescriptiveUrl(URI.create(String.format("%s://%s/public/upload-shares/%s",
+            return new DescriptiveUrl(String.format("%s://%s/public/upload-shares/%s",
                     bookmark.getProtocol().getScheme(),
                     bookmark.getHostname(),
-                    share.getAccessKey())),
+                    share.getAccessKey()),
                     DescriptiveUrl.Type.signed, help);
         }
         catch(ApiException e) {

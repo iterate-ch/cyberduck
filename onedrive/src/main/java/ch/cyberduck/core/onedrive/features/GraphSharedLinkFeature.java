@@ -30,7 +30,6 @@ import org.nuxeo.onedrive.client.OneDriveSharingLink;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
-import java.net.URI;
 import java.text.MessageFormat;
 
 public class GraphSharedLinkFeature implements Share {
@@ -53,7 +52,7 @@ public class GraphSharedLinkFeature implements Share {
             throws BackgroundException {
         final DriveItem item = session.getItem(file);
         try {
-            return new DescriptiveUrl(URI.create(Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
+            return new DescriptiveUrl(Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW).getLink().getWebUrl(),
                     DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
         }
         catch(IOException e) {

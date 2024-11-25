@@ -2,8 +2,6 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
-import java.net.URI;
-
 import static org.junit.Assert.*;
 
 public class DescriptiveUrlBagTest {
@@ -11,7 +9,7 @@ public class DescriptiveUrlBagTest {
     @Test
     public void testFilter() {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        final DescriptiveUrl url = new DescriptiveUrl(URI.create("http://example.net"));
+        final DescriptiveUrl url = new DescriptiveUrl("http://example.net");
         list.add(url);
         assertTrue(list.filter(DescriptiveUrl.Type.provider).isEmpty());
         assertTrue(list.filter(DescriptiveUrl.Type.cdn).isEmpty());
@@ -24,7 +22,7 @@ public class DescriptiveUrlBagTest {
     @Test
     public void testFind() {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        final DescriptiveUrl url = new DescriptiveUrl(URI.create("http://example.net"));
+        final DescriptiveUrl url = new DescriptiveUrl("http://example.net");
         list.add(url);
         assertEquals(DescriptiveUrl.EMPTY, list.find(DescriptiveUrl.Type.provider));
         assertEquals(url, list.find(DescriptiveUrl.Type.http));

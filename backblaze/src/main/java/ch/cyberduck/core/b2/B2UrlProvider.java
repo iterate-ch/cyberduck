@@ -24,7 +24,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Locale;
 
@@ -49,7 +48,7 @@ public class B2UrlProvider implements UrlProvider {
             final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
                 URIEncoder.encode(containerService.getContainer(file).getName()),
                 URIEncoder.encode(containerService.getKey(file)));
-            list.add(new DescriptiveUrl(URI.create(download), DescriptiveUrl.Type.http,
+            list.add(new DescriptiveUrl(download, DescriptiveUrl.Type.http,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
         }
         return list;

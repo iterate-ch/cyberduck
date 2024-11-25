@@ -21,7 +21,6 @@ import ch.cyberduck.core.ocs.model.Share;
 import org.apache.http.HttpEntity;
 
 import java.io.IOException;
-import java.net.URI;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -33,7 +32,7 @@ public class OcsDownloadShareResponseHandler extends OcsResponseHandler<Descript
         final Share value = mapper.readValue(entity.getContent(), Share.class);
         if(null != value.data) {
             if(null != value.data.url) {
-                return new DescriptiveUrl(URI.create(value.data.url), DescriptiveUrl.Type.http);
+                return new DescriptiveUrl(value.data.url, DescriptiveUrl.Type.http);
             }
         }
         return DescriptiveUrl.EMPTY;

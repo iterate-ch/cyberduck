@@ -52,23 +52,23 @@ public class GoogleStorageUrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DefaultUrlProvider(session.getHost()).toUrl(file);
         if(file.isFile()) {
             // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
-            list.add(new DescriptiveUrl(URI.create(String.format("https://storage.cloud.google.com%s",
-                URIEncoder.encode(file.getAbsolute()))), DescriptiveUrl.Type.authenticated,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
+            list.add(new DescriptiveUrl(String.format("https://storage.cloud.google.com%s",
+                    URIEncoder.encode(file.getAbsolute())), DescriptiveUrl.Type.authenticated,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
             // Website configuration
             final Distribution distribution = new Distribution(Distribution.DOWNLOAD, URI.create(String.format("%s://%s.%s",
-                Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), session.getHost().getProtocol().getDefaultHostname())),
-                false);
+                    Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), session.getHost().getProtocol().getDefaultHostname())),
+                    false);
             distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
-                session.getHost().getProtocol().getDefaultHostname())));
+                    session.getHost().getProtocol().getDefaultHostname())));
             list.addAll(new DistributionUrlProvider(distribution).toUrl(file));
         }
         // gsutil URI
-        list.add(new DescriptiveUrl(URI.create(String.format("gs://%s%s",
-            containerService.getContainer(file).getName(),
-            file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
-            DescriptiveUrl.Type.provider,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getName())));
+        list.add(new DescriptiveUrl(String.format("gs://%s%s",
+                containerService.getContainer(file).getName(),
+                file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file)))),
+                DescriptiveUrl.Type.provider,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getName())));
         return list;
     }
 }

@@ -20,8 +20,6 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
 public class DefaultWebUrlProvider implements WebUrlProvider {
@@ -47,15 +45,9 @@ public class DefaultWebUrlProvider implements WebUrlProvider {
                 base = String.format("http://%s/", bookmark.getWebURL());
             }
         }
-        final URI uri;
-        try {
-            uri = new URI(base);
-        }
-        catch(URISyntaxException e) {
-            return DescriptiveUrl.EMPTY;
-        }
-        return new DescriptiveUrl(uri,
-            DescriptiveUrl.Type.http,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), StringUtils.upperCase(uri.getScheme())));
+        return new DescriptiveUrl(base,
+                DescriptiveUrl.Type.http,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                        StringUtils.upperCase(StringUtils.substringBefore(base, "://"))));
     }
 }

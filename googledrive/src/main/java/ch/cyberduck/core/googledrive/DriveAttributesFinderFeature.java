@@ -37,7 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 
@@ -121,11 +120,11 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
         }
         attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
         if(StringUtils.isNotBlank(f.getWebViewLink())) {
-            attributes.setLink(new DescriptiveUrl(URI.create(f.getWebViewLink()),
+            attributes.setLink(new DescriptiveUrl(f.getWebViewLink(),
                     DescriptiveUrl.Type.http,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
             if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
-                attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(URI.create(f.getWebViewLink())))
+                attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(f.getWebViewLink()))
                         .getBytes(Charset.defaultCharset()).length);
             }
         }

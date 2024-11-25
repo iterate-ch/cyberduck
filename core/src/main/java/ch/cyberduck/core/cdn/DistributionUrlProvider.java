@@ -39,7 +39,7 @@ public class DistributionUrlProvider implements UrlProvider {
     private final Distribution distribution;
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     public DistributionUrlProvider(final Distribution distribution) {
         this.distribution = distribution;
@@ -49,32 +49,32 @@ public class DistributionUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         list.add(new DescriptiveUrl(this.toUrl(file, distribution.getOrigin()), DescriptiveUrl.Type.origin,
-            MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                distribution.getName(),
-                LocaleFactory.localizedString("Origin", "Info"))));
+                MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                        distribution.getName(),
+                        LocaleFactory.localizedString("Origin", "Info"))));
         if(distribution.getUrl() != null) {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getUrl()), DescriptiveUrl.Type.cdn,
-                MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                    distribution.getName(),
-                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"))));
+                    MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                            distribution.getName(),
+                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"))));
         }
         if(distribution.getSslUrl() != null) {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getSslUrl()), DescriptiveUrl.Type.cdn,
-                String.format("%s (SSL)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                    distribution.getName(),
-                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+                    String.format("%s (SSL)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                            distribution.getName(),
+                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
         }
         if(distribution.getStreamingUrl() != null) {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getStreamingUrl()), DescriptiveUrl.Type.cdn,
-                String.format("%s (Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                    distribution.getName(),
-                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+                    String.format("%s (Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                            distribution.getName(),
+                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
         }
         if(distribution.getiOSstreamingUrl() != null) {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getiOSstreamingUrl()), DescriptiveUrl.Type.cdn,
-                String.format("%s (iOS Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                    distribution.getName(),
-                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+                    String.format("%s (iOS Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                            distribution.getName(),
+                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
         }
         list.addAll(this.toCnameUrl(file));
         return list;
@@ -85,7 +85,7 @@ public class DistributionUrlProvider implements UrlProvider {
      * @param origin Distribution URL
      * @return URL to file in distribution
      */
-    private URI toUrl(final Path file, final URI origin) {
+    private String toUrl(final Path file, final URI origin) {
         final StringBuilder b = new StringBuilder(String.format("%s://%s", origin.getScheme(), origin.getHost()));
         if(distribution.getMethod().equals(Distribution.CUSTOM)) {
             b.append(Path.DELIMITER).append(URIEncoder.encode(PathRelativizer.relativize(origin.getRawPath(), file.getAbsolute())));
@@ -98,7 +98,7 @@ public class DistributionUrlProvider implements UrlProvider {
                 b.append(Path.DELIMITER).append(URIEncoder.encode(containerService.getKey(file)));
             }
         }
-        return URI.create(b.toString()).normalize();
+        return b.toString();
     }
 
     /**
@@ -113,11 +113,11 @@ public class DistributionUrlProvider implements UrlProvider {
             if(StringUtils.isNotEmpty(containerService.getKey(file))) {
                 b.append(Path.DELIMITER).append(URIEncoder.encode(containerService.getKey(file)));
             }
-            urls.add(new DescriptiveUrl(URI.create(b.toString()).normalize(), DescriptiveUrl.Type.cname,
-                MessageFormat.format(LocaleFactory.localizedString("{0} {1} {2} URL"),
-                    distribution.getName(),
-                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"),
-                    LocaleFactory.localizedString("CNAME", "S3"))));
+            urls.add(new DescriptiveUrl(b.toString(), DescriptiveUrl.Type.cname,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} {1} {2} URL"),
+                            distribution.getName(),
+                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"),
+                            LocaleFactory.localizedString("CNAME", "S3"))));
         }
         return urls;
     }

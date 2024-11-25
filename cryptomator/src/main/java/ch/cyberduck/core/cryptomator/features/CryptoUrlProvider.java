@@ -30,7 +30,6 @@ import ch.cyberduck.core.vault.DecryptingListProgressListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.URI;
 import java.text.MessageFormat;
 
 public class CryptoUrlProvider implements UrlProvider {
@@ -51,8 +50,8 @@ public class CryptoUrlProvider implements UrlProvider {
         try {
             final DescriptiveUrlBag set = delegate.toUrl(file);
             final Path encrypt = vault.encrypt(session, file);
-            set.add(new DescriptiveUrl(URI.create(String.format("%s%s",
-                new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(encrypt.getAbsolute()))),
+            set.add(new DescriptiveUrl(String.format("%s%s",
+                    new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(encrypt.getAbsolute())),
                     DescriptiveUrl.Type.encrypted,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                             LocaleFactory.localizedString("Encrypted", "Cryptomator")))

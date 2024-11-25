@@ -43,7 +43,6 @@ import org.jets3t.service.Constants;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -99,8 +98,8 @@ public class SwiftUrlProvider implements UrlProvider {
                 final Region region = optional.get();
                 list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
                 list.add(new DescriptiveUrl(
-                        URI.create(region.getStorageUrl(containerService.getContainer(file).getName(),
-                                containerService.getKey(file)).toString()),
+                        region.getStorageUrl(containerService.getContainer(file).getName(),
+                                containerService.getKey(file)).toString(),
                         DescriptiveUrl.Type.provider,
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                                 session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))

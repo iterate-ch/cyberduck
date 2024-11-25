@@ -21,8 +21,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 
-import java.net.URI;
-
 public class DeepboxUrlProvider implements UrlProvider {
     private final DeepboxSession session;
 
@@ -35,13 +33,13 @@ public class DeepboxUrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile() && file.attributes().getFileId() != null) {
             // For now, use pattern https://{env}.deepbox.swiss/node/{nodeId}/preview, API forthcoming
-            list.add(new DescriptiveUrl(URI.create(new HostUrlProvider()
+            list.add(new DescriptiveUrl(new HostUrlProvider()
                     .withPath(true).withUsername(false)
                     .get(session.getHost().getProtocol().getScheme(),
                             session.getHost().getPort(),
                             null,
                             String.format("%sdeepbox.swiss", session.getStage()),
-                            String.format("/node/%s/preview", file.attributes().getFileId())))));
+                            String.format("/node/%s/preview", file.attributes().getFileId()))));
         }
         return list;
     }
