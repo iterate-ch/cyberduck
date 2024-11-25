@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Local;
 
 public class IconServiceFactory extends Factory<IconService> {
 
@@ -28,5 +29,9 @@ public class IconServiceFactory extends Factory<IconService> {
 
     public static IconService get() {
         return new IconServiceFactory().create();
+    }
+
+    public static IconService.Icon iconFor(final Local file) {
+        return get().get(file);
     }
 }
