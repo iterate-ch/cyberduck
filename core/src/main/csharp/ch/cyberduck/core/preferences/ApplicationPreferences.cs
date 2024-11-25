@@ -96,7 +96,7 @@ public class ApplicationPreferences<T> : DefaultPreferences
 
     public override string getProperty(string property)
     {
-        if (propertyStore[property] is not { } value || string.IsNullOrWhiteSpace(value))
+        if (propertyStore[property] is not { } value)
         {
             value = getDefault(property);
         }
