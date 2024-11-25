@@ -22,11 +22,16 @@
     <property name="app.name" value="Cyberduck"/>
     <property name="app.runtime.archs" value="'x86_64 arm64'"/>
     <property name="app.runtime.system.min" value="10.13"/>
-    <property name="app.runtime.args"
+    <property name="jvm.runtime.args"
               value="-client --add-opens=java.base/sun.security.ssl=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -DLog4jContextSelector=org.apache.logging.log4j.core.selector.BasicContextSelector -XX:+UseG1GC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:+UseStringDeduplication"/>
 
+    <condition property="jvm.runtime.debug"
+               value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6005 ">
+        <equals arg1="${configuration}" arg2="debug"/>
+    </condition>
+
     <property name="build.xcodeoptions"
-              value="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO JVM_RUNTIME_ARGS='${app.runtime.args}' JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+              value="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO JVM_RUNTIME_ARGS='${jvm.runtime.debug}${jvm.runtime.args}' JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="cli"/>
