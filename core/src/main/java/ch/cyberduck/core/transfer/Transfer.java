@@ -365,14 +365,13 @@ public abstract class Transfer implements Serializable {
      * @param file        Remote file path
      * @param local       Local file reference
      * @param options     Quarantine option
-     * @param overall     Overall transfer status
      * @param segment     Segment transfer status
      * @param prompt      Prompt for alerts to user
      * @param progress    Progress messages listener
-     * @param listener      Byte count listener
+     * @param listener    Byte count listener
      */
     public abstract void transfer(Session<?> source, Session<?> destination, Path file, Local local,
-                                  TransferOptions options, TransferStatus overall, TransferStatus segment,
+                                  TransferOptions options, TransferStatus segment,
                                   ConnectionCallback prompt, ProgressListener progress, StreamListener listener) throws BackgroundException;
 
     public void start() {

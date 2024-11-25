@@ -385,7 +385,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             transfer.transfer(s, d,
                                     segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                     segment.getRename().local != null ? segment.getRename().local : item.local,
-                                    options, status, segment, connect, progress, counter);
+                                    options, segment, connect, progress, counter);
                         }
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);

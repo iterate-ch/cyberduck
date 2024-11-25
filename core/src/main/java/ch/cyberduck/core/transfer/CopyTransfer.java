@@ -232,7 +232,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
-                         final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
+                         final TransferOptions options, final TransferStatus segment,
                          final ConnectionCallback prompt,
                          final ProgressListener progress, final StreamListener listener) throws BackgroundException {
         log.debug("Transfer file {} with options {}", source, options);
