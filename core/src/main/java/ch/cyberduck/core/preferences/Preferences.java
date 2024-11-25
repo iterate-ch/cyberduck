@@ -49,6 +49,7 @@ import ch.cyberduck.core.serializer.impl.dd.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.dd.PlistWriter;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.dd.TransferPlistReader;
+import ch.cyberduck.core.serviceloader.AnnotationAutoServiceLoader;
 import ch.cyberduck.core.socket.NetworkInterfaceHardwareAddress;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
@@ -480,6 +481,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     protected void setFactories() {
+        this.setDefault("factory.autoserviceloader.class", AnnotationAutoServiceLoader.class.getName());
         this.setDefault("factory.serializer.class", PlistSerializer.class.getName());
         this.setDefault("factory.deserializer.class", PlistDeserializer.class.getName());
         this.setDefault("factory.reader.profile.class", ProfilePlistReader.class.getName());

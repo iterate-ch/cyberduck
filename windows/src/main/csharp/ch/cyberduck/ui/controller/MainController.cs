@@ -29,6 +29,7 @@ using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
 using ch.cyberduck.core.serializer;
+using ch.cyberduck.core.serviceloader;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
@@ -65,7 +66,6 @@ using XamlGeneratedNamespace;
 using static Windows.Win32.PInvoke;
 using Application = ch.cyberduck.core.local.Application;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
-using ServiceLoader = java.util.ServiceLoader;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -126,10 +126,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             }
 
-            foreach (Protocol p in ServiceLoader.load(typeof(Protocol)))
+            foreach(Protocol p in AutoServiceLoaderFactory.get().load(typeof(Protocol)))
             {
                 protocolFactory.register(p);
             }
+
             protocolFactory.load();
             
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());

@@ -32,6 +32,7 @@ import ch.cyberduck.core.logging.LoggerPrintStream;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serviceloader.AutoServiceLoaderFactory;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
@@ -74,7 +75,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -107,7 +107,7 @@ public class Terminal {
     public Terminal(final ProtocolFactory protocols, final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.protocols = protocols;
         this.preferences = defaults.withDefaults(input);
-        for(Protocol p : ServiceLoader.load(Protocol.class)) {
+        for(Protocol p : AutoServiceLoaderFactory.<Protocol>get().load(Protocol.class)) {
             protocols.register(p);
         }
         this.options = options;

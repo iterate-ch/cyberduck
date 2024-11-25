@@ -24,11 +24,10 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.logging.LoggerPrintStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serviceloader.AutoServiceLoaderFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.controller.MainController;
-
-import java.util.ServiceLoader;
 
 public final class MainApplication {
 
@@ -56,7 +55,7 @@ public final class MainApplication {
             PreferencesFactory.set(preferences);
 
             final ProtocolFactory protocols = ProtocolFactory.get();
-            for(Protocol p : ServiceLoader.load(Protocol.class)) {
+            for(Protocol p : AutoServiceLoaderFactory.<Protocol>get().load(Protocol.class)) {
                 protocols.register(p);
             }
             protocols.load();
