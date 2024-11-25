@@ -313,10 +313,14 @@ public abstract class NSView extends NSResponder {
     public abstract void setFrame(NSRect frame);
 
     /**
-     * <i>native declaration : :163</i><br>
-     * Conversion Error : NSRect
+     * @return The view’s frame rectangle, which defines its position and size in its superview’s coordinate system.
      */
     public abstract NSRect frame();
+
+    /**
+     * @return The view’s bounds rectangle, which expresses its location and size in its own coordinate system.
+     */
+    public abstract NSRect bounds();
 
     /**
      * Original signature : <code>void setFrameRotation(CGFloat)</code><br>
