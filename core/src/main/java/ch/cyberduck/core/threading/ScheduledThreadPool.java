@@ -21,7 +21,6 @@ package ch.cyberduck.core.threading;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class ScheduledThreadPool {
     private static final Logger log = LogManager.getLogger(ScheduledThreadPool.class);
 
-    private final ScheduledExecutorService pool;
+    private final ScheduledThreadPoolExecutor pool;
 
     /**
      * With FIFO (first-in-first-out) ordered wait queue.
@@ -54,6 +53,10 @@ public class ScheduledThreadPool {
     public ScheduledThreadPool(final Thread.UncaughtExceptionHandler handler, final String threadNamePrefix) {
         this.pool = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory(threadNamePrefix, handler),
                 new DefaultThreadPool.CustomCallerPolicy());
+        // no execute after shutdown
+        this.pool.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        // cancel periodic tasks on shutdown
+        this.pool.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
     }
 
     /**
