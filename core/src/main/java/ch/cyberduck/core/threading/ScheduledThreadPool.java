@@ -99,5 +99,13 @@ public class ScheduledThreadPool {
     public void shutdown() {
         log.info("Shutdown pool {}", pool);
         pool.shutdown();
+        try {
+            while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
+                log.warn("Await termination for pool {}", pool);
+            }
+        }
+        catch(InterruptedException e) {
+            log.error("Failure awaiting pool termination. {}", e.getMessage());
+        }
     }
 }
