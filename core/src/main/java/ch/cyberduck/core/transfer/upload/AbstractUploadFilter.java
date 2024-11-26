@@ -17,75 +17,48 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.PreferencesReader;
+import ch.cyberduck.core.transfer.FeatureFilter;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
-import ch.cyberduck.ui.browser.SearchFilterFactory;
+import ch.cyberduck.core.transfer.upload.features.DefaultLocalUploadOptionsFilterChain;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = LogManager.getLogger(AbstractUploadFilter.class);
 
-    private final PreferencesReader preferences;
-    private final Session<?> session;
-    private final SymlinkResolver<Local> symlinkResolver;
-    private final Filter<Path> hidden = SearchFilterFactory.HIDDEN_FILTER;
-
+    private final SymlinkResolver<Local> resolver;
     protected final Find find;
     protected final AttributesFinder attribute;
-    protected final UploadFilterOptions options;
+    protected final FeatureFilter chain;
 
-    public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
-        this(symlinkResolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), options);
+    public AbstractUploadFilter(final SymlinkResolver<Local> resolver, final Session<?> session, final UploadFilterOptions options) {
+        this(resolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), options);
     }
 
-    public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
-        this.session = session;
-        this.symlinkResolver = symlinkResolver;
+    public AbstractUploadFilter(final SymlinkResolver<Local> resolver, final Session<?> session, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
+        this(resolver, find, attribute, new DefaultLocalUploadOptionsFilterChain(session, options));
+    }
+
+    public AbstractUploadFilter(final SymlinkResolver<Local> resolver, final Find find, final AttributesFinder attribute, final FeatureFilter chain) {
+        this.resolver = resolver;
         this.find = find;
         this.attribute = attribute;
-        this.options = options;
-        this.preferences = new HostPreferences(session.getHost());
+        this.chain = chain;
     }
 
     @Override
@@ -100,16 +73,31 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         log.debug("Prepare {}", file);
-        final TransferStatus status = new TransferStatus()
-                .hidden(!hidden.accept(file))
-                .withLockId(parent.getLockId());
+        final TransferStatus status = new TransferStatus().withLockId(parent.getLockId());
+        if(file.isFile()) {
+            // Set content length from local file
+            if(local.isSymbolicLink()) {
+                if(!resolver.resolve(local)) {
+                    // Will resolve the symbolic link when the file is requested.
+                    final Local target = local.getSymlinkTarget();
+                    status.setLength(target.attributes().getSize());
+                }
+                // No file size increase for symbolic link to be created on the server
+            }
+            else {
+                // Read file size from filesystem
+                status.setLength(local.attributes().getSize());
+            }
+        }
+        if(file.isDirectory()) {
+            status.setLength(0L);
+        }
         // Read remote attributes first
         if(parent.isExists()) {
             if(find.find(file)) {
                 status.setExists(true);
                 // Read remote attributes
-                final PathAttributes attributes = attribute.find(file);
-                status.setRemote(attributes);
+                status.setRemote(attribute.find(file));
             }
             else {
                 // Look if there is directory or file that clashes with this upload
@@ -125,253 +113,19 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
-        if(file.isFile()) {
-            // Set content length from local file
-            if(local.isSymbolicLink()) {
-                if(!symlinkResolver.resolve(local)) {
-                    // Will resolve the symbolic link when the file is requested.
-                    final Local target = local.getSymlinkTarget();
-                    status.setLength(target.attributes().getSize());
-                }
-                // No file size increase for symbolic link to be created on the server
-            }
-            else {
-                // Read file size from filesystem
-                status.setLength(local.attributes().getSize());
-            }
-            if(options.temporary) {
-                final Move feature = session.getFeature(Move.class);
-                final Path renamed = new Path(file.getParent(),
-                        MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
-                                file.getName(), new AlphanumericRandomStringService().random()), file.getType());
-                if(feature.isSupported(file, renamed)) {
-                    log.debug("Set temporary filename {}", renamed);
-                    // Set target name after transfer
-                    status.withRename(renamed).withDisplayname(file);
-                    // Remember status of target file for later rename
-                    status.getDisplayname().exists(status.isExists());
-                    // Keep exist flag for subclasses to determine additional rename strategy
-                }
-                else {
-                    log.warn("Cannot use temporary filename for upload with missing rename support for {}", file);
-                }
-            }
-            status.withMime(new MappingMimeTypeService().getMime(file.getName()));
-        }
-        if(file.isDirectory()) {
-            status.setLength(0L);
-        }
-        if(options.permissions) {
-            final UnixPermission feature = session.getFeature(UnixPermission.class);
-            if(feature != null) {
-                if(status.isExists()) {
-                    // Already set when reading attributes of file
-                    status.setPermission(status.getRemote().getPermission());
-                }
-                else {
-                    if(new HostPreferences(session.getHost()).getBoolean("queue.upload.permissions.default")) {
-                        status.setPermission(feature.getDefault(file.getType()));
-                    }
-                    else {
-                        // Read permissions from local file
-                        status.setPermission(local.attributes().getPermission());
-                    }
-                }
-            }
-            else {
-                // Setting target UNIX permissions in transfer status
-                status.setPermission(Permission.EMPTY);
-            }
-        }
-        if(options.acl) {
-            final AclPermission feature = session.getFeature(AclPermission.class);
-            if(feature != null) {
-                if(status.isExists()) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Getting permission of {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setAcl(feature.getPermission(file));
-                    }
-                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setAcl(feature.getDefault(file));
-                    }
-                }
-                else {
-                    status.setAcl(feature.getDefault(file));
-                }
-            }
-            else {
-                // Setting target ACL in transfer status
-                status.setAcl(Acl.EMPTY);
-            }
-        }
-        if(options.timestamp) {
-            if(1L != local.attributes().getModificationDate()) {
-                status.setModified(local.attributes().getModificationDate());
-            }
-            if(1L != local.attributes().getCreationDate()) {
-                status.setCreated(local.attributes().getCreationDate());
-            }
-        }
-        if(options.metadata) {
-            final Headers feature = session.getFeature(Headers.class);
-            if(feature != null) {
-                if(status.isExists()) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setMetadata(feature.getMetadata(file));
-                    }
-                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setMetadata(feature.getDefault());
-                    }
-                }
-                else {
-                    status.setMetadata(feature.getDefault());
-                }
-            }
-        }
-        if(options.encryption) {
-            final Encryption feature = session.getFeature(Encryption.class);
-            if(feature != null) {
-                if(status.isExists()) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setEncryption(feature.getEncryption(file));
-                    }
-                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setEncryption(feature.getDefault(file));
-                    }
-                }
-                else {
-                    status.setEncryption(feature.getDefault(file));
-                }
-            }
-        }
-        if(options.redundancy) {
-            if(file.isFile()) {
-                final Redundancy feature = session.getFeature(Redundancy.class);
-                if(feature != null) {
-                    if(status.isExists()) {
-                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                                file.getName()));
-                        try {
-                            status.setStorageClass(feature.getClass(file));
-                        }
-                        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                            status.setStorageClass(feature.getDefault());
-                        }
-                    }
-                    else {
-                        status.setStorageClass(feature.getDefault());
-                    }
-                }
-            }
-        }
-        if(options.checksum) {
-            if(file.isFile()) {
-                final ChecksumCompute feature = session.getFeature(Write.class).checksum(file, status);
-                if(feature != null) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setChecksum(feature.compute(local.getInputStream(), status));
-                    }
-                    catch(LocalAccessDeniedException e) {
-                        // Ignore failure reading file when in sandbox when we miss a security scoped access bookmark.
-                        // Lock for files is obtained only later in Transfer#pre
-                        log.warn(e.getMessage());
-                    }
-                }
-            }
-        }
-        return status;
+        return chain.prepare(file, Optional.of(local), status, progress);
     }
 
     @Override
-    public void apply(final Path file, final Local local, final TransferStatus status,
-                      final ProgressListener listener) throws BackgroundException {
-        if(file.isFile()) {
-            if(status.isExists() && !status.isAppend()) {
-                if(options.versioning) {
-                    switch(session.getHost().getProtocol().getVersioningMode()) {
-                        case custom:
-                            final Versioning feature = session.getFeature(Versioning.class);
-                            if(feature != null && feature.getConfiguration(file).isEnabled()) {
-                                if(feature.save(file)) {
-                                    log.debug("Clear exist flag for file {}", file);
-                                    status.exists(false).getDisplayname().exists(false);
-                                }
-                            }
-                    }
-                }
-            }
-        }
-        if(status.getRename().remote != null) {
-            log.debug("Clear exist flag for file {}", local);
-            // Reset exist flag after subclass hae applied strategy
-            status.setExists(false);
-        }
+    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener progress) throws BackgroundException {
+        chain.apply(file, status, progress);
     }
 
     @Override
-    public void complete(final Path file, final Local local,
-                         final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void complete(final Path file, final Local local, final TransferStatus status, final ProgressListener progress) throws BackgroundException {
         log.debug("Complete {} with status {}", file.getAbsolute(), status);
         if(status.isComplete()) {
-            if(!Permission.EMPTY.equals(status.getPermission())) {
-                final UnixPermission feature = session.getFeature(UnixPermission.class);
-                if(feature != null) {
-                    try {
-                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                                file.getName(), status.getPermission()));
-                        feature.setUnixPermission(file, status);
-                    }
-                    catch(BackgroundException e) {
-                        // Ignore
-                        log.warn(e.getMessage());
-                    }
-                }
-            }
-            if(!Acl.EMPTY.equals(status.getAcl())) {
-                final AclPermission feature = session.getFeature(AclPermission.class);
-                if(feature != null) {
-                    try {
-                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                                file.getName(), StringUtils.isBlank(status.getAcl().getCannedString()) ? LocaleFactory.localizedString("Unknown") : status.getAcl().getCannedString()));
-                        feature.setPermission(file, status);
-                    }
-                    catch(BackgroundException e) {
-                        // Ignore
-                        log.warn(e.getMessage());
-                    }
-                }
-            }
-            if(status.getModified() != null) {
-                if(!session.getFeature(Write.class).timestamp(file)) {
-                    final Timestamp feature = session.getFeature(Timestamp.class);
-                    if(feature != null) {
-                        try {
-                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                                    file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getModified())));
-                            feature.setTimestamp(file, status);
-                        }
-                        catch(BackgroundException e) {
-                            // Ignore
-                            log.warn(e.getMessage());
-                        }
-                    }
-                }
-            }
-            if(file.isFile()) {
-                if(status.getDisplayname().remote != null) {
-                    final Move move = session.getFeature(Move.class);
-                    log.info("Rename file {} to {}", file, status.getDisplayname().remote);
-                    move.move(file, status.getDisplayname().remote, new TransferStatus(status).exists(status.getDisplayname().exists),
-                            new Delete.DisabledCallback(), new DisabledConnectionCallback());
-                }
-            }
+            chain.complete(file, Optional.empty(), status, progress);
         }
     }
 }
