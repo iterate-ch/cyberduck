@@ -63,9 +63,21 @@ public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = LogManager.getLogger(SwiftSession.class);
 
     private final SwiftRegionService regionService
-        = new SwiftRegionService(this);
+            = new SwiftRegionService(this);
 
     private final Map<Region, AccountInfo> accounts = new ConcurrentHashMap<>();
+
+    private final DelegatingSchedulerFeature scheduler = new DelegatingSchedulerFeature(
+            new SwiftAccountLoader(this) {
+                @Override
+                protected Map<Region, AccountInfo> operate(final PasswordCallback callback) throws BackgroundException {
+                    final Map<Region, AccountInfo> result = super.operate(callback);
+                    // Only executed single time
+                    accounts.putAll(result);
+                    return result;
+                }
+            }, new SwiftDistributionConfigurationLoader(this)
+    );
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -83,6 +95,7 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     protected void logout() throws BackgroundException {
         try {
+            scheduler.shutdown();
             client.disconnect();
         }
         catch(IOException e) {
@@ -104,8 +117,8 @@ public class SwiftSession extends HttpSession<Client> {
                 catch(GenericException failure) {
                     final BackgroundException reason = new SwiftExceptionMappingService().map(failure);
                     if(reason instanceof LoginFailureException
-                        || reason instanceof AccessDeniedException
-                        || reason instanceof InteroperabilityException) {
+                            || reason instanceof AccessDeniedException
+                            || reason instanceof InteroperabilityException) {
                         if(!iter.hasNext()) {
                             throw failure;
                         }
@@ -198,17 +211,7 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Scheduler.class) {
             if(new HostPreferences(host).getBoolean("openstack.accounts.preload")) {
-                return (T) new DelegatingSchedulerFeature(
-                        new SwiftAccountLoader(this) {
-                            @Override
-                            protected Map<Region, AccountInfo> operate(final PasswordCallback callback) throws BackgroundException {
-                                final Map<Region, AccountInfo> result = super.operate(callback);
-                                // Only executed single time
-                                accounts.putAll(result);
-                                return result;
-                            }
-                        },
-                        new SwiftDistributionConfigurationLoader(this));
+                return (T) scheduler;
             }
             return null;
         }

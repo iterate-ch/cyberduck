@@ -130,6 +130,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     };
 
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
+    private final CloudFrontDistributionConfigurationPreloader scheduler = new CloudFrontDistributionConfigurationPreloader(this);
 
     private S3CredentialsStrategy authentication;
 
@@ -147,6 +148,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected void logout() throws BackgroundException {
         try {
+            scheduler.shutdown();
             client.shutdown();
         }
         catch(ServiceException e) {
@@ -495,7 +497,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Scheduler.class) {
             if(new HostPreferences(host).getBoolean("s3.cloudfront.preload.enable")) {
-                return (T) new CloudFrontDistributionConfigurationPreloader(this);
+                return (T) scheduler;
             }
         }
         if(type == Restore.class) {

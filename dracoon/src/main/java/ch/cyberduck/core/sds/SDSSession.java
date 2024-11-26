@@ -139,6 +139,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     private UserKeyPair.Version requiredKeyPairVersion;
 
     private final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(this);
+    private final SDSMissingFileKeysSchedulerFeature scheduler = new SDSMissingFileKeysSchedulerFeature(this, nodeid);
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -521,6 +522,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     @Override
     protected void logout() {
+        scheduler.shutdown();
         client.getHttpClient().close();
         nodeid.clear();
     }
@@ -595,7 +597,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSTripleCryptEncryptorFeature(this, nodeid);
         }
         if(type == Scheduler.class) {
-            return (T) new SDSMissingFileKeysSchedulerFeature(this, nodeid);
+            return (T) scheduler;
         }
         return super._getFeature(type);
     }
