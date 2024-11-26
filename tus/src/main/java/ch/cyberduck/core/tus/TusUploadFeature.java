@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,8 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                     throw new InteroperabilityException(String.format("No support for %s", Extension.creation));
                 }
                 // Create an Upload URL
-                final HttpPost request = new HttpPost(new DefaultUrlProvider(host).toUrl(file.getParent()).find(DescriptiveUrl.Type.provider).getUrl());
+                final HttpPost request = new HttpPost(new DefaultUrlProvider(host).toUrl(file.getParent(),
+                        EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
                 request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
                 // The Upload-Length header indicates the size of the entire upload in bytes
                 request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getDestinationlength()));
@@ -232,7 +234,8 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
      */
     private static String toUploadUrlPropertyKey(final Host host, final Path file, final TransferStatus status) {
         return String.format("tus.url.%s%s",
-                Base64.encodeBase64String(new DefaultUrlProvider(host).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl().getBytes(StandardCharsets.UTF_8)),
+                Base64.encodeBase64String(new DefaultUrlProvider(host).toUrl(file,
+                        EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl().getBytes(StandardCharsets.UTF_8)),
                 null == status.getChecksum() ? StringUtils.EMPTY : String.format(":%s", status.getChecksum().base64));
     }
 

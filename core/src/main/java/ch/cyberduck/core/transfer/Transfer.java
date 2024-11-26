@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -229,10 +230,10 @@ public abstract class Transfer implements Serializable {
 
     public DescriptiveUrl getRemote() {
         if(this.roots.size() == 1) {
-            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote).find(DescriptiveUrl.Type.provider);
+            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider);
         }
         else {
-            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote.getParent()).find(DescriptiveUrl.Type.provider);
+            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote.getParent(), EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider);
         }
     }
 

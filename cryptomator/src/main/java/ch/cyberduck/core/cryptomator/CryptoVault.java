@@ -142,7 +142,7 @@ public class CryptoVault implements Vault {
         if(credentials.isSaved()) {
             try {
                 keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
             }
             catch(LocalAccessDeniedException e) {
                 log.error("Failure {} saving credentials for {} in password store", e, bookmark);
@@ -210,11 +210,11 @@ public class CryptoVault implements Vault {
         }
         final Host bookmark = session.getHost();
         String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+                new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         if(null == passphrase) {
             // Legacy
             passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+                    new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         }
         return this.unlock(session, prompt, bookmark, passphrase);
     }
@@ -289,7 +289,7 @@ public class CryptoVault implements Vault {
                 log.info("Save passphrase for {}", masterkey);
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
             }
         }
         catch(CryptoAuthenticationException e) {

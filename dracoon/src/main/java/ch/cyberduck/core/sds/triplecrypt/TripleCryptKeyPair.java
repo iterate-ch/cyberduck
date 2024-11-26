@@ -91,7 +91,8 @@ public class TripleCryptKeyPair {
     }
 
     protected static String toAccountName(final Host bookmark) {
-        return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl();
+        return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl();
     }
 
     public static PlainDataContainer createPlainDataContainer(final byte[] bytes, final int len) {

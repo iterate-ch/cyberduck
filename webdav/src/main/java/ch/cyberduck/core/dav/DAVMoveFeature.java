@@ -49,7 +49,8 @@ public class DAVMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
-            final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl();
+            final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed,
+                    EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl();
             if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
                 // Indicate that the client has knowledge of that state token
                 session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target,

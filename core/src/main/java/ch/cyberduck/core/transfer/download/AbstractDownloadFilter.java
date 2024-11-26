@@ -62,6 +62,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -284,7 +285,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     icon.remove(local);
                 }
                 if(options.quarantine || options.wherefrom) {
-                    final DescriptiveUrlBag provider = session.getFeature(UrlProvider.class).toUrl(file).filter(DescriptiveUrl.Type.provider, DescriptiveUrl.Type.http);
+                    final DescriptiveUrlBag provider = session.getFeature(UrlProvider.class).toUrl(file,
+                            EnumSet.of(DescriptiveUrl.Type.provider)).filter(DescriptiveUrl.Type.provider, DescriptiveUrl.Type.http);
                     for(DescriptiveUrl url : provider) {
                         try {
                             if(options.quarantine) {
