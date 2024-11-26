@@ -17,7 +17,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 
-public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkResolver<Void, Void> {
+public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkResolver<Object, Object> {
 
     @Override
     public Void create(final Local file) {
@@ -25,7 +25,7 @@ public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkRes
     }
 
     @Override
-    public Void resolve(final Void bookmark) {
+    public Object resolve(final Object file) {
         return null;
     }
 }
