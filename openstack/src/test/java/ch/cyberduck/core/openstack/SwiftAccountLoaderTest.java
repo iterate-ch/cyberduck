@@ -15,7 +15,7 @@ package ch.cyberduck.core.openstack;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -32,6 +32,6 @@ public class SwiftAccountLoaderTest extends AbstractSwiftTest {
     @Test
     public void testOperate() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new SwiftAccountLoader(session).operate(new DisabledLoginCallback(), container).isEmpty());
+        assertFalse(new SwiftAccountLoader(session).operate(new DisabledPasswordCallback()).isEmpty());
     }
 }

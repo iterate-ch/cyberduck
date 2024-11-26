@@ -16,12 +16,23 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.pool.SessionPool;
+
+import java.util.concurrent.Future;
 
 @Optional
 public interface Scheduler<R> {
-    R repeat(SessionPool pool, PasswordCallback callback);
+    /**
+     * Repeated execution on background thread
+     */
+    Future<R> repeat(PasswordCallback callback);
 
+    /**
+     * Single execution on background thread with no delay
+     */
+    Future<R> execute(PasswordCallback callback);
+
+    /**
+     * Shutdown thread pool
+     */
     void shutdown();
-
 }

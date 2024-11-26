@@ -23,13 +23,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -42,18 +42,17 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
     private final SwiftSession session;
 
     public SwiftDistributionConfigurationLoader(final SwiftSession session) {
-        super(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         this.session = session;
     }
 
     @Override
-    protected Set<Distribution> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
+    protected Set<Distribution> operate(final PasswordCallback callback) throws BackgroundException {
         final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
         if(null == feature) {
             return Collections.emptySet();
         }
-        final AttributedList<Path> containers = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion()))
-            .list(file, new DisabledListProgressListener());
+        final AttributedList<Path> containers = new SwiftContainerListService(session,
+                new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(Home.ROOT, new DisabledListProgressListener());
         final Set<Distribution> distributions = new LinkedHashSet<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {

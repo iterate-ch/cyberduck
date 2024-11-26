@@ -16,40 +16,18 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Scheduler;
-import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.threading.ThreadPool;
-import ch.cyberduck.core.threading.ThreadPoolFactory;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-public abstract class OneTimeSchedulerFeature<R> implements Scheduler<Future<R>> {
+public abstract class OneTimeSchedulerFeature<R> extends ThreadPoolSchedulerFeature<R> {
 
-    private final Path file;
-
-    private final ThreadPool scheduler = ThreadPoolFactory.get("scheduler", 1);
-
-    public OneTimeSchedulerFeature(final Path file) {
-        this.file = file;
-    }
-
-    protected abstract R operate(PasswordCallback callback, Path file) throws BackgroundException;
-
-    @Override
-    public Future<R> repeat(final SessionPool pool, final PasswordCallback callback) {
-        return scheduler.execute(new Callable<R>() {
-            @Override
-            public R call() throws Exception {
-                return operate(callback, file);
-            }
-        });
+    public OneTimeSchedulerFeature() {
+        super(Long.MAX_VALUE);
     }
 
     @Override
-    public void shutdown() {
-        scheduler.shutdown(false);
+    public Future<R> repeat(final PasswordCallback callback) {
+        // No repeat
+        return this.execute(callback);
     }
 }

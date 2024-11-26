@@ -19,7 +19,6 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Pairing;
-import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptCleanupFeature;
 import ch.cyberduck.core.shared.CredentialsCleanupService;
 import ch.cyberduck.core.shared.DelegatingPairingFeature;
@@ -123,9 +122,6 @@ public class SDSProtocol extends AbstractProtocol {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
-        if(type == Scheduler.class) {
-            return (T) new SDSMissingFileKeysSchedulerFeature();
-        }
         if(type == Pairing.class) {
             return (T) new DelegatingPairingFeature(new CredentialsCleanupService(), new TripleCryptCleanupFeature());
         }
