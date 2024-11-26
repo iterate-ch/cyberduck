@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googlestorage.AbstractGoogleStorageTest;
 import ch.cyberduck.core.googlestorage.GoogleStorageDeleteFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageDirectoryFeature;
-import ch.cyberduck.core.googlestorage.GoogleStorageFindFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageObjectListService;
 import ch.cyberduck.core.googlestorage.GoogleStorageTouchFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageWriteFeature;
@@ -64,7 +63,7 @@ public class GoogleStorageListServiceTest extends AbstractGoogleStorageTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         final CryptoDirectoryV7Feature<StorageObject> mkdir = new CryptoDirectoryV7Feature<>(session, new GoogleStorageDirectoryFeature(session),
-                new GoogleStorageWriteFeature(session), new GoogleStorageFindFeature(session), cryptomator);
+                new GoogleStorageWriteFeature(session), cryptomator);
         final Path directory1 = mkdir.mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener())

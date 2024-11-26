@@ -39,16 +39,14 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
 
     private final Session<?> session;
     private final Write<Reply> writer;
-    private final Find find;
     private final Directory<Reply> delegate;
     private final CryptoVault vault;
     private final RandomStringService random = new UUIDRandomStringService();
 
     public CryptoDirectoryV6Feature(final Session<?> session, final Directory<Reply> delegate,
-                                    final Write<Reply> writer, final Find find, final CryptoVault cryptomator) {
+                                    final Write<Reply> writer, final CryptoVault cryptomator) {
         this.session = session;
         this.writer = writer;
-        this.find = find;
         this.delegate = delegate;
         this.vault = cryptomator;
     }
