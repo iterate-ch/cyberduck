@@ -89,6 +89,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
@@ -337,6 +338,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 final CustomClientConfiguration configuration = new CustomClientConfiguration(host,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
                 final AWSSecurityTokenServiceClientBuilder builder = AWSSecurityTokenServiceClientBuilder.standard()
+                        .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(host.getProtocol().getSTSEndpoint(), null))
                         .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(client.getProviderCredentials()))
                         .withClientConfiguration(configuration);
                 final AWSSecurityTokenService service = builder.build();
