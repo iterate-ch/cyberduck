@@ -23,16 +23,8 @@ import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 
 public class CteraCopyFeature extends DAVCopyFeature {
 
-    private final CteraAttributesFinderFeature attributes;
-
-    public CteraCopyFeature(final CteraSession session, final CteraAttributesFinderFeature attributes) {
-        super(session);
-        this.attributes = attributes;
-    }
-
     public CteraCopyFeature(final CteraSession session) {
         super(session);
-        this.attributes = new CteraAttributesFinderFeature(session);
     }
 
     @Override

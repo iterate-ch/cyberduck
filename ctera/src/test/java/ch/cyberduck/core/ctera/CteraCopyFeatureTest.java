@@ -77,7 +77,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
         final CteraAttributesFinderFeature mock = mock(CteraAttributesFinderFeature.class);
         // target exists and not writable
         when(mock.find(eq(target))).thenReturn(new PathAttributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session, mock).preflight(source, target));
+        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session).preflight(source, target));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), target.getName())));
     }
 
@@ -92,7 +92,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
         final CteraAttributesFinderFeature mock = mock(CteraAttributesFinderFeature.class);
         // target exists and not writable
         when(mock.find(eq(target))).thenReturn(new PathAttributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session, mock).preflight(source, target));
+        final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session).preflight(source, target));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), target.getName())));
     }
 
