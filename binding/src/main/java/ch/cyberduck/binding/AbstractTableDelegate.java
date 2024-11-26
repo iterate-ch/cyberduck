@@ -56,6 +56,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @return By default no column is editable. To be overriden in subclasses
      */
+    @Delegate
     public boolean isColumnRowEditable(final NSTableColumn column, final NSInteger row) {
         return false;
     }
@@ -63,6 +64,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSTableView.DataSource
      */
+    @Delegate
     public boolean tableView_shouldSelectRow(final NSTableView view, final NSInteger row) {
         return true;
     }
@@ -70,6 +72,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSTableView.DataSource
      */
+    @Delegate
     public boolean outlineView_shouldSelectItem(final NSOutlineView view, final NSObject item) {
         return true;
     }
@@ -77,6 +80,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSTableView.DataSource
      */
+    @Delegate
     public boolean tableView_shouldEditTableColumn_row(final NSTableView view, final NSTableColumn c, final NSInteger row) {
         return this.isColumnRowEditable(c, row);
     }
@@ -84,6 +88,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSTableView.DataSource
      */
+    @Delegate
     public boolean outlineView_shouldEditTableColumn_item(final NSOutlineView view, final NSTableColumn c, final NSObject item) {
         return this.isColumnRowEditable(c, view.rowForItem(item));
     }
@@ -91,12 +96,14 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSOutlineView.Delegate
      */
+    @Delegate
     public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSCell cell, final NSTableColumn tableColumn, final NSObject item) {
     }
 
     /**
      * @see NSTableView.Delegate
      */
+    @Delegate
     public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell, final NSTableColumn c, final NSInteger row) {
     }
 
@@ -107,6 +114,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSTableView.DataSource
      */
+    @Delegate
     public boolean selectionShouldChangeInTableView(final NSTableView view) {
         return this.selectionShouldChange();
     }
@@ -114,17 +122,20 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSOutlineView.DataSource
      */
+    @Delegate
     public boolean selectionShouldChangeInOutlineView(final NSTableView view) {
         return this.selectionShouldChange();
     }
 
     public abstract void tableColumnClicked(NSTableView view, NSTableColumn tableColumn);
 
+    @Delegate
     public void tableViewColumnDidResize(final NSNotification notification) {
         final NSTableColumn column = Rococoa.cast(notification.userInfo().objectForKey("NSTableColumn"), NSTableColumn.class);
         this.columnDidResize(column.identifier(), column.width().floatValue());
     }
 
+    @Delegate
     public void outlineViewColumnDidResize(final NSNotification notification) {
         final NSTableColumn column = Rococoa.cast(notification.userInfo().objectForKey("NSTableColumn"), NSTableColumn.class);
         this.columnDidResize(column.identifier(), column.width().floatValue());
@@ -137,6 +148,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSOutlineView.Delegate
      */
+    @Delegate
     public void outlineView_didClickTableColumn(final NSOutlineView view, final NSTableColumn tableColumn) {
         this.tableColumnClicked(view, tableColumn);
     }
@@ -144,24 +156,29 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSTableView.Delegate
      */
+    @Delegate
     public void tableView_didClickTableColumn(final NSOutlineView view, final NSTableColumn tableColumn) {
         this.tableColumnClicked(view, tableColumn);
     }
 
     public abstract void tableRowDoubleClicked(final ID sender);
 
+    @Delegate
     public void tableViewSelectionDidChange(final NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
+    @Delegate
     public void tableViewSelectionIsChanging(final NSNotification notification) {
         this.selectionIsChanging(notification);
     }
 
+    @Delegate
     public void outlineViewSelectionDidChange(final NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
+    @Delegate
     public void outlineViewSelectionIsChanging(final NSNotification notification) {
         this.selectionIsChanging(notification);
     }
@@ -175,6 +192,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSOutlineView.Delegate
      */
+    @Delegate
     public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell, ID rect, NSTableColumn c, NSObject item, NSPoint mouseLocation) {
         return null;
     }
@@ -182,6 +200,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSTableView.Delegate
      */
+    @Delegate
     public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell, ID rect, NSTableColumn c, NSInteger row, NSPoint mouseLocation) {
         return null;
     }
@@ -213,11 +232,13 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
         return sortAscending;
     }
 
+    @Delegate
     public boolean tableView_shouldTypeSelectForEvent_withCurrentSearchString(
             final NSTableView view, final NSEvent event, final String searchString) {
         return this.isTypeSelectSupported();
     }
 
+    @Delegate
     public boolean outlineView_shouldTypeSelectForEvent_withCurrentSearchString(
             final NSOutlineView view, final NSEvent event, final String searchString) {
         return this.isTypeSelectSupported();
@@ -228,6 +249,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSOutlineView.Delegate
      */
+    @Delegate
     public String outlineView_typeSelectStringForTableColumn_item(NSOutlineView view, NSTableColumn tableColumn, NSObject item) {
         return null;
     }
@@ -235,6 +257,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * @see NSTableView.Delegate
      */
+    @Delegate
     public String tableView_typeSelectStringForTableColumn_row(NSTableView view, NSTableColumn column, NSInteger row) {
         return null;
     }
@@ -251,6 +274,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
      * @param row       The row index.
      * @return The height of the row. The height should not include intercell spacing and must be greater than zero.
      */
+    @Delegate
     public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row) {
         return tableView.rowHeight();
     }
@@ -268,6 +292,7 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
      * @param item        The row item.
      * @return The height of the row.
      */
+    @Delegate
     public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item) {
         return outlineView.rowHeight();
     }
