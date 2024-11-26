@@ -34,7 +34,7 @@
               value="-client --add-opens=java.base/sun.security.ssl=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -DLog4jContextSelector=org.apache.logging.log4j.core.selector.BasicContextSelector -XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:+UseStringDeduplication"/>
 
     <condition property="jvm.runtime.debug"
-               value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6005 ">
+               value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 ">
         <equals arg1="${configuration}" arg2="debug"/>
     </condition>
 
