@@ -41,8 +41,6 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
-import ch.cyberduck.core.local.IconService;
-import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -74,7 +72,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private final SymlinkResolver<Path> symlinkResolver;
     private final QuarantineService quarantine = QuarantineServiceFactory.get();
     private final ApplicationLauncher launcher = ApplicationLauncherFactory.get();
-    private final IconService icon = IconServiceFactory.get();
 
     protected final AttributesFinder attribute;
     protected final DownloadFilterOptions options;
@@ -178,8 +175,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         status.setAcl(attributes.getAcl());
         if(options.segments) {
-            if(!session.getFeature(Read.class).offset(file)) {
-                log.warn("Reading with offsets not supported for {}", file);
+            final Read read = session.getFeature(Read.class);
+            if(!read.offset(file)) {
+                log.warn("Reading with offset not supported with {} for {}", read, file);
             }
             else {
                 if(file.isFile()) {
@@ -279,11 +277,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 // Bounce Downloads folder dock icon by sending download finished notification
                 launcher.bounce(local);
-                // Remove custom icon if complete. The Finder will display the default icon for this file type
-                if(options.icon) {
-                    icon.set(local, status);
-                    icon.remove(local);
-                }
                 if(options.quarantine || options.wherefrom) {
                     final DescriptiveUrlBag provider = session.getFeature(UrlProvider.class).toUrl(file,
                             EnumSet.of(DescriptiveUrl.Type.provider)).filter(DescriptiveUrl.Type.provider, DescriptiveUrl.Type.http);

@@ -37,7 +37,6 @@ import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.transfer.download.DownloadRegexPriorityComparator;
-import ch.cyberduck.core.transfer.download.IconUpdateStreamListener;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.RenameExistingFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
@@ -279,8 +278,8 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
-                         final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                         final TransferStatus segment, final ConnectionCallback prompt,
+                         final ProgressListener progress, final StreamListener listener) throws BackgroundException {
         log.debug("Transfer file {} with options {} and status {}", file, options, segment);
         if(file.isSymbolicLink()) {
             if(symlinkResolver.resolve(file)) {
@@ -294,7 +293,7 @@ public class DownloadTransfer extends Transfer {
             }
         }
         if(file.isFile()) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
+            progress.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
                     file.getName()));
             final Local folder = local.getParent();
             if(!folder.exists()) {
@@ -302,8 +301,7 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            download.download(file, local, bandwidth, this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && !overall.isSegmented() ?
-                    new IconUpdateStreamListener(streamListener, segment, local) : streamListener, segment, connectionCallback);
+            download.download(file, local, bandwidth, listener, segment, prompt);
         }
     }
 

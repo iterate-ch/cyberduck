@@ -56,7 +56,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
-import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
@@ -69,7 +68,6 @@ import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.ui.browser.BrowserColumn;
@@ -390,7 +388,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         for(int i = 0; i < elements.count().intValue(); i++) {
                             final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
                             roots.add(new TransferItem(new Path(destination, local.getName(),
-                                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                                    local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                         }
                         controller.transfer(new UploadTransfer(controller.getSession().getHost(), roots));
                         return true;
@@ -631,7 +629,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             final Local destination = LocalFactory.get(url.path());
             final DownloadFilterOptions options = new DownloadFilterOptions(controller.getSession().getHost());
             if(destination.isChild(new TemporarySupportDirectoryFinder().find())) {
-                options.icon = false;
                 options.segments = false;
             }
             final PathPasteboard pasteboard = controller.getPasteboard();
@@ -647,9 +644,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     if(!file.exists()) {
                         try {
                             LocalTouchFactory.get().touch(file);
-                            if(options.icon) {
-                                IconServiceFactory.get().set(file, new TransferStatus().withLength(0L));
-                            }
                         }
                         catch(AccessDeniedException e) {
                             log.warn("Failure creating file {} {}", file, e.getMessage());
@@ -678,7 +672,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             else {
                 final Transfer transfer = new DownloadTransfer(controller.getSession().getHost(), downloads)
-                    .withOptions(options);
+                        .withOptions(options);
                 controller.transfer(transfer, Collections.emptyList());
             }
             pasteboard.clear();

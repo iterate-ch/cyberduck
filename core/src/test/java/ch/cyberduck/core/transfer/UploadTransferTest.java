@@ -159,9 +159,9 @@ public class UploadTransferTest {
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
-                                 final ConnectionCallback connectionCallback,
-                                 final ProgressListener listener, final StreamListener streamListener) {
+                                 final TransferOptions options, final TransferStatus segment,
+                                 final ConnectionCallback prompt,
+                                 final ProgressListener progress, final StreamListener listener) {
                 assertTrue(options.resumeRequested);
             }
         }.withCache(cache);
@@ -245,9 +245,9 @@ public class UploadTransferTest {
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
-                                 final ConnectionCallback connectionCallback,
-                                 final ProgressListener listener, final StreamListener streamListener) {
+                                 final TransferOptions options, final TransferStatus segment,
+                                 final ConnectionCallback prompt,
+                                 final ProgressListener progress, final StreamListener listener) {
                 //
             }
         }.withCache(cache);
@@ -414,8 +414,8 @@ public class UploadTransferTest {
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
-                                 final ConnectionCallback connectionCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final TransferOptions options, final TransferStatus segment,
+                                 final ConnectionCallback prompt, final ProgressListener progress, final StreamListener listener) {
                 segment.setComplete();
                 set.set(true);
             }

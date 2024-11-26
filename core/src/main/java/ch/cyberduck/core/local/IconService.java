@@ -19,29 +19,43 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferProgress;
 
 public interface IconService {
 
-    /**
-     * @param file  File
-     * @param image Image name
-     * @return True if icon is set
-     */
-    boolean set(Local file, String image);
+    Icon disabled = new Icon() {
+        @Override
+        public boolean update(final TransferProgress progress) {
+            return false;
+        }
+
+        @Override
+        public boolean remove() {
+            return false;
+        }
+    };
 
     /**
-     * @param file     File
-     * @param progress An integer from -1 and 9. If -1 is passed, the icon should be removed.
-     * @return True if icon is set
-     */
-    boolean set(Local file, TransferStatus progress);
-
-    /**
-     * Remove custom icon
+     * Get icon updater to track progress
      *
-     * @param file File
-     * @return True if icon is set
+     * @param file Local file
+     * @return Updater to send continious progress updates to
      */
-    boolean remove(Local file);
+    Icon get(Transfer.Type type, Local file);
+
+    interface Icon {
+        /**
+         * @param progress Transfer status with transferred bytes set in offset
+         * @return True if icon is set
+         */
+        boolean update(TransferProgress progress);
+
+        /**
+         * Remove custom icon
+         *
+         * @return True if icon is set
+         */
+        boolean remove();
+    }
 }

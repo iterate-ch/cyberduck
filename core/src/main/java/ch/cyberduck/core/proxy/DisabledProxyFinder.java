@@ -22,5 +22,6 @@ public class DisabledProxyFinder implements ProxyFinder {
     @Override
     public Proxy find(final String target) {
         return Proxy.DIRECT;
+//        return new Proxy(Proxy.Type.HTTPS, "127.0.0.1", 9090);
     }
 }

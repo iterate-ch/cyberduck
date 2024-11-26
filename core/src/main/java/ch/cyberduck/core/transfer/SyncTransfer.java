@@ -210,15 +210,15 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
-                         final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
+                         final TransferOptions options, final TransferStatus segment, final ConnectionCallback prompt,
+                         final ProgressListener progress, final StreamListener listener) throws BackgroundException {
         log.debug("Transfer file {} with options {}", file, options);
-        switch(comparison.compare(file, local, progressListener)) {
+        switch(comparison.compare(file, local, progress)) {
             case remote:
-                download.transfer(source, destination, file, local, options, overall, segment, connectionCallback, progressListener, streamListener);
+                download.transfer(source, destination, file, local, options, segment, prompt, progress, listener);
                 break;
             case local:
-                upload.transfer(source, destination, file, local, options, overall, segment, connectionCallback, progressListener, streamListener);
+                upload.transfer(source, destination, file, local, options, segment, prompt, progress, listener);
                 break;
         }
     }
