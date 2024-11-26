@@ -2539,10 +2539,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void openBrowserButtonClicked(final ID sender) {
         final DescriptiveUrlBag list;
         if(this.getSelectionCount() == 1) {
-            list = pool.getFeature(UrlProvider.class).toUrl(this.getSelectedPath());
+            list = pool.getFeature(UrlProvider.class).toUrl(this.getSelectedPath(), EnumSet.of(DescriptiveUrl.Type.http));
         }
         else {
-            list = pool.getFeature(UrlProvider.class).toUrl(workdir);
+            list = pool.getFeature(UrlProvider.class).toUrl(workdir, EnumSet.of(DescriptiveUrl.Type.http));
         }
         if(!list.isEmpty()) {
             BrowserLauncherFactory.get().open(list.find(DescriptiveUrl.Type.http).getUrl());

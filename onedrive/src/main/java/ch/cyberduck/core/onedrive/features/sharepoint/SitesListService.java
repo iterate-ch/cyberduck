@@ -118,7 +118,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
         final PathAttributes attributes = new PathAttributes();
         attributes.setFileId(metadata.getId());
         attributes.setDisplayname(metadata.getDisplayName());
-        attributes.setLink(new DescriptiveUrl(URI.create(metadata.getWebUrl())));
+        attributes.setLink(new DescriptiveUrl(metadata.getWebUrl()));
 
         return new Path(directory, metadata.getName(),
             EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder), attributes);

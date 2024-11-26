@@ -17,6 +17,12 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import java.util.EnumSet;
+
 public interface UrlProvider {
-    DescriptiveUrlBag toUrl(Path file);
+    default DescriptiveUrlBag toUrl(Path file) {
+        return this.toUrl(file, EnumSet.allOf(DescriptiveUrl.Type.class));
+    }
+
+    DescriptiveUrlBag toUrl(Path file, EnumSet<DescriptiveUrl.Type> types);
 }

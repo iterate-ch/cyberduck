@@ -23,7 +23,6 @@ import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
 
-import java.net.URI;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -41,8 +40,8 @@ public class CustomSchemeUrlProviderTest {
         Path path = new Path("/file", EnumSet.of(Path.Type.file));
         final DescriptiveUrlBag list = new CustomSchemeUrlProvider(host).toUrl(path).filter(DescriptiveUrl.Type.provider);
         assertEquals(2, list.size());
-        assertTrue(list.contains(new DescriptiveUrl(URI.create("c1://localhost/file"))));
-        assertTrue(list.contains(new DescriptiveUrl(URI.create("c2://localhost/file"))));
+        assertTrue(list.contains(new DescriptiveUrl("c1://localhost/file")));
+        assertTrue(list.contains(new DescriptiveUrl("c2://localhost/file")));
     }
 
     @Test

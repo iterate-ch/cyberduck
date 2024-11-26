@@ -30,9 +30,9 @@ import ch.cyberduck.core.idna.PunycodeConverter;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.EnumSet;
 
 public class CustomSchemeUrlProvider implements UrlProvider {
 
@@ -43,12 +43,12 @@ public class CustomSchemeUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         for(String scheme : host.getProtocol().getSchemes()) {
             if(Arrays.stream(Scheme.values()).noneMatch(s -> s.name().equals(scheme))) {
-                list.add(new DescriptiveUrl(URI.create(String.format("%s://%s%s",
-                    scheme, new PunycodeConverter().convert(host.getHostname()), PathNormalizer.normalize(file.getAbsolute()))),
+                list.add(new DescriptiveUrl(String.format("%s://%s%s",
+                        scheme, new PunycodeConverter().convert(host.getHostname()), PathNormalizer.normalize(file.getAbsolute())),
                     DescriptiveUrl.Type.provider,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), StringUtils.capitalize(scheme))));
             }

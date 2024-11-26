@@ -20,10 +20,12 @@ import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 
+import java.util.EnumSet;
+
 public class GraphUrlProvider implements UrlProvider {
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().getLink() != DescriptiveUrl.EMPTY) {
             list.add(file.attributes().getLink());

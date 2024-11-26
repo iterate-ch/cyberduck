@@ -29,18 +29,17 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
-import org.nuxeo.onedrive.client.types.DriveItemVersion;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.EnumSet;
 
 public class GraphReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(GraphReadFeature.class);
@@ -57,7 +56,7 @@ public class GraphReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(file.getType().contains(Path.Type.placeholder)) {
-                final DescriptiveUrl link = new GraphUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
+                final DescriptiveUrl link = new GraphUrlProvider().toUrl(file, EnumSet.of(DescriptiveUrl.Type.http)).find(DescriptiveUrl.Type.http);
                 if(DescriptiveUrl.EMPTY.equals(link)) {
                     log.warn("Missing web link for file {}", file);
                     return new NullInputStream(file.attributes().getSize());

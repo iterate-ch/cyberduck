@@ -24,8 +24,8 @@ import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 
-import java.net.URI;
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class FreenetUrlProvider implements UrlProvider {
 
@@ -36,11 +36,14 @@ public class FreenetUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        return new DescriptiveUrlBag(Collections.singletonList(
-            new DescriptiveUrl(URI.create(String.format("https://webmail.freenet.de/web/?goTo=share&path=/%s#cloud",
-                URIEncoder.encode(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.isFile() ?
-                    file.getParent().getAbsolute() : file.getAbsolute())))), DescriptiveUrl.Type.http)
-        ));
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
+        if(types.contains(DescriptiveUrl.Type.http)) {
+            return new DescriptiveUrlBag(Collections.singleton(
+                    new DescriptiveUrl(String.format("https://webmail.freenet.de/web/?goTo=share&path=/%s#cloud",
+                            URIEncoder.encode(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.isFile() ?
+                                    file.getParent().getAbsolute() : file.getAbsolute()))), DescriptiveUrl.Type.http)
+            ));
+        }
+        return DescriptiveUrlBag.empty();
     }
 }

@@ -37,8 +37,6 @@ import org.nuxeo.onedrive.client.types.FileSystemInfo;
 import org.nuxeo.onedrive.client.types.Publication;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
@@ -55,14 +53,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     static Optional<DescriptiveUrl> getWebUrl(final DriveItem.Metadata metadata) {
-        DescriptiveUrl url = null;
-        try {
-            url = new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http);
-        }
-        catch(URISyntaxException e) {
-            log.warn("Cannot create URI of WebURL: {}", metadata.getWebUrl(), e);
-        }
-        return Optional.ofNullable(url);
+        return Optional.of(new DescriptiveUrl(metadata.getWebUrl(), DescriptiveUrl.Type.http));
     }
 
     @Override

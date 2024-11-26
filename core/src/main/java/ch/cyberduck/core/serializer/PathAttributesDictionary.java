@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
@@ -80,12 +79,12 @@ public class PathAttributesDictionary<T> {
         }
         if(dict.mapForKey("Link") != null) {
             final Map<String, String> link = dict.mapForKey("Link");
-            attributes.setLink(new DescriptiveUrl(URI.create(link.get("Url")), DescriptiveUrl.Type.valueOf(link.get("Type"))));
+            attributes.setLink(new DescriptiveUrl(link.get("Url"), DescriptiveUrl.Type.valueOf(link.get("Type"))));
         }
         else {
             final String linkObj = dict.stringForKey("Link");
             if(linkObj != null) {
-                attributes.setLink(new DescriptiveUrl(URI.create(linkObj), DescriptiveUrl.Type.http));
+                attributes.setLink(new DescriptiveUrl(linkObj, DescriptiveUrl.Type.http));
             }
         }
         if(dict.mapForKey("Checksum") != null) {

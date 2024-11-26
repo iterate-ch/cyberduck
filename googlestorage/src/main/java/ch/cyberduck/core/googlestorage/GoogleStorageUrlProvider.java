@@ -28,6 +28,7 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 public class GoogleStorageUrlProvider implements UrlProvider {
 
@@ -48,27 +49,33 @@ public class GoogleStorageUrlProvider implements UrlProvider {
      * you provide users with a URL that is scoped to the object.
      */
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag list = new DefaultUrlProvider(session.getHost()).toUrl(file);
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
+        final DescriptiveUrlBag list = new DefaultUrlProvider(session.getHost()).toUrl(file, types);
         if(file.isFile()) {
-            // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
-            list.add(new DescriptiveUrl(URI.create(String.format("https://storage.cloud.google.com%s",
-                URIEncoder.encode(file.getAbsolute()))), DescriptiveUrl.Type.authenticated,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
-            // Website configuration
-            final Distribution distribution = new Distribution(Distribution.DOWNLOAD, URI.create(String.format("%s://%s.%s",
-                Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), session.getHost().getProtocol().getDefaultHostname())),
-                false);
-            distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
-                session.getHost().getProtocol().getDefaultHostname())));
-            list.addAll(new DistributionUrlProvider(distribution).toUrl(file));
+            if(types.contains(DescriptiveUrl.Type.authenticated)) {
+                // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
+                list.add(new DescriptiveUrl(String.format("https://storage.cloud.google.com%s",
+                        URIEncoder.encode(file.getAbsolute())), DescriptiveUrl.Type.authenticated,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
+            }
+            if(types.contains(DescriptiveUrl.Type.cdn)) {
+                // Website configuration
+                final Distribution distribution = new Distribution(Distribution.DOWNLOAD, URI.create(String.format("%s://%s.%s",
+                        Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), session.getHost().getProtocol().getDefaultHostname())),
+                        false);
+                distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
+                        session.getHost().getProtocol().getDefaultHostname())));
+                list.addAll(new DistributionUrlProvider(distribution).toUrl(file, types));
+            }
         }
-        // gsutil URI
-        list.add(new DescriptiveUrl(URI.create(String.format("gs://%s%s",
-            containerService.getContainer(file).getName(),
-            file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
-            DescriptiveUrl.Type.provider,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getName())));
+        if(types.contains(DescriptiveUrl.Type.provider)) {
+            // gsutil URI
+            list.add(new DescriptiveUrl(String.format("gs://%s%s",
+                    containerService.getContainer(file).getName(),
+                    file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file)))),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getName())));
+        }
         return list;
     }
 }

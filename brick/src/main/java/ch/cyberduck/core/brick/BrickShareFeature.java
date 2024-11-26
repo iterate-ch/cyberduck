@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Share;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collections;
 
@@ -53,9 +52,9 @@ public class BrickShareFeature implements Share {
                     LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                     MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                     new LoginOptions().anonymous(true).keychain(false).icon(session.getHost().getProtocol().disk()));
-            return new DescriptiveUrl(URI.create(new BundlesApi(new BrickApiClient(session))
+            return new DescriptiveUrl(new BundlesApi(new BrickApiClient(session))
                     .postBundles(new BundlesBody().password(password.isPasswordAuthentication() ? password.getPassword() : null).paths(Collections.singletonList(
-                            StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER))))).getUrl()), DescriptiveUrl.Type.signed);
+                            StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER))))).getUrl(), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map(e);

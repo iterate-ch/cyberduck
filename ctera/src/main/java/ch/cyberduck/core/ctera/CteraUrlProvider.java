@@ -25,8 +25,9 @@ import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 
-import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Locale;
 
 public class CteraUrlProvider implements UrlProvider {
@@ -38,13 +39,14 @@ public class CteraUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        list.add(new DescriptiveUrl(URI.create(String.format("%s/%s/%s",
-                new HostUrlProvider().withUsername(false).withPath(false).get(host),
-                "ServicesPortal/#/cloudDrive", URIEncoder.encode(PathRelativizer.relativize(host.getDefaultPath(), file.getAbsolute())))),
-                DescriptiveUrl.Type.provider,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
-        return list;
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
+        if(types.contains(DescriptiveUrl.Type.provider)) {
+            return new DescriptiveUrlBag(Collections.singleton(new DescriptiveUrl(String.format("%s/%s/%s",
+                    new HostUrlProvider().withUsername(false).withPath(false).get(host),
+                    "ServicesPortal/#/cloudDrive", URIEncoder.encode(PathRelativizer.relativize(host.getDefaultPath(), file.getAbsolute()))),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT)))));
+        }
+        return DescriptiveUrlBag.empty();
     }
 }

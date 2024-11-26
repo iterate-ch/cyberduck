@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.util.EnumSet;
 
 public class MantaUrlProviderFeature implements UrlProvider {
     private static final Logger log = LogManager.getLogger(MantaUrlProviderFeature.class);
@@ -39,7 +40,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().getLink() != DescriptiveUrl.EMPTY) {
             list.add(file.attributes().getLink());
@@ -48,7 +49,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
             {
                 final Duration expiresIn = Duration.ofMinutes(1);
                 list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn).toString(),
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
@@ -57,7 +58,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
             {
                 final Duration expiresIn = Duration.ofHours(1);
                 list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn).toString(),
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
@@ -66,7 +67,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
             {
                 final Duration expiresIn = Duration.ofDays(1);
                 list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn).toString(),
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",

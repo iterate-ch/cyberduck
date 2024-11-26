@@ -28,8 +28,6 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaObject;
@@ -61,13 +59,7 @@ public final class MantaObjectAttributeAdapter implements AttributesAdapter<Mant
         if(session.isWorldReadable(object)) {
             // mantaObject.getPath() starts with /
             final String joinedPath = new DefaultWebUrlProvider().toUrl(session.getHost()) + URIEncoder.encode(object.getPath());
-            try {
-                final URI link = new URI(joinedPath);
-                attributes.setLink(new DescriptiveUrl(link, DescriptiveUrl.Type.http));
-            }
-            catch(URISyntaxException e) {
-                log.warn("Cannot set link. Web URL returned {}", joinedPath);
-            }
+            attributes.setLink(new DescriptiveUrl(joinedPath, DescriptiveUrl.Type.http));
         }
         attributes.setSize(object.getContentLength());
         attributes.setETag(object.getEtag());

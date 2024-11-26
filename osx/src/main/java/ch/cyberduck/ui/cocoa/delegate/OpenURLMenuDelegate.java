@@ -27,6 +27,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.pool.SessionPool;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
@@ -47,9 +48,8 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
         final SessionPool pool = this.getSession();
         final UrlProvider provider = pool.getFeature(UrlProvider.class);
         if(provider != null) {
-            list.addAll(provider.toUrl(selected).filter(
-                DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
-                DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated));
+            list.addAll(provider.toUrl(selected, EnumSet.of(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
+                    DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated)));
         }
         return list;
     }

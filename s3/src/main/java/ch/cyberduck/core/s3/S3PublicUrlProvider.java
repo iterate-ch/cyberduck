@@ -25,6 +25,8 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.jets3t.service.acl.Permission;
 
+import java.util.EnumSet;
+
 public class S3PublicUrlProvider implements Share<Void, Void> {
 
     private final S3Session session;
@@ -53,7 +55,7 @@ public class S3PublicUrlProvider implements Share<Void, Void> {
             permission.addAll(everyone, read);
             acl.setPermission(file, permission);
         }
-        return new DefaultUrlProvider(session.getHost()).toUrl(file).find(DescriptiveUrl.Type.provider);
+        return new DefaultUrlProvider(session.getHost()).toUrl(file, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider);
     }
 
     @Override

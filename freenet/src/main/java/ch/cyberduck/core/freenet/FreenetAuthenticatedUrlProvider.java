@@ -32,7 +32,6 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.ProxyFactory;
-import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -50,7 +49,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URI;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.oauth2.PasswordTokenRequest;
@@ -109,7 +107,7 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                         .set("webLogin", Boolean.TRUE)
                         .execute();
                 final FreenetTemporaryLoginResponse login = this.getLoginSession(client, response.getAccessToken());
-                return new DescriptiveUrl(URI.create(login.urls.login), DescriptiveUrl.Type.authenticated);
+                return new DescriptiveUrl(login.urls.login, DescriptiveUrl.Type.authenticated);
             }
             catch(IOException e) {
                 throw new HttpExceptionMappingService().map(e);

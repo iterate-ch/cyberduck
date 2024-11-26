@@ -23,8 +23,6 @@ import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
 
-import java.net.URI;
-
 import static org.junit.Assert.assertEquals;
 
 public class PathAttributesDictionaryTest {
@@ -49,7 +47,7 @@ public class PathAttributesDictionaryTest {
         attributes.setSize(3L);
         attributes.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
         attributes.setModificationDate(5343L);
-        attributes.setLink(new DescriptiveUrl(URI.create("https://cyberduck.io/"), DescriptiveUrl.Type.signed));
+        attributes.setLink(new DescriptiveUrl("https://cyberduck.io/", DescriptiveUrl.Type.signed));
         final PathAttributes deserialized = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(attributes, deserialized);
         assertEquals(attributes.hashCode(), deserialized.hashCode());

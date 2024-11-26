@@ -61,6 +61,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 public abstract class TransferPromptController extends SheetController implements TransferPrompt, ProgressListener, TranscriptListener {
     private static final Logger log = LogManager.getLogger(TransferPromptController.class);
@@ -319,7 +320,7 @@ public abstract class TransferPromptController extends SheetController implement
                         }
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            new DefaultUrlProvider(transfer.getSource()).toUrl(item.remote).find(DescriptiveUrl.Type.provider).getUrl(),
+                            new DefaultUrlProvider(transfer.getSource()).toUrl(item.remote, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     final TransferStatus status = browserModel.getStatus(item);
                     if(status.getRemote().getSize() == -1) {

@@ -92,6 +92,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1695,7 +1696,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             this.updateField(webUrlField, LocaleFactory.localizedString("Unknown"));
             final Path file = this.getSelected();
-            final DescriptiveUrl http = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.http);
+            final DescriptiveUrl http = session.getFeature(UrlProvider.class).toUrl(file, EnumSet.of(DescriptiveUrl.Type.http)).find(DescriptiveUrl.Type.http);
             if(!http.equals(DescriptiveUrl.EMPTY)) {
                 webUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(http));
                 webUrlField.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
@@ -2530,7 +2531,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(file).find(DescriptiveUrl.Type.cname);
+                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(file, EnumSet.of(DescriptiveUrl.Type.cname)).find(DescriptiveUrl.Type.cname);
                         if(!url.equals(DescriptiveUrl.EMPTY)) {
                             // We only support one CNAME URL to be displayed
                             distributionCnameUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));

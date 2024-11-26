@@ -25,9 +25,9 @@ import ch.cyberduck.core.UrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Locale;
 
 public class SDSUrlProvider implements UrlProvider {
@@ -39,18 +39,21 @@ public class SDSUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final String nodeid = file.attributes().getVersionId();
         if(StringUtils.isBlank(nodeid)) {
             return DescriptiveUrlBag.empty();
         }
-        return new DescriptiveUrlBag(Collections.singletonList(
-            new DescriptiveUrl(URI.create(String.format("%s/#/node/%s/details",
-                new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(
-                    nodeid
-                ))),
-                DescriptiveUrl.Type.http,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getScheme().toString().toUpperCase(Locale.ROOT)))
-        ));
+        if(types.contains(DescriptiveUrl.Type.http)) {
+            return new DescriptiveUrlBag(Collections.singleton(
+                    new DescriptiveUrl(String.format("%s/#/node/%s/details",
+                            new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(
+                                    nodeid
+                            )),
+                            DescriptiveUrl.Type.http,
+                            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getScheme().toString().toUpperCase(Locale.ROOT)))
+            ));
+        }
+        return DescriptiveUrlBag.empty();
     }
 }

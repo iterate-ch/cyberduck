@@ -27,8 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Share;
 
-import java.net.URI;
-
 public class DeepboxShareFeature implements Share<Object, Object> {
 
     private final DeepboxSession session;
@@ -62,7 +60,7 @@ public class DeepboxShareFeature implements Share<Object, Object> {
             final ShareLinkAdd body = new ShareLinkAdd();
             body.setNodeId(fileid.getFileId(file));
             final ShareLinkResource link = new ShareLinkRestControllerApi(session.getClient()).createShareLinkResource(body, null);
-            return new DescriptiveUrl(URI.create(link.getShareUrl()), DescriptiveUrl.Type.signed);
+            return new DescriptiveUrl(link.getShareUrl(), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map(e);

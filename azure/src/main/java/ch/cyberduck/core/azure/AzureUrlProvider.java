@@ -56,7 +56,7 @@ public class AzureUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         // In one hour
         list.add(this.toSignedUrl(file, (int) TimeUnit.HOURS.toSeconds(1)));

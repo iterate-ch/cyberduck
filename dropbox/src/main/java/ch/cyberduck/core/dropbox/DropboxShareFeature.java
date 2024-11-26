@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Share;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -66,7 +65,7 @@ public class DropboxShareFeature implements Share<Void, Void> {
                         .createSharedLinkWithSettings(containerService.getKey(file),
                                 settings);
                 log.debug("Created shared link {}", share);
-                return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
+                return new DescriptiveUrl(share.getUrl(), DescriptiveUrl.Type.signed,
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                                 LocaleFactory.localizedString("Password Share", "Dropbox"))
                 );
@@ -84,7 +83,7 @@ public class DropboxShareFeature implements Share<Void, Void> {
                     log.debug("Return existing shared link {}", link);
                     final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file)).modifySharedLinkSettings(link.getUrl(),
                             settings);
-                    return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
+                    return new DescriptiveUrl(share.getUrl(), DescriptiveUrl.Type.signed,
                             MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                                     LocaleFactory.localizedString("Password Share", "Dropbox"))
                     );
@@ -102,7 +101,7 @@ public class DropboxShareFeature implements Share<Void, Void> {
         try {
             final FileRequest request = new DbxUserFileRequestsRequests(session.getClient())
                     .create(file.getName(), file.isRoot() ? file.getAbsolute() : containerService.getKey(file));
-            return new DescriptiveUrl(URI.create(request.getUrl()), DescriptiveUrl.Type.signed);
+            return new DescriptiveUrl(request.getUrl(), DescriptiveUrl.Type.signed);
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);

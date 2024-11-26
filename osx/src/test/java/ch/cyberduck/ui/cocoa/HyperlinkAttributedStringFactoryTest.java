@@ -7,8 +7,6 @@ import ch.cyberduck.core.Local;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import java.net.URI;
-
 import static org.junit.Assert.assertEquals;
 
 public class HyperlinkAttributedStringFactoryTest {
@@ -22,7 +20,7 @@ public class HyperlinkAttributedStringFactoryTest {
 
     @Test
     public void testCreateNull() {
-        assertEquals("", HyperlinkAttributedStringFactory.create(new DescriptiveUrl(URI.create(StringUtils.EMPTY))).string());
+        assertEquals("", HyperlinkAttributedStringFactory.create(new DescriptiveUrl(StringUtils.EMPTY)).string());
         assertEquals("", HyperlinkAttributedStringFactory.create((String) null).string());
         assertEquals("", HyperlinkAttributedStringFactory.create("", (Local) null).string());
     }

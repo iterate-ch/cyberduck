@@ -21,7 +21,8 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 
-import java.net.URI;
+import java.util.Collections;
+import java.util.EnumSet;
 
 public class DeepboxUrlProvider implements UrlProvider {
     private final DeepboxSession session;
@@ -31,17 +32,19 @@ public class DeepboxUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.isFile() && file.attributes().getFileId() != null) {
-            // For now, use pattern https://{env}.deepbox.swiss/node/{nodeId}/preview, API forthcoming
-            list.add(new DescriptiveUrl(URI.create(new HostUrlProvider()
-                    .withPath(true).withUsername(false)
-                    .get(session.getHost().getProtocol().getScheme(),
-                            session.getHost().getPort(),
-                            null,
-                            String.format("%sdeepbox.swiss", session.getStage()),
-                            String.format("/node/%s/preview", file.attributes().getFileId())))));
+        if(types.contains(DescriptiveUrl.Type.http)) {
+            if(file.isFile() && file.attributes().getFileId() != null) {
+                // For now, use pattern https://{env}.deepbox.swiss/node/{nodeId}/preview, API forthcoming
+                return new DescriptiveUrlBag(Collections.singleton(new DescriptiveUrl(new HostUrlProvider()
+                        .withPath(true).withUsername(false)
+                        .get(session.getHost().getProtocol().getScheme(),
+                                session.getHost().getPort(),
+                                null,
+                                String.format("%sdeepbox.swiss", session.getStage()),
+                                String.format("/node/%s/preview", file.attributes().getFileId())))));
+            }
         }
         return list;
     }
