@@ -15,7 +15,6 @@ package ch.cyberduck.core.tus;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
@@ -171,7 +170,6 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         return ConcurrentUtils.constantFuture(new DefaultRetryCallable<>(host, new BackgroundExceptionCallable<Void>() {
             @Override
             public Void call() throws BackgroundException {
-                final BytecountStreamListener counter = new BytecountStreamListener(listener);
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
                         .segment(true)
