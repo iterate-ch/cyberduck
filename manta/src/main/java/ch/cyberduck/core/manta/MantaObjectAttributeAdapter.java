@@ -25,15 +25,11 @@ import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaObject;
 
 public final class MantaObjectAttributeAdapter implements AttributesAdapter<MantaObject> {
-    private static final Logger log = LogManager.getLogger(MantaObjectAttributeAdapter.class);
 
     private final MantaSession session;
 

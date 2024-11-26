@@ -47,14 +47,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
 public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Chunk> {
-    private static final Logger log = LogManager.getLogger(EueWriteFeature.class);
 
     public static final String RESOURCE_ID = "resourceId";
 

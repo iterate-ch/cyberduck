@@ -18,11 +18,8 @@ package ch.cyberduck.core.ctera.auth;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public final class CteraTokens {
-    private static final Logger log = LogManager.getLogger(CteraTokens.class);
 
     public static CteraTokens EMPTY = new CteraTokens(StringUtils.EMPTY, StringUtils.EMPTY);
 

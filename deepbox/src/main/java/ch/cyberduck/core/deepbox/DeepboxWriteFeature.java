@@ -38,8 +38,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.AbstractResponseHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,7 +47,6 @@ import java.util.EnumSet;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
-    private static final Logger log = LogManager.getLogger(DeepboxWriteFeature.class);
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;

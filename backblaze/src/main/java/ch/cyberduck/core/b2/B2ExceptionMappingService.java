@@ -29,15 +29,12 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2ExceptionMappingService extends AbstractExceptionMappingService<B2ApiException> {
-    private static final Logger log = LogManager.getLogger(B2ExceptionMappingService.class);
 
     private final B2VersionIdProvider fileid;
 

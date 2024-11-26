@@ -17,11 +17,7 @@ package ch.cyberduck.core.proxy;
 
 import ch.cyberduck.binding.foundation.NSAppleScript;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public final class SystemPreferencesProxyConfiguration implements ProxyFinder.Configuration {
-    private static final Logger log = LogManager.getLogger(SystemPreferencesProxyConfiguration.class);
 
     @Override
     public void configure() {

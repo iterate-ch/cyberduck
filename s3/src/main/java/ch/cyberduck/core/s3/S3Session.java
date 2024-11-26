@@ -36,7 +36,6 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
-import ch.cyberduck.core.date.RFC822DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
@@ -233,8 +232,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
         });
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            private final RFC822DateFormatter formatter = new RFC822DateFormatter();
-
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
                 request.setHeader(S3_ALTERNATE_DATE, SignatureUtils.formatAwsFlavouredISO8601Date(client.getCurrentTimeWithOffset()));

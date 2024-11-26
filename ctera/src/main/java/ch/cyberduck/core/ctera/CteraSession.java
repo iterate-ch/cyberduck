@@ -46,8 +46,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -55,7 +53,6 @@ import java.text.MessageFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CteraSession extends DAVSession {
-    private static final Logger log = LogManager.getLogger(CteraSession.class);
 
     private static final String PUBLIC_INFO_PATH = "/ServicesPortal/public/publicInfo?format=jsonext";
     private static final String CURRENT_SESSION_PATH = "/ServicesPortal/api/currentSession?format=jsonext";

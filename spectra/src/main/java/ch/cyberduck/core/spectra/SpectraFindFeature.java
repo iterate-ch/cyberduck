@@ -22,9 +22,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 
 import com.spectralogic.ds3client.Ds3Client;
@@ -35,7 +32,6 @@ import com.spectralogic.ds3client.commands.HeadObjectResponse;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraFindFeature implements Find {
-    private static final Logger log = LogManager.getLogger(SpectraFindFeature.class);
 
     private final SpectraSession session;
     private final PathContainerService containerService;

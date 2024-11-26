@@ -16,7 +16,6 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -312,7 +311,6 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         @Override
         public String getFileId(final Path file) throws BackgroundException {
             try {
-                final AttributedList<Path> list = new AttributedList<>();
                 int offset = 0;
                 int size;
                 do {

@@ -18,11 +18,7 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.local.Application;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class SMAppServiceApplicationLoginRegistry implements ApplicationLoginRegistry {
-    private static final Logger log = LogManager.getLogger(SMAppServiceApplicationLoginRegistry.class);
 
     static {
         Native.load("core");
