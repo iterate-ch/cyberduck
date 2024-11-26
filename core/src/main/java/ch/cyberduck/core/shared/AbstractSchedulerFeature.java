@@ -43,28 +43,12 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<Void> {
 
     @Override
     public Void repeat(final SessionPool pool, final PasswordCallback callback) {
-        scheduler.repeat(() -> {
-            try {
-                final Session<?> session = pool.borrow(BackgroundActionState.running);
-                try {
-                    this.operate(session, callback, null);
-                }
-                finally {
-                    pool.release(session, null);
-                }
-            }
-            catch(LoginFailureException | ConnectionCanceledException e) {
-                log.warn("Cancel processing scheduled task after failure {}", e.getMessage());
-                this.shutdown();
-            }
-            catch(BackgroundException e) {
-                log.warn("Failure processing scheduled task. {}", e.getMessage(), e);
-            }
-            catch(Exception e) {
-                log.error("Failure processing scheduled task {}", e.getMessage(), e);
-                this.shutdown();
-            }
-        }, period, TimeUnit.MILLISECONDS);
+        scheduler.repeat(new PoolOperator(pool, callback), period, TimeUnit.MILLISECONDS);
+        return null;
+    }
+
+    public Void single(final Session<?> session, final PasswordCallback callback, final Path file) {
+        scheduler.schedule(new SessionOperator(session, callback, file), 0L, TimeUnit.MILLISECONDS);
         return null;
     }
 
@@ -74,5 +58,65 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<Void> {
     public void shutdown() {
         log.debug("Shutting down scheduler thread pool");
         scheduler.shutdown();
+    }
+
+    private class PoolOperator implements Runnable {
+        private final SessionPool pool;
+        private final PasswordCallback callback;
+
+        public PoolOperator(final SessionPool pool, final PasswordCallback callback) {
+            this.pool = pool;
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            try {
+                final Session<?> session = pool.borrow(BackgroundActionState.running);
+                try {
+                    AbstractSchedulerFeature.this.operate(session, callback, null);
+                }
+                finally {
+                    pool.release(session, null);
+                }
+            }
+            catch(LoginFailureException | ConnectionCanceledException e) {
+                log.warn("Cancel processing scheduled task after failure {}", e.getMessage());
+                AbstractSchedulerFeature.this.shutdown();
+            }
+            catch(BackgroundException e) {
+                log.warn("Failure processing scheduled task. {}", e.getMessage(), e);
+            }
+            catch(Exception e) {
+                log.error("Failure processing scheduled task {}", e.getMessage(), e);
+                AbstractSchedulerFeature.this.shutdown();
+            }
+        }
+    }
+
+    private class SessionOperator implements Runnable {
+        private final Session<?> session;
+        private final PasswordCallback callback;
+        private final Path file;
+
+        public SessionOperator(final Session<?> session, final PasswordCallback callback, final Path file) {
+            this.session = session;
+            this.callback = callback;
+            this.file = file;
+        }
+
+        @Override
+        public void run() {
+            try {
+                AbstractSchedulerFeature.this.operate(session, callback, file);
+            }
+            catch(BackgroundException e) {
+                log.warn("Failure processing scheduled task. {}", e.getMessage(), e);
+            }
+            catch(Exception e) {
+                log.error("Failure processing scheduled task {}", e.getMessage(), e);
+                AbstractSchedulerFeature.this.shutdown();
+            }
+        }
     }
 }

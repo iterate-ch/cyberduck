@@ -99,7 +99,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                                 final Path container = containerService.getContainer(file);
                                 if(rooms.get(container)) {
                                     log.debug("Run missing file keys for {}", file);
-                                    background.operate(session, callback, file);
+                                    background.single(session, callback, file);
                                 }
                             }
                         }
