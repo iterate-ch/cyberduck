@@ -51,7 +51,7 @@ public abstract class ThreadPoolSchedulerFeature<R> implements Scheduler<R> {
 
     @Override
     public void shutdown() {
-        log.debug("Shutting down scheduler thread pool");
+        log.debug("Shutting down scheduler thread pool {}", this);
         scheduler.shutdown();
     }
 
