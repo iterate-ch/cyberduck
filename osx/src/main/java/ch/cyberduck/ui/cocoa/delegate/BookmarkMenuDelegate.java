@@ -116,7 +116,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     public void menuNeedsUpdate(final NSMenu menu) {
         if(!this.isPopulated()) {
             log.trace("Build menu {}", menu);
-            for(int i = menu.numberOfItems().intValue() - 1; i >= BOOKMARKS_INDEX; i--) {
+            for(int i = menu.numberOfItems().intValue() - 1; i >= index; i--) {
                 menu.removeItemAtIndex(new NSInteger(i));
             }
             {
