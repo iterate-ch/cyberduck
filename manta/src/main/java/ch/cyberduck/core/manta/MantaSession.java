@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
@@ -43,8 +44,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -60,21 +59,20 @@ import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.http.MantaConnectionFactoryConfigurator;
 
 public class MantaSession extends HttpSession<MantaClient> {
-    private static final Logger log = LogManager.getLogger(MantaSession.class);
 
     private final AuthAwareConfigContext config;
 
     public MantaSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
         config = new AuthAwareConfigContext(new ChainedConfigContext(
-            new DefaultsConfigContext(),
-            new StandardConfigContext()
-                .setNoAuth(true)
-                .setMantaKeyPath(null)
-                .setHttpsProtocols(new HostPreferences(host).getProperty("connection.ssl.protocols"))
-                .setDisableNativeSignatures(true)
-                .setMantaUser(host.getCredentials().getUsername())
-                .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname()))
+                new DefaultsConfigContext(),
+                new StandardConfigContext()
+                        .setNoAuth(true)
+                        .setMantaKeyPath(null)
+                        .setHttpsProtocols(new HostPreferences(host).getProperty("connection.ssl.protocols"))
+                        .setDisableNativeSignatures(true)
+                        .setMantaUser(host.getCredentials().getUsername())
+                        .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname()))
         ));
     }
 
@@ -122,30 +120,30 @@ public class MantaSession extends HttpSession<MantaClient> {
     protected boolean userIsOwner() {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return StringUtils.equals(host.getCredentials().getUsername(),
-            account.getAccountOwner());
+                account.getAccountOwner());
     }
 
     protected boolean isUserWritable(final MantaObject object) {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return StringUtils.startsWithAny(
-            object.getPath(),
-            account.getAccountPublicRoot().getAbsolute(),
-            account.getAccountPrivateRoot().getAbsolute());
+                object.getPath(),
+                account.getAccountPublicRoot().getAbsolute(),
+                account.getAccountPrivateRoot().getAbsolute());
     }
 
     protected boolean isUserWritable(final Path file) {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return file.equals(account.getAccountPublicRoot())
-            || file.equals(account.getAccountPrivateRoot())
-            || file.isChild(account.getAccountPublicRoot())
-            || file.isChild(account.getAccountPrivateRoot());
+                || file.equals(account.getAccountPrivateRoot())
+                || file.isChild(account.getAccountPublicRoot())
+                || file.isChild(account.getAccountPrivateRoot());
     }
 
     protected boolean isWorldReadable(final MantaObject object) {
         final MantaAccountHomeInfo accountHomeInfo = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return StringUtils.startsWithAny(
-            object.getPath(),
-            accountHomeInfo.getAccountPublicRoot().getAbsolute());
+                object.getPath(),
+                accountHomeInfo.getAccountPublicRoot().getAbsolute());
     }
 
     protected boolean isWorldReadable(final Path file) {
@@ -162,31 +160,34 @@ public class MantaSession extends HttpSession<MantaClient> {
         if(type == Directory.class) {
             return (T) new MantaDirectoryFeature(this);
         }
-        else if(type == Read.class) {
+        if(type == Read.class) {
             return (T) new MantaReadFeature(this);
         }
-        else if(type == Write.class) {
+        if(type == Write.class) {
             return (T) new MantaWriteFeature(this);
         }
-        else if(type == Delete.class) {
+        if(type == Delete.class) {
             return (T) new MantaDeleteFeature(this);
         }
-        else if(type == Touch.class) {
+        if(type == Touch.class) {
             return (T) new MantaTouchFeature(this);
         }
-        else if(type == Move.class) {
+        if(type == Move.class) {
             return (T) new MantaMoveFeature(this);
         }
-        else if(type == AttributesFinder.class) {
+        if(type == Find.class) {
+            return (T) new MantaFindFeature(this);
+        }
+        if(type == AttributesFinder.class) {
             return (T) new MantaAttributesFinderFeature(this);
         }
-        else if(type == UrlProvider.class) {
+        if(type == UrlProvider.class) {
             return (T) new MantaUrlProviderFeature(this);
         }
-        else if(type == Home.class) {
+        if(type == Home.class) {
             return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new MantaHomeFinderFeature(host));
         }
-        else if(type == Search.class) {
+        if(type == Search.class) {
             return (T) new MantaSearchFeature(this);
         }
         return super._getFeature(type);
