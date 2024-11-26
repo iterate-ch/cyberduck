@@ -2,6 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 9.1.0
+- [Feature] Display transfer progress in Finder for downloads and uploads (macOS) (#16568)
 - [Bugfix] Multipart uploads fail to buckets with '.' character in name (S3) (#16401)
 - [Bugfix] Usability improvements entering connection details (#15200)
 - [Bugfix] Set "Show Hidden Files"shortcut to "⌘ ⇧ ." as in Finder (macOS) (#16459)
