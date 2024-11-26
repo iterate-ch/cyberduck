@@ -88,7 +88,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             final HashMap<UserKeyPairContainer, Credentials> passphrases = new HashMap<>();
             UserFileKeySetBatchRequest request;
             do {
-                log.debug("Request a list of missing file keys for file {}", file);
+                log.debug("Request a list of missing file keys limited to {}", fileId);
                 request = new UserFileKeySetBatchRequest();
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
                         null, null, null, fileId, null, null, null);
