@@ -201,8 +201,8 @@ public class SwiftSession extends HttpSession<Client> {
                 return (T) new DelegatingSchedulerFeature(
                         new SwiftAccountLoader(this) {
                             @Override
-                            public Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                                final Map<Region, AccountInfo> result = super.operate(callback, container);
+                            protected Map<Region, AccountInfo> operate(final PasswordCallback callback) throws BackgroundException {
+                                final Map<Region, AccountInfo> result = super.operate(callback);
                                 // Only executed single time
                                 accounts.putAll(result);
                                 return result;

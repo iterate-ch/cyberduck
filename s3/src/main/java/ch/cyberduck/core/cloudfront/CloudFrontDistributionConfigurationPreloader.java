@@ -23,8 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.s3.S3BucketListService;
-import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
@@ -32,7 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -42,18 +41,16 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
     private final S3Session session;
 
     public CloudFrontDistributionConfigurationPreloader(final S3Session session) {
-        super(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         this.session = session;
     }
 
     @Override
-    protected Set<Distribution> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
+    protected Set<Distribution> operate(final PasswordCallback callback) throws BackgroundException {
         final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
         if(null == feature) {
             return Collections.emptySet();
         }
-        final AttributedList<Path> containers = new S3BucketListService(session)
-            .list(file, new DisabledListProgressListener());
+        final AttributedList<Path> containers = new S3BucketListService(session).list(Home.ROOT, new DisabledListProgressListener());
         final Set<Distribution> distributions = new LinkedHashSet<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {

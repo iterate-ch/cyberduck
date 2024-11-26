@@ -18,9 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -36,7 +34,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserUserPublicKey;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
-import ch.cyberduck.core.shared.AbstractSchedulerFeature;
+import ch.cyberduck.core.shared.ThreadPoolSchedulerFeature;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -61,21 +59,30 @@ import com.dracoon.sdk.crypto.model.UserPrivateKey;
 
 import static java.util.stream.Collectors.groupingBy;
 
-public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature<List<UserFileKeySetRequest>> {
+public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeature<List<UserFileKeySetRequest>> {
     private static final Logger log = LogManager.getLogger(SDSMissingFileKeysSchedulerFeature.class);
 
-    public SDSMissingFileKeysSchedulerFeature() {
-        this(PreferencesFactory.get().getLong("sds.encryption.missingkeys.scheduler.period"));
+    private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
+    private final Path file;
+
+    public SDSMissingFileKeysSchedulerFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        this(session, nodeid, null);
     }
 
-    public SDSMissingFileKeysSchedulerFeature(final long period) {
+    public SDSMissingFileKeysSchedulerFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Path file) {
+        this(session, nodeid, file, PreferencesFactory.get().getLong("sds.encryption.missingkeys.scheduler.period"));
+    }
+
+    public SDSMissingFileKeysSchedulerFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Path file, final long period) {
         super(period);
+        this.file = file;
+        this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
-    public List<UserFileKeySetRequest> operate(final Session<?> client, final PasswordCallback callback, final Path file) throws BackgroundException {
-        final SDSSession session = (SDSSession) client;
-        final SDSNodeIdProvider nodeid = (SDSNodeIdProvider) session._getFeature(VersionIdProvider.class);
+    protected List<UserFileKeySetRequest> operate(final PasswordCallback callback) throws BackgroundException {
         try {
             final UserAccountWrapper account = session.userAccount();
             if(!account.isEncryptionEnabled()) {

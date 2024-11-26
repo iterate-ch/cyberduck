@@ -18,7 +18,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
@@ -29,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,12 +41,11 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
     private final SwiftSession session;
 
     public SwiftAccountLoader(final SwiftSession session) {
-        super(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         this.session = session;
     }
 
     @Override
-    protected Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
+    protected Map<Region, AccountInfo> operate(final PasswordCallback callback) throws BackgroundException {
         final Map<Region, AccountInfo> accounts = new ConcurrentHashMap<>();
         for(Region region : session.getClient().getRegions()) {
             try {

@@ -93,13 +93,13 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
-        final List<UserFileKeySetRequest> processed = background.operate(session, new DisabledPasswordCallback() {
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid, test);
+        final List<UserFileKeySetRequest> processed = background.operate(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
-        }, test);
+        });
         assertTrue(processed.stream().filter(userFileKeySetRequest -> userFileKeySetRequest.getFileId().equals(Long.parseLong(test.attributes().getVersionId()))).findAny().isPresent());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -160,13 +160,13 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(Long.parseLong(test.attributes().getVersionId()), null, null);
         final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
         assertEquals(EncryptedFileKey.Version.RSA2048_AES256GCM, encFileKey.getVersion());
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
-        final List<UserFileKeySetRequest> processed = background.operate(session, new DisabledPasswordCallback() {
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
+        final List<UserFileKeySetRequest> processed = background.operate(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
-        }, null);
+        });
         assertFalse(processed.isEmpty());
         boolean found = false;
         for(UserFileKeySetRequest p : processed) {
@@ -176,12 +176,12 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
             }
         }
         assertTrue(found);
-        final List<UserFileKeySetRequest> empty = new SDSMissingFileKeysSchedulerFeature().operate(session, new DisabledPasswordCallback() {
+        final List<UserFileKeySetRequest> empty = new SDSMissingFileKeysSchedulerFeature(session, nodeid).operate(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
-        }, null);
+        });
         assertTrue(empty.isEmpty());
         assertEquals(2, userApi.requestUserKeyPairs(null, null).size());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -208,9 +208,9 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
         final AtomicBoolean prompt = new AtomicBoolean();
-        final List<UserFileKeySetRequest> processed = background.operate(session, new DisabledPasswordCallback() {
+        final List<UserFileKeySetRequest> processed = background.operate(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if(prompt.get()) {
@@ -219,7 +219,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
                 prompt.set(true);
                 return new VaultCredentials("n");
             }
-        }, null);
+        });
         assertTrue(prompt.get());
     }
 }

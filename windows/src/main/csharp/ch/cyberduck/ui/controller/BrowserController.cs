@@ -3500,7 +3500,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
                         _controller._scheduler = (Scheduler)_pool.getFeature(typeof(Scheduler));
-                        _controller._scheduler?.repeat(_pool, PasswordCallbackFactory.get(_controller));
+                        _controller._scheduler?.repeat(PasswordCallbackFactory.get(_controller));
                     }
                 }
             }
