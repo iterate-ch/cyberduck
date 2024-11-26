@@ -38,7 +38,7 @@ public class DropboxReadFeature implements Read {
 
     public DropboxReadFeature(final DropboxSession session) {
         this.session = session;
-        this.containerService = new DropboxPathContainerService(session);
+        this.containerService = new DropboxPathContainerService();
     }
 
     @Override

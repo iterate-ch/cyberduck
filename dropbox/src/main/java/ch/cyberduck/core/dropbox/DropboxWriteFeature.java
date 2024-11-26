@@ -59,7 +59,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
         super(new DropboxAttributesFinderFeature(session));
         this.session = session;
         this.chunksize = chunksize;
-        this.containerService = new DropboxPathContainerService(session);
+        this.containerService = new DropboxPathContainerService();
     }
 
     @Override

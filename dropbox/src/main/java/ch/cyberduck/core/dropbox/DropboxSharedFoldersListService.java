@@ -24,9 +24,6 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.EnumSet;
 
 import com.dropbox.core.DbxException;
@@ -35,7 +32,6 @@ import com.dropbox.core.v2.sharing.ListFoldersResult;
 import com.dropbox.core.v2.sharing.SharedFolderMetadata;
 
 public class DropboxSharedFoldersListService implements ListService {
-    private static final Logger log = LogManager.getLogger(DropboxSharedFoldersListService.class);
 
     private final DropboxSession session;
 
@@ -51,7 +47,7 @@ public class DropboxSharedFoldersListService implements ListService {
             this.parse(directory, listener, children, listFoldersResult = new DbxUserSharingRequests(session.getClient()).listFolders());
             while(listFoldersResult.getCursor() != null) {
                 this.parse(directory, listener, children, listFoldersResult = new DbxUserSharingRequests(session.getClient())
-                    .listMountableFoldersContinue(listFoldersResult.getCursor()));
+                        .listMountableFoldersContinue(listFoldersResult.getCursor()));
             }
             return children;
         }
@@ -73,6 +69,6 @@ public class DropboxSharedFoldersListService implements ListService {
     protected Path parse(final Path directory, final SharedFolderMetadata metadata) {
         final PathAttributes attr = new PathAttributes();
         return new Path(directory, PathNormalizer.name(metadata.getName()),
-            EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared), attr);
+                EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared), attr);
     }
 }

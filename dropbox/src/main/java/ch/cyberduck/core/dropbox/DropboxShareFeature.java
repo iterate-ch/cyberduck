@@ -47,7 +47,7 @@ public class DropboxShareFeature implements Share<Void, Void> {
 
     public DropboxShareFeature(final DropboxSession session) {
         this.session = session;
-        this.containerService = new DropboxPathContainerService(session);
+        this.containerService = new DropboxPathContainerService();
     }
 
     protected SharedLinkSettings.Builder toSettings(final Path file, final PasswordCallback callback) throws LoginCanceledException {

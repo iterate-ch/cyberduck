@@ -22,12 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 
 public class DropboxPathContainerService extends DefaultPathContainerService {
 
-    private final DropboxSession session;
-
-    public DropboxPathContainerService(final DropboxSession session) {
-        this.session = session;
-    }
-
     @Override
     public String getKey(final Path file) {
         return file.isRoot() ? StringUtils.EMPTY : file.getAbsolute();
