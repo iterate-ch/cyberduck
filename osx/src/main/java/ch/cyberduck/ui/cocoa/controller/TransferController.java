@@ -28,13 +28,11 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferCollection;
@@ -596,7 +594,6 @@ public final class TransferController extends WindowController implements Transf
      */
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
-        final Cache<Path> cache = new PathCache(preferences.getInteger("transfer.cache.size"));
         final Host source = transfer.getSource();
         final Host destination = transfer.getDestination();
         final TransferBackgroundAction action = new TransferCollectionBackgroundAction(this,
