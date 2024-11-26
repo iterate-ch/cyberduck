@@ -20,6 +20,7 @@ import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.unicode.NFDNormalizer;
 
@@ -33,30 +34,34 @@ public final class WorkspaceIconService implements IconService {
     private static final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
     @Override
-    public Icon get(final Local file) {
-        return new Icon() {
-            // An integer between 0 and 9
-            private int step = 0;
+    public Icon get(final Transfer.Type type, final Local file) {
+        switch(type) {
+            case download:
+                return new Icon() {
+                    // An integer between 0 and 9
+                    private int step = 0;
 
-            @Override
-            public boolean update(final TransferProgress progress) {
-                if(progress.getSize() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
-                    final int fraction = new BigDecimal(progress.getTransferred()).divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN).multiply(BigDecimal.TEN).intValue();
-                    if(fraction >= step) {
-                        // Another 10 percent of the file has been transferred
-                        return WorkspaceIconService.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", step = fraction)));
+                    @Override
+                    public boolean update(final TransferProgress progress) {
+                        if(progress.getSize() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
+                            final int fraction = new BigDecimal(progress.getTransferred()).divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN).multiply(BigDecimal.TEN).intValue();
+                            if(fraction >= step) {
+                                // Another 10 percent of the file has been transferred
+                                return WorkspaceIconService.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", step = fraction)));
+                            }
+                            return false;
+                        }
+                        return false;
                     }
-                    return false;
-                }
-                return false;
-            }
 
-            @Override
-            public boolean remove() {
-                // The Finder will display the default icon for this file type
-                return WorkspaceIconService.update(file, null);
-            }
-        };
+                    @Override
+                    public boolean remove() {
+                        // The Finder will display the default icon for this file type
+                        return WorkspaceIconService.update(file, null);
+                    }
+                };
+        }
+        return disabled;
     }
 
     public static boolean update(final Local file, final NSImage icon) {

@@ -18,25 +18,35 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.foundation.NSProgress;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class FinderProgressIconService implements IconService {
 
     @Override
-    public Icon get(final Local file) {
-        return new FinderProgressIcon(file);
+    public Icon get(final Transfer.Type type, final Local file) {
+        return new FinderProgressIcon(type, file);
     }
 
     private static final class FinderProgressIcon implements Icon {
         private final NSProgress progress;
+        private final Local file;
 
-        public FinderProgressIcon(final Local file) {
+        public FinderProgressIcon(final Transfer.Type type, final Local file) {
+            this.file = file;
             progress = NSProgress.discreteProgressWithTotalUnitCount(0L);
             progress.setKind(NSProgress.NSProgressKindFile);
             progress.setCancellable(false);
             progress.setPausable(false);
-            progress.setFileOperationKind(NSProgress.NSProgressFileOperationKindDownloading);
+            switch(type) {
+                case download:
+                    progress.setFileOperationKind(NSProgress.NSProgressFileOperationKindDownloading);
+                    break;
+                case upload:
+                    progress.setFileOperationKind(NSProgress.NSProgressFileOperationKindUploading);
+                    break;
+            }
             progress.setFileURL(NSURL.fileURLWithPath(file.getAbsolute()));
             progress.publish();
         }
@@ -57,6 +67,7 @@ public class FinderProgressIconService implements IconService {
         @Override
         public boolean remove() {
             progress.unpublish();
+            WorkspaceIconService.update(file, null);
             return true;
         }
     }

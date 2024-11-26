@@ -19,9 +19,22 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferProgress;
 
 public interface IconService {
+
+    Icon disabled = new Icon() {
+        @Override
+        public boolean update(final TransferProgress progress) {
+            return false;
+        }
+
+        @Override
+        public boolean remove() {
+            return false;
+        }
+    };
 
     /**
      * Get icon updater to track progress
@@ -29,7 +42,7 @@ public interface IconService {
      * @param file Local file
      * @return Updater to send continious progress updates to
      */
-    Icon get(Local file);
+    Icon get(Transfer.Type type, Local file);
 
     interface Icon {
         /**

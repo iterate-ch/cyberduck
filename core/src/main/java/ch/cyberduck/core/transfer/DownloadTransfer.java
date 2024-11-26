@@ -29,8 +29,6 @@ import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
-import ch.cyberduck.core.local.IconService;
-import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -39,7 +37,6 @@ import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.transfer.download.DownloadRegexPriorityComparator;
-import ch.cyberduck.core.transfer.download.IconServiceStreamListener;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.RenameExistingFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
@@ -304,13 +301,7 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            final IconService.Icon icon = IconServiceFactory.iconFor(segment.isSegment() ? folder : local);
-            download.download(file, local, bandwidth, this.options.icon ?
-                    new IconServiceStreamListener(this, icon, listener) : listener, segment, prompt);
-            // Remove custom icon if complete
-            if(segment.isComplete()) {
-                icon.remove();
-            }
+            download.download(file, local, bandwidth, listener, segment, prompt);
         }
     }
 

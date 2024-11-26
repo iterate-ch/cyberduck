@@ -56,8 +56,8 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
-import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -69,7 +69,6 @@ import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.ui.browser.BrowserColumn;
@@ -390,7 +389,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         for(int i = 0; i < elements.count().intValue(); i++) {
                             final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
                             roots.add(new TransferItem(new Path(destination, local.getName(),
-                                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                                    local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                         }
                         controller.transfer(new UploadTransfer(controller.getSession().getHost(), roots));
                         return true;
@@ -648,7 +647,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         try {
                             LocalTouchFactory.get().touch(file);
                             if(options.icon) {
-                                IconServiceFactory.iconFor(file).update(new TransferProgress(0L, 0L));
+                                WorkspaceIconService.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", 0)));
                             }
                         }
                         catch(AccessDeniedException e) {
@@ -678,7 +677,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             else {
                 final Transfer transfer = new DownloadTransfer(controller.getSession().getHost(), downloads)
-                    .withOptions(options);
+                        .withOptions(options);
                 controller.transfer(transfer, Collections.emptyList());
             }
             pasteboard.clear();

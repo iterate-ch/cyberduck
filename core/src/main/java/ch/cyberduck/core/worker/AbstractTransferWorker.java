@@ -24,7 +24,10 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.local.IconService;
+import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.SynchronizingTransferErrorCallback;
@@ -38,6 +41,7 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.TransferStreamListener;
+import ch.cyberduck.core.transfer.download.IconServiceStreamListener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
@@ -380,12 +384,25 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         log.debug("Transfer item {} with status {}", item, segment);
                         final Session<?> s = borrow(Connection.source);
                         final Session<?> d = borrow(Connection.destination);
-                        final BytecountStreamListener counter = new TransferStreamListener(transfer, stream);
+                        final IconService.Icon icon;
+                        if(new HostPreferences(s.getHost()).getBoolean(String.format("queue.%s.icon.update", transfer.getType().name()))) {
+                            icon = IconServiceFactory.iconFor(transfer.getType(),
+                                    segment.getRename().local != null ? segment.isSegment() ? segment.getRename().local.getParent() : segment.getRename().local : item.local);
+                        }
+                        else {
+                            icon = IconService.disabled;
+                        }
+                        final BytecountStreamListener counter = new TransferStreamListener(transfer,
+                                new IconServiceStreamListener(transfer, icon, stream));
                         try {
                             transfer.transfer(s, d,
                                     segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                     segment.getRename().local != null ? segment.getRename().local : item.local,
                                     options, segment, connect, progress, counter);
+                            if(transfer.isComplete()) {
+                                // Remove custom icon if complete
+                                icon.remove();
+                            }
                         }
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);
