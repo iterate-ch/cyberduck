@@ -28,7 +28,6 @@ public class RenameExistingFilterTest {
     public void testPrepare() throws Exception {
         final Host host = new Host(new TestProtocol());
         final DownloadFilterOptions options = new DownloadFilterOptions(host);
-        options.icon = false;
         RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(host),
             options);
         final String name = new AsciiRandomStringService().random();

@@ -67,7 +67,6 @@ public class FinderProgressIconService implements IconService {
         @Override
         public boolean remove() {
             progress.unpublish();
-            WorkspaceIconService.update(file, null);
             return true;
         }
     }

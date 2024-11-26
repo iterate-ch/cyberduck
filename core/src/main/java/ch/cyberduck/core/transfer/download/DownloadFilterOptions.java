@@ -31,7 +31,6 @@ public final class DownloadFilterOptions {
     public boolean permissions;
     public boolean timestamp;
     public boolean wherefrom;
-    public boolean icon;
     public boolean checksum;
     /**
      * Add quarantine flag to downloaded file
@@ -45,7 +44,6 @@ public final class DownloadFilterOptions {
         permissions = preferences.getBoolean("queue.download.permissions.change");
         timestamp = preferences.getBoolean("queue.download.timestamp.change");
         wherefrom = preferences.getBoolean("queue.download.wherefrom");
-        icon = preferences.getBoolean("queue.download.icon.update");
         checksum = preferences.getBoolean("queue.download.checksum.calculate");
         quarantine = preferences.getBoolean("queue.download.quarantine");
         open = preferences.getBoolean("queue.download.complete.open");
@@ -58,7 +56,6 @@ public final class DownloadFilterOptions {
         sb.append(", permissions=").append(permissions);
         sb.append(", timestamp=").append(timestamp);
         sb.append(", wherefrom=").append(wherefrom);
-        sb.append(", icon=").append(icon);
         sb.append(", checksum=").append(checksum);
         sb.append(", quarantine=").append(quarantine);
         sb.append(", open=").append(open);
