@@ -110,8 +110,7 @@ public final class PathNormalizer {
         StringBuilder n = new StringBuilder();
         if(normalized.startsWith("//")) {
             // see #972. Omit leading delimiter
-            n.append(Path.DELIMITER);
-            n.append(Path.DELIMITER);
+            n.append(Path.DELIMITER).append(Path.DELIMITER);
         }
         else if(absolute) {
             // convert to absolute path
@@ -121,8 +120,7 @@ public final class PathNormalizer {
             // Keep absolute path
             n.append(Path.DELIMITER);
         }
-        // Remove duplicated Path.DELIMITERs
-
+        // Remove duplicated "/"
         final String[] segments = StringUtils.split(normalized, String.valueOf(Path.DELIMITER));
         for(String segment : segments) {
             if(segment.equals(StringUtils.EMPTY)) {
@@ -133,7 +131,7 @@ public final class PathNormalizer {
         }
         normalized = n.toString();
         while(normalized.endsWith(String.valueOf(Path.DELIMITER)) && normalized.length() > 1) {
-            //Strip any redundant delimiter at the end of the path
+            // Strip any redundant delimiter at the end of the path
             normalized = normalized.substring(0, normalized.length() - 1);
         }
         // Return the normalized path that we have completed
