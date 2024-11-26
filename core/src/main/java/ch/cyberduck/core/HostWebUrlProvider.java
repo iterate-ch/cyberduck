@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
+
 public class HostWebUrlProvider implements UrlProvider {
 
     private final Host host;
@@ -29,12 +31,15 @@ public class HostWebUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        final DescriptiveUrl base = new DefaultWebUrlProvider().toUrl(host);
-        list.add(new DescriptiveUrl(String.format("%s%s", StringUtils.stripEnd(base.getUrl(), String.valueOf(Path.DELIMITER)), URIEncoder.encode(
-                PathNormalizer.normalize(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))
-        )), base.getType(), base.getHelp()));
-        return list;
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
+        if(types.contains(DescriptiveUrl.Type.http)) {
+            final DescriptiveUrlBag list = new DescriptiveUrlBag();
+            final DescriptiveUrl base = new DefaultWebUrlProvider().toUrl(host);
+            list.add(new DescriptiveUrl(String.format("%s%s", StringUtils.stripEnd(base.getUrl(), String.valueOf(Path.DELIMITER)), URIEncoder.encode(
+                    PathNormalizer.normalize(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))
+            )), base.getType(), base.getHelp()));
+            return list;
+        }
+        return DescriptiveUrlBag.empty();
     }
 }

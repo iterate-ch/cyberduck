@@ -15,12 +15,15 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
+
+import java.util.EnumSet;
 
 public class VaultRegistryUrlProvider implements UrlProvider {
 
@@ -35,12 +38,12 @@ public class VaultRegistryUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         try {
-            return registry.find(session, file, false).getFeature(session, UrlProvider.class, proxy).toUrl(file);
+            return registry.find(session, file, false).getFeature(session, UrlProvider.class, proxy).toUrl(file, types);
         }
         catch(VaultUnlockCancelException e) {
-            return proxy.toUrl(file);
+            return proxy.toUrl(file, types);
         }
     }
 

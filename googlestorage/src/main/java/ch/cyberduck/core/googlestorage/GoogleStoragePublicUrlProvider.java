@@ -24,6 +24,8 @@ import ch.cyberduck.core.features.Share;
 
 import org.jets3t.service.acl.Permission;
 
+import java.util.EnumSet;
+
 public class GoogleStoragePublicUrlProvider implements Share<Void, Void> {
 
     private final GoogleStorageSession session;
@@ -51,7 +53,7 @@ public class GoogleStoragePublicUrlProvider implements Share<Void, Void> {
             permission.addAll(everyone, read);
             acl.setPermission(file, permission);
         }
-        return new GoogleStorageUrlProvider(session).toUrl(file).find(DescriptiveUrl.Type.provider);
+        return new GoogleStorageUrlProvider(session).toUrl(file, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider);
     }
 
     @Override

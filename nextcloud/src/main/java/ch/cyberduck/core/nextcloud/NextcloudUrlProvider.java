@@ -25,6 +25,8 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
 
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Locale;
 
 public class NextcloudUrlProvider implements UrlProvider {
@@ -36,12 +38,14 @@ public class NextcloudUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        list.add(new DescriptiveUrl(String.format("%s%s",
-                new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(file.getAbsolute())),
-            DescriptiveUrl.Type.provider,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
-        return list;
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
+        if(types.contains(DescriptiveUrl.Type.provider)) {
+            return new DescriptiveUrlBag(Collections.singleton(new DescriptiveUrl(String.format("%s%s",
+                    new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(file.getAbsolute())),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))))
+            );
+        }
+        return DescriptiveUrlBag.empty();
     }
 }

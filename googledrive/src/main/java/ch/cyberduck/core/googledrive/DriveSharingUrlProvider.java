@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import com.google.api.services.drive.model.Permission;
 
@@ -58,7 +59,7 @@ public class DriveSharingUrlProvider implements Share {
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
         }
-        return new DriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
+        return new DriveUrlProvider().toUrl(file, EnumSet.of(DescriptiveUrl.Type.http)).find(DescriptiveUrl.Type.http);
     }
 
     @Override

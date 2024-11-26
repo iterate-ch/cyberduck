@@ -15,9 +15,11 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import java.util.EnumSet;
+
 public class DisabledUrlProvider implements UrlProvider {
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         return DescriptiveUrlBag.empty();
     }
 }

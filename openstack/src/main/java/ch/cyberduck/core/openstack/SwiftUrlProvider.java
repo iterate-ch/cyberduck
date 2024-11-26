@@ -49,6 +49,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -86,45 +87,53 @@ public class SwiftUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             Optional<Region> optional = accounts.keySet().stream().filter(r -> StringUtils.equals(r.getRegionId(),
                     file.attributes().getRegion())).findAny();
             if(!optional.isPresent()) {
-                list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
+                list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file, types));
             }
             else {
                 final Region region = optional.get();
-                list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
-                list.add(new DescriptiveUrl(
-                        region.getStorageUrl(containerService.getContainer(file).getName(),
-                                containerService.getKey(file)).toString(),
-                        DescriptiveUrl.Type.provider,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                                session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
-                ));
-                // In one hour
-                list.add(this.toSignedUrl(region, file, (int) TimeUnit.HOURS.toSeconds(1)));
-                // Default signed URL expiring in 24 hours.
-                list.add(this.toSignedUrl(region, file, (int) TimeUnit.SECONDS.toSeconds(
-                        new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
-                // 1 Week
-                list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(7)));
-                // 1 Month
-                list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(30)));
-                // 1 Year
-                list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(365)));
+                if(types.contains(DescriptiveUrl.Type.http)) {
+                    list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file, types));
+                }
+                if(types.contains(DescriptiveUrl.Type.provider)) {
+                    list.add(new DescriptiveUrl(
+                            region.getStorageUrl(containerService.getContainer(file).getName(),
+                                    containerService.getKey(file)).toString(),
+                            DescriptiveUrl.Type.provider,
+                            MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                                    session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
+                    ));
+                }
+                if(types.contains(DescriptiveUrl.Type.signed)) {
+                    // In one hour
+                    list.add(this.toSignedUrl(region, file, (int) TimeUnit.HOURS.toSeconds(1)));
+                    // Default signed URL expiring in 24 hours.
+                    list.add(this.toSignedUrl(region, file, (int) TimeUnit.SECONDS.toSeconds(
+                            new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
+                    // 1 Week
+                    list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(7)));
+                    // 1 Month
+                    list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(30)));
+                    // 1 Year
+                    list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(365)));
+                }
             }
         }
-        // Filter by matching container name
-        final Optional<Set<Distribution>> filtered = distributions.entrySet().stream().filter(entry ->
-                        new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
-                .map(Map.Entry::getValue).findFirst();
-        if(filtered.isPresent()) {
-            // Add CloudFront distributions
-            for(Distribution distribution : filtered.get()) {
-                list.addAll(new DistributionUrlProvider(distribution).toUrl(file));
+        if(types.contains(DescriptiveUrl.Type.cdn)) {
+            // Filter by matching container name
+            final Optional<Set<Distribution>> filtered = distributions.entrySet().stream().filter(entry ->
+                            new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
+                    .map(Map.Entry::getValue).findFirst();
+            if(filtered.isPresent()) {
+                // Add CloudFront distributions
+                for(Distribution distribution : filtered.get()) {
+                    list.addAll(new DistributionUrlProvider(distribution).toUrl(file, types));
+                }
             }
         }
         return list;

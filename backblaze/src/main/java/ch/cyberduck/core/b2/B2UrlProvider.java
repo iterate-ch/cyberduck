@@ -25,6 +25,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Locale;
 
 public class B2UrlProvider implements UrlProvider {
@@ -39,7 +40,7 @@ public class B2UrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         if(file.isVolume()) {
             return DescriptiveUrlBag.empty();
         }

@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class DistributionUrlProvider implements UrlProvider {
@@ -46,37 +47,43 @@ public class DistributionUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        list.add(new DescriptiveUrl(this.toUrl(file, distribution.getOrigin()), DescriptiveUrl.Type.origin,
-                MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                        distribution.getName(),
-                        LocaleFactory.localizedString("Origin", "Info"))));
-        if(distribution.getUrl() != null) {
-            list.add(new DescriptiveUrl(this.toUrl(file, distribution.getUrl()), DescriptiveUrl.Type.cdn,
+        if(types.contains(DescriptiveUrl.Type.origin)) {
+            list.add(new DescriptiveUrl(this.toUrl(file, distribution.getOrigin()), DescriptiveUrl.Type.origin,
                     MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
                             distribution.getName(),
-                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"))));
+                            LocaleFactory.localizedString("Origin", "Info"))));
         }
-        if(distribution.getSslUrl() != null) {
-            list.add(new DescriptiveUrl(this.toUrl(file, distribution.getSslUrl()), DescriptiveUrl.Type.cdn,
-                    String.format("%s (SSL)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                            distribution.getName(),
-                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+        if(types.contains(DescriptiveUrl.Type.cdn)) {
+            if(distribution.getUrl() != null) {
+                list.add(new DescriptiveUrl(this.toUrl(file, distribution.getUrl()), DescriptiveUrl.Type.cdn,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                                distribution.getName(),
+                                LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"))));
+            }
+            if(distribution.getSslUrl() != null) {
+                list.add(new DescriptiveUrl(this.toUrl(file, distribution.getSslUrl()), DescriptiveUrl.Type.cdn,
+                        String.format("%s (SSL)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                                distribution.getName(),
+                                LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+            }
+            if(distribution.getStreamingUrl() != null) {
+                list.add(new DescriptiveUrl(this.toUrl(file, distribution.getStreamingUrl()), DescriptiveUrl.Type.cdn,
+                        String.format("%s (Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                                distribution.getName(),
+                                LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+            }
+            if(distribution.getiOSstreamingUrl() != null) {
+                list.add(new DescriptiveUrl(this.toUrl(file, distribution.getiOSstreamingUrl()), DescriptiveUrl.Type.cdn,
+                        String.format("%s (iOS Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                                distribution.getName(),
+                                LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+            }
         }
-        if(distribution.getStreamingUrl() != null) {
-            list.add(new DescriptiveUrl(this.toUrl(file, distribution.getStreamingUrl()), DescriptiveUrl.Type.cdn,
-                    String.format("%s (Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                            distribution.getName(),
-                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+        if(types.contains(DescriptiveUrl.Type.cname)) {
+            list.addAll(this.toCnameUrl(file));
         }
-        if(distribution.getiOSstreamingUrl() != null) {
-            list.add(new DescriptiveUrl(this.toUrl(file, distribution.getiOSstreamingUrl()), DescriptiveUrl.Type.cdn,
-                    String.format("%s (iOS Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
-                            distribution.getName(),
-                            LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
-        }
-        list.addAll(this.toCnameUrl(file));
         return list;
     }
 

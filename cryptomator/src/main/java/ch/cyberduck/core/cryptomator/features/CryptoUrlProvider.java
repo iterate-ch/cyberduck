@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 public class CryptoUrlProvider implements UrlProvider {
     private static final Logger log = LogManager.getLogger(DecryptingListProgressListener.class);
@@ -46,16 +47,18 @@ public class CryptoUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         try {
-            final DescriptiveUrlBag set = delegate.toUrl(file);
-            final Path encrypt = vault.encrypt(session, file);
-            set.add(new DescriptiveUrl(String.format("%s%s",
-                    new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(encrypt.getAbsolute())),
-                    DescriptiveUrl.Type.encrypted,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                            LocaleFactory.localizedString("Encrypted", "Cryptomator")))
-            );
+            final DescriptiveUrlBag set = delegate.toUrl(file, types);
+            if(types.contains(DescriptiveUrl.Type.encrypted)) {
+                final Path encrypt = vault.encrypt(session, file);
+                set.add(new DescriptiveUrl(String.format("%s%s",
+                        new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(encrypt.getAbsolute())),
+                        DescriptiveUrl.Type.encrypted,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                                LocaleFactory.localizedString("Encrypted", "Cryptomator")))
+                );
+            }
             return set;
         }
         catch(BackgroundException e) {

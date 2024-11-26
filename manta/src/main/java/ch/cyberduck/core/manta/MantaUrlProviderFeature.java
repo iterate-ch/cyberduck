@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.util.EnumSet;
 
 public class MantaUrlProviderFeature implements UrlProvider {
     private static final Logger log = LogManager.getLogger(MantaUrlProviderFeature.class);
@@ -39,7 +40,7 @@ public class MantaUrlProviderFeature implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().getLink() != DescriptiveUrl.EMPTY) {
             list.add(file.attributes().getLink());

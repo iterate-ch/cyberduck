@@ -29,6 +29,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Locale;
 
 public class DefaultUrlProvider implements UrlProvider {
@@ -40,16 +41,22 @@ public class DefaultUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.attributes().getLink() != DescriptiveUrl.EMPTY) {
-            list.add(file.attributes().getLink());
+        if(types.contains(DescriptiveUrl.Type.http)) {
+            if(file.attributes().getLink() != DescriptiveUrl.EMPTY) {
+                list.add(file.attributes().getLink());
+            }
         }
-        list.add(new DescriptiveUrl(String.format("%s%s",
-                new HostUrlProvider().withUsername(false).get(host), URIEncoder.encode(file.getAbsolute())),
-            DescriptiveUrl.Type.provider,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
-        list.addAll(new HostWebUrlProvider(host).toUrl(file));
+        if(types.contains(DescriptiveUrl.Type.provider)) {
+            list.add(new DescriptiveUrl(String.format("%s%s",
+                    new HostUrlProvider().withUsername(false).get(host), URIEncoder.encode(file.getAbsolute())),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
+        }
+        if(types.contains(DescriptiveUrl.Type.http)) {
+            list.addAll(new HostWebUrlProvider(host).toUrl(file, EnumSet.of(DescriptiveUrl.Type.http)));
+        }
         return list;
     }
 }
