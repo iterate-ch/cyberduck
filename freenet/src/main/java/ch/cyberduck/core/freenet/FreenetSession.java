@@ -91,6 +91,6 @@ public class FreenetSession extends DAVSession {
         if(type == Metadata.class) {
             return null;
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }
