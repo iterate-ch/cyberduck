@@ -131,6 +131,10 @@ Run with `-Pinstaller` to build installer packages with build artifacts
 * `cli/windows/target/release/*.(exe|msi)`
 * `cli/linux/target/release/*.(deb|rpm)`
 
+### macOS
+
+Active the sandboxing profile with `-Psandbox` to apply sandbox entitlements `com.apple.security.app-sandbox`.
+
 ### Windows
 
 You will run into warnings from `MSBuild`/`WiX` that are unrelated to how Cyberduck is built. You may safely ignore them.

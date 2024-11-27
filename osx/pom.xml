@@ -247,6 +247,12 @@
             </properties>
         </profile>
         <profile>
+            <id>sandbox</id>
+            <properties>
+                <codesign.arg>--entitlements ../setup/app/sandbox.entitlements</codesign.arg>
+            </properties>
+        </profile>
+        <profile>
             <id>installer</id>
             <activation>
                 <property>
