@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -109,7 +110,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
     }
 
     @Override
-    public Node upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public Node upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -148,11 +149,11 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                         final FileBuffer buffer = new FileBuffer(temporary);
                         new StreamCopier(status, StreamProgress.noop).withAutoclose(false).withLimit(length)
                                 .transfer(in, new BufferOutputStream(buffer));
-                        parts.add(this.submit(pool, file, temporary, buffer, throttle, listener, status,
+                        parts.add(this.submit(pool, file, temporary, buffer, throttle, streamListener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback));
                     }
                     else {
-                        parts.add(this.submit(pool, file, local, Buffer.noop, throttle, listener, status,
+                        parts.add(this.submit(pool, file, local, Buffer.noop, throttle, streamListener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
                     }
                     remaining -= length;

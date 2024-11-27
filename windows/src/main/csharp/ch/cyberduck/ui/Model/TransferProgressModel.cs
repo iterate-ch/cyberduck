@@ -49,7 +49,7 @@ namespace ch.cyberduck.ui.Model
             else
             {
                 Completed = progress.isComplete();
-                Progress = progress.getSize().longValue() is long size and > 0
+                Progress = !Completed && progress.getSize().longValue() is long size and > 0
                     ? progress.getTransferred().longValue() * 100.0 / size
                     : null;
                 Text = progress.getProgress();

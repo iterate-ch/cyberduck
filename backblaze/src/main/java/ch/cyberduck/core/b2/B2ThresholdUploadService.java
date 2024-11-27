@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -59,13 +60,13 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     }
 
     @Override
-    public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                  final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status)) {
-            return new B2LargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, callback);
+            return new B2LargeUploadService(session, fileid, writer).upload(file, local, throttle, progress, streamListener, status, callback);
         }
         else {
-            return new B2SingleUploadService(session, writer).upload(file, local, throttle, listener, status, callback);
+            return new B2SingleUploadService(session, writer).upload(file, local, throttle, progress, streamListener, status, callback);
         }
     }
 

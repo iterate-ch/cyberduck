@@ -20,6 +20,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -53,7 +54,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             IOUtils.write(content, local.getOutputStream(false));
             final TransferStatus status = new TransferStatus().withLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
-            service.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+            service.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
             assertTrue(new EueFindFeature(session, fileid).find(file));
@@ -67,7 +68,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             IOUtils.write(content, local.getOutputStream(false));
             final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
             final BytecountStreamListener count = new BytecountStreamListener();
-            service.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+            service.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
             assertTrue(new EueFindFeature(session, fileid).find(file));

@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault.registry;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
@@ -41,8 +42,8 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Output upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return (Output) registry.find(session, file).getFeature(session, Upload.class, proxy).upload(file, local, throttle, listener, status, callback);
+    public Output upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return (Output) registry.find(session, file).getFeature(session, Upload.class, proxy).upload(file, local, throttle, progress, streamListener, status, callback);
     }
 
     @Override

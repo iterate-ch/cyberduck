@@ -46,6 +46,7 @@ import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.AutoTransferConnectionLimiter;
+import ch.cyberduck.core.transfer.Speedometer;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -258,8 +259,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 if(local.exists()) {
                     local.delete();
                 }
+                final Speedometer meter = new Speedometer();
+                long concatLength = 0L;
                 for(Iterator<TransferStatus> iterator = segments.iterator(); iterator.hasNext(); ) {
                     final TransferStatus segmentStatus = iterator.next();
+                    concatLength += segmentStatus.getLength();
+                    listener.message(String.format("%s (%s)", MessageFormat.format(LocaleFactory.localizedString("Finalize {0}", "Status"),
+                            file.getName()), meter.getProgress(false, status.getLength(), concatLength)));
                     // Segment
                     final Local segmentFile = segmentStatus.getRename().local;
                     log.info("Append segment {} to {}", segmentFile, local);
