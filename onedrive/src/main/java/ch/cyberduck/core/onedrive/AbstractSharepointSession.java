@@ -30,8 +30,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.Drive;
@@ -45,7 +43,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public abstract class AbstractSharepointSession extends GraphSession {
-    private static final Logger log = LogManager.getLogger(SharepointSession.class);
 
     private final Path home;
 
@@ -57,10 +54,6 @@ public abstract class AbstractSharepointSession extends GraphSession {
         else {
             this.home = Home.ROOT;
         }
-    }
-
-    public Path getHome() {
-        return home;
     }
 
     public boolean isHome(final Path file) {

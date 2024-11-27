@@ -25,8 +25,6 @@ import ch.cyberduck.core.brick.io.swagger.client.model.MovePathBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +38,6 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
     private static final Logger log = LogManager.getLogger(BrickMoveFeature.class);
 
     private final BrickSession session;
-    private final Preferences preferences = PreferencesFactory.get();
 
     public BrickMoveFeature(final BrickSession session) {
         this.session = session;

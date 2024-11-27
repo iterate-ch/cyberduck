@@ -28,8 +28,6 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
@@ -42,7 +40,6 @@ import java.util.Optional;
 
 
 public class GraphAttributesFinderFeature implements AttributesFinder, AttributesAdapter<DriveItem.Metadata> {
-    private static final Logger log = LogManager.getLogger(GraphAttributesFinderFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;

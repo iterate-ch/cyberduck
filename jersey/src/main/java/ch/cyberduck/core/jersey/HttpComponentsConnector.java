@@ -28,8 +28,6 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.client.spi.AsyncConnectorCallback;
@@ -55,7 +53,6 @@ import java.util.concurrent.Future;
 import com.google.common.util.concurrent.MoreExecutors;
 
 public class HttpComponentsConnector implements Connector {
-    private static final Logger log = LogManager.getLogger(HttpComponentsConnector.class);
 
     private final CloseableHttpClient client;
     private final HttpClientContext context;

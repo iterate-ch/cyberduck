@@ -26,15 +26,12 @@ import ch.cyberduck.core.shared.AbstractHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.EnumSet;
 
 public class NextcloudHomeFeature extends AbstractHomeFeature {
-    private static final Logger log = LogManager.getLogger(NextcloudHomeFeature.class);
 
     private final Host bookmark;
 

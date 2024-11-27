@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSMenu;
@@ -112,11 +113,13 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
         return false;
     }
 
+    @Delegate
     public ID menuKeyEquivalentTarget_forEvent(NSMenu menu, NSEvent event) {
         log.trace("menuKeyEquivalentTarget_forEvent:{}", menu);
         return this.getTarget();
     }
 
+    @Delegate
     public Selector menuKeyEquivalentAction_forEvent(NSMenu menu, NSEvent event) {
         log.trace("menuKeyEquivalentAction_forEvent:{}", menu);
         return this.getDefaultAction();

@@ -26,15 +26,12 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
 public class EueDeleteFeature extends EueTrashFeature implements Delete {
-    private static final Logger log = LogManager.getLogger(EueDeleteFeature.class);
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;
@@ -48,7 +45,6 @@ public class EueDeleteFeature extends EueTrashFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
-            final EueApiClient client = new EueApiClient(session);
             // Move to trash first as precondition of delete
             this.delete(super.trash(files, prompt, callback));
             for(Path f : files.keySet()) {

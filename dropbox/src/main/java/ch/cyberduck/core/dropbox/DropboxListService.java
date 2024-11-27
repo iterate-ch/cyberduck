@@ -47,7 +47,7 @@ public class DropboxListService implements ListService {
     public DropboxListService(final DropboxSession session) {
         this.session = session;
         this.attributes = new DropboxAttributesFinderFeature(session);
-        this.containerService = new DropboxPathContainerService(session);
+        this.containerService = new DropboxPathContainerService();
     }
 
     @Override

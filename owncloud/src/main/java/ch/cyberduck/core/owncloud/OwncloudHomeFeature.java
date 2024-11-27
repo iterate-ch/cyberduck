@@ -18,11 +18,7 @@ package ch.cyberduck.core.owncloud;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class OwncloudHomeFeature extends NextcloudHomeFeature {
-    private static final Logger log = LogManager.getLogger(OwncloudHomeFeature.class);
 
     public OwncloudHomeFeature(final Host bookmark) {
         super(bookmark);

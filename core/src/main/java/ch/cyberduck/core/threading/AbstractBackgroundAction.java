@@ -25,7 +25,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -51,7 +50,6 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     @Override
     public void cancel() {
         log.debug("Cancel background task {}", this);
-        final Iterator<BackgroundActionListener> iter = listeners.iterator();
         for(BackgroundActionListener listener : listeners) {
             listener.cancel(this);
         }

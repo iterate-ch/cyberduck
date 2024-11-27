@@ -29,13 +29,10 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class SDSListService implements ListService {
-    private static final Logger log = LogManager.getLogger(SDSListService.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -58,8 +55,8 @@ public class SDSListService implements ListService {
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).requestNodes(null, 0,
-                    Long.parseLong(nodeid.getVersionId(directory)),
-                    false, null, "name:asc", offset, chunksize, StringUtils.EMPTY);
+                        Long.parseLong(nodeid.getVersionId(directory)),
+                        false, null, "name:asc", offset, chunksize, StringUtils.EMPTY);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
                     final EnumSet<Path.Type> type = feature.toType(node);

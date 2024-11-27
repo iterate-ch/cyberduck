@@ -634,10 +634,9 @@ public class CryptoVault implements Vault {
             }
             if(type == Directory.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class),
-                                session._getFeature(Find.class), this) :
-                        new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class),
-                                session._getFeature(Find.class), this));
+                        new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class), this) :
+                        new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class), this)
+                );
             }
             if(type == Upload.class) {
                 return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);

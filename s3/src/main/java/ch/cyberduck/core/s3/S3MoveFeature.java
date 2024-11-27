@@ -31,8 +31,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
@@ -42,7 +40,6 @@ import java.util.Collections;
 import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 
 public class S3MoveFeature implements Move {
-    private static final Logger log = LogManager.getLogger(S3MoveFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

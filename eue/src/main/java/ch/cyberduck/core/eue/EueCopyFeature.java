@@ -66,7 +66,6 @@ public class EueCopyFeature implements Copy {
             }
             final String resourceId = fileid.getFileId(file);
             final String parentResourceId = fileid.getFileId(target.getParent());
-            String targetResourceId = null;
             final ResourceCopyResponseEntries resourceCopyResponseEntries;
             switch(parentResourceId) {
                 case EueResourceIdProvider.ROOT:

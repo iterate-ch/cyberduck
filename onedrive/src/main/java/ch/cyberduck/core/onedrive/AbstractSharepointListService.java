@@ -38,10 +38,6 @@ public abstract class AbstractSharepointListService implements ListService {
         this.fileid = fileid;
     }
 
-    public AbstractSharepointSession getSession() {
-        return session;
-    }
-
     @Override
     public final AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if((!session.isSingleSite() && directory.isRoot())

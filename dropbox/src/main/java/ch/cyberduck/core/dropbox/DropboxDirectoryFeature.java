@@ -36,7 +36,7 @@ public class DropboxDirectoryFeature implements Directory<String> {
 
     public DropboxDirectoryFeature(final DropboxSession session) {
         this.session = session;
-        this.containerService = new DropboxPathContainerService(session);
+        this.containerService = new DropboxPathContainerService();
     }
 
     @Override

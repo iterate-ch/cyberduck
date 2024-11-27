@@ -60,7 +60,6 @@ public class AzureFindFeature implements Find {
         }
         try {
             try {
-                final boolean found;
                 if(containerService.isContainer(file)) {
                     final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
                     return container.exists(null, null, context);

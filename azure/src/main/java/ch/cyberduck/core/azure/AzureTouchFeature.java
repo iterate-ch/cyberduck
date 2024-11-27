@@ -33,13 +33,8 @@ import com.microsoft.azure.storage.OperationContext;
 
 public class AzureTouchFeature extends DefaultTouchFeature<Void> {
 
-    private final AzureSession session;
-    private final OperationContext context;
-
     public AzureTouchFeature(final AzureSession session, final OperationContext context) {
         super(new AzureWriteFeature(session, context));
-        this.session = session;
-        this.context = context;
     }
 
     @Override

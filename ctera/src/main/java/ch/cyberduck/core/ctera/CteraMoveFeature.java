@@ -27,16 +27,8 @@ import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 
 public class CteraMoveFeature extends DAVMoveFeature {
 
-    private final CteraAttributesFinderFeature attributes;
-
     public CteraMoveFeature(final CteraSession session) {
         super(session);
-        this.attributes = new CteraAttributesFinderFeature(session);
-    }
-
-    public CteraMoveFeature(final CteraSession session, final CteraAttributesFinderFeature attributes) {
-        super(session);
-        this.attributes = attributes;
     }
 
     @Override

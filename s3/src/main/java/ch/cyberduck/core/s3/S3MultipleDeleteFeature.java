@@ -128,8 +128,8 @@ public class S3MultipleDeleteFeature implements Delete {
                 final String multiFactorAuthCode = mfa.getPassword();
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(bucket.getName(),
                         keys.toArray(new ObjectKeyAndVersion[keys.size()]),
-                        mfa.getUsername(),
-                        mfa.getPassword(),
+                        multiFactorSerialNumber,
+                        multiFactorAuthCode,
                         // Only include errors in response
                         true);
                 if(result.hasErrors()) {

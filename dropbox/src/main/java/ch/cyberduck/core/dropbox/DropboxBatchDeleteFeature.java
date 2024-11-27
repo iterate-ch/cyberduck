@@ -61,7 +61,7 @@ public class DropboxBatchDeleteFeature implements Delete {
 
     public DropboxBatchDeleteFeature(final DropboxSession session) {
         this.session = session;
-        this.containerService = new DropboxPathContainerService(session);
+        this.containerService = new DropboxPathContainerService();
     }
 
     @Override

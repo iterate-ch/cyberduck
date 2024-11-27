@@ -43,7 +43,7 @@ public class DropboxTemporaryUrlProvider implements Share<Void, Void> {
 
     public DropboxTemporaryUrlProvider(final DropboxSession session) {
         this.session = session;
-        this.containerService = new DropboxPathContainerService(session);
+        this.containerService = new DropboxPathContainerService();
     }
 
     @Override

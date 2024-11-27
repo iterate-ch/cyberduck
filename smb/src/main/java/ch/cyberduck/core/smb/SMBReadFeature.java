@@ -22,8 +22,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.ProxyInputStream;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +36,6 @@ import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
 
 public class SMBReadFeature implements Read {
-    private static final Logger log = LogManager.getLogger(SMBWriteFeature.class);
 
     private final SMBSession session;
 

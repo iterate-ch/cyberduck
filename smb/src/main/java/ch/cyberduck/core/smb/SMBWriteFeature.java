@@ -24,8 +24,6 @@ import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,7 +38,6 @@ import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
 
 public class SMBWriteFeature implements Write<Void> {
-    private static final Logger log = LogManager.getLogger(SMBWriteFeature.class);
 
     private final SMBSession session;
 

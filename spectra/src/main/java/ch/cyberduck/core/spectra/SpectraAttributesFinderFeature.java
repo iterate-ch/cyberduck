@@ -28,8 +28,6 @@ import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,7 +39,6 @@ import com.spectralogic.ds3client.commands.HeadObjectResponse;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraAttributesFinderFeature implements AttributesFinder, AttributesAdapter<HeadObjectResponse> {
-    private static final Logger log = LogManager.getLogger(SpectraAttributesFinderFeature.class);
 
     private final SpectraSession session;
     private final PathContainerService containerService;

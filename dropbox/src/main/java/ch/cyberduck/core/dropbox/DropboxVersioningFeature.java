@@ -47,7 +47,7 @@ public class DropboxVersioningFeature implements Versioning {
 
     public DropboxVersioningFeature(final DropboxSession session) {
         this.session = session;
-        this.containerService = new DropboxPathContainerService(session);
+        this.containerService = new DropboxPathContainerService();
     }
 
 
