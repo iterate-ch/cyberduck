@@ -20,6 +20,7 @@ import org.junit.BeforeClass;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
@@ -38,6 +39,7 @@ public class VaultTest {
         try {
             config = new VaultConfig()
                     .engineVersion(2)
+                    .sslConfig(new SslConfig().verify(false))
                     .address("https://vault.iterate.ch")
                     .token(System.getenv("VAULT_TOKEN"))
                     .build();
