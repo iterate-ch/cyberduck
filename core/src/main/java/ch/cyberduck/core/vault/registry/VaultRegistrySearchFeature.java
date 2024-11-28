@@ -16,7 +16,6 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -33,8 +32,6 @@ public class VaultRegistrySearchFeature implements Search {
     private final Search proxy;
     private final VaultRegistry registry;
 
-    private Cache<Path> cache;
-
     public VaultRegistrySearchFeature(final Session<?> session, final Search proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
@@ -43,9 +40,7 @@ public class VaultRegistrySearchFeature implements Search {
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
-        return registry.find(session, workdir).getFeature(session, Search.class, proxy)
-
-            .search(workdir, regex, listener);
+        return registry.find(session, workdir).getFeature(session, Search.class, proxy).search(workdir, regex, listener);
     }
 
     @Override
