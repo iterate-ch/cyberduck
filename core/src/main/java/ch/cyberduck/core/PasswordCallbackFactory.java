@@ -33,8 +33,9 @@ public class PasswordCallbackFactory extends Factory<PasswordCallback> {
 
     public PasswordCallback create(final Controller controller) {
         try {
-            final Constructor<? extends PasswordCallback> constructor
-                    = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
+            if(null == constructor) {
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
+            }
             if(null == constructor) {
                 log.warn("No matching constructor for parameter {}", controller.getClass());
                 // Call default constructor for disabled implementations
