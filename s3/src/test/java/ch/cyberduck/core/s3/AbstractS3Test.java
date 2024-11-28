@@ -104,7 +104,7 @@ public abstract class AbstractS3Test extends VaultTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
-        final Host host = new Host(profile, "test.eu-west-3-cyberduck.s3.amazonaws.com", new Credentials(
+        final Host host = new Host(profile, "test-eu-west-3-cyberduck.s3.amazonaws.com", new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         virtualhost = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
