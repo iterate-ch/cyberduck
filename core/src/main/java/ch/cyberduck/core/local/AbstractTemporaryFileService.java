@@ -51,6 +51,7 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
      * @param file File reference
      */
     protected Local delete(final Local file) {
+        log.debug("Add temporary file {}", file);
         files.add(file);
         return file;
     }
@@ -68,6 +69,7 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
         Collections.reverse(list);
         for(Local f : list) {
             try {
+                log.debug("Delete file {}", f);
                 f.delete();
             }
             catch(AccessDeniedException | NotfoundException e) {
