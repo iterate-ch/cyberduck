@@ -77,15 +77,7 @@ public abstract class AbstractS3Test extends VaultTest {
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
-        )) {
-            @Override
-            public String getProperty(final String key) {
-                if("s3.listing.metadata.enable".equals(key)) {
-                    return String.valueOf(false);
-                }
-                return super.getProperty(key);
-            }
-        };
+        ));
         session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -104,7 +96,7 @@ public abstract class AbstractS3Test extends VaultTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
-        final Host host = new Host(profile, "test-eu-west-3-cyberduck.s3.amazonaws.com", new Credentials(
+        final Host host = new Host(profile, "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         virtualhost = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
