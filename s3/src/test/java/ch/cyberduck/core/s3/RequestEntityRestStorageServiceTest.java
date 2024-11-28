@@ -22,7 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -76,7 +75,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
         final String key = new AlphanumericRandomStringService().random();
         {
             final HttpUriRequest request = service.setupConnection("GET", "", key, Collections.emptyMap());
-            assertEquals(String.format("https://test-eu-west-3-cyberduck.s3.amazonaws.com:443/%s", key), request.getURI().toString());
+            assertEquals(String.format("https://test-eu-central-1-cyberduck.s3.amazonaws.com:443/%s", key), request.getURI().toString());
         }
     }
 }

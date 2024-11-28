@@ -34,7 +34,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -141,10 +140,10 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     @Test
     public void testAccessBucketNameInHostname() throws Exception {
         final RegionEndpointCache cache = virtualhost.getClient().getRegionEndpointCache();
-        assertEquals(new S3LocationFeature.S3Region("eu-west-3"), new S3LocationFeature(virtualhost, cache).getLocation(
+        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(virtualhost, cache).getLocation(
                 new Path("/", EnumSet.of(Path.Type.directory))
         ));
-        assertEquals("eu-west-3", cache.getRegionForBucketName(""));
+        assertEquals("eu-central-1", cache.getRegionForBucketName(""));
     }
 
     @Test
