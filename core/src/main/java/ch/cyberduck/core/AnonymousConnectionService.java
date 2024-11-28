@@ -19,11 +19,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class AnonymousConnectionService implements ConnectionService {
-    private static final Logger log = LogManager.getLogger(AnonymousConnectionService.class);
 
     @Override
     public boolean check(final Session<?> session, final CancelCallback callback) throws BackgroundException {
@@ -38,7 +34,7 @@ public class AnonymousConnectionService implements ConnectionService {
     @Override
     public void connect(final Session<?> session, final CancelCallback cancel) throws BackgroundException {
         session.open(ProxyFactory.get(),
-            new DisabledHostKeyCallback(), new DisabledLoginCallback(), cancel);
+                new DisabledHostKeyCallback(), new DisabledLoginCallback(), cancel);
     }
 
     @Override

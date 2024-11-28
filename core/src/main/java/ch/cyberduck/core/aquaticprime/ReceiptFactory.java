@@ -24,13 +24,9 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.regex.Pattern;
 
 public class ReceiptFactory extends LicenseFactory {
-    private static final Logger log = LogManager.getLogger(ReceiptFactory.class);
 
     public ReceiptFactory() {
         super(new Local[]{LocalFactory.get(PreferencesFactory.get().getProperty("application.receipt.path"))},

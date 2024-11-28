@@ -20,11 +20,7 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class DonationKeyFactory extends LicenseFactory {
-    private static final Logger log = LogManager.getLogger(DonationKeyFactory.class);
 
     @Override
     protected License open(final Local file) {

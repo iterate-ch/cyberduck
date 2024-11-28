@@ -21,16 +21,12 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Directory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 public class DefaultLocalDirectoryFeature implements Directory {
-    private static final Logger log = LogManager.getLogger(DefaultLocalDirectoryFeature.class);
 
     @Override
     public void mkdir(final Local file) throws AccessDeniedException {
@@ -39,7 +35,7 @@ public class DefaultLocalDirectoryFeature implements Directory {
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                "Cannot create folder {0}", "Error"), file.getName()), e);
+                    "Cannot create folder {0}", "Error"), file.getName()), e);
         }
     }
 }
