@@ -350,9 +350,9 @@ public class DeepboxListService implements ListService {
                 final Overview overview = rest.getOverview(companyId, chunksize, null);
                 for(final BoxEntry box : overview.getSharedWithMe().getBoxes()) {
                     list.add(new Path(directory,
-                            String.format("%s (%s)", DeepboxPathNormalizer.name(box.getDeepBoxName()), DeepboxPathNormalizer.name(box.getBoxName())),
+                            String.format("%s (%s)", DeepboxPathNormalizer.name(box.getCompany().getDisplayName()), DeepboxPathNormalizer.name(box.getBoxName())),
                             EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            new PathAttributes().withFileId(box.getBoxNodeId()))
+                            new PathAttributes().withFileId(box.getBoxNodeId()).withCustom("deepboxName", box.getDeepBoxName()))
                     );
                 }
                 listener.chunk(directory, list);

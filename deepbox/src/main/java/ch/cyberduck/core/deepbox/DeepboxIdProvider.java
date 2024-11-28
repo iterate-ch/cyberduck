@@ -113,18 +113,32 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         while(!segments.isEmpty()) {
             Path segment = segments.pop();
             if(containerService.isSharedWithMe(segment)) {
-                final String combined = segments.pop().getName();
-                final Matcher matcher = SHARED.matcher(combined);
+                final Path combined = segments.pop();
+                final String name = combined.getName();
+                final Matcher matcher = SHARED.matcher(name);
                 if(matcher.matches()) {
-                    final String deepboxName = matcher.group(1);
+                    final String companyName = matcher.group(1);
                     final String boxName = matcher.group(2);
                     final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(segment.getType());
                     type.add(AbstractPath.Type.shared);
-                    final Path deepbox = new Path(result, deepboxName, type, new PathAttributes(segment.attributes()).withFileId(null));
+                    String deepboxName;
+                    if(combined.attributes().getCustom().containsKey("deepboxName")) {
+                        deepboxName = combined.attributes().getCustom().get("deepboxName");
+                    }
+                    else {
+                        try {
+                            deepboxName = this.lookupDeepboxName(this.getCompanyNodeId(file), companyName, boxName);
+                        }
+                        catch(BackgroundException e) {
+                            log.warn("Cannot find Deepbox for company {} and box {}", companyName, boxName);
+                            return file;
+                        }
+                    }
+                    final Path deepbox = new Path(result, deepboxName, type, new PathAttributes(combined.attributes()).withFileId(null));
                     result = new Path(deepbox, boxName, type, segment.attributes());
                 }
                 else {
-                    log.warn("Folder {} does not match pattern {}", combined, SHARED.pattern());
+                    log.warn("Folder {} does not match pattern {}", name, SHARED.pattern());
                     return file;
                 }
             }
@@ -137,6 +151,23 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             }
         }
         return result;
+    }
+
+    private String lookupDeepboxName(final String companyId, final String companyName, final String boxName) throws BackgroundException {
+        final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
+        try {
+            final Overview overview = rest.getOverview(companyId, chunksize, null);
+            for(final BoxEntry box : overview.getSharedWithMe().getBoxes()) {
+                if(StringUtils.equals(companyName, DeepboxPathNormalizer.name(box.getCompany().getDisplayName())) &&
+                        StringUtils.equals(boxName, DeepboxPathNormalizer.name(box.getBoxName()))) {
+                    return box.getDeepBoxName();
+                }
+            }
+        }
+        catch(ApiException e) {
+            throw new DeepboxExceptionMappingService(this).map(String.format("Failure finding Deepbox for company %s and box %s", companyName, boxName), e);
+        }
+        throw new NotfoundException(String.format("Cannot find Deepbox for company %s and box %s", companyName, boxName));
     }
 
     private Deque<Path> decompose(final Path path) {
