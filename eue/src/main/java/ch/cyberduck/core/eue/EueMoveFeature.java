@@ -145,9 +145,6 @@ public class EueMoveFeature implements Move {
         if(StringUtils.equals(EueResourceIdProvider.TRASH, source.attributes().getFileId())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), source.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
-        }
         if(optional.isPresent()) {
             final Path target = optional.get();
             if(!EueTouchFeature.validate(target.getName())) {
