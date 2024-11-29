@@ -58,7 +58,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     private final int chunksize;
     private final DeepboxPathContainerService containerService;
 
-    private Pattern SHARED = Pattern.compile("(.*)\\s\\((.*)\\)");
+    private static final Pattern SHARED = Pattern.compile("(.*)\\s\\((.*)\\)");
 
     public DeepboxIdProvider(final DeepboxSession session) {
         super(session.getCaseSensitivity());
