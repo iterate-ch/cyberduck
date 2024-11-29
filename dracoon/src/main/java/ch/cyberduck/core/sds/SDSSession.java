@@ -336,14 +336,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
                     final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                     log.debug("Attempt to unlock deprecated private key {}", keypair.getUserPrivateKey());
-                    deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                    deprecatedCredentials = new TripleCryptKeyPair(host).unlock(prompt, keypair);
                     keyPairDeprecated.set(deprecated);
                 }
                 if(!migrated) {
                     final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
                     final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                     log.debug("Attempt to unlock and migrate deprecated private key {}", keypair.getUserPrivateKey());
-                    deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                    deprecatedCredentials = new TripleCryptKeyPair(host).unlock(prompt, keypair);
                     final UserKeyPair newPair = Crypto.generateUserKeyPair(requiredKeyPairVersion, deprecatedCredentials.getPassword().toCharArray());
                     final CreateKeyPairRequest request = new CreateKeyPairRequest();
                     request.setPreviousPrivateKey(deprecated.getPrivateKeyContainer());
@@ -361,15 +361,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             if(deprecatedCredentials != null) {
                 log.debug("Attempt to unlock private key with passphrase from deprecated private key {}", keypair.getUserPrivateKey());
                 if(Crypto.checkUserKeyPair(keypair, deprecatedCredentials.getPassword().toCharArray())) {
-                    new TripleCryptKeyPair().unlock(prompt, host, keypair, deprecatedCredentials.getPassword());
+                    new TripleCryptKeyPair(host).unlock(prompt, keypair, deprecatedCredentials.getPassword());
                 }
                 else {
-                    new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                    new TripleCryptKeyPair(host).unlock(prompt, keypair);
                 }
             }
             else {
                 log.debug("Attempt to unlock private key {}", keypair.getUserPrivateKey());
-                new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                new TripleCryptKeyPair(host).unlock(prompt, keypair);
             }
         }
         catch(CryptoException e) {
