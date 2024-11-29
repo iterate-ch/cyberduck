@@ -15,20 +15,8 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ConnectionTimeoutFactory;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.ExpiringObjectHolder;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.Version;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -68,6 +56,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -100,6 +90,8 @@ import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
 
@@ -124,6 +116,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPairDeprecated
             = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
 
+    private final ExpiringObjectHolder<Credentials> keyPairPassphrase
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
+
     private final ExpiringObjectHolder<SystemDefaults> systemDefaults
             = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
@@ -135,6 +130,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
             = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+
+    private final LRUCache<KeyPairCacheReference, Credentials> keyPairPassphrases
+            = LRUCache.build(new RemovalListener<KeyPairCacheReference, Credentials>() {
+        @Override
+        public void onRemoval(final RemovalNotification<KeyPairCacheReference, Credentials> notification) {
+            //
+        }
+    }, 2, preferences.getLong("sds.encryption.keys.ttl"), false);
 
     private UserKeyPair.Version requiredKeyPairVersion;
 
@@ -188,7 +191,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
 
-                        new ExecutionCountServiceUnavailableRetryStrategy(new PreconditionFailedResponseInterceptor(host, authorizationService, prompt),
+                new ExecutionCountServiceUnavailableRetryStrategy(new PreconditionFailedResponseInterceptor(host, authorizationService, prompt),
                         new OAuth2ErrorResponseInterceptor(host, authorizationService))));
         if(new HostPreferences(host).getBoolean("sds.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
@@ -315,6 +318,32 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         return false;
     }
 
+    public Credentials unlockTripleCryptKeyPair(final PasswordCallback callback, final UserKeyPair keypair) throws BackgroundException {
+        final KeyPairCacheReference reference = new KeyPairCacheReference(keypair);
+        if(!keyPairPassphrases.contains(reference)) {
+            try {
+                keyPairPassphrases.put(reference, new TripleCryptKeyPair().unlock(callback, host, keypair));
+            }
+            catch(CryptoException e) {
+                throw new TripleCryptExceptionMappingService().map(e);
+            }
+        }
+        return keyPairPassphrases.get(reference);
+    }
+
+    public Credentials unlockTripleCryptKeyPair(final PasswordCallback callback, final UserKeyPair keypair, final String passphrase) throws BackgroundException {
+        final KeyPairCacheReference reference = new KeyPairCacheReference(keypair);
+        if(!keyPairPassphrases.contains(reference)) {
+            try {
+                keyPairPassphrases.put(reference, new TripleCryptKeyPair().unlock(callback, host, keypair, passphrase));
+            }
+            catch(CryptoException e) {
+                throw new TripleCryptExceptionMappingService().map(e);
+            }
+        }
+        return keyPairPassphrases.get(reference);
+    }
+
     protected void unlockTripleCryptKeyPair(final LoginCallback prompt, final UserAccountWrapper user,
                                             final UserKeyPair.Version requiredKeyPairVersion) throws BackgroundException {
         try {
@@ -336,14 +365,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
                     final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                     log.debug("Attempt to unlock deprecated private key {}", keypair.getUserPrivateKey());
-                    deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                    deprecatedCredentials = this.unlockTripleCryptKeyPair(prompt, keypair);
                     keyPairDeprecated.set(deprecated);
                 }
                 if(!migrated) {
                     final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
                     final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                     log.debug("Attempt to unlock and migrate deprecated private key {}", keypair.getUserPrivateKey());
-                    deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                    deprecatedCredentials = this.unlockTripleCryptKeyPair(prompt, keypair);
                     final UserKeyPair newPair = Crypto.generateUserKeyPair(requiredKeyPairVersion, deprecatedCredentials.getPassword().toCharArray());
                     final CreateKeyPairRequest request = new CreateKeyPairRequest();
                     request.setPreviousPrivateKey(deprecated.getPrivateKeyContainer());
@@ -361,15 +390,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             if(deprecatedCredentials != null) {
                 log.debug("Attempt to unlock private key with passphrase from deprecated private key {}", keypair.getUserPrivateKey());
                 if(Crypto.checkUserKeyPair(keypair, deprecatedCredentials.getPassword().toCharArray())) {
-                    new TripleCryptKeyPair().unlock(prompt, host, keypair, deprecatedCredentials.getPassword());
+                    this.unlockTripleCryptKeyPair(prompt, keypair, deprecatedCredentials.getPassword());
                 }
                 else {
-                    new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                    this.unlockTripleCryptKeyPair(prompt, keypair);
                 }
             }
             else {
                 log.debug("Attempt to unlock private key {}", keypair.getUserPrivateKey());
-                new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                this.unlockTripleCryptKeyPair(prompt, keypair);
             }
         }
         catch(CryptoException e) {
@@ -518,6 +547,42 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     public UserKeyPair.Version requiredKeyPairVersion() {
         return requiredKeyPairVersion;
+    }
+
+    private static class KeyPairCacheReference {
+
+        private final UserKeyPair keypair;
+
+        public KeyPairCacheReference(final UserKeyPair keypair) {
+            this.keypair = keypair;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            final KeyPairCacheReference that = (KeyPairCacheReference) o;
+
+            return new EqualsBuilder().append(keypair.getUserPrivateKey().getVersion().getValue(), that.keypair.getUserPrivateKey().getVersion().getValue()).
+                    append(keypair.getUserPrivateKey().getPrivateKey(), that.keypair.getUserPrivateKey().getPrivateKey()).
+                    append(keypair.getUserPublicKey().getVersion().getValue(), that.keypair.getUserPublicKey().getVersion().getValue()).
+                    append(keypair.getUserPrivateKey().getPrivateKey(), that.keypair.getUserPrivateKey().getPrivateKey()).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder().
+                    append(keypair.getUserPrivateKey().getVersion().getValue()).
+                    append(keypair.getUserPrivateKey().getPrivateKey()).
+                    append(keypair.getUserPublicKey().getVersion().getValue()).
+                    append(keypair.getUserPrivateKey().getPrivateKey()).toHashCode();
+        }
     }
 
     @Override

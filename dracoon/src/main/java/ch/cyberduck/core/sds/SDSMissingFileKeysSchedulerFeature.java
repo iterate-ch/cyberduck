@@ -33,7 +33,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserUserPublicKey;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 import ch.cyberduck.core.shared.ThreadPoolSchedulerFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +41,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,7 +90,6 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
             final List<UserFileKeySetRequest> processed = new ArrayList<>();
             // Null when operating from scheduler. File reference is set for post upload.
             final Long fileId = file != null ? Long.parseLong(nodeid.getVersionId(file)) : null;
-            final HashMap<UserKeyPairContainer, Credentials> passphrases = new HashMap<>();
             UserFileKeySetBatchRequest request;
             do {
                 log.debug("Request a list of missing file keys limited to {}", fileId);
@@ -105,11 +102,7 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
                     for(FileFileKeys fileKey : files.get(item.getFileId())) {
                         final EncryptedFileKey encryptedFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(fileKey.getFileKeyContainer());
                         final UserKeyPairContainer keyPairForDecryption = session.getKeyPairForFileKey(encryptedFileKey.getVersion());
-                        if(!passphrases.containsKey(keyPairForDecryption)) {
-                            passphrases.put(keyPairForDecryption,
-                                    new TripleCryptKeyPair().unlock(callback, session.getHost(), TripleCryptConverter.toCryptoUserKeyPair(keyPairForDecryption)));
-                        }
-                        final Credentials passphrase = passphrases.get(keyPairForDecryption);
+                        final Credentials passphrase = session.unlockTripleCryptKeyPair(callback, TripleCryptConverter.toCryptoUserKeyPair(keyPairForDecryption));
                         for(UserUserPublicKey userPublicKey : userPublicKeys.get(item.getUserId())) {
                             final EncryptedFileKey fk = this.encryptFileKey(
                                     TripleCryptConverter.toCryptoUserPrivateKey(keyPairForDecryption.getPrivateKeyContainer()),
