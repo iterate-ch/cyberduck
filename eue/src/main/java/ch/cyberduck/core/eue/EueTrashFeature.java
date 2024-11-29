@@ -119,9 +119,6 @@ public class EueTrashFeature implements Trash {
         if(StringUtils.equals(EueResourceIdProvider.TRASH, file.attributes().getFileId())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
-        else if(StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), file.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);
-        }
     }
 
     @Override
