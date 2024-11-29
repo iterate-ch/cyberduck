@@ -33,7 +33,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserUserPublicKey;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 import ch.cyberduck.core.shared.ThreadPoolSchedulerFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -103,7 +102,7 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
                     for(FileFileKeys fileKey : files.get(item.getFileId())) {
                         final EncryptedFileKey encryptedFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(fileKey.getFileKeyContainer());
                         final UserKeyPairContainer keyPairForDecryption = session.getKeyPairForFileKey(encryptedFileKey.getVersion());
-                        final Credentials passphrase = new TripleCryptKeyPair(session.getHost()).unlock(callback, TripleCryptConverter.toCryptoUserKeyPair(keyPairForDecryption));
+                        final Credentials passphrase = session.unlockTripleCryptKeyPair(callback, TripleCryptConverter.toCryptoUserKeyPair(keyPairForDecryption));
                         for(UserUserPublicKey userPublicKey : userPublicKeys.get(item.getUserId())) {
                             final EncryptedFileKey fk = this.encryptFileKey(
                                     TripleCryptConverter.toCryptoUserPrivateKey(keyPairForDecryption.getPrivateKeyContainer()),

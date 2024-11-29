@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds.triplecrypt;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
@@ -28,7 +27,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
@@ -47,57 +45,45 @@ public class TripleCryptKeyPair {
 
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
-    private final Host host;
-
-    private final ExpiringObjectHolder<Credentials> cache;
-
-    public TripleCryptKeyPair(final Host host) {
-        this.host = host;
-        this.cache = new ExpiringObjectHolder<>(new HostPreferences(host).getLong("sds.encryption.keys.ttl"));
+    public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, BackgroundException {
+        final String passphrase = keychain.getPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()), toAccountName(bookmark));
+        return this.unlock(callback, bookmark, keypair, passphrase);
     }
 
-    public Credentials unlock(final PasswordCallback callback, final UserKeyPair keypair) throws CryptoException, BackgroundException {
-        final String passphrase = keychain.getPassword(toServiceName(host, keypair.getUserPublicKey().getVersion()), toAccountName(host));
-        return this.unlock(callback, keypair, passphrase);
+    public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, final String passphrase) throws CryptoException, LoginCanceledException {
+        return this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS"));
     }
 
-    public Credentials unlock(final PasswordCallback callback, final UserKeyPair keypair, final String passphrase) throws CryptoException, LoginCanceledException {
-        return this.unlock(callback, keypair, passphrase, LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS"));
-    }
-
-    private Credentials unlock(final PasswordCallback callback, final UserKeyPair keypair, String passphrase, final String message) throws LoginCanceledException, CryptoException {
-        if(cache.get() == null) {
-            final Credentials credentials;
-            if(null == passphrase) {
-                credentials = callback.prompt(host, LocaleFactory.localizedString("Decryption password required", "SDS"), message,
-                        new LoginOptions()
-                                .icon(host.getProtocol().disk())
-                );
-                if(credentials.getPassword() == null) {
-                    throw new LoginCanceledException();
-                }
-            }
-            else {
-                credentials = new VaultCredentials(passphrase).withSaved(false);
-            }
-            if(!Crypto.checkUserKeyPair(keypair, credentials.getPassword().toCharArray())) {
-                return this.unlock(callback, keypair, null, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS")));
-            }
-            else {
-                if(credentials.isSaved()) {
-                    log.info("Save encryption password for {}", host);
-                    try {
-                        keychain.addPassword(toServiceName(host, keypair.getUserPublicKey().getVersion()),
-                                toAccountName(host), credentials.getPassword());
-                    }
-                    catch(LocalAccessDeniedException e) {
-                        log.error("Failure {} saving credentials for {} in password store", e, host);
-                    }
-                }
-                cache.set(credentials);
+    private Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, String passphrase, final String message) throws LoginCanceledException, CryptoException {
+        final Credentials credentials;
+        if(null == passphrase) {
+            credentials = callback.prompt(bookmark, LocaleFactory.localizedString("Decryption password required", "SDS"), message,
+                    new LoginOptions()
+                            .icon(bookmark.getProtocol().disk())
+            );
+            if(credentials.getPassword() == null) {
+                throw new LoginCanceledException();
             }
         }
-        return cache.get();
+        else {
+            credentials = new VaultCredentials(passphrase).withSaved(false);
+        }
+        if(!Crypto.checkUserKeyPair(keypair, credentials.getPassword().toCharArray())) {
+            return this.unlock(callback, bookmark, keypair, null, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS")));
+        }
+        else {
+            if(credentials.isSaved()) {
+                log.info("Save encryption password for {}", bookmark);
+                try {
+                    keychain.addPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
+                            toAccountName(bookmark), credentials.getPassword());
+                }
+                catch(LocalAccessDeniedException e) {
+                    log.error("Failure {} saving credentials for {} in password store", e, bookmark);
+                }
+            }
+            return credentials;
+        }
     }
 
     protected static String toServiceName(final Host bookmark, final UserKeyPair.Version version) {

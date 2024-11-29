@@ -38,7 +38,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -119,7 +118,7 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
                 final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
                 final UserKeyPairContainer keyPairContainer = session.getKeyPairForFileKey(encFileKey.getVersion());
                 final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
-                final Credentials passphrase = new TripleCryptKeyPair(bookmark).unlock(callback, userKeyPair);
+                final Credentials passphrase = session.unlockTripleCryptKeyPair(callback, userKeyPair);
 
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), passphrase.getPassword().toCharArray());
                 // encrypt file key with a new key pair

@@ -92,7 +92,7 @@ public class TripleCryptReadFeature implements Read {
     private Credentials unlock(final ConnectionCallback callback, final UserKeyPair userKeyPair) throws CryptoException, BackgroundException {
         final Credentials passphrase;
         try {
-            passphrase = new TripleCryptKeyPair(session.getHost()).unlock(callback, userKeyPair);
+            passphrase = session.unlockTripleCryptKeyPair(callback, userKeyPair);
         }
         catch(LoginCanceledException e) {
             throw new AccessDeniedException(LocaleFactory.localizedString("Decryption password required", "SDS"), e);
