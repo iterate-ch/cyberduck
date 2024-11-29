@@ -56,6 +56,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -129,10 +131,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
             = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
-    private final LRUCache<UserKeyPair, Credentials> keyPairPassphrases
-            = LRUCache.build(new RemovalListener<UserKeyPair, Credentials>() {
+    private final LRUCache<KeyPairCacheReference, Credentials> keyPairPassphrases
+            = LRUCache.build(new RemovalListener<KeyPairCacheReference, Credentials>() {
         @Override
-        public void onRemoval(final RemovalNotification<UserKeyPair, Credentials> notification) {
+        public void onRemoval(final RemovalNotification<KeyPairCacheReference, Credentials> notification) {
             //
         }
     }, 2, preferences.getLong("sds.encryption.keys.ttl"), false);
@@ -317,27 +319,29 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     public Credentials unlockTripleCryptKeyPair(final PasswordCallback callback, final UserKeyPair keypair) throws BackgroundException {
-        if(!keyPairPassphrases.contains(keypair)) {
+        final KeyPairCacheReference reference = new KeyPairCacheReference(keypair);
+        if(!keyPairPassphrases.contains(reference)) {
             try {
-                keyPairPassphrases.put(keypair, new TripleCryptKeyPair().unlock(callback, host, keypair));
+                keyPairPassphrases.put(reference, new TripleCryptKeyPair().unlock(callback, host, keypair));
             }
             catch(CryptoException e) {
                 throw new TripleCryptExceptionMappingService().map(e);
             }
         }
-        return keyPairPassphrases.get(keypair);
+        return keyPairPassphrases.get(reference);
     }
 
     public Credentials unlockTripleCryptKeyPair(final PasswordCallback callback, final UserKeyPair keypair, final String passphrase) throws BackgroundException {
-        if(!keyPairPassphrases.contains(keypair)) {
+        final KeyPairCacheReference reference = new KeyPairCacheReference(keypair);
+        if(!keyPairPassphrases.contains(reference)) {
             try {
-                keyPairPassphrases.put(keypair, new TripleCryptKeyPair().unlock(callback, host, keypair, passphrase));
+                keyPairPassphrases.put(reference, new TripleCryptKeyPair().unlock(callback, host, keypair, passphrase));
             }
             catch(CryptoException e) {
                 throw new TripleCryptExceptionMappingService().map(e);
             }
         }
-        return keyPairPassphrases.get(keypair);
+        return keyPairPassphrases.get(reference);
     }
 
     protected void unlockTripleCryptKeyPair(final LoginCallback prompt, final UserAccountWrapper user,
@@ -543,6 +547,42 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     public UserKeyPair.Version requiredKeyPairVersion() {
         return requiredKeyPairVersion;
+    }
+
+    private static class KeyPairCacheReference {
+
+        private final UserKeyPair keypair;
+
+        public KeyPairCacheReference(final UserKeyPair keypair) {
+            this.keypair = keypair;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            final KeyPairCacheReference that = (KeyPairCacheReference) o;
+
+            return new EqualsBuilder().append(keypair.getUserPrivateKey().getVersion().getValue(), that.keypair.getUserPrivateKey().getVersion().getValue()).
+                    append(keypair.getUserPrivateKey().getPrivateKey(), that.keypair.getUserPrivateKey().getPrivateKey()).
+                    append(keypair.getUserPublicKey().getVersion().getValue(), that.keypair.getUserPublicKey().getVersion().getValue()).
+                    append(keypair.getUserPrivateKey().getPrivateKey(), that.keypair.getUserPrivateKey().getPrivateKey()).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder().
+                    append(keypair.getUserPrivateKey().getVersion().getValue()).
+                    append(keypair.getUserPrivateKey().getPrivateKey()).
+                    append(keypair.getUserPublicKey().getVersion().getValue()).
+                    append(keypair.getUserPrivateKey().getPrivateKey()).toHashCode();
+        }
     }
 
     @Override
