@@ -330,7 +330,7 @@ public class Profile implements Protocol {
     public String getDefaultNickname() {
         final String v = this.value(DEFAULT_NICKNAME_KEY);
         if(StringUtils.isBlank(v)) {
-            return parent.getDefaultNickname();
+            return null;
         }
         return v;
     }
