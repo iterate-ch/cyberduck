@@ -122,7 +122,7 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.37</version>
+                <version>0.9.38</version>
             </dependency>
             <dependency>
                 <groupId>com.auth0</groupId>
