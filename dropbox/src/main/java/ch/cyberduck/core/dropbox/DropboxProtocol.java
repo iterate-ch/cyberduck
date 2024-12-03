@@ -85,4 +85,9 @@ public class DropboxProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return Scheme.https;
     }
+
+    @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
 }
