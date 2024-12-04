@@ -50,4 +50,9 @@ public class SharepointProtocol extends GraphProtocol {
     public VersioningMode getVersioningMode() {
         return VersioningMode.storage;
     }
+
+    @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
 }
