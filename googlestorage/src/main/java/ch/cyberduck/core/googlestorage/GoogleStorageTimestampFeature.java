@@ -42,7 +42,7 @@ public class GoogleStorageTimestampFeature implements Timestamp {
 
     public GoogleStorageTimestampFeature(final GoogleStorageSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new GoogleStoragePathContainerService();
     }
 
     @Override

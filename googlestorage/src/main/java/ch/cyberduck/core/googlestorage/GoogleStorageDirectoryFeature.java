@@ -48,7 +48,7 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
 
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new GoogleStoragePathContainerService();
         this.writer = new GoogleStorageWriteFeature(session);
     }
 

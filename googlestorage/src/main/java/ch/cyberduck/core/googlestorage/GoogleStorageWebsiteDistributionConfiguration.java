@@ -46,7 +46,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
 
     public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new GoogleStoragePathContainerService();
     }
 
     /**

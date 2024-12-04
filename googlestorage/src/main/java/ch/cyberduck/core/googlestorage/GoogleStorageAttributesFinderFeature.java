@@ -51,7 +51,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
 
     public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new GoogleStoragePathContainerService();
     }
 
     @Override

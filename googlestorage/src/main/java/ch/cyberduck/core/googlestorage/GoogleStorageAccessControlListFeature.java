@@ -63,7 +63,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
 
     public GoogleStorageAccessControlListFeature(final GoogleStorageSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new GoogleStoragePathContainerService();
     }
 
     @Override

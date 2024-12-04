@@ -37,7 +37,7 @@ public class GoogleStorageUrlProvider implements UrlProvider {
 
     public GoogleStorageUrlProvider(final GoogleStorageSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new GoogleStoragePathContainerService();
     }
 
     /**

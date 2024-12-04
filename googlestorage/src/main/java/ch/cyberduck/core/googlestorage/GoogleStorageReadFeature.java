@@ -44,7 +44,7 @@ public class GoogleStorageReadFeature implements Read {
 
     public GoogleStorageReadFeature(final GoogleStorageSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new GoogleStoragePathContainerService();
     }
 
     @Override

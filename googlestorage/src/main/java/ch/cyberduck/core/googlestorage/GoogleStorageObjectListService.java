@@ -67,7 +67,7 @@ public class GoogleStorageObjectListService implements ListService {
     public GoogleStorageObjectListService(final GoogleStorageSession session, final Integer concurrency) {
         this.session = session;
         this.attributes = new GoogleStorageAttributesFinderFeature(session);
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new GoogleStoragePathContainerService();
         this.concurrency = concurrency;
     }
 
