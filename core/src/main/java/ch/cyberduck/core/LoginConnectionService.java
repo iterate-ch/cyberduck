@@ -83,7 +83,7 @@ public class LoginConnectionService implements ConnectionService {
     @Override
     public boolean check(final Session<?> session, final CancelCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(bookmark.getProtocol().isHostnameConfigurable() && StringUtils.isBlank(bookmark.getHostname())) {
+        if(StringUtils.isBlank(bookmark.getHostname())) {
             throw new ConnectionCanceledException();
         }
         if(session.isConnected()) {
