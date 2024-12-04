@@ -119,7 +119,7 @@ public class DAVTimestampFeature implements Timestamp {
     protected Map<String, String> getCustomHeaders(final Path file, final TransferStatus status) {
         final Map<String, String> headers = new HashMap<>();
         if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
-            headers.put(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
+            headers.put(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(file), status.getLockId()));
         }
         return headers;
     }

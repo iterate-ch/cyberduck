@@ -116,7 +116,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
         }
         if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
             // Indicate that the client has knowledge of that state token
-            headers.add(new BasicHeader(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+            headers.add(new BasicHeader(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(file), status.getLockId())));
         }
         return headers;
     }

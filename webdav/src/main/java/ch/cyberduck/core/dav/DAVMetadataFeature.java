@@ -93,7 +93,7 @@ public class DAVMetadataFeature implements Headers {
             }
             final Map<String, String> headers;
             if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
-                headers = Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
+                headers = Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(file), status.getLockId()));
             }
             else {
                 headers = Collections.emptyMap();
