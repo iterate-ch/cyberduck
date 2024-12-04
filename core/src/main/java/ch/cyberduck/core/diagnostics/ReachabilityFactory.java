@@ -53,21 +53,21 @@ public class ReachabilityFactory extends Factory<Reachability> {
                     break;
                 case https:
                 case http:
-                    new ChainedReachability(monitor, new HostnameReachability(), new ResolverReachability(), new HttpReachability()).test(bookmark);
+                    new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(), new HttpReachability()).test(bookmark);
                     break;
                 case sftp:
                     final Host jumphost = JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname());
                     if(null != jumphost) {
                         log.warn("Run reachablity check for jump host {}", jumphost);
-                        new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).test(jumphost);
+                        new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(), new TcpReachability()).test(jumphost);
                         return;
                     }
                     else {
-                        new ChainedReachability(monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
+                        new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
                     }
                     break;
                 default:
-                    new ChainedReachability(monitor, new HostnameReachability(), new ResolverReachability(), new TcpReachability()).test(bookmark);
+                    new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
                     break;
             }
         }
