@@ -64,16 +64,18 @@ public class SystemConfigurationReachability implements Reachability {
 
             @Override
             public Monitor start() {
-                notificationCenter.addObserver(listener.id(), Foundation.selector("notify:"),
-                        "kNetworkReachabilityChangedNotification", monitor.id());
-                monitor.startReachabilityMonitor();
+                if(monitor.startReachabilityMonitor()) {
+                    notificationCenter.addObserver(listener.id(), Foundation.selector("notify:"),
+                            "kNetworkReachabilityChangedNotification", monitor.id());
+                }
                 return this;
             }
 
             @Override
             public Monitor stop() {
-                monitor.stopReachabilityMonitor();
-                notificationCenter.removeObserver(listener.id());
+                if(monitor.stopReachabilityMonitor()) {
+                    notificationCenter.removeObserver(listener.id());
+                }
                 return this;
             }
         };

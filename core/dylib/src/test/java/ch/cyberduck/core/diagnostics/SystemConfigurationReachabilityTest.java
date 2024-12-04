@@ -29,15 +29,24 @@ public class SystemConfigurationReachabilityTest {
 
     @Test
     public void testMonitor() {
-        final Reachability r = new SystemConfigurationReachability();
+        final SystemConfigurationReachability r = new SystemConfigurationReachability();
         final Reachability.Monitor monitor = r.monitor(new Host(new TestProtocol(Scheme.https), "cyberduck.io", 80), () -> {
         }).start();
         assertSame(monitor, monitor.stop());
     }
 
     @Test
+    public void testMonitorNoHostname() {
+        final SystemConfigurationReachability r = new SystemConfigurationReachability();
+        final Reachability.Monitor monitor = r.monitor(new Host(new TestProtocol(Scheme.http)), () -> {
+        });
+        assertSame(monitor, monitor.start());
+        assertSame(monitor, monitor.stop());
+    }
+
+    @Test
     public void testIsReachable() {
-        final Reachability r = new SystemConfigurationReachability();
+        final SystemConfigurationReachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(new Host(new TestProtocol(Scheme.http))));
         assertTrue(r.isReachable(new Host(new TestProtocol(Scheme.http), "cyberduck.io")));
         assertTrue(r.isReachable(new Host(new TestProtocol(Scheme.https), "cyberduck.io")));
@@ -45,13 +54,13 @@ public class SystemConfigurationReachabilityTest {
 
     @Test
     public void testNotReachableSubdomain() {
-        final Reachability r = new SystemConfigurationReachability();
+        final SystemConfigurationReachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(new Host(new TestProtocol(Scheme.https), "a.cyberduck.io")));
     }
 
     @Test
     public void testNotReachableWrongDomain() {
-        final Reachability r = new SystemConfigurationReachability();
+        final SystemConfigurationReachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(new Host(new TestProtocol(Scheme.https), "cyberduck.f")));
     }
 }
