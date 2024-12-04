@@ -62,38 +62,44 @@ static void _ReachabilityCallbackFunction(SCNetworkReachabilityRef target, SCNet
 }
 
 - (BOOL)startReachabilityMonitor {
-	SCNetworkConnectionFlags flags;
-	if(!SCNetworkReachabilityGetFlags(target, &flags)) {
-        NSLog(@"Error getting reachability flags for %@", url);
-        return NO;
-    }
-    SCNetworkReachabilityContext context = {
-        .version = 0,
-        .info = (void *)CFBridgingRetain(self),
-        .release = CFRelease
-    };
-	if(SCNetworkReachabilitySetCallback(target, _ReachabilityCallbackFunction, &context)) {
-		if(SCNetworkReachabilityScheduleWithRunLoop(target, CFRunLoopGetMain(), kCFRunLoopDefaultMode)) {
-			return YES;
-		}
-        else {
-            NSLog(@"Error scheduling reachability run loop for %@", url);
-            SCNetworkReachabilitySetCallback(target, NULL, NULL);
+    if(target != NULL) {
+        SCNetworkConnectionFlags flags;
+        if(!SCNetworkReachabilityGetFlags(target, &flags)) {
+            NSLog(@"Error getting reachability flags for %@", url);
+            return NO;
         }
+        SCNetworkReachabilityContext context = {
+            .version = 0,
+            .info = (void *)CFBridgingRetain(self),
+            .release = CFRelease
+        };
+        if(SCNetworkReachabilitySetCallback(target, _ReachabilityCallbackFunction, &context)) {
+            if(SCNetworkReachabilityScheduleWithRunLoop(target, CFRunLoopGetMain(), kCFRunLoopDefaultMode)) {
+                return YES;
+            }
+            else {
+                NSLog(@"Error scheduling reachability run loop for %@", url);
+                SCNetworkReachabilitySetCallback(target, NULL, NULL);
+            }
+        }
+        NSLog(@"Error setting reachability callback for %@", url);
+        return NO;
 	}
-    NSLog(@"Error setting reachability callback for %@", url);
 	return NO;
 }
 
 - (BOOL)stopReachabilityMonitor {
-    // Delete callback and unschedule
-    if(!SCNetworkReachabilitySetCallback(target, NULL, NULL)) {
-        return NO;
+    if(target != NULL) {
+        // Delete callback and unschedule
+        if(!SCNetworkReachabilitySetCallback(target, NULL, NULL)) {
+            return NO;
+        }
+        if(!SCNetworkReachabilityUnscheduleFromRunLoop(target, CFRunLoopGetMain(), kCFRunLoopDefaultMode)) {
+            return NO;
+        }
+        return YES;
     }
-    if(!SCNetworkReachabilityUnscheduleFromRunLoop(target, CFRunLoopGetMain(), kCFRunLoopDefaultMode)) {
-        return NO;
-    }
-    return YES;
+    return NO;
 }
 
 - (SCNetworkReachabilityFlags)getFlags {
