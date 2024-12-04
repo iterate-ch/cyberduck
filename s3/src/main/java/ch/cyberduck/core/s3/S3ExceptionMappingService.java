@@ -45,7 +45,7 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
     private static final String MINIO_ERROR_CODE = "x-minio-error-code";
     private static final String MINIO_ERROR_DESCRIPTION = "x-minio-error-desc";
 
-    public BackgroundException map(HttpResponse response) throws IOException {
+    public BackgroundException map(final HttpResponse response) throws IOException {
         final S3ServiceException failure;
         if(null == response.getEntity()) {
             failure = new S3ServiceException(response.getStatusLine().getReasonPhrase());
