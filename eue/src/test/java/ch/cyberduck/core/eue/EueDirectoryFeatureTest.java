@@ -31,7 +31,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 @Category(IntegrationTest.class)
 public class EueDirectoryFeatureTest extends AbstractEueSessionTest {
@@ -58,17 +59,12 @@ public class EueDirectoryFeatureTest extends AbstractEueSessionTest {
         }
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void testCaseSensitivity() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final String filename = new AlphanumericRandomStringService().random();
         new EueDirectoryFeature(session, fileid).mkdir(new Path(StringUtils.capitalize(filename), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        try {
-            new EueDirectoryFeature(session, fileid).mkdir(new Path(StringUtils.lowerCase(filename), EnumSet.of(Path.Type.directory)), new TransferStatus());
-            fail();
-        }
-        finally {
-            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(new Path(StringUtils.capitalize(filename), EnumSet.of(Path.Type.directory))), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
+        assertThrows(ConflictException.class, () -> new EueDirectoryFeature(session, fileid).mkdir(new Path(StringUtils.lowerCase(filename), EnumSet.of(Path.Type.directory)), new TransferStatus()));
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(new Path(StringUtils.capitalize(filename), EnumSet.of(Path.Type.directory))), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
