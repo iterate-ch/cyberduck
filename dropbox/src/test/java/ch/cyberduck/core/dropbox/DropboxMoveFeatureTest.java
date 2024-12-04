@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
@@ -35,6 +36,7 @@ import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -109,6 +111,26 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final AttributedList<Path> files = new DropboxListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
         assertFalse(new DropboxFindFeature(session).find(temp));
+        assertTrue(new DropboxFindFeature(session).find(test));
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveCaseSensitive() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new DefaultFindFeature(session).find(folder));
+        final Path test = new DropboxTouchFeature(session).touch(
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        final Path temp = new DropboxTouchFeature(session).touch(
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new DefaultFindFeature(session).find(temp));
+        new DropboxMoveFeature(session).move(temp, new Path(folder, StringUtils.upperCase(test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final AttributedList<Path> list = new DropboxListService(session).list(folder, new DisabledListProgressListener());
+        assertNotNull(list.find(new SimplePathPredicate(new Path(folder, StringUtils.upperCase(test.getName()), EnumSet.of(Path.Type.file)))));
+        assertNull(list.find(new SimplePathPredicate(test)));
         assertTrue(new DropboxFindFeature(session).find(test));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
