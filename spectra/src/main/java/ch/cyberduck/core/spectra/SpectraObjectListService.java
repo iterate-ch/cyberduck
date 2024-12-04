@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.S3AbstractListService;
+import ch.cyberduck.core.s3.S3PathContainerService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -54,7 +55,7 @@ public class SpectraObjectListService extends S3AbstractListService {
     public SpectraObjectListService(final SpectraSession session) {
         super(session);
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

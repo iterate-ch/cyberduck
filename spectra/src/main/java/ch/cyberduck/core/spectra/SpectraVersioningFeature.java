@@ -25,6 +25,7 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.s3.S3PathContainerService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,7 +57,7 @@ public class SpectraVersioningFeature implements Versioning {
 
     public SpectraVersioningFeature(final SpectraSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

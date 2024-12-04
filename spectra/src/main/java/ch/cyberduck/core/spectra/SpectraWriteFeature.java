@@ -21,6 +21,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -33,7 +34,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
 
     public SpectraWriteFeature(final SpectraSession session) {
         super(session, new S3AccessControlListFeature(session));
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     /**

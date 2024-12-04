@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.s3.S3PathContainerService;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -45,7 +46,7 @@ public class SpectraAttributesFinderFeature implements AttributesFinder, Attribu
 
     public SpectraAttributesFinderFeature(final SpectraSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

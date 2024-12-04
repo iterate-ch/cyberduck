@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class SpectraDeleteFeature implements Delete {
 
     public SpectraDeleteFeature(final SpectraSession session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override
