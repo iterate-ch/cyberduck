@@ -1,17 +1,4 @@
-package ch.cyberduck.binding.foundation;/*
- * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+package ch.cyberduck.binding.foundation;
 
 /*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
@@ -28,6 +15,7 @@ package ch.cyberduck.binding.foundation;/*
  * GNU General Public License for more details.
  */
 
+import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
@@ -159,6 +147,21 @@ public abstract class NSProgress extends NSObject {
      */
     public abstract void setCancellable(boolean value);
 
+
+    /**
+     * If the receiver is a suboperation of another progress object, the system invokes the cancellationHandler
+     * block when canceling the containing progress object.
+     * <p>
+     * You’re responsible for canceling any work for the progress object.
+     * <p>
+     * You can invoke the cancellation handler on any queue. If you must do work on a specific queue, dispatch to
+     * that queue from within the cancellation handler block.
+     *
+     * @param completionHandler The block to invoke when canceling progress.
+     * @since macOS 10.9+
+     */
+    public abstract void registerCancellationHandler(ID completionHandler);
+
     /**
      * For an NSProgress with a kind of NSProgressKindFile, the unit of this property is bytes while the NSProgressFileTotalCountKey
      * and NSProgressFileCompletedCountKey keys in the userInfo dictionary are used for the overall count of files.
@@ -287,11 +290,13 @@ public abstract class NSProgress extends NSObject {
     /**
      * The value that indicates that the progress is tracking a file operation.
      * If you set this value for the progress kind, set a value in the user info dictionary for the NSProgressFileOperationKindKey.
+     *
      * @since macOS 10.9+
      */
     public static final String NSProgressKindFile = "NSProgressKindFile";
     /**
      * A key with a corresponding value that indicates the kind of file operation a progress object represents.
+     *
      * @since macOS 10.9+
      */
     public static final String NSProgressFileOperationKindKey = "NSProgressFileOperationKindKey";
@@ -303,6 +308,7 @@ public abstract class NSProgress extends NSObject {
     public static final String NSProgressFileURLKey = "NSProgressFileURLKey";
     /**
      * The progress is tracking a file upload operation.
+     *
      * @since macOS 10.9+
      */
     public static final String NSProgressFileOperationKindUploading = "NSProgressFileOperationKindUploading";
@@ -320,11 +326,13 @@ public abstract class NSProgress extends NSObject {
     public static final String NSProgressFileOperationKindDecompressingAfterDownloading = "NSProgressFileOperationKindDecompressingAfterDownloading";
     /**
      * A key with a corresponding value that represents the time remaining, in seconds.
+     *
      * @since macOS 10.9+
      */
     public static final String NSProgressEstimatedTimeRemainingKey = "NSProgressEstimatedTimeRemainingKey";
     /**
      * A key with a corresponding value that indicates the speed of data processing, in bytes per second.
+     *
      * @since macOS 10.9+
      */
     public static final String NSProgressThroughputKey = "NSProgressThroughputKey";
