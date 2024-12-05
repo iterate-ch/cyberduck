@@ -28,8 +28,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.AccountInfo;
@@ -46,7 +46,7 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
 
     @Override
     protected Map<Region, AccountInfo> operate(final PasswordCallback callback) throws BackgroundException {
-        final Map<Region, AccountInfo> accounts = new ConcurrentHashMap<>();
+        final Map<Region, AccountInfo> accounts = new HashMap<>();
         for(Region region : session.getClient().getRegions()) {
             try {
                 final AccountInfo info = session.getClient().getAccountInfo(region);
