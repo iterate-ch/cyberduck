@@ -39,8 +39,10 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.StringReader;
+import java.util.ArrayList;
 
 public class FTPAttributesFinderFeature extends VoidAttributesAdapter implements AttributesFinder {
     private static final Logger log = LogManager.getLogger(FTPAttributesFinderFeature.class);
@@ -64,9 +66,57 @@ public class FTPAttributesFinderFeature extends VoidAttributesAdapter implements
                         if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MLST, file.getAbsolute()))) {
                             throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                         }
+
+                        final ArrayList<String> lines = new ArrayList<String>();
+                        boolean endOfList = false;
+                        boolean newReply = false;
+                        while(!endOfList) {
+                            if(newReply) {
+                                // Synology Diskstation FTP server responds
+                                // with reply
+                                // 250-
+                                // 550
+                                // 250
+                                // commons-net stops parsing at 550, never seeing the 250 end of list.
+                                // This works around this issue.
+                                session.getClient().getReply();
+                            }
+
+                            newReply = true;
+                            final String reply = session.getClient().getReplyString();
+                            try (final StringReader replyReader = new StringReader(reply)) {
+                                try (final BufferedReader replyLineReader = new BufferedReader(replyReader)) {
+                                    String line;
+                                    while((line = replyLineReader.readLine()) != null) {
+                                        /*
+                                         * MLST must follow RFC3659 7.2, in that:
+                                         *
+                                         * error-response = error-code SP *TCHAR CRLF
+                                         * error-code = ("4" / "5") 2DIGIT
+                                         *
+                                         * mlst-response = control-response / error-response
+                                         *
+                                         * control-response = "250-" [ response-message ] CRLF
+                                         * 1*( SP entry CRLF )
+                                         * "250" [ SP response-message ] CRLF
+                                         */
+                                        if(line.startsWith("250")) {
+                                            // EndOfList set when receiving "250"
+                                            endOfList |= line.length() < 4 || line.charAt(3) != '-';
+                                        }
+                                        else if(!endOfList) {
+                                            // Not "250-" Preamble
+                                            // Not "250" End of List
+                                            // Not outside range "250-" - "250"
+                                            lines.add(line);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
-                        final AttributedList<Path> attributes
-                                = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()));
+                        final AttributedList<Path> attributes = reader.read(file.getParent(), lines);
                         if(attributes.contains(file)) {
                             return attributes.get(attributes.indexOf(file)).attributes();
                         }
