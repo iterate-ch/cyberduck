@@ -45,9 +45,9 @@ public class DelegatingSchedulerFeature implements Scheduler<Void> {
     }
 
     @Override
-    public void shutdown() {
+    public void shutdown(final boolean gracefully) {
         for(Scheduler scheduler : features) {
-            scheduler.shutdown();
+            scheduler.shutdown(gracefully);
         }
     }
 }

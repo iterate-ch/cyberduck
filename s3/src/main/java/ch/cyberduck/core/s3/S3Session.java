@@ -148,7 +148,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected void logout() throws BackgroundException {
         try {
-            scheduler.shutdown();
+            scheduler.shutdown(false);
             client.shutdown();
         }
         catch(ServiceException e) {

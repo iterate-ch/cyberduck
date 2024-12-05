@@ -130,7 +130,7 @@ public class DeepboxReadFeature implements Read {
             }
         }
         finally {
-            scheduler.shutdown();
+            scheduler.shutdown(true);
         }
     }
 

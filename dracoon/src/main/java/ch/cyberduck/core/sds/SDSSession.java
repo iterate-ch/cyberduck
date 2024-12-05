@@ -587,7 +587,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     @Override
     protected void logout() {
-        scheduler.shutdown();
+        scheduler.shutdown(false);
         client.getHttpClient().close();
         nodeid.clear();
     }

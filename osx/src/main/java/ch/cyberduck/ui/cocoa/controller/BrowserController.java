@@ -3419,7 +3419,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void run() {
                 if(scheduler != null) {
-                    scheduler.shutdown();
+                    scheduler.shutdown(false);
                 }
                 pool.shutdown();
                 pool = SessionPool.DISCONNECTED;
