@@ -30,13 +30,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Preload CDN configuration
  */
-public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeature<Set<Distribution>> {
+public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeature<Map<Path, Set<Distribution>>> {
     private static final Logger log = LogManager.getLogger(SwiftDistributionConfigurationLoader.class);
 
     private final SwiftSession session;
@@ -46,19 +48,19 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
     }
 
     @Override
-    protected Set<Distribution> operate(final PasswordCallback callback) throws BackgroundException {
+    protected Map<Path, Set<Distribution>> operate(final PasswordCallback callback) throws BackgroundException {
         final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
         if(null == feature) {
-            return Collections.emptySet();
+            return Collections.emptyMap();
         }
         final AttributedList<Path> containers = new SwiftContainerListService(session,
                 new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(Home.ROOT, new DisabledListProgressListener());
-        final Set<Distribution> distributions = new LinkedHashSet<>();
+        final Map<Path, Set<Distribution>> distributions = new HashMap<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {
                 final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
                 log.info("Cache distribution {}", distribution);
-                distributions.add(distribution);
+                distributions.getOrDefault(container, new HashSet<>()).add(distribution);
             }
         }
         return distributions;
