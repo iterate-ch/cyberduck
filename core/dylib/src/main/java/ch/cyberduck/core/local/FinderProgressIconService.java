@@ -31,10 +31,8 @@ public class FinderProgressIconService implements IconService {
 
     private static final class FinderProgressIcon implements Icon {
         private final NSProgress progress;
-        private final Local file;
 
         public FinderProgressIcon(final Transfer.Type type, final Local file) {
-            this.file = file;
             progress = NSProgress.discreteProgressWithTotalUnitCount(0L);
             progress.setKind(NSProgress.NSProgressKindFile);
             progress.setCancellable(false);
