@@ -17,6 +17,8 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.PasswordCallback;
 
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
+
 import java.util.concurrent.Future;
 
 @Optional
@@ -35,4 +37,21 @@ public interface Scheduler<R> {
      * Shutdown thread pool
      */
     void shutdown(boolean gracefully);
+
+    Scheduler noop = new Scheduler() {
+        @Override
+        public Future repeat(final PasswordCallback callback) {
+            return ConcurrentUtils.constantFuture(null);
+        }
+
+        @Override
+        public Future execute(final PasswordCallback callback) {
+            return ConcurrentUtils.constantFuture(null);
+        }
+
+        @Override
+        public void shutdown(final boolean gracefully) {
+        //
+        }
+    };
 }

@@ -66,9 +66,10 @@ public class SwiftSession extends HttpSession<Client> {
             = new SwiftRegionService(this);
 
     private final Map<Region, AccountInfo> accounts = new ConcurrentHashMap<>();
+    private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     private final DelegatingSchedulerFeature scheduler = new DelegatingSchedulerFeature(
-            new SwiftAccountLoader(this) {
+            new HostPreferences(host).getBoolean("openstack.account.preload") ? new SwiftAccountLoader(this) {
                 @Override
                 protected Map<Region, AccountInfo> operate(final PasswordCallback callback) throws BackgroundException {
                     final Map<Region, AccountInfo> result = super.operate(callback);
@@ -76,9 +77,17 @@ public class SwiftSession extends HttpSession<Client> {
                     accounts.putAll(result);
                     return result;
                 }
-            }, new SwiftDistributionConfigurationLoader(this)
+            } : Scheduler.noop,
+            new HostPreferences(host).getBoolean("openstack.cdn.preload") ? new SwiftDistributionConfigurationLoader(this) {
+                @Override
+                protected Map<Path, Set<Distribution>> operate(final PasswordCallback callback) throws BackgroundException {
+                    final Map<Path, Set<Distribution>> result = super.operate(callback);
+                    // Only executed single time
+                    distributions.putAll(result);
+                    return result;
+                }
+            } : Scheduler.noop
     );
-    private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -210,10 +219,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftAttributesFinderFeature(this, regionService);
         }
         if(type == Scheduler.class) {
-            if(new HostPreferences(host).getBoolean("openstack.accounts.preload")) {
-                return (T) scheduler;
-            }
-            return null;
+            return (T) scheduler;
         }
         return super._getFeature(type);
     }
