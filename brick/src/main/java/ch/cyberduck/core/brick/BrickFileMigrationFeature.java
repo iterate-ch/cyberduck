@@ -100,7 +100,7 @@ public class BrickFileMigrationFeature {
             }
         }
         finally {
-            scheduler.shutdown();
+            scheduler.shutdown(true);
         }
     }
 

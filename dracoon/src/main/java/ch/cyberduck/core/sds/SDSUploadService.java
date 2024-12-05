@@ -276,7 +276,7 @@ public class SDSUploadService {
                 throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
             }
         }
-        polling.shutdown();
+        polling.shutdown(true);
         log.debug("Polling completed for {} with {} polls in {}ms ", file, polls.get(), System.currentTimeMillis() - start);
         if(null != failure.get()) {
             throw failure.get();

@@ -143,7 +143,7 @@ public class DropboxBatchDeleteFeature implements Delete {
             throw new DropboxExceptionMappingService().map(e);
         }
         finally {
-            scheduler.shutdown();
+            scheduler.shutdown(true);
         }
     }
 

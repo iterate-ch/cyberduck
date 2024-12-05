@@ -50,9 +50,9 @@ public abstract class ThreadPoolSchedulerFeature<R> implements Scheduler<R> {
     protected abstract R operate(PasswordCallback callback) throws BackgroundException;
 
     @Override
-    public void shutdown() {
+    public void shutdown(final boolean gracefully) {
         log.debug("Shutting down scheduler thread pool {}", this);
-        scheduler.shutdown();
+        scheduler.shutdown(gracefully);
     }
 
     private final class FailureAwareRunnable implements Runnable {
@@ -72,7 +72,7 @@ public abstract class ThreadPoolSchedulerFeature<R> implements Scheduler<R> {
             }
             catch(Exception e) {
                 log.error("Failure processing scheduled task {}", e.getMessage(), e);
-                ThreadPoolSchedulerFeature.this.shutdown();
+                ThreadPoolSchedulerFeature.this.shutdown(false);
             }
         }
     }

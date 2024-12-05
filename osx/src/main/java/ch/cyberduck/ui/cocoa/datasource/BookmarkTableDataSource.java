@@ -148,7 +148,7 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     @Override
     public void invalidate() {
-        timerPool.shutdown();
+        timerPool.shutdown(true);
         source.removeListener(listener);
         super.invalidate();
     }

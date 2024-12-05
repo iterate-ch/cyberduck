@@ -34,5 +34,5 @@ public interface Scheduler<R> {
     /**
      * Shutdown thread pool
      */
-    void shutdown();
+    void shutdown(boolean gracefully);
 }

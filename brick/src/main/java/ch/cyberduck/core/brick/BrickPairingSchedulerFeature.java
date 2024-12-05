@@ -170,6 +170,6 @@ public class BrickPairingSchedulerFeature {
     }
 
     public void shutdown() {
-        scheduler.shutdown();
+        scheduler.shutdown(true);
     }
 }

@@ -2925,7 +2925,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             CallbackDelegate run = delegate
             {
-                _scheduler?.shutdown();
+                _scheduler?.shutdown(false);
                 Session.shutdown();
                 Session = SessionPool.DISCONNECTED;
                 SetWorkdir(null);

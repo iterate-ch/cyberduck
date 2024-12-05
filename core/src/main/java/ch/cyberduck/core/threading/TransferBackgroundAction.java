@@ -180,7 +180,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
         progressTimer.cancel(false);
         transfer.stop();
         listener.transferDidStop(transfer);
-        timerPool.shutdown();
+        timerPool.shutdown(true);
     }
 
     @Override

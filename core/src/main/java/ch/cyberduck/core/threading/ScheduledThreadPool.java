@@ -96,9 +96,15 @@ public class ScheduledThreadPool {
         return pool.schedule(runnable, delay, unit);
     }
 
-    public void shutdown() {
-        log.info("Shutdown pool {}", pool);
-        pool.shutdown();
+    public void shutdown(final boolean gracefully) {
+        if(gracefully) {
+            log.info("Shutdown pool {} gracefully", pool);
+            pool.shutdown();
+        }
+        else {
+            log.info("Shutdown pool {} now", pool);
+            pool.shutdownNow();
+        }
         try {
             while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
                 log.warn("Await termination for pool {}", pool);
