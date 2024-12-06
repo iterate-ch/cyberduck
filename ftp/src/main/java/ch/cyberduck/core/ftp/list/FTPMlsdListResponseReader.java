@@ -40,10 +40,6 @@ import java.util.regex.Pattern;
 public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     private static final Logger log = LogManager.getLogger(FTPMlsdListResponseReader.class);
 
-    public FTPMlsdListResponseReader() {
-        //
-    }
-
     @Override
     public AttributedList<Path> read(final Path directory, final List<String> replies) throws FTPInvalidListException {
         final AttributedList<Path> children = new AttributedList<>();
