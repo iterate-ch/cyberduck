@@ -20,9 +20,5 @@
   </PropertyGroup>
 
   <Import Project="$(_CoreBasePath)native/Directory.Build.props" />
-
-  <PropertyGroup>
-    <Platforms>x64</Platforms>
-    <Platform Condition=" '$(Platform)'=='' ">x64</Platform>
-  </PropertyGroup>
+  
 </Project>
