@@ -70,11 +70,10 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     public boolean isCompany(final Path file) {
-        final Path normalized = fileid.normalize(file);
-        if(normalized.isRoot()) {
+        if(file.isRoot()) {
             return false;
         }
-        return normalized.isDirectory() && normalized.getParent().isRoot();
+        return file.isDirectory() && file.getParent().isRoot();
     }
 
     public boolean isSharedWithMe(final Path file) {
@@ -214,7 +213,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     protected Path getCompanyPath(final Path file) {
-        Path company = fileid.normalize(file);
+        Path company = file;
         while(!company.isRoot() && !this.isCompany(company)) {
             company = company.getParent();
         }

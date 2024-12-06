@@ -83,7 +83,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
     public void testSharedWithMe_Box() {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
-        final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Testing (1 Christian Gruber)", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
+        final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
         assertThrows(AccessDeniedException.class, () -> directory.mkdir(folder, new TransferStatus()));
@@ -103,7 +103,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
     public void testSharedWithMe_Inbox() {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
-        final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Testing (1 Christian Gruber)/Inbox", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
+        final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)/Inbox", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
         assertThrows(InteroperabilityException.class, () -> directory.mkdir(folder, new TransferStatus()));
