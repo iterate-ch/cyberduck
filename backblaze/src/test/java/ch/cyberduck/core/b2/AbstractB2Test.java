@@ -24,10 +24,10 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
@@ -46,11 +46,11 @@ public class AbstractB2Test extends VaultTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{VaultMetadata.Type.V8, VaultMetadata.Type.UVF};
     }
 
     @Parameterized.Parameter
-    public int vaultVersion;
+    public VaultMetadata.Type vaultVersion;
 
     @After
     public void disconnect() throws Exception {

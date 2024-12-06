@@ -16,7 +16,6 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
@@ -38,25 +37,24 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     }
 
     @Override
-    public Vault load(final Session<?> session, final Path directory, final String masterkey, final String config, final byte[] pepper) throws VaultUnlockCancelException {
+    public Vault load(final Session<?> session, final VaultMetadata metadata) throws VaultUnlockCancelException {
         synchronized(registry) {
-            if(registry.contains(directory)) {
-                return registry.find(session, directory);
+            if(registry.contains(metadata.root)) {
+                return registry.find(session, metadata.root);
             }
-            final Vault vault = VaultFactory.get(directory, masterkey, config, pepper);
-            log.info("Loading vault {} for session {}", vault, session);
+            log.info("Loading vault for session {}", session);
+            final Vault vault = VaultProviderFactory.get(session).provide(session, metadata);
             try {
-                if(registry.add(vault.load(session, prompt))) {
+                if(registry.add(vault.load(session, new DefaultVaultMetadataCallbackProvider(prompt)))) {
                     final EnumSet<Path.Type> type = directory.getType();
                     type.add(Path.Type.vault);
                     directory.setType(type);
                 }
             }
             catch(BackgroundException e) {
-                log.warn("Failure {} loading vault {}", e, vault);
+                log.warn("Failure {} loading vault", e);
                 throw new VaultUnlockCancelException(vault, e);
             }
-            return vault;
         }
     }
 }

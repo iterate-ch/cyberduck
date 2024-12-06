@@ -23,52 +23,19 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class CryptoWriteFeatureTest {
-
-    @Test
-    public void testCiphertextSize_CTR() throws Exception {
-        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Directory.class) {
-                    return (T) new Directory() {
-
-                        @Override
-                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
-                            assertTrue(folder.equals(home) || folder.isChild(home));
-                            return folder;
-                        }
-                    };
-                }
-                return super._getFeature(type);
-            }
-        };
-        final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"), CryptoVault.VAULT_VERSION_DEPRECATED);
-        int headerSize = vault.getFileHeaderCryptor().headerSize();
-        // zero file size
-        assertEquals(headerSize, vault.toCiphertextSize(0L, 0));
-        // one-byte file
-        assertEquals(headerSize + 48 + 1, vault.toCiphertextSize(0L, 1));
-        // file with chunk size length
-        assertEquals(headerSize + vault.getFileContentCryptor().ciphertextChunkSize(), vault.toCiphertextSize(0L, vault.getFileContentCryptor().cleartextChunkSize()));
-        // file with chunk size length + 1
-        assertEquals(headerSize + vault.getFileContentCryptor().ciphertextChunkSize() + 48 + 1, vault.toCiphertextSize(0L, vault.getFileContentCryptor().cleartextChunkSize() + 1));
-        // file with 2 * chunk size length
-        assertEquals(headerSize + 2 * vault.getFileContentCryptor().ciphertextChunkSize(), vault.toCiphertextSize(0L, 2 * vault.getFileContentCryptor().cleartextChunkSize()));
-        // file with 2 * chunk size length + 100
-        assertEquals(headerSize + 2 * vault.getFileContentCryptor().ciphertextChunkSize() + 48 + 100, vault.toCiphertextSize(0L, 2 * vault.getFileContentCryptor().cleartextChunkSize() + 100));
-    }
+@RunWith(value = Parameterized.class)
+public class CryptoWriteFeatureTest extends AbstractCryptoTests {
 
     @Test
     public void testCiphertextSize_GCM() throws Exception {
@@ -90,8 +57,8 @@ public class CryptoWriteFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"), CryptoVault.VAULT_VERSION);
+        final AbstractVault vault = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(home, vaultVersion));
         int headerSize = vault.getFileHeaderCryptor().headerSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0L, 0));
