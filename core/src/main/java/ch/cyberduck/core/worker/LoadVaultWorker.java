@@ -16,32 +16,27 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.VaultMetadata;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class LoadVaultWorker extends Worker<Vault> {
 
     private final VaultLookupListener listener;
-    private final Path directory;
+    private final VaultMetadata metadata;
 
-    public LoadVaultWorker(final VaultLookupListener listener, final Path directory) {
+    public LoadVaultWorker(final VaultLookupListener listener, final VaultMetadata metadata) {
         this.listener = listener;
-        this.directory = directory;
+        this.metadata = metadata;
     }
 
     @Override
     public Vault run(final Session<?> session) throws BackgroundException {
-        return listener.load(session, directory,
-                HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+        return listener.load(session, metadata);
     }
 
     @Override
@@ -58,18 +53,18 @@ public class LoadVaultWorker extends Worker<Vault> {
             return false;
         }
         final LoadVaultWorker that = (LoadVaultWorker) o;
-        return Objects.equals(directory, that.directory);
+        return Objects.equals(metadata, that.metadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(directory);
+        return Objects.hash(metadata);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("LoadVaultWorker{");
-        sb.append("directory=").append(directory);
+        sb.append("metadata=").append(metadata);
         sb.append('}');
         return sb.toString();
     }

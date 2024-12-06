@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -139,13 +140,17 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     private Map<String, String> metadata = Collections.emptyMap();
 
     /**
+     * Cryptomator vault metadata
+     */
+    private VaultMetadata vaultMetadata;
+    /**
      * Cryptomator decrypted path
      */
     private Path decrypted;
     /**
      * Unique identifier for cryptomator
      */
-    private String directoryId;
+    private byte[] directoryId;
 
     private Map<String, String> custom = Collections.emptyMap();
 
@@ -479,12 +484,12 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public String getDirectoryId() {
+    public byte[] getDirectoryId() {
         return directoryId;
     }
 
     @Override
-    public PathAttributes setDirectoryId(final String directoryId) {
+    public PathAttributes setDirectoryId(final byte[] directoryId) {
         this.directoryId = directoryId;
         return this;
     }

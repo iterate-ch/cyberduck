@@ -24,44 +24,51 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptoVaultTest;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
+import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class CryptoDirectoryV6ProviderTest {
+public class CryptoDirectoryV8ProviderTest {
 
     @Test(expected = NotfoundException.class)
     public void testToEncryptedInvalidArgument() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final CryptoVault vault = new CryptoVault(home);
-        final CryptoDirectory provider = new CryptoDirectoryV6Provider(home, vault);
-        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/vault/f", EnumSet.of(Path.Type.file)));
+        final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
+        final SecureRandom random = new SecureRandom();
+        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptoVault(home), new CryptoFilenameV7Provider());
+        provider.toEncrypted(session, new Path("/vault/f", EnumSet.of(Path.Type.file)));
     }
 
     @Test(expected = NotfoundException.class)
     public void testToEncryptedInvalidPath() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final CryptoVault vault = new CryptoVault(home);
-        final CryptoDirectory provider = new CryptoDirectoryV6Provider(home, vault);
-        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/", EnumSet.of(Path.Type.directory)));
+        final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
+        final SecureRandom random = new SecureRandom();
+        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptoVault(home), new CryptoFilenameV7Provider());
+        provider.toEncrypted(session, new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
     @Test
     public void testToEncryptedDirectory() throws Exception {
-        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -71,16 +78,20 @@ public class CryptoDirectoryV6ProviderTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
+                                    "  \"version\": 8,\n" +
+                                    "  \"scryptSalt\": \"RVAAirkArDU=\",\n" +
+                                    "  \"scryptCostParam\": 32768,\n" +
                                     "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
+                                    "  \"primaryMasterKey\": \"+03NkJNWVsJ9Tb1CTpKhXyfINzjDirFFI+iJLOWIOySyxB+abpx34Q==\",\n" +
+                                    "  \"hmacMasterKey\": \"aMoDtn7Y6kIXxyHo2zl47p5jCYTlRnfx3l3AMgULmIDSYAxVAraSgg==\",\n" +
+                                    "  \"versionMac\": \"FzirA8UhwCmS5RsC4JvxbO+ZBxaCbIkzqD2Ocagd+A8=\"\n" +
                                     "}";
+
                             if("masterkey.cryptomator".equals(file.getName())) {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                            }
+                            if("vault.cryptomator".equals(file.getName())) {
+                                return IOUtils.toInputStream(CryptoVaultTest.createJWT(masterKey, CryptoVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -94,17 +105,17 @@ public class CryptoDirectoryV6ProviderTest {
                 return super._getFeature(type);
             }
         };
+        final Path home = new Path("/vault", EnumSet.of((Path.Type.directory)));
         final CryptoVault vault = new CryptoVault(home);
-        vault.load(session, new DisabledPasswordCallback() {
-            @Override
+        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault");
+                return new VaultCredentials("vault123");
             }
-        });
-        final CryptoDirectory provider = new CryptoDirectoryV6Provider(home, vault);
-        assertNotNull(provider.toEncrypted(session, null, home));
+        }));
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider());
+        assertNotNull(provider.toEncrypted(session, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));
-        assertNotNull(provider.toEncrypted(session, null, f));
-        assertEquals(provider.toEncrypted(session, null, f), provider.toEncrypted(session, null, f));
+        assertNotNull(provider.toEncrypted(session, f));
+        assertEquals(provider.toEncrypted(session, f), provider.toEncrypted(session, f));
     }
 }

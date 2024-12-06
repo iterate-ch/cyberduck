@@ -21,7 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptoVault;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -87,7 +87,7 @@ public class CryptoBulkFeatureTest {
                 return item.remote.isDirectory();
             }
         }).findFirst().get().remote;
-        final String directoryId = encryptedDirectory.attributes().getDirectoryId();
+        final byte[] directoryId = encryptedDirectory.attributes().getDirectoryId();
         assertNotNull(directoryId);
         for(TransferItem file : pre.keySet().stream().filter(new Predicate<TransferItem>() {
             @Override

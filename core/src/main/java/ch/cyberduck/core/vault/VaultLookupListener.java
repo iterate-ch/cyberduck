@@ -15,7 +15,6 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
 
@@ -31,5 +30,5 @@ public interface VaultLookupListener {
      * @return The loaded vault instance.
      * @throws VaultUnlockCancelException If the vault unlock operation is canceled.
      */
-    Vault load(final Session<?> session, Path directory, String masterkey, final String config, byte[] pepper) throws VaultUnlockCancelException;
+    Vault load(final Session<?> session, VaultMetadata metadata) throws VaultUnlockCancelException;
 }

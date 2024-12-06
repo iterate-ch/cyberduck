@@ -17,9 +17,11 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.runners.Parameterized;
 
@@ -30,11 +32,11 @@ public abstract class AbstractOneDriveTest extends AbstractGraphTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{VaultMetadata.Type.V8, VaultMetadata.Type.UVF};
     }
 
     @Parameterized.Parameter
-    public int vaultVersion;
+    public VaultMetadata.Type vaultVersion;
 
     @Override
     protected Protocol protocol() {
