@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Vault;
@@ -31,7 +30,7 @@ public class CryptoEncryptionFeature implements Encryption {
     private final Encryption delegate;
     private final Vault vault;
 
-    public CryptoEncryptionFeature(final Session<?> session, final Encryption delegate, final CryptoVault vault) {
+    public CryptoEncryptionFeature(final Session<?> session, final Encryption delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;

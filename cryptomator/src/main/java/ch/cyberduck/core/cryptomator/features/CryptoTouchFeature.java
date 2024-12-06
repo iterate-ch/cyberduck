@@ -19,7 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
@@ -35,9 +35,9 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
 
     private final Session<?> session;
     private final Touch<Reply> proxy;
-    private final CryptoVault vault;
+    private final AbstractVault vault;
 
-    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final CryptoVault cryptomator) {
+    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final AbstractVault cryptomator) {
         this.session = session;
         this.proxy = proxy;
         this.vault = cryptomator;
