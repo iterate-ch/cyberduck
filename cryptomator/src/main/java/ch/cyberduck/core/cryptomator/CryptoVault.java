@@ -76,6 +76,10 @@ import static ch.cyberduck.core.vault.DefaultVaultRegistry.DEFAULT_VAULTCONFIG_F
 /**
  * Cryptomator vault implementation
  */
+// UVF: Keep this as façade for detecting vault version and delegating to implementation
+// - upon create, the vault version is determined from preferences -> set the delegate impl
+// - upon unlock, the vault version needs to be determined by reading masterkey.cryptomator or (!) vault.uvf file -> set the delegate impl
+// - open is called either from create or unlock, hence at this point we can delegate calls to the v6/v7/uvf imple?
 public class CryptoVault implements Vault {
     private static final Logger log = LogManager.getLogger(CryptoVault.class);
 
@@ -114,6 +118,7 @@ public class CryptoVault implements Vault {
     private final byte[] pepper;
 
     public CryptoVault(final Path home) {
+        // UVF: readVaultConfig - do we need to try multiple file names for dection "masterkey.cryptomator" and "vault.uvf"?
         this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_VAULTCONFIG_FILE_NAME, VAULT_PEPPER);
     }
 
@@ -121,6 +126,8 @@ public class CryptoVault implements Vault {
         this.home = home;
         this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vault));
+
+        // UVF: no pepper for uvf
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
@@ -133,10 +140,13 @@ public class CryptoVault implements Vault {
         }
     }
 
+    // UVF:  VaultCredentials must come with specification of recipient, see the recipient header in https://github.com/encryption-alliance/unified-vault-format/tree/develop/vault%20metadata#example-per-recipient-unprotected-header
+    // UVF:  version string instead of int?
     public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final int version) throws BackgroundException {
         return this.create(session, null, credentials, version);
     }
 
+    // UVF: Switch on version ->  CryptoVaultImple: one for v6/v7 and one for uvf
     public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final int version) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
@@ -219,6 +229,7 @@ public class CryptoVault implements Vault {
         return this.unlock(session, prompt, bookmark, passphrase);
     }
 
+    // UVF: VaultConfig v6/v7 only
     private VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
         try {
             final String token = new ContentReader(session).read(config);
@@ -235,7 +246,7 @@ public class CryptoVault implements Vault {
         }
     }
 
-
+    // UVF: v6/v7 specific
     public static VaultConfig parseVaultConfigFromJWT(final String token) {
         final DecodedJWT decoded = JWT.decode(token);
         return new VaultConfig(
@@ -245,6 +256,8 @@ public class CryptoVault implements Vault {
                 decoded.getAlgorithm(), decoded);
     }
 
+    // UVF: v6/v7 and vault.uvf are different - can we use  the new MasterKey interface from https://github.com/cryptomator/cryptolib/pull/51/files?
+    // called from readVaultConfig() only which is v6/v7 only... good for us!
     private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path masterkey) throws BackgroundException {
         log.debug("Read master key {}", masterkey);
         try (Reader reader = new ContentReader(session).getReader(masterkey)) {
@@ -256,6 +269,7 @@ public class CryptoVault implements Vault {
     }
 
     public CryptoVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+        // UVF:  we need to detect the version here, vault.uvf is different from VaultConfig
         final VaultConfig vaultConfig = this.readVaultConfig(session);
         this.unlock(vaultConfig, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
@@ -263,6 +277,7 @@ public class CryptoVault implements Vault {
         return this;
     }
 
+    // UVF: extract to v6/v7 and uvf imple
     public void unlock(final VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
                        final String message) throws BackgroundException {
         final Credentials credentials;
@@ -316,6 +331,7 @@ public class CryptoVault implements Vault {
         fileNameCryptor = null;
     }
 
+    // UVF: at this point, we have done the version detection, we can directly go to a delegate, no switch
     protected CryptoFilename createFilenameProvider(final VaultConfig vaultConfig) {
         switch(vaultConfig.version) {
             case VAULT_VERSION_DEPRECATED:
@@ -334,10 +350,15 @@ public class CryptoVault implements Vault {
         }
     }
 
+    // UVF: extract to v6/v7/uvf imple, VaultConfig only for v6/v7
+    // pro memoria:
+    //   create -> open
+    //   unlock -> open
     protected void open(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
         this.open(vaultConfig, passphrase, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
     }
 
+    // UVF:  extract to v6/v7/uvf, at this point we know which version
     protected void open(final VaultConfig vaultConfig, final CharSequence passphrase,
                         final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         try {
@@ -352,10 +373,12 @@ public class CryptoVault implements Vault {
         }
     }
 
+    // UVF: unused?!
     protected void open(final VaultConfig vaultConfig, final Masterkey masterKey) throws BackgroundException {
         this.open(vaultConfig, masterKey, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
     }
 
+    // UVF:  extract to v6/v7 imple, can we use  the new MasterKey interface from https://github.com/cryptomator/cryptolib/pull/51/files?
     protected void open(final VaultConfig vaultConfig, final Masterkey masterKey,
                         final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         this.vaultVersion = vaultConfig.version;
@@ -403,6 +426,7 @@ public class CryptoVault implements Vault {
         return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
     }
 
+    // UVF: extract to delegate?
     public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
         final Path encrypted;
         if(file.isFile() || metadata) {
