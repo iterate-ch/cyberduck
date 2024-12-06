@@ -1,7 +1,7 @@
 package ch.cyberduck.core.cryptomator.features;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,16 +30,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
+import java.nio.ByteBuffer;
 import java.util.EnumSet;
 
-public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
-    private static final Logger log = LogManager.getLogger(CryptoDirectoryV7Feature.class);
+public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<Reply> {
+    private static final Logger log = LogManager.getLogger(CryptoDirectoryUVFFeature.class);
 
     private final Session<?> session;
     private final Directory<Reply> delegate;
     private final AbstractVault vault;
 
-    public CryptoDirectoryV7Feature(final Session<?> session, final Directory<Reply> delegate, final AbstractVault vault) {
+    public CryptoDirectoryUVFFeature(final Session<?> session, final Directory<Reply> delegate, final AbstractVault vault) {
+        super(session, delegate, vault);
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
@@ -50,25 +52,30 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         final byte[] directoryId = vault.getDirectoryProvider().createDirectoryId(folder);
         // Create metadata file for directory
         final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(
-                session._getFeature(Write.class), vault.encrypt(session, folder, true),
-                new TransferStatus().setRegion(status.getRegion()));
+                session._getFeature(Write.class), vault.encrypt(session, folder, true), new TransferStatus().setRegion(status.getRegion()));
         final Path directoryMetadataFile = new Path(directoryMetadataFolder,
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
-        directoryMetadataFile.setAttributes(new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8), new TransferStatus()));
-        new ContentWriter(session).write(directoryMetadataFile, directoryId);
+        new ContentWriter(session).write(directoryMetadataFile, this.encryptDirectoryMetadataWithCurrentRevision(directoryId));
         final Path encrypt = vault.encrypt(session, folder, false);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
-            session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
+            session._getFeature(Directory.class).mkdir(
+                    session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
-        // Write header
+        // Write metadata
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
         final Path target = delegate.mkdir(writer, encrypt, status);
+        final Path recoveryDirectoryMetadataFile = new Path(target,
+                vault.getDirectoryMetadataFilename(),
+                EnumSet.of(Path.Type.file));
+        log.debug("Write recovery metadata {} for folder {}", recoveryDirectoryMetadataFile, folder);
+        new ContentWriter(session).write(recoveryDirectoryMetadataFile, this.encryptDirectoryMetadataWithCurrentRevision(directoryId));
         // Implementation may return new copy of attributes without encryption attributes
+
         target.attributes().setDirectoryId(directoryId);
         target.attributes().setDecrypted(folder);
         // Make reference of encrypted path in attributes of decrypted file point to metadata file
@@ -78,20 +85,22 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         return decrypt;
     }
 
-    @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return delegate.isSupported(workdir, name);
-    }
-
-    @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        delegate.preflight(vault.encrypt(session, workdir), filename);
+    // TODO replace with DirectoryContentCryptor#encryptDirectoryMetadata once we have access to dirId
+    private byte[] encryptDirectoryMetadataWithCurrentRevision(final byte[] dirId) {
+        final ByteBuffer cleartextBuf = ByteBuffer.wrap(dirId);
+        final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
+        final ByteBuffer headerBuf = vault.getCryptor().fileHeaderCryptor().encryptHeader(header);
+        final ByteBuffer contentBuf = vault.getCryptor().fileContentCryptor().encryptChunk(cleartextBuf, 0, header);
+        final byte[] result = new byte[headerBuf.remaining() + contentBuf.remaining()];
+        headerBuf.get(result, 0, headerBuf.remaining());
+        contentBuf.get(result, headerBuf.limit(), contentBuf.remaining());
+        return result;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CryptoDirectoryV7Feature{");
-        sb.append("proxy=").append(delegate);
+        final StringBuilder sb = new StringBuilder("CryptoDirectoryUVFFeature{");
+        sb.append("vault=").append(vault);
         sb.append('}');
         return sb.toString();
     }

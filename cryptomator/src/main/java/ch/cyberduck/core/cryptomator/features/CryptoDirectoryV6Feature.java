@@ -19,8 +19,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentWriter;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -32,17 +32,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
-import java.nio.charset.StandardCharsets;
-
 public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryV6Feature.class);
 
     private final Session<?> session;
     private final Directory<Reply> delegate;
-    private final CryptoVault vault;
+    private final AbstractVault vault;
     private final RandomStringService random = new UUIDRandomStringService();
 
-    public CryptoDirectoryV6Feature(final Session<?> session, final Directory<Reply> delegate, final CryptoVault cryptomator) {
+    public CryptoDirectoryV6Feature(final Session<?> session, final Directory<Reply> delegate, final AbstractVault cryptomator) {
         this.session = session;
         this.delegate = delegate;
         this.vault = cryptomator;
@@ -50,12 +48,12 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
-        final Path encrypt = vault.encrypt(session, folder, random.random(), false);
-        final String directoryId = encrypt.attributes().getDirectoryId();
+        final byte[] directoryId = vault.getDirectoryProvider().createDirectoryId(folder);
+        final Path encrypt = vault.encrypt(session, folder, false);
         // Create metadata file for directory
         final Path directoryMetadataFile = vault.encrypt(session, folder, true);
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
-        directoryMetadataFile.setAttributes(new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8), new TransferStatus()));
+        new ContentWriter(session).write(directoryMetadataFile, directoryId);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
@@ -87,7 +85,7 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CryptoDirectoryFeature{");
+        final StringBuilder sb = new StringBuilder("CryptoDirectoryV6Feature{");
         sb.append("proxy=").append(delegate);
         sb.append('}');
         return sb.toString();
