@@ -20,8 +20,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -33,9 +33,9 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     private final Session<?> session;
     private final Upload<Reply> proxy;
-    private final CryptoVault vault;
+    private final AbstractVault vault;
 
-    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final CryptoVault vault) {
+    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final AbstractVault vault) {
         this.session = session;
         this.proxy = delegate;
         this.vault = vault;

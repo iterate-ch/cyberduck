@@ -90,7 +90,7 @@ public class CryptoReadFeatureTest {
                 }).
 
                 getHome());
-        CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
+        CryptoReadFeature read = new CryptoReadFeature(session, null, vault);
 
         {
             assertEquals(0, read.chunk(0));

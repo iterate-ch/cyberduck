@@ -19,8 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
@@ -35,12 +34,12 @@ public class CryptoMoveV7Feature implements Move {
 
     private final Session<?> session;
     private final Move proxy;
-    private final CryptoVault vault;
+    private final AbstractVault vault;
 
-    public CryptoMoveV7Feature(final Session<?> session, final Move delegate, final CryptoVault cryptomator) {
+    public CryptoMoveV7Feature(final Session<?> session, final Move delegate, final AbstractVault vault) {
         this.session = session;
         this.proxy = delegate;
-        this.vault = cryptomator;
+        this.vault = vault;
     }
 
     @Override
@@ -51,8 +50,8 @@ public class CryptoMoveV7Feature implements Move {
         final Path target = proxy.move(sourceEncrypted, targetEncrypted, status, callback, connectionCallback);
         if(file.isDirectory()) {
             if(!proxy.isRecursive(file, renamed)) {
-                proxy.move(new Path(sourceEncrypted, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file)),
-                        new Path(targetEncrypted, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file)),
+                proxy.move(new Path(sourceEncrypted, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file)),
+                        new Path(targetEncrypted, vault.getBackupDirectoryMetadataFilename(), EnumSet.of(Path.Type.file)),
                         new TransferStatus(status), callback, connectionCallback);
             }
             vault.getDirectoryProvider().delete(file);
