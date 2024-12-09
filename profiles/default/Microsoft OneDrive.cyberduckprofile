@@ -57,5 +57,7 @@
         <false/>
         <key>Username Configurable</key>
         <false/>
+        <key>Path Placeholder</key>
+        <string>/My Files</string>
     </dict>
 </plist>
