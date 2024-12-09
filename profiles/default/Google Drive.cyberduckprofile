@@ -45,5 +45,7 @@
         <false/>
         <key>Username Configurable</key>
         <false/>
+        <key>Path Placeholder</key>
+        <string>/My Drive</string>
     </dict>
 </plist>
