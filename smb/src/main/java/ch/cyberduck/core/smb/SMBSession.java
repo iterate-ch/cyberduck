@@ -228,6 +228,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     protected Connection connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final SMBClient client = new SMBClient(SmbConfig.builder()
+                    .withWorkStationName(new HostPreferences(host).getProperty("smb.ntlm.workstation"))
                     .withSocketFactory(new ProxySocketFactory(host))
                     .withTimeout(ConnectionTimeoutFactory.get(new HostPreferences(host)).getTimeout(), TimeUnit.SECONDS)
                     .withSoTimeout(new HostPreferences(host).getLong("smb.socket.timeout"), TimeUnit.SECONDS)
