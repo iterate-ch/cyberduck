@@ -347,7 +347,7 @@ public class DeepboxListService implements ListService {
             try {
                 final AttributedList<Path> list = new AttributedList<>();
                 final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
-                final Overview overview = rest.getOverview(companyId, chunksize, null);
+                final Overview overview = rest.getOverview(companyId, 1, null);
                 for(final BoxEntry box : overview.getSharedWithMe().getBoxes()) {
                     list.add(new Path(directory,
                             String.format("%s (%s)", DeepboxPathNormalizer.name(box.getDeepBoxName()), DeepboxPathNormalizer.name(box.getBoxName())),
