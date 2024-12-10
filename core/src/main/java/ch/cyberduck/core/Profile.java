@@ -216,7 +216,7 @@ public class Profile implements Protocol {
     @Override
     public String getHostnamePlaceholder() {
         final String v = this.value(HOSTNAME_PLACEHOLDER_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return parent.getHostnamePlaceholder();
         }
         return v;
@@ -225,7 +225,7 @@ public class Profile implements Protocol {
     @Override
     public String getPathPlaceholder() {
         final String v = this.value(PATH_PLACEHOLDER_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return parent.getPathPlaceholder();
         }
         return v;
@@ -234,7 +234,7 @@ public class Profile implements Protocol {
     @Override
     public String getUsernamePlaceholder() {
         final String v = this.value(USERNAME_PLACEHOLDER_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return parent.getUsernamePlaceholder();
         }
         return LocaleFactory.localizedString(v, "Credentials");
@@ -243,7 +243,7 @@ public class Profile implements Protocol {
     @Override
     public String getPasswordPlaceholder() {
         final String v = this.value(PASSWORD_PLACEHOLDER_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return parent.getPasswordPlaceholder();
         }
         return LocaleFactory.localizedString(v, "Credentials");
@@ -252,7 +252,7 @@ public class Profile implements Protocol {
     @Override
     public String getTokenPlaceholder() {
         final String v = this.value(TOKEN_PLACEHOLDER_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return parent.getTokenPlaceholder();
         }
         return LocaleFactory.localizedString(v, "Credentials");
@@ -261,7 +261,7 @@ public class Profile implements Protocol {
     @Override
     public String getDefaultHostname() {
         final String v = this.value(DEFAULT_HOSTNAME_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return parent.getDefaultHostname();
         }
         return v;
@@ -320,7 +320,7 @@ public class Profile implements Protocol {
     @Override
     public String getDefaultPath() {
         final String v = this.value(DEFAULT_PATH_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return parent.getDefaultPath();
         }
         return v;
@@ -329,7 +329,7 @@ public class Profile implements Protocol {
     @Override
     public String getDefaultNickname() {
         final String v = this.value(DEFAULT_NICKNAME_KEY);
-        if(StringUtils.isBlank(v)) {
+        if(null == v) {
             return null;
         }
         return v;
