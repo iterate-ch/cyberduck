@@ -73,7 +73,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         break;
                 }
             };
-            _browser.Invoke(d);
+            _browser.Invoke(d, true);
             return credentials;
         }
 
