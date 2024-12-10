@@ -28,14 +28,12 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 
-import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthSchemeProvider;
@@ -59,7 +57,6 @@ import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.WinHttpClients;
-import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -210,7 +207,6 @@ public class HttpConnectionPoolBuilder {
                         new BackportWindowsNegotiateSchemeFactory(null) :
                         new SPNegoSchemeFactory())
                 .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
-        configuration.setDnsResolver(new CustomDnsResolver());
         if(new HostPreferences(host).getBoolean("connection.retry.backoff.enable")) {
             final AIMDBackoffManager manager = new AIMDBackoffManager(connectionManager);
             manager.setPerHostConnectionCap(new HostPreferences(host).getInteger("http.connections.route"));
@@ -242,7 +238,7 @@ public class HttpConnectionPoolBuilder {
 
     public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry) {
         log.debug("Setup connection pool with registry {}", registry);
-        final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
+        final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry, new CustomDnsResolver());
         manager.setMaxTotal(new HostPreferences(host).getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(new HostPreferences(host).getInteger("http.connections.route"));
         // Detect connections that have become stale (half-closed) while kept inactive in the pool
