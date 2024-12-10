@@ -91,7 +91,7 @@ public class DeepboxReadFeature implements Read {
             final ScheduledFuture<?> f = scheduler.repeat(() -> {
                 try {
                     if(System.currentTimeMillis() - start > timeout) {
-                        failure.set(new ConnectionCanceledException(String.format("Interrupt polling for migration key after %d", timeout)));
+                        failure.set(new ConnectionCanceledException(String.format("Interrupt polling for download URL after %d", timeout)));
                         signal.countDown();
                         return;
                     }
