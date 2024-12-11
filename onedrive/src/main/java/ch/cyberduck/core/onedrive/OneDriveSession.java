@@ -41,10 +41,13 @@ import org.nuxeo.onedrive.client.types.User;
 import java.io.IOException;
 import java.util.Optional;
 
+import static ch.cyberduck.core.onedrive.OneDriveHomeFinderService.MYFILES_NAME;
+import static ch.cyberduck.core.onedrive.OneDriveHomeFinderService.SHARED_NAME;
+
 public class OneDriveSession extends GraphSession {
 
-    public final static ContainerItem MYFILES = new ContainerItem(OneDriveListService.MYFILES_NAME, null, true);
-    public final static ContainerItem SHAREDFILES = new ContainerItem(null, OneDriveListService.SHARED_NAME, false);
+    public final static ContainerItem MYFILES = new ContainerItem(MYFILES_NAME, null, true);
+    public final static ContainerItem SHAREDFILES = new ContainerItem(null, SHARED_NAME, false);
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -73,7 +76,7 @@ public class OneDriveSession extends GraphSession {
 
     @Override
     public DriveItem.Metadata getMetadata(final DriveItem item, ODataQuery query) throws IOException {
-        if (query == null) {
+        if(query == null) {
             query = new ODataQuery();
         }
         query.select(BaseItem.Property.ParentReference, DriveItem.Property.RemoteItem);
@@ -85,7 +88,7 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        if(new SimplePathPredicate(OneDriveListService.MYFILES_NAME).test(file)) {
+        if(new SimplePathPredicate(MYFILES_NAME).test(file)) {
             final User.Metadata user = this.getUser();
             // creationType can be non-assigned (Microsoft Account)
             // or null, Inviation, LocalAccount or EmailVerified.
@@ -172,10 +175,10 @@ public class OneDriveSession extends GraphSession {
 
     @Override
     public ContainerItem getContainer(final Path file) {
-        if(new SimplePathPredicate(OneDriveListService.MYFILES_NAME).test(file) || file.isChild(OneDriveListService.MYFILES_NAME)) {
+        if(new SimplePathPredicate(MYFILES_NAME).test(file) || file.isChild(MYFILES_NAME)) {
             return MYFILES;
         }
-        if(new SimplePathPredicate(OneDriveListService.SHARED_NAME).test(file) || file.isChild(OneDriveListService.SHARED_NAME)) {
+        if(new SimplePathPredicate(SHARED_NAME).test(file) || file.isChild(SHARED_NAME)) {
             return SHAREDFILES;
         }
         return ContainerItem.EMPTY;
