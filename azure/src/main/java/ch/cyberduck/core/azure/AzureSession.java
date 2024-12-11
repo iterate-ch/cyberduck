@@ -74,6 +74,7 @@ import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.SendingRequestEvent;
 import com.microsoft.azure.storage.StorageCredentials;
 import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
+import com.microsoft.azure.storage.StorageCredentialsSharedAccessSignature;
 import com.microsoft.azure.storage.StorageEvent;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 
@@ -102,10 +103,15 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     @Override
     protected CloudBlobClient connect(final ProxyFinder proxyfinder, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            // Client configured with no credentials
+            final StorageCredentials credentials;
+            if(host.getCredentials().isTokenAuthentication()) {
+                credentials = new StorageCredentialsSharedAccessSignature(host.getCredentials().getToken());
+            }
+            else {
+                credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
+            }
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
-            final CloudBlobClient client = new CloudBlobClient(uri,
-                    new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null"));
+            final CloudBlobClient client = new CloudBlobClient(uri, credentials);
             client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
             context.setLoggingEnabled(true);
             context.setLogger(LoggerFactory.getLogger(log.getName()));
