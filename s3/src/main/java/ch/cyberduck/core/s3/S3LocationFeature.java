@@ -149,7 +149,7 @@ public class S3LocationFeature implements Location {
 
         @Override
         public String toString() {
-            final String identifier = getIdentifier();
+            final String identifier = this.getIdentifier();
             if(null == identifier) {
                 return LocaleFactory.localizedString("Unknown");
             }
