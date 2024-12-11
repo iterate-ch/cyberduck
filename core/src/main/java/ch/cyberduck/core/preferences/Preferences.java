@@ -314,6 +314,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         // If true, the client will send a session ticket extension in the ClientHello for TLS 1.2 and earlier.
         // Set to false as statless session resumption breaks session reuse in FTPS
         System.setProperty("jdk.tls.client.enableSessionTicketExtension", String.valueOf(false));
+        System.setProperty("aws.java.v1.disableDeprecationAnnouncement", String.valueOf(true));
     }
 
     /**
