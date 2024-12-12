@@ -45,6 +45,8 @@
         <false/>
         <key>Username Configurable</key>
         <false/>
+        <key>Default Path</key>
+        <string>/My Drive</string>
         <key>Path Placeholder</key>
         <string>/My Drive</string>
     </dict>

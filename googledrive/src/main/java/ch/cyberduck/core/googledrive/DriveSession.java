@@ -38,9 +38,6 @@ import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.shared.DefaultPathHomeFeature;
-import ch.cyberduck.core.shared.DelegatingHomeFeature;
-import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -182,9 +179,6 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Versioning.class) {
             return (T) new DriveVersioningFeature(this, fileid);
-        }
-        if(type == Home.class) {
-            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new DriveHomeFinderService());
         }
         return super._getFeature(type);
     }
