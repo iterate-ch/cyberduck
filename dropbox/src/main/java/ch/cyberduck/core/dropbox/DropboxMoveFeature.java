@@ -70,7 +70,7 @@ public class DropboxMoveFeature implements Move {
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
         if(!DropboxTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
         }
     }
 }
