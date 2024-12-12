@@ -34,6 +34,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Move.validate;
+
 public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy {
     private static final Logger log = LogManager.getLogger(BrickCopyFeature.class);
 
@@ -68,5 +70,11 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
     @Override
     public EnumSet<Flags> features(final Path source, final Path target) {
         return EnumSet.of(Flags.recursive);
+    }
+
+    @Override
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        Copy.super.preflight(source, target);
+        validate(session.getCaseSensitivity(), source, target);
     }
 }

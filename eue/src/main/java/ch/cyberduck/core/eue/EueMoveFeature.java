@@ -44,6 +44,8 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Move.validate;
+
 public class EueMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(EueMoveFeature.class);
 
@@ -150,6 +152,7 @@ public class EueMoveFeature implements Move {
         if(!EueTouchFeature.validate(target.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
         }
+        validate(session.getCaseSensitivity(), source, target);
     }
 
     @Override

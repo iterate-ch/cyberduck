@@ -37,6 +37,8 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.RelocationResult;
 
+import static ch.cyberduck.core.features.Move.validate;
+
 public class DropboxCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(DropboxCopyFeature.class);
 
@@ -75,5 +77,6 @@ public class DropboxCopyFeature implements Copy {
         if(!DropboxTouchFeature.validate(target.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
         }
+        validate(session.getCaseSensitivity(), source, target);
     }
 }

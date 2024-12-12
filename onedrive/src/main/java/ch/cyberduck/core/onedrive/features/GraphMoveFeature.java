@@ -46,6 +46,8 @@ import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Move.validate;
+
 public class GraphMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(GraphMoveFeature.class);
 
@@ -112,5 +114,6 @@ public class GraphMoveFeature implements Move {
         if(source.getType().contains(Path.Type.shared)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
+        validate(session.getCaseSensitivity(), source, target);
     }
 }

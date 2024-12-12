@@ -39,6 +39,8 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Move.validate;
+
 public class BoxCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(BoxCopyFeature.class);
 
@@ -89,5 +91,6 @@ public class BoxCopyFeature implements Copy {
         if(!BoxTouchFeature.validate(target.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
         }
+        validate(session.getCaseSensitivity(), source, target);
     }
 }

@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Move.validate;
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class StoregateMoveFeature implements Move {
@@ -88,6 +89,12 @@ public class StoregateMoveFeature implements Move {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
+    }
+
+    @Override
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        Move.super.preflight(source, target);
+        validate(session.getCaseSensitivity(), source, target);
     }
 
     @Override

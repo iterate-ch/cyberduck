@@ -46,6 +46,8 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Move.validate;
+
 public class SDSMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(SDSMoveFeature.class);
 
@@ -152,5 +154,6 @@ public class SDSMoveFeature implements Move {
             log.warn("Deny move of {} to {} with missing permissions for user with missing role {} on data room {}", source, target, SDSPermissionsFeature.CHANGE_ROLE, containerService.getContainer(source));
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
+        validate(session.getCaseSensitivity(), source, target);
     }
 }
