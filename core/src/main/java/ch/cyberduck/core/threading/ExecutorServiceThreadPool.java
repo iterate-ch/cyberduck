@@ -65,4 +65,12 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
     public AbstractExecutorService executor() {
         return pool;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ExecutorServiceThreadPool{");
+        sb.append("pool=").append(pool);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -64,4 +64,15 @@ public class NamedThreadFactory implements ThreadFactory {
         thread.setUncaughtExceptionHandler(handler);
         return thread;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("NamedThreadFactory{");
+        sb.append("threadNumber=").append(threadNumber);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", priority=").append(priority);
+        sb.append(", handler=").append(handler);
+        sb.append('}');
+        return sb.toString();
+    }
 }
