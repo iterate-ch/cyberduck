@@ -404,7 +404,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             try {
                 final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
                 final String companyId = DeepboxIdProvider.this.getFileId(file.getParent());
-                final Overview overview = rest.getOverview(companyId, chunksize, null);
+                final Overview overview = rest.getOverview(companyId, 1, null);
                 return overview.getSharedWithMe().getBoxes().stream().filter(box ->
                         DeepboxPathNormalizer.name(box.getDeepBoxName()).equals(file.getName())).findFirst().map(BoxEntry::getDeepBoxNodeId).orElse(null);
             }
