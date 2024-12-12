@@ -761,6 +761,9 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         sb.append(", region=").append(region);
         sb.append(", part=").append(part);
         sb.append(", filekey=").append(filekey);
+        sb.append(", canceled=").append(canceled);
+        sb.append(", complete=").append(complete);
+        sb.append(", done=").append(done);
         sb.append('}');
         return sb.toString();
     }
