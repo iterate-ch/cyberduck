@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+9.1.1
+- [Bugfix] Repeated prompts for passphrase (Cryptomator, Windows) (#16645)
+- [Bugfix] Missing list of buckets (Linode Object Storage) (#16659)
+
 9.1.0
 - [Feature] Display transfer progress in Finder for downloads and uploads (macOS) (#16568)
 - [Feature] Show indeterminate progress when concatenating segments after download transfer (#13610)
