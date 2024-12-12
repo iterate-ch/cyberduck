@@ -19,10 +19,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.AbstractHomeFeature;
 
+import java.util.EnumSet;
+
 public class OneDriveHomeFinderService extends AbstractHomeFeature {
+
+    public static final Path MYFILES_NAME = new Path("/My Files", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
+    public static final Path SHARED_NAME = new Path("/Shared", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
 
     @Override
     public Path find() throws BackgroundException {
-        return OneDriveListService.MYFILES_NAME;
+        return MYFILES_NAME;
     }
 }

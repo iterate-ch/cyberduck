@@ -57,6 +57,8 @@
         <false/>
         <key>Username Configurable</key>
         <false/>
+        <key>Default Path</key>
+        <string>/My Files</string>
         <key>Path Placeholder</key>
         <string>/My Files</string>
     </dict>

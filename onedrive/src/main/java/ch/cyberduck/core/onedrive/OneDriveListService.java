@@ -24,12 +24,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.onedrive.SharedWithMeListService;
 
-import java.util.EnumSet;
+import static ch.cyberduck.core.onedrive.OneDriveHomeFinderService.MYFILES_NAME;
+import static ch.cyberduck.core.onedrive.OneDriveHomeFinderService.SHARED_NAME;
 
 public class OneDriveListService implements ListService {
-
-    public static final Path MYFILES_NAME = new Path("/My Files", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
-    public static final Path SHARED_NAME = new Path("/Shared", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
