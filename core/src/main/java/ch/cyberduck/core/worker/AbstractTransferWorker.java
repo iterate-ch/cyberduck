@@ -156,8 +156,11 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
     @Override
     public void cancel() {
-        for(TransferStatus status : table.values()) {
+        for(Map.Entry<TransferItem, TransferStatus> entry : table.entrySet()) {
+            final TransferItem item = entry.getKey();
+            final TransferStatus status = entry.getValue();
             for(TransferStatus segment : status.getSegments()) {
+                log.warn("Cancel segment {} of item {}", segment, item);
                 segment.setCanceled();
             }
         }
