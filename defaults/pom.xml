@@ -30,11 +30,6 @@
     <profiles>
         <profile>
             <id>debug</id>
-            <activation>
-                <property>
-                    <name>!env.JENKINS_HOME</name>
-                </property>
-            </activation>
             <properties>
                 <configuration>debug</configuration>
             </properties>
