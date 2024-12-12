@@ -17,7 +17,9 @@ package ch.cyberduck.core.ocs;
 
 import ch.cyberduck.core.ocs.model.Capabilities;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,28 +38,31 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
 
     @Override
     public OcsCapabilities handleEntity(final HttpEntity entity) throws IOException {
-        final XmlMapper mapper = new XmlMapper();
-        final Capabilities value = mapper.readValue(entity.getContent(), Capabilities.class);
-        if(value.data != null) {
-            if(value.data.capabilities != null) {
-                if(value.data.capabilities.core != null) {
-                    capabilities.withWebdav(value.data.capabilities.core.webdav);
-                }
-                if(value.data.capabilities.files != null) {
-                    if(value.data.capabilities.files.locking != null) {
-                        try {
-                            capabilities.withLocking(1 == Double.parseDouble(value.data.capabilities.files.locking));
-                        }
-                        catch(NumberFormatException e) {
-                            log.warn("Failure parsing {}", value.data.capabilities.files.locking);
-                        }
+        if(StringUtils.equals(ContentType.APPLICATION_XML.getMimeType(),
+                ContentType.parse(entity.getContentType().getValue()).getMimeType())) {
+            final XmlMapper mapper = new XmlMapper();
+            final Capabilities value = mapper.readValue(entity.getContent(), Capabilities.class);
+            if(value.data != null) {
+                if(value.data.capabilities != null) {
+                    if(value.data.capabilities.core != null) {
+                        capabilities.withWebdav(value.data.capabilities.core.webdav);
                     }
-                    if(value.data.capabilities.files.versioning != null) {
-                        try {
-                            capabilities.withVersioning(1 == Integer.parseInt(value.data.capabilities.files.versioning));
+                    if(value.data.capabilities.files != null) {
+                        if(value.data.capabilities.files.locking != null) {
+                            try {
+                                capabilities.withLocking(1 == Double.parseDouble(value.data.capabilities.files.locking));
+                            }
+                            catch(NumberFormatException e) {
+                                log.warn("Failure parsing {}", value.data.capabilities.files.locking);
+                            }
                         }
-                        catch(NumberFormatException e) {
-                            log.warn("Failure parsing {}", value.data.capabilities.files.versioning);
+                        if(value.data.capabilities.files.versioning != null) {
+                            try {
+                                capabilities.withVersioning(1 == Integer.parseInt(value.data.capabilities.files.versioning));
+                            }
+                            catch(NumberFormatException e) {
+                                log.warn("Failure parsing {}", value.data.capabilities.files.versioning);
+                            }
                         }
                     }
                 }
