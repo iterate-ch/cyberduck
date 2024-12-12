@@ -39,6 +39,13 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
     public BackgroundException map(final StorageException failure) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
+        if(failure.getExtendedErrorInformation() != null) {
+            for(String[] details : failure.getExtendedErrorInformation().getAdditionalDetails().values()) {
+                for(String detail : details) {
+                    this.append(buffer, detail);
+                }
+            }
+        }
         if(ExceptionUtils.getRootCause(failure) instanceof UnknownHostException) {
             return new NotfoundException(buffer.toString(), failure);
         }

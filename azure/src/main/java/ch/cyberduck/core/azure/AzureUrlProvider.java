@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.CloudBlob;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPermissions;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 
@@ -94,15 +95,19 @@ public class AzureUrlProvider implements UrlProvider {
 
         @Override
         public String getUrl() {
-            final CloudBlob blob;
             try {
                 if(!session.isConnected()) {
                     return DescriptiveUrl.EMPTY.getUrl();
                 }
-                blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlobReferenceFromServer(containerService.getKey(file));
+                final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
                 final String token;
-                token = blob.generateSharedAccessSignature(this.getPolicy(expiry), null);
+                if(containerService.isContainer(file)) {
+                    token = container.generateSharedAccessSignature(this.getPolicy(expiry), null);
+                }
+                else {
+                    final CloudBlob blob = container.getBlobReferenceFromServer(containerService.getKey(file));
+                    token = blob.generateSharedAccessSignature(this.getPolicy(expiry), null);
+                }
                 return String.format("%s://%s%s?%s",
                         Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token);
             }
