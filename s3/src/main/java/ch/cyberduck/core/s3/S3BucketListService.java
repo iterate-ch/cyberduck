@@ -25,9 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Location;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -68,20 +66,7 @@ public class S3BucketListService implements RootListService {
                     attr.setRegion(b.getLocation());
                 }
                 else {
-                    if(region.getIdentifier() != null) {
-                        final String location;
-                        if(!b.isLocationKnown()) {
-                            location = session.getFeature(Location.class).getLocation(bucket).getIdentifier();
-                        }
-                        else {
-                            location = b.getLocation();
-                        }
-                        if(!StringUtils.equals(location, region.getIdentifier())) {
-                            log.warn("Skip bucket {} in region {}", bucket, location);
-                            continue;
-                        }
-                        attr.setRegion(location);
-                    }
+                    attr.setRegion(region.getIdentifier());
                 }
                 buckets.add(bucket);
                 listener.chunk(directory, buckets);

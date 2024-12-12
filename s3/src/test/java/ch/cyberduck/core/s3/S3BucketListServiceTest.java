@@ -26,15 +26,4 @@ public class S3BucketListServiceTest extends AbstractS3Test {
             assertEquals(bucket.attributes(), new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(bucket, new DisabledListProgressListener()));
         }
     }
-
-    @Test
-    public void testListRestrictRegion() throws Exception {
-        final AttributedList<Path> list = new S3BucketListService(session, new S3LocationFeature.S3Region("eu-central-1")).list(
-            new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        for(Path bucket : list) {
-            assertEquals("eu-central-1", bucket.attributes().getRegion());
-            assertEquals(bucket.attributes(), new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(bucket, new DisabledListProgressListener()));
-        }
-    }
 }
