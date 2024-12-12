@@ -600,8 +600,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                _host.setProtocol(selected);
-
                 var hostname = HostnameConfiguratorFactory.get(selected).getHostname(selected.getDefaultHostname());
                 if (Utils.IsNotBlank(hostname))
                 {
@@ -615,8 +613,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     _host.setDefaultPath(selected.getDefaultPath());
                 }
 
+                _host.setProtocol(selected);
                 _host.setPort(HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname()));
-                _host.setCredentials(CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host));
+                _host.setCredentials(CredentialsConfiguratorFactory.get(selected).configure(_host));
                 _options.configure(selected);
                 _validator.configure(selected);
                 ItemChanged();
