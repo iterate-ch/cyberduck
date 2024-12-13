@@ -91,11 +91,6 @@ public class StoregateMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        Move.super.preflight(source, target);
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path source, final Path target) {
         return EnumSet.of(Flags.recursive);
     }
