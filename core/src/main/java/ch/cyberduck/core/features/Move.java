@@ -18,16 +18,12 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
@@ -88,17 +84,6 @@ public interface Move {
         if(!target.getParent().attributes().getPermission().isWritable()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"),
                     source.getName())).withFile(source);
-        }
-    }
-
-    static void validate(final Protocol.Case sensitivity, final Path source, final Path target) throws BackgroundException {
-        switch(sensitivity) {
-            case insensitive:
-                if(new SimplePathPredicate(source.getParent()).test(target.getParent())) {
-                    if(StringUtils.equalsIgnoreCase(source.getName(), target.getName())) {
-                        throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
-                    }
-                }
         }
     }
 

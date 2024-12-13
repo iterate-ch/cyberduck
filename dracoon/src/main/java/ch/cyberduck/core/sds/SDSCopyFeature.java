@@ -39,7 +39,7 @@ import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import static ch.cyberduck.core.features.Move.validate;
+import static ch.cyberduck.core.features.Copy.validate;
 
 public class SDSCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(SDSCopyFeature.class);

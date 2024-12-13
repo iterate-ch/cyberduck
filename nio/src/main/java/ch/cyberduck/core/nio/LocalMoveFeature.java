@@ -28,8 +28,6 @@ import java.nio.file.NoSuchFileException;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.features.Move.validate;
-
 public class LocalMoveFeature implements Move {
 
     private final LocalSession session;
@@ -55,7 +53,6 @@ public class LocalMoveFeature implements Move {
     @Override
     public void preflight(final Path source, final Path target) throws BackgroundException {
         Move.super.preflight(source, target);
-        validate(session.getCaseSensitivity(), source, target);
     }
 
     @Override

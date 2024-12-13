@@ -37,7 +37,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.RelocationResult;
 
-import static ch.cyberduck.core.features.Move.validate;
+import static ch.cyberduck.core.features.Copy.validate;
 
 public class DropboxCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(DropboxCopyFeature.class);

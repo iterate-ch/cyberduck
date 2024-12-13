@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.features.Move.validate;
+import static ch.cyberduck.core.features.Copy.validate;
 
 public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy {
     private static final Logger log = LogManager.getLogger(BrickCopyFeature.class);

@@ -45,7 +45,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.features.Move.validate;
+import static ch.cyberduck.core.features.Copy.validate;
 
 public class EueCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(EueCopyFeature.class);

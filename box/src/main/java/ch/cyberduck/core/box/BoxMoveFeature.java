@@ -40,8 +40,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.features.Move.validate;
-
 public class BoxMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(BoxMoveFeature.class);
 
@@ -97,6 +95,5 @@ public class BoxMoveFeature implements Move {
         if(!BoxTouchFeature.validate(target.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
         }
-        validate(session.getCaseSensitivity(), source, target);
     }
 }

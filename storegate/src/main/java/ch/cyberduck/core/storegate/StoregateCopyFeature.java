@@ -28,7 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.features.Move.validate;
+import static ch.cyberduck.core.features.Copy.validate;
 
 public class StoregateCopyFeature implements Copy {
 

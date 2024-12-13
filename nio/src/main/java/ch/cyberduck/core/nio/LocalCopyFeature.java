@@ -27,7 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.features.Move.validate;
+import static ch.cyberduck.core.features.Copy.validate;
 
 public class LocalCopyFeature implements Copy {
 
