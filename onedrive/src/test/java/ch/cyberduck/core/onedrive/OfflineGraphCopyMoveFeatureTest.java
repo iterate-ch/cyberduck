@@ -57,47 +57,44 @@ public class OfflineGraphCopyMoveFeatureTest {
         final List<TestCase> cases = new ArrayList<>();
 
         // Rename Tests
-        // Assumption: Cyberduck always uses same source and target path to indicate rename.
-        cases.add(new TestCase("/Default", directory, false));
-        cases.add(new TestCase("/Default/Drives/Drive", directory, false));
-        cases.add(new TestCase("/Default/Drives/Drive/Folder/Test", file, true));
-        cases.add(new TestCase("/Default/Drives/Drive/Test", file, true));
-        cases.add(new TestCase("/Default/Sites", directory, false));
-        cases.add(new TestCase("/Default/Sites/Site", directory, false));
-        cases.add(new TestCase("/Default/Sites/Site/Drives", directory, false));
-        cases.add(new TestCase("/Default/Sites/Site/Sites", directory, false));
-        cases.add(new TestCase("/Groups", directory, false));
-        cases.add(new TestCase("/Groups/Group", directory, false));
-        cases.add(new TestCase("/Groups/Group/Drive", directory, false));
-        cases.add(new TestCase("/Groups/Group/Drive/Folder/Test", file, true));
-        cases.add(new TestCase("/Groups/Group/Drive/Test", file, true));
-        cases.add(new TestCase("/Invalid", directory, false));
-        cases.add(new TestCase("/Sites", directory, false));
-        cases.add(new TestCase("/Sites/Site", directory, false));
-        cases.add(new TestCase("/Sites/Site/Drives", directory, false));
-        cases.add(new TestCase("/Sites/Site/Drives/Drive", directory, false));
-        cases.add(new TestCase("/Sites/Site/Drives/Drive/Folder/Test", file, true));
-        cases.add(new TestCase("/Sites/Site/Drives/Drive/Test", file, true));
-        cases.add(new TestCase("/Sites/Site/Sites", directory, false));
-        cases.add(new TestCase("/Sites/Site/Sites/Site", directory, false));
+        cases.add(new TestCase("/Default", directory, "/Target", false));
+        cases.add(new TestCase("/Default/Drives/Drive", directory, "/Default/Drives/Target", false));
+        cases.add(new TestCase("/Default/Drives/Drive/Folder/Test", file, "/Default/Drives/Drive/Folder/Target", true));
+        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Default/Drives/Drive/Target", true));
+        cases.add(new TestCase("/Default/Sites", directory, "/Default/Target", false));
+        cases.add(new TestCase("/Default/Sites/Site", directory, "/Default/Sites/Target", false));
+        cases.add(new TestCase("/Default/Sites/Site/Drives", directory, "/Default/Sites/Site/Target", false));
+        cases.add(new TestCase("/Default/Sites/Site/Sites", directory, "/Default/Sites/Site/Target", false));
+        cases.add(new TestCase("/Groups", directory, "/Target", false));
+        cases.add(new TestCase("/Groups/Group", directory, "/Groups/Target", false));
+        cases.add(new TestCase("/Groups/Group/Drive", directory, "/Groups/Group/Target", false));
+        cases.add(new TestCase("/Groups/Group/Drive/Folder/Test", file, "/Groups/Group/Drive/Folder/Target", true));
+        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Groups/Group/Drive/Target", true));
+        cases.add(new TestCase("/Invalid", directory, "/Target", false));
+        cases.add(new TestCase("/Sites", directory, "/Target", false));
+        cases.add(new TestCase("/Sites/Site", directory, "/Sites/Target", false));
+        cases.add(new TestCase("/Sites/Site/Drives", directory, "/Sites/Site/Target", false));
+        cases.add(new TestCase("/Sites/Site/Drives/Drive", directory, "/Sites/Site/Drives/Target", false));
+        cases.add(new TestCase("/Sites/Site/Drives/Drive/Folder/Test", file, "/Sites/Site/Drives/Drive/Folder/Target", true));
+        cases.add(new TestCase("/Sites/Site/Drives/Drive/Test", file, "/Sites/Site/Drives/Drive/Target", true));
+        cases.add(new TestCase("/Sites/Site/Sites", directory, "//Sites/Site/Target", false));
+        cases.add(new TestCase("/Sites/Site/Sites/Site", directory, "/Sites/Site/Sites/Target", false));
 
         // Move/Copy-Tests
-        // Assumption: Cyberduck always uses target directory without name to indicate drag.
-        // Target always is folder.
-        cases.add(new TestCase("/Default/Drives/Drive/Nested/Test", file, "/Default/Drives/Drive", true));
-        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Default/Drives/Drive/Nested", true));
-        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Default/Drives/Other Drive", false));
-        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Groups/Group/Drive", false));
-        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Sites/Site/Drives/Drive", false));
-        cases.add(new TestCase("/Groups/Group/Drive/Nested/Test", file, "/Groups/Group/Drive", true));
-        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Groups/Group/Drive/Test/Nested", true));
-        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Groups/Group/Other Drive", false));
-        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Groups/Other Group/Drive", false));
-        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Sites/Site/Drives/Drive", false));
-        cases.add(new TestCase("/Sites/Site/Drives/Drive/Nested/Test", file, "/Sites/Site/Drives/Drive", true));
-        cases.add(new TestCase("/Sites/Site/Drives/Drive/Test", file, "/Sites/Other Site/Drives/Drive", false));
-        cases.add(new TestCase("/Sites/Site/Drives/Drive/Test", file, "/Sites/Site/Drives/Drive/Nested", true));
-        cases.add(new TestCase("/Sites/Site/Drives/Drive/Test", file, "/Sites/Site/Drives/Other Drive", false));
+        cases.add(new TestCase("/Default/Drives/Drive/Nested/Test", file, "/Default/Drives/Drive/Target", true));
+        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Default/Drives/Drive/Nested/Target", true));
+        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Default/Drives/Other Drive//Target", false));
+        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Groups/Group/Drive//Target", false));
+        cases.add(new TestCase("/Default/Drives/Drive/Test", file, "/Sites/Site/Drives/Drive//Target", false));
+        cases.add(new TestCase("/Groups/Group/Drive/Nested/Test", file, "/Groups/Group/Drive//Target", true));
+        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Groups/Group/Drive/Test/Nested/Target", true));
+        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Groups/Group/Other Drive/Target", false));
+        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Groups/Other Group/Drive/Target", false));
+        cases.add(new TestCase("/Groups/Group/Drive/Test", file, "/Sites/Site/Drives/Drive/Target", false));
+        cases.add(new TestCase("/Sites/Site/Drives/Drive/Nested/Test", file, "/Sites/Site/Drives/Drive/Target", true));
+        cases.add(new TestCase("/Sites/Site/Drives/Drive/Test", file, "/Sites/Other Site/Drives/Drive/Target", false));
+        cases.add(new TestCase("/Sites/Site/Drives/Drive/Test", file, "/Sites/Site/Drives/Drive/Nested/Target", true));
+        cases.add(new TestCase("/Sites/Site/Drives/Drive/Test", file, "/Sites/Site/Drives/Other Drive/Target", false));
 
         test(feature, cases);
     }
@@ -109,18 +106,15 @@ public class OfflineGraphCopyMoveFeatureTest {
         final List<TestCase> cases = new ArrayList<>();
 
         // Rename Tests
-        // Assumption: Cyberduck always uses same source and target path to indicate rename.
-        cases.add(new TestCase("/Test", directory, false));
-        cases.add(new TestCase("/My Files", directory, false));
-        cases.add(new TestCase("/Shared", directory, false));
-        cases.add(new TestCase("/Shared/Element", file, false));
-        cases.add(new TestCase("/My Files/Element", file, true));
-        cases.add(new TestCase("/My Files/Folder/Element", file, true));
-        cases.add(new TestCase("/Shared/Folder/Element", file, true));
+        cases.add(new TestCase("/Test", directory, "/Target", false));
+        cases.add(new TestCase("/My Files", directory, "/Target", false));
+        cases.add(new TestCase("/Shared", directory, "/Target", false));
+        cases.add(new TestCase("/Shared/Element", file, "/Target", false));
+        cases.add(new TestCase("/My Files/Element", file, "/My Files/Target", true));
+        cases.add(new TestCase("/My Files/Folder/Element", file, "/My Files/Folder/Target", true));
+        cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared/Folder/Target", true));
 
         // Move/Copy-Tests
-        // Assumption: Cyberduck always uses target directory without name to indicate drag.
-        // Target always is folder.
         cases.add(new TestCase("/My Files", directory, "/Shared", false));
         cases.add(new TestCase("/Shared", directory, "/My Files", false));
         cases.add(new TestCase("/Shared/Element", file, "/My Files", false));
@@ -132,8 +126,8 @@ public class OfflineGraphCopyMoveFeatureTest {
         cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared/Test", true));
         cases.add(new TestCase("/Shared/Folder/Element", file, "/My Files", false));
         cases.add(new TestCase("/Shared/Folder/Element", file, "/My Files/Element", false));
-        cases.add(new TestCase("/My Files/Element", file, "/My Files/Folder", true));
-        cases.add(new TestCase("/My Files/Folder/Element", file, "/My Files", true));
+        cases.add(new TestCase("/My Files/Element", file, "/My Files/Folder/Target", true));
+        cases.add(new TestCase("/My Files/Folder/Element", file, "/My Files/Target", true));
         cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared/Folder", true));
         cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared/Folder/Folder", true));
 
@@ -142,8 +136,8 @@ public class OfflineGraphCopyMoveFeatureTest {
 
     void test(final Object feature, final List<TestCase> test) {
         for(TestCase testCase : test) {
-            final Path from = new Path(testCase.source, EnumSet.of(testCase.sourceType));
-            final Path to = new Path(testCase.target, EnumSet.of(testCase.targetType));
+            final Path from = new Path(testCase.source, EnumSet.of(testCase.type));
+            final Path to = new Path(testCase.target, EnumSet.of(testCase.type));
 
             if(feature instanceof Move) {
                 final Move move = (Move) feature;
@@ -162,23 +156,13 @@ public class OfflineGraphCopyMoveFeatureTest {
     static class TestCase {
         final String source;
         final String target;
-        final AbstractPath.Type sourceType;
-        final AbstractPath.Type targetType;
+        final AbstractPath.Type type;
         final boolean isValid;
 
-        public TestCase(final String rename, final AbstractPath.Type type, final boolean isValid) {
-            this(rename, type, rename, type, isValid);
-        }
-
-        public TestCase(final String source, final AbstractPath.Type sourceType, final String target, final boolean isValid) {
-            this(source, sourceType, target, directory, isValid);
-        }
-
-        TestCase(final String source, final AbstractPath.Type sourceType, final String target, final AbstractPath.Type targetType, final boolean isValid) {
+        public TestCase(final String source, final Path.Type type, final String target, final boolean isValid) {
             this.source = source;
             this.target = target;
-            this.sourceType = sourceType;
-            this.targetType = targetType;
+            this.type = type;
             this.isValid = isValid;
         }
     }
