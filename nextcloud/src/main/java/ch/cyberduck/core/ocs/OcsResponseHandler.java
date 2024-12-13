@@ -19,10 +19,12 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.nextcloud.NextcloudShareFeature;
 import ch.cyberduck.core.ocs.model.Share;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
@@ -38,24 +40,29 @@ public abstract class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
     @Override
     public R handleResponse(final HttpResponse response) throws IOException {
         final StatusLine statusLine = response.getStatusLine();
-        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-        if(statusLine.getStatusCode() >= 300) {
-            final StringAppender message = new StringAppender();
-            message.append(statusLine.getReasonPhrase());
-            final Share error = new XmlMapper().readValue(response.getEntity().getContent(), Share.class);
-            message.append(error.meta.message);
-            throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-        }
-        final Share error = new XmlMapper().readValue(response.getEntity().getContent(), Share.class);
-        try {
-            if(Integer.parseInt(error.meta.statuscode) > 100) {
+        if(response.getEntity() != null) {
+            EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+            if(statusLine.getStatusCode() >= 300) {
                 final StringAppender message = new StringAppender();
+                message.append(statusLine.getReasonPhrase());
+                final Share error = new XmlMapper().readValue(response.getEntity().getContent(), Share.class);
                 message.append(error.meta.message);
-                throw new HttpResponseException(Integer.parseInt(error.meta.statuscode), message.toString());
+                throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
             }
-        }
-        catch(NumberFormatException e) {
-            log.warn("Failure parsing status code in response {}", error);
+            if(StringUtils.equals(ContentType.APPLICATION_XML.getMimeType(),
+                    ContentType.parse(response.getEntity().getContentType().getValue()).getMimeType())) {
+                final Share error = new XmlMapper().readValue(response.getEntity().getContent(), Share.class);
+                try {
+                    if(Integer.parseInt(error.meta.statuscode) > 100) {
+                        final StringAppender message = new StringAppender();
+                        message.append(error.meta.message);
+                        throw new HttpResponseException(Integer.parseInt(error.meta.statuscode), message.toString());
+                    }
+                }
+                catch(NumberFormatException e) {
+                    log.warn("Failure parsing status code in response {}", error);
+                }
+            }
         }
         return super.handleResponse(response);
     }
