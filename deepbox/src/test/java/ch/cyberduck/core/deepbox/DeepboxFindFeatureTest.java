@@ -24,6 +24,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -66,10 +67,11 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testFindFile() throws Exception {
         final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(box, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(box, StringUtils.lowerCase(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(new Path(box, StringUtils.upperCase(file.getName()), EnumSet.of(Path.Type.file))));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
