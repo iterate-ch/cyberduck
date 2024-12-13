@@ -15,18 +15,17 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.unicode.NFCNormalizer;
-import ch.cyberduck.core.unicode.UnicodeNormalizer;
-
 import org.apache.commons.lang3.StringUtils;
 
-public final class CaseInsensitivePathPredicate extends SimplePathPredicate {
-
-    private static final UnicodeNormalizer normalizer = new NFCNormalizer();
+public class CaseInsensitivePathPredicate extends SimplePathPredicate {
 
     public CaseInsensitivePathPredicate(final Path file) {
         super(file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory,
-                StringUtils.lowerCase(normalizer.normalize(file.getAbsolute()).toString()));
+                StringUtils.lowerCase(file.getAbsolute()));
+    }
+
+    public CaseInsensitivePathPredicate(final Path.Type type, final String path) {
+        super(type, StringUtils.lowerCase(path));
     }
 
     @Override

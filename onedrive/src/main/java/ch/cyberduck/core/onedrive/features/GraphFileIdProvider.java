@@ -17,10 +17,10 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CachingFileIdProvider;
+import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
@@ -59,7 +59,7 @@ public class GraphFileIdProvider extends CachingFileIdProvider implements FileId
         return this.cache(file, found.attributes().getFileId());
     }
 
-    private final static class SymlinkUnawarePathPredicate extends SimplePathPredicate {
+    private final static class SymlinkUnawarePathPredicate extends CaseInsensitivePathPredicate {
         public SymlinkUnawarePathPredicate(final Path file) {
             super(file.isFile() ? Path.Type.file : Path.Type.directory, file.getAbsolute());
         }

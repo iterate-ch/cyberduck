@@ -1,16 +1,21 @@
 package ch.cyberduck.core.onedrive;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -54,5 +59,29 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
         assertNotEquals(fileId, path2RWithId.attributes().getFileId());
 
         new GraphDeleteFeature(session, fileid).delete(Arrays.asList(path2RWithId, path33WithId), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void getFileIdFile() throws Exception {
+        final GraphFileIdProvider nodeid = new GraphFileIdProvider(session);
+        final Path home = new OneDriveHomeFinderService().find();
+        final String name = String.format("%s", new AlphanumericRandomStringService().random());
+        final Path file = new GraphTouchFeature(session, nodeid).touch(new Path(home, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        nodeid.clear();
+        final String nodeId = nodeid.getFileId(new Path(home, name, EnumSet.of(Path.Type.file)));
+        assertNotNull(nodeId);
+        assertEquals(nodeId, nodeid.getFileId(new Path(home.withAttributes(PathAttributes.EMPTY), name, EnumSet.of(Path.Type.file))));
+        nodeid.clear();
+        assertEquals(nodeId, nodeid.getFileId(new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file))));
+        nodeid.clear();
+        assertEquals(nodeId, nodeid.getFileId(new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file))));
+        try {
+            assertNull(nodeid.getFileId(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        new GraphDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
