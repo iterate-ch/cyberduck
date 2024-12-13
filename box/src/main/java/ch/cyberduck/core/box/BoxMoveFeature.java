@@ -55,8 +55,10 @@ public class BoxMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                log.warn("Delete file {} to be replaced with {}", renamed, file);
-                new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
+                if(!fileid.getFileId(file).equals(fileid.getFileId(renamed))) {
+                    log.warn("Delete file {} to be replaced with {}", renamed, file);
+                    new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
+                }
             }
             final String id = fileid.getFileId(file);
             if(file.isDirectory()) {
