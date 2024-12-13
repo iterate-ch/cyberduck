@@ -78,7 +78,7 @@ public class LocalMoveFeatureTest {
         final Path test = new Path(workdir, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(workdir, StringUtils.capitalize(test.getName()), EnumSet.of(Path.Type.file));
-        new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new LocalMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));
         assertTrue(new LocalFindFeature(session).find(target));
         new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

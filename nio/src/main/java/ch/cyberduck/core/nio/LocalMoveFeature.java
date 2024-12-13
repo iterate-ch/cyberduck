@@ -15,6 +15,7 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -24,11 +25,15 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.nio.file.NoSuchFileException;
 import java.util.Collections;
 import java.util.EnumSet;
 
 public class LocalMoveFeature implements Move {
+    private static final Logger log = LogManager.getLogger(LocalMoveFeature.class);
 
     private final LocalSession session;
 
@@ -42,7 +47,16 @@ public class LocalMoveFeature implements Move {
             throw new NotfoundException(file.getAbsolute());
         }
         if(status.isExists()) {
-            new LocalDeleteFeature(session).delete(Collections.singletonMap(renamed, status), new DisabledPasswordCallback(), callback);
+            switch(session.getCaseSensitivity()) {
+                case insensitive:
+                    if(new CaseInsensitivePathPredicate(file).test(renamed)) {
+                        break;
+                    }
+                    // Break through
+                case sensitive:
+                    log.warn("Delete file {} to be replaced with {}", renamed, file);
+                    new LocalDeleteFeature(session).delete(Collections.singletonMap(renamed, status), new DisabledPasswordCallback(), callback);
+            }
         }
         if(!session.toPath(file).toFile().renameTo(session.toPath(renamed).toFile())) {
             throw new LocalExceptionMappingService().map("Cannot rename {0}", new NoSuchFileException(file.getName()), file);
