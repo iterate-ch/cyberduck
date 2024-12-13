@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
@@ -86,6 +87,11 @@ public interface Copy {
     default void preflight(final Path source, final Path target) throws BackgroundException {
         if(!target.getParent().attributes().getPermission().isWritable()) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
+                    source.getName())).withFile(source);
+        }
+        // Deny copy to self
+        if(new SimplePathPredicate(source).test(target)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
                     source.getName())).withFile(source);
         }
     }
