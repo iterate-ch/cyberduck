@@ -21,7 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -228,12 +227,14 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     protected Connection connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final SMBClient client = new SMBClient(SmbConfig.builder()
+                    .withWorkStationName(new HostPreferences(host).getProperty("smb.ntlm.workstation"))
                     .withSocketFactory(new ProxySocketFactory(host))
                     .withTimeout(ConnectionTimeoutFactory.get(new HostPreferences(host)).getTimeout(), TimeUnit.SECONDS)
                     .withSoTimeout(new HostPreferences(host).getLong("smb.socket.timeout"), TimeUnit.SECONDS)
                     .withAuthenticators(new NtlmAuthenticator.Factory())
                     .withDfsEnabled(new HostPreferences(host).getBoolean("smb.dfs.enable"))
                     .withEncryptData(new HostPreferences(host).getBoolean("smb.encrypt.enable"))
+                    .withSigningEnabled(new HostPreferences(host).getBoolean("smb.signing.enable"))
                     .withSigningRequired(new HostPreferences(host).getBoolean("smb.signing.required"))
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
                     .withMultiProtocolNegotiate(new HostPreferences(host).getBoolean("smb.protocol.negotiate.enable"))
