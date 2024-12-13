@@ -89,6 +89,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     protected void save(final Host bookmark) {
+        this.lock();
         try {
             if(!folder.exists()) {
                 new DefaultLocalDirectoryFeature().mkdir(folder);
@@ -99,6 +100,9 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         }
         catch(AccessDeniedException e) {
             log.warn("Failure saving item in collection {}", e.getMessage());
+        }
+        finally {
+            this.unlock();
         }
     }
 
