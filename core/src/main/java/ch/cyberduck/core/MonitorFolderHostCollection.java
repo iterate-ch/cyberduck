@@ -30,12 +30,16 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class MonitorFolderHostCollection extends AbstractFolderHostCollection implements FileWatcherListener {
     private static final Logger log = LogManager.getLogger(MonitorFolderHostCollection.class);
 
     private final Preferences preferences = PreferencesFactory.get();
     private final FileWatcher monitor = new FileWatcher(WatchServiceFactory.get());
+
+    private final Set<HostFileListener> listeners = new CopyOnWriteArraySet<>();
 
     public MonitorFolderHostCollection(final Local f) {
         super(f);
@@ -110,6 +114,9 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
             if(bookmark != null) {
                 log.warn("Delete bookmark {}", bookmark);
                 this.remove(bookmark);
+                for(HostFileListener listener : listeners) {
+                    listener.fileDeleted(bookmark);
+                }
             }
         }
     }
@@ -124,10 +131,27 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
                 final Host bookmark = HostReaderFactory.get().read(file);
                 log.warn("Add bookmark {}", bookmark);
                 this.add(bookmark);
+                for(HostFileListener listener : listeners) {
+                    listener.fileCreated(bookmark);
+                }
             }
             catch(AccessDeniedException e) {
                 log.warn("Failure reading file {}", file);
             }
         }
+    }
+
+    public void addListener(final HostFileListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(final HostFileListener listener) {
+        listeners.remove(listener);
+    }
+
+    public interface HostFileListener {
+        void fileDeleted(Host host);
+
+        void fileCreated(Host host);
     }
 }
