@@ -89,11 +89,7 @@ public interface Copy {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
                     source.getName())).withFile(source);
         }
-        // Deny copy to self
-        if(new SimplePathPredicate(source).test(target)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
-                    source.getName())).withFile(source);
-        }
+        validate(Protocol.Case.sensitive, source, target);
     }
 
     /**
@@ -105,8 +101,16 @@ public interface Copy {
         switch(sensitivity) {
             case insensitive:
                 if(new CaseInsensitivePathPredicate(source).test(target)) {
-                    throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+                    throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
+                            source.getName())).withFile(source);
                 }
+                break;
+            case sensitive:
+                if(new SimplePathPredicate(source).test(target)) {
+                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
+                            source.getName())).withFile(source);
+                }
+                break;
         }
     }
 
