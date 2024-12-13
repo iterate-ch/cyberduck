@@ -57,6 +57,7 @@
                         <artifactId>swagger-codegen-maven-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>codegen-deepbox</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
@@ -75,6 +76,7 @@
                                 </configuration>
                             </execution>
                             <execution>
+                                <id>codegen-deepcloud</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
