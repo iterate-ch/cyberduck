@@ -85,6 +85,7 @@ public abstract class NSView extends NSResponder {
         NSObject defaultFocusRingType();
     }
 
+    @Override
     public abstract NSView init();
 
     public abstract NSView initWithFrame(NSRect frameRect);

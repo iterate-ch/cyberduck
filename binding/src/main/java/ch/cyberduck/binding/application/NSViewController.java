@@ -34,6 +34,9 @@ public abstract class NSViewController extends NSResponder {
         return CLASS.alloc().initWithNibName_bundle(nib, bundle);
     }
 
+    @Override
+    public abstract NSViewController init();
+
     /**
      * The NSViewController object looks for the nib file in the bundle's language-specific project directories first, followed by the Resources directory.
      * <p>

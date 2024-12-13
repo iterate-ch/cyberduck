@@ -33,6 +33,7 @@ public abstract class NSTitlebarAccessoryViewController extends NSResponder {
         return CLASS.alloc().init();
     }
 
+    @Override
     public abstract NSTitlebarAccessoryViewController init();
 
     public abstract void removeFromParentViewController();

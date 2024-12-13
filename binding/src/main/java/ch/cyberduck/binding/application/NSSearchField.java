@@ -33,8 +33,10 @@ public abstract class NSSearchField extends NSTextField {
         NSSearchField alloc();
     }
 
+    @Override
     public abstract NSSearchField init();
 
+    @Override
     public abstract NSSearchField initWithFrame(NSRect frameRect);
 
     /**

@@ -45,6 +45,7 @@ public abstract class NSSegmentedControl extends NSControl {
         return CLASS.alloc().init();
     }
 
+    @Override
     public abstract NSSegmentedControl init();
 
     /**

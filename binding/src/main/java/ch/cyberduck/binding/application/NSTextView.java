@@ -39,6 +39,7 @@ public abstract class NSTextView extends NSText {
         NSTextView alloc();
     }
 
+    @Override
     public abstract NSTextView init();
 
     /**

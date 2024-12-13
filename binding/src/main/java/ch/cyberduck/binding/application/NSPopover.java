@@ -31,6 +31,7 @@ public abstract class NSPopover extends NSResponder {
         NSPopover alloc();
     }
 
+    @Override
     public abstract NSPopover init();
 
     public static NSPopover create() {

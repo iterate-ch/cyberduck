@@ -27,6 +27,8 @@ import org.rococoa.cocoa.foundation.NSError;
 /// <i>native declaration : :11</i>
 public abstract class NSResponder extends NSObject {
 
+    public abstract NSResponder init();
+
     /**
      * Original signature : <code>NSResponder* nextResponder()</code><br>
      * <i>native declaration : :17</i>
