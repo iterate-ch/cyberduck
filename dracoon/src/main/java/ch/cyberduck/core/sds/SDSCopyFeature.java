@@ -39,6 +39,8 @@ import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
+import static ch.cyberduck.core.features.Copy.validate;
+
 public class SDSCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(SDSCopyFeature.class);
 
@@ -101,5 +103,6 @@ public class SDSCopyFeature implements Copy {
             log.warn("Deny copy of {} to {}", source, target);
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
+        validate(session.getCaseSensitivity(), source, target);
     }
 }

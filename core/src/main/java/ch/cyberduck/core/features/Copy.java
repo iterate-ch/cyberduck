@@ -15,10 +15,13 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
@@ -86,7 +89,31 @@ public interface Copy {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
                     source.getName())).withFile(source);
         }
+        validate(Protocol.Case.sensitive, source, target);
     }
+
+    /**
+     * Fail when source and target only differ with change in case of filename and protocol is case-insensitive
+     *
+     * @throws UnsupportedException Copying file to same location is not supported
+     */
+    static void validate(final Protocol.Case sensitivity, final Path source, final Path target) throws BackgroundException {
+        switch(sensitivity) {
+            case insensitive:
+                if(new CaseInsensitivePathPredicate(source).test(target)) {
+                    throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
+                            source.getName())).withFile(source);
+                }
+                break;
+            case sensitive:
+                if(new SimplePathPredicate(source).test(target)) {
+                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
+                            source.getName())).withFile(source);
+                }
+                break;
+        }
+    }
+
 
     /**
      * @return Supported features

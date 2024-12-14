@@ -28,6 +28,7 @@ import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -89,5 +90,15 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BoxMoveFeature(session, fileid).move(test, new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+    }
+
+    @Test
+    public void testRenameCaseOnly() throws Exception {
+        final BoxFileidProvider fileid = new BoxFileidProvider(session);
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new BoxTouchFeature(session, fileid).touch(new Path(new DefaultHomeFinderService(session).find(), StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path rename = new Path(new DefaultHomeFinderService(session).find(), StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
+        new BoxMoveFeature(session, fileid).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

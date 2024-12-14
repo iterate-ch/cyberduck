@@ -28,6 +28,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Copy.validate;
+
 public class StoregateCopyFeature implements Copy {
 
     private final StoregateSession session;
@@ -54,6 +56,12 @@ public class StoregateCopyFeature implements Copy {
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
         }
+    }
+
+    @Override
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        Copy.super.preflight(source, target);
+        validate(session.getCaseSensitivity(), source, target);
     }
 
     @Override

@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
@@ -85,15 +86,19 @@ public interface Move {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"),
                     source.getName())).withFile(source);
         }
+        // Deny move to self
+        if(new SimplePathPredicate(source).test(target)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"),
+                    source.getName())).withFile(source);
+        }
     }
-
 
     /**
      * @return Supported features
      */
-   default EnumSet<Flags> features(Path source, Path target) {
-       return EnumSet.noneOf(Flags.class);
-   }
+    default EnumSet<Flags> features(Path source, Path target) {
+        return EnumSet.noneOf(Flags.class);
+    }
 
     /**
      * Feature flags

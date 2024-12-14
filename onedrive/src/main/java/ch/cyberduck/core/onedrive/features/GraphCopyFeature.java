@@ -42,6 +42,8 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Copy.validate;
+
 public class GraphCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(GraphCopyFeature.class);
 
@@ -106,5 +108,6 @@ public class GraphCopyFeature implements Copy {
         if(source.getType().contains(Path.Type.shared)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
+        validate(session.getCaseSensitivity(), source, target);
     }
 }

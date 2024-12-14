@@ -16,9 +16,9 @@ package ch.cyberduck.core.box;
  */
 
 import ch.cyberduck.core.CachingFileIdProvider;
+import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
@@ -53,7 +53,7 @@ public class BoxFileidProvider extends CachingFileIdProvider implements FileIdPr
             return ROOT;
         }
         final Path f = new BoxListService(session, this).list(file.getParent(),
-                new DisabledListProgressListener()).find(new SimplePathPredicate(file));
+                new DisabledListProgressListener()).find(new CaseInsensitivePathPredicate(file));
         if(null == f) {
             throw new NotfoundException(file.getAbsolute());
         }

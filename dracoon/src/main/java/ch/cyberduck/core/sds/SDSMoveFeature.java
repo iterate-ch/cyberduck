@@ -130,7 +130,7 @@ public class SDSMoveFeature implements Move {
         }
         if(!SDSTouchFeature.validate(target.getName())) {
             log.warn("Validation failed for target name {}", target);
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(target);
+            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), target.getName())).withFile(source);
         }
         final SDSPermissionsFeature acl = new SDSPermissionsFeature(session, nodeid);
         if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {

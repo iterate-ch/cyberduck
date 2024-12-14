@@ -40,10 +40,10 @@ public class SharepointListService extends AbstractSharepointListService {
     public static final String GROUPS_CONTAINER = "Groups";
     public static final String SITES_CONTAINER = "Sites";
 
-    public static final Path DEFAULT_NAME = new Path(Path.DELIMITER + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory, Path.Type.symboliclink));
-    public static final Path DRIVES_NAME = new Path(Path.DELIMITER + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-    public static final Path GROUPS_NAME = new Path(Path.DELIMITER + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-    public static final Path SITES_NAME = new Path(Path.DELIMITER + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path DEFAULT_NAME = new Path(DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory, Path.Type.symboliclink));
+    public static final Path DRIVES_NAME = new Path(DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path GROUPS_NAME = new Path(GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path SITES_NAME = new Path(SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
 
     private final SharepointSession session;
     private final GraphFileIdProvider fileid;

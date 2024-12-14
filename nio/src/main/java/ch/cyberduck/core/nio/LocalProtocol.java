@@ -21,8 +21,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
-import org.apache.commons.io.IOCase;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -113,7 +111,7 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public Case getCaseSensitivity() {
-        return IOCase.SYSTEM.isCaseSensitive() ? Case.sensitive : Case.insensitive;
+        return Case.insensitive;
     }
 
     @Override

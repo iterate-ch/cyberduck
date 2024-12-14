@@ -153,4 +153,14 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertThrows(NotfoundException.class, () -> feature.move(test, new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
     }
+
+    @Test
+    public void testRenameCaseOnly() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new DropboxTouchFeature(session).touch(new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
+        new DropboxMoveFeature(session).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }

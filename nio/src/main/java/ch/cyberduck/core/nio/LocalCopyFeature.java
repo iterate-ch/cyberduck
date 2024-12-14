@@ -27,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Copy.validate;
+
 public class LocalCopyFeature implements Copy {
 
     private final LocalSession session;
@@ -45,6 +47,12 @@ public class LocalCopyFeature implements Copy {
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Cannot copy {0}", e, source);
         }
+    }
+
+    @Override
+    public void preflight(final Path source, final Path target) throws BackgroundException {
+        Copy.super.preflight(source, target);
+        validate(session.getCaseSensitivity(), source, target);
     }
 
     @Override

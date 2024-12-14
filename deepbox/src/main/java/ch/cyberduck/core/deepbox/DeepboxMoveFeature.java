@@ -84,7 +84,7 @@ public class DeepboxMoveFeature implements Move {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if(target.isRoot() || new DeepboxPathContainerService(session, fileid).isContainer(target) || new DeepboxPathContainerService(session, fileid).isInTrash(target)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
         }
         final Acl acl = source.attributes().getAcl();
         if(Acl.EMPTY == acl) {
