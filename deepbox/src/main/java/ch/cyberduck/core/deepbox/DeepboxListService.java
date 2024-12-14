@@ -78,9 +78,9 @@ import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANLISTCH
  * │   ├── deepbox 2
  * │   │   └── mybox 3
  * │   └── boxes shared with me
- * │       ├── deepbox 77 (box 65)
- * │       ├── deepbox 77 (box 67)
- * │       └── deepbox 89 (box 78)
+ * │       ├── company 77 (box 65)
+ * │       ├── company 77 (box 67)
+ * │       └── company 89 (box 78)
  * └── company 29
  * └── ....
  */
@@ -355,6 +355,8 @@ public class DeepboxListService implements ListService {
                             new PathAttributes().withFileId(box.getBoxNodeId()).withCustom("deepboxName", box.getDeepBoxName()))
                     );
                 }
+                // Mark duplicates
+                list.toStream().forEach(f -> f.attributes().setDuplicate(list.findAll(new SimplePathPredicate(f)).size() != 1));
                 listener.chunk(directory, list);
                 return list;
             }
