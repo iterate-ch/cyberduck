@@ -94,7 +94,7 @@ public abstract class AbstractProtocol implements Protocol {
             dict.setStringForKey(this.getRegion(), REGION_KEY);
         }
         if(!this.getRegions().isEmpty()) {
-            dict.setStringListForKey(this.getRegions().stream().map(r -> r.getIdentifier()).collect(Collectors.toList()), REGIONS_KEY);
+            dict.setStringListForKey(this.getRegions().stream().map(Location.Name::getIdentifier).collect(Collectors.toList()), REGIONS_KEY);
         }
         dict.setStringForKey(this.getScheme().name(), SCHEME_KEY);
         if(this.getSchemes().length > 0) {
