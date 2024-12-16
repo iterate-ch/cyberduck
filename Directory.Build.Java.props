@@ -4,7 +4,6 @@
     <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
     <EnableDefaultItems>false</EnableDefaultItems>
     <LangVersion>1.8</LangVersion>
-    <Static>true</Static>
   </PropertyGroup>
 
   <PropertyGroup Label="MSBuild">
