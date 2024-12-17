@@ -19,6 +19,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -134,6 +135,7 @@ public class BrickPairingSchedulerFeature {
             }
             if(json.has("password")) {
                 credentials.setPassword(json.getAsJsonPrimitive("password").getAsString());
+                credentials.setSaved(new LoginOptions().save);
             }
             else {
                 throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));

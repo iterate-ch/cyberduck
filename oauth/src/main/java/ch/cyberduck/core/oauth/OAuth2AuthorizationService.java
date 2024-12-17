@@ -147,7 +147,9 @@ public class OAuth2AuthorizationService {
     public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
         credentials.withOauth(tokens).withSaved(new LoginOptions().save);
-        store.save(host);
+        if(credentials.isSaved()) {
+            store.save(host);
+        }
         return tokens;
     }
 
