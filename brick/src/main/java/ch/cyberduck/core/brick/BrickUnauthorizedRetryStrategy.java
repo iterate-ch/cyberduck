@@ -75,7 +75,9 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                             LocaleFactory.localizedString("You've been logged out", "Brick"),
                             LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick")
                     );
-                    store.save(session.getHost());
+                    if(credentials.isSaved()) {
+                        store.save(session.getHost());
+                    }
                     apiKey = credentials.getPassword();
                     return true;
                 }
