@@ -16,6 +16,7 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
@@ -151,10 +152,12 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
      */
     public CteraTokens save(final CteraTokens tokens) throws LocalAccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
-        host.getCredentials()
-                .withToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()))
+        final Credentials credentials = host.getCredentials();
+        credentials.withToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()))
                 .withSaved(new LoginOptions().save);
-        store.save(host);
+        if(credentials.isSaved()) {
+            store.save(host);
+        }
         return tokens;
     }
 
