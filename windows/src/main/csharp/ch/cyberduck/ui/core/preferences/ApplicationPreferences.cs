@@ -57,8 +57,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             base.setFactories();
 
-            this.setDefault("factory.autoserviceloader.class",
-                typeof(AppContextServiceLoader).AssemblyQualifiedName);
             this.setDefault("factory.supportdirectoryfinder.class",
                 typeof(RoamingSupportDirectoryFinder).AssemblyQualifiedName);
             this.setDefault("factory.localsupportdirectoryfinder.class",

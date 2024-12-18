@@ -15,6 +15,7 @@
 
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.serviceloader;
 using java.security;
 using java.util;
 using org.apache.commons.lang3;
@@ -320,6 +321,14 @@ public class ApplicationPreferences<T> : DefaultPreferences
         {
             SetUWPDefaults();
         }
+    }
+
+    protected override void setFactories()
+    {
+        base.setFactories();
+
+        this.setDefault("factory.autoserviceloader.class",
+                typeof(AppContextServiceLoader).AssemblyQualifiedName);
     }
 
     private static string TryToMatchLocale(string sysLocale, List appLocales)
