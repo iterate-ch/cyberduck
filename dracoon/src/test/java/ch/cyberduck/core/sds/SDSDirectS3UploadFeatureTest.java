@@ -239,7 +239,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new DisabledConnectionCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("eth[oh8uv4Eesij");
+                return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
             }
         });
         IOUtils.readFully(stream, compare);
@@ -278,7 +278,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new DisabledConnectionCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("eth[oh8uv4Eesij");
+                return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
             }
         });
         IOUtils.readFully(stream, compare);
@@ -317,7 +317,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new DisabledConnectionCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("eth[oh8uv4Eesij");
+                return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
             }
         });
         IOUtils.readFully(stream, compare);

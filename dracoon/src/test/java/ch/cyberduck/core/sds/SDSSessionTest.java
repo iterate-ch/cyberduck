@@ -161,7 +161,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             }
         }
         // create legacy key pair
-        final UserKeyPair userKeyPair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, "eth[oh8uv4Eesij".toCharArray());
+        final UserKeyPair userKeyPair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, PROPERTIES.get("vault.passphrase").toCharArray());
         userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(userKeyPair), null);
         List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(1, keyPairs.size());
@@ -169,7 +169,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         session.unlockTripleCryptKeyPair(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                return new VaultCredentials("eth[oh8uv4Eesij");
+                return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
             }
         }, session.userAccount(), UserKeyPair.Version.RSA4096);
         keyPairs = userApi.requestUserKeyPairs(null, null);

@@ -266,7 +266,7 @@ public class SDSShareFeatureTest extends AbstractSDSTest {
                         .maxDownloads(null), new DisabledPasswordCallback() {
                     @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                    return new VaultCredentials("eth[oh8uv4Eesij");
+                        return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
                 }
             });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
