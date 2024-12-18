@@ -18,6 +18,7 @@
 
 using ch.cyberduck.cli;
 using ch.cyberduck.core.cryptomator;
+using ch.cyberduck.core.serviceloader;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Editor;
@@ -68,6 +69,8 @@ namespace Ch.Cyberduck.Cli
         {
             base.setFactories();
 
+            this.setDefault("factory.autoserviceloader.class",
+                typeof(AppContextServiceLoader).AssemblyQualifiedName);
             this.setDefault("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
             this.setDefault("factory.supportdirectoryfinder.class",
                 typeof(RoamingSupportDirectoryFinder).AssemblyQualifiedName);
