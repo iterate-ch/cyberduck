@@ -129,10 +129,12 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
         else {
             try {
                 final Host bookmark = HostReaderFactory.get().read(file);
-                log.warn("Add bookmark {}", bookmark);
-                this.add(bookmark);
-                for(HostFileListener listener : listeners) {
-                    listener.fileCreated(bookmark);
+                if(!this.contains(bookmark)) {
+                    log.warn("Add bookmark {}", bookmark);
+                    this.add(bookmark);
+                    for(HostFileListener listener : listeners) {
+                        listener.fileCreated(bookmark);
+                    }
                 }
             }
             catch(AccessDeniedException e) {
