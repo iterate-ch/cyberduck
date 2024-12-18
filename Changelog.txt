@@ -4,6 +4,7 @@ https://cyberduck.io/
 9.1.1
 - [Bugfix] Repeated prompts for passphrase (Cryptomator, Windows) (#16645)
 - [Bugfix] Missing list of buckets (Linode Object Storage) (#16659)
+- [Bugfix] Enable encryption by default (SMB) (#16678)
 
 9.1.0
 - [Feature] Display transfer progress in Finder for downloads and uploads (macOS) (#16568)
