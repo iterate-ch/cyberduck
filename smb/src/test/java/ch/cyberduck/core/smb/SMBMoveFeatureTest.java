@@ -19,13 +19,13 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -86,5 +86,15 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SMBMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+    }
+
+    @Test
+    public void testRenameCaseOnly() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new SMBTouchFeature(session).touch(new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
+        new SMBMoveFeature(session).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

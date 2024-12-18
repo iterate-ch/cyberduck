@@ -61,6 +61,11 @@ public class SMBProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
+
+    @Override
     public String getUsernamePlaceholder() {
         return String.format("%s\\%s", PreferencesFactory.get().getProperty("smb.domain.default"),
                 LocaleFactory.localizedString("Username", "Credentials"));

@@ -17,22 +17,40 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class SMBTouchFeatureTest extends AbstractSMBTest {
+
+    @Test
+    public void testCaseSensitivity() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
+        final Path test = new SMBTouchFeature(session)
+                .touch(new Path(home, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        assertThrows(ConflictException.class, () -> new SMBTouchFeature(session)
+                .touch(new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L)));
+        assertTrue(new SMBFindFeature(session).find(test));
+        assertTrue(new SMBFindFeature(session).find(new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file))));
+        assertEquals(new SMBAttributesFinderFeature(session).find(test),
+                new SMBAttributesFinderFeature(session).find(new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file))));
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
 
     @Test
     public void testTouchLongFilename() throws Exception {
