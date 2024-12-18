@@ -39,6 +39,7 @@ public class DriveListService implements ListService {
             list.add(DriveHomeFinderService.MYDRIVE_FOLDER);
             list.add(DriveHomeFinderService.SHARED_FOLDER_NAME);
             list.add(DriveHomeFinderService.SHARED_DRIVES_NAME);
+            list.add(DriveHomeFinderService.TRASH_NAME);
             listener.chunk(directory, list);
             return list;
         }
@@ -48,6 +49,9 @@ public class DriveListService implements ListService {
             }
             if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(directory)) {
                 return new DriveTeamDrivesListService(session, fileid).list(directory, listener);
+            }
+            if(new SimplePathPredicate(DriveHomeFinderService.TRASH_NAME).test(directory)) {
+                return new DriveTrashListService(session, fileid).list(directory, listener);
             }
             return new DriveDefaultListService(session, fileid).list(directory, listener);
         }

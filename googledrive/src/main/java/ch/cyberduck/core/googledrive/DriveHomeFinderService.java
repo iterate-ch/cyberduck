@@ -29,16 +29,20 @@ public class DriveHomeFinderService extends AbstractHomeFeature {
     public static final String ROOT_FOLDER_ID = "root";
 
     public static final Path MYDRIVE_FOLDER
-        = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("My Drive", "Google Drive")),
-        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume), new PathAttributes().withFileId(ROOT_FOLDER_ID));
+            = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("My Drive", "Google Drive")),
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume), new PathAttributes().withFileId(ROOT_FOLDER_ID));
 
     public static final Path SHARED_FOLDER_NAME
-        = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared with me", "Google Drive")),
-        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+            = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared with me", "Google Drive")),
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
     public static final Path SHARED_DRIVES_NAME
-        = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared Drives", "Google Drive")),
-        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+            = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared Drives", "Google Drive")),
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+
+    public static final Path TRASH_NAME
+            = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Trash", "Google Drive")),
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
     @Override
     public Path find() throws BackgroundException {
