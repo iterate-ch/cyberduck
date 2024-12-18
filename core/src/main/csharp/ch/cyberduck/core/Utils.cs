@@ -90,8 +90,7 @@ namespace Ch.Cyberduck.Core
                 try
                 {
                     uint length = 0;
-                    int result = GetCurrentPackageFullName(ref length, default);
-                    return result != 15700;
+                    return GetCurrentPackageFullName(ref length, default) != WIN32_ERROR.APPMODEL_ERROR_NO_PACKAGE;
                 }
                 catch (EntryPointNotFoundException entryPointNotFoundException) // Fix for MD-3274
                 {
@@ -310,7 +309,7 @@ namespace Ch.Cyberduck.Core
                     return Application.notfound;
                 }
 
-                return new ShellApplicationFinder.ProgIdApplication(defaultQuery.ToString(), friendlyAppName, defaultIcon);
+                return new ShellApplicationFinder.ProgIdApplication(defaultQuery.ToString(), friendlyAppName.ToString(), defaultIcon.ToString());
             }
             catch
             {
