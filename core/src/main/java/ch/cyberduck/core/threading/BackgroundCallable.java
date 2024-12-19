@@ -101,7 +101,7 @@ public class BackgroundCallable<T> implements Callable<T> {
             log.debug("Call background action {}", action);
             return action.call();
         }
-        catch(Exception e) {
+        catch(Throwable e) {
             this.failure(client, e);
             // Runtime failure
             if(action.alert(new DefaultExceptionMappingService().map(e))) {
@@ -114,7 +114,7 @@ public class BackgroundCallable<T> implements Callable<T> {
         }
     }
 
-    protected void failure(final Exception trace, final Exception failure) {
+    protected void failure(final Exception trace, final Throwable failure) {
         try {
             trace.initCause(failure);
         }
