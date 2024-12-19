@@ -17,7 +17,8 @@
 // 
 
 using ch.cyberduck.core.local;
-using Windows.Win32.UI.Shell.Common;
+using System;
+using Windows.Win32;
 using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Core.Local
@@ -31,26 +32,20 @@ namespace Ch.Cyberduck.Core.Local
                 return ApplicationLauncherFactory.get().open(l);
             }
 
-            using PIDLIST_ABSOLUTEHandle nativeFolder = ILCreateFromPath2(l.getParent().getAbsolute());
-            if (!nativeFolder)
+            using var nativeFolder = ILCreateFromPathSafe(l.getParent().getAbsolute());
+            if (nativeFolder.IsInvalid)
             {
                 return false;
             }
 
-            using PIDLIST_ABSOLUTEHandle nativeFile = ILCreateFromPath2(l.getAbsolute());
-            if (!nativeFile)
+            using var nativeFile = ILCreateFromPathSafe(l.getAbsolute());
+            if (nativeFile.IsInvalid)
             {
                 return false;
             }
 
-            uint count = 0;
-            ITEMIDLIST* target = default;
-            if (nativeFile)
-            {
-                count = 1;
-                target = nativeFile.Pointer;
-            }
-            SHOpenFolderAndSelectItems(nativeFolder.Value, count, &target, 0);
+            ReadOnlySpan<PITEMIDLIST> target = select ? [nativeFile.Value] : [];
+            SHOpenFolderAndSelectItems(nativeFolder, target, 0);
             return true;
         }
 

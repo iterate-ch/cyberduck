@@ -14,10 +14,10 @@
     <ProjectGuid>{fba5efe2-362b-4bad-a748-3248f79468ac}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>WindowsVersionCustomAction</RootNamespace>
-    <OutDir>windows\target\</OutDir>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(BuildSupportDir)Cyberduck.Cpp.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
@@ -26,7 +26,6 @@
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '17.0'">v143</PlatformToolset>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <IntDir>obj\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
