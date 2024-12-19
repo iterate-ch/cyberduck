@@ -74,6 +74,7 @@ public class NextcloudListServiceTest extends AbstractNextcloudTest {
         final PathAttributes directoryAttributes = new DAVAttributesFinderFeature(session).find(directory);
         final String folderEtag = directoryAttributes.getETag();
         final long folderTimestamp = directoryAttributes.getModificationDate();
+        Thread.sleep(1000L);
         final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(directory,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(Protocol.DirectoryTimestamp.implicit, session.getHost().getProtocol().getDirectoryTimestamp());
