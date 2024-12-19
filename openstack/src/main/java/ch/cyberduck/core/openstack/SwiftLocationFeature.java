@@ -110,6 +110,8 @@ public class SwiftLocationFeature implements Location {
                 for(Region r : client.getRegions()) {
                     try {
                         cache.put(container, new SwiftRegion(client.getContainerInfo(r, container.getName()).getRegion().getRegionId()));
+                        // Found region for container
+                        break;
                     }
                     catch(ContainerNotFoundException | AuthorizationException e) {
                         log.warn("Failure finding container {} in region {}", container, r.getRegionId());

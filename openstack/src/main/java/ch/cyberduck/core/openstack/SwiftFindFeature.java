@@ -27,9 +27,15 @@ import ch.cyberduck.core.features.Find;
 public class SwiftFindFeature implements Find {
 
     private final SwiftSession session;
+    private final SwiftRegionService regionService;
 
     public SwiftFindFeature(final SwiftSession session) {
+        this(session, new SwiftRegionService(session));
+    }
+
+    public SwiftFindFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
@@ -38,7 +44,7 @@ public class SwiftFindFeature implements Find {
             return true;
         }
         try {
-            new SwiftAttributesFinderFeature(session).find(file, listener);
+            new SwiftAttributesFinderFeature(session, regionService).find(file, listener);
             return true;
         }
         catch(NotfoundException e) {

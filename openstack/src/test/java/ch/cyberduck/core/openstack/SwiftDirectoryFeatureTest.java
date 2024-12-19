@@ -42,14 +42,15 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testCreateContainer() throws Exception {
-        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
+        final SwiftRegionService region = new SwiftRegionService(session);
+        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, region, new SwiftWriteFeature(session, region));
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path container = feature.mkdir(test, new TransferStatus().withRegion("ORD"));
-        assertTrue(new SwiftFindFeature(session).find(container));
+        assertTrue(new SwiftFindFeature(session, region).find(container));
         // Can create again regardless if exists
         feature.mkdir(test, new TransferStatus());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new SwiftFindFeature(session).find(container));
+        new SwiftDeleteFeature(session, region).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new SwiftFindFeature(session, region).find(container));
     }
 
     @Test
@@ -70,16 +71,17 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         });
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
-        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
+        final SwiftRegionService region = new SwiftRegionService(session);
+        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, region, new SwiftWriteFeature(session, region));
         final Path parent = feature.mkdir(new Path(container, parentname, EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path placeholder = feature.mkdir(new Path(parent, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(put.get());
-        assertTrue(new SwiftFindFeature(session).find(placeholder));
+        assertTrue(new SwiftFindFeature(session, region).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
-        assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session).find(placeholder).getChecksum());
-        assertTrue(new SwiftObjectListService(session, new SwiftRegionService(session)).list(placeholder, new DisabledListProgressListener()).isEmpty());
-        assertEquals(1, new SwiftObjectListService(session, new SwiftRegionService(session)).list(parent, new DisabledListProgressListener()).size());
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new SwiftFindFeature(session).find(placeholder));
+        assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session, region).find(placeholder).getChecksum());
+        assertTrue(new SwiftObjectListService(session, region).list(placeholder, new DisabledListProgressListener()).isEmpty());
+        assertEquals(1, new SwiftObjectListService(session, region).list(parent, new DisabledListProgressListener()).size());
+        new SwiftDeleteFeature(session, region).delete(Arrays.asList(placeholder, parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new SwiftFindFeature(session, region).find(placeholder));
     }
 }
