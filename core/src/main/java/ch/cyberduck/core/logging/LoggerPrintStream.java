@@ -50,4 +50,12 @@ public class LoggerPrintStream extends PrintStream {
     public void println(final String message) {
         log.log(level, message);
     }
+
+    /**
+     * Print stacktrace
+     */
+    @Override
+    public void println(final Object x) {
+        this.println(x != null ? x.toString() : null);
+    }
 }
