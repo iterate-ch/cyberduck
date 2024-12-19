@@ -157,11 +157,12 @@ public class Terminal {
             System.exit(1);
         }
         catch(FactoryException e) {
-            console.printf("%s%n", e.getMessage());
+            console.printf("Configuration error %s%n", e.getMessage());
             System.exit(1);
         }
         catch(Throwable error) {
-            error.printStackTrace(System.err);
+            console.printf("Fatal error %s%n", error.getMessage());
+            error.printStackTrace(new LoggerPrintStream());
             System.exit(1);
         }
         finally {
