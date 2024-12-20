@@ -42,15 +42,15 @@ public abstract class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
         final StatusLine statusLine = response.getStatusLine();
         if(response.getEntity() != null) {
             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-            if(statusLine.getStatusCode() >= 300) {
-                final StringAppender message = new StringAppender();
-                message.append(statusLine.getReasonPhrase());
-                final Share error = new XmlMapper().readValue(response.getEntity().getContent(), Share.class);
-                message.append(error.meta.message);
-                throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-            }
             if(StringUtils.equals(ContentType.APPLICATION_XML.getMimeType(),
                     ContentType.parse(response.getEntity().getContentType().getValue()).getMimeType())) {
+                if(statusLine.getStatusCode() >= 300) {
+                    final StringAppender message = new StringAppender();
+                    message.append(statusLine.getReasonPhrase());
+                    final Share error = new XmlMapper().readValue(response.getEntity().getContent(), Share.class);
+                    message.append(error.meta.message);
+                    throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
+                }
                 final Share error = new XmlMapper().readValue(response.getEntity().getContent(), Share.class);
                 try {
                     if(Integer.parseInt(error.meta.statuscode) > 100) {
