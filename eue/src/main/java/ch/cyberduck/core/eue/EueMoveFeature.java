@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class EueMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(EueMoveFeature.class);
@@ -140,15 +141,18 @@ public class EueMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
         if(StringUtils.equals(EueResourceIdProvider.TRASH, source.attributes().getFileId())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if(StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), source.getName())) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(!EueTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(!EueTouchFeature.validate(target.getName())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
+            }
         }
     }
 

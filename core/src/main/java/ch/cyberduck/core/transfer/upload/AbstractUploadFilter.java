@@ -62,6 +62,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = LogManager.getLogger(AbstractUploadFilter.class);
@@ -144,7 +145,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), new AlphanumericRandomStringService().random()), file.getType());
-                if(feature.isSupported(file, renamed)) {
+                if(feature.isSupported(file, Optional.of(renamed))) {
                     log.debug("Set temporary filename {}", renamed);
                     // Set target name after transfer
                     status.withRename(renamed).withDisplayname(file);

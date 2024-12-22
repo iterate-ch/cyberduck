@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
+import java.util.Optional;
 
 public class SwiftMoveFeature implements Move {
 
@@ -68,8 +69,10 @@ public class SwiftMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        proxy.preflight(source, target);
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
+        if(target.isPresent()) {
+            proxy.preflight(source, target.get());
+        }
         delete.preflight(source);
     }
 }

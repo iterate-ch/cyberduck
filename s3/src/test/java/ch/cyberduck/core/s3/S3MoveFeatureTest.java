@@ -40,6 +40,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -134,9 +135,9 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new S3MoveFeature(session, new S3AccessControlListFeature(session)).isSupported(c, c));
+        assertFalse(new S3MoveFeature(session, new S3AccessControlListFeature(session)).isSupported(c, Optional.of(new Path("/d", EnumSet.of(Path.Type.directory)))));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new S3MoveFeature(session, new S3AccessControlListFeature(session)).isSupported(cf, cf));
+        assertTrue(new S3MoveFeature(session, new S3AccessControlListFeature(session)).isSupported(cf, Optional.of(new Path("/c/f2", EnumSet.of(Path.Type.directory)))));
     }
 
     @Test

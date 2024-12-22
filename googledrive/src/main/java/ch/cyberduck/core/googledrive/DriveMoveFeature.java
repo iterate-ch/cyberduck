@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import com.google.api.services.drive.model.File;
 
@@ -81,11 +82,11 @@ public class DriveMoveFeature implements Move {
                 }
                 // Move the file to the new folder
                 result = session.getClient().files().update(id, null)
-                    .setAddParents(fileid.getFileId(renamed.getParent()))
-                    .setRemoveParents(previousParents.toString())
-                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
-                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                    .execute();
+                        .setAddParents(fileid.getFileId(renamed.getParent()))
+                        .setRemoveParents(previousParents.toString())
+                        .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
+                        .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                        .execute();
             }
             fileid.cache(file, null);
             fileid.cache(renamed, id);
@@ -102,9 +103,12 @@ public class DriveMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(target.getParent().isRoot()) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(target.getParent().isRoot()) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+            }
         }
         if(source.isPlaceholder()) {
             // Disable for application/vnd.google-apps

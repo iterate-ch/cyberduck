@@ -36,6 +36,7 @@ import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 
@@ -101,8 +102,10 @@ public class S3MoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        proxy.preflight(source, target);
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
+        if(target.isPresent()) {
+            proxy.preflight(source, target.get());
+        }
         delete.preflight(source);
     }
 }

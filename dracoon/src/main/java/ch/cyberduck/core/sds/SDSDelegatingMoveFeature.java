@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class SDSDelegatingMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(SDSDelegatingMoveFeature.class);
@@ -86,12 +87,18 @@ public class SDSDelegatingMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
-            session.getFeature(Copy.class).preflight(source, target);
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
+                session.getFeature(Copy.class).preflight(source, target);
+            }
+            else {
+                proxy.preflight(source, optional);
+            }
         }
         else {
-            proxy.preflight(source, target);
+            proxy.preflight(source, optional);
         }
     }
 

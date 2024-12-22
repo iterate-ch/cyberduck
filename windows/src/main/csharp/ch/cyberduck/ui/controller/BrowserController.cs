@@ -58,6 +58,7 @@ using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 using Application = ch.cyberduck.core.local.Application;
 using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
+using Optional = java.util.Optional;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
@@ -1048,7 +1049,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         Move move = (Move)Session.getFeature(typeof(Move));
                         foreach (Path sourcePath in args.SourceModels)
                         {
-                            if (!move.isSupported(sourcePath, new Path(destination, sourcePath.getName(), sourcePath.getType())))
+                            if (!move.isSupported(sourcePath, Optional.of(new Path(destination, sourcePath.getName(), sourcePath.getType()))))
                             {
                                 args.Effect = DragDropEffects.None;
                                 args.DropTargetLocation = DropTargetLocation.None;
@@ -2024,7 +2025,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return false;
                 }
-                return ((Move)Session.getFeature(typeof(Move))).isSupported(SelectedPath, SelectedPath);
+                return ((Move)Session.getFeature(typeof(Move))).isSupported(SelectedPath, Optional.empty());
             }
             return false;
         }

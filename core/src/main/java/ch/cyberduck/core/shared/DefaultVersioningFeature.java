@@ -47,6 +47,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,7 +97,7 @@ public class DefaultVersioningFeature implements Versioning {
     public boolean save(final Path file) throws BackgroundException {
         final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
         final Move feature = session.getFeature(Move.class);
-        if(!feature.isSupported(file, version)) {
+        if(!feature.isSupported(file, Optional.of(version))) {
             log.warn("Skip saving version for {}", file);
             return false;
         }

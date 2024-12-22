@@ -99,6 +99,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -1614,8 +1615,7 @@ public class InfoController extends ToolbarWindowController {
         if(count > 0) {
             filenameField.setStringValue(this.getName());
             final Path file = this.getSelected();
-            filenameField.setEnabled(1 == count
-                    && session.getFeature(Move.class).isSupported(file, file));
+            filenameField.setEnabled(1 == count && session.getFeature(Move.class).isSupported(file, Optional.empty()));
             // Where
             String path;
             if(file.isSymbolicLink()) {

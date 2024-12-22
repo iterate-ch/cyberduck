@@ -95,6 +95,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
@@ -513,7 +514,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                     else {
                         for(Path file : pasteboard) {
-                            if(!controller.getSession().getFeature(Move.class).isSupported(file, new Path(destination, file.getName(), file.getType()))) {
+                            if(!controller.getSession().getFeature(Move.class).isSupported(file, Optional.of(new Path(destination, file.getName(), file.getType())))) {
                                 return NSDraggingInfo.NSDragOperationNone;
                             }
                         }

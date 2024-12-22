@@ -35,6 +35,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -79,9 +80,9 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new GoogleStorageMoveFeature(session).isSupported(c, c));
+        assertFalse(new GoogleStorageMoveFeature(session).isSupported(c, Optional.of(new Path(new Path("/d", EnumSet.of(Path.Type.directory))))));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new GoogleStorageMoveFeature(session).isSupported(cf, cf));
+        assertTrue(new GoogleStorageMoveFeature(session).isSupported(cf, Optional.of(new Path("/c/f2", EnumSet.of(Path.Type.directory)))));
     }
 
     @Test

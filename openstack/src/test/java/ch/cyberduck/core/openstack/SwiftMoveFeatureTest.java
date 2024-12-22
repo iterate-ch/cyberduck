@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -89,9 +90,9 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new SwiftMoveFeature(session).isSupported(c, c));
+        assertFalse(new SwiftMoveFeature(session).isSupported(c, Optional.of(new Path("/d", EnumSet.of(Path.Type.directory)))));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new SwiftMoveFeature(session).isSupported(cf, cf));
+        assertTrue(new SwiftMoveFeature(session).isSupported(cf, Optional.of(new Path("/c/f2", EnumSet.of(Path.Type.directory)))));
     }
 
     @Test

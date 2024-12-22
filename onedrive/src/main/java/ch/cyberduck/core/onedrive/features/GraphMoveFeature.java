@@ -45,6 +45,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class GraphMoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(GraphMoveFeature.class);
@@ -101,18 +102,21 @@ public class GraphMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!session.isAccessible(target, true)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
-        }
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
         if(!session.isAccessible(source, false)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(!session.getContainer(source).equals(session.getContainer(target))) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
-        }
         if(source.getType().contains(Path.Type.shared)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+        }
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(!session.isAccessible(target, true)) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+            }
+            if(!session.getContainer(source).equals(session.getContainer(target))) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+            }
         }
     }
 }

@@ -18,10 +18,12 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 
+import java.util.Optional;
+
 public class NullMoveFeature extends DisabledMoveFeature {
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         //
     }
 }

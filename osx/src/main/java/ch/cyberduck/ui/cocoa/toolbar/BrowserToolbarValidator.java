@@ -50,6 +50,8 @@ import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 
+import java.util.Optional;
+
 import static ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory.BrowserToolbarItem.*;
 
 public class BrowserToolbarValidator implements ToolbarValidator {
@@ -268,7 +270,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 if(null == selected) {
                     return false;
                 }
-                return controller.getSession().getFeature(Move.class).isSupported(selected, selected);
+                return controller.getSession().getFeature(Move.class).isSupported(selected, Optional.empty());
             }
             return false;
         }
