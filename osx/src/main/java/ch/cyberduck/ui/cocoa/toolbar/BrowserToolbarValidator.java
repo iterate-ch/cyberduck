@@ -261,8 +261,14 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                     && controller.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
-            return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Copy.class) != null
-                    && controller.getSelectionCount() == 1;
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
+                final Path selected = controller.getSelectedPath();
+                if(null == selected) {
+                    return false;
+                }
+                return controller.getSession().getFeature(Copy.class).isSupported(selected, Optional.empty());
+            }
+            return false;
         }
         else if(action.equals(Foundation.selector("renameFileButtonClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {

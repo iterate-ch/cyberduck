@@ -2014,7 +2014,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDuplicateFile()
         {
-            return IsMounted() && Session.getFeature(typeof(Copy)) != null && SelectedPaths.Count == 1;
+            if (IsMounted() && SelectedPaths.Count == 1)
+            {
+                if (null == SelectedPath)
+                {
+                    return false;
+                }
+                return ((Copy)Session.getFeature(typeof(Copy))).isSupported(SelectedPath, Optional.empty());
+            }
+            return false;
         }
 
         private bool View_ValidateRenameFile()
