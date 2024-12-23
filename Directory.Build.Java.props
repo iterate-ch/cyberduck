@@ -1,0 +1,22 @@
+<Project>
+
+  <PropertyGroup Label="IKVM">
+    <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <LangVersion>1.8</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Label="MSBuild">
+    <!-- 
+      Skip expected diagnostics.
+      Catch authoring/dependency issues in automated Tests.
+      
+      IKVM0100: Class Not Found
+      IKVM0101: Class Format Error (not Java 8)
+      IKVM0105: Missing Class
+      IKVM0111: Emitted NoClassDefFoundError
+    -->
+    <NoWarn>IKVM0100;IKVM0101;IKVM0105;IKVM0111;$(NoWarn)</NoWarn>
+  </PropertyGroup>
+
+</Project>
