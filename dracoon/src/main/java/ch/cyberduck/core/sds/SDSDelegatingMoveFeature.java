@@ -91,7 +91,7 @@ public class SDSDelegatingMoveFeature implements Move {
         if(optional.isPresent()) {
             final Path target = optional.get();
             if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
-                session.getFeature(Copy.class).preflight(source, target);
+                session.getFeature(Copy.class).preflight(source, optional);
             }
             else {
                 proxy.preflight(source, optional);

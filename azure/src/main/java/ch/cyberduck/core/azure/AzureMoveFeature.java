@@ -43,9 +43,7 @@ public class AzureMoveFeature implements Move {
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        if(target.isPresent()) {
-            proxy.preflight(source, target.get());
-        }
+        proxy.preflight(source, target);
         delete.preflight(source);
     }
 

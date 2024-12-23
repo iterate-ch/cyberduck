@@ -32,6 +32,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -46,9 +47,9 @@ public class B2CopyFeatureTest extends AbstractB2Test {
         final Path test = new B2TouchFeature(session, fileid).touch(new Path(container, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final B2CopyFeature feature = new B2CopyFeature(session, fileid);
-        assertThrows(UnsupportedException.class, () -> feature.preflight(container, test));
+        assertThrows(UnsupportedException.class, () -> feature.preflight(container, Optional.of(test)));
         try {
-            feature.preflight(container, test);
+            feature.preflight(container, Optional.of(test));
         }
         catch(UnsupportedException e) {
             assertEquals("Unsupported", e.getMessage());

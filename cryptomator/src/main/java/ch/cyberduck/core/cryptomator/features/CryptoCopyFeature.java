@@ -31,6 +31,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class CryptoCopyFeature implements Copy {
 
@@ -90,9 +91,14 @@ public class CryptoCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path copy) throws BackgroundException {
-        if(vault.contains(source) && vault.contains(copy)) {
-            proxy.withTarget(target).preflight(source, copy);
+    public void preflight(final Path source, final Optional<Path> copy) throws BackgroundException {
+        if(copy.isPresent()) {
+            if(vault.contains(source) && vault.contains(copy.get())) {
+                proxy.withTarget(target).preflight(source, copy);
+            }
+            else {
+                new DefaultCopyFeature(session).withTarget(target).preflight(source, copy);
+            }
         }
         else {
             new DefaultCopyFeature(session).withTarget(target).preflight(source, copy);

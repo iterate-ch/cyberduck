@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.features.Copy.validate;
 
@@ -50,9 +51,11 @@ public class LocalCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         Copy.super.preflight(source, target);
-        validate(session.getCaseSensitivity(), source, target);
+        if(target.isPresent()) {
+            validate(session.getCaseSensitivity(), source, target.get());
+        }
     }
 
     @Override

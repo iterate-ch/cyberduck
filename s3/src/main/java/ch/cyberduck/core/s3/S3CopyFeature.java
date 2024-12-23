@@ -43,6 +43,7 @@ import org.jets3t.service.model.S3Object;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class S3CopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(S3CopyFeature.class);
@@ -107,12 +108,14 @@ public class S3CopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(containerService.isContainer(target)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
+        if(target.isPresent()) {
+            if(containerService.isContainer(target.get())) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
     }
 }

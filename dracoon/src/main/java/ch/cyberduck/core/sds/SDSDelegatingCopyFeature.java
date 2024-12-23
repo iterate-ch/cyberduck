@@ -24,6 +24,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.Optional;
+
 public class SDSDelegatingCopyFeature implements Copy {
 
     private final SDSSession session;
@@ -43,7 +45,7 @@ public class SDSDelegatingCopyFeature implements Copy {
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
-        if(proxy.isSupported(source, target)) {
+        if(proxy.isSupported(source, Optional.of(target))) {
             return proxy.copy(source, target, status, callback, listener);
         }
         // Copy between encrypted and unencrypted data room
@@ -57,7 +59,7 @@ public class SDSDelegatingCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(proxy.isSupported(source, target)) {
             proxy.preflight(source, target);
         }

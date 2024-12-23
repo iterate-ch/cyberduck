@@ -32,6 +32,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -63,7 +64,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final Path directory = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(documents,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        assertThrows(UnsupportedException.class, () -> new DeepboxCopyFeature(session, fileid).preflight(directory, copy));
+        assertThrows(UnsupportedException.class, () -> new DeepboxCopyFeature(session, fileid).preflight(directory, Optional.of(copy)));
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(directory.withAttributes(new PathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

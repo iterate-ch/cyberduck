@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.storage.Storage;
@@ -81,12 +82,15 @@ public class GoogleStorageCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(containerService.isContainer(target)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(containerService.isContainer(target)) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
     }
 }

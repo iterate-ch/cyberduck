@@ -29,6 +29,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 public class S3ThresholdCopyFeature implements Copy {
 
@@ -58,12 +59,14 @@ public class S3ThresholdCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(containerService.isContainer(target)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
+        if(target.isPresent()) {
+            if(containerService.isContainer(target.get())) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
     }
 }

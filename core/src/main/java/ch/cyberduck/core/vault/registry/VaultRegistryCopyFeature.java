@@ -27,6 +27,7 @@ import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class VaultRegistryCopyFeature implements Copy {
 
@@ -74,20 +75,26 @@ public class VaultRegistryCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path copy) throws BackgroundException {
-        try {
-            if(registry.find(session, source, false).equals(Vault.DISABLED)) {
-                registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy);
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            try {
+                if(registry.find(session, source, false).equals(Vault.DISABLED)) {
+                    registry.find(session, target, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, optional);
+                }
+                else if(registry.find(session, target, false).equals(Vault.DISABLED)) {
+                    registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, optional);
+                }
+                else {
+                    registry.find(session, target, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, optional);
+                }
             }
-            else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
-                registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy);
-            }
-            else {
-                registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).preflight(source, copy);
+            catch(VaultUnlockCancelException e) {
+                proxy.preflight(source, optional);
             }
         }
-        catch(VaultUnlockCancelException e) {
-            proxy.preflight(source, copy);
+        else {
+            proxy.preflight(source, optional);
         }
     }
 

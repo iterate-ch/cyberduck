@@ -24,6 +24,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class B2ThresholdCopyFeature implements Copy {
 
@@ -52,7 +53,7 @@ public class B2ThresholdCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         new B2CopyFeature(session, fileid).preflight(source, target);
     }
 

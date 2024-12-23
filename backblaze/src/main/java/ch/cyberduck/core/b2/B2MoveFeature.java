@@ -59,9 +59,7 @@ public class B2MoveFeature implements Move {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(target.isPresent()) {
-            proxy.preflight(source, target.get());
-        }
+        proxy.preflight(source, target);
     }
 
     @Override

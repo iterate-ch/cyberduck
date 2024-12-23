@@ -39,6 +39,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -63,14 +64,14 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
     public void testCopy() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         Path directory = new GraphDirectoryFeature(session, fileid).mkdir(
-            new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session, fileid).find(directory));
         final TransferStatus status = new TransferStatus();
         Path file = new GraphTouchFeature(session, fileid).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withMime("x-application/cyberduck"));
         assertNotNull(new GraphAttributesFinderFeature(session, fileid).find(file));
         Path rename = new Path(directory, file.getName(), EnumSet.of(Path.Type.file));
         final GraphCopyFeature copy = new GraphCopyFeature(session, fileid);
-        assertTrue(copy.isSupported(file, rename));
+        assertTrue(copy.isSupported(file, Optional.of(rename)));
         final Path target = copy.copy(file, rename, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(file.attributes().getFileId(), target.attributes().getFileId());
         assertEquals(target.attributes().getFileId(), new GraphAttributesFinderFeature(session, fileid).find(rename).getFileId());
@@ -80,7 +81,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(
-            new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new GraphCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());

@@ -92,7 +92,7 @@ public class VaultRegistryMoveFeature implements Move {
                     registry.find(session, source, false).getFeature(session, Move.class, proxy).preflight(source, optional);
                 }
                 else {
-                    session.getFeature(Copy.class).preflight(source, target);
+                    session.getFeature(Copy.class).preflight(source, optional);
                 }
             }
             catch(VaultUnlockCancelException e) {

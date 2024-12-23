@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -38,8 +39,8 @@ public class StatefulDefaultCopyFeatureTest extends AbstractFTPTest {
     public void testSupported() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertFalse(new DefaultCopyFeature(session).isSupported(source, target));
-        assertFalse(new DefaultCopyFeature(session).withTarget(session).isSupported(source, target));
-        assertTrue(new DefaultCopyFeature(session).withTarget(new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")))).isSupported(source, target));
+        assertFalse(new DefaultCopyFeature(session).isSupported(source, Optional.of(target)));
+        assertFalse(new DefaultCopyFeature(session).withTarget(session).isSupported(source, Optional.of(target)));
+        assertTrue(new DefaultCopyFeature(session).withTarget(new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")))).isSupported(source, Optional.of(target)));
     }
 }

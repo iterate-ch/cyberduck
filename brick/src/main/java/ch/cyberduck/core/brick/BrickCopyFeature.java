@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.features.Copy.validate;
 
@@ -54,8 +55,8 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
             final FileActionEntity entity = new FileActionsApi(client)
-                .copy(new CopyPathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
-                    StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
+                    .copy(new CopyPathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
+                            StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
             listener.sent(status.getLength());
             if(entity.getFileMigrationId() != null) {
                 this.poll(client, entity);
@@ -73,8 +74,10 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         Copy.super.preflight(source, target);
-        validate(session.getCaseSensitivity(), source, target);
+        if(target.isPresent()) {
+            validate(session.getCaseSensitivity(), source, target.get());
+        }
     }
 }

@@ -506,7 +506,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
                         for(Path file : pasteboard) {
-                            if(!controller.getSession().getFeature(Copy.class).isSupported(file, new Path(destination, file.getName(), file.getType()))) {
+                            if(!controller.getSession().getFeature(Copy.class).isSupported(file, Optional.of(new Path(destination, file.getName(), file.getType())))) {
                                 return NSDraggingInfo.NSDragOperationNone;
                             }
                         }
