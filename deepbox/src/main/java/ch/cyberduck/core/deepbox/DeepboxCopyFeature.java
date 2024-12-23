@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Optional;
 
 public class DeepboxCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(DeepboxCopyFeature.class);
@@ -71,7 +72,7 @@ public class DeepboxCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(source.isDirectory()) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }

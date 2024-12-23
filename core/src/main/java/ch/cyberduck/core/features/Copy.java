@@ -61,7 +61,7 @@ public interface Copy {
      * @param target Target file or folder
      * @return False if not supported for given files
      */
-    default boolean isSupported(final Path source, final Path target) {
+    default boolean isSupported(final Path source, final java.util.Optional<Path> target) {
         try {
             this.preflight(source, target);
             return true;
@@ -84,12 +84,15 @@ public interface Copy {
      * @throws UnsupportedException     Copy operation not supported for source
      * @throws InvalidFilenameException Target filename not supported
      */
-    default void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!target.getParent().attributes().getPermission().isWritable()) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
-                    source.getName())).withFile(source);
+    default void preflight(final Path source, final java.util.Optional<Path> optional) throws BackgroundException {
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(!target.getParent().attributes().getPermission().isWritable()) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"),
+                        source.getName())).withFile(source);
+            }
+            validate(Protocol.Case.sensitive, source, target);
         }
-        validate(Protocol.Case.sensitive, source, target);
     }
 
     /**

@@ -35,6 +35,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -67,12 +68,14 @@ public class SwiftLargeObjectCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(containerService.isContainer(target)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
+        if(target.isPresent()) {
+            if(containerService.isContainer(target.get())) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
     }
 
@@ -84,8 +87,8 @@ public class SwiftLargeObjectCopyFeature implements Copy {
             final Path destination = new Path(copySegmentsDirectory, copyPart.getName(), copyPart.getType());
             try {
                 session.getClient().copyObject(regionService.lookup(copyPart),
-                    containerService.getContainer(copyPart).getName(), containerService.getKey(copyPart),
-                    containerService.getContainer(target).getName(), containerService.getKey(destination));
+                        containerService.getContainer(copyPart).getName(), containerService.getKey(copyPart),
+                        containerService.getContainer(target).getName(), containerService.getKey(destination));
                 listener.sent(copyPart.attributes().getSize());
 
                 // copy attributes from source. Should be same?
@@ -110,10 +113,10 @@ public class SwiftLargeObjectCopyFeature implements Copy {
         final StorageObject stored = new StorageObject(containerService.getKey(target));
         try {
             final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
-                containerService.getContainer(target)),
-                containerService.getContainer(target).getName(),
-                status.getMime(),
-                containerService.getKey(target), manifest, Collections.emptyMap());
+                            containerService.getContainer(target)),
+                    containerService.getContainer(target).getName(),
+                    status.getMime(),
+                    containerService.getKey(target), manifest, Collections.emptyMap());
             // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             stored.setMd5sum(checksum);

@@ -95,6 +95,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
@@ -106,10 +107,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     private final FileDescriptor descriptor = FileDescriptorFactory.get();
     private final Preferences preferences = PreferencesFactory.get();
     private final LRUCache<Item, NSAttributedString> attributed = LRUCache.build(
-        preferences.getInteger("browser.model.cache.size")
+            preferences.getInteger("browser.model.cache.size")
     );
     private final LRUCache<Path, AttributedList<Path>> filtered = LRUCache.build(
-        preferences.getInteger("browser.model.cache.size")
+            preferences.getInteger("browser.model.cache.size")
     );
     protected final BrowserController controller;
     protected final Cache<Path> cache;
@@ -227,32 +228,32 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         log.trace("Lookup failed for {} in cache", key);
         if(identifier.equals(BrowserColumn.filename.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                item.getName(),
-                TableCellAttributes.browserFontLeftAlignment());
+                    item.getName(),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.size.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                sizeFormatter.format(item.attributes().getSize()),
-                TableCellAttributes.browserFontRightAlignment());
+                    sizeFormatter.format(item.attributes().getSize()),
+                    TableCellAttributes.browserFontRightAlignment());
         }
         else if(identifier.equals(BrowserColumn.modified.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                dateFormatter.getShortFormat(item.attributes().getModificationDate(),
-                    preferences.getBoolean("browser.date.natural")),
-                TableCellAttributes.browserFontLeftAlignment()
+                    dateFormatter.getShortFormat(item.attributes().getModificationDate(),
+                            preferences.getBoolean("browser.date.natural")),
+                    TableCellAttributes.browserFontLeftAlignment()
             );
         }
         else if(identifier.equals(BrowserColumn.owner.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                StringUtils.isBlank(item.attributes().getOwner()) ?
-                    LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
-                TableCellAttributes.browserFontLeftAlignment());
+                    StringUtils.isBlank(item.attributes().getOwner()) ?
+                            LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.group.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                StringUtils.isBlank(item.attributes().getGroup()) ?
-                    LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
-                TableCellAttributes.browserFontLeftAlignment());
+                    StringUtils.isBlank(item.attributes().getGroup()) ?
+                            LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.permission.name())) {
             final Acl acl = item.attributes().getAcl();
@@ -260,53 +261,53 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final StringBuilder s = new StringBuilder();
                 for(Map.Entry<Acl.User, Set<Acl.Role>> entry : acl.entrySet()) {
                     s.append(String.format("%s%s:%s", s.length() == 0 ? StringUtils.EMPTY : ", ",
-                        entry.getKey().getDisplayName(), entry.getValue()));
+                            entry.getKey().getDisplayName(), entry.getValue()));
                 }
                 value = NSAttributedString.attributedStringWithAttributes(s.toString(),
-                    TableCellAttributes.browserFontLeftAlignment());
+                        TableCellAttributes.browserFontLeftAlignment());
             }
             else {
                 final Permission permission = item.attributes().getPermission();
                 value = NSAttributedString.attributedStringWithAttributes(
-                    permission.toString(),
-                    TableCellAttributes.browserFontLeftAlignment());
+                        permission.toString(),
+                        TableCellAttributes.browserFontLeftAlignment());
             }
         }
         else if(identifier.equals(BrowserColumn.kind.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                descriptor.getKind(item),
-                TableCellAttributes.browserFontLeftAlignment());
+                    descriptor.getKind(item),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.extension.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                item.isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() :
-                    LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
-                TableCellAttributes.browserFontLeftAlignment());
+                    item.isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() :
+                            LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.region.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() :
-                    LocaleFactory.localizedString("Unknown"),
-                TableCellAttributes.browserFontLeftAlignment());
+                    StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() :
+                            LocaleFactory.localizedString("Unknown"),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.version.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() :
-                    LocaleFactory.localizedString("None"),
-                TableCellAttributes.browserFontLeftAlignment());
+                    StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() :
+                            LocaleFactory.localizedString("None"),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.checksum.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                !Checksum.NONE.equals(item.attributes().getChecksum()) ? item.attributes().getChecksum().hash :
-                    StringUtils.isNotBlank(item.attributes().getETag()) ? item.attributes().getETag() : LocaleFactory.localizedString("None"),
-                TableCellAttributes.browserFontLeftAlignment());
+                    !Checksum.NONE.equals(item.attributes().getChecksum()) ? item.attributes().getChecksum().hash :
+                            StringUtils.isNotBlank(item.attributes().getETag()) ? item.attributes().getETag() : LocaleFactory.localizedString("None"),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.storageclass.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
-                StringUtils.isNotBlank(item.attributes().getStorageClass()) ?
-                    LocaleFactory.localizedString(item.attributes().getStorageClass(), "S3") :
-                    LocaleFactory.localizedString("None"),
-                TableCellAttributes.browserFontLeftAlignment());
+                    StringUtils.isNotBlank(item.attributes().getStorageClass()) ?
+                            LocaleFactory.localizedString(item.attributes().getStorageClass(), "S3") :
+                            LocaleFactory.localizedString("None"),
+                    TableCellAttributes.browserFontLeftAlignment());
         }
         else {
             throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
@@ -505,7 +506,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
                         for(Path file : pasteboard) {
-                            if(!controller.getSession().getFeature(Copy.class).isSupported(file, new Path(destination, file.getName(), file.getType()))) {
+                            if(!controller.getSession().getFeature(Copy.class).isSupported(file, Optional.of(new Path(destination, file.getName(), file.getType())))) {
                                 return NSDraggingInfo.NSDragOperationNone;
                             }
                         }
@@ -513,7 +514,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                     else {
                         for(Path file : pasteboard) {
-                            if(!controller.getSession().getFeature(Move.class).isSupported(file, new Path(destination, file.getName(), file.getType()))) {
+                            if(!controller.getSession().getFeature(Move.class).isSupported(file, Optional.of(new Path(destination, file.getName(), file.getType())))) {
                                 return NSDraggingInfo.NSDragOperationNone;
                             }
                         }

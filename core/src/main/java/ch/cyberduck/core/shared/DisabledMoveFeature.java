@@ -27,6 +27,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.Optional;
+
 public class DisabledMoveFeature implements Move {
 
     @Override
@@ -36,7 +38,7 @@ public class DisabledMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         throw new AccessDeniedException(LocaleFactory.localizedString("Unsupported", "Error"));
     }
 }

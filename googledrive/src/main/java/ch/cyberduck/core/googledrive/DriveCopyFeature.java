@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import com.google.api.services.drive.model.File;
 
@@ -46,9 +47,9 @@ public class DriveCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final File copy = session.getClient().files().copy(fileid.getFileId(source), new File()
-                    .setParents(Collections.singletonList(fileid.getFileId(target.getParent())))
-                    .setName(target.getName()))
-                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                            .setParents(Collections.singletonList(fileid.getFileId(target.getParent())))
+                            .setName(target.getName()))
+                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             listener.sent(status.getLength());
             fileid.cache(target, copy.getId());
             return target.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(copy));
@@ -64,9 +65,12 @@ public class DriveCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(target.getParent().isRoot()) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(target.getParent().isRoot()) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
         if(source.isPlaceholder()) {
             // Disable for application/vnd.google-apps

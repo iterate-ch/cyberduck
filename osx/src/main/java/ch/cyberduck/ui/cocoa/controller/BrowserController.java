@@ -159,6 +159,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class BrowserController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
@@ -3826,8 +3827,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     if(null == file) {
                         return false;
                     }
-                    return pool.getFeature(Move.class).isSupported(file, file);
-
+                    return pool.getFeature(Move.class).isSupported(file, Optional.empty());
                 }
             }
             return false;

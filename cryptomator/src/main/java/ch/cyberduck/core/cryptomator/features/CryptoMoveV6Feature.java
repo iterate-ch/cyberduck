@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class CryptoMoveV6Feature implements Move {
 
@@ -63,9 +64,11 @@ public class CryptoMoveV6Feature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!vault.getFilenameProvider().isValid(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
+        if(target.isPresent()) {
+            if(!vault.getFilenameProvider().isValid(target.get().getName())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.get().getName())).withFile(source);
+            }
         }
         proxy.preflight(source, target);
     }

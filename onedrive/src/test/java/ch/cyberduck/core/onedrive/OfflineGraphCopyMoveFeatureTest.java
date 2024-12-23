@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import static ch.cyberduck.core.AbstractPath.Type.directory;
 import static ch.cyberduck.core.AbstractPath.Type.file;
@@ -141,11 +142,11 @@ public class OfflineGraphCopyMoveFeatureTest {
 
             if(feature instanceof Move) {
                 final Move move = (Move) feature;
-                assertEquals(String.format("Move \"%s\" to \"%s\".", from, to), testCase.isValid, move.isSupported(from, to));
+                assertEquals(String.format("Move \"%s\" to \"%s\".", from, to), testCase.isValid, move.isSupported(from, Optional.of(to)));
             }
             else if(feature instanceof Copy) {
                 final Copy copy = (Copy) feature;
-                assertEquals(String.format("Copy \"%s\" to \"%s\".", from, to), testCase.isValid, copy.isSupported(from, to));
+                assertEquals(String.format("Copy \"%s\" to \"%s\".", from, to), testCase.isValid, copy.isSupported(from, Optional.of(to)));
             }
             else {
                 fail();

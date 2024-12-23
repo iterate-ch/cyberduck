@@ -27,6 +27,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.features.Copy.validate;
 
@@ -44,11 +45,11 @@ public class StoregateCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final CopyFileRequest copy = new CopyFileRequest()
-                .name(target.getName())
-                .parentID(fileid.getFileId(target.getParent()))
-                .mode(1); // Overwrite
+                    .name(target.getName())
+                    .parentID(fileid.getFileId(target.getParent()))
+                    .mode(1); // Overwrite
             final File file = new FilesApi(session.getClient()).filesCopy(
-                fileid.getFileId(source), copy);
+                    fileid.getFileId(source), copy);
             listener.sent(status.getLength());
             fileid.cache(target, file.getId());
             return target.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));
@@ -59,9 +60,11 @@ public class StoregateCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         Copy.super.preflight(source, target);
-        validate(session.getCaseSensitivity(), source, target);
+        if(target.isPresent()) {
+            validate(session.getCaseSensitivity(), source, target.get());
+        }
     }
 
     @Override

@@ -27,6 +27,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import com.microsoft.azure.storage.OperationContext;
 
@@ -41,7 +42,7 @@ public class AzureMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         proxy.preflight(source, target);
         delete.preflight(source);
     }

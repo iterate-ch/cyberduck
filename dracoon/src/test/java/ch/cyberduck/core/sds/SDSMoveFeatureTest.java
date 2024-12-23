@@ -31,6 +31,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -61,7 +62,7 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
-        assertFalse(move.isSupported(test, target));
+        assertFalse(move.isSupported(test, Optional.of(target)));
         move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new SDSFindFeature(session, nodeid).find(test));
@@ -78,7 +79,7 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
-        assertFalse(move.isSupported(test, target));
+        assertFalse(move.isSupported(test, Optional.of(target)));
     }
 
     @Test
@@ -90,7 +91,7 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
         final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
-        assertTrue(move.isSupported(subroom, target));
+        assertTrue(move.isSupported(subroom, Optional.of(target)));
         move.move(subroom, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
         subroom.attributes().setVersionId(null);

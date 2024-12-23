@@ -28,11 +28,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 
 public class SwiftSegmentCopyService implements Copy {
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;
@@ -55,17 +56,19 @@ public class SwiftSegmentCopyService implements Copy {
         }
         else {
             return new SwiftLargeObjectCopyFeature(session, regionService, segmentService)
-                .copy(source, segments, target, status, callback, listener);
+                    .copy(source, segments, target, status, callback, listener);
         }
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(containerService.isContainer(target)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
+        if(target.isPresent()) {
+            if(containerService.isContainer(target.get())) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
     }
 }

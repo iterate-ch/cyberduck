@@ -38,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -48,7 +49,7 @@ public class DefaultCopyFeatureTest extends AbstractSFTPTest {
     public void testSupported() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertTrue(new DefaultCopyFeature(session).isSupported(source, target));
+        assertTrue(new DefaultCopyFeature(session).isSupported(source, Optional.of(target)));
     }
 
     @Test

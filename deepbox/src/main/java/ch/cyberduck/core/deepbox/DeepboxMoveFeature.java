@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
 
@@ -79,36 +80,39 @@ public class DeepboxMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
         if(source.isRoot() || new DeepboxPathContainerService(session, fileid).isContainer(source) || new DeepboxPathContainerService(session, fileid).isInTrash(source)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
-        if(target.isRoot() || new DeepboxPathContainerService(session, fileid).isContainer(target) || new DeepboxPathContainerService(session, fileid).isInTrash(target)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
-        }
-        final Acl acl = source.attributes().getAcl();
-        if(Acl.EMPTY == acl) {
-            // Missing initialization
-            log.warn("Unknown ACLs on {}", source);
-            return;
-        }
-        if(!source.getName().equals(target.getName())) {
-            if(!acl.get(new Acl.CanonicalUser()).contains(CANRENAME)) {
-                log.warn("ACL {} for {} does not include {}", acl, source, CANRENAME);
-                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(target.isRoot() || new DeepboxPathContainerService(session, fileid).isContainer(target) || new DeepboxPathContainerService(session, fileid).isInTrash(target)) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
             }
-        }
-        if(!fileid.getFileId(source.getParent()).equals(fileid.getFileId(target.getParent()))) {
-            if(fileid.getBoxNodeId(source.getParent()).equals(fileid.getBoxNodeId(target.getParent()))) {
-                if(!acl.get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX)) {
-                    log.warn("ACL {} for {} does not include {}", acl, source, CANMOVEWITHINBOX);
+            final Acl acl = source.attributes().getAcl();
+            if(Acl.EMPTY == acl) {
+                // Missing initialization
+                log.warn("Unknown ACLs on {}", source);
+                return;
+            }
+            if(!source.getName().equals(target.getName())) {
+                if(!acl.get(new Acl.CanonicalUser()).contains(CANRENAME)) {
+                    log.warn("ACL {} for {} does not include {}", acl, source, CANRENAME);
                     throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
                 }
             }
-            else {
-                if(!acl.get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX)) {
-                    log.warn("ACL {} for {} does not include {}", acl, source, CANMOVEOUTOFBOX);
-                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+            if(!fileid.getFileId(source.getParent()).equals(fileid.getFileId(target.getParent()))) {
+                if(fileid.getBoxNodeId(source.getParent()).equals(fileid.getBoxNodeId(target.getParent()))) {
+                    if(!acl.get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX)) {
+                        log.warn("ACL {} for {} does not include {}", acl, source, CANMOVEWITHINBOX);
+                        throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                    }
+                }
+                else {
+                    if(!acl.get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX)) {
+                        log.warn("ACL {} for {} does not include {}", acl, source, CANMOVEOUTOFBOX);
+                        throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                    }
                 }
             }
         }

@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.features.Copy.validate;
 
@@ -72,9 +73,9 @@ public class GraphCopyFeature implements Copy {
         final DriveItem item = session.getItem(file);
         try {
             Files.copy(item, copyOperation).await(statusObject -> log.info("Copy Progress Operation {} progress {} status {}",
-                statusObject.getOperation(),
-                statusObject.getPercentage(),
-                statusObject.getStatus()));
+                    statusObject.getOperation(),
+                    statusObject.getPercentage(),
+                    statusObject.getStatus()));
             listener.sent(status.getLength());
             target.attributes().setFileId(null);
             final PathAttributes attr = attributes.find(target);
@@ -95,19 +96,25 @@ public class GraphCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!session.isAccessible(target, true)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
+        if(target.isPresent()) {
+            if(!session.isAccessible(target.get(), true)) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
         if(!session.isAccessible(source, false)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(!session.getContainer(source).equals(session.getContainer(target))) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+        if(target.isPresent()) {
+            if(!session.getContainer(source).equals(session.getContainer(target.get()))) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
         if(source.getType().contains(Path.Type.shared)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        validate(session.getCaseSensitivity(), source, target);
+        if(target.isPresent()) {
+            validate(session.getCaseSensitivity(), source, target.get());
+        }
     }
 }

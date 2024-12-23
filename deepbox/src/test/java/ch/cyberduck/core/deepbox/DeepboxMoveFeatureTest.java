@@ -35,6 +35,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.*;
 import static org.junit.Assert.*;
@@ -170,7 +171,8 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         final Path deepBox = new Path("/ORG 1 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(deepBox);
         assertEquals(Acl.EMPTY, attributes.getAcl());
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(deepBox, new Path(String.format("/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(deepBox,
+                Optional.of(new Path(String.format("/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
     }
 
     @Test
@@ -179,8 +181,10 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         final Path box = new Path("/ORG 1 - DeepBox Desktop App/ORG 1 - DeepBox Desktop App/ORG1:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(box);
         assertEquals(Acl.EMPTY, attributes.getAcl());
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(box, new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(box, new Path(String.format("/ORG 4 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(box,
+                Optional.of(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(box,
+                Optional.of(new Path(String.format("/ORG 4 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
     }
 
     @Test
@@ -191,8 +195,10 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(inbox, new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(inbox, new Path(String.format("/ORG 4 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(inbox,
+                Optional.of(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(inbox,
+                Optional.of(new Path(String.format("/ORG 4 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
     }
 
     @Test
@@ -203,8 +209,10 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(documents, new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(documents, new Path(String.format("/ORG 4 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(documents,
+                Optional.of(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(documents,
+                Optional.of(new Path(String.format("/ORG 4 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
     }
 
     @Test
@@ -215,8 +223,10 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(trash, new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(trash, new Path(String.format("/ORG 4 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(trash,
+                Optional.of(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(trash,
+                Optional.of(new Path(String.format("/ORG 4 - DeepBox Desktop App/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
     }
 
     @Test
@@ -233,8 +243,8 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(fileInTrash, file));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(fileInTrash, new Path(trash, file.getName(), EnumSet.of(Path.Type.file))));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(fileInTrash, Optional.of(file)));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(fileInTrash, Optional.of(new Path(trash, file.getName(), EnumSet.of(Path.Type.file)))));
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -250,7 +260,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(file, fileInTrash));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(file, Optional.of(fileInTrash)));
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -268,7 +278,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertFalse(fileAttributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
         assertFalse(fileAttributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertFalse(fileAttributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(file, fileRenamed));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(file, Optional.of(fileRenamed)));
 
         final PathAttributes folderAttributes = new DeepboxAttributesFinderFeature(session, nodeid).find(file);
         folder.setAttributes(folderAttributes);
@@ -276,6 +286,6 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertFalse(folderAttributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEWITHINBOX));
         assertFalse(folderAttributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertFalse(folderAttributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(folder, folderRenamed));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(folder, Optional.of(folderRenamed)));
     }
 }

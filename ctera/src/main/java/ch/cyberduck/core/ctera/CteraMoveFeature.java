@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 
@@ -32,16 +33,19 @@ public class CteraMoveFeature extends DAVMoveFeature {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!CteraTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), target.getName())).withFile(source);
-        }
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
         assumeRole(source, DELETEPERMISSION);
-        // defaults to Acl.EMPTY (disabling role checking) if target does not exist
-        assumeRole(target, WRITEPERMISSION);
-        // no createfilespermission required for now
-        if(source.isDirectory()) {
-            assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(!CteraTouchFeature.validate(target.getName())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), target.getName())).withFile(source);
+            }
+            // defaults to Acl.EMPTY (disabling role checking) if target does not exist
+            assumeRole(target, WRITEPERMISSION);
+            // no createfilespermission required for now
+            if(source.isDirectory()) {
+                assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+            }
         }
     }
 }

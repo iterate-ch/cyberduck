@@ -44,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.features.Copy.validate;
 
@@ -134,11 +135,14 @@ public class EueCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        if(!EueTouchFeature.validate(target.getName())) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            if(!EueTouchFeature.validate(target.getName())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName()));
+            }
+            validate(session.getCaseSensitivity(), source, target);
         }
-        validate(session.getCaseSensitivity(), source, target);
     }
 
     @Override

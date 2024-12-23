@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class FTPMoveFeature implements Move {
 
@@ -62,7 +63,7 @@ public class FTPMoveFeature implements Move {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) {
+    public void preflight(final Path source, final Optional<Path> target) {
         // Skip checking permission mask
     }
 }

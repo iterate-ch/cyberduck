@@ -19,6 +19,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVCopyFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.Optional;
+
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 
 public class CteraCopyFeature extends DAVCopyFeature {
@@ -28,12 +30,15 @@ public class CteraCopyFeature extends DAVCopyFeature {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
-        // defaults to Acl.EMPTY (disabling role checking) if target does not exist
-        assumeRole(target, WRITEPERMISSION);
-        // no createfilespermission required for now
-        if(source.isDirectory()) {
-            assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+    public void preflight(final Path source, final Optional<Path> optional) throws BackgroundException {
+        if(optional.isPresent()) {
+            final Path target = optional.get();
+            // defaults to Acl.EMPTY (disabling role checking) if target does not exist
+            assumeRole(target, WRITEPERMISSION);
+            // no createfilespermission required for now
+            if(source.isDirectory()) {
+                assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+            }
         }
     }
 }

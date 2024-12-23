@@ -33,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -50,7 +51,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(file));
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertTrue(move.isSupported(file, rename));
+        assertTrue(move.isSupported(file, Optional.of(rename)));
         assertEquals(rename, move.move(file, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         assertFalse(new MantaFindFeature(session).find(file));
         assertTrue(new MantaFindFeature(session).find(rename));
@@ -73,7 +74,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(touchedFile));
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
-        assertTrue(move.isSupported(touchedFile, rename));
+        assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
         assertEquals(rename, move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         assertNotNull(attributesFinder.find(rename));
         assertFalse(new MantaFindFeature(session).find(touchedFile));
@@ -96,7 +97,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(touchedFile));
         Path rename = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertTrue(move.isSupported(touchedFile, rename));
+        assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
         assertEquals(rename, move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         assertNotNull(attributesFinder.find(rename));
         assertFalse(new MantaFindFeature(session).find(touchedFile));

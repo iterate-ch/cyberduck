@@ -32,6 +32,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -57,8 +58,8 @@ public class SwiftDefaultCopyFeature implements Copy {
             // If segmented file, copies manifest (creating a link between new object and original segments)
             // Use with caution.
             session.getClient().copyObject(regionService.lookup(source),
-                containerService.getContainer(source).getName(), containerService.getKey(source),
-                containerService.getContainer(target).getName(), containerService.getKey(target));
+                    containerService.getContainer(source).getName(), containerService.getKey(source),
+                    containerService.getContainer(target).getName(), containerService.getKey(target));
             listener.sent(status.getLength());
             // Copy original file attributes
             return target.withAttributes(source.attributes());
@@ -72,12 +73,14 @@ public class SwiftDefaultCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(containerService.isContainer(source)) {
             throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
-        if(containerService.isContainer(target)) {
-            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(target);
+        if(target.isPresent()) {
+            if(containerService.isContainer(target.get())) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
         }
     }
 }

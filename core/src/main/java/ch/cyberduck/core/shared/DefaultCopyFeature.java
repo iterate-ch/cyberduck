@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Objects;
+import java.util.Optional;
 
 public class DefaultCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(DefaultCopyFeature.class);
@@ -70,7 +71,7 @@ public class DefaultCopyFeature implements Copy {
     }
 
     @Override
-    public void preflight(final Path source, final Path target) throws BackgroundException {
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         switch(from.getHost().getProtocol().getType()) {
             case ftp:
             case irods:

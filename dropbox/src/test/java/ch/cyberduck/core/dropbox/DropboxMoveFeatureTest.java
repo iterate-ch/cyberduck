@@ -42,6 +42,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -78,7 +79,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         new DropboxMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DropboxFindFeature(session).find(test));
         assertTrue(new DropboxFindFeature(session).find(target));
-        new DropboxDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -141,7 +142,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path file = new DropboxTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(home, "~$f", EnumSet.of(Path.Type.file));
-        assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, target));
+        assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, Optional.of(target)));
         assertThrows(AccessDeniedException.class, () -> feature.move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

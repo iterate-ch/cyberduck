@@ -14,6 +14,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -36,8 +37,8 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new AzureMoveFeature(session, null).isSupported(c, c));
+        assertFalse(new AzureMoveFeature(session, null).isSupported(c, Optional.of(new Path("/d", EnumSet.of(Path.Type.directory)))));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new AzureMoveFeature(session, null).isSupported(cf, cf));
+        assertTrue(new AzureMoveFeature(session, null).isSupported(cf, Optional.of(new Path("/c/f2", EnumSet.of(Path.Type.directory)))));
     }
 }
