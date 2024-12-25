@@ -24,16 +24,17 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GraphQuotaFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testQuotaSimple() throws BackgroundException {
-        final Home home = new OneDriveHomeFinderService();
-        final Quota quota = new GraphQuotaFeature(session, fileid);
+        assertEquals(Quota.unknown, new GraphQuotaFeature(session, fileid, () -> Home.ROOT).get());
+        final Quota quota = new GraphQuotaFeature(session, fileid, new OneDriveHomeFinderService());
         Quota.Space space = quota.get();
+        assertNotEquals(Quota.unknown, space);
         assertTrue(space.available > 0);
         assertTrue(space.used >= 0);
     }

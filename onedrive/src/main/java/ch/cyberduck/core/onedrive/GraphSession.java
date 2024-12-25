@@ -34,9 +34,9 @@ import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.onedrive.features.*;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.BufferWriteFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -264,7 +264,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             }
         }
         if(type == Quota.class) {
-            return (T) new GraphQuotaFeature(this, fileid);
+            return (T) new GraphQuotaFeature(this, fileid, new DefaultHomeFinderService(this));
         }
         if(type == UrlProvider.class) {
             return (T) new GraphUrlProvider();
