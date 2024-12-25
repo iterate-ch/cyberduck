@@ -79,8 +79,8 @@ public interface SPUUpdaterDelegate {
      *
      * @param updater The updater instance.
      */
-    default void updaterDidNotFindUpdate(SPUUpdater updater) {
-        log.debug("No update found");
+    default void updaterDidNotFindUpdate_error(SPUUpdater updater, NSError error) {
+        log.debug("Did not find update {}", error);
     }
 
     /**
