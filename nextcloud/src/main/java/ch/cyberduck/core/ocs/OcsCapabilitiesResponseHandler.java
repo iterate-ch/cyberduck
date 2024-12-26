@@ -17,9 +17,7 @@ package ch.cyberduck.core.ocs;
 
 import ch.cyberduck.core.ocs.model.Capabilities;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,8 +36,7 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
 
     @Override
     public OcsCapabilities handleEntity(final HttpEntity entity) throws IOException {
-        if(StringUtils.equals(ContentType.APPLICATION_XML.getMimeType(),
-                ContentType.parse(entity.getContentType().getValue()).getMimeType())) {
+        if(isXml(entity)) {
             final XmlMapper mapper = new XmlMapper();
             final Capabilities value = mapper.readValue(entity.getContent(), Capabilities.class);
             if(value.data != null) {
