@@ -16,7 +16,6 @@ package ch.cyberduck.core.ocs;
  */
 
 import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.nextcloud.NextcloudShareFeature;
 import ch.cyberduck.core.ocs.model.Share;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +34,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public abstract class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
-    private static final Logger log = LogManager.getLogger(NextcloudShareFeature.class);
+    private static final Logger log = LogManager.getLogger(OcsResponseHandler.class);
 
     @Override
     public R handleResponse(final HttpResponse response) throws IOException {
