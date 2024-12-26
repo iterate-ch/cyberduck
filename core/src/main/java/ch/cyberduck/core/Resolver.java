@@ -28,13 +28,15 @@ import ch.cyberduck.core.threading.NamedThreadFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
@@ -67,20 +69,25 @@ public final class Resolver {
      */
     public InetAddress[] resolve(final String hostname, final CancelCallback callback) throws ResolveFailedException, ResolveCanceledException {
         final CountDownLatch signal = new CountDownLatch(1);
-        final AtomicReference<Set<InetAddress>> resolved = new AtomicReference<>();
+        final AtomicReference<List<InetAddress>> resolved = new AtomicReference<>();
         final AtomicReference<UnknownHostException> failure = new AtomicReference<>();
         final Thread resolver = threadFactory.newThread(new Runnable() {
             @Override
             public void run() {
                 try {
                     final InetAddress[] allByName = InetAddress.getAllByName(hostname);
-                    resolved.set(Arrays.stream(allByName).collect(Collectors.toSet()));
-                    if(preferIPv6) {
-                        final Set<InetAddress> filtered = Arrays.stream(allByName).filter(inetAddress -> inetAddress instanceof Inet6Address).collect(Collectors.toSet());
-                        if(!filtered.isEmpty()) {
-                            resolved.set(filtered);
+                    resolved.set(Arrays.stream(allByName).sorted(new Comparator<InetAddress>() {
+                        @Override
+                        public int compare(final InetAddress o1, final InetAddress o2) {
+                            if(o1 instanceof Inet6Address && o2 instanceof Inet4Address) {
+                                return preferIPv6 ? -1 : 1;
+                            }
+                            if(o2 instanceof Inet6Address && o1 instanceof Inet4Address) {
+                                return preferIPv6 ? 1 : -1;
+                            }
+                            return 0;
                         }
-                    }
+                    }).collect(Collectors.toList()));
                     log.info("Resolved {} to {}", hostname, Arrays.toString(resolved.get().toArray()));
                 }
                 catch(UnknownHostException e) {
