@@ -16,10 +16,10 @@ package ch.cyberduck.core.ocs;
  */
 
 import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.nextcloud.NextcloudShareFeature;
 import ch.cyberduck.core.ocs.model.Share;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
@@ -35,15 +35,14 @@ import java.io.IOException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public abstract class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
-    private static final Logger log = LogManager.getLogger(NextcloudShareFeature.class);
+    private static final Logger log = LogManager.getLogger(OcsResponseHandler.class);
 
     @Override
     public R handleResponse(final HttpResponse response) throws IOException {
         final StatusLine statusLine = response.getStatusLine();
         if(response.getEntity() != null) {
             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-            if(StringUtils.equals(ContentType.APPLICATION_XML.getMimeType(),
-                    ContentType.parse(response.getEntity().getContentType().getValue()).getMimeType())) {
+            if(isXml(response.getEntity())) {
                 if(statusLine.getStatusCode() >= 300) {
                     final StringAppender message = new StringAppender();
                     message.append(statusLine.getReasonPhrase());
@@ -65,5 +64,12 @@ public abstract class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
             }
         }
         return super.handleResponse(response);
+    }
+
+    protected static boolean isXml(final HttpEntity response) {
+        return StringUtils.equals(ContentType.APPLICATION_XML.getMimeType(),
+                ContentType.parse(response.getContentType().getValue()).getMimeType())
+                || StringUtils.equals(ContentType.TEXT_XML.getMimeType(),
+                ContentType.parse(response.getContentType().getValue()).getMimeType());
     }
 }
