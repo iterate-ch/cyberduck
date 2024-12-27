@@ -23,7 +23,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
+import ch.cyberduck.core.onedrive.features.GraphQuotaFeature;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -189,6 +191,9 @@ public class OneDriveSession extends GraphSession {
     public <T> T _getFeature(final Class<T> type) {
         if(type == Home.class) {
             return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new OneDriveHomeFinderService());
+        }
+        if(type == Quota.class) {
+            return (T) new GraphQuotaFeature(this, fileid, new OneDriveHomeFinderService());
         }
         if(type == ListService.class) {
             return (T) new OneDriveListService(this, fileid);

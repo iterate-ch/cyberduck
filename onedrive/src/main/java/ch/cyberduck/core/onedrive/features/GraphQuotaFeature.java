@@ -18,10 +18,10 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -34,15 +34,17 @@ public class GraphQuotaFeature implements Quota {
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
+    private final Home finder;
 
-    public GraphQuotaFeature(final GraphSession session, final GraphFileIdProvider fileid) {
+    public GraphQuotaFeature(final GraphSession session, final GraphFileIdProvider fileid, final Home finder) {
         this.session = session;
         this.fileid = fileid;
+        this.finder = finder;
     }
 
     @Override
     public Space get() throws BackgroundException {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = finder.find();
         if(!session.isAccessible(home)) {
             // not accessible (important for Sharepoint)
             return unknown;
