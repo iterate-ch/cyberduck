@@ -171,18 +171,23 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
             return session.getClient().execute(resource, new OcsUploadShareResponseHandler() {
                 @Override
                 public DescriptiveUrl handleEntity(final HttpEntity entity) throws IOException {
-                    final XmlMapper mapper = new XmlMapper();
-                    final Share value = mapper.readValue(entity.getContent(), Share.class);
-                    // Additional request, because permissions are ignored in POST
-                    final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares/%s?permissions=%d",
-                            bookmark.getHostname(),
-                            value.data.id,
-                            SHARE_PERMISSIONS_CREATE
-                    ));
-                    final HttpPut put = new HttpPut(request.toString());
-                    put.setHeader("OCS-APIRequest", "true");
-                    put.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
-                    session.getClient().execute(put, new VoidResponseHandler());
+                    if(isXml(entity)) {
+                        final XmlMapper mapper = new XmlMapper();
+                        final Share value = mapper.readValue(entity.getContent(), Share.class);
+                        // Additional request, because permissions are ignored in POST
+                        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares/%s?permissions=%d",
+                                bookmark.getHostname(),
+                                value.data.id,
+                                SHARE_PERMISSIONS_CREATE
+                        ));
+                        final HttpPut put = new HttpPut(request.toString());
+                        put.setHeader("OCS-APIRequest", "true");
+                        put.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
+                        session.getClient().execute(put, new VoidResponseHandler());
+                    }
+                    else {
+                        log.warn("Ignore entity {}", entity);
+                    }
                     return super.handleEntity(entity);
                 }
             });

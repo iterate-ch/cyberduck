@@ -65,6 +65,9 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                 }
             }
         }
+        else {
+            log.warn("Ignore entity {}", entity);
+        }
         log.debug("Determined OCS capabilities {}", capabilities);
         return capabilities;
     }

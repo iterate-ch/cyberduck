@@ -62,6 +62,9 @@ public abstract class OcsResponseHandler<R> extends AbstractResponseHandler<R> {
                     log.warn("Failure parsing status code in response {}", error);
                 }
             }
+            else {
+                log.warn("Ignore entity {}", response.getEntity());
+            }
         }
         return super.handleResponse(response);
     }
