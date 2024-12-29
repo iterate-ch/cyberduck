@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+9.1.2
+- [Bugfix] No fallback to IPv4 address when IPv6 connect attempt fails with unreachable network (#16723)
+- [Bugfix] File → Rename option always disabled (#16695)
+
 9.1.1
 - [Bugfix] Repeated prompts for passphrase (Cryptomator, Windows) (#16645)
 - [Bugfix] Missing list of buckets (Linode Object Storage) (#16659)
