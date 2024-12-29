@@ -10,6 +10,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -61,16 +64,37 @@ public class ResolverTest {
     @Ignore
     public void testResolveLinkLocalZoneIndexInterfaceName() throws Exception {
         assertEquals("andaman.local", new Resolver().resolve("andaman.local", new DisabledCancelCallback())[0].getHostName());
-        assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0", new DisabledCancelCallback())[0].getHostAddress());
+        assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver()
+                .resolve("fe80::c62c:3ff:fe0b:8670%en0", new DisabledCancelCallback())[0].getHostAddress());
     }
 
     @Test
-    public void testResolvePublicDNSIPv6Only() throws Exception {
-        assertEquals("2001:470:a085:999:0:0:0:21", new Resolver().resolve("ftp6.netbsd.org", new DisabledCancelCallback())[0].getHostAddress());
+    public void testResolvePublicDnsIPv6Only() throws Exception {
+        assertEquals("2001:470:a085:999:0:0:0:21", new Resolver()
+                .resolve("ftp6.netbsd.org", new DisabledCancelCallback())[0].getHostAddress());
     }
 
     @Test
-    public void testResolvePublicDNSIPv6ForHybrid() throws Exception {
-        assertEquals("2600:3c02:0:0:f03c:91ff:fe89:e8b1", new Resolver(true).resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback())[0].getHostAddress());
+    public void testResolvePublicPreferIpv6() throws Exception {
+        assertTrue("2600:3c02:0:0:f03c:91ff:fe89:e8b1", new Resolver(true)
+                .resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback())[0] instanceof Inet6Address);
+        assertTrue("2620:100:6025:14:0:0:a27d:450e", new Resolver(true)
+                .resolve("content.dropboxapi.com", new DisabledCancelCallback())[0] instanceof Inet6Address);
+        assertTrue("2a00:1450:400a:803:0:0:0:200a", new Resolver(true)
+                .resolve("www.googleapis.com", new DisabledCancelCallback())[0] instanceof Inet6Address);
+        assertTrue("2603:1027:1:28:0:0:0:25", new Resolver(true)
+                .resolve("login.microsoftonline.com", new DisabledCancelCallback())[0] instanceof Inet6Address);
+    }
+
+    @Test
+    public void testResolvePublicPreferIpv4() throws Exception {
+        assertTrue("23.239.19.84", new Resolver(false)
+                .resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback())[0] instanceof Inet4Address);
+        assertTrue("162.125.69.14", new Resolver(false)
+                .resolve("content.dropboxapi.com", new DisabledCancelCallback())[0] instanceof Inet4Address);
+        assertTrue("216.58.215.234", new Resolver(false)
+                .resolve("www.googleapis.com", new DisabledCancelCallback())[0] instanceof Inet4Address);
+        assertTrue("20.190.181.0", new Resolver(false)
+                .resolve("login.microsoftonline.com", new DisabledCancelCallback())[0] instanceof Inet4Address);
     }
 }

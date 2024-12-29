@@ -59,6 +59,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
+import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
@@ -68,6 +69,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
 
 public class HttpConnectionPoolBuilder {
     private static final Logger log = LogManager.getLogger(HttpConnectionPoolBuilder.class);
@@ -139,9 +141,9 @@ public class HttpConnectionPoolBuilder {
     }
 
     /**
-     * @param proxyfinder    Proxy configuration
-     * @param listener Log listener
-     * @param prompt   Prompt for proxy credentials
+     * @param proxyfinder Proxy configuration
+     * @param listener    Log listener
+     * @param prompt      Prompt for proxy credentials
      * @return Builder for HTTP client
      */
     public HttpClientBuilder build(final ProxyFinder proxyfinder, final TranscriptListener listener, final LoginCallback prompt) {
@@ -238,7 +240,9 @@ public class HttpConnectionPoolBuilder {
 
     public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry) {
         log.debug("Setup connection pool with registry {}", registry);
-        final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry, new CustomDnsResolver());
+        final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(
+                new CustomHttpClientConnectionOperator(registry, DefaultSchemePortResolver.INSTANCE, new CustomDnsResolver()),
+                ManagedHttpClientConnectionFactory.INSTANCE, -1, TimeUnit.MILLISECONDS);
         manager.setMaxTotal(new HostPreferences(host).getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(new HostPreferences(host).getInteger("http.connections.route"));
         // Detect connections that have become stale (half-closed) while kept inactive in the pool
