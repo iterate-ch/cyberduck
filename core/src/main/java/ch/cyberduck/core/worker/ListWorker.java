@@ -63,10 +63,11 @@ public class ListWorker extends Worker<AttributedList<Path>> {
                 log.debug("Run with feature {}", service);
                 list = service.list(directory, listener);
                 if(list.isEmpty()) {
+                    log.debug("Notify listener {} with chunk for {}", listener, directory);
                     listener.chunk(directory, list);
                 }
-                log.debug("Notify listener {}", listener);
             }
+            log.debug("Notify listener {} with finish for {}", listener, directory);
             listener.finish(directory, list, Optional.empty());
             return list;
         }
@@ -74,11 +75,6 @@ public class ListWorker extends Worker<AttributedList<Path>> {
             log.warn("Return partial directory listing for {}", directory);
             listener.finish(directory, e.getChunk(), Optional.of(e));
             return e.getChunk();
-        }
-        catch(BackgroundException e) {
-            log.warn("Notify listener for {} with error {}", directory, e);
-            listener.finish(directory, AttributedList.emptyList(), Optional.of(e));
-            throw e;
         }
     }
 
@@ -93,7 +89,12 @@ public class ListWorker extends Worker<AttributedList<Path>> {
             return;
         }
         // Update the working directory if listing is successful
-        if(!(AttributedList.<Path>emptyList() == list)) {
+        if(AttributedList.<Path>emptyList() == list) {
+            log.debug("Notify listener {} with empty result set for {}", listener, directory);
+            listener.finish(directory, AttributedList.emptyList(), Optional.empty());
+        }
+        else {
+            log.debug("Cache contents for {}", directory);
             // Cache directory listing
             cache.put(directory, list);
         }

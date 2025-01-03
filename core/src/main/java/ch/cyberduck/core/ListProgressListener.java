@@ -39,7 +39,7 @@ public interface ListProgressListener extends ProgressListener {
      * @param list      Directory contents retrieved
      * @param e         Exception if any
      */
-    default void finish(Path directory, AttributedList<Path> list, Optional<BackgroundException> e) throws ConnectionCanceledException {
+    default void finish(Path directory, AttributedList<Path> list, Optional<BackgroundException> e) {
         //
     }
 

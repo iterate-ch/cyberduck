@@ -43,7 +43,7 @@ public class ProxyListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) throws ConnectionCanceledException {
+    public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
         for(ListProgressListener listener : proxy) {
             listener.finish(directory, list, e);
         }
