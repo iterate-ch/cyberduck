@@ -1,0 +1,37 @@
+name: Transifex
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  transifex:
+    name: Pull localization changes
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ./i18n/src/main/resources
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Transifex
+        run: |
+          ./i18n.sh --tx-pull
+          ./i18n.sh --update
+          ./i18n.sh --convertstrings
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        if: success()
+        with:
+          branch: i18n/
+          branch-suffix: timestamp
+          commit-message: "Pull localization changes from Transifex"
+          title: "Pull localization changes from Transifex"
+          labels: "i18n"
+          committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
