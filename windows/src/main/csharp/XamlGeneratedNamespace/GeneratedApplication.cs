@@ -14,6 +14,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Windows.Win32.UI.HiDpi;
 using static Windows.Win32.PInvoke;
 
 namespace XamlGeneratedNamespace;
@@ -25,7 +26,7 @@ partial class GeneratedApplication
         TaskCompletionSource<GeneratedApplication> appResult = new();
         Thread thread = new(static state =>
         {
-            SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+            SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
             GeneratedApplication app = new();
             app.InitializeComponent();
             ((TaskCompletionSource<GeneratedApplication>)state).SetResult(app);
