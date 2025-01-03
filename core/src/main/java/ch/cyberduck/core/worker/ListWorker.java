@@ -63,10 +63,11 @@ public class ListWorker extends Worker<AttributedList<Path>> {
                 log.debug("Run with feature {}", service);
                 list = service.list(directory, listener);
                 if(list.isEmpty()) {
+                    log.debug("Notify listener {} with chunk for {}", listener, directory);
                     listener.chunk(directory, list);
                 }
-                log.debug("Notify listener {}", listener);
             }
+            log.debug("Notify listener {} with finish for {}", listener, directory);
             listener.finish(directory, list, Optional.empty());
             return list;
         }
