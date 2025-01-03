@@ -158,10 +158,6 @@ public class DAVSession extends HttpSession<DAVClient> {
                 client.disablePreemptiveAuthentication();
             }
         }
-        if(credentials.isPassed()) {
-            log.warn("Skip verifying credentials with previous successful authentication event for {}", this);
-            return;
-        }
         try {
             final Path home = this.getFeature(Home.class).find();
             final HttpHead head = new HttpHead(new DAVPathEncoder().encode(home));

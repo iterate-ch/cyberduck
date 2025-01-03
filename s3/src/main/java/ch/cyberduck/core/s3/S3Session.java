@@ -327,10 +327,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 client.setProviderCredentials(new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
             }
         }
-        if(host.getCredentials().isPassed()) {
-            log.warn("Skip verifying credentials with previous successful authentication event for {}", this);
-            return;
-        }
         final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
