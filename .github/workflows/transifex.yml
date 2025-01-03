@@ -25,6 +25,9 @@ jobs:
           ./i18n.sh --tx-pull
           ./i18n.sh --update
           ./i18n.sh --convertstrings
+        env:
+          TX_HOSTNAME: ${{ secrets.TRANSIFEX_HOSTNAME }}
+          TX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         if: success()
