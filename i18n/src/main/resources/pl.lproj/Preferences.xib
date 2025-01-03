@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -266,7 +266,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="64">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="65">
                                         <items>
                                             <menuItem title="Użyj małych ikon" id="66"/>
@@ -307,7 +307,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="NnP-Br-fPH">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="34">
                                         <items>
                                             <menuItem title=" " id="35"/>
@@ -538,7 +538,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title="Open new connection" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="144" id="142">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="message"/>
+                                            <font key="font" metaFont="menu"/>
                                             <menu key="menu" title="Inne widoki" id="143">
                                                 <items>
                                                     <menuItem title="Open new connection" state="on" id="144"/>
@@ -578,7 +578,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="114" id="112">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="message"/>
+                                            <font key="font" metaFont="menu"/>
                                             <menu key="menu" title="Inne widoki" id="113">
                                                 <items>
                                                     <menuItem title=" " state="on" id="114"/>
@@ -613,7 +613,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="130" id="128">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="message"/>
+                                            <font key="font" metaFont="menu"/>
                                             <menu key="menu" title="Inne widoki" id="129">
                                                 <items>
                                                     <menuItem title=" " state="on" id="130"/>
@@ -642,7 +642,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="138" id="136">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="message"/>
+                                            <font key="font" metaFont="menu"/>
                                             <menu key="menu" title="Inne widoki" id="137">
                                                 <items>
                                                     <menuItem title=" " state="on" id="138"/>
@@ -1126,11 +1126,11 @@
                                                 </textView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="250">
+                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="250">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
@@ -1185,11 +1185,11 @@
                                                 </textView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="255">
+                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="255">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
@@ -1218,7 +1218,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="269" id="267">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="268">
                                         <items>
                                             <menuItem title=" " state="on" id="269"/>
@@ -1250,7 +1250,7 @@
                                 <autoresizingMask key="autoresizingMask"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="285" id="283">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="284">
                                         <items>
                                             <menuItem title=" " state="on" id="285"/>
@@ -1290,7 +1290,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="277" id="275">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="276">
                                         <items>
                                             <menuItem title=" " state="on" id="277"/>
@@ -1363,7 +1363,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="bv6-7A-srz">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="51">
                                         <items>
                                             <menuItem title=" " id="52"/>
@@ -1558,7 +1558,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="326"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1618,7 +1618,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="339" id="336">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="337">
                                         <items>
                                             <menuItem title="Unlimited Bandwidth" tag="-1" id="338"/>
@@ -1643,7 +1643,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="346" id="343">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="344">
                                         <items>
                                             <menuItem title="Unlimited Bandwidth" tag="-1" id="345"/>
@@ -1685,7 +1685,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="352">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="353"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1713,7 +1713,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="358">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="359"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1741,7 +1741,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="364">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="365"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1770,7 +1770,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="Nln-7K-rM6">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="LOt-Ur-gZL"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1805,7 +1805,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="373" id="371">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="372">
                                         <items>
                                             <menuItem title=" " state="on" id="373"/>
@@ -1888,7 +1888,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="413">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="414"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1947,7 +1947,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="Yox-e4-qNs">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="diO-fA-NtZ"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1975,7 +1975,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="3pD-c1-mdX">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="8oB-mo-TeL"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -2004,7 +2004,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="K6E-Rf-5sb">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="rw5-0E-6t1"/>
                                 </popUpButtonCell>
                             </popUpButton>
