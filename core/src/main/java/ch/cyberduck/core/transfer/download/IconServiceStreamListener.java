@@ -18,26 +18,28 @@ package ch.cyberduck.core.transfer.download;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-public class IconServiceStreamListener extends DelegateStreamListener {
+public class IconServiceStreamListener extends BytecountStreamListener {
 
-    private final Transfer transfer;
+    private final TransferStatus status;
     private final IconService.Icon icon;
 
-    public IconServiceStreamListener(final Transfer transfer, final IconService.Icon icon, final StreamListener delegate) {
+    public IconServiceStreamListener(final TransferStatus status, final IconService.Icon icon, final StreamListener delegate) {
         super(delegate);
-        this.transfer = transfer;
+        this.status = status;
         this.icon = icon;
     }
 
     @Override
     public void sent(final long bytes) {
         super.sent(bytes);
-        icon.update(new TransferProgress(transfer.getSize(), transfer.getTransferred()));
+        icon.update(new TransferProgress(status.getLength(), this.getSent()));
     }
 }

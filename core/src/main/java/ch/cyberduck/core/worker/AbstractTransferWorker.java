@@ -396,7 +396,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             icon = IconService.disabled;
                         }
                         final BytecountStreamListener counter = new TransferStreamListener(transfer,
-                                new IconServiceStreamListener(transfer, icon, stream));
+                                new IconServiceStreamListener(segment, icon, stream));
                         try {
                             transfer.transfer(s, d,
                                     segment.getRename().remote != null ? segment.getRename().remote : item.remote,
