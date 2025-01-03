@@ -213,10 +213,7 @@ public class Credentials implements Comparable<Credentials> {
      * @return true if the username is anonymous.
      */
     public boolean isAnonymousLogin() {
-        if(StringUtils.isEmpty(user)) {
-            return false;
-        }
-        return PreferencesFactory.get().getProperty("connection.login.anon.name").equals(user);
+        return StringUtils.equals(user, PreferencesFactory.get().getProperty("connection.login.anon.name"));
     }
 
     public boolean isPasswordAuthentication() {
