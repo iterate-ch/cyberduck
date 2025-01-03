@@ -109,6 +109,9 @@ public class Glacier implements Restore {
         final AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard()
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
             .withClientConfiguration(configuration);
+        if(session.getClient().isAuthenticatedConnection()) {
+            builder.withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()));
+        }
         final Location.Name region = this.getRegion(container);
         if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(Location.unknown.equals(region)) {

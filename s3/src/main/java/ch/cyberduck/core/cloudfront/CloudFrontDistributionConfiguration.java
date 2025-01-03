@@ -615,8 +615,10 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     private AmazonCloudFront client(final Path container) throws BackgroundException {
         final AmazonCloudFrontClientBuilder builder = AmazonCloudFrontClientBuilder.standard()
-            .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
             .withClientConfiguration(configuration);
+        if(session.getClient().isAuthenticatedConnection()) {
+            builder.withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()));
+        }
         final Location.Name region = this.getRegion(container);
         if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(Location.unknown.equals(region)) {

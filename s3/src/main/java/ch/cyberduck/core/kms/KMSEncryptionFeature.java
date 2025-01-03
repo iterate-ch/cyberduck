@@ -130,8 +130,10 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     private AWSKMS client(final Path container) throws BackgroundException {
         final AWSKMSClientBuilder builder = AWSKMSClientBuilder.standard()
-                .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
                 .withClientConfiguration(configuration);
+        if(session.getClient().isAuthenticatedConnection()) {
+            builder.withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()));
+        }
         final Location.Name region = location.getLocation(container);
         if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(Location.unknown.equals(region)) {
