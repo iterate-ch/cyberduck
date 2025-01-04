@@ -20,13 +20,11 @@
     <import file="../../archive.xml"/>
 
     <condition property="msbuild.configuration" value="Debug">
-        <equals arg1="${configuration}" arg2="debug" />
+        <equals arg1="${configuration}" arg2="debug"/>
     </condition>
     <condition property="msbuild.configuration" value="Release">
-        <equals arg1="${configuration}" arg2="release" />
+        <equals arg1="${configuration}" arg2="release"/>
     </condition>
-
-    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
     <property name="chocolatey.source" value="${setup}/chocolatey/duck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
@@ -40,42 +38,42 @@
 
     <target name="restore" depends="init-msbuild, version">
         <msbuild buildfile="build.proj">
-            <target name="Restore" />
+            <target name="Restore"/>
 
-            <property name="Exe" value="true" />
-            <property name="Installer" value="true" />
+            <property name="Exe" value="true"/>
+            <property name="Installer" value="true"/>
         </msbuild>
     </target>
 
     <target name="build" depends="init-msbuild, version">
         <msbuild buildfile="build.proj">
-            <target name="Build" />
+            <target name="Build"/>
 
-            <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Exe" value="true" />
-            <property name="Platform" value="x64" />
-            <property name="ShortVersion" value="${version} (${revision})" />
-            <property name="Version" value="${version}.${revision}" />
+            <property name="Configuration" value="${msbuild.configuration}"/>
+            <property name="Copyright" value="${copyright}"/>
+            <property name="Exe" value="true"/>
+            <property name="Platform" value="x64"/>
+            <property name="ShortVersion" value="${version} (${revision})"/>
+            <property name="Version" value="${version}.${revision}"/>
         </msbuild>
     </target>
 
     <target name="package" depends="init-msbuild, version">
         <condition property="msbuild.sign" value="false">
-            <istrue value="${skip}" />
+            <istrue value="${skip}"/>
         </condition>
-        <property name="msbuild.sign" value="" />
+        <property name="msbuild.sign" value=""/>
 
         <msbuild buildfile="build.proj">
-            <target name="Build" />
+            <target name="Build"/>
 
-            <property name="BuildProjectReferences" value="false" />
-            <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Installer" value="true" />
-            <property name="ShortVersion" value="${version} (${revision})" />
-            <property name="SignOutput" value="${msbuild.sign}" />
-            <property name="Version" value="${version}.${revision}" />
+            <property name="BuildProjectReferences" value="false"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
+            <property name="Copyright" value="${copyright}"/>
+            <property name="Installer" value="true"/>
+            <property name="ShortVersion" value="${version} (${revision})"/>
+            <property name="SignOutput" value="${msbuild.sign}"/>
+            <property name="Version" value="${version}.${revision}"/>
         </msbuild>
     </target>
 
@@ -102,6 +100,8 @@
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
-        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
+        <exec executable="choco" dir="${chocolatey.target}" failonerror="true">
+            <arg value="pack"/>
+        </exec>
     </target>
 </project>
