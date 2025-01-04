@@ -376,12 +376,19 @@ public class Terminal {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
+        final TerminalTransferErrorCallback error;
         final Host host = transfer.getSource();
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
             host.setTransfer(Host.TransferType.concurrent);
         }
         else {
             host.setTransfer(Host.TransferType.newconnection);
+        }
+        if(input.hasOption(TerminalOptionsBuilder.Params.quiet.name())) {
+            error = new TerminalTransferErrorCallback(reader -> false);
+        }
+        else {
+            error = new TerminalTransferErrorCallback(reader);
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.existing.name())) {
             prompt = new DisabledTransferPrompt() {
@@ -404,7 +411,7 @@ public class Terminal {
         }
         final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller,
                 source, destination,
-                transfer.withCache(cache), new TransferOptions().reload(true), prompt, login, new TerminalTransferErrorCallback(reader), meter,
+                transfer.withCache(cache), new TransferOptions().reload(true), prompt, login, error, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
