@@ -55,6 +55,7 @@ public class OpenSSHJumpHostConfigurator implements JumphostConfigurator {
         }
         final String proxyJump = configuration.lookup(alias).getProxyJump();
         if(StringUtils.isBlank(proxyJump)) {
+            log.debug("No configuration for alias {}", alias);
             return null;
         }
         log.info("Found jump host configuration {} from {}", proxyJump, configuration);

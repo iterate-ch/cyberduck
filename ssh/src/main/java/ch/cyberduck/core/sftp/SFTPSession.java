@@ -284,6 +284,7 @@ public class SFTPSession extends Session<SSHClient> {
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
             final String identityAgent = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
+            log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
             switch(Platform.getDefault()) {
                 case windows:
                     defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
@@ -297,8 +298,7 @@ public class SFTPSession extends Session<SSHClient> {
                     break;
                 default:
                     try {
-                        defaultMethods.add(new SFTPAgentAuthentication(client,
-                                new OpenSSHAgentAuthenticator(identityAgent)));
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(identityAgent)));
                     }
                     catch(AgentProxyException e) {
                         log.warn("Agent proxy failed with {}", e.getMessage());

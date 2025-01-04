@@ -49,6 +49,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
         }
         final String hostname = configuration.lookup(alias).getHostName();
         if(StringUtils.isBlank(hostname)) {
+            log.debug("No configuration for alias {}", alias);
             return alias;
         }
         log.info("Determined hostname {} from alias {} from {}", hostname, alias, configuration);

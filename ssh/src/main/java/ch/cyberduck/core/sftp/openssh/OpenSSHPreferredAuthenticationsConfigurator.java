@@ -22,8 +22,11 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class OpenSSHPreferredAuthenticationsConfigurator {
+    private static final Logger log = LogManager.getLogger(OpenSSHPreferredAuthenticationsConfigurator.class);
 
     private final OpenSshConfig configuration;
 
@@ -38,8 +41,10 @@ public class OpenSSHPreferredAuthenticationsConfigurator {
     public String[] getPreferred(final String alias) {
         final String methods = configuration.lookup(alias).getPreferredAuthentications();
         if(StringUtils.isBlank(methods)) {
+            log.debug("No configuration for alias {}", alias);
             return null;
         }
+        log.debug("Found configuration {} for alias {}", methods, alias);
         return StringUtils.split(methods, ",");
     }
 

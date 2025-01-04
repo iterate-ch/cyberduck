@@ -21,7 +21,12 @@ package ch.cyberduck.core.sftp.openssh;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class OpenSSHIdentitiesOnlyConfigurator {
+    private static final Logger log = LogManager.getLogger(OpenSSHIdentitiesOnlyConfigurator.class);
+
     private final OpenSshConfig configuration;
 
     public OpenSSHIdentitiesOnlyConfigurator() {
@@ -35,8 +40,10 @@ public class OpenSSHIdentitiesOnlyConfigurator {
     public boolean isIdentitiesOnly(final String alias) {
         final Boolean identitiesOnly = configuration.lookup(alias).isIdentitiesOnly();
         if(null == identitiesOnly) {
+            log.debug("No configuration for alias {}", alias);
             return false;
         }
+        log.debug("Found configuration {} for alias {}", identitiesOnly, alias);
         return identitiesOnly;
     }
 
