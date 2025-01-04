@@ -47,7 +47,8 @@ public class GlobTransferItemFinder implements TransferItemFinder {
             if(StringUtils.containsAny(path, '*', '?')) {
                 final Local directory = LocalFactory.get(FilenameUtils.getFullPath(path));
                 if(directory.isDirectory()) {
-                    final Set<TransferItem> items = new HashSet<TransferItem>();
+                    log.debug("Resolve files in {} matching {}", directory, path);
+                    final Set<TransferItem> items = new HashSet<>();
                     for(Local file : directory.list(new NullFilter<String>() {
                         @Override
                         public boolean accept(final String file) {
