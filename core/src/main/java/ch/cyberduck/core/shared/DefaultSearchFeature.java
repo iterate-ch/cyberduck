@@ -20,6 +20,7 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProxyListProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -40,33 +41,23 @@ public class DefaultSearchFeature implements Search {
         return session.getFeature(ListService.class).list(workdir, new SearchListProgressListener(filter, listener)).filter(filter);
     }
 
-    private static final class SearchListProgressListener implements ListProgressListener {
+    private static final class SearchListProgressListener extends ProxyListProgressListener {
         private final Filter<Path> filter;
-        private final ListProgressListener delegate;
 
         public SearchListProgressListener(final Filter<Path> filter, final ListProgressListener delegate) {
+            super(delegate);
             this.filter = filter;
-            this.delegate = delegate;
         }
 
         @Override
         public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
-            delegate.chunk(directory, list.filter(filter));
+            super.chunk(directory, list.filter(filter));
         }
 
         @Override
-        public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
-            delegate.finish(directory, list, e);
-        }
-
-        @Override
-        public ListProgressListener reset() {
+        public ListProgressListener reset() throws ConnectionCanceledException {
+            super.reset();
             return this;
-        }
-
-        @Override
-        public void message(final String message) {
-            delegate.message(message);
         }
     }
 }
