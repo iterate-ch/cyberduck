@@ -28,9 +28,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.copy.ChecksumFilter;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 
@@ -170,10 +168,8 @@ public class CopyTransfer extends Transfer {
     @Override
     public TransferPathFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         log.debug("Filter transfer with action {}", action);
-        final Find find = new CachingFindFeature(destination, cache,
-                destination.getFeature(Find.class, new DefaultFindFeature(destination)));
-        final AttributesFinder attributes = new CachingAttributesFinderFeature(destination, cache,
-                destination.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(destination)));
+        final Find find = new CachingFindFeature(destination, cache);
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(destination, cache);
         if(action.equals(TransferAction.comparison)) {
             return new ChecksumFilter(source, destination, mapping, find, attributes);
         }

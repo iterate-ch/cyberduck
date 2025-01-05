@@ -18,6 +18,7 @@ package ch.cyberduck.core;
 import org.junit.Test;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -25,32 +26,32 @@ import static org.junit.Assert.assertTrue;
 public class CachingListProgressListenerTest {
 
     @Test
-    public void testEmptyList() {
+    public void testEmptyList() throws Exception {
         final PathCache cache = new PathCache(1);
         final CachingListProgressListener listener = new CachingListProgressListener(cache);
         final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
         listener.chunk(directory, new AttributedList<>());
         assertFalse(cache.isCached(directory));
-        listener.cache();
+        listener.cleanup(directory, new AttributedList<>(), Optional.empty());
         assertTrue(cache.isCached(directory));
     }
 
     @Test
-    public void testNoResult() {
+    public void testNoResult() throws Exception {
         final PathCache cache = new PathCache(1);
         final CachingListProgressListener listener = new CachingListProgressListener(cache);
         final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
         listener.chunk(directory, AttributedList.emptyList());
-        listener.cache();
+        listener.cleanup(directory, AttributedList.emptyList(), Optional.empty());
         assertFalse(cache.isCached(directory));
     }
 
     @Test
-    public void testNoChunk() {
+    public void testNoChunk() throws Exception {
         final PathCache cache = new PathCache(1);
         final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
         final CachingListProgressListener listener = new CachingListProgressListener(cache);
-        listener.cache();
+        listener.cleanup(directory, AttributedList.emptyList(), Optional.empty());
         assertFalse(cache.isCached(directory));
     }
 }

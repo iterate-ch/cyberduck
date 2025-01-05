@@ -37,8 +37,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.synchronization.CachingComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
@@ -148,10 +146,8 @@ public class SyncTransfer extends Transfer {
     @Override
     public TransferPathFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         log.debug("Filter transfer with action {}", action);
-        final Find find = new CachingFindFeature(source, cache,
-                source.getFeature(Find.class, new DefaultFindFeature(source)));
-        final AttributesFinder attributes = new CachingAttributesFinderFeature(source, cache,
-                source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+        final Find find = new CachingFindFeature(source, cache);
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(source, cache);
         // Set chosen action (upload, download, mirror) from prompt
         comparison = new CachingComparePathFilter(comparisons, new DefaultComparePathFilter(source, find, attributes));
         return new SynchronizationPathFilter(comparison,
@@ -184,7 +180,7 @@ public class SyncTransfer extends Transfer {
                                    final ListProgressListener listener) throws BackgroundException {
         log.debug("Children for {}", directory);
         final Set<TransferItem> children = new HashSet<>();
-        final Find finder = new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session)));
+        final Find finder = new CachingFindFeature(session, cache);
         if(finder.find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }

@@ -18,6 +18,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class ProxyListProgressListener implements ListProgressListener {
@@ -43,9 +44,9 @@ public class ProxyListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
+    public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
         for(ListProgressListener listener : proxy) {
-            listener.finish(directory, list, e);
+            listener.cleanup(directory, list, e);
         }
     }
 
@@ -55,5 +56,13 @@ public class ProxyListProgressListener implements ListProgressListener {
             listener.reset();
         }
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ProxyListProgressListener{");
+        sb.append("proxy=").append(Arrays.toString(proxy));
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -76,8 +76,8 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     }
 
     @Override
-    public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
-        delegate.finish(directory, list, e);
+    public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
+        delegate.cleanup(directory, list, e);
     }
 
     @Override

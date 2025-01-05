@@ -15,10 +15,12 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.CachingListProgressListener;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MemoryListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -30,28 +32,37 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Objects;
+import java.util.Optional;
 
 public class AttributesWorker extends Worker<PathAttributes> {
     private static final Logger log = LogManager.getLogger(AttributesWorker.class.getName());
 
     private final Cache<Path> cache;
     private final Path file;
+    private final MemoryListProgressListener memory;
 
     public AttributesWorker(final Cache<Path> cache, final Path file) {
         this.cache = cache;
         this.file = file;
+        this.memory = new MemoryListProgressListener(new WorkerCanceledListProgressListener(this,
+                new CachingListProgressListener(cache)));
     }
 
     @Override
     public PathAttributes run(final Session<?> session) throws BackgroundException {
-        log.debug("Read latest attributes for file {}", file);
-        return session.getFeature(AttributesFinder.class).find(file, new WorkerCanceledListProgressListener(this,
-                new CachingListProgressListener(new DisabledListProgressListener(), cache)));
+        return new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class)).find(file, memory);
+    }
+
+    protected boolean isCached(final Path directory) {
+        return cache.isValid(directory);
     }
 
     @Override
-    public void cleanup(final PathAttributes result) {
-        log.debug("Return {} for file {}", result, file);
+    public void cleanup(final PathAttributes result, final BackgroundException e) {
+        final Path directory = file.getParent();
+        final AttributedList<Path> list = memory.getContents();
+        log.debug("Cache directory listing {} for {}", list, directory);
+        memory.cleanup(directory, list, Optional.ofNullable(e));
     }
 
     @Override

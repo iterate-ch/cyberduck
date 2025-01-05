@@ -45,7 +45,7 @@ public class ListWorker extends Worker<AttributedList<Path>> {
     public ListWorker(final Cache<Path> cache, final Path directory, final ListProgressListener listener) {
         this.cache = cache;
         this.directory = directory;
-        this.listener = new WorkerCanceledListProgressListener(this, new CachingListProgressListener(listener, cache));
+        this.listener = new WorkerCanceledListProgressListener(this, new CachingListProgressListener(cache, listener));
     }
 
     @Override
@@ -66,19 +66,11 @@ public class ListWorker extends Worker<AttributedList<Path>> {
                     listener.chunk(directory, list);
                 }
             }
-            log.debug("Notify listener {} with finish for {}", listener, directory);
-            listener.finish(directory, list, Optional.empty());
             return list;
         }
         catch(ListCanceledException e) {
             log.warn("Return partial directory listing for {}", directory);
-            listener.finish(directory, e.getChunk(), Optional.of(e));
             return e.getChunk();
-        }
-        catch(BackgroundException e) {
-            log.warn("Notify listener for {} with error {}", directory, e);
-            listener.finish(directory, AttributedList.emptyList(), Optional.of(e));
-            throw e;
         }
     }
 
@@ -87,21 +79,9 @@ public class ListWorker extends Worker<AttributedList<Path>> {
     }
 
     @Override
-    public void cleanup(final AttributedList<Path> list) {
-        // Do not cache results from a canceled list worker as it may be incomplete
-        if(this.isCanceled()) {
-            return;
-        }
-        // Update the working directory if listing is successful
-        if(!(AttributedList.<Path>emptyList() == list)) {
-            // Cache directory listing
-            cache.put(directory, list);
-        }
-        else {
-            log.debug("Cache contents for {}", directory);
-            // Cache directory listing
-            cache.put(directory, list);
-        }
+    public void cleanup(final AttributedList<Path> list, final BackgroundException failure) {
+        listener.cleanup(directory, list, Optional.ofNullable(failure));
+        super.cleanup(list, failure);
     }
 
     @Override

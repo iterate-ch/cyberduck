@@ -31,10 +31,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.TimestampComparator;
@@ -98,7 +96,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                                 .withPermission(r.getKey().attributes().getPermission())
                                 .withEncryption(r.getKey().attributes().getEncryption())
                                 .withStorageClass(r.getKey().attributes().getStorageClass())
-                                .exists(new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+                                .exists(new CachingFindFeature(session, cache).find(r.getValue()))
                                 .withLength(r.getKey().attributes().getSize());
                         final Path copied = copy.copy(r.getKey(), r.getValue(), status, callback, new DisabledStreamListener());
                         if(PathAttributes.EMPTY.equals(copied.attributes())) {

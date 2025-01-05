@@ -44,7 +44,9 @@ public abstract class ListFilteringFeature {
      * @return Null if not found
      */
     protected Path search(final Path file, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
+        final Path directory = file.getParent();
+        log.debug("Lookup {} in {}", file, directory);
+        final AttributedList<Path> list = session._getFeature(ListService.class).list(directory, listener);
         // Try to match path only as the version might have changed in the meantime
         final Path found = list.find(new ListFilteringPredicate(session.getCaseSensitivity(), file));
         if(null == found) {

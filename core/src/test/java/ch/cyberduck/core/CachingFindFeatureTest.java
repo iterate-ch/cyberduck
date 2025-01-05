@@ -41,9 +41,10 @@ public class CachingFindFeatureTest {
                         throw new NotfoundException(folder.getAbsolute());
                     }
                 }));
-        feature.find(file, new DisabledListProgressListener());
-        assertEquals(0, cache.size());
-        assertFalse(cache.isCached(directory));
+        feature.find(file);
+        assertEquals(1, cache.size());
+        assertTrue(cache.isCached(directory));
+        assertSame(AttributedList.emptyList(), cache.get(directory));
     }
 
     @Test
@@ -63,10 +64,10 @@ public class CachingFindFeatureTest {
                 return Protocol.Case.sensitive;
             }
         }));
-        assertTrue(feature.find(file, new DisabledListProgressListener()));
+        assertTrue(feature.find(file));
         assertEquals(1, cache.size());
         assertTrue(cache.isCached(directory));
-        assertFalse(feature.find(new Path(directory, "F", EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertFalse(feature.find(new Path(directory, "F", EnumSet.of(Path.Type.file))));
     }
 
     @Test
@@ -86,9 +87,9 @@ public class CachingFindFeatureTest {
                 return Protocol.Case.insensitive;
             }
         }));
-        assertTrue(feature.find(file, new DisabledListProgressListener()));
+        assertTrue(feature.find(file));
         assertEquals(1, cache.size());
         assertTrue(cache.isCached(directory));
-        assertTrue(feature.find(new Path(directory, "F", EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertTrue(feature.find(new Path(directory, "F", EnumSet.of(Path.Type.file))));
     }
 }
