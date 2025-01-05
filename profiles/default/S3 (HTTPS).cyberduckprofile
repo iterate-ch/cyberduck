@@ -27,6 +27,8 @@
         <string>s3.amazonaws.com</string>
         <key>Hostname Configurable</key>
         <true/>
+        <key>Anonymous Configurable</key>
+        <true/>
         <key>Port Configurable</key>
         <false/>
         <key>Default Nickname</key>

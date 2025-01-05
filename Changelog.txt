@@ -4,6 +4,7 @@ https://cyberduck.io/
 9.1.2
 - [Bugfix] No fallback to IPv4 address when IPv6 connect attempt fails with unreachable network (#16723)
 - [Bugfix] File → Rename option always disabled (#16695)
+- [Bugfix] Connect anonymously to public buckets (S3) (#16746)
 
 9.1.1
 - [Bugfix] Repeated prompts for passphrase (Cryptomator, Windows) (#16645)

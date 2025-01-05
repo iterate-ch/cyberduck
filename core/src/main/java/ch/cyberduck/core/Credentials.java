@@ -58,11 +58,6 @@ public class Credentials implements Comparable<Credentials> {
     private boolean saved = new LoginOptions().save;
 
     /**
-     * Passed authentication successfully
-     */
-    private boolean passed;
-
-    /**
      * Default credentials
      */
     public Credentials() {
@@ -78,7 +73,6 @@ public class Credentials implements Comparable<Credentials> {
         this.identityPassphrase = copy.identityPassphrase;
         this.certificate = copy.certificate;
         this.saved = copy.saved;
-        this.passed = copy.passed;
     }
 
     public Credentials(final String user) {
@@ -109,7 +103,6 @@ public class Credentials implements Comparable<Credentials> {
 
     public void setUsername(final String user) {
         this.user = user;
-        this.passed = false;
     }
 
     public Credentials withUsername(final String user) {
@@ -131,7 +124,6 @@ public class Credentials implements Comparable<Credentials> {
 
     public void setPassword(final String password) {
         this.password = password;
-        this.passed = false;
     }
 
     public Credentials withPassword(final String password) {
@@ -145,7 +137,6 @@ public class Credentials implements Comparable<Credentials> {
 
     public void setToken(final String token) {
         this.tokens = new TemporaryAccessTokens(token);
-        this.passed = false;
     }
 
     public Credentials withToken(final String token) {
@@ -159,7 +150,6 @@ public class Credentials implements Comparable<Credentials> {
 
     public void setTokens(final TemporaryAccessTokens tokens) {
         this.tokens = tokens;
-        this.passed = false;
     }
 
     public Credentials withTokens(final TemporaryAccessTokens tokens) {
@@ -201,22 +191,11 @@ public class Credentials implements Comparable<Credentials> {
         return this;
     }
 
-    public boolean isPassed() {
-        return passed;
-    }
-
-    public void setPassed(final boolean passed) {
-        this.passed = passed;
-    }
-
     /**
      * @return true if the username is anonymous.
      */
     public boolean isAnonymousLogin() {
-        if(StringUtils.isEmpty(user)) {
-            return false;
-        }
-        return PreferencesFactory.get().getProperty("connection.login.anon.name").equals(user);
+        return StringUtils.equals(user, PreferencesFactory.get().getProperty("connection.login.anon.name"));
     }
 
     public boolean isPasswordAuthentication() {
@@ -247,7 +226,6 @@ public class Credentials implements Comparable<Credentials> {
 
     public Credentials withIdentity(final Local file) {
         this.identity = file;
-        this.passed = false;
         return this;
     }
 
@@ -265,7 +243,6 @@ public class Credentials implements Comparable<Credentials> {
      */
     public void setIdentity(final Local file) {
         this.identity = file;
-        this.passed = false;
     }
 
     public String getIdentityPassphrase() {
