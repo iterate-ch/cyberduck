@@ -19,14 +19,13 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProxyListProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +45,7 @@ public class ListWorker extends Worker<AttributedList<Path>> {
     public ListWorker(final Cache<Path> cache, final Path directory, final ListProgressListener listener) {
         this.cache = cache;
         this.directory = directory;
-        this.listener = new ConnectionCancelListProgressListener(this, directory, listener);
+        this.listener = new WorkerCanceledListProgressListener(this, new CachingListProgressListener(listener, cache));
     }
 
     @Override
@@ -138,29 +137,9 @@ public class ListWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SessionListWorker{");
+        final StringBuilder sb = new StringBuilder("ListWorker{");
         sb.append("directory=").append(directory);
         sb.append('}');
         return sb.toString();
-    }
-
-    private static final class ConnectionCancelListProgressListener extends ProxyListProgressListener {
-        private final Worker worker;
-        private final Path directory;
-
-        public ConnectionCancelListProgressListener(final Worker worker, final Path directory, final ListProgressListener proxy) {
-            super(proxy);
-            this.worker = worker;
-            this.directory = directory;
-        }
-
-        @Override
-        public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
-            log.info("Retrieved chunk of {} items in {}", list.size(), this.directory);
-            if(worker.isCanceled()) {
-                throw new ListCanceledException(list);
-            }
-            super.chunk(this.directory, list);
-        }
     }
 }
