@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -54,10 +54,7 @@ public class CachingFindFeature implements Find {
             log.debug("Cached directory listing does not contain {}", file);
             return false;
         }
-        final CachingListProgressListener caching = new CachingListProgressListener(cache);
-        final boolean found = delegate.find(file, new ProxyListProgressListener(listener, caching));
-        caching.cache();
-        return found;
+        return delegate.find(file, new CachingListProgressListener(listener, cache));
     }
 
     @Override

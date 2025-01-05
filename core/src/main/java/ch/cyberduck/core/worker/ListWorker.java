@@ -92,11 +92,6 @@ public class ListWorker extends Worker<AttributedList<Path>> {
             log.debug("Notify listener {} with empty result set for {}", listener, directory);
             listener.finish(directory, AttributedList.emptyList(), Optional.empty());
         }
-        else {
-            log.debug("Cache contents for {}", directory);
-            // Cache directory listing
-            cache.put(directory, list);
-        }
     }
 
     @Override
