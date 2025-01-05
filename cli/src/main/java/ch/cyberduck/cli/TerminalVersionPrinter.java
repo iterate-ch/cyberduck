@@ -35,6 +35,6 @@ public final class TerminalVersionPrinter {
                 preferences.getProperty("application.name"),
                 preferences.getProperty("application.version"),
                 preferences.getProperty("application.revision"),
-                l.verify() ? l.toString() : "Not registered. Purchase a donation key to support the development of this software.");
+                l.verify() ? l.getEntitlement() : "Not registered. Purchase a donation key to support the development of this software.");
     }
 }
