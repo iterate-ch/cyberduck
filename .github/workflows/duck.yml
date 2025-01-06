@@ -26,11 +26,11 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}.{{patch}},value=${{env.VERSION}}
             type=semver,pattern={{major}}.{{minor}},value=${{env.VERSION}}
             type=semver,pattern={{major}},value=${{env.VERSION}}
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - name: checkout
         uses: actions/checkout@v4
         with:
