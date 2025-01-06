@@ -2,6 +2,7 @@ name: Create duck image
 on:
   push:
     tags: ['*']
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
