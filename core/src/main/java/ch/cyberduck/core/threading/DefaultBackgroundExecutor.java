@@ -16,6 +16,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
@@ -77,7 +78,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
             catch(RejectedExecutionException e) {
                 log.error("Error scheduling background task {} for execution. {}", action, e.getMessage());
                 action.cancel();
-                action.cleanup();
+                action.cleanup(null, new ConnectionCanceledException(e));
                 return ConcurrentUtils.constantFuture(null);
             }
         }

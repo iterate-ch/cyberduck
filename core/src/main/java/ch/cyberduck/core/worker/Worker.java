@@ -63,8 +63,23 @@ public abstract class Worker<T> {
         throw new ConnectionCanceledException();
     }
 
-    public void cleanup(T result) {
+    /**
+     * Override to handle result regardless of failure
+     *
+     * @param result Return value from worker
+     */
+    public void cleanup(final T result) {
         //
+    }
+
+    /**
+     * Override to handle result with optional failure
+     *
+     * @param result  Return value from worker
+     * @param failure Null on success
+     */
+    public void cleanup(final T result, final BackgroundException failure) {
+        this.cleanup(result);
     }
 
     public String getActivity() {

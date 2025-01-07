@@ -92,8 +92,8 @@ public class MountWorker extends Worker<Path> {
     }
 
     @Override
-    public void cleanup(final Path workdir) {
-        if(null != workdir) {
+    public void cleanup(final Path workdir, final BackgroundException failure) {
+        if(null == failure) {
             final HistoryCollection history = HistoryCollection.defaultCollection();
             if(history.isLoaded()) {
                 history.add(bookmark);
@@ -106,6 +106,7 @@ public class MountWorker extends Worker<Path> {
                 }
             }
         }
+        super.cleanup(workdir, failure);
     }
 
     @Override
