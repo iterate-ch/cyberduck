@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -97,7 +98,7 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         assertFalse(new SwiftFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         final PathCache cache = new PathCache(1);
         final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        assertFalse(new CachingFindFeature(session, cache, new SwiftFindFeature(session)).find(directory));
-        assertFalse(cache.isCached(directory));
+        assertFalse(new CachingFindFeature(session, cache, new DefaultFindFeature(session)).find(directory));
+        assertTrue(cache.isCached(directory));
     }
 }
