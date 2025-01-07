@@ -122,13 +122,13 @@ public class BackgroundCallable<T> implements Callable<T> {
             log.warn("Failure overwriting cause for failure {} with {}", trace, failure);
         }
         if(failure instanceof ConnectionCanceledException) {
-            log.debug(String.format("Canceled running background task %s", action), trace);
+            log.debug("Canceled running background task {}", action, trace);
         }
         else if(failure instanceof UnsupportedException) {
-            log.debug(String.format("Unsupported running background task %s", action), trace);
+            log.debug("Unsupported running background task {}", action, trace);
         }
         else {
-            log.warn(String.format("Failure running background task %s", action), trace);
+            log.warn("Failure running background task {}", action, trace);
         }
     }
 }
