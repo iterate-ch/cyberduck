@@ -69,14 +69,13 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     private final static String API_VERSION = "v1.0";
 
-    protected GraphFileIdProvider fileid;
+    protected GraphFileIdProvider fileid = new GraphFileIdProvider(this);
 
     private OAuth2RequestInterceptor authorizationService;
     private User.Metadata user;
 
     protected GraphSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
-        this.fileid = new GraphFileIdProvider(this);
     }
 
     public abstract String getFileId(final DriveItem.Metadata metadata);
