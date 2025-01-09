@@ -15,7 +15,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -30,7 +29,7 @@ public class FTPUnixPermissionFeatureTest extends AbstractFTPTest {
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(test, new TransferStatus());
         new FTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
-        assertEquals("666", new FTPListService(session, null, TimeZone.getDefault()).list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());
+        assertEquals("666", new FTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

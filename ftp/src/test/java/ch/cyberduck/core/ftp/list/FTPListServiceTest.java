@@ -40,7 +40,6 @@ import org.junit.experimental.categories.Category;
 import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -51,7 +50,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
 
     @Test
     public void testList() throws Exception {
-        final ListService service = new FTPListService(session, null, TimeZone.getDefault());
+        final ListService service = new FTPListService(session);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(file, new TransferStatus());
@@ -67,7 +66,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
 
     @Test
     public void testListExtended() throws Exception {
-        final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
+        final FTPListService service = new FTPListService(session);
         service.remove(FTPListService.Command.list);
         service.remove(FTPListService.Command.stat);
         service.remove(FTPListService.Command.mlsd);
@@ -86,7 +85,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
 
     @Test
     public void testListEmptyDirectoryList() throws Exception {
-        final FTPListService list = new FTPListService(session, null, TimeZone.getDefault());
+        final FTPListService list = new FTPListService(session);
         list.remove(FTPListService.Command.stat);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
@@ -107,7 +106,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
 
     @Test(expected = ConnectionTimeoutException.class)
     public void testListIOFailureStat() throws Exception {
-        final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
+        final FTPListService service = new FTPListService(session);
         service.remove(FTPListService.Command.lista);
         service.remove(FTPListService.Command.mlsd);
         final AtomicBoolean set = new AtomicBoolean();
@@ -128,7 +127,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
+        final FTPListService service = new FTPListService(session);
         service.list(f, new DisabledListProgressListener());
     }
 }

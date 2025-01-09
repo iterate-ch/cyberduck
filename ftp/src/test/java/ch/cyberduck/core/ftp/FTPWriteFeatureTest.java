@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -48,7 +47,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(session.getFeature(Find.class).find(test));
-        final PathAttributes attributes = new FTPListService(session, null, TimeZone.getDefault()).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        final PathAttributes attributes = new FTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
         {
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
