@@ -52,7 +52,11 @@ public interface FailureDiagnostics<T> {
         /**
          * Scanner denied access to file
          */
-        antivirus
+        antivirus,
+        /**
+         * Accessing local file
+         */
+        filesystem
     }
 
     Type determine(T failure);
