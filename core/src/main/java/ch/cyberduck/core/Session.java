@@ -47,7 +47,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class Session<C> implements TranscriptListener {
+public abstract class Session<C> implements FeatureFactory, TranscriptListener {
     private static final Logger log = LogManager.getLogger(Session.class);
 
     /**
@@ -255,8 +255,8 @@ public abstract class Session<C> implements TranscriptListener {
      * @return Feature implementation or null when not supported
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T> T getFeature(final Class<T> type) {
-        metrics.increment(type);
         return this.getFeature(type, this._getFeature(type));
     }
 
@@ -269,6 +269,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T feature) {
+        metrics.increment(type);
         return registry.getFeature(this, type, feature);
     }
 

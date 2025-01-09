@@ -18,6 +18,7 @@ package ch.cyberduck.core.pool;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.FeatureFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.Session;
@@ -27,7 +28,7 @@ import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.commons.lang3.StringUtils;
 
-public interface SessionPool {
+public interface SessionPool extends FeatureFactory {
     SessionPool DISCONNECTED = new DisconnectedSessionPool();
 
     /**
@@ -70,6 +71,7 @@ public interface SessionPool {
     /**
      * Obtain feature from connection type
      */
+    @Override
     <T> T getFeature(final Class<T> type);
 
     /**
@@ -116,7 +118,7 @@ public interface SessionPool {
 
         @Override
         public <T> T getFeature(final Class<T> type) {
-            return null;
+            return FeatureFactory.disabled.getFeature(type);
         }
 
         @Override
