@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ch.cyberduck</groupId>
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.1.2-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
@@ -74,13 +75,13 @@
 
     <scm>
         <connection>scm:git:git@github.com:iterate-ch/cyberduck.git</connection>
-        <tag>release-9-1-1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <argLine />
+        <argLine/>
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
         <jackson-version>2.14.2</jackson-version>
@@ -507,12 +508,12 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <property name="home" value="${main.basedir}" />
-                                    <property name="version" value="${project.version}" />
-                                    <property name="revision" value="${git.commitsCount}" />
-                                    <property name="hash" value="${git.revision}" />
-                                    <property name="sparkle.feed" value="${sparkle.feed}" />
-                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
+                                    <property name="home" value="${main.basedir}"/>
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="revision" value="${git.commitsCount}"/>
+                                    <property name="hash" value="${git.revision}"/>
+                                    <property name="sparkle.feed" value="${sparkle.feed}"/>
+                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
                                 </target>
                             </configuration>
                         </execution>
@@ -624,7 +625,36 @@
                                 <goal>copy-dependencies</goal>
                             </goals>
                             <configuration>
-                                <outputDirectory>${project.build.directory}</outputDirectory>
+                                <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                <excludeClassifiers>net472,net8.0</excludeClassifiers>
+                                <includeTypes>dll</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-dll-net472-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/lib/net472</outputDirectory>
+                                <classifier>net472</classifier>
+                                <includeTypes>dll</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-dll-net8.0-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/lib/net8.0</outputDirectory>
+                                <classifier>net8.0</classifier>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
@@ -687,7 +717,7 @@
                 <plugin>
                     <groupId>io.swagger</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>2.4.44</version>
+                    <version>2.4.43</version>
                 </plugin>
                 <plugin>
                     <groupId>io.swagger.codegen.v3</groupId>
@@ -1011,6 +1041,33 @@
             <properties>
                 <configuration>debug</configuration>
             </properties>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-dependency-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>copy-dependencies-jar-target</id>
+                                    <configuration>
+                                        <prependGroupId>true</prependGroupId>
+                                        <stripVersion>true</stripVersion>
+                                        <includeScope>compile</includeScope>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
         </profile>
     </profiles>
 </project>
