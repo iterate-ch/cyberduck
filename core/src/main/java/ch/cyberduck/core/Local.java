@@ -440,7 +440,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
 
     public InputStream getInputStream() throws AccessDeniedException {
-        return getInputStream(path);
+        return this.getInputStream(path);
     }
 
     protected InputStream getInputStream(final String path) throws AccessDeniedException {
