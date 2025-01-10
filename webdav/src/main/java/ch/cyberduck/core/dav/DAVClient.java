@@ -129,9 +129,6 @@ public class DAVClient extends SardineImpl {
                     @Override
                     public int getStatusCode() {
                         List<Propstat> list = response.getPropstat();
-                        if(list.isEmpty()) {
-                            return DEFAULT_STATUS_CODE;
-                        }
                         for(Propstat propstat : list) {
                             if(propstat.getStatus() != null) {
                                 try {
