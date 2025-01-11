@@ -23,6 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
@@ -35,6 +36,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicLineParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,6 +54,7 @@ import com.github.sardine.impl.handler.MultiStatusResponseHandler;
 import com.github.sardine.impl.methods.HttpPropFind;
 import com.github.sardine.model.Multistatus;
 import com.github.sardine.model.Propfind;
+import com.github.sardine.model.Propstat;
 import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
 
@@ -122,7 +125,27 @@ public class DAVClient extends SardineImpl {
         List<DavResource> resources = new ArrayList<>(responses.size());
         for(Response response : responses) {
             try {
-                resources.add(new DavResource(response));
+                resources.add(new DavResource(response) {
+                    @Override
+                    public int getStatusCode() {
+                        List<Propstat> list = response.getPropstat();
+                        if(list.isEmpty()) {
+                            return DEFAULT_STATUS_CODE;
+                        }
+                        for(Propstat propstat : list) {
+                            if(propstat.getStatus() != null) {
+                                try {
+                                    return BasicLineParser.parseStatusLine(propstat.getStatus(), null).getStatusCode();
+                                }
+                                catch(ParseException e) {
+                                    log.warn("Failed to parse status line: {}", propstat.getStatus());
+                                    return -1;
+                                }
+                            }
+                        }
+                        return super.getStatusCode();
+                    }
+                });
             }
             catch(URISyntaxException e) {
                 log.warn("Ignore resource with invalid URI {}", response.getHref().get(0));

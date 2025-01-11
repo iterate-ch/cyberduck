@@ -40,6 +40,9 @@ public class DAVQuotaFeature implements Quota {
         final Path home = new DefaultHomeFinderService(session).find();
         try {
             final DavQuota quota = session.getClient().getQuota(new DAVPathEncoder().encode(home));
+            if(null == quota) {
+                return Quota.unknown;
+            }
             return new Space(
                 quota.getQuotaUsedBytes() > 0 ? quota.getQuotaUsedBytes() : 0,
                 quota.getQuotaAvailableBytes() >= 0 ? quota.getQuotaAvailableBytes() : Long.MAX_VALUE

@@ -24,7 +24,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <sardine-version>5.14</sardine-version>
+        <sardine-version>5.14.1</sardine-version>
         <milton-api.version>4.0.5.2400</milton-api.version>
     </properties>
 

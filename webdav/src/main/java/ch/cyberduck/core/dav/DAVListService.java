@@ -73,8 +73,13 @@ public class DAVListService implements ListService {
                         throw new NotfoundException(directory.getAbsolute());
                     }
                     final PathAttributes attr = attributes.toAttributes(resource);
-                    final Path file = new Path(directory, PathNormalizer.name(resource.getHref().getPath()),
-                            resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
+                    final EnumSet<Path.Type> type = resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                    switch(resource.getStatusCode()) {
+                        // 425 Too Early for partial tus uploads
+                        case 425:
+                            type.add(Path.Type.upload);
+                    }
+                    final Path file = new Path(directory, PathNormalizer.name(resource.getHref().getPath()), type, attr);
                     children.add(file);
                     listener.chunk(directory, children);
                 }

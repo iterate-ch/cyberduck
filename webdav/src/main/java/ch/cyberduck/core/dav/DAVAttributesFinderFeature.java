@@ -214,6 +214,11 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
             attributes.setDisplayname(resource.getDisplayName());
         }
         attributes.setLockId(resource.getLockToken());
+        switch(resource.getStatusCode()) {
+            // 425 Too Early for partial tus uploads
+            case 425:
+                attributes.setHidden(true);
+        }
         return attributes;
     }
 }
