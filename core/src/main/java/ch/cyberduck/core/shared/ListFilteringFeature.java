@@ -30,6 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
+
 public abstract class ListFilteringFeature {
     private static final Logger log = LogManager.getLogger(ListFilteringFeature.class);
 
@@ -44,7 +46,16 @@ public abstract class ListFilteringFeature {
      * @return Null if not found
      */
     protected Path search(final Path file, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
+        final Path directory = file.getParent();
+        final AttributedList<Path> list;
+        try {
+            list = session._getFeature(ListService.class).list(directory, listener);
+        }
+        catch(BackgroundException e) {
+            listener.finish(directory, AttributedList.emptyList(), Optional.of(e));
+            throw e;
+        }
+        listener.finish(directory, list, Optional.empty());
         // Try to match path only as the version might have changed in the meantime
         final Path found = list.find(new ListFilteringPredicate(session.getCaseSensitivity(), file));
         if(null == found) {

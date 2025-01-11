@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -55,16 +55,7 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
             log.debug("Cached directory listing does not contain {}", file);
             throw new NotfoundException(file.getAbsolute());
         }
-        final CachingListProgressListener caching = new CachingListProgressListener(cache);
-        try {
-            final PathAttributes attr = delegate.find(file, new ProxyListProgressListener(listener, caching));
-            caching.cache();
-            return attr;
-        }
-        catch(NotfoundException e) {
-            caching.cache();
-            throw e;
-        }
+        return delegate.find(file, new CachingListProgressListener(listener, cache));
     }
 
     @Override
