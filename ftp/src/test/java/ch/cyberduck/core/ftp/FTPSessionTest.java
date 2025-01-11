@@ -30,7 +30,6 @@ import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -96,7 +95,7 @@ public class FTPSessionTest extends AbstractFTPTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotfound() throws Exception {
-        new FTPListService(session, null, TimeZone.getDefault()).list(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new FTPListService(session).list(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test

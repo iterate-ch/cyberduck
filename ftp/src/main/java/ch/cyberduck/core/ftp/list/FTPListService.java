@@ -28,6 +28,7 @@ import ch.cyberduck.core.ftp.FTPParserSelector;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.apache.commons.lang3.StringUtils;
@@ -91,28 +92,35 @@ public class FTPListService implements ListService {
         }
     }
 
-    public FTPListService(final FTPSession session, final String system, final TimeZone zone) {
+    public FTPListService(final FTPSession session) {
         this.session = session;
+        this.configure(StringUtils.EMPTY);
+    }
+
+    public void configure(final String system) {
+        implementations.clear();
         // Directory listing parser depending on response for SYST command
-        final CompositeFileEntryParser parser = new FTPParserSelector().getParser(system, zone);
-        this.implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
+        final TimeZone tz = null == session.getHost().getTimezone() ? TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")) : session.getHost().getTimezone();
+        log.info("Reset parser to timezone {}", tz);
+        final CompositeFileEntryParser parser = new FTPParserSelector().getParser(system, tz);
+        implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
         final PreferencesReader preferences = new HostPreferences(session.getHost());
         if(preferences.getBoolean("ftp.command.stat")) {
             if(StringUtils.isNotBlank(system)) {
                 if(!system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
                     // Workaround for #5572.
-                    this.implementations.put(Command.stat, new FTPStatListService(session, parser));
+                    implementations.put(Command.stat, new FTPStatListService(session, parser));
                 }
             }
             else {
-                this.implementations.put(Command.stat, new FTPStatListService(session, parser));
+                implementations.put(Command.stat, new FTPStatListService(session, parser));
             }
         }
         if(preferences.getBoolean("ftp.command.mlsd")) {
-            this.implementations.put(Command.mlsd, new FTPMlsdListService(session));
+            implementations.put(Command.mlsd, new FTPMlsdListService(session));
         }
         if(preferences.getBoolean("ftp.command.lista")) {
-            this.implementations.put(Command.lista, new FTPDefaultListService(session, parser, Command.lista));
+            implementations.put(Command.lista, new FTPDefaultListService(session, parser, Command.lista));
         }
     }
 

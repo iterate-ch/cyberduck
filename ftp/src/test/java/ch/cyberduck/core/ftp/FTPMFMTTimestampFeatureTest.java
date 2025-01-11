@@ -30,7 +30,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +44,7 @@ public class FTPMFMTTimestampFeatureTest extends AbstractFTPTest {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(test, new TransferStatus());
         new FTPMFMTTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified / 1000 * 1000, new FTPListService(session, null, TimeZone.getDefault()).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
+        assertEquals(modified / 1000 * 1000, new FTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

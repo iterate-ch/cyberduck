@@ -41,15 +41,15 @@ public class FTPReadFeature implements Read {
     /**
      * Server process supports RESTart in STREAM mode
      */
-    private final boolean rest;
+    private final EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
 
     public FTPReadFeature(final FTPSession session) {
-        this(session, true);
+        this.session = session;
     }
 
-    public FTPReadFeature(final FTPSession session, final boolean rest) {
-        this.session = session;
-        this.rest = rest;
+    public void configure(final EnumSet<Flags> flags) {
+        this.flags.clear();
+        this.flags.addAll(flags);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class FTPReadFeature implements Read {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return rest ? EnumSet.of(Flags.offset) : EnumSet.noneOf(Flags.class);
+        return flags;
     }
 
     private final class ReadReplyInputStream extends ProxyInputStream {

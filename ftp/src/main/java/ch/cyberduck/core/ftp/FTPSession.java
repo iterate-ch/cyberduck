@@ -35,7 +35,6 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
@@ -62,8 +61,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.util.EnumSet;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = LogManager.getLogger(FTPSession.class);
@@ -71,11 +70,12 @@ public class FTPSession extends SSLSession<FTPClient> {
     private final PreferencesReader preferences
             = new HostPreferences(host);
 
-    private Read read;
+    private final FTPListService list = new FTPListService(this);
+    private final FTPReadFeature read = new FTPReadFeature(this);
+
     private Timestamp timestamp;
     private UnixPermission permission;
     private Symlink symlink;
-    private FTPListService listService;
     private Protocol.Case casesensitivity = Protocol.Case.sensitive;
 
     public FTPSession(final Host h) {
@@ -246,14 +246,6 @@ public class FTPSession extends SSLSession<FTPClient> {
                         }
                     }
                 }
-                final TimeZone zone;
-                if(null == host.getTimezone()) {
-                    zone = TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default"));
-                }
-                else {
-                    zone = host.getTimezone();
-                }
-                log.info("Reset parser to timezone {}", zone);
                 String system = StringUtils.EMPTY; //Unknown
                 try {
                     system = client.getSystemType();
@@ -264,8 +256,9 @@ public class FTPSession extends SSLSession<FTPClient> {
                 catch(IOException e) {
                     log.warn("SYST command failed {}", e.getMessage());
                 }
-                read = new FTPReadFeature(this, client.hasFeature("REST", "STREAM"));
-                listService = new FTPListService(this, system, zone);
+                read.configure(client.hasFeature("REST", "STREAM") ?
+                        EnumSet.of(Read.Flags.offset) : EnumSet.noneOf(Read.Flags.class));
+                list.configure(system);
                 if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
                     timestamp = new FTPMFMTTimestampFeature(this);
                 }
@@ -295,7 +288,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) listService;
+            return (T) list;
         }
         if(type == Directory.class) {
             return (T) new FTPDirectoryFeature(this);

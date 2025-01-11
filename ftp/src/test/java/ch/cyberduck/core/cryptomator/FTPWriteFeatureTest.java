@@ -57,7 +57,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 
@@ -90,7 +89,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attr = cryptomator.getFeature(session, AttributesFinder.class, new FTPAttributesFinderFeature(session)).find(test);
-        assertEquals(content.length, new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new CryptoListService(session, new FTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new FTPReadFeature(session), cryptomator).read(test, new TransferStatus(), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);

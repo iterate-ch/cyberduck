@@ -58,7 +58,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -160,12 +159,12 @@ public class MoveWorkerTest extends AbstractFTPTest {
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folderRenamed));
         try {
-            assertTrue(new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), cryptomator).list(folder, new DisabledListProgressListener()).isEmpty());
+            assertTrue(new CryptoListService(session, new FTPListService(session), cryptomator).list(folder, new DisabledListProgressListener()).isEmpty());
         }
         catch(NotfoundException e) {
             //
         }
-        assertEquals(1, new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
+        assertEquals(1, new CryptoListService(session, new FTPListService(session), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(
                 new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file)), folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -18,12 +18,9 @@ package ch.cyberduck.core.pool;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -53,7 +50,6 @@ public class DefaultSessionPool implements SessionPool {
     private final FailureDiagnostics<BackgroundException> diagnostics
             = new DefaultFailureDiagnostics();
 
-    private final ConnectionService connect;
     private final TranscriptListener transcript;
     private final Host bookmark;
 
@@ -61,29 +57,29 @@ public class DefaultSessionPool implements SessionPool {
 
     private final GenericObjectPool<Session> pool;
 
-    private SessionPool features = SessionPool.DISCONNECTED;
+    private static final GenericObjectPoolConfig<Session> configuration = new GenericObjectPoolConfig<>();
 
-    public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final VaultRegistry registry, final TranscriptListener transcript,
-                              final Host bookmark) {
-        this.connect = connect;
-        this.registry = registry;
-        this.bookmark = bookmark;
-        this.transcript = transcript;
-        final GenericObjectPoolConfig<Session> configuration = new GenericObjectPoolConfig<>();
+    static {
         configuration.setJmxEnabled(false);
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWait(Duration.ofMillis(BORROW_MAX_WAIT_INTERVAL));
-        this.pool = new GenericObjectPool<>(new PooledSessionFactory(connect, trust, key, bookmark, registry), configuration);
-        final AbandonedConfig abandon = new AbandonedConfig();
-        abandon.setUseUsageTracking(true);
-        this.pool.setAbandonedConfig(abandon);
     }
 
-    public DefaultSessionPool(final ConnectionService connect, final VaultRegistry registry,
-                              final TranscriptListener transcript, final Host bookmark, final GenericObjectPool<Session> pool) {
-        this.connect = connect;
+    private static final AbandonedConfig abandon = new AbandonedConfig();
+
+    {
+        abandon.setUseUsageTracking(true);
+    }
+
+    public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
+                              final VaultRegistry registry, final TranscriptListener transcript, final Host bookmark) {
+        this(connect, registry, transcript, bookmark,
+                new GenericObjectPool<>(new PooledSessionFactory(connect, trust, key, bookmark, registry), configuration, abandon));
+    }
+
+    public DefaultSessionPool(final ConnectionService connect, final VaultRegistry registry, final TranscriptListener transcript,
+                              final Host bookmark, final GenericObjectPool<Session> pool) {
         this.transcript = transcript;
         this.bookmark = bookmark;
         this.registry = registry;
@@ -132,9 +128,6 @@ public class DefaultSessionPool implements SessionPool {
                     log.info("Borrow session from pool {}", this);
                     final Session<?> session = pool.borrowObject();
                     log.info("Borrowed session {} from pool {}", session, this);
-                    if(DISCONNECTED == features) {
-                        features = new StatelessSessionPool(connect, session, transcript, registry);
-                    }
                     return session.withListener(transcript);
                 }
                 catch(IllegalStateException e) {
@@ -259,10 +252,16 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        if(DISCONNECTED == features) {
-            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager()).getFeature(type);
+        try {
+            final Session<?> session = this.borrow(BackgroundActionState.running);
+            final T feature = session.getFeature(type);
+            this.release(session, null);
+            return feature;
         }
-        return features.getFeature(type);
+        catch(BackgroundException e) {
+            log.warn("Failure {} obtaining feature from {}", e.toString(), this);
+            return null;
+        }
     }
 
     @Override
