@@ -29,9 +29,11 @@ public class DefaultComparisonServiceTest {
     public void testCompareFile() {
         final DefaultComparisonService c = new DefaultComparisonService(new TestProtocol());
         assertEquals(Comparison.equal, c.compare(Path.Type.file, new PathAttributes().withETag("1"), new PathAttributes().withETag("1")));
+        assertEquals(1519, c.hashCode(Path.Type.file, new PathAttributes().withETag("1")));
         assertEquals(Comparison.unknown, c.compare(Path.Type.file, new PathAttributes().withETag("1"), new PathAttributes().withETag("2")));
         assertEquals(Comparison.equal, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1000L), new PathAttributes().withETag("2").withSize(1000L)));
         assertEquals(Comparison.equal, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1000L).withModificationDate(1680879106939L), new PathAttributes().withETag("2").withSize(1000L).withModificationDate(1680879106939L)));
+        assertEquals(709077619, c.hashCode(Path.Type.file, new PathAttributes().withETag("1").withModificationDate(1680879106939L)));
         assertEquals(Comparison.local, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1000L).withModificationDate(1680879107939L), new PathAttributes().withETag("2").withSize(1000L).withModificationDate(1680879106939L)));
     }
 
@@ -45,8 +47,10 @@ public class DefaultComparisonServiceTest {
                 }
             });
             assertEquals(Comparison.equal, c.compare(Path.Type.directory, new PathAttributes().withETag("1"), new PathAttributes().withETag("1")));
+            assertEquals(1519, c.hashCode(Path.Type.directory, new PathAttributes().withETag("1")));
             assertEquals(Comparison.notequal, c.compare(Path.Type.directory, new PathAttributes().withETag("1"), new PathAttributes().withETag("2")));
             assertEquals(Comparison.equal, c.compare(Path.Type.directory, new PathAttributes().withModificationDate(1680879106939L), new PathAttributes().withModificationDate(1680879106939L)));
+            assertEquals(1546894076, c.hashCode(Path.Type.directory, new PathAttributes().withModificationDate(1680879106939L)));
             assertEquals(Comparison.local, c.compare(Path.Type.directory, new PathAttributes().withModificationDate(1680879107939L), new PathAttributes().withModificationDate(1680879106939L)));
         }
         {
@@ -56,9 +60,12 @@ public class DefaultComparisonServiceTest {
                     return DirectoryTimestamp.explicit;
                 }
             });
+            assertEquals(0, c.hashCode(Path.Type.directory, new PathAttributes()));
             assertEquals(Comparison.equal, c.compare(Path.Type.directory, new PathAttributes().withETag("1"), new PathAttributes().withETag("1")));
+            assertEquals(1519, c.hashCode(Path.Type.directory, new PathAttributes().withETag("1")));
             assertEquals(Comparison.notequal, c.compare(Path.Type.directory, new PathAttributes().withETag("1"), new PathAttributes().withETag("2")));
             assertEquals(Comparison.unknown, c.compare(Path.Type.directory, new PathAttributes().withModificationDate(1680879106939L), new PathAttributes().withModificationDate(1680879106939L)));
+            assertEquals(0, c.hashCode(Path.Type.directory, new PathAttributes().withModificationDate(1680879106939L)));
             assertEquals(Comparison.unknown, c.compare(Path.Type.directory, new PathAttributes().withModificationDate(1680879107939L), new PathAttributes().withModificationDate(1680879106939L)));
         }
     }
