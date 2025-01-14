@@ -3,21 +3,38 @@ on:
   push:
     tags: ['*']
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag'
+        required: true
+        type: string
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  docker:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - name: Sanitize Version
+      - name: Determine Version from Input
+        if: ${{ github.event.inputs.tag }}
         run: |
+          export TAG=${{ github.event.inputs.tag }}
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          export VERSION=${TAG/release-}
+          export VERSION=${VERSION//-/.}
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+      - name: Determine Version
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          echo "TAG=${{ github.ref }}" >> "$GITHUB_ENV"
           export VERSION=${GITHUB_REF#refs/tags/release-}
           export VERSION=${VERSION//-/.}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+      - name: Print Version
+        run: echo "Building $VERSION"
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -35,6 +52,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
         with:
+          ref: $TAG
           fetch-depth: 0
       - run: |
           export COUNT=$(git rev-list --count $GITHUB_SHA)
