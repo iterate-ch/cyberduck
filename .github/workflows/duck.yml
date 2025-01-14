@@ -54,7 +54,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.$TAG }
+          ref: ${{ env.TAG }}
           fetch-depth: 0
       - run: |
           export COUNT=$(git rev-list --count $GITHUB_SHA)
