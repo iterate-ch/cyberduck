@@ -57,7 +57,7 @@ jobs:
           ref: ${{ env.TAG }}
           fetch-depth: 0
       - run: |
-          export COUNT=$(git rev-list --count $GITHUB_SHA)
+          export COUNT=$(git rev-list --count ${{ env.TAG }})
           mvn -B verify --projects cli/linux --also-make -DskipTests
           dpkg-deb -R cli/linux/target/release/duck_${{env.VERSION}}.$COUNT_amd64.deb .
       - name: Log in to the Container registry
