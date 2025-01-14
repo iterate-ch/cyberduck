@@ -35,6 +35,8 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
       - name: Print Version
         run: echo "Building $VERSION"
+      - name: Print Tag
+        run: echo "Checkout $TAG"
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -52,7 +54,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
         with:
-          ref: $TAG
+          ref: ${{ env.$TAG }
           fetch-depth: 0
       - run: |
           export COUNT=$(git rev-list --count $GITHUB_SHA)
