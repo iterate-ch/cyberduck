@@ -22,8 +22,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
-import ch.cyberduck.core.transfer.download.CompareFilter;
-import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import ch.cyberduck.core.worker.Worker;
 
 import java.util.Collections;
@@ -72,13 +70,9 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
         // Find all locally installed profiles
         final LocalProfilesFinder local = new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE);
         // Find all profiles from repository
-        final RemoteProfilesFinder remote = new RemoteProfilesFinder(registry, session, this.filter(session));
+        final RemoteProfilesFinder remote = new RemoteProfilesFinder(registry, session);
         return new ProtocolFactoryProfilesSynchronizer(registry, local, remote).sync(
                 // Match profiles by ETag and MD5 checksum of profile on disk
                 new ChecksumProfileMatcher(), visitor);
-    }
-
-    protected CompareFilter filter(final Session<?> session) {
-        return new CompareFilter(new DisabledDownloadSymlinkResolver(), session);
     }
 }
