@@ -67,6 +67,11 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         this(protocols, session, new CompareFilter(new DisabledDownloadSymlinkResolver(), session), new ProfileFilter());
     }
 
+    public RemoteProfilesFinder(final Session<?> session,
+                                final TransferPathFilter comparison, final Filter<Path> filter) {
+        this(ProtocolFactory.get(), session, comparison, filter);
+    }
+
     public RemoteProfilesFinder(final ProtocolFactory protocols, final Session<?> session,
                                 final TransferPathFilter comparison, final Filter<Path> filter) {
         this.protocols = protocols;

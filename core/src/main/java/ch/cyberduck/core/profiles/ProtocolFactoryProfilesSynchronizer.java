@@ -16,8 +16,12 @@ package ch.cyberduck.core.profiles;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +36,34 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
     private final ProtocolFactory registry;
     private final LocalProfilesFinder local;
     private final RemoteProfilesFinder remote;
+
+    public ProtocolFactoryProfilesSynchronizer(final Session<?> session) {
+        this(ProtocolFactory.get(), session, LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+                PreferencesFactory.get().getProperty("profiles.folder.name")));
+    }
+
+    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final Session<?> session, final Local directory) {
+        this(ProtocolFactory.get(),
+                // Find all locally installed profiles
+                new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE), session);
+    }
+
+    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final LocalProfilesFinder local, final Session<?> session) {
+        this(registry, local,
+                // Find all profiles from repository
+                new RemoteProfilesFinder(registry, session));
+    }
+
+    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final RemoteProfilesFinder remote) {
+        this(registry, LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+                PreferencesFactory.get().getProperty("profiles.folder.name")), remote);
+    }
+
+    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final Local directory, final RemoteProfilesFinder remote) {
+        this(registry,
+                // Find all locally installed profiles
+                new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE), remote);
+    }
 
     public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final LocalProfilesFinder local, final RemoteProfilesFinder remote) {
         this.registry = registry;

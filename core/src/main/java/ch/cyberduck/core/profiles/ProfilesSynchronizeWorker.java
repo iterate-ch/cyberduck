@@ -67,11 +67,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
 
     @Override
     public Set<ProfileDescription> run(final Session<?> session) throws BackgroundException {
-        // Find all locally installed profiles
-        final LocalProfilesFinder local = new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE);
-        // Find all profiles from repository
-        final RemoteProfilesFinder remote = new RemoteProfilesFinder(registry, session);
-        return new ProtocolFactoryProfilesSynchronizer(registry, local, remote).sync(
+        return new ProtocolFactoryProfilesSynchronizer(session).sync(
                 // Match profiles by ETag and MD5 checksum of profile on disk
                 new ChecksumProfileMatcher(), visitor);
     }
