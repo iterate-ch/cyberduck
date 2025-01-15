@@ -29,29 +29,18 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
     private static final Logger log = LogManager.getLogger(ChecksumProfileMatcher.class.getName());
 
     /**
-     * Remote list of profiles
-     */
-    private final Set<ProfileDescription> repository;
-
-    /**
-     * @param repository Profiles from remote repository
-     */
-    public ChecksumProfileMatcher(final Set<ProfileDescription> repository) {
-        this.repository = repository;
-    }
-
-    /**
      * Filter locally installed profiles by matching checksum
      *
-     * @param next Description of profile installed in application support directory
+     * @param repository Remote list of profiles
+     * @param installed  Description of profile installed in application support directory
      * @return Non-null if matching profile is found in remote list and not latest version
      */
     @Override
-    public Optional<ProfileDescription> compare(final ProfileDescription next) {
+    public Optional<ProfileDescription> compare(final Set<ProfileDescription> repository, final ProfileDescription installed) {
         // Filter out profiles with matching checksum
         final Optional<ProfileDescription> found = repository.stream()
-            .filter(description -> Objects.equals(description.getChecksum(), next.getChecksum()))
-            .findFirst();
+                .filter(description -> Objects.equals(description.getChecksum(), installed.getChecksum()))
+                .findFirst();
         if(found.isPresent()) {
             // Found matching checksum. Determine if latest version
             if(found.get().isLatest()) {
@@ -63,7 +52,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
                 return found;
             }
         }
-        log.warn("Local only profile {}", next);
+        log.warn("Local only profile {}", installed);
         return Optional.empty();
     }
 }

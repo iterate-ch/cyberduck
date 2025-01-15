@@ -37,7 +37,8 @@ public class ChecksumProfileMatcherTest {
         // Local only profile
         final ProfileDescription local = new ProfileDescription(
                 ProtocolFactory.get(), new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
-        assertFalse(new ChecksumProfileMatcher(Stream.<ProfileDescription>empty().collect(Collectors.toSet())).compare(local).isPresent());
+        assertFalse(new ChecksumProfileMatcher().compare(
+                Stream.<ProfileDescription>empty().collect(Collectors.toSet()), local).isPresent());
     }
 
     @Test
@@ -52,7 +53,8 @@ public class ChecksumProfileMatcherTest {
         };
         final ProfileDescription local = new ProfileDescription(
                 ProtocolFactory.get(), new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
-        assertFalse(new ChecksumProfileMatcher(Stream.of(remote).collect(Collectors.toSet())).compare(local).isPresent());
+        assertFalse(new ChecksumProfileMatcher().compare(
+                Stream.of(remote).collect(Collectors.toSet()), local).isPresent());
     }
 
     @Test
@@ -70,6 +72,7 @@ public class ChecksumProfileMatcherTest {
                 return Optional.of(new NullLocal("Profile.cyberduckprofile"));
             }
         };
-        assertTrue(new ChecksumProfileMatcher(Stream.of(remote).collect(Collectors.toSet())).compare(local).isPresent());
+        assertTrue(new ChecksumProfileMatcher().compare(
+                Stream.of(remote).collect(Collectors.toSet()), local).isPresent());
     }
 }
