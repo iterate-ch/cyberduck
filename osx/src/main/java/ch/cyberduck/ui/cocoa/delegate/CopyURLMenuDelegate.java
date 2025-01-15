@@ -20,13 +20,12 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.binding.application.NSEvent;
-import ch.cyberduck.binding.application.NSPasteboard;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.ui.pasteboard.PasteboardService;
+import ch.cyberduck.ui.pasteboard.PasteboardServiceFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,10 +67,6 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
                 url.append("\n");
             }
         }
-        final NSPasteboard pboard = NSPasteboard.generalPasteboard();
-        pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-        if(!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
-            log.error("Error writing URL to {}", NSPasteboard.StringPboardType);
-        }
+        PasteboardServiceFactory.get().add(PasteboardService.Type.string, url.toString());
     }
 }
