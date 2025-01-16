@@ -1,7 +1,7 @@
 package ch.cyberduck.core.profiles;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,10 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import java.util.Optional;
+import ch.cyberduck.core.exception.BackgroundException;
+
 import java.util.Set;
 
-public interface ProfileMatcher {
-    /**
-     * @param repository Description of available profiles in repository
-     * @param installed Description of profile installed
-     * @return Non-null if profile from server has been updated. Matching profile with later version from remote repository.
-     */
-    Optional<ProfileDescription> compare(Set<ProfileDescription> repository, ProfileDescription installed);
+public interface ProfilesSynchronizer {
+    Set<ProfileDescription> sync(ProfileMatcher matcher, ProfilesFinder.Visitor visitor) throws BackgroundException;
 }

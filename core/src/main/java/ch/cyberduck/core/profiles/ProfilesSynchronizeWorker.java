@@ -22,23 +22,15 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
-import ch.cyberduck.core.transfer.download.CompareFilter;
-import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
  * Merge local set with latest versions from server
  */
 public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
-    private static final Logger log = LogManager.getLogger(ProfilesSynchronizeWorker.class.getName());
 
     private final ProtocolFactory registry;
     private final Local directory;
@@ -75,57 +67,8 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
 
     @Override
     public Set<ProfileDescription> run(final Session<?> session) throws BackgroundException {
-        final Set<ProfileDescription> returned = new HashSet<>();
-        // Find all locally installed profiles
-        final LocalProfilesFinder localProfilesFinder = new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE);
-        final Set<ProfileDescription> installed = localProfilesFinder.find();
-        // Find all profiles from repository
-        final RemoteProfilesFinder remoteProfilesFinder = new RemoteProfilesFinder(registry, session, this.filter(session));
-        final Set<ProfileDescription> remote = remoteProfilesFinder.find();
-        final ProfileMatcher matcher = new ChecksumProfileMatcher(remote);
-        // Iterate over every installed profile and find match in repository
-        installed.forEach(local -> {
-            // Check for matching remote checksum and download profile if this version is not equal to latest
-            final Optional<ProfileDescription> match = matcher.compare(local);
-            if(match.isPresent()) {
-                // Found matching checksum for profile in remote list which is not marked as latest version
-                log.warn("Override {} with latest profile verison {}", local, match);
-                // Remove previous version
-                local.getProfile().ifPresent(registry::unregister);
-                // Register updated profile by copying temporary file to application support
-                match.get().getFile().ifPresent(value -> {
-                    final Local copy = registry.register(value);
-                    if(null != copy) {
-                        final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
-                        log.debug("Add synched profile {}", d);
-                        returned.add(d);
-                        visitor.visit(d);
-                    }
-                });
-            }
-            else {
-                log.debug("Add local only profile {}", local);
-                returned.add(local);
-                visitor.visit(local);
-            }
-        });
-        // Iterate over all fetched profiles and when not installed
-        remote.forEach(description -> {
-            if(description.isLatest()) {
-                // Check if not already added previously when syncing with local list
-                if(!returned.contains(description)) {
-                    log.debug("Add remote profile {}", description);
-                    returned.add(description);
-                    visitor.visit(description);
-                }
-            }
-        });
-        localProfilesFinder.cleanup();
-        remoteProfilesFinder.cleanup();
-        return returned;
-    }
-
-    protected CompareFilter filter(final Session<?> session) {
-        return new CompareFilter(new DisabledDownloadSymlinkResolver(), session);
+        return new ProtocolFactoryProfilesSynchronizer(session).sync(
+                // Match profiles by ETag and MD5 checksum of profile on disk
+                new ChecksumProfileMatcher(), visitor);
     }
 }

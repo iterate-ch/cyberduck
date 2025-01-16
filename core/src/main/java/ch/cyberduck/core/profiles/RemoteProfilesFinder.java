@@ -57,25 +57,32 @@ public class RemoteProfilesFinder implements ProfilesFinder {
     private final ProtocolFactory protocols;
     private final Session<?> session;
     private final TransferPathFilter comparison;
+    private final Filter<Path> filter;
 
     public RemoteProfilesFinder(final Session<?> session) {
         this(ProtocolFactory.get(), session);
     }
 
     public RemoteProfilesFinder(final ProtocolFactory protocols, final Session<?> session) {
-        this(protocols, session, new CompareFilter(new DisabledDownloadSymlinkResolver(), session));
+        this(protocols, session, new CompareFilter(new DisabledDownloadSymlinkResolver(), session), new ProfileFilter());
     }
 
-    public RemoteProfilesFinder(final ProtocolFactory protocols, final Session<?> session, final TransferPathFilter comparison) {
+    public RemoteProfilesFinder(final Session<?> session,
+                                final TransferPathFilter comparison, final Filter<Path> filter) {
+        this(ProtocolFactory.get(), session, comparison, filter);
+    }
+
+    public RemoteProfilesFinder(final ProtocolFactory protocols, final Session<?> session,
+                                final TransferPathFilter comparison, final Filter<Path> filter) {
         this.protocols = protocols;
         this.session = session;
         this.comparison = comparison;
+        this.filter = filter;
     }
 
     @Override
     public Set<ProfileDescription> find(final Visitor visitor) throws BackgroundException {
         log.info("Fetch profiles from {}", session.getHost());
-        final ProfileFilter filter = new ProfileFilter();
         final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
                 new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
         return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(protocols, file,
