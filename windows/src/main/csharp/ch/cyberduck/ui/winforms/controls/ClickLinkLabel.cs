@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core;
+using ch.cyberduck.ui.pasteboard;
 using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
@@ -33,7 +34,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             {
                 ContextMenuStrip contextMenu = new ContextMenuStrip();
                 ToolStripItem addItem = contextMenu.Items.Add(LocaleFactory.localizedString("Copy URL", "Browser"));
-                addItem.Click += (sender, args) => Clipboard.SetText(Text);
+                addItem.Click += (sender, args) => PasteboardServiceFactory.get().add(PasteboardService.Type.url, Text);
                 ContextMenuStrip = contextMenu;
             }
         }

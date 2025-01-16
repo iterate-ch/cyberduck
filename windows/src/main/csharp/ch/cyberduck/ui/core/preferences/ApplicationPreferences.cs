@@ -20,7 +20,6 @@ using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.cryptomator.random;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.serviceloader;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.AquaticPrime;
 using Ch.Cyberduck.Core.Date;
@@ -34,6 +33,7 @@ using Ch.Cyberduck.Core.Proxy;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Pasteboard;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using CoreApplicationPreferences = Ch.Cyberduck.Core.Preferences.ApplicationPreferences<Ch.Cyberduck.Ui.Core.Preferences.ApplicationPreferences>;
 using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
@@ -119,6 +119,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             }
             this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
             this.setDefault("factory.securerandom.class", typeof(FastSecureRandomProvider).AssemblyQualifiedName);
+            this.setDefault("factory.pasteboardservice.class", typeof(ClipboardService).AssemblyQualifiedName);
         }
     }
 }

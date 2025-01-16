@@ -126,6 +126,8 @@ import ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory;
 import ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarValidator;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
+import ch.cyberduck.ui.pasteboard.PasteboardService;
+import ch.cyberduck.ui.pasteboard.PasteboardServiceFactory;
 import ch.cyberduck.ui.quicklook.QuickLook;
 import ch.cyberduck.ui.quicklook.QuickLookFactory;
 
@@ -2609,11 +2611,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                         public void callback(final int returncode) {
                                             switch(returncode) {
                                                 case SheetCallback.CANCEL_OPTION:
-                                                    final NSPasteboard pboard = NSPasteboard.generalPasteboard();
-                                                    pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-                                                    if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
-                                                        log.error("Error writing URL to {}", NSPasteboard.StringPboardType);
-                                                    }
+                                                    PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
                                             }
                                         }
 
@@ -2655,11 +2653,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                         public void callback(final int returncode) {
                                             switch(returncode) {
                                                 case SheetCallback.CANCEL_OPTION:
-                                                    final NSPasteboard pboard = NSPasteboard.generalPasteboard();
-                                                    pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-                                                    if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
-                                                        log.error("Error writing URL to {}", NSPasteboard.StringPboardType);
-                                                    }
+                                                    PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
                                             }
                                         }
 

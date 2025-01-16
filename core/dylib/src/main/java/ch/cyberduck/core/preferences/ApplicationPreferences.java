@@ -53,6 +53,7 @@ import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.core.urlhandler.WorkspaceSchemeHandler;
 import ch.cyberduck.core.webloc.WeblocFileWriter;
+import ch.cyberduck.ui.pasteboard.WorkspacePasteboardService;
 
 public class ApplicationPreferences extends UserDefaultsPreferences {
 
@@ -121,6 +122,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.urlfilewriter.class", WeblocFileWriter.class.getName());
         this.setDefault("factory.quicklook.class", QuartzQuickLook.class.getName());
         this.setDefault("factory.hardwareaddress.class", IOKitHardwareAddress.class.getName());
+        this.setDefault("factory.pasteboardservice.class", WorkspacePasteboardService.class.getName());
     }
 
     @Override

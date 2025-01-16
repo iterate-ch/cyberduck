@@ -39,6 +39,7 @@ using ch.cyberduck.core.vault;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
+using ch.cyberduck.ui.pasteboard;
 using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
@@ -3705,7 +3706,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 switch (option)
                                 {
                                     case 1:
-                                        Clipboard.SetText(url.getUrl());
+                                        PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
                                         break;
                                 }
                             });
@@ -3750,7 +3751,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 switch (option)
                                 {
                                     case 1:
-                                        Clipboard.SetText(url.getUrl());
+                                        PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
                                         break;
                                 }
                             });
