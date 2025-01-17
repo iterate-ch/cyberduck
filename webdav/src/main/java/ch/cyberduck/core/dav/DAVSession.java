@@ -43,16 +43,20 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
-import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -90,6 +94,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     private final PreferencesReader preferences = new HostPreferences(host);
     private final HttpCapabilities capabilities = new HttpCapabilities(preferences);
 
+    private OAuth2RequestInterceptor authorizationService;
+
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         this(host, trust, key, new PreferencesRedirectCallback());
     }
@@ -107,6 +113,16 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     protected HttpClientBuilder getConfiguration(final ProxyFinder proxy, final LoginCallback prompt) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        if(host.getProtocol().isOAuthConfigurable()) {
+            authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
+                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+            if(host.getProtocol().getAuthorization() != null) {
+                authorizationService.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+            }
+            configuration.addInterceptorLast(authorizationService);
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+        }
         configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
         configuration.addInterceptorLast(new MicrosoftIISPersistentAuthResponseInterceptor());
         return configuration;
@@ -124,8 +140,11 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = host.getCredentials();
+        if(host.getProtocol().isOAuthConfigurable()) {
+            authorizationService.validate();
+        }
         if(host.getProtocol().isPasswordConfigurable()) {
+            final Credentials credentials = host.getCredentials();
             final String domain, username;
             if(credentials.getUsername().contains("\\")) {
                 domain = StringUtils.substringBefore(credentials.getUsername(), "\\");
