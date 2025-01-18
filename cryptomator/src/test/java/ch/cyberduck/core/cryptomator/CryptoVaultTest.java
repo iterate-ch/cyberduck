@@ -41,7 +41,7 @@ import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.CryptorProvider;
-import org.cryptomator.cryptolib.api.Masterkey;
+import org.cryptomator.cryptolib.api.PerpetualMasterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFile;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
 import org.junit.Test;
@@ -563,7 +563,7 @@ public class CryptoVaultTest {
             final MasterkeyFile mkFile = MasterkeyFile.read(new StringReader(masterkeyCryptomator));
             final StringWriter writer = new StringWriter();
             mkFile.write(writer);
-            final Masterkey masterkey = new MasterkeyFileAccess(PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8),
+            final PerpetualMasterkey masterkey = new MasterkeyFileAccess(PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8),
                     FastSecureRandomProvider.get().provide()).load(new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
             final Algorithm algorithm = Algorithm.HMAC256(masterkey.getEncoded());
             return JWT.create()

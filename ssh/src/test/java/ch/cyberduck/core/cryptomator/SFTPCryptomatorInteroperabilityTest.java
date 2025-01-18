@@ -54,6 +54,7 @@ import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.Masterkey;
 import org.cryptomator.cryptolib.api.MasterkeyLoader;
 import org.cryptomator.cryptolib.api.MasterkeyLoadingFailedException;
+import org.cryptomator.cryptolib.api.PerpetualMasterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
 import org.cryptomator.cryptolib.common.ReseedingSecureRandom;
 import org.junit.After;
@@ -99,7 +100,7 @@ public class SFTPCryptomatorInteroperabilityTest {
             default:
                 csprng = FastSecureRandomProvider.get().provide();
         }
-        final Masterkey mk = Masterkey.generate(csprng);
+        final PerpetualMasterkey mk = Masterkey.generate(csprng);
         final MasterkeyFileAccess mkAccess = new MasterkeyFileAccess(CryptoVault.VAULT_PEPPER, csprng);
         final java.nio.file.Path mkPath = Paths.get(vault.toString(), DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME);
         mkAccess.persist(mk, mkPath, passphrase);
