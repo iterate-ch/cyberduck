@@ -45,6 +45,7 @@ import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.Masterkey;
+import org.cryptomator.cryptolib.api.PerpetualMasterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFile;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
 
@@ -160,7 +161,7 @@ public class CryptoVault implements Vault {
         }
         final String passphrase = credentials.getPassword();
         final ByteArrayOutputStream mkArray = new ByteArrayOutputStream();
-        final Masterkey mk = Masterkey.generate(FastSecureRandomProvider.get().provide());
+        final PerpetualMasterkey mk = Masterkey.generate(FastSecureRandomProvider.get().provide());
         final MasterkeyFileAccess access = new MasterkeyFileAccess(pepper, FastSecureRandomProvider.get().provide());
         final MasterkeyFile masterkeyFile;
         try {
@@ -367,7 +368,7 @@ public class CryptoVault implements Vault {
     protected void open(final VaultConfig vaultConfig, final CharSequence passphrase,
                         final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         try {
-            final Masterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
+            final PerpetualMasterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
             this.open(vaultConfig, masterKey, filenameProvider, directoryProvider);
         }
         catch(IllegalArgumentException | IOException e) {
@@ -379,12 +380,12 @@ public class CryptoVault implements Vault {
     }
 
     // UVF: unused?!
-    protected void open(final VaultConfig vaultConfig, final Masterkey masterKey) throws BackgroundException {
+    protected void open(final VaultConfig vaultConfig, final PerpetualMasterkey masterKey) throws BackgroundException {
         this.open(vaultConfig, masterKey, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
     }
 
     // UVF:  extract to v6/v7 imple, can we use  the new MasterKey interface from https://github.com/cryptomator/cryptolib/pull/51/files?
-    protected void open(final VaultConfig vaultConfig, final Masterkey masterKey,
+    protected void open(final VaultConfig vaultConfig, final PerpetualMasterkey masterKey,
                         final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         this.vaultVersion = vaultConfig.version;
         final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
@@ -397,7 +398,7 @@ public class CryptoVault implements Vault {
         this.nonceSize = vaultConfig.getNonceSize();
     }
 
-    private Masterkey getMasterKey(final MasterkeyFile mkFile, final CharSequence passphrase) throws IOException {
+    private PerpetualMasterkey getMasterKey(final MasterkeyFile mkFile, final CharSequence passphrase) throws IOException {
         final StringWriter writer = new StringWriter();
         mkFile.write(writer);
         return new MasterkeyFileAccess(pepper, FastSecureRandomProvider.get().provide()).load(
