@@ -25,6 +25,7 @@ import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
+import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.CryptorCache;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,7 +49,8 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
 
     private final Path dataRoot;
     private final Path home;
-    private final CryptoVault cryptomator;
+    private final CryptoFilename filenameProvider;
+    private final CryptorCache filenameCryptor;
 
     private final RandomStringService random
             = new UUIDRandomStringService();
@@ -58,18 +60,19 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     private final LRUCache<CacheReference<Path>, String> cache = LRUCache.build(
             PreferencesFactory.get().getInteger("cryptomator.cache.size"));
 
-    public CryptoDirectoryV6Provider(final Path vault, final CryptoVault cryptomator) {
+    public CryptoDirectoryV6Provider(final Path vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
         this.home = vault;
         this.dataRoot = new Path(vault, DATA_DIR_NAME, vault.getType());
-        this.cryptomator = cryptomator;
+        this.filenameProvider = filenameProvider;
+        this.filenameCryptor = filenameCryptor;
     }
 
     @Override
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
-        final String ciphertextName = prefix + cryptomator.getFileNameCryptor().encryptFilename(CryptorCache.BASE32, filename, directoryId.getBytes(StandardCharsets.UTF_8));
+        final String ciphertextName = prefix + filenameCryptor.encryptFilename(CryptorCache.BASE32, filename, directoryId.getBytes(StandardCharsets.UTF_8));
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
-        return cryptomator.getFilenameProvider().deflate(session, ciphertextName);
+        return filenameProvider.deflate(session, ciphertextName);
     }
 
     @Override
@@ -87,7 +90,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             log.debug("Use directory ID '{}' for folder {}", id, directory);
             attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
-            final String directoryIdHash = cryptomator.getFileNameCryptor().hashDirectoryId(id);
+            final String directoryIdHash = filenameCryptor.hashDirectoryId(id);
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
             // Add encrypted type

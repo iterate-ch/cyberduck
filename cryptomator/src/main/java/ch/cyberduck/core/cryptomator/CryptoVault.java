@@ -347,29 +347,20 @@ public class CryptoVault implements Vault {
         }
     }
 
-    protected CryptoDirectory createDirectoryProvider(final VaultConfig vaultConfig) {
+    protected CryptoDirectory createDirectoryProvider(final VaultConfig vaultConfig, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
         switch(vaultConfig.version) {
             case VAULT_VERSION_DEPRECATED:
-                return new CryptoDirectoryV6Provider(vault, this);
+                return new CryptoDirectoryV6Provider(vault, filenameProvider, filenameCryptor);
             default:
-                return new CryptoDirectoryV7Provider(vault, this);
+                return new CryptoDirectoryV7Provider(vault, filenameProvider, filenameCryptor);
         }
     }
 
-    // UVF: extract to v6/v7/uvf imple, VaultConfig only for v6/v7
-    // pro memoria:
-    //   create -> open
-    //   unlock -> open
-    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
-        this.open(vaultConfig, passphrase, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
-    }
-
     // UVF:  extract to v6/v7/uvf, at this point we know which version
-    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase,
-                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
+    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
         try {
             final PerpetualMasterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
-            this.open(vaultConfig, masterKey, filenameProvider, directoryProvider);
+            this.open(vaultConfig, masterKey);
         }
         catch(IllegalArgumentException | IOException e) {
             throw new VaultException("Failure reading key file", e);
@@ -381,20 +372,14 @@ public class CryptoVault implements Vault {
 
     // UVF: unused?!
     protected void open(final VaultConfig vaultConfig, final PerpetualMasterkey masterKey) throws BackgroundException {
-        this.open(vaultConfig, masterKey, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
-    }
-
-    // UVF:  extract to v6/v7 imple, can we use  the new MasterKey interface from https://github.com/cryptomator/cryptolib/pull/51/files?
-    protected void open(final VaultConfig vaultConfig, final PerpetualMasterkey masterKey,
-                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         this.vaultVersion = vaultConfig.version;
         final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
         log.debug("Initialized crypto provider {}", provider);
         vaultConfig.verify(masterKey.getEncoded(), VAULT_VERSION);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
-        this.filenameProvider = filenameProvider;
-        this.directoryProvider = directoryProvider;
+        this.filenameProvider = this.createFilenameProvider(vaultConfig);
+        this.directoryProvider = this.createDirectoryProvider(vaultConfig, this.filenameProvider, this.fileNameCryptor);
         this.nonceSize = vaultConfig.getNonceSize();
     }
 
