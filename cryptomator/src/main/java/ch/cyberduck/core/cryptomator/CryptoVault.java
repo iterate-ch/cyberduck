@@ -25,7 +25,6 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
@@ -50,7 +49,6 @@ import ch.cyberduck.core.vault.VaultException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.FileContentCryptor;
@@ -71,8 +69,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -81,7 +77,6 @@ import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.common.io.BaseEncoding;
 import com.google.gson.JsonParseException;
 
 import static ch.cyberduck.core.vault.DefaultVaultRegistry.DEFAULT_VAULTCONFIG_FILE_NAME;
@@ -97,11 +92,6 @@ public class CryptoVault extends AbstractVault {
     private static final Logger log = LogManager.getLogger(CryptoVault.class);
 
     public static final byte[] VAULT_PEPPER = PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
-
-    public static final String DIR_PREFIX = "0";
-
-    private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
-    private static final Pattern BASE64URL_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+).c9r");
 
     private static final String JSON_KEY_VAULTVERSION = "format";
     private static final String JSON_KEY_CIPHERCONFIG = "cipherCombo";
@@ -331,18 +321,7 @@ public class CryptoVault extends AbstractVault {
 
     @Override
     public synchronized void close() {
-        if(this.isUnlocked()) {
-            log.info("Close vault with cryptor {}", cryptor);
-            if(cryptor != null) {
-                cryptor.destroy();
-            }
-            if(directoryProvider != null) {
-                directoryProvider.destroy();
-            }
-            if(filenameProvider != null) {
-                filenameProvider.destroy();
-            }
-        }
+        super.close();
         cryptor = null;
         fileNameCryptor = null;
     }
@@ -400,171 +379,6 @@ public class CryptoVault extends AbstractVault {
                 new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
     }
 
-    @Override
-    public State getState() {
-        return this.isUnlocked() ? State.open : State.closed;
-    }
-
-    @Override
-    public boolean contains(final Path file) {
-        return new SimplePathPredicate(file).test(home) || file.isChild(home);
-    }
-
-    // UVF: extract to delegate?
-    public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
-        final Path encrypted;
-        if(file.isFile() || metadata) {
-            if(file.getType().contains(Path.Type.vault)) {
-                log.warn("Skip file {} because it is marked as an internal vault path", file);
-                return file;
-            }
-            if(new SimplePathPredicate(file).test(home)) {
-                log.warn("Skip vault home {} because the root has no metadata file", file);
-                return file;
-            }
-            final Path parent;
-            final String filename;
-            if(file.getType().contains(Path.Type.encrypted)) {
-                final Path decrypted = file.attributes().getDecrypted();
-                parent = directoryProvider.toEncrypted(session, decrypted.getParent().attributes().getDirectoryId(), decrypted.getParent());
-                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), decrypted.getName(), decrypted.getType());
-            }
-            else {
-                parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
-                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            }
-            final PathAttributes attributes = new PathAttributes(file.attributes());
-            attributes.setDirectoryId(null);
-            if(!file.isFile() && !metadata) {
-                // The directory is different from the metadata file used to resolve the actual folder
-                attributes.setVersionId(null);
-                attributes.setFileId(null);
-            }
-            // Translate file size
-            attributes.setSize(this.toCiphertextSize(0L, file.attributes().getSize()));
-            final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-            if(metadata && vaultVersion == VAULT_VERSION_DEPRECATED) {
-                type.remove(Path.Type.directory);
-                type.add(Path.Type.file);
-            }
-            type.remove(Path.Type.decrypted);
-            type.add(Path.Type.encrypted);
-            encrypted = new Path(parent, filename, type, attributes);
-        }
-        else {
-            if(file.getType().contains(Path.Type.encrypted)) {
-                log.warn("Skip file {} because it is already marked as an encrypted path", file);
-                return file;
-            }
-            if(file.getType().contains(Path.Type.vault)) {
-                return directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
-            }
-            encrypted = directoryProvider.toEncrypted(session, directoryId, file);
-        }
-        // Add reference to decrypted file
-        if(!file.getType().contains(Path.Type.encrypted)) {
-            encrypted.attributes().setDecrypted(file);
-        }
-        // Add reference for vault
-        file.attributes().setVault(home);
-        encrypted.attributes().setVault(home);
-        return encrypted;
-    }
-
-    @Override
-    public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
-        if(file.getType().contains(Path.Type.decrypted)) {
-            log.warn("Skip file {} because it is already marked as an decrypted path", file);
-            return file;
-        }
-        if(file.getType().contains(Path.Type.vault)) {
-            log.warn("Skip file {} because it is marked as an internal vault path", file);
-            return file;
-        }
-        final Path inflated = this.inflate(session, file);
-        final Pattern pattern = vaultVersion == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : BASE64URL_PATTERN;
-        final Matcher m = pattern.matcher(inflated.getName());
-        if(m.matches()) {
-            final String ciphertext = m.group(1);
-            try {
-                final String cleartextFilename = fileNameCryptor.decryptFilename(
-                        vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
-                        ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
-                final PathAttributes attributes = new PathAttributes(file.attributes());
-                if(this.isDirectory(inflated)) {
-                    if(Permission.EMPTY != attributes.getPermission()) {
-                        final Permission permission = new Permission(attributes.getPermission());
-                        permission.setUser(permission.getUser().or(Permission.Action.execute));
-                        permission.setGroup(permission.getGroup().or(Permission.Action.execute));
-                        permission.setOther(permission.getOther().or(Permission.Action.execute));
-                        attributes.setPermission(permission);
-                    }
-                    // Reset size for folders
-                    attributes.setSize(-1L);
-                    attributes.setVersionId(null);
-                    attributes.setFileId(null);
-                }
-                else {
-                    // Translate file size
-                    attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
-                }
-                // Add reference to encrypted file
-                attributes.setEncrypted(file);
-                // Add reference for vault
-                attributes.setVault(home);
-                final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-                type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
-                type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
-                type.remove(Path.Type.encrypted);
-                type.add(Path.Type.decrypted);
-                final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
-                if(type.contains(Path.Type.symboliclink)) {
-                    decrypted.setSymlinkTarget(file.getSymlinkTarget());
-                }
-                return decrypted;
-            }
-            catch(AuthenticationFailedException e) {
-                throw new CryptoAuthenticationException(
-                        "Failure to decrypt due to an unauthentic ciphertext", e);
-            }
-        }
-        else {
-            throw new CryptoFilenameMismatchException(
-                    String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern));
-        }
-    }
-
-    private boolean isDirectory(final Path p) {
-        if(vaultVersion == VAULT_VERSION_DEPRECATED) {
-            return p.getName().startsWith(DIR_PREFIX);
-        }
-        return p.isDirectory();
-    }
-
-    @Override
-    public long toCiphertextSize(final long cleartextFileOffset, final long cleartextFileSize) {
-        if(TransferStatus.UNKNOWN_LENGTH == cleartextFileSize) {
-            return TransferStatus.UNKNOWN_LENGTH;
-        }
-        final int headerSize;
-        if(0L == cleartextFileOffset) {
-            headerSize = cryptor.fileHeaderCryptor().headerSize();
-        }
-        else {
-            headerSize = 0;
-        }
-        return headerSize + cryptor.fileContentCryptor().ciphertextSize(cleartextFileSize);
-    }
-
-    private Path inflate(final Session<?> session, final Path file) throws BackgroundException {
-        final String fileName = file.getName();
-        if(filenameProvider.isDeflated(fileName)) {
-            final String filename = filenameProvider.inflate(session, fileName);
-            return new Path(file.getParent(), filename, EnumSet.of(Path.Type.file), file.attributes());
-        }
-        return file;
-    }
-
     public Path getHome() {
         return home;
     }
@@ -577,6 +391,11 @@ public class CryptoVault extends AbstractVault {
     @Override
     public Path getConfig() {
         return config;
+    }
+
+    @Override
+    public Path gethHome() {
+        return home;
     }
 
     @Override
