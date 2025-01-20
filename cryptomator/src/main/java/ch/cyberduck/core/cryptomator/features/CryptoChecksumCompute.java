@@ -15,8 +15,8 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
-import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -55,10 +55,10 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public class CryptoChecksumCompute extends AbstractChecksumCompute {
     private static final Logger log = LogManager.getLogger(CryptoChecksumCompute.class);
 
-    private final CryptoVaultInterface cryptomator;
+    private final AbstractVault cryptomator;
     private final ChecksumCompute delegate;
 
-    public CryptoChecksumCompute(final ChecksumCompute delegate, final CryptoVaultInterface CryptoVaultInterface) {
+    public CryptoChecksumCompute(final ChecksumCompute delegate, final AbstractVault CryptoVaultInterface) {
         this.cryptomator = CryptoVaultInterface;
         this.delegate = delegate;
     }

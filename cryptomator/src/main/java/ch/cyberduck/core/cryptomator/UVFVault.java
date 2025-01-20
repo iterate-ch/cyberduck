@@ -19,22 +19,25 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.FileContentCryptor;
+import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 
 import java.util.EnumSet;
+import java.util.Objects;
 
-public class UVFVault implements Vault {
+public class UVFVault extends AbstractVault {
 
     private static final Logger log = LogManager.getLogger(UVFVault.class);
 
@@ -49,6 +52,8 @@ public class UVFVault implements Vault {
     private CryptorCache fileNameCryptor;
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;
+
+    private int nonceSize;
 
     public UVFVault(final Path home, final String decryptedPayload) {
         this.home = home;
@@ -80,7 +85,7 @@ public class UVFVault implements Vault {
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
         this.filenameProvider = new CryptoFilenameV7Provider(/* TODO threshold was previously defined in vault.config - default now? */);
         this.directoryProvider = new CryptoDirectoryV7Provider(vault, filenameProvider, fileNameCryptor);
-        //TODO where? this.nonceSize = vaultConfig.getNonceSize();
+        this.nonceSize = 12;
         return this;
     }
 
@@ -95,12 +100,7 @@ public class UVFVault implements Vault {
     }
 
     @Override
-    public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
-        return null;
-    }
-
-    @Override
-    public Path encrypt(final Session<?> session, final Path file, final boolean metadata) throws BackgroundException {
+    public Path encrypt(final Session<?> session, final Path file, final String directoryId, final boolean metadata) throws BackgroundException {
         return null;
     }
 
@@ -115,8 +115,55 @@ public class UVFVault implements Vault {
     }
 
     @Override
-    public long toCleartextSize(final long cleartextFileOffset, final long ciphertextFileSize) throws BackgroundException {
-        return 0;
+    public Path getMasterkey() {
+        //TODO: implement
+        return null;
+    }
+
+    @Override
+    public Path getConfig() {
+        //TODO: implement
+        return null;
+    }
+
+    @Override
+    public FileHeaderCryptor getFileHeaderCryptor() {
+        return cryptor.fileHeaderCryptor();
+    }
+
+    @Override
+    public FileContentCryptor getFileContentCryptor() {
+        return cryptor.fileContentCryptor();
+    }
+
+    @Override
+    public CryptorCache getFileNameCryptor() {
+        return fileNameCryptor;
+    }
+
+    @Override
+    public CryptoFilename getFilenameProvider() {
+        return filenameProvider;
+    }
+
+    @Override
+    public CryptoDirectory getDirectoryProvider() {
+        return directoryProvider;
+    }
+
+    @Override
+    public Cryptor getCryptor() {
+        return cryptor;
+    }
+
+    @Override
+    public int getNonceSize() {
+        return nonceSize;
+    }
+
+    @Override
+    public int getVersion() {
+        return VAULT_VERSION;
     }
 
     @Override
@@ -132,5 +179,31 @@ public class UVFVault implements Vault {
     @Override
     public Path getHome() {
         return null;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof UVFVault)) {
+            return false;
+        }
+        final UVFVault that = (UVFVault) o;
+        return new SimplePathPredicate(home).test(that.home);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(new SimplePathPredicate(home));
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("UVFVault{");
+        sb.append("home=").append(home);
+        sb.append(", cryptor=").append(cryptor);
+        sb.append('}');
+        return sb.toString();
     }
 }
