@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -46,9 +46,9 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
 
     private final Session<?> session;
     private final Bulk<R> delegate;
-    private final CryptoVault cryptomator;
+    private final CryptoVaultInterface cryptomator;
 
-    public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
+    public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVaultInterface cryptomator) {
         this.session = session;
         this.delegate = delegate.withDelete(cryptomator.getFeature(session, Delete.class, delete));
         this.cryptomator = cryptomator;

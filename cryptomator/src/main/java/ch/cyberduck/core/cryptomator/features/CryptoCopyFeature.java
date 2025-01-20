@@ -19,7 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,11 +37,11 @@ public class CryptoCopyFeature implements Copy {
 
     private final Session<?> session;
     private final Copy proxy;
-    private final CryptoVault vault;
+    private final CryptoVaultInterface vault;
 
     private Session<?> target;
 
-    public CryptoCopyFeature(final Session<?> session, final Copy proxy, final CryptoVault vault) {
+    public CryptoCopyFeature(final Session<?> session, final Copy proxy, final CryptoVaultInterface vault) {
         this.session = session;
         this.target = session;
         this.proxy = proxy;

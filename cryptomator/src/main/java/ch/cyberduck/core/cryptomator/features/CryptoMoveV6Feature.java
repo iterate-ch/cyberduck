@@ -19,7 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
@@ -34,9 +34,9 @@ public class CryptoMoveV6Feature implements Move {
 
     private final Session<?> session;
     private final Move proxy;
-    private final CryptoVault vault;
+    private final CryptoVaultInterface vault;
 
-    public CryptoMoveV6Feature(final Session<?> session, final Move delegate, final CryptoVault cryptomator) {
+    public CryptoMoveV6Feature(final Session<?> session, final Move delegate, final CryptoVaultInterface cryptomator) {
         this.session = session;
         this.proxy = delegate;
         this.vault = cryptomator;

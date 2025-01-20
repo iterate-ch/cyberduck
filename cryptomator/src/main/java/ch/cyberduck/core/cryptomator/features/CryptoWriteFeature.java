@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,9 +42,9 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     private final Session<?> session;
     private final Write<Reply> proxy;
-    private final CryptoVault vault;
+    private final CryptoVaultInterface vault;
 
-    public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final CryptoVault vault) {
+    public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final CryptoVaultInterface vault) {
         this.session = session;
         this.proxy = proxy;
         this.vault = vault;

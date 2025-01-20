@@ -27,9 +27,9 @@ import org.apache.logging.log4j.Logger;
 public class CryptoTransferStatus extends ProxyTransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = LogManager.getLogger(CryptoTransferStatus.class);
 
-    private final CryptoVault vault;
+    private final CryptoVaultInterface vault;
 
-    public CryptoTransferStatus(final CryptoVault vault, final TransferStatus proxy) {
+    public CryptoTransferStatus(final CryptoVaultInterface vault, final TransferStatus proxy) {
         super(proxy);
         this.vault = vault;
         this.setLength(vault.toCiphertextSize(proxy.getOffset(), proxy.getLength()))
