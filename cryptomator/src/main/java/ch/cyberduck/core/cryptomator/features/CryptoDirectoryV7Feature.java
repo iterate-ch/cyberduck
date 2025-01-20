@@ -20,7 +20,7 @@ import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentWriter;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,11 +42,11 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     private final Session<?> session;
     private final Write<Reply> writer;
     private final Directory<Reply> delegate;
-    private final CryptoVault vault;
+    private final CryptoVaultInterface vault;
     private final RandomStringService random = new UUIDRandomStringService();
 
     public CryptoDirectoryV7Feature(final Session<?> session, final Directory<Reply> delegate,
-                                    final Write<Reply> writer, final CryptoVault cryptomator) {
+                                    final Write<Reply> writer, final CryptoVaultInterface cryptomator) {
         this.session = session;
         this.writer = writer;
         this.delegate = delegate;
