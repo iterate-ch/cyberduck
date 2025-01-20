@@ -15,8 +15,20 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.cryptomator.features.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV6Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV6Provider;
@@ -26,10 +38,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -81,11 +93,9 @@ import static ch.cyberduck.core.vault.DefaultVaultRegistry.DEFAULT_VAULTCONFIG_F
 // - upon create, the vault version is determined from preferences -> set the delegate impl
 // - upon unlock, the vault version needs to be determined by reading masterkey.cryptomator or (!) vault.uvf file -> set the delegate impl
 // - open is called either from create or unlock, hence at this point we can delegate calls to the v6/v7/uvf imple?
-public class CryptoVault implements CryptoVaultInterface {
+public class CryptoVault extends AbstractVault {
     private static final Logger log = LogManager.getLogger(CryptoVault.class);
 
-    public static final int VAULT_VERSION_DEPRECATED = 6;
-    public static final int VAULT_VERSION = PreferencesFactory.get().getInteger("cryptomator.vault.version");
     public static final byte[] VAULT_PEPPER = PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
 
     public static final String DIR_PREFIX = "0";
@@ -390,10 +400,6 @@ public class CryptoVault implements CryptoVaultInterface {
                 new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
     }
 
-    public synchronized boolean isUnlocked() {
-        return cryptor != null;
-    }
-
     @Override
     public State getState() {
         return this.isUnlocked() ? State.open : State.closed;
@@ -550,29 +556,6 @@ public class CryptoVault implements CryptoVaultInterface {
         return headerSize + cryptor.fileContentCryptor().ciphertextSize(cleartextFileSize);
     }
 
-    @Override
-    public long toCleartextSize(final long cleartextFileOffset, final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
-        if(TransferStatus.UNKNOWN_LENGTH == ciphertextFileSize) {
-            return TransferStatus.UNKNOWN_LENGTH;
-        }
-        final int headerSize;
-        if(0L == cleartextFileOffset) {
-            headerSize = cryptor.fileHeaderCryptor().headerSize();
-        }
-        else {
-            headerSize = 0;
-        }
-        try {
-            return cryptor.fileContentCryptor().cleartextSize(ciphertextFileSize - headerSize);
-        }
-        catch(AssertionError e) {
-            throw new CryptoInvalidFilesizeException(String.format("Encrypted file size must be at least %d bytes", headerSize));
-        }
-        catch(IllegalArgumentException e) {
-            throw new CryptoInvalidFilesizeException(String.format("Invalid file size. %s", e.getMessage()));
-        }
-    }
-
     private Path inflate(final Session<?> session, final Path file) throws BackgroundException {
         final String fileName = file.getName();
         if(filenameProvider.isDeflated(fileName)) {
@@ -594,6 +577,11 @@ public class CryptoVault implements CryptoVaultInterface {
     @Override
     public Path getConfig() {
         return config;
+    }
+
+    @Override
+    public int getVersion() {
+        return vaultVersion;
     }
 
     @Override
@@ -622,132 +610,13 @@ public class CryptoVault implements CryptoVaultInterface {
     }
 
     @Override
+    public Cryptor getCryptor() {
+        return cryptor;
+    }
+
+    @Override
     public int getNonceSize() {
         return nonceSize;
-    }
-
-    @Override
-    public int numberOfChunks(final long cleartextFileSize) {
-        return (int) (cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
-                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
-        if(this.isUnlocked()) {
-            if(type == ListService.class) {
-                return (T) new CryptoListService(session, (ListService) delegate, this);
-            }
-            if(type == Touch.class) {
-                // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
-            }
-            if(type == Directory.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDirectoryV6Feature(session, (Directory) delegate, this) :
-                        new CryptoDirectoryV7Feature(session, (Directory) delegate, this)
-                );
-            }
-            if(type == Upload.class) {
-                return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
-            }
-            if(type == Download.class) {
-                return (T) new CryptoDownloadFeature(session, (Download) delegate, this);
-            }
-            if(type == Read.class) {
-                return (T) new CryptoReadFeature(session, (Read) delegate, this);
-            }
-            if(type == Write.class) {
-                return (T) new CryptoWriteFeature(session, (Write) delegate, this);
-            }
-            if(type == MultipartWrite.class) {
-                return (T) new CryptoMultipartWriteFeature(session, (Write) delegate, this);
-            }
-            if(type == Move.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoMoveV6Feature(session, (Move) delegate, this) :
-                        new CryptoMoveV7Feature(session, (Move) delegate, this));
-
-            }
-            if(type == AttributesFinder.class) {
-                return (T) new CryptoAttributesFeature(session, (AttributesFinder) delegate, this);
-            }
-            if(type == Find.class) {
-                return (T) new CryptoFindFeature(session, (Find) delegate, this);
-            }
-            if(type == UrlProvider.class) {
-                return (T) new CryptoUrlProvider(session, (UrlProvider) delegate, this);
-            }
-            if(type == FileIdProvider.class) {
-                return (T) new CryptoFileIdProvider(session, (FileIdProvider) delegate, this);
-            }
-            if(type == VersionIdProvider.class) {
-                return (T) new CryptoVersionIdProvider(session, (VersionIdProvider) delegate, this);
-            }
-            if(type == Delete.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
-                        new CryptoDeleteV7Feature(session, (Delete) delegate, this));
-            }
-            if(type == Trash.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
-                        new CryptoDeleteV7Feature(session, (Delete) delegate, this));
-            }
-            if(type == Symlink.class) {
-                return (T) new CryptoSymlinkFeature(session, (Symlink) delegate, this);
-            }
-            if(type == Headers.class) {
-                return (T) new CryptoHeadersFeature(session, (Headers) delegate, this);
-            }
-            if(type == Compress.class) {
-                return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
-            }
-            if(type == Bulk.class) {
-                return (T) new CryptoBulkFeature(session, (Bulk) delegate, this);
-            }
-            if(type == UnixPermission.class) {
-                return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);
-            }
-            if(type == AclPermission.class) {
-                return (T) new CryptoAclPermission(session, (AclPermission) delegate, this);
-            }
-            if(type == Copy.class) {
-                return (T) new CryptoCopyFeature(session, (Copy) delegate, this);
-            }
-            if(type == Timestamp.class) {
-                return (T) new CryptoTimestampFeature(session, (Timestamp) delegate, this);
-            }
-            if(type == Encryption.class) {
-                return (T) new CryptoEncryptionFeature(session, (Encryption) delegate, this);
-            }
-            if(type == Lifecycle.class) {
-                return (T) new CryptoLifecycleFeature(session, (Lifecycle) delegate, this);
-            }
-            if(type == Location.class) {
-                return (T) new CryptoLocationFeature(session, (Location) delegate, this);
-            }
-            if(type == Lock.class) {
-                return (T) new CryptoLockFeature(session, (Lock) delegate, this);
-            }
-            if(type == Logging.class) {
-                return (T) new CryptoLoggingFeature(session, (Logging) delegate, this);
-            }
-            if(type == Redundancy.class) {
-                return (T) new CryptoRedundancyFeature(session, (Redundancy) delegate, this);
-            }
-            if(type == Search.class) {
-                return (T) new CryptoSearchFeature(session, (Search) delegate, this);
-            }
-            if(type == TransferAcceleration.class) {
-                return (T) new CryptoTransferAccelerationFeature<>(session, (TransferAcceleration) delegate, this);
-            }
-            if(type == Versioning.class) {
-                return (T) new CryptoVersioningFeature(session, (Versioning) delegate, this);
-            }
-        }
-        return delegate;
     }
 
     @Override
