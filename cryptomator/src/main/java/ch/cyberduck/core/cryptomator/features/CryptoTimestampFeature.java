@@ -18,7 +18,7 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -27,9 +27,9 @@ public class CryptoTimestampFeature implements Timestamp {
 
     private final Session<?> session;
     private final Timestamp proxy;
-    private final CryptoVault vault;
+    private final CryptoVaultInterface vault;
 
-    public CryptoTimestampFeature(final Session<?> session, final Timestamp proxy, final CryptoVault vault) {
+    public CryptoTimestampFeature(final Session<?> session, final Timestamp proxy, final CryptoVaultInterface vault) {
         this.session = session;
         this.proxy = proxy;
         this.vault = vault;

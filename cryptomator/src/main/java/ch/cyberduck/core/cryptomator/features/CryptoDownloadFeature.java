@@ -19,12 +19,11 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,9 +32,9 @@ public class CryptoDownloadFeature implements Download {
 
     private final Session<?> session;
     private final Download proxy;
-    private final Vault vault;
+    private final CryptoVaultInterface vault;
 
-    public CryptoDownloadFeature(final Session<?> session, final Download proxy, final Read reader, final CryptoVault vault) {
+    public CryptoDownloadFeature(final Session<?> session, final Download proxy, final Read reader, final CryptoVaultInterface vault) {
         this.session = session;
         this.proxy = proxy.withReader(new CryptoReadFeature(session, reader, vault));
         this.vault = vault;
