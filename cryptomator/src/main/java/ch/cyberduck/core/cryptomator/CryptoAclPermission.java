@@ -22,16 +22,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.EnumSet;
 import java.util.List;
 
 public class CryptoAclPermission implements AclPermission {
 
     private final Session<?> session;
     private final AclPermission delegate;
-    private final CryptoVault cryptomator;
+    private final AbstractVault cryptomator;
 
-    public CryptoAclPermission(final Session<?> session, final AclPermission delegate, final CryptoVault cryptomator) {
+    public CryptoAclPermission(final Session<?> session, final AclPermission delegate, final AbstractVault cryptomator) {
 
         this.session = session;
         this.delegate = delegate;
