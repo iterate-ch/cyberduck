@@ -20,8 +20,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
-import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -44,10 +44,10 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
 
     private final Session<?> session;
     private final Delete proxy;
-    private final CryptoVaultInterface vault;
+    private final AbstractVault vault;
     private final CryptoFilename filenameProvider;
 
-    public CryptoDeleteV6Feature(final Session<?> session, final Delete proxy, final CryptoVaultInterface vault) {
+    public CryptoDeleteV6Feature(final Session<?> session, final Delete proxy, final AbstractVault vault) {
         this.session = session;
         this.proxy = proxy;
         this.vault = vault;
