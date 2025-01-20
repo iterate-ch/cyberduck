@@ -20,7 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoInputStream;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,9 +36,9 @@ public class CryptoReadFeature implements Read {
 
     private final Session<?> session;
     private final Read proxy;
-    private final CryptoVault vault;
+    private final CryptoVaultInterface vault;
 
-    public CryptoReadFeature(final Session<?> session, final Read proxy, final CryptoVault vault) {
+    public CryptoReadFeature(final Session<?> session, final Read proxy, final CryptoVaultInterface vault) {
         this.session = session;
         this.proxy = proxy;
         this.vault = vault;
