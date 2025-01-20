@@ -16,18 +16,18 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVaultInterface;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 
 public class CryptoMultipartWriteFeature<Reply> extends CryptoWriteFeature<Reply> implements MultipartWrite<Reply> {
-    public CryptoMultipartWriteFeature(final Session<?> session, final Write<Reply> delegate, final CryptoVaultInterface vault) {
+    public CryptoMultipartWriteFeature(final Session<?> session, final Write<Reply> delegate, final AbstractVault vault) {
         super(session, delegate, vault);
     }
 
-    public CryptoMultipartWriteFeature(final Session<?> session, final Write<Reply> delegate, final Find finder, final AttributesFinder attributes, final CryptoVaultInterface vault) {
+    public CryptoMultipartWriteFeature(final Session<?> session, final Write<Reply> delegate, final Find finder, final AttributesFinder attributes, final AbstractVault vault) {
         super(session, delegate, vault);
     }
 }
