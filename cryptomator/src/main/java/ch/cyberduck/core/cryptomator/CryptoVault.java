@@ -81,7 +81,7 @@ import static ch.cyberduck.core.vault.DefaultVaultRegistry.DEFAULT_VAULTCONFIG_F
 // - upon create, the vault version is determined from preferences -> set the delegate impl
 // - upon unlock, the vault version needs to be determined by reading masterkey.cryptomator or (!) vault.uvf file -> set the delegate impl
 // - open is called either from create or unlock, hence at this point we can delegate calls to the v6/v7/uvf imple?
-public class CryptoVault implements Vault {
+public class CryptoVault implements CryptoVaultInterface {
     private static final Logger log = LogManager.getLogger(CryptoVault.class);
 
     public static final int VAULT_VERSION_DEPRECATED = 6;
@@ -404,16 +404,6 @@ public class CryptoVault implements Vault {
         return new SimplePathPredicate(file).test(home) || file.isChild(home);
     }
 
-    @Override
-    public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
-        return this.encrypt(session, file, file.attributes().getDirectoryId(), false);
-    }
-
-    @Override
-    public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
-        return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
-    }
-
     // UVF: extract to delegate?
     public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
         final Path encrypted;
@@ -596,38 +586,47 @@ public class CryptoVault implements Vault {
         return home;
     }
 
+    @Override
     public Path getMasterkey() {
         return masterkey;
     }
 
+    @Override
     public Path getConfig() {
         return config;
     }
 
+    @Override
     public FileHeaderCryptor getFileHeaderCryptor() {
         return cryptor.fileHeaderCryptor();
     }
 
+    @Override
     public FileContentCryptor getFileContentCryptor() {
         return cryptor.fileContentCryptor();
     }
 
+    @Override
     public CryptorCache getFileNameCryptor() {
         return fileNameCryptor;
     }
 
+    @Override
     public CryptoFilename getFilenameProvider() {
         return filenameProvider;
     }
 
+    @Override
     public CryptoDirectory getDirectoryProvider() {
         return directoryProvider;
     }
 
+    @Override
     public int getNonceSize() {
         return nonceSize;
     }
 
+    @Override
     public int numberOfChunks(final long cleartextFileSize) {
         return (int) (cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
                 ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
