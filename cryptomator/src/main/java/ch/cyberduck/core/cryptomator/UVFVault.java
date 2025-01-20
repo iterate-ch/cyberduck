@@ -71,7 +71,7 @@ public class UVFVault extends AbstractVault {
 
     @Override
     public Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     // load -> unlock -> open
@@ -90,28 +90,10 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public void close() {
-
-    }
-
-    @Override
-    public boolean contains(final Path file) {
-        return false;
-    }
-
-    @Override
-    public Path encrypt(final Session<?> session, final Path file, final String directoryId, final boolean metadata) throws BackgroundException {
-        return null;
-    }
-
-    @Override
-    public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
-        return null;
-    }
-
-    @Override
-    public long toCiphertextSize(final long cleartextFileOffset, final long cleartextFileSize) {
-        return 0;
+    public synchronized void close() {
+        super.close();
+        cryptor = null;
+        fileNameCryptor = null;
     }
 
     @Override
@@ -124,6 +106,11 @@ public class UVFVault extends AbstractVault {
     public Path getConfig() {
         //TODO: implement
         return null;
+    }
+
+    @Override
+    public Path gethHome() {
+        return home;
     }
 
     @Override
@@ -167,18 +154,8 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
-        return null;
-    }
-
-    @Override
-    public State getState() {
-        return null;
-    }
-
-    @Override
     public Path getHome() {
-        return null;
+        return home;
     }
 
     @Override
