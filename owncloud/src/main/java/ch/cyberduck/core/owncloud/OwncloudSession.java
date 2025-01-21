@@ -28,7 +28,6 @@ import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -41,18 +40,13 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
 import ch.cyberduck.core.nextcloud.NextcloudListService;
 import ch.cyberduck.core.nextcloud.NextcloudShareFeature;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
-import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
-import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
@@ -70,7 +64,6 @@ import ch.cyberduck.core.tus.TusWriteFeature;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,8 +76,6 @@ import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 
 public class OwncloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(OwncloudSession.class);
-
-    private OAuth2RequestInterceptor authorizationService;
 
     protected final TusCapabilities tus = new TusCapabilities();
     protected final OcsCapabilities ocs = new OcsCapabilities();
@@ -111,25 +102,10 @@ public class OwncloudSession extends DAVSession {
     }
 
     @Override
-    protected HttpClientBuilder getConfiguration(final ProxyFinder proxy, final LoginCallback prompt) throws ConnectionCanceledException {
-        final HttpClientBuilder configuration = super.getConfiguration(proxy, prompt);
-        if(host.getProtocol().isOAuthConfigurable()) {
-            authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-            if(host.getProtocol().getAuthorization() != null) {
-                authorizationService.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
-            }
-            configuration.addInterceptorLast(authorizationService);
-            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
-        }
-        return configuration;
-    }
-
-    @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        super.login(prompt, cancel);
         if(host.getProtocol().isOAuthConfigurable()) {
-            final Credentials credentials = authorizationService.validate();
+            final Credentials credentials = host.getCredentials();
             final OAuthTokens oauth = credentials.getOauth();
             try {
                 final String username = JWT.decode(oauth.getIdToken()).getClaim("preferred_username").asString();
@@ -141,7 +117,6 @@ public class OwncloudSession extends DAVSession {
                 log.warn("Failure {} decoding JWT {}", e, oauth.getIdToken());
             }
         }
-        super.login(prompt, cancel);
         try {
             client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
         }
