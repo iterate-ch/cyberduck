@@ -148,10 +148,6 @@ public class Profile implements Protocol {
         return serializer.getSerialized();
     }
 
-    public Protocol getProtocol() {
-        return parent;
-    }
-
     @Override
     public String getPrefix() {
         return parent.getPrefix();
@@ -165,7 +161,7 @@ public class Profile implements Protocol {
         if(this.isBundled()) {
             return true;
         }
-        final String protocol = this.value(PROTOCOL_KEY);
+        final String protocol = parent.getIdentifier();
         final String vendor = this.value(VENDOR_KEY);
         if(StringUtils.isNotBlank(protocol) && StringUtils.isNotBlank(vendor)) {
             final String property = PreferencesFactory.get().getProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", protocol, vendor)));

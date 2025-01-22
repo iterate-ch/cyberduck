@@ -143,7 +143,7 @@ public final class ProtocolFactory {
             log.info("Register profile {}", profile);
             registered.add(profile);
             preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled",
-                    profile.getProtocol().getIdentifier(), profile.getProvider())), true);
+                    profile.getIdentifier(), profile.getProvider())), true);
             if(!profiles.exists()) {
                 new DefaultLocalDirectoryFeature().mkdir(profiles);
             }
@@ -169,7 +169,7 @@ public final class ProtocolFactory {
     public void unregister(final Profile profile) {
         if(registered.remove(profile)) {
             preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled",
-                    profile.getProtocol().getIdentifier(), profile.getProvider())), false);
+                    profile.getIdentifier(), profile.getProvider())), false);
         }
         else {
             log.warn("Failure removing protocol {}", profile);

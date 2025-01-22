@@ -58,7 +58,7 @@ public class ProfilePlistReaderTest {
                 new Local(Paths.get(this.getClass().getResource("/Test Dropbox.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(profile);
-        assertSame(parent, profile.getProtocol());
+        assertEquals(parent.getIdentifier(), profile.getIdentifier());
         // Lookup with fallback
         assertNotNull(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)), ProtocolFactory.BUNDLED_PROFILE_PREDICATE).read(
                 new Local(Paths.get(this.getClass().getResource("/Test Dropbox.cyberduckprofile").toURI()).toFile().getAbsolutePath())
@@ -82,7 +82,7 @@ public class ProfilePlistReaderTest {
                 new Local(Paths.get(this.getClass().getResource("/Azure.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         );
         assertNotNull(profile);
-        assertSame(parent, profile.getProtocol());
+        assertEquals(parent.getIdentifier(), profile.getIdentifier());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -141,7 +141,7 @@ public class ProfilePlistReaderTest {
                 new Local(Paths.get(this.getClass().getResource("/Eucalyptus Walrus S3.cyberduckprofile").toURI()).toFile().getAbsolutePath())
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertSame(parent, profile.getProtocol());
+        assertEquals(parent.getIdentifier(), profile.getIdentifier());
         assertNotSame(parent.getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(parent.getScheme(), profile.getScheme());
         assertEquals("eucalyptus", profile.getProvider());
@@ -218,7 +218,7 @@ public class ProfilePlistReaderTest {
         ));
         assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertSame(parent, profile.getProtocol());
+        assertEquals(parent.getIdentifier(), profile.getIdentifier());
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertEquals(Scheme.http, profile.getScheme());
@@ -254,7 +254,7 @@ public class ProfilePlistReaderTest {
         ));
         assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertSame(parent, profile.getProtocol());
+        assertEquals(parent.getIdentifier(), profile.getIdentifier());
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertEquals(Scheme.https, profile.getScheme());

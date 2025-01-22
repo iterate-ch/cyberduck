@@ -93,10 +93,10 @@ public class CommandLineUriParserTest {
         final SwiftProtocol protocol = new SwiftProtocol();
         final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(protocol)));
         final Profile rackspace = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"));
-        assertSame(protocol, rackspace.getProtocol());
+        assertEquals(protocol.getIdentifier(), rackspace.getIdentifier());
         factory.register(rackspace);
         final Profile generic = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Openstack Swift (Keystone 2).cyberduckprofile"));
-        assertSame(protocol, generic.getProtocol());
+        assertEquals(protocol.getIdentifier(), generic.getIdentifier());
         factory.register(generic);
         assertSame(rackspace, factory.forName("swift", "rackspace"));
         assertSame(generic, factory.forName("swift", "openstack-keystone2"));
