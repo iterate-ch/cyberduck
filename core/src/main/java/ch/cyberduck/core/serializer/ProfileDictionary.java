@@ -62,7 +62,7 @@ public class ProfileDictionary<T> {
      */
     public Profile deserialize(final T serialized, final Predicate<Protocol> filter) {
         final Deserializer<T> dict = deserializer.create(serialized);
-        final String protocol = dict.stringForKey("Protocol");
+        final String protocol = dict.stringForKey(Profile.PROTOCOL_KEY);
         if(StringUtils.isNotBlank(protocol)) {
             // Return default registered protocol specification as parent
             Protocol parent = protocols.forName(protocols.find(filter), protocol, null);
