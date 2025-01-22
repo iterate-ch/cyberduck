@@ -40,10 +40,8 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.ComposeContainer;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -53,9 +51,6 @@ import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRoleWithWebIdentityTest {
-
-    @ClassRule
-    public static ComposeContainer compose = prepareDockerComposeContainer();
 
     @Test
     public void testAuthorizationFindBucket() throws BackgroundException {

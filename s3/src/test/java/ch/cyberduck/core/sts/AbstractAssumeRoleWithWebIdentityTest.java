@@ -17,8 +17,8 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.test.TestcontainerTest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.ComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -27,17 +27,23 @@ import java.io.File;
 
 @Category(TestcontainerTest.class)
 public abstract class AbstractAssumeRoleWithWebIdentityTest {
-    protected static final Logger log = LogManager.getLogger(AbstractAssumeRoleWithWebIdentityTest.class);
 
     protected static final int OAUTH_TTL_MILLIS = 5000;
 
-    public static ComposeContainer prepareDockerComposeContainer() {
-        log.info("Preparing docker compose container...");
-        return new ComposeContainer(
-                new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
-                .withPull(false)
-                .withLocalCompose(true)
-                .withExposedService("keycloak-1", 8080, Wait.forListeningPort())
-                .withExposedService("minio-1", 9000, Wait.forListeningPort());
+    private static final ComposeContainer container = new ComposeContainer(
+            new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
+            .withPull(false)
+            .withLocalCompose(true)
+            .withExposedService("keycloak-1", 8080, Wait.forListeningPort())
+            .withExposedService("minio-1", 9000, Wait.forListeningPort());
+
+    @BeforeClass
+    public static void start() {
+        container.start();
+    }
+
+    @AfterClass
+    public static void shutdown() {
+        container.stop();
     }
 }

@@ -38,10 +38,8 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.security.AWSSessionCredentials;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.ComposeContainer;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -53,9 +51,6 @@ import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeRoleWithWebIdentityTest {
-
-    @ClassRule
-    public static ComposeContainer compose = prepareDockerComposeContainer();
 
     @Test
     public void testSuccessfulLogin() throws BackgroundException {
