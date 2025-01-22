@@ -15,9 +15,6 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
