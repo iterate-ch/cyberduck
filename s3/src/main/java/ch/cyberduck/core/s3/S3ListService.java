@@ -58,12 +58,12 @@ public class S3ListService implements ListService {
                 }
                 catch(InteroperabilityException e) {
                     // Bucket set in hostname that leads to parser failure for XML reply
-                    log.warn("Failure {} listing buckets", e.getMessage());
+                    log.warn("Failure {} listing buckets", e.toString());
                     try {
                         return this.listObjects(directory, listener);
                     }
                     catch(BackgroundException ignored) {
-                        log.warn("Ignore failure {} listing objects", ignored.getMessage());
+                        log.warn("Ignore failure {} listing objects", ignored.toString());
                         // Throw original failure
                         throw e;
                     }
@@ -84,7 +84,7 @@ public class S3ListService implements ListService {
                 objects = new S3VersionedObjectListService(session, acl).list(directory, listener);
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn("Ignore failure listing versioned objects. {}", e.getMessage());
+                log.warn("Ignore failure {} listing versioned objects", e.toString());
                 objects = new S3ObjectListService(session, acl).list(directory, listener);
             }
         }
@@ -102,7 +102,7 @@ public class S3ListService implements ListService {
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn("Ignore failure listing incomplete multipart uploads. {}", e.getMessage());
+                log.warn("Ignore failure {} listing incomplete multipart uploads", e.toString());
             }
         }
         return objects;
