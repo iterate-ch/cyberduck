@@ -115,7 +115,7 @@ public abstract class AbstractDriveListService implements ListService {
                     @Override
                     public boolean test(final Path f) {
                         // Exclude trashed
-                        return super.test(f) && !f.attributes().isHidden();
+                        return super.test(f) && !f.attributes().isTrashed();
                     }
                 }).size() > 1));
                 listener.chunk(directory, children);

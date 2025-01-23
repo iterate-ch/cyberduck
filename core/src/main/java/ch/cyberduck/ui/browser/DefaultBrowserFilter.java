@@ -51,6 +51,9 @@ public class DefaultBrowserFilter implements Filter<Path> {
         if(file.attributes().isHidden()) {
             return false;
         }
+        if(file.attributes().isTrashed()) {
+            return false;
+        }
         return true;
     }
 

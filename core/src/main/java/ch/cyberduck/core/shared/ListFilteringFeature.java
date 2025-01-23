@@ -77,6 +77,10 @@ public abstract class ListFilteringFeature {
                 // Filter previous versions and delete markers when searching for no specific version
                 return false;
             }
+            if(f.attributes().isTrashed()) {
+                // Filter trashed files
+                return false;
+            }
             switch(sensitivity) {
                 case sensitive:
                     return new CaseSensitivePathPredicate(file).test(f);

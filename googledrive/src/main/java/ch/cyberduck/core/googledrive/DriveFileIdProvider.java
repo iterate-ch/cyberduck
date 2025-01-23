@@ -74,17 +74,17 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
             query = file;
         }
         final AttributedList<Path> list = new FileidDriveListService(session, this, query).list(file.getParent(), new DisabledListProgressListener());
-        final Path found = list.filter(new IgnoreTrashedComparator()).find(new SimplePathPredicate(file));
+        final Path found = list.filter(new TrashedComparator()).find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
         return this.cache(file, found.attributes().getFileId());
     }
 
-    private static final class IgnoreTrashedComparator implements Comparator<Path> {
+    private static final class TrashedComparator implements Comparator<Path> {
         @Override
         public int compare(final Path o1, final Path o2) {
-            return Boolean.compare(o1.attributes().isHidden(), o2.attributes().isDuplicate());
+            return Boolean.compare(o1.attributes().isTrashed(), o2.attributes().isTrashed());
         }
     }
 }

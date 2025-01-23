@@ -106,6 +106,10 @@ public class PathAttributesDictionary<T> {
         if(hiddenObj != null) {
             attributes.setHidden(Boolean.parseBoolean(hiddenObj));
         }
+        final String trashedObj = dict.stringForKey("Trashed");
+        if(trashedObj != null) {
+            attributes.setTrashed(Boolean.parseBoolean(trashedObj));
+        }
         attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));

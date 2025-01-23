@@ -60,7 +60,7 @@ public class DriveTrashFeature implements Trash {
                     session.getClient().teamdrives().delete(fileid.getFileId(f)).execute();
                 }
                 else {
-                    if(f.attributes().isHidden()) {
+                    if(f.attributes().isTrashed()) {
                         log.warn("Delete file {} already in trash", f);
                         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(f), prompt, callback);
                         continue;

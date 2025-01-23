@@ -55,7 +55,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
             }
             else {
                 try {
-                    if(!new DriveAttributesFinderFeature(session, fileid).find(folder).isHidden()) {
+                    if(!new DriveAttributesFinderFeature(session, fileid).find(folder).isTrashed()) {
                         throw new ConflictException(folder.getAbsolute());
                     }
                 }
