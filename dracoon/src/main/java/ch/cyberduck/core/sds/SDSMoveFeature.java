@@ -91,13 +91,13 @@ public class SDSMoveFeature implements Move {
                 }
                 else {
                     // Move to different parent
-                    new NodesApi(session.getClient()).moveNodes(
+                    nodeid.retry(renamed.getParent(), () -> new NodesApi(session.getClient()).moveNodes(
                             new MoveNodesRequest()
                                     .resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                                     .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
                                     .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
                             Long.parseLong(nodeid.getVersionId(renamed.getParent())),
-                            StringUtils.EMPTY, null);
+                            StringUtils.EMPTY, null));
                 }
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);

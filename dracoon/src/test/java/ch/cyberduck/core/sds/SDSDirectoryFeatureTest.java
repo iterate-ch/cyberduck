@@ -18,13 +18,16 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFolderRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -47,19 +50,30 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
         assertThrows(ConflictException.class, () -> new SDSDirectoryFeature(session, nodeid).mkdir(test, new TransferStatus()));
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(test));
+        // Replace directory on server with same name
+        new NodesApi(session.getClient()).removeNode(Long.parseLong(test.attributes().getVersionId()), StringUtils.EMPTY);
+        final CreateFolderRequest folderRequest = new CreateFolderRequest();
+        folderRequest.setParentId(Long.parseLong(room.attributes().getVersionId()));
+        folderRequest.setName(test.getName());
+        // New node for directory with same nmae
+        final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
+        assertNotEquals(test.attributes().getVersionId(), node.getId().toString());
+        // Attempt to create subdirectory referencing previous node id
+        final Path subdir = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(test,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertEquals(node.getId().toString(), nodeid.getVersionId(test));
+        assertEquals(test.attributes().getVersionId(), node.getId().toString());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(subdir, test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testCreateDataRoom() throws Exception {
-        final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotNull(room.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(room));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(room));
     }
 }

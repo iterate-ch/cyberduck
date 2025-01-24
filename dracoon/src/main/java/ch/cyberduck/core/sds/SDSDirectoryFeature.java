@@ -69,10 +69,9 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     }
 
     private Path createFolder(final Path folder) throws BackgroundException, ApiException {
-        final CreateFolderRequest folderRequest = new CreateFolderRequest();
-        folderRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent())));
-        folderRequest.setName(folder.getName());
-        final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
+        final Node node = nodeid.retry(folder.getParent(), () -> new NodesApi(session.getClient()).createFolder(new CreateFolderRequest()
+                .parentId(Long.parseLong(nodeid.getVersionId(folder.getParent())))
+                .name(folder.getName()), StringUtils.EMPTY, null));
         nodeid.cache(folder, String.valueOf(node.getId()));
         return folder.withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
     }
