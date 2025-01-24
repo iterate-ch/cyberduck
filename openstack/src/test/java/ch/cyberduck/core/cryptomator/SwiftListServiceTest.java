@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
@@ -60,7 +59,7 @@ public class SwiftListServiceTest extends AbstractSwiftTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new SwiftObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         final SwiftRegionService regionService = new SwiftRegionService(session);
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<StorageObject>(new SwiftWriteFeature(session, regionService)

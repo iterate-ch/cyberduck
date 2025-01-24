@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -67,7 +66,7 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         final Path target = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)
         ), new SFTPWriteFeature(session), cryptomator), new SFTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
@@ -87,7 +86,7 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         final Path target = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)
         ), new SFTPWriteFeature(session), cryptomator), new SFTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
@@ -110,7 +109,7 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         final Path target = new Path(targetFolder, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)
         ), new SFTPWriteFeature(session), cryptomator), new SFTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
@@ -129,7 +128,7 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
         final Path template = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -154,7 +153,7 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
         final Move move = cryptomator.getFeature(session, Move.class, new SFTPMoveFeature(session));
@@ -174,7 +173,7 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         final Path file = new Path(folder, "file-1", EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
         new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)

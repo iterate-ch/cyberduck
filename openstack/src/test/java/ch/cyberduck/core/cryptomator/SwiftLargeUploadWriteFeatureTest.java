@@ -20,7 +20,6 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -68,7 +67,7 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new SwiftLargeUploadWriteFeature(session, regionService,
                 new SwiftSegmentService(session, ".segments-test/")), cryptomator);

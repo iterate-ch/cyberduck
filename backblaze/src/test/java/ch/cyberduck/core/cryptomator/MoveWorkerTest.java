@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -68,7 +67,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
+        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
@@ -94,7 +93,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         assertTrue(new DefaultFindFeature(session).find(clearFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
+        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         // move directory into vault
         final Path encryptedFolder = new Path(vault, clearFolder.getName(), EnumSet.of(Path.Type.directory));
@@ -120,7 +119,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
+        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
@@ -145,7 +144,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
+        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());

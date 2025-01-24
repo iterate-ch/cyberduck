@@ -17,9 +17,7 @@ package ch.cyberduck.core.vault;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -37,27 +35,23 @@ public class VaultRegistryFactory extends Factory<VaultRegistry> {
     }
 
     public static VaultRegistry get(final PasswordCallback callback) {
-        return get(PasswordStoreFactory.get(), callback);
-    }
-
-    public static VaultRegistry get(final HostPasswordStore keychain, final PasswordCallback callback) {
         return PreferencesFactory.get().getBoolean("cryptomator.enable") ?
-                new VaultRegistryFactory().create(keychain, callback) : VaultRegistry.DISABLED;
+                new VaultRegistryFactory().create(callback) : VaultRegistry.DISABLED;
     }
 
-    public VaultRegistry create(final HostPasswordStore keychain, final PasswordCallback callback) {
+    public VaultRegistry create(final PasswordCallback callback) {
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
             final Constructor<? extends VaultRegistry> constructor = ConstructorUtils
-                    .getMatchingAccessibleConstructor(clazz, keychain.getClass(), callback.getClass());
+                    .getMatchingAccessibleConstructor(clazz, callback.getClass());
             if(null == constructor) {
-                log.warn("No matching constructor for parameters {},{}", keychain.getClass(), callback.getClass());
+                log.warn("No matching constructor for parameter {}", callback.getClass());
                 // Call default constructor for disabled implementations
                 return clazz.getDeclaredConstructor().newInstance();
             }
-            return constructor.newInstance(keychain, callback);
+            return constructor.newInstance(callback);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException |
               NoSuchMethodException e) {

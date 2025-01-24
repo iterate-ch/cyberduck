@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
@@ -64,7 +63,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
@@ -85,7 +84,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String versionId = test.attributes().getVersionId();

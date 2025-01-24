@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
@@ -57,7 +56,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new SFTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)
         ), new SFTPWriteFeature(session), cryptomator), new SFTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());

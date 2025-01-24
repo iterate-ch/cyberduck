@@ -20,7 +20,6 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -79,7 +78,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
                 new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5L * 1024L * 1024L, 5),
@@ -115,7 +114,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
                 new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5L * 1024L * 1024L, 5),
@@ -148,7 +147,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus writeStatus = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         writeStatus.setLength(content.length);

@@ -20,7 +20,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.dropbox.DropboxDeleteFeature;
@@ -63,7 +62,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DropboxWriteFeature(session)
         ), new DropboxWriteFeature(session), cryptomator).touch(file, new TransferStatus());

@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -76,7 +75,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));

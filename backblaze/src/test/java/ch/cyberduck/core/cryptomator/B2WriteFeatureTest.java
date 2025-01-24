@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.b2.AbstractB2Test;
@@ -74,7 +73,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final CryptoWriteFeature<BaseB2Response> writer = new CryptoWriteFeature<>(session, new B2WriteFeature(session, fileid), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();

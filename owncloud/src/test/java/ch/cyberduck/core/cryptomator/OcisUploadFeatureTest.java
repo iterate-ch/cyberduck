@@ -21,7 +21,6 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -78,7 +77,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TusCapabilities capabilities = new TusCapabilities().withHashAlgorithm(HashAlgorithm.sha1);
         final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
                 new OcisUploadFeature(session,

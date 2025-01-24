@@ -20,7 +20,6 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -77,7 +76,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
                 new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid), 5000000L, 5),
@@ -113,7 +112,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus writeStatus = new TransferStatus();
         final int length = 5242885;
         final byte[] content = RandomUtils.nextBytes(length);

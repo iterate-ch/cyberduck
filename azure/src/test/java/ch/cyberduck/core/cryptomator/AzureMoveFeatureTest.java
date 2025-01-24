@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
@@ -60,7 +59,7 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path folder = cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(

@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.b2.AbstractB2Test;
@@ -63,7 +62,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -87,7 +86,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));

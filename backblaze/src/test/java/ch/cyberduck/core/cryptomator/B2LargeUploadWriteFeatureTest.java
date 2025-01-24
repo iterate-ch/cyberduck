@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
@@ -65,7 +64,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         final CryptoVault cryptomator = new CryptoVault(
             new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new B2LargeUploadWriteFeature(session, fileid), cryptomator);
         final TransferStatus writeStatus = new TransferStatus();

@@ -20,7 +20,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
@@ -61,7 +60,7 @@ public class DriveListServiceTest extends AbstractDriveTest {
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         assertTrue(new CryptoListService(session, new DriveDefaultListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         final Path testFile = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DriveWriteFeature(session, fileid)), new DriveWriteFeature(session, fileid), cryptomator).touch(

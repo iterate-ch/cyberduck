@@ -75,7 +75,7 @@ public class SessionPoolFactory {
         return create(connect, transcript, bookmark,
                 new KeychainX509TrustManager(CertificateTrustCallbackFactory.get(controller), new DefaultTrustManagerHostnameCallback(bookmark), certificates),
                 new KeychainX509KeyManager(CertificateIdentityCallbackFactory.get(controller), bookmark, certificates),
-                VaultRegistryFactory.get(keychain, login), usage);
+                VaultRegistryFactory.get(login), usage);
     }
 
     public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,

@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -56,7 +55,7 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         //        cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(test, null, new TransferStatus());
         cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(test, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(test));
@@ -73,7 +72,7 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(test, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(test));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));

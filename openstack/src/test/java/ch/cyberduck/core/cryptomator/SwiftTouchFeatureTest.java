@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
@@ -59,7 +58,7 @@ public class SwiftTouchFeatureTest extends AbstractSwiftTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(
@@ -77,7 +76,7 @@ public class SwiftTouchFeatureTest extends AbstractSwiftTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, regionService)), new SwiftWriteFeature(session, regionService), cryptomator).touch(

@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -30,7 +29,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPReadFeature;
@@ -152,7 +150,7 @@ public class SFTPCryptomatorInteroperabilityTest {
                 return new VaultCredentials(passphrase);
             }
         });
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), new DisabledConnectionCallback());
         final byte[] readContent = new byte[content.length];
@@ -186,7 +184,7 @@ public class SFTPCryptomatorInteroperabilityTest {
                 return new VaultCredentials(passphrase);
             }
         });
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), new DisabledConnectionCallback());
         final byte[] readContent = new byte[content.length];

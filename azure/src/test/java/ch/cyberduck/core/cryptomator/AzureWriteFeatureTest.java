@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.azure.AbstractAzureTest;
@@ -72,7 +71,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, new AzureWriteFeature(session, null), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));

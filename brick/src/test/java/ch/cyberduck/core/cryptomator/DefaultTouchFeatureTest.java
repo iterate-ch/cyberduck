@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.AbstractBrickTest;
 import ch.cyberduck.core.brick.BrickDeleteFeature;
@@ -57,7 +56,7 @@ public class DefaultTouchFeatureTest extends AbstractBrickTest {
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature(new BrickWriteFeature(session)), new BrickWriteFeature(session), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
@@ -73,7 +72,7 @@ public class DefaultTouchFeatureTest extends AbstractBrickTest {
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature(new BrickWriteFeature(session)), new BrickWriteFeature(session), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);

@@ -19,7 +19,6 @@ import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.dropbox.DropboxAttributesFinderFeature;
@@ -60,7 +59,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DropboxWriteFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
@@ -78,7 +77,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DropboxWriteFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
