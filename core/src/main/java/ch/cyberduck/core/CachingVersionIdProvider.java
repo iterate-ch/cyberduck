@@ -54,11 +54,13 @@ public abstract class CachingVersionIdProvider implements VersionIdProvider {
     public String cache(final Path file, final String id) {
         log.debug("Cache {} for file {}", id, file);
         if(null == id) {
+            log.warn("Invalidate cached id for {}", file);
             cache.remove(this.toPredicate(file));
             file.attributes().setVersionId(null);
             if(file.isDirectory()) {
                 for(SimplePathPredicate entry : cache.asMap().keySet()) {
                     if(entry.isChild(this.toPredicate(file))) {
+                        log.warn("Invalidate cached id for {}", entry);
                         cache.remove(entry);
                     }
                 }
