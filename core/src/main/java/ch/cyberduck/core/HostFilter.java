@@ -18,6 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.HostPreferences;
+
+import org.apache.commons.lang3.StringUtils;
+
 public interface HostFilter {
     boolean accept(Host host);
 
@@ -25,6 +29,17 @@ public interface HostFilter {
         @Override
         public boolean accept(final Host host) {
             return true;
+        }
+    };
+
+    HostFilter BYPROTOCOL = new HostFilter() {
+        @Override
+        public boolean accept(final Host host) {
+            final String filter = new HostPreferences(host).getProperty("bookmark.filter.protocol.type");
+            if(StringUtils.isBlank(filter)) {
+                return true;
+            }
+            return Protocol.Type.valueOf(filter).equals(host.getProtocol().getType());
         }
     };
 }
