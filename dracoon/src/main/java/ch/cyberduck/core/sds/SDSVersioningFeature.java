@@ -62,7 +62,7 @@ public class SDSVersioningFeature implements Versioning {
                             .resolutionStrategy(RestoreDeletedNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                             .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                             .addDeletedNodeIdsItem(Long.parseLong(nodeid.getVersionId(file)))
-                            .parentId(Long.parseLong(nodeid.getVersionId(file.getParent()))), StringUtils.EMPTY);
+                            .parentId(Long.parseLong(nodeid.getVersionId(file.getParent()))), StringUtils.EMPTY);//todo
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Failure to write attributes of {0}", e, file);
@@ -81,10 +81,11 @@ public class SDSVersioningFeature implements Versioning {
             DeletedNodeVersionsList nodes;
             final AttributedList<Path> versions = new AttributedList<>();
             do {
-                nodes = new NodesApi(session.getClient()).requestDeletedNodeVersions(
+                final int range = offset;
+                nodes = nodeid.retry(file.getParent(), () -> new NodesApi(session.getClient()).requestDeletedNodeVersions(
                         Long.parseLong(nodeid.getVersionId(file.getParent())),
                         file.isFile() ? "file" : "folder", file.getName(), StringUtils.EMPTY, "updatedAt:desc",
-                        offset, chunksize, null);
+                        range, chunksize, null));
                 for(DeletedNode item : nodes.getItems()) {
                     versions.add(new Path(file.getParent(), file.getName(), file.getType(),
                             new SDSAttributesAdapter(session).toAttributes(item)));

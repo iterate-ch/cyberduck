@@ -97,12 +97,12 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
     @Override
     public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
+            final CreateFileUploadRequest createFileUploadRequest = nodeid.retry(file.getParent(), () -> new CreateFileUploadRequest()
                     .directS3Upload(true)
                     .timestampModification(status.getModified() != null ? new DateTime(status.getModified()) : null)
                     .timestampCreation(status.getCreated() != null ? new DateTime(status.getCreated()) : null)
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
-                    .name(file.getName());
+                    .name(file.getName()));
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                     .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
             log.debug("upload started for {} with response {}", file, createFileUploadResponse);

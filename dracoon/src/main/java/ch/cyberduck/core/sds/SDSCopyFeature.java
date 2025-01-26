@@ -59,14 +59,14 @@ public class SDSCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            new NodesApi(session.getClient()).copyNodes(
+            nodeid.retry(target.getParent(), () -> new NodesApi(session.getClient()).copyNodes(
                     new CopyNodesRequest()
                             .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                             .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getVersionId(source))))
                             .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
                     // Target Parent Node ID
                     Long.parseLong(nodeid.getVersionId(target.getParent())),
-                    StringUtils.EMPTY, null);
+                    StringUtils.EMPTY, null));
             listener.sent(status.getLength());
             nodeid.cache(target, null);
             final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(target);
