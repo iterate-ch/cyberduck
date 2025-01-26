@@ -459,12 +459,12 @@ public class Profile implements Protocol {
         if(regions.isEmpty()) {
             return parent.getRegions();
         }
-        return parent.getRegions(regions);
+        return parent.toLocations(regions);
     }
 
     @Override
-    public Set<Location.Name> getRegions(final List<String> regions) {
-        return parent.getRegions(regions);
+    public Set<Location.Name> toLocations(final List<String> regions) {
+        return parent.toLocations(regions);
     }
 
     @Override

@@ -210,7 +210,7 @@ public interface Protocol extends FeatureFactory, Comparable<Protocol>, Serializ
      * @param regions Available regions represented as strings from profile
      * @return Localized region set
      */
-    Set<Location.Name> getRegions(List<String> regions);
+    Set<Location.Name> toLocations(List<String> regions);
 
     /**
      * @return Default region

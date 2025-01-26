@@ -359,7 +359,7 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public Set<Location.Name> getRegions(final List<String> regions) {
+    public Set<Location.Name> toLocations(final List<String> regions) {
         return regions.stream().map(Location.Name::new).collect(Collectors.toSet());
     }
 

@@ -86,7 +86,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
-    public Set<Location.Name> getRegions(final List<String> regions) {
+    public Set<Location.Name> toLocations(final List<String> regions) {
         return regions.stream().map(GoogleStorageLocationFeature.GoogleStorageRegion::new).collect(Collectors.toSet());
     }
 
