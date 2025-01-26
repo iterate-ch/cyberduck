@@ -73,8 +73,12 @@ public abstract class ListFilteringFeature {
                 // Search with specific version and region
                 return super.test(f);
             }
-            if(f.attributes().isDuplicate() || f.attributes().isHidden()) {
+            if(f.attributes().isDuplicate()) {
                 // Filter previous versions and delete markers when searching for no specific version
+                return false;
+            }
+            if(f.attributes().isTrashed()) {
+                // Filter trashed files
                 return false;
             }
             switch(sensitivity) {

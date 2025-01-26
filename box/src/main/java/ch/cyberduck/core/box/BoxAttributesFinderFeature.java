@@ -89,7 +89,7 @@ public class BoxAttributesFinderFeature implements AttributesFinder, AttributesA
             attrs.setCreationDate(f.getContentCreatedAt().getMillis());
         }
         if(f.getTrashedAt() != null) {
-            attrs.setHidden(true);
+            attrs.setTrashed(true);
         }
         attrs.setSize(f.getSize());
         attrs.setFileId(f.getId());

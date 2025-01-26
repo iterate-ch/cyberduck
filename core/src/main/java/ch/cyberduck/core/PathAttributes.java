@@ -110,10 +110,16 @@ public class PathAttributes extends Attributes implements Serializable {
      * Should be hidden in the browser by default
      */
     private Boolean duplicate;
+
     /**
      * Hidden flag set on server
      */
     private Boolean hidden;
+
+    /**
+     * Trashed
+     */
+    private Boolean trashed;
 
     /**
      * Revision number
@@ -186,6 +192,7 @@ public class PathAttributes extends Attributes implements Serializable {
         lockId = copy.lockId;
         duplicate = copy.duplicate;
         hidden = copy.hidden;
+        trashed = copy.trashed;
         revision = copy.revision;
         region = copy.region;
         displayname = copy.displayname;
@@ -264,6 +271,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(hidden != null) {
             dict.setStringForKey(String.valueOf(hidden), "Hidden");
+        }
+        if(trashed != null) {
+            dict.setStringForKey(String.valueOf(trashed), "Trashed");
         }
         if(StringUtils.isNotBlank(region)) {
             dict.setStringForKey(region, "Region");
@@ -597,6 +607,19 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
+    public Boolean isTrashed() {
+        return trashed != null && trashed;
+    }
+
+    public void setTrashed(final boolean trashed) {
+        this.trashed = trashed;
+    }
+
+    public PathAttributes withTrashed(final boolean trashed) {
+        this.setTrashed(trashed);
+        return this;
+    }
+
     public Map<String, String> getMetadata() {
         return metadata;
     }
@@ -729,6 +752,7 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", lockId='").append(lockId).append('\'');
         sb.append(", duplicate=").append(duplicate);
         sb.append(", hidden=").append(hidden);
+        sb.append(", trashed=").append(trashed);
         sb.append(", revision=").append(revision);
         sb.append(", region='").append(region).append('\'');
         sb.append(", metadata=").append(metadata).append('\'');

@@ -29,6 +29,8 @@ public class PathAttributesTest {
         attributes.setLockId(new AlphanumericRandomStringService().random());
         attributes.setPermission(new Permission(644));
         attributes.setVerdict(PathAttributes.Verdict.pending);
+        attributes.setTrashed(true);
+        attributes.setHidden(true);
         final PathAttributes clone = new PathAttributes(attributes);
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
@@ -41,6 +43,8 @@ public class PathAttributesTest {
         assertNotSame(attributes.getPermission(), clone.getPermission());
         attributes.setLink(new DescriptiveUrl("http://g"));
         assertEquals(DescriptiveUrl.EMPTY, clone.getLink());
+        assertTrue(clone.isTrashed());
+        assertTrue(clone.isHidden());
     }
 
     @Test
@@ -81,6 +85,8 @@ public class PathAttributesTest {
         attributes.setRegion("region");
         attributes.setStorageClass("storageClass");
         attributes.setVerdict(PathAttributes.Verdict.pending);
+        attributes.setTrashed(false);
+        attributes.setHidden(true);
         final Map<String, String> custom = new HashMap<>(attributes.getCustom());
         custom.put("key", "value");
         attributes.setCustom(custom);
@@ -98,5 +104,7 @@ public class PathAttributesTest {
         assertEquals(attributes.getVerdict(), deserialized.getVerdict());
         assertEquals(attributes.getCustom(), deserialized.getCustom());
         assertEquals(attributes, deserialized);
+        assertFalse(deserialized.isTrashed());
+        assertTrue(deserialized.isHidden());
     }
 }

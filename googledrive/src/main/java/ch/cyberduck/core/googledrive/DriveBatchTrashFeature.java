@@ -67,7 +67,7 @@ public class DriveBatchTrashFeature implements Trash {
                                 .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
                     }
                     else {
-                        if(f.attributes().isHidden()) {
+                        if(f.attributes().isTrashed()) {
                             log.warn("Delete file {} already in trash", f);
                             new DriveBatchDeleteFeature(session, fileid).queue(f, batch, callback, failures);
                             continue;

@@ -104,7 +104,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
         if(null != f.getTrashed()) {
             if(f.getTrashed()) {
                 // Mark as hidden
-                attributes.setHidden(true);
+                attributes.setTrashed(true);
             }
         }
         if(null != f.getSize()) {

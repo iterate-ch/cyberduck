@@ -23,7 +23,7 @@ import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class PathAttributesDictionaryTest {
 
@@ -32,6 +32,8 @@ public class PathAttributesDictionaryTest {
         PathAttributes attributes = new PathAttributes();
         attributes.setOwner("u");
         attributes.setGroup("g");
+        attributes.setTrashed(true);
+        attributes.setHidden(true);
         attributes.setModificationDate(System.currentTimeMillis());
         attributes.setPermission(new Permission(Permission.Action.none, Permission.Action.write, Permission.Action.execute));
         PathAttributes clone = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
@@ -39,6 +41,9 @@ public class PathAttributesDictionaryTest {
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
         assertEquals("u", clone.getOwner());
         assertEquals("g", clone.getGroup());
+        assertTrue(clone.isHidden());
+        assertTrue(clone.isTrashed());
+        assertFalse(clone.isDuplicate());
     }
 
     @Test
