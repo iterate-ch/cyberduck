@@ -457,6 +457,10 @@ public class Profile implements Protocol {
     public Set<Location.Name> getRegions() {
         final List<String> regions = this.list(REGIONS_KEY);
         if(regions.isEmpty()) {
+            final String region = this.getRegion();
+            if(StringUtils.isNotBlank(region)) {
+                return parent.toLocations(Collections.singletonList(region));
+            }
             return parent.getRegions();
         }
         return parent.toLocations(regions);
