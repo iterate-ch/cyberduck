@@ -70,9 +70,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <classifier>net472</classifier>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/net472/Cyberduck.Cli.dll</file>
+                                            <file>${project.build.directory}/net8.0/Cyberduck.Cli.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -91,28 +90,28 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
-                    <classifier>net472</classifier>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Native</artifactId>
-                    <classifier>net472</classifier>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Protocols</artifactId>
-                    <classifier>net472</classifier>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cryptomator</artifactId>
-                    <classifier>net472</classifier>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>

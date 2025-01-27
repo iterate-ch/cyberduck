@@ -83,14 +83,14 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
-                    <classifier>net472</classifier>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Native</artifactId>
-                    <classifier>net472</classifier>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -98,21 +98,20 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Protocols</artifactId>
-                    <classifier>net472</classifier>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cryptomator</artifactId>
-                    <classifier>net472</classifier>
+                    <classifier>net8.0</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cli</artifactId>
-                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
