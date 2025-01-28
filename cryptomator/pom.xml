@@ -26,6 +26,7 @@
 
     <properties>
         <cryptolib.version>2.3.0-uvfdraft-SNAPSHOT</cryptolib.version>
+        <nimbus-jose.version>10.0.1</nimbus-jose.version>
     </properties>
 
     <profiles>
@@ -72,6 +73,11 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${nimbus-jose.version}</version>
         </dependency>
     </dependencies>
 </project>
