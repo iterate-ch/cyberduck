@@ -38,17 +38,6 @@
       <Name>WixUtilExtension</Name>
     </WixExtension>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Bundle\duck.bundle.wixproj">
-      <Name>CLI-WiX</Name>
-      <Project>{f6975079-f730-4a31-9909-de536e524764}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-  </ItemGroup>
-
   <Target Name="UsesFrameworkSdk">
     <GetFrameworkSdkPath>
       <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
@@ -68,17 +57,12 @@
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(Win10SDKVerBinPath)x86\signtool.exe')">$(Win10SDKVerBinPath)x86\signtool.exe</SignToolPath>
     </PropertyGroup>
   </Target>
-
   <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool">
-    <Exec
-        Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundleEngine)&quot;"/>
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundleEngine)&quot;" />
   </Target>
-
   <Target Name="SignBundle" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool">
-    <Exec
-        Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundle)&quot;"/>
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundle)&quot;" />
   </Target>
-
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.
