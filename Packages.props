@@ -39,6 +39,7 @@
     <PackageReference Update="System.Memory" Version="4.5.5" />
     <PackageReference Update="System.Runtime.Caching" Version="8.0.0" />
     <PackageReference Update="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <PackageReference Update="WixToolset.Heat" Version="5.0.2" />
 
     <GlobalPackageReference Include="MSBuildTasks" Version="1.5.0.235" GeneratePathProperty="true" />
   </ItemGroup>
