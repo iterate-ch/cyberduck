@@ -1,0 +1,12 @@
+{
+    "keys": [
+        {
+            "kty": "EC",
+            "crv": "P-384",
+            "kid": "org.cryptomator.hub.recoverykey.X_ptFVTOjzl2GjukwRbUPS2Mo4iZZkiuibY2pFPRNLk",
+            "x": "8470R3GRpCsu8Ut30qJv5VGBAL9dhFY8Z3-tTiOWNTXGRa5IITqjPXbQcJkazoks",
+            "y": "NVlWpgpohVXVQ2rHUdETMUhdYayvV0EupUU5OiefpzIgnM1c-EjDPAuhLBaTTBYi",
+            "alg": "ECDH-ES+A256KW"
+        }
+    ]
+}
