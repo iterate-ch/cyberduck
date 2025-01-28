@@ -33,6 +33,8 @@ import com.nimbusds.jose.crypto.MultiDecrypter;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import net.iharder.Base64;
 
+import static ch.cyberduck.core.cryptomator.UVFVault.computeRootDirId;
+import static ch.cyberduck.core.cryptomator.UVFVault.computeRootDirIdHash;
 import static org.junit.Assert.assertEquals;
 
 public class UVFVaultTest {
@@ -74,5 +76,15 @@ public class UVFVaultTest {
             put("username", "minioadmin");
             put("password", "minioadmin");
         }}, payload.get("cloud.katta.storage"));
+    }
+
+    @Test
+    public void testComputeRootDirIdHash() {
+        final String kdfSalt = "xCW36cK17Fp0UWGMMNBjCB8Hg7Zcn__dfAB3dL_QfWM";
+        final String initialSeed = "E_v5PPBw5rb_3yzMILWn_LqnoSq1oOpXaOGLiWsgVIs";
+        byte[] rootDirId = computeRootDirId(kdfSalt, initialSeed);
+        String rootDirIdHash = computeRootDirIdHash(kdfSalt, initialSeed, rootDirId);
+        // empty directory structure: d/QN/NRGNYIEE3XXH5CZFDDCYD7ZUIKI4QB
+        assertEquals("QNNRGNYIEE3XXH5CZFDDCYD7ZUIKI4QB", rootDirIdHash);
     }
 }

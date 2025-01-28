@@ -28,14 +28,23 @@ import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.macs.HMac;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.util.encoders.Base32;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
+
+import at.favre.lib.hkdf.HKDF;
+import com.nimbusds.jose.util.Base64URL;
 
 public class UVFVault extends AbstractVault {
 
@@ -182,5 +191,21 @@ public class UVFVault extends AbstractVault {
         sb.append(", cryptor=").append(cryptor);
         sb.append('}');
         return sb.toString();
+    }
+
+    public static byte[] computeRootDirId(final String kdfSalt, final String initialSeed) {
+        return HKDF.fromHmacSha512().extractAndExpand(Base64URL.from(kdfSalt).decode(), Base64URL.from(initialSeed).decode(), "rootDirId".getBytes(), 256 / 8);
+    }
+
+    public static String computeRootDirIdHash(final String kdfSalt, final String initialSeed, final byte[] rootDirId) {
+        final byte[] hmacKey = HKDF.fromHmacSha512()
+                .extractAndExpand(Base64URL.from(kdfSalt).decode(), Base64URL.from(initialSeed).decode(), "hmac".getBytes(), 512 / 8);
+        final Digest digest = new SHA256Digest();
+        final HMac hMac = new HMac(digest);
+        hMac.init(new KeyParameter(hmacKey));
+        hMac.update(rootDirId, 0, rootDirId.length);
+        byte[] hmacOut = new byte[hMac.getMacSize()];
+        hMac.doFinal(hmacOut, 0);
+        return Base32.toBase32String(Arrays.copyOfRange(hmacOut, 0, 20));
     }
 }
