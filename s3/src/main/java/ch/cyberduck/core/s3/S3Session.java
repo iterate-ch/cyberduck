@@ -19,16 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
@@ -52,15 +43,16 @@ import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.ssl.*;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
 import ch.cyberduck.core.sts.STSExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
-
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityRequest;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -87,13 +79,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
-import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
-import com.amazonaws.services.securitytoken.model.GetCallerIdentityRequest;
-import com.amazonaws.services.securitytoken.model.GetCallerIdentityResult;
 
 import static com.amazonaws.services.s3.Headers.*;
 
@@ -265,7 +250,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected S3CredentialsStrategy configureCredentialsStrategy(final ProxyFinder proxy, final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt) throws LoginCanceledException {
         if(host.getProtocol().isOAuthConfigurable()) {
-            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host, prompt)
+            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
                 oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));

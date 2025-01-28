@@ -15,37 +15,14 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ConnectionTimeoutFactory;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.JSON;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.UserRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Me;
 import ch.cyberduck.core.deepcloud.DeepcloudApiClient;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.FileIdProvider;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Restore;
-import ch.cyberduck.core.features.Share;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Trash;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.ChainedServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
@@ -60,7 +37,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -96,7 +72,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     @Override
     protected DeepboxApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host, prompt) {
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request instanceof HttpRequestWrapper) {

@@ -15,25 +15,12 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.DefaultHttpRateLimiter;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
-import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -41,18 +28,16 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.About;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-
-import com.google.api.client.http.apache.v2.ApacheHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.About;
 
 public class DriveSession extends HttpSession<Drive> {
     private static final Logger log = LogManager.getLogger(DriveSession.class);
@@ -69,7 +54,7 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     protected Drive connect(final ProxyFinder proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException, ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host, prompt)
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
