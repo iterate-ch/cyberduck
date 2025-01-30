@@ -1,5 +1,10 @@
 # Changelog
 
+[9.1.3](https://github.com/iterate-ch/cyberduck/compare/release-9-1-2...release-9-1-3)
+
+* [Bugfix] Invalid progress in Finder transferring multiple files (
+  macOS) ([#16738](https://trac.cyberduck.io/ticket/16738))
+
 [9.1.2](https://github.com/iterate-ch/cyberduck/compare/release-9-1-1...release-9-1-2)
 * [Bugfix] No fallback to IPv4 address when IPv6 connect attempt fails with unreachable network ([#16723](https://trac.cyberduck.io/ticket/16723))
 * [Bugfix] File → Rename option always disabled ([#16695](https://trac.cyberduck.io/ticket/16695))
