@@ -6,6 +6,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -37,6 +38,7 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         final Path container = new Path("untitled folder", EnumSet.of(Path.Type.directory));
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
         assertFalse(feature.isSupported(container.getParent(), container.getName()));
+        assertThrows(InvalidFilenameException.class, () -> feature.preflight(container.getParent(), container.getName()));
         feature.mkdir(container, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(container));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
