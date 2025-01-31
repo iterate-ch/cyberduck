@@ -3483,7 +3483,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                                 if(elements.count().intValue() == 1) {
                                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                            "\"" + elements.objectAtIndex(new NSUInteger(0)) + "\"").trim());
+                                            String.format("\"%s\"", elements.objectAtIndex(new NSUInteger(0)))).trim());
                                 }
                                 else {
                                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
@@ -3498,7 +3498,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 else {
                     if(pasteboard.size() == 1) {
                         item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                "\"" + pasteboard.get(0).getName() + "\"").trim());
+                                String.format("\"%s\"", pasteboard.get(0).getName())).trim());
                     }
                     else {
                         item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
@@ -3508,13 +3508,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         }
         else if(action.equals(Foundation.selector("cut:")) || action.equals(Foundation.selector("copy:"))) {
-            String title = null;
-            if(action.equals(Foundation.selector("cut:"))) {
-                title = "Cut {0}";
-            }
-            else if(action.equals(Foundation.selector("copy:"))) {
-                title = "Copy {0}";
-            }
+            final String title = action.equals(Foundation.selector("cut:")) ? "Cut {0}" : "Copy {0}";
             if(this.isMounted()) {
                 int count = this.getSelectionCount();
                 if(0 == count) {

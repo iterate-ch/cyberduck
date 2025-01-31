@@ -842,7 +842,7 @@ public final class TransferController extends WindowController implements Transf
                     }
                     else {
                         item.setTitle(MessageFormat.format(LocaleFactory.localizedString("Paste {0}"),
-                            MessageFormat.format(LocaleFactory.localizedString("{0} Items"), String.valueOf(pasteboard.size())) + ")"));
+                                MessageFormat.format(LocaleFactory.localizedString("{0} Items"), String.valueOf(pasteboard.size()))));
                     }
                 }
             }
