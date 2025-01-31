@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             public CreateFileAction(BrowserController controller, Path directory, string filename, bool edit)
                 : base(
-                    controller, controller.Session,
+                    controller, controller.Pool,
                     new InnerCreateFileWorker(controller,
                         new Path(directory, filename, EnumSet.of(AbstractPath.Type.file)), filename, edit))
             {
