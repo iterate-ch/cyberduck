@@ -29,6 +29,8 @@ import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSError;
 
+import java.text.MessageFormat;
+
 public class WorkspaceSymlinkFeature implements Symlink {
     private static final Logger log = LogManager.getLogger(WorkspaceSymlinkFeature.class);
 
@@ -40,8 +42,7 @@ public class WorkspaceSymlinkFeature implements Symlink {
         if(!success) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {
-                throw new LocalAccessDeniedException(String.format("%s %s",
-                        LocaleFactory.localizedString("Cannot create file", "Error"), file.getAbsolute()));
+                throw new LocalAccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName()));
             }
             throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
