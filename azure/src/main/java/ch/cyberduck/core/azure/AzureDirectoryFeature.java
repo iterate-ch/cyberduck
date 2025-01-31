@@ -30,6 +30,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -84,10 +86,28 @@ public class AzureDirectoryFeature implements Directory<Void> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            if(!AzureTouchFeature.validate(filename)) {
+            if(!validate(filename)) {
                 throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
             }
         }
+    }
+
+    public static boolean validate(final String filename) {
+        // Empty argument if not known in validation
+        if(StringUtils.isNotBlank(filename)) {
+            // Container names must be lowercase, between 3-63 characters long and must start with a letter or
+            // number. Container names may contain only letters, numbers, and the dash (-) character.
+            if(StringUtils.length(filename) > 63) {
+                return false;
+            }
+            if(StringUtils.length(filename) < 3) {
+                return false;
+            }
+            if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename, "-"))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
