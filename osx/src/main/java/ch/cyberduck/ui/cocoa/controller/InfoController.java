@@ -72,6 +72,7 @@ import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferQueueFactory;
 import ch.cyberduck.core.worker.*;
 import ch.cyberduck.ui.cocoa.callback.PromptRecursiveCallback;
 import ch.cyberduck.ui.quicklook.QuickLook;
@@ -1247,7 +1248,7 @@ public class InfoController extends ToolbarWindowController {
             items.add(new TransferItem(f, temporary.create(session.getHost().getUuid(), f)));
         }
         if(toggleVersionsSettings(false)) {
-            this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, items) {
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, TransferQueueFactory.get(), items) {
                 @Override
                 public void cleanup() {
                     super.cleanup();

@@ -100,6 +100,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View = view;
 
             Session = SessionPool.DISCONNECTED;
+            Queue = new TransferQueue(1);
             ShowHiddenFiles = PreferencesFactory.get().getBoolean("browser.showHidden");
 
             _limitListener = new DialogLimitedListProgressListener(this);
@@ -456,6 +457,8 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         public SessionPool Session { get; private set; }
+
+        public TransferQueue Queue { get; private set; }
 
         public void collectionLoaded()
         {
@@ -2580,7 +2583,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferCallback callback = new ReloadTransferCallback(this, selected);
             if (browser)
             {
-                Background(new BrowserTransferBackgroundAction(this, Session, transfer, callback));
+                Background(new BrowserTransferBackgroundAction(this, Session, Queue, transfer, callback));
             }
             else
             {

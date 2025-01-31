@@ -85,6 +85,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferQueue;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -225,6 +226,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private final Cache<Path> cache
             = new ReverseLookupCache<>(new PathCache(preferences.getInteger("browser.cache.size")), preferences.getInteger("browser.cache.size"));
+
+    private final TransferQueue queue = new TransferQueue(1);
 
     private Scheduler scheduler;
 
@@ -595,7 +598,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             downloads.add(new TransferItem(file, temporary.create(String.format("quicklook-%s", pool.getHost().getUuid()), file)));
         }
         if(downloads.size() > 0) {
-            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, downloads));
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, queue, downloads));
         }
     }
 
@@ -2894,7 +2897,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         };
         if(browser) {
-            this.background(new BrowserTransferBackgroundAction(this, pool, transfer, callback));
+            this.background(new BrowserTransferBackgroundAction(this, pool, queue, transfer, callback));
         }
         else {
             TransferControllerFactory.get().start(transfer, new TransferOptions(), callback);

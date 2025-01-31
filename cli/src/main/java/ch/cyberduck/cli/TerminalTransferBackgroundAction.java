@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferQueueFactory;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 
 public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
@@ -53,7 +54,7 @@ public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
                                             final TransferErrorCallback error,
                                             final TransferSpeedometer meter,
                                             final StreamListener listener) {
-        super(login, controller, source, destination,
+        super(login, controller, source, destination, TransferQueueFactory.get(),
             new TerminalTransferListener(), controller, transfer, options,
             prompt, error, meter, listener);
     }

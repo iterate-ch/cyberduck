@@ -35,6 +35,7 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferQueue;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
@@ -49,8 +50,9 @@ public class QuicklookTransferBackgroundAction extends BrowserTransferBackground
     private final QuickLook quicklook;
     private final List<TransferItem> downloads;
 
-    public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final List<TransferItem> items) {
-        super(controller, session, toDownload(session, items), new TransferCallback() {
+    public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session,
+                                             final TransferQueue queue, final List<TransferItem> items) {
+        super(controller, session, queue, toDownload(session, items), new TransferCallback() {
             @Override
             public void complete(final Transfer transfer) {
                 //
