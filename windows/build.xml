@@ -26,8 +26,6 @@
 
     <property name="app.name" value="Cyberduck"/>
 
-    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
-
     <property name="chocolatey.source" value="${setup}/chocolatey/cyberduck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
 
@@ -37,8 +35,6 @@
     <condition property="msbuild.configuration" value="Release">
         <equals arg1="${configuration}" arg2="release" />
     </condition>
-
-    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
     <target name="init-msbuild">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
@@ -172,6 +168,8 @@
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
-        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
+        <exec executable="choco" dir="${chocolatey.target}" failonerror="true">
+            <arg value="pack"/>
+        </exec>
     </target>
 </project>
