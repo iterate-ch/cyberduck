@@ -26,13 +26,17 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
 public class SwiftExceptionMappingService extends AbstractExceptionMappingService<GenericException> {
+    private static final Logger log = LogManager.getLogger(SwiftExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final GenericException e) {
+        log.warn("Map failure {}", e.toString());
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         final StatusLine status = e.getHttpStatusLine();

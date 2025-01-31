@@ -23,6 +23,8 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -33,6 +35,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpResponseException;
 
 public class DriveExceptionMappingService extends DefaultIOExceptionMappingService {
+    private static final Logger log = LogManager.getLogger(DriveExceptionMappingService.class);
 
     private final DriveFileIdProvider fileid;
 
@@ -54,6 +57,7 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
 
     @Override
     public BackgroundException map(final IOException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         if(failure instanceof GoogleJsonResponseException) {
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;

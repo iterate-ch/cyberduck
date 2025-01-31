@@ -34,6 +34,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.xml.sax.SAXException;
@@ -41,6 +43,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 public class S3ExceptionMappingService extends AbstractExceptionMappingService<ServiceException> {
+    private static final Logger log = LogManager.getLogger(S3ExceptionMappingService.class);
 
     private static final String MINIO_ERROR_CODE = "x-minio-error-code";
     private static final String MINIO_ERROR_DESCRIPTION = "x-minio-error-desc";
@@ -67,6 +70,7 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
 
     @Override
     public BackgroundException map(final ServiceException e) {
+        log.warn("Map failure {}", e.toString());
         if(e.getCause() instanceof ServiceException) {
             return this.map((ServiceException) e.getCause());
         }

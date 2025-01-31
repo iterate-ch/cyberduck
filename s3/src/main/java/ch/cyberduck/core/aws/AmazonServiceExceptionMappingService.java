@@ -24,14 +24,18 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 
 public class AmazonServiceExceptionMappingService extends AbstractExceptionMappingService<AmazonClientException> {
+    private static final Logger log = LogManager.getLogger(AmazonServiceExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final AmazonClientException e) {
+        log.warn("Map failure {}", e.toString());
         final StringBuilder buffer = new StringBuilder();
         if(e instanceof AmazonServiceException) {
             final AmazonServiceException failure = (AmazonServiceException) e;

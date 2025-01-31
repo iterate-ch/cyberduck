@@ -23,11 +23,14 @@ import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 
 public class DefaultIOExceptionMappingService extends AbstractExceptionMappingService<IOException> {
+    private static final Logger log = LogManager.getLogger(DefaultIOExceptionMappingService.class);
 
     public BackgroundException map(final IOException failure, final Path directory) {
         return super.map("Connection failed", failure, directory);
@@ -35,6 +38,7 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
 
     @Override
     public BackgroundException map(final IOException failure) {
+        log.warn("Map failure {}", failure.toString());
         final Throwable[] stack = ExceptionUtils.getThrowables(failure);
         for(Throwable t : stack) {
             if(t instanceof BackgroundException) {

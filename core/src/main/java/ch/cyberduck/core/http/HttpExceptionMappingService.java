@@ -20,13 +20,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 
 import org.apache.http.ConnectionClosedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class HttpExceptionMappingService extends DefaultIOExceptionMappingService {
+    private static final Logger log = LogManager.getLogger(HttpExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final IOException failure) {
+        log.warn("Map failure {}", failure.toString());
         if(failure instanceof ConnectionClosedException) {
             final StringBuilder buffer = new StringBuilder();
             this.append(buffer, failure.getMessage());

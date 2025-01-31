@@ -18,12 +18,17 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.net.SocketException;
 
 public class DefaultSocketExceptionMappingService extends AbstractExceptionMappingService<SocketException> {
+    private static final Logger log = LogManager.getLogger(DefaultSocketExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final SocketException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
         return new ConnectionRefusedException(buffer.toString(), failure);

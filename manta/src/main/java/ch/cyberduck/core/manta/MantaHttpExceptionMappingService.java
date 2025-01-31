@@ -21,13 +21,17 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 
 public class MantaHttpExceptionMappingService extends AbstractExceptionMappingService<MantaClientHttpResponseException> {
+    private static final Logger log = LogManager.getLogger(MantaHttpExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final MantaClientHttpResponseException failure) {
+        log.warn("Map failure {}", failure.toString());
         switch(failure.getStatusCode()) {
             case 403:
                 final StringBuilder buffer = new StringBuilder();

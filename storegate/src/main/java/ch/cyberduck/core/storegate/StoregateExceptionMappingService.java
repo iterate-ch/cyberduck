@@ -28,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -40,6 +42,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 public class StoregateExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
+    private static final Logger log = LogManager.getLogger(StoregateExceptionMappingService.class);
 
     private final StoregateIdProvider fileid;
 
@@ -58,6 +61,7 @@ public class StoregateExceptionMappingService extends AbstractExceptionMappingSe
 
     @Override
     public BackgroundException map(final ApiException failure) {
+        log.warn("Map failure {}", failure.toString());
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SocketException) {
                 // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe

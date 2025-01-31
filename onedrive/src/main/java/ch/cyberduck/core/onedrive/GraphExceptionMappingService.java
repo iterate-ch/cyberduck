@@ -31,12 +31,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.IOException;
 import java.time.Duration;
 
 public class GraphExceptionMappingService extends AbstractExceptionMappingService<OneDriveAPIException> {
+    private static final Logger log = LogManager.getLogger(GraphExceptionMappingService.class);
 
     private final GraphFileIdProvider fileid;
 
@@ -57,6 +60,7 @@ public class GraphExceptionMappingService extends AbstractExceptionMappingServic
 
     @Override
     public BackgroundException map(final OneDriveAPIException failure) {
+        log.warn("Map failure {}", failure.toString());
         if(failure.getResponseCode() > 0) {
             final StringAppender buffer = new StringAppender();
             buffer.append(failure.getMessage());

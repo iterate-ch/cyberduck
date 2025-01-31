@@ -29,7 +29,6 @@ import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
-import ch.cyberduck.core.features.Quota;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -52,6 +51,7 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
 
     @Override
     public BackgroundException map(final IOException e) {
+        log.warn("Map failure {}", e.toString());
         if(ExceptionUtils.getRootCause(e) != e && ExceptionUtils.getRootCause(e) instanceof SSHException) {
             return this.map((SSHException) ExceptionUtils.getRootCause(e));
         }
