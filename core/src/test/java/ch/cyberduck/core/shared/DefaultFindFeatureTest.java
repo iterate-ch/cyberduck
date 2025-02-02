@@ -7,6 +7,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
@@ -32,6 +33,17 @@ public class DefaultFindFeatureTest {
         assertEquals(1, count.get());
         assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(2, count.get());
+    }
+
+    @Test
+    public void testFindParentNotFound() throws Exception {
+        final DefaultFindFeature feature = new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
+            @Override
+            public AttributedList<Path> list(Path file, ListProgressListener listener) throws NotfoundException {
+                throw new NotfoundException(file.getParent().toString());
+            }
+        });
+        assertThrows(NotfoundException.class, () -> feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
