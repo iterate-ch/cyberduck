@@ -23,13 +23,17 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.sardine.impl.SardineException;
 
 public class DAVExceptionMappingService extends HttpResponseExceptionMappingService<SardineException> {
+    private static final Logger log = LogManager.getLogger(DAVExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final SardineException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         switch(failure.getStatusCode()) {
             case HttpStatus.SC_OK:

@@ -23,6 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.irods.jargon.core.exception.AuthenticationException;
 import org.irods.jargon.core.exception.CatNoAccessException;
 import org.irods.jargon.core.exception.DataNotFoundException;
@@ -32,9 +34,11 @@ import org.irods.jargon.core.exception.InvalidUserException;
 import org.irods.jargon.core.exception.JargonException;
 
 public class IRODSExceptionMappingService extends AbstractExceptionMappingService<JargonException> {
+    private static final Logger log = LogManager.getLogger(IRODSExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final JargonException e) {
+        log.warn("Map failure {}", e.toString());
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(e instanceof CatNoAccessException) {

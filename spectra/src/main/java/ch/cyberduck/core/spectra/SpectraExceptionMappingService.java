@@ -23,15 +23,19 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraExceptionMappingService extends AbstractExceptionMappingService<FailedRequestException> {
+    private static final Logger log = LogManager.getLogger(SpectraExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final FailedRequestException e) {
+        log.warn("Map failure {}", e.toString());
         final StringBuilder buffer = new StringBuilder();
         if(null != e.getError()) {
             this.append(buffer, e.getError().getMessage());

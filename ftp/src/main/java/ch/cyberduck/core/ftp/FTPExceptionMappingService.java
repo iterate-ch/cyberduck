@@ -31,13 +31,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.MalformedServerReplyException;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class FTPExceptionMappingService extends AbstractExceptionMappingService<IOException> {
+    private static final Logger log = LogManager.getLogger(FTPExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final IOException e) {
+        log.warn("Map failure {}", e.toString());
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(e instanceof FTPConnectionClosedException) {

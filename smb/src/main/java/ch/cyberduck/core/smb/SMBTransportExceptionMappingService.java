@@ -20,6 +20,8 @@ import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -27,9 +29,11 @@ import com.hierynomus.mssmb.SMB1NotSupportedException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
 public class SMBTransportExceptionMappingService extends AbstractExceptionMappingService<IOException> {
+    private static final Logger log = LogManager.getLogger(SMBTransportExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final IOException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
         if(failure instanceof SMB1NotSupportedException) {

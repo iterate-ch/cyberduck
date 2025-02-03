@@ -42,6 +42,7 @@ public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMapp
 
     @Override
     public BackgroundException map(final IOException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         if(failure instanceof GoogleJsonResponseException) {
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;

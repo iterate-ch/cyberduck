@@ -30,6 +30,8 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.StringReader;
 import java.time.Duration;
@@ -52,9 +54,11 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 public class DropboxExceptionMappingService extends AbstractExceptionMappingService<DbxException> {
+    private static final Logger log = LogManager.getLogger(DropboxExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final DbxException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         this.parse(buffer, failure.getMessage());
         if(failure instanceof InvalidAccessTokenException) {

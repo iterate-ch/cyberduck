@@ -69,6 +69,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
      */
     @Override
     public BackgroundException map(final SSLException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SocketException) {

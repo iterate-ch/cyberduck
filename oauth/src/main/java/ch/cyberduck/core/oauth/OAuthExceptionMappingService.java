@@ -22,14 +22,18 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.api.client.auth.oauth2.TokenErrorResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 
 public class OAuthExceptionMappingService extends AbstractExceptionMappingService<TokenResponseException> {
+    private static final Logger log = LogManager.getLogger(OAuthExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final TokenResponseException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         final TokenErrorResponse details = failure.getDetails();
         if(null != details) {

@@ -21,15 +21,20 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemException;
 import java.nio.file.NoSuchFileException;
 
 public class LocalExceptionMappingService extends AbstractExceptionMappingService<IOException> {
+    private static final Logger log = LogManager.getLogger(LocalExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final IOException e) {
+        log.warn("Map failure {}", e.toString());
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(e instanceof NoSuchFileException) {

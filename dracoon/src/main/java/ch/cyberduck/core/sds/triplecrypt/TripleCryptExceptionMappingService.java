@@ -19,12 +19,17 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.dracoon.sdk.crypto.error.CryptoException;
 
 public class TripleCryptExceptionMappingService extends AbstractExceptionMappingService<CryptoException> {
+    private static final Logger log = LogManager.getLogger(TripleCryptExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final CryptoException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
         return new AccessDeniedException(buffer.toString(), failure);

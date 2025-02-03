@@ -34,6 +34,8 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.ProcessingException;
 import java.io.IOException;
@@ -47,9 +49,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EueExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
+    private static final Logger log = LogManager.getLogger(EueExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final ApiException failure) {
+        log.warn("Map failure {}", failure.toString());
         final StringBuilder buffer = new StringBuilder();
         if(StringUtils.isNotBlank(failure.getMessage())) {
             for(String s : StringUtils.split(failure.getMessage(), ",")) {
