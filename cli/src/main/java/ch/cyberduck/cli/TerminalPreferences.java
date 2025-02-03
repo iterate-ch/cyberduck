@@ -96,6 +96,11 @@ public class TerminalPreferences extends Preferences {
         this.setDefault("queue.copy.reload.action", TransferAction.comparison.name());
 
         this.setDefault("keychain.secure", String.valueOf(false));
+
+        /*
+         * Disable lookup of key files. Must explicitly add --vault parameter to unlock
+         */
+        this.setDefault("cryptomator.vault.autodetect", String.valueOf(false));
     }
 
     public TerminalPreferences withDefaults(final CommandLine input) {
