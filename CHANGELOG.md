@@ -2,8 +2,10 @@
 
 [9.1.3](https://github.com/iterate-ch/cyberduck/compare/release-9-1-2...release-9-1-3)
 
-* [Bugfix] Invalid progress in Finder transferring multiple files (
-  macOS) ([#16738](https://trac.cyberduck.io/ticket/16738))
+* [Bugfix] Invalid progress in Finder transferring multiple files (macOS) ([#16738](https://trac.cyberduck.io/ticket/16738))
+* [Bugfix] Diasble lookup of vaults by default. Must explicitly specify --vault (Cyptomator, CLI)
+* [Bugfix] Duplicate file menu item always disabled (FTP) ([#16798](https://github.com/iterate-ch/cyberduck/issues/16798))
+* [Bugfix] Allow OAuth configuration in connection profiles (WebDAV) ([#16792](https://github.com/iterate-ch/cyberduck/issues/16792))
 
 [9.1.2](https://github.com/iterate-ch/cyberduck/compare/release-9-1-1...release-9-1-2)
 * [Bugfix] No fallback to IPv4 address when IPv6 connect attempt fails with unreachable network ([#16723](https://trac.cyberduck.io/ticket/16723))
