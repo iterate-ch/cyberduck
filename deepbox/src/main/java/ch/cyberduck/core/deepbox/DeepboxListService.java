@@ -226,6 +226,7 @@ public class DeepboxListService implements ListService {
                         list.add(new Path(directory, DeepboxPathNormalizer.name(node.getDisplayName()),
                                 EnumSet.of(node.getType() == Node.TypeEnum.FILE ? Path.Type.file : Path.Type.directory)).withAttributes(attributes.toAttributes(node)));
                     }
+                    listener.chunk(directory, list);
                     size = files.getSize();
                     offset += chunksize;
                 }

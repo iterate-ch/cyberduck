@@ -82,8 +82,8 @@ public class SMBListService implements ListService {
                 attr.setSize(f.getEndOfFile());
                 attr.setDisplayname(f.getFileName());
                 result.add(new Path(directory, filename, type, attr));
-                listener.chunk(directory, result);
             }
+            listener.chunk(directory, result);
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Listing directory {0} failed", e, directory);

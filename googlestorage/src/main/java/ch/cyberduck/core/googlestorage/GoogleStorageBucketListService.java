@@ -57,10 +57,10 @@ public class GoogleStorageBucketListService implements ListService {
                                 attributes.toAttributes(item)
                         );
                         buckets.add(bucket);
-                        listener.chunk(directory, buckets);
                     }
                 }
                 page = response.getNextPageToken();
+                listener.chunk(directory, buckets);
             }
             while(page != null);
             return buckets;
