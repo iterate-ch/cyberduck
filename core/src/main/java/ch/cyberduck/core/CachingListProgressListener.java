@@ -15,37 +15,46 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
-public class CachingListProgressListener extends DisabledListProgressListener {
+public class CachingListProgressListener extends ProxyListProgressListener {
     private static final Logger log = LogManager.getLogger(CachingListProgressListener.class);
 
     private final Cache<Path> cache;
-    private final Map<Path, AttributedList<Path>> contents = new HashMap<>(1);
 
-    public CachingListProgressListener(final Cache<Path> cache) {
+    public CachingListProgressListener(final Cache<Path> cache, final ListProgressListener... proxy) {
+        super(proxy);
         this.cache = cache;
     }
 
     @Override
-    public void chunk(final Path directory, final AttributedList<Path> list) {
-        contents.put(directory, list);
-    }
-
-    /**
-     * Add enumerated contents to cache
-     */
-    public void cache() {
-        for(Map.Entry<Path, AttributedList<Path>> entry : contents.entrySet()) {
-            final AttributedList<Path> list = entry.getValue();
-            if(!(AttributedList.<Path>emptyList() == list)) {
-                log.debug("Cache directory listing for {}", entry.getKey());
-                cache.put(entry.getKey(), list);
+    public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
+        // Add enumerated contents to cache
+        if(e.isPresent()) {
+            if(e.get() instanceof NotfoundException) {
+                // Parent directory not found
+                log.debug("Cache empty contents for directory {} after failure {}", directory, e.get().toString());
+                cache.put(directory, AttributedList.emptyList());
+            }
+            else {
+                log.warn("Failure {} caching contents for {}", e.get().toString(), directory);
             }
         }
+        else {
+            if(!(AttributedList.<Path>emptyList() == list)) {
+                log.debug("Cache contents for {}", directory);
+                cache.put(directory, list);
+            }
+            else {
+                log.warn("Skip caching directory listing for {}", directory);
+            }
+        }
+        super.cleanup(directory, list, e);
     }
 }

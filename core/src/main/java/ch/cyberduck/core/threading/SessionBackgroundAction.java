@@ -144,7 +144,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     @Override
-    public void cleanup() {
+    public void cleanup(final T result, final BackgroundException failure) {
         transcript.setLength(0);
         this.message(StringUtils.EMPTY);
     }

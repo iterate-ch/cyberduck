@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -95,8 +96,8 @@ public class GoogleStorageFindFeatureTest extends AbstractGoogleStorageTest {
         assertFalse(new GoogleStorageFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         final PathCache cache = new PathCache(1);
         final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        assertFalse(new CachingFindFeature(session, cache, new GoogleStorageFindFeature(session)).find(directory));
-        assertFalse(cache.isCached(directory));
+        assertFalse(new CachingFindFeature(session, cache, new DefaultFindFeature(session)).find(directory));
+        assertTrue(cache.isCached(directory));
         assertFalse(new GoogleStorageFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }
 }

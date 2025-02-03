@@ -69,8 +69,8 @@ public class S3BucketListService implements RootListService {
                     attr.setRegion(region.getIdentifier());
                 }
                 buckets.add(bucket);
-                listener.chunk(directory, buckets);
             }
+            listener.chunk(directory, buckets);
             return buckets;
         }
         catch(ServiceException e) {

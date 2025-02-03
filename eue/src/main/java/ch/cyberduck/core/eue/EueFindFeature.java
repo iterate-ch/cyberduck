@@ -34,7 +34,7 @@ public class EueFindFeature implements Find {
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            new EueAttributesFinderFeature(session, fileid).find(file);
+            new EueAttributesFinderFeature(session, fileid).find(file, listener);
             return true;
         }
         catch(NotfoundException e) {

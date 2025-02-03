@@ -54,7 +54,7 @@ public interface BackgroundAction<T> extends BackgroundActionState {
      * To be called from the main interface thread after the #run
      * has finished to allow calls to non-threadable view classes
      */
-    void cleanup();
+    void cleanup(T result, BackgroundException failure);
 
     /**
      * Mark this action as canceled. Will not execute if scheduled.

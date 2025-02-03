@@ -75,8 +75,8 @@ public class DropboxListService implements ListService {
                 continue;
             }
             children.add(child);
-            listener.chunk(directory, children);
         }
+        listener.chunk(directory, children);
     }
 
     protected Path parse(final Path directory, final Metadata metadata) {

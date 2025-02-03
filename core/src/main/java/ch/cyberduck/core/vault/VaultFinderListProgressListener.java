@@ -100,7 +100,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     }
 
     @Override
-    public void finish(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
-        proxy.finish(directory, list, e);
+    public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
+        proxy.cleanup(directory, list, e);
     }
 }

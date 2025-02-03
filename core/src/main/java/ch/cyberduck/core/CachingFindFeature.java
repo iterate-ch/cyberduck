@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,11 +16,15 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.ListFilteringFeature;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Optional;
 
 public class CachingFindFeature implements Find {
     private static final Logger log = LogManager.getLogger(CachingFindFeature.class);
@@ -29,23 +33,57 @@ public class CachingFindFeature implements Find {
     private final Cache<Path> cache;
     private final Find delegate;
 
+    /**
+     * Use default feature looking up file using list feature
+     *
+     * @param cache Access from cache when available
+     * @see DefaultFindFeature
+     */
+    public CachingFindFeature(final Session<?> session, final Cache<Path> cache) {
+        this(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session)));
+    }
+
+    /**
+     * @param cache    Access from cache when available
+     * @param delegate Feature implementation
+     */
     public CachingFindFeature(final Session<?> session, final Cache<Path> cache, final Find delegate) {
         this(session.getCaseSensitivity(), cache, delegate);
     }
 
+    /**
+     * @param sensitivity Case sensitivity for lookup in cache
+     * @param cache       Access from cache when available
+     * @param delegate    Feature implementation
+     */
     public CachingFindFeature(final Protocol.Case sensitivity, final Cache<Path> cache, final Find delegate) {
         this.cache = cache;
         this.delegate = delegate;
         this.sensitivity = sensitivity;
     }
 
+    /**
+     * Return state from cached contents when available. Otherwise cache parent directory contents after lookup.
+     */
+    @Override
+    public boolean find(final Path file) throws BackgroundException {
+        return this.find(file, new CachingListProgressListener(cache));
+    }
+
+    /**
+     * Return state from cached contents when available. Invoke listener cleanup with directory contents when available
+     *
+     * @see ListProgressListener#cleanup(Path, AttributedList, Optional)
+     */
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return delegate.find(file, listener);
         }
-        if(cache.isValid(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
+        log.debug("Find {} with listener {}", file, listener);
+        final Path directory = file.getParent();
+        if(cache.isValid(directory)) {
+            final AttributedList<Path> list = cache.get(directory);
             final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
             if(found != null) {
                 log.debug("Found {} in cache", file);
@@ -54,10 +92,18 @@ public class CachingFindFeature implements Find {
             log.debug("Cached directory listing does not contain {}", file);
             return false;
         }
-        final CachingListProgressListener caching = new CachingListProgressListener(cache);
-        final boolean found = delegate.find(file, new ProxyListProgressListener(listener, caching));
-        caching.cache();
-        return found;
+        final MemoryListProgressListener memory = new MemoryListProgressListener(listener);
+        try {
+            final boolean found = delegate.find(file, memory);
+            // Notify listener with contents
+            memory.cleanup(directory, memory.getContents(), Optional.empty());
+            return found;
+        }
+        catch(NotfoundException e) {
+            log.warn("Parent directory for file {} not found", file);
+            memory.cleanup(directory, memory.getContents(), Optional.of(e));
+            return false;
+        }
     }
 
     @Override

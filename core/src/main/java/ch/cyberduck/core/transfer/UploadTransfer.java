@@ -44,8 +44,6 @@ import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
@@ -152,12 +150,12 @@ public class UploadTransfer extends Transfer {
         final Find find;
         final AttributesFinder attributes;
         if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
-            find = new CachingFindFeature(source, cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
-            attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+            find = new CachingFindFeature(source, cache);
+            attributes = new CachingAttributesFinderFeature(source, cache);
         }
         else {
-            find = new CachingFindFeature(source, cache, source.getFeature(Find.class));
-            attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class));
+            find = source.getFeature(Find.class);
+            attributes = source.getFeature(AttributesFinder.class);
         }
         log.debug("Determined features {} and {}", find, attributes);
         if(action.equals(TransferAction.resume)) {
@@ -198,7 +196,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                if(new CachingFindFeature(source, cache, source.getFeature(Find.class, new DefaultFindFeature(source))).find(upload.remote)) {
+                if(new CachingFindFeature(source, cache).find(upload.remote)) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
                         if(this.list(source, upload.remote, upload.local, listener).isEmpty()) {

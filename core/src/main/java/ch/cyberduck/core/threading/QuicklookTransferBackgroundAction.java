@@ -116,9 +116,9 @@ public class QuicklookTransferBackgroundAction extends BrowserTransferBackground
     }
 
     @Override
-    public void cleanup() {
-        super.cleanup();
-        if(!this.hasFailed()) {
+    public void cleanup(final Boolean result, final BackgroundException failure) {
+        super.cleanup(result, failure);
+        if(failure != null) {
             final List<Local> previews = new ArrayList<>();
             for(TransferItem download : downloads) {
                 previews.add(download.local);

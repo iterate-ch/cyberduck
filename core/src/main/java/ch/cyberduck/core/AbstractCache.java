@@ -31,13 +31,21 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
     private final LRUCache<CacheReference<T>, AttributedList<T>> impl;
 
     public AbstractCache(int size) {
+        this(size, -1L);
+    }
+
+    /**
+     * @param size           Maximum size
+     * @param expireDuration In millis
+     */
+    public AbstractCache(int size, Long expireDuration) {
         if(size == Integer.MAX_VALUE) {
             // Unlimited
-            impl = LRUCache.build();
+            impl = LRUCache.build(-1L, expireDuration);
         }
         else {
             // Will inflate to the given size
-            impl = LRUCache.build(size);
+            impl = LRUCache.build(size, expireDuration);
         }
     }
 

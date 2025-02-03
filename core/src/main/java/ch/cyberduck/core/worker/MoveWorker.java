@@ -35,13 +35,11 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -120,7 +118,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                 .withPermission(r.getKey().attributes().getPermission())
                                 .withEncryption(r.getKey().attributes().getEncryption())
                                 .withStorageClass(r.getKey().attributes().getStorageClass())
-                                .exists(new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+                                .exists(new CachingFindFeature(session, cache).find(r.getValue()))
                                 .withLength(r.getKey().attributes().getSize());
                         if(status.isExists()) {
                             status.withRemote(new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
@@ -150,7 +148,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                 final Path target = new Path(new DefaultVersioningFeature.DefaultVersioningDirectoryProvider().provide(r.getValue()),
                                                         version.getName(), version.getType());
                                                 final Path directory = target.getParent();
-                                                if(!new CachingFindFeature(session, cache, new DefaultFindFeature(session)).find(directory)) {
+                                                if(!new CachingFindFeature(session, cache).find(directory)) {
                                                     log.debug("Create directory {} for versions", directory);
                                                     session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
                                                 }
@@ -164,7 +162,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                 feature.move(version, target, new TransferStatus()
                                                         .withLockId(this.getLockId(version))
                                                         .withMime(new MappingMimeTypeService().getMime(version.getName()))
-                                                        .exists(new CachingFindFeature(session, cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(target))
+                                                        .exists(new CachingFindFeature(session, cache).find(target))
                                                         .withLength(version.attributes().getSize()), delete, callback);
                                             }
                                         }

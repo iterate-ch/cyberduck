@@ -31,7 +31,7 @@ public class BrickFindFeature implements Find {
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            new BrickAttributesFinderFeature(session).find(file);
+            new BrickAttributesFinderFeature(session).find(file, listener);
             return true;
         }
         catch(NotfoundException e) {

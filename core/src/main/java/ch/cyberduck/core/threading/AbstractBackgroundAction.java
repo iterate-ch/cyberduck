@@ -101,9 +101,14 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         return this.run();
     }
 
-    @Override
     public void cleanup() {
         //
+    }
+
+    @Override
+    public void cleanup(final T result, final BackgroundException failure) {
+        log.debug("Cleanup background task {}", this);
+        this.cleanup();
     }
 
     protected String toString(final List<Path> files) {

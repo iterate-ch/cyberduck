@@ -22,17 +22,12 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * The default implementation does a directory listing of the parent folder.
  */
 public class DefaultFindFeature extends ListFilteringFeature implements Find {
-    private static final Logger log = LogManager.getLogger(DefaultFindFeature.class);
 
     public DefaultFindFeature(final Session<?> session) {
         super(session);
@@ -43,13 +38,6 @@ public class DefaultFindFeature extends ListFilteringFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
-        try {
-            final Path found = this.search(file, listener);
-            return found != null;
-        }
-        catch(NotfoundException e) {
-            log.debug("Parent directory for file {} not found", file);
-            return false;
-        }
+        return this.search(file, listener) != null;
     }
 }

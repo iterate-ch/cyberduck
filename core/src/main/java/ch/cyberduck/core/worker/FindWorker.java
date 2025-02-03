@@ -1,7 +1,7 @@
 package ch.cyberduck.core.worker;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,31 +17,28 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.CachingAttributesFinderFeature;
+import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.CachingListProgressListener;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MemoryListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
 
-public class AttributesWorker extends Worker<PathAttributes> {
-    private static final Logger log = LogManager.getLogger(AttributesWorker.class.getName());
+public class FindWorker extends Worker<Boolean> {
+    private static final Logger log = LogManager.getLogger(FindWorker.class.getName());
 
     private final Cache<Path> cache;
     private final Path file;
     private final MemoryListProgressListener memory;
 
-    public AttributesWorker(final Cache<Path> cache, final Path file) {
+    public FindWorker(final Cache<Path> cache, final Path file) {
         this.cache = cache;
         this.file = file;
         this.memory = new MemoryListProgressListener(new WorkerCanceledListProgressListener(this,
@@ -49,8 +46,8 @@ public class AttributesWorker extends Worker<PathAttributes> {
     }
 
     @Override
-    public PathAttributes run(final Session<?> session) throws BackgroundException {
-        return new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class)).find(file, memory);
+    public Boolean run(final Session<?> session) throws BackgroundException {
+        return new CachingFindFeature(session, cache, session.getFeature(Find.class)).find(file, memory);
     }
 
     protected boolean isCached(final Path directory) {
@@ -58,7 +55,7 @@ public class AttributesWorker extends Worker<PathAttributes> {
     }
 
     @Override
-    public void cleanup(final PathAttributes result, final BackgroundException e) {
+    public void cleanup(final Boolean result, final BackgroundException e) {
         final Path directory = file.getParent();
         final AttributedList<Path> list = memory.getContents();
         log.debug("Cache directory listing {} for {}", list, directory);
@@ -66,29 +63,24 @@ public class AttributesWorker extends Worker<PathAttributes> {
     }
 
     @Override
-    public PathAttributes initialize() {
-        return PathAttributes.EMPTY;
+    public Boolean initialize() {
+        return false;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public final boolean equals(final Object o) {
         if(this == o) {
             return true;
         }
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        final AttributesWorker that = (AttributesWorker) o;
-        return file.equals(that.file);
+        final FindWorker that = (FindWorker) o;
+        return Objects.equals(file, that.file);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(file);
-    }
-
-    @Override
-    public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"), file.getName());
+        return Objects.hashCode(file);
     }
 }

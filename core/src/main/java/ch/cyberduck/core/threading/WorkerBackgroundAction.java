@@ -35,8 +35,6 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
 
     protected final Worker<T> worker;
 
-    protected T result;
-
     public WorkerBackgroundAction(final Controller controller,
                                   final SessionPool session,
                                   final Worker<T> worker) {
@@ -65,26 +63,25 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
     public T run(final Session<?> session) throws BackgroundException {
         log.debug("Run worker {}", worker);
         try {
-            result = worker.run(session);
+            return worker.run(session);
         }
         catch(ConnectionCanceledException e) {
             worker.cancel();
             throw e;
         }
-        return result;
     }
 
     @Override
-    public void cleanup() {
+    public void cleanup(final T result, final BackgroundException failure) {
         if(null == result) {
             log.warn("Missing result for worker {}. Use default value.", worker);
-            worker.cleanup(worker.initialize());
+            worker.cleanup(worker.initialize(), failure);
         }
         else {
             log.debug("Cleanup worker {}", worker);
-            worker.cleanup(result);
+            worker.cleanup(result, failure);
         }
-        super.cleanup();
+        super.cleanup(result, failure);
     }
 
     @Override

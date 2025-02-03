@@ -50,18 +50,18 @@ public class BackgroundCallable<T> implements Callable<T> {
         catch(BackgroundException e) {
             action.alert(e);
             log.debug("Invoke cleanup for background action {}", action);
-            this.cleanup();
+            this.cleanup(null, e);
             return false;
         }
     }
 
-    private void cleanup() {
+    private void cleanup(final T result, final BackgroundException failure) {
         // Invoke the cleanup on the main thread to let the action synchronize the user interface
         controller.invoke(new ControllerMainAction(controller) {
             @Override
             public void run() {
                 try {
-                    action.cleanup();
+                    action.cleanup(result, failure);
                 }
                 catch(Exception e) {
                     log.error(String.format("Exception %s running cleanup task", e), e);
@@ -80,22 +80,29 @@ public class BackgroundCallable<T> implements Callable<T> {
         }
         log.debug("Prepare background action {}", action);
         action.prepare();
+        T result = null;
+        BackgroundException failure = null;
         try {
-            final T result = this.run();
+            result = this.run();
             log.debug("Return result {} from background action {}", result, action);
             return result;
+        }
+        catch(BackgroundException e) {
+            failure = e;
+            // Failed action yields no result
+            return null;
         }
         finally {
             action.finish();
             log.debug("Invoke cleanup for background action {}", action);
             // Invoke the cleanup on the main thread to let the action synchronize the user interface
-            this.cleanup();
+            this.cleanup(result, failure);
             log.debug("Releasing lock for background runnable {}", action);
             autorelease.operate();
         }
     }
 
-    protected T run() {
+    protected T run() throws BackgroundException {
         try {
             // Execute the action of the runnable
             log.debug("Call background action {}", action);
@@ -104,13 +111,13 @@ public class BackgroundCallable<T> implements Callable<T> {
         catch(Throwable e) {
             this.failure(client, e);
             // Runtime failure
-            if(action.alert(new DefaultExceptionMappingService().map(e))) {
+            final BackgroundException failure = new DefaultExceptionMappingService().map(e);
+            if(action.alert(failure)) {
                 log.debug("Retry background action {}", action);
                 // Retry
                 return this.run();
             }
-            // Failed action yields no result
-            return null;
+            throw failure;
         }
     }
 

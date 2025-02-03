@@ -88,8 +88,8 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
         assertFalse(new AzureFindFeature(session, null).find(intermediate));
         final PathCache cache = new PathCache(1);
         final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        assertFalse(new CachingFindFeature(session, cache, new AzureFindFeature(session, null)).find(directory));
-        assertFalse(cache.isCached(directory));
+        assertFalse(new CachingFindFeature(session, cache).find(directory));
+        assertTrue(cache.isCached(directory));
         assertFalse(new AzureFindFeature(session, null).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }
 }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -59,9 +60,9 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
     }
 
     @Override
-    public void cleanup() {
+    public void cleanup(final Boolean result, final BackgroundException failure) {
         log.debug("Cleanup background action for transfer {}", transfer);
-        super.cleanup();
+        super.cleanup(result, failure);
         final TransferCollection collection = TransferCollection.defaultCollection();
         if(PreferencesFactory.get().getBoolean("queue.removeItemWhenComplete")
                 && transfer.isReset() && transfer.isComplete()) {

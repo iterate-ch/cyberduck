@@ -61,7 +61,11 @@ public class DAVListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            for(List<DavResource> list : ListUtils.partition(this.list(directory),
+            final List<DavResource> resources = this.list(directory);
+            if(resources.isEmpty()) {
+                listener.chunk(directory, children);
+            }
+            for(List<DavResource> list : ListUtils.partition(resources,
                     new HostPreferences(session.getHost()).getInteger("webdav.listing.chunksize"))) {
                 for(final DavResource resource : list) {
                     if(new SimplePathPredicate(new Path(resource.getHref().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
@@ -81,8 +85,8 @@ public class DAVListService implements ListService {
                     }
                     final Path file = new Path(directory, PathNormalizer.name(resource.getHref().getPath()), type, attr);
                     children.add(file);
-                    listener.chunk(directory, children);
                 }
+                listener.chunk(directory, children);
             }
             return children;
         }
