@@ -27,6 +27,10 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
         super(size);
     }
 
+    public TransferItemCache(final int size, final Long expireDuration) {
+        super(size, expireDuration);
+    }
+
     @Override
     public CacheReference<TransferItem> reference(final TransferItem object) {
         if(null == object) {

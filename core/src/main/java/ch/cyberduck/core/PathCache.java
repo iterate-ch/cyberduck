@@ -38,6 +38,10 @@ public class PathCache extends AbstractCache<Path> {
         super(size);
     }
 
+    public PathCache(final int size, final Long expireDuration) {
+        super(size, expireDuration);
+    }
+
     @Override
     public CacheReference<Path> reference(final Path file) {
         if(null == file) {
