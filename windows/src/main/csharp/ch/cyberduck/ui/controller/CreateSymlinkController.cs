@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             public CreateSymlinkAction(BrowserController controller, Path workdir, string symlink)
                 : base(
-                      controller, controller.Session,
+                      controller, controller.Pool,
                       new InnerCreateSymlinkWorker(controller,
                           controller.SelectedPath,
                           new Path(workdir, symlink, EnumSet.of(AbstractPath.Type.file))))

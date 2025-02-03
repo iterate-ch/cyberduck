@@ -31,6 +31,7 @@ import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferQueue;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
 
@@ -41,6 +42,8 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
 
     private final Transfer transfer;
 
+    private final TransferQueue queue;
+    private final ProgressListener progress;
     private final TransferOptions options;
     /**
      * Keeping track of the current transfer rate
@@ -61,23 +64,25 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
+                                    final TransferQueue queue,
                                     final TransferListener listener,
                                     final Transfer transfer,
                                     final TransferOptions options) {
-        this(controller, source, destination, listener, controller, transfer, options,
-            TransferPromptControllerFactory.get(controller, transfer, source, destination),
-            TransferErrorCallbackControllerFactory.get(controller),
-            new TransferSpeedometer(transfer), new DisabledStreamListener());
+        this(controller, source, destination, queue, listener, controller, transfer, options,
+                TransferPromptControllerFactory.get(controller, transfer, source, destination),
+                TransferErrorCallbackControllerFactory.get(controller),
+                new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
+                                    final TransferQueue queue,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
                                     final TransferOptions options) {
-        this(controller, source, destination, listener, progress, transfer, options,
+        this(controller, source, destination, queue, listener, progress, transfer, options,
                 TransferPromptControllerFactory.get(controller, transfer, source, destination),
                 TransferErrorCallbackControllerFactory.get(controller));
     }
@@ -85,31 +90,34 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
+                                    final TransferQueue queue,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
                                     final TransferOptions options,
                                     final TransferPrompt prompt) {
-        this(controller, source, destination, listener, progress, transfer, options, prompt, TransferErrorCallbackControllerFactory.get(controller),
-            new TransferSpeedometer(transfer), new DisabledStreamListener());
+        this(controller, source, destination, queue, listener, progress, transfer, options, prompt, TransferErrorCallbackControllerFactory.get(controller),
+                new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
+                                    final TransferQueue queue,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
                                     final TransferOptions options,
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error) {
-        this(controller, source, destination, listener, progress, transfer, options, prompt, error,
-            new TransferSpeedometer(transfer), new DisabledStreamListener());
+        this(controller, source, destination, queue, listener, progress, transfer, options, prompt, error,
+                new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
+                                    final TransferQueue queue,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
@@ -119,13 +127,14 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
         this(LoginCallbackFactory.get(controller),
-            controller, source, destination, listener, progress, transfer, options, prompt, error, meter, stream);
+                controller, source, destination, queue, listener, progress, transfer, options, prompt, error, meter, stream);
     }
 
     public TransferBackgroundAction(final ConnectionCallback callback,
                                     final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
+                                    final TransferQueue queue,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
@@ -135,7 +144,9 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
         super(controller, source, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, progress, stream,
-            NotificationServiceFactory.get()));
+                NotificationServiceFactory.get()));
+        this.queue = queue;
+        this.progress = progress;
         this.options = options;
         this.meter = meter;
         this.transfer = transfer;
@@ -157,6 +168,8 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                 }
             }
         }, 100L, TimeUnit.MILLISECONDS);
+        // Wait for slot in queue
+        queue.add(transfer, progress);
     }
 
     @Override
@@ -181,6 +194,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
         transfer.stop();
         listener.transferDidStop(transfer);
         timerPool.shutdown(true);
+        queue.remove(transfer);
     }
 
     @Override

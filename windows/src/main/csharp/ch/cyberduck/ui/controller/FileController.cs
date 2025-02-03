@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected SessionPool Session
         {
-            get { return BrowserController.Session; }
+            get { return BrowserController.Pool; }
         }
 
         protected virtual bool ValidateInput()

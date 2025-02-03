@@ -86,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             public CreateDirectoryAction(BrowserController controller, Path directory, string filename, string region)
                 : base(
-                    controller, controller.Session,
+                    controller, controller.Pool,
                     new InnerCreateDirectoryWorker(controller,
                         new Path(directory, filename, EnumSet.of(AbstractPath.Type.directory)), filename, region))
             {

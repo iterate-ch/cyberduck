@@ -107,7 +107,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetBookmarkStatusImage(object rowobject)
         {
-            SessionPool session = _controller.Session;
+            SessionPool session = _controller.Pool;
             if (((Host) rowobject).Equals(session.getHost()))
             {
                 if (session.getState().Equals(Session.State.open))

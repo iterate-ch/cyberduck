@@ -185,7 +185,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         // The workspace should be saved. Serialize all open browser sessions
                         Host serialized =
                             new HostDictionary().deserialize(
-                                controller.Session.getHost().serialize(SerializerFactory.get()));
+                                controller.Pool.getHost().serialize(SerializerFactory.get()));
                         serialized.setWorkdir(controller.Workdir);
                         sessions.add(serialized);
                     }
@@ -283,7 +283,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (browser.IsMounted())
                 {
-                    if (bookmark.equals(browser.Session.getHost()))
+                    if (bookmark.equals(browser.Pool.getHost()))
                     {
                         Logger.debug("Default bookmark already mounted");
                         return;
@@ -455,7 +455,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (b.IsMounted())
                         {
                             if (
-                                new HostUrlProvider().get(b.Session.getHost())
+                                new HostUrlProvider().get(b.Pool.getHost())
                                     .Equals(new HostUrlProvider().get(h)))
                             {
                                 b.View.BringToFront();
@@ -636,7 +636,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (SessionPool.DISCONNECTED == c.Session && c.View.IsOnCurrentDesktop())
+                    if (SessionPool.DISCONNECTED == c.Pool && c.View.IsOnCurrentDesktop())
                     {
                         c.Invoke(c.View.BringToFront);
 

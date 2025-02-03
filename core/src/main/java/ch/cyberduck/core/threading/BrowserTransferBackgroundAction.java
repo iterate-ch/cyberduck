@@ -26,22 +26,22 @@ import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferQueue;
 
 public class BrowserTransferBackgroundAction extends TransferBackgroundAction {
     private final Transfer transfer;
     private final TransferCallback callback;
 
-    public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool,
+    public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool, final TransferQueue queue,
                                            final Transfer transfer, final TransferCallback callback) {
-        this(controller, pool, transfer, callback, TransferPromptControllerFactory.get(controller, transfer, pool, SessionPool.DISCONNECTED));
+        this(controller, pool, queue, transfer, callback, TransferPromptControllerFactory.get(controller, transfer, pool, SessionPool.DISCONNECTED));
     }
 
-    public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool,
+    public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool, final TransferQueue queue,
                                            final Transfer transfer, final TransferCallback callback, final TransferPrompt prompt) {
-        super(controller,
-            pool,
+        super(controller, pool,
             transfer.getType() == Transfer.Type.copy ? SessionPoolFactory.create(controller, transfer.getDestination()) : SessionPool.DISCONNECTED,
-            new BrowserTransferAdapter(controller), controller, transfer, new TransferOptions(), prompt);
+                queue, new BrowserTransferAdapter(controller), controller, transfer, new TransferOptions(), prompt);
         this.transfer = transfer;
         this.callback = callback;
     }
