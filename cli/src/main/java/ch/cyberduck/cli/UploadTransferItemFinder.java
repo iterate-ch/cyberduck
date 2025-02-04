@@ -25,7 +25,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +36,7 @@ public class UploadTransferItemFinder implements TransferItemFinder {
         final Local local = LocalFactory.get(input.getOptionValues(action.name())[1]);
         final Set<TransferItem> items = new HashSet<>();
         // Append local name to remote target
-        final boolean append = !Arrays.asList(input.getArgs()).isEmpty();
+        final boolean append = !input.getArgList().isEmpty();
         items.add(resolve(remote, local, append));
         for(String arg : input.getArgs()) {
             items.add(resolve(remote, LocalFactory.get(arg), append));
