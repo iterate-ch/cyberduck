@@ -72,6 +72,17 @@ public class FinderLocalAttributesFinderTest {
     }
 
     @Test
+    public void getSetModificationDate() throws Exception {
+        assertEquals(-1, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getModificationDate());
+        final File f = new File(UUID.randomUUID().toString());
+        f.createNewFile();
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
+        a.setModificationDate(1738771415656L);
+        assertEquals(1738771415656L, a.getModificationDate());
+        f.delete();
+    }
+
+    @Test
     public void testGetOwner() throws Exception {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
