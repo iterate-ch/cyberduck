@@ -69,7 +69,7 @@ public abstract class Worker<T> {
      * @param result Return value from worker
      */
     public void cleanup(final T result) {
-        //
+        log.debug("Cleanup with result {}", result);
     }
 
     /**
@@ -79,6 +79,7 @@ public abstract class Worker<T> {
      * @param failure Null on success
      */
     public void cleanup(final T result, final BackgroundException failure) {
+        log.debug("Cleanup with result {} and failure {}", result, failure);
         this.cleanup(result);
     }
 
