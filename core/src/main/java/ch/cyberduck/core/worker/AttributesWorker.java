@@ -53,10 +53,6 @@ public class AttributesWorker extends Worker<PathAttributes> {
         return new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class)).find(file, memory);
     }
 
-    protected boolean isCached(final Path directory) {
-        return cache.isValid(directory);
-    }
-
     @Override
     public void cleanup(final PathAttributes result, final BackgroundException e) {
         final Path directory = file.getParent();

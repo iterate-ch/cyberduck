@@ -50,10 +50,6 @@ public class FindWorker extends Worker<Boolean> {
         return new CachingFindFeature(session, cache, session.getFeature(Find.class)).find(file, memory);
     }
 
-    protected boolean isCached(final Path directory) {
-        return cache.isValid(directory);
-    }
-
     @Override
     public void cleanup(final Boolean result, final BackgroundException e) {
         final Path directory = file.getParent();
