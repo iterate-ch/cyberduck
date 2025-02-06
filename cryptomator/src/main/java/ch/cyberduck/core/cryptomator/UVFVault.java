@@ -55,7 +55,7 @@ public class UVFVault extends AbstractVault {
 
     private int nonceSize;
 
-    public UVFVault(final Path home, final String decryptedPayload) {
+    public UVFVault(final Path home, final String decryptedPayload, final String config, final byte[] pepper) {
         this.home = home;
         this.decrypted = decryptedPayload;
         // New vault home with vault flag set for internal use
@@ -83,7 +83,7 @@ public class UVFVault extends AbstractVault {
         log.debug("Initialized crypto provider {}", provider);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
-        this.filenameProvider = new CryptoFilenameV7Provider(/* TODO threshold was previously defined in vault.config - default now? */);
+        this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE); // TODO there is no shortening in UVF defined yet
         this.directoryProvider = new CryptoDirectoryV7Provider(vault, filenameProvider, fileNameCryptor);
         this.nonceSize = 12;
         return this;
