@@ -82,7 +82,7 @@ public class UVFVault extends AbstractVault {
         final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
         log.debug("Initialized crypto provider {}", provider);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
-        this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
+        this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor(masterKey.firstRevision())); // TODO revision eventually depends on location - safe?
         this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE); // TODO there is no shortening in UVF defined yet
         this.directoryProvider = new CryptoDirectoryV7Provider(vault, filenameProvider, fileNameCryptor);
         this.nonceSize = 12;
