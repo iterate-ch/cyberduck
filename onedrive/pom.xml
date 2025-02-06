@@ -23,7 +23,7 @@
     </parent>
     <artifactId>onedrive</artifactId>
     <properties>
-        <onedrive-java-client-version>3.2.2</onedrive-java-client-version>
+        <onedrive-java-client-version>3.2.3</onedrive-java-client-version>
     </properties>
     <dependencies>
         <dependency>
