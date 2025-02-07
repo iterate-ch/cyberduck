@@ -84,7 +84,7 @@ public class B2FindFeatureTest extends AbstractB2Test {
         final PathCache cache = new PathCache(1);
         final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertFalse(new CachingFindFeature(session, cache).find(directory));
-        assertTrue(cache.isCached(directory));
+        assertTrue(cache.isCached(directory.getParent()));
         assertFalse(new B2FindFeature(session, fileid).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }
 }
