@@ -67,7 +67,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
 
     @Override
     public Set<ProfileDescription> run(final Session<?> session) throws BackgroundException {
-        return new ProtocolFactoryProfilesSynchronizer(session).sync(
+        return new ProtocolFactoryProfilesSynchronizer(registry, session, directory).sync(
                 // Match profiles by ETag and MD5 checksum of profile on disk
                 new ChecksumProfileMatcher(), visitor);
     }
