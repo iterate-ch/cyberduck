@@ -69,8 +69,11 @@ public class CryptoMoveV6Feature implements Move {
             if(!vault.getFilenameProvider().isValid(target.get().getName())) {
                 throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.get().getName())).withFile(source);
             }
+            proxy.preflight(vault.encrypt(session, source, source.isDirectory()), Optional.of(vault.encrypt(session, target.get(), source.isDirectory())));
         }
-        proxy.preflight(source, target);
+        else {
+            proxy.preflight(vault.encrypt(session, source, source.isDirectory()), target);
+        }
     }
 
     @Override

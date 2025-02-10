@@ -90,6 +90,11 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
+    public void preflight(final Path file) throws BackgroundException {
+        proxy.preflight(vault.encrypt(session, file));
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoWriteFeature{");
         sb.append("proxy=").append(proxy);

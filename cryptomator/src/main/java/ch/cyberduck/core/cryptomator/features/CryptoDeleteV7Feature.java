@@ -139,7 +139,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
 
     @Override
     public void preflight(final Path file) throws BackgroundException {
-        proxy.preflight(file);
+        proxy.preflight(vault.encrypt(session, file));
     }
 
     @Override

@@ -85,7 +85,7 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        delegate.preflight(workdir, filename);
+        delegate.preflight(vault.encrypt(session, workdir), filename);
     }
 
     @Override

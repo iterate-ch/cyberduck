@@ -91,6 +91,11 @@ public class CryptoReadFeature implements Read {
     }
 
     @Override
+    public void preflight(final Path file) throws BackgroundException {
+        proxy.preflight(vault.encrypt(session, file));
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoReadFeature{");
         sb.append("proxy=").append(proxy);

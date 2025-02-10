@@ -94,14 +94,20 @@ public class CryptoCopyFeature implements Copy {
     public void preflight(final Path source, final Optional<Path> copy) throws BackgroundException {
         if(copy.isPresent()) {
             if(vault.contains(source) && vault.contains(copy.get())) {
-                proxy.withTarget(target).preflight(source, copy);
+                proxy.withTarget(target).preflight(
+                        vault.encrypt(session, source),
+                        Optional.of(vault.encrypt(session, copy.get())));
             }
             else {
-                new DefaultCopyFeature(session).withTarget(target).preflight(source, copy);
+                new DefaultCopyFeature(session).withTarget(target).preflight(
+                        vault.contains(source) ? vault.encrypt(session, source) : source,
+                        vault.contains(copy.get()) ? Optional.of(vault.encrypt(session, copy.get())) : copy);
             }
         }
         else {
-            new DefaultCopyFeature(session).withTarget(target).preflight(source, copy);
+            new DefaultCopyFeature(session).withTarget(target).preflight(
+                    vault.contains(source) ? vault.encrypt(session, source) : source,
+                    vault.contains(copy.get()) ? Optional.of(vault.encrypt(session, copy.get())) : copy);
         }
     }
 
