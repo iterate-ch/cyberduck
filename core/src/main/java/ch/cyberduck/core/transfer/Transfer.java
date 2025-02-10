@@ -173,7 +173,7 @@ public abstract class Transfer implements Serializable {
         this.bandwidth = bandwidth;
     }
 
-    public abstract Transfer withCache(final Cache<Path> cache);
+    public abstract Transfer withCache(Cache<Path> cache);
 
     public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(this.getType().name(), "Type");
@@ -278,7 +278,7 @@ public abstract class Transfer implements Serializable {
      * @param listener    Progress listener
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public abstract TransferPathFilter filter(Session<?> source, final Session<?> destination, TransferAction action, ProgressListener listener);
+    public abstract TransferPathFilter filter(Session<?> source, Session<?> destination, TransferAction action, ProgressListener listener);
 
     /**
      * @param source          Connection to source server of transfer. May be null.
@@ -289,7 +289,7 @@ public abstract class Transfer implements Serializable {
      * @param listener        Listener
      * @return Duplicate file strategy from preferences or user selection
      */
-    public abstract TransferAction action(Session<?> source, final Session<?> destination, boolean resumeRequested, boolean reloadRequested,
+    public abstract TransferAction action(Session<?> source, Session<?> destination, boolean resumeRequested, boolean reloadRequested,
                                           TransferPrompt prompt, ListProgressListener listener) throws BackgroundException;
 
     /**
