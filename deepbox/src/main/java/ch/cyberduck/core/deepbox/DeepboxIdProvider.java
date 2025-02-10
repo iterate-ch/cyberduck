@@ -15,7 +15,6 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -119,8 +118,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 if(matcher.matches()) {
                     final String companyName = matcher.group(1);
                     final String boxName = matcher.group(2);
-                    final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(segment.getType());
-                    type.add(AbstractPath.Type.shared);
+                    final EnumSet<Path.Type> type = EnumSet.copyOf(segment.getType());
+                    type.add(Path.Type.shared);
                     String deepboxName;
                     if(combined.attributes().getCustom().containsKey("deepboxName")) {
                         deepboxName = combined.attributes().getCustom().get("deepboxName");
@@ -143,9 +142,9 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 }
             }
             else {
-                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(segment.getType());
+                final EnumSet<Path.Type> type = EnumSet.copyOf(segment.getType());
                 if(containerService.isInSharedWithMe(segment)) {
-                    type.add(AbstractPath.Type.shared);
+                    type.add(Path.Type.shared);
                 }
                 result = new Path(result, segment.getName(), type, segment.attributes());
             }

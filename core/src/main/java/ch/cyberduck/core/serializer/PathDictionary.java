@@ -18,7 +18,6 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -63,17 +62,17 @@ public class PathDictionary<T> {
             // Legacy
             final String legacyTypeObj = factory.create(attributesObj).stringForKey("Type");
             if(legacyTypeObj != null) {
-                if((Integer.parseInt(legacyTypeObj) & AbstractPath.Type.file.legacy()) == AbstractPath.Type.file.legacy()) {
-                    type.add(AbstractPath.Type.file);
+                if((Integer.parseInt(legacyTypeObj) & Path.Type.file.legacy()) == Path.Type.file.legacy()) {
+                    type.add(Path.Type.file);
                 }
-                if((Integer.parseInt(legacyTypeObj) & AbstractPath.Type.directory.legacy()) == AbstractPath.Type.directory.legacy()) {
-                    type.add(AbstractPath.Type.directory);
+                if((Integer.parseInt(legacyTypeObj) & Path.Type.directory.legacy()) == Path.Type.directory.legacy()) {
+                    type.add(Path.Type.directory);
                 }
-                if((Integer.parseInt(legacyTypeObj) & AbstractPath.Type.symboliclink.legacy()) == AbstractPath.Type.symboliclink.legacy()) {
-                    type.add(AbstractPath.Type.symboliclink);
+                if((Integer.parseInt(legacyTypeObj) & Path.Type.symboliclink.legacy()) == Path.Type.symboliclink.legacy()) {
+                    type.add(Path.Type.symboliclink);
                 }
-                if((Integer.parseInt(legacyTypeObj) & AbstractPath.Type.volume.legacy()) == AbstractPath.Type.volume.legacy()) {
-                    type.add(AbstractPath.Type.volume);
+                if((Integer.parseInt(legacyTypeObj) & Path.Type.volume.legacy()) == Path.Type.volume.legacy()) {
+                    type.add(Path.Type.volume);
                 }
             }
             if(type.isEmpty()) {

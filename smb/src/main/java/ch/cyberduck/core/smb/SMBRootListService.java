@@ -15,7 +15,6 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ListProgressListener;
@@ -72,7 +71,7 @@ public class SMBRootListService implements ListService {
                 log.debug("Retrieved share info {}", info);
                 final AttributedList<Path> result = new AttributedList<>();
                 for(final String s : info.stream().map(NetShareInfo::getNetName).collect(Collectors.toSet())) {
-                    final Path share = new Path(s, EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.volume));
+                    final Path share = new Path(s, EnumSet.of(Path.Type.directory, Path.Type.volume));
                     try {
                         result.add(share.withAttributes(new SMBAttributesFinderFeature(session).find(share)));
                     }
