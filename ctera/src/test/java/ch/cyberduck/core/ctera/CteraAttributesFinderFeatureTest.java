@@ -111,7 +111,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testNoAccessAcl() throws Exception {
-        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (new user)", EnumSet.of(AbstractPath.Type.directory));
 
         // list parent folder to inspect attributes
         final List<DavResource> noAccess = new CteraListService(session).list(home).stream().filter(r -> r.getName().equals("NoAccess")).collect(Collectors.toList());
@@ -137,7 +137,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testNoDeleteAcl() throws Exception {
-        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (new user)", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "NoDelete", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
         assertEquals(new Acl(new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)), folderAcl);
@@ -149,7 +149,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testReadOnlyAcl() throws Exception {
-        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (new user)", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "ReadOnly", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
         assertEquals(new Acl(new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION)), folderAcl);
@@ -161,7 +161,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testNoCreateFolderAcl() throws Exception {
-        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (new user)", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "NoCreateFolderPermission", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
         assertEquals(new Acl(
@@ -180,7 +180,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testReadWriteAcl() throws Exception {
-        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (new user)", EnumSet.of(AbstractPath.Type.directory));
         final Path folder = new Path(home, "ReadWrite", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
         assertEquals(new Acl(
@@ -210,7 +210,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     @Test
     public void testWORMAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me", EnumSet.of(AbstractPath.Type.directory));
-        final Path folder = new Path(home, "WORM test (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Path folder = new Path(home, "WORM test (new user)", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
         assertEquals(new Acl(
                 new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
@@ -243,7 +243,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     @Test
     public void testWORMNoRetentionAcl() throws Exception {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me", EnumSet.of(AbstractPath.Type.directory));
-        final Path folder = new Path(home, "WORM-NoRetention(Delete allowed) (Alex Berman)", EnumSet.of(AbstractPath.Type.directory));
+        final Path folder = new Path(home, "WORM-NoRetention(Delete allowed) (new user)", EnumSet.of(AbstractPath.Type.directory));
         final Acl folderAcl = new CteraAttributesFinderFeature(session).find(folder).getAcl();
         assertEquals(new Acl(
                 new Acl.UserAndRole(new Acl.CanonicalUser(), READPERMISSION),
