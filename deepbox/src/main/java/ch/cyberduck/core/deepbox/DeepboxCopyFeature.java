@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,9 +61,11 @@ public class DeepboxCopyFeature implements Copy {
             final String nodeId = fileid.getFileId(file);
             // manually patched deepbox-api.json, return code 200 missing in theirs
             final Node copied = new CoreRestControllerApi(session.getClient()).copyNode(nodeCopy, nodeId);
-            final NodeUpdate nodeUpdate = new NodeUpdate();
-            nodeUpdate.setName(target.getName());
-            new CoreRestControllerApi(session.getClient()).updateNode(nodeUpdate, copied.getNodeId());
+            if(!StringUtils.equals(file.getName(), target.getName())) {
+                final NodeUpdate nodeUpdate = new NodeUpdate();
+                nodeUpdate.setName(target.getName());
+                new CoreRestControllerApi(session.getClient()).updateNode(nodeUpdate, copied.getNodeId());
+            }
             listener.sent(status.getLength());
             return target.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(copied));
         }
