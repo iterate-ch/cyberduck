@@ -16,35 +16,24 @@
 // feedback@cyberduck.io
 //
 
+using System;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Local;
-using Windows.Storage;
-using Path = System.IO.Path;
+using CoreLocal = ch.cyberduck.core.Local;
 
-namespace Ch.Cyberduck.Core.Preferences
+namespace Ch.Cyberduck.Core.Preferences;
+
+
+public class LocalSupportDirectoryFinder : SupportDirectoryFinder
 {
-    using Local = ch.cyberduck.core.Local;
+    private static readonly Lazy<SystemLocal> local = new(() => new(EnvironmentInfo.LocalAppDataPath, EnvironmentInfo.DataFolderName), true);
 
-    public class LocalSupportDirectoryFinder : SupportDirectoryFinder
+    public static SystemLocal Local => local.Value;
+
+    public CoreLocal find() => Local;
+
+    public SupportDirectoryFinder setup()
     {
-        private static SystemLocal local;
-
-        public static SystemLocal Local
-        {
-            get
-            {
-                return local ??= new(Path.Combine(EnvironmentInfo.LocalAppDataPath, EnvironmentInfo.DataFolderName));
-            }
-        }
-
-        public Local find()
-        {
-            return new SystemLocal(Local);
-        }
-
-        public SupportDirectoryFinder setup()
-        {
-            return this;
-        }
+        return this;
     }
 }
