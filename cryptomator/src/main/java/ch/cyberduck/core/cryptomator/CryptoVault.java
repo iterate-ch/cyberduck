@@ -15,8 +15,19 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.cryptomator.features.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV6Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV6Provider;
@@ -26,10 +37,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -38,13 +49,13 @@ import ch.cyberduck.core.vault.VaultException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.Masterkey;
+import org.cryptomator.cryptolib.api.PerpetualMasterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFile;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
 
@@ -58,8 +69,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -68,7 +77,6 @@ import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.common.io.BaseEncoding;
 import com.google.gson.JsonParseException;
 
 import static ch.cyberduck.core.vault.DefaultVaultRegistry.DEFAULT_VAULTCONFIG_FILE_NAME;
@@ -76,17 +84,14 @@ import static ch.cyberduck.core.vault.DefaultVaultRegistry.DEFAULT_VAULTCONFIG_F
 /**
  * Cryptomator vault implementation
  */
-public class CryptoVault implements Vault {
+// UVF: Keep this as façade for detecting vault version and delegating to implementation
+// - upon create, the vault version is determined from preferences -> set the delegate impl
+// - upon unlock, the vault version needs to be determined by reading masterkey.cryptomator or (!) vault.uvf file -> set the delegate impl
+// - open is called either from create or unlock, hence at this point we can delegate calls to the v6/v7/uvf imple?
+public class CryptoVault extends AbstractVault {
     private static final Logger log = LogManager.getLogger(CryptoVault.class);
 
-    public static final int VAULT_VERSION_DEPRECATED = 6;
-    public static final int VAULT_VERSION = PreferencesFactory.get().getInteger("cryptomator.vault.version");
     public static final byte[] VAULT_PEPPER = PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
-
-    public static final String DIR_PREFIX = "0";
-
-    private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
-    private static final Pattern BASE64URL_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+).c9r");
 
     private static final String JSON_KEY_VAULTVERSION = "format";
     private static final String JSON_KEY_CIPHERCONFIG = "cipherCombo";
@@ -114,6 +119,7 @@ public class CryptoVault implements Vault {
     private final byte[] pepper;
 
     public CryptoVault(final Path home) {
+        // UVF: readVaultConfig - do we need to try multiple file names for dection "masterkey.cryptomator" and "vault.uvf"?
         this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_VAULTCONFIG_FILE_NAME, VAULT_PEPPER);
     }
 
@@ -121,6 +127,8 @@ public class CryptoVault implements Vault {
         this.home = home;
         this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vault));
+
+        // UVF: no pepper for uvf
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
@@ -133,10 +141,13 @@ public class CryptoVault implements Vault {
         }
     }
 
+    // UVF:  VaultCredentials must come with specification of recipient, see the recipient header in https://github.com/encryption-alliance/unified-vault-format/tree/develop/vault%20metadata#example-per-recipient-unprotected-header
+    // UVF:  version string instead of int?
     public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final int version) throws BackgroundException {
         return this.create(session, null, credentials, version);
     }
 
+    // UVF: Switch on version ->  CryptoVaultImple: one for v6/v7 and one for uvf
     public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final int version) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
@@ -150,7 +161,7 @@ public class CryptoVault implements Vault {
         }
         final String passphrase = credentials.getPassword();
         final ByteArrayOutputStream mkArray = new ByteArrayOutputStream();
-        final Masterkey mk = Masterkey.generate(FastSecureRandomProvider.get().provide());
+        final PerpetualMasterkey mk = Masterkey.generate(FastSecureRandomProvider.get().provide());
         final MasterkeyFileAccess access = new MasterkeyFileAccess(pepper, FastSecureRandomProvider.get().provide());
         final MasterkeyFile masterkeyFile;
         try {
@@ -219,6 +230,7 @@ public class CryptoVault implements Vault {
         return this.unlock(session, prompt, bookmark, passphrase);
     }
 
+    // UVF: VaultConfig v6/v7 only
     private VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
         try {
             final String token = new ContentReader(session).read(config);
@@ -235,7 +247,7 @@ public class CryptoVault implements Vault {
         }
     }
 
-
+    // UVF: v6/v7 specific
     public static VaultConfig parseVaultConfigFromJWT(final String token) {
         final DecodedJWT decoded = JWT.decode(token);
         return new VaultConfig(
@@ -245,6 +257,8 @@ public class CryptoVault implements Vault {
                 decoded.getAlgorithm(), decoded);
     }
 
+    // UVF: v6/v7 and vault.uvf are different - can we use  the new MasterKey interface from https://github.com/cryptomator/cryptolib/pull/51/files?
+    // called from readVaultConfig() only which is v6/v7 only... good for us!
     private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path masterkey) throws BackgroundException {
         log.debug("Read master key {}", masterkey);
         try (Reader reader = new ContentReader(session).getReader(masterkey)) {
@@ -256,6 +270,7 @@ public class CryptoVault implements Vault {
     }
 
     public CryptoVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+        // UVF:  we need to detect the version here, vault.uvf is different from VaultConfig
         final VaultConfig vaultConfig = this.readVaultConfig(session);
         this.unlock(vaultConfig, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
@@ -263,6 +278,7 @@ public class CryptoVault implements Vault {
         return this;
     }
 
+    // UVF: extract to v6/v7 and uvf imple
     public void unlock(final VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
                        final String message) throws BackgroundException {
         final Credentials credentials;
@@ -300,22 +316,12 @@ public class CryptoVault implements Vault {
 
     @Override
     public synchronized void close() {
-        if(this.isUnlocked()) {
-            log.info("Close vault with cryptor {}", cryptor);
-            if(cryptor != null) {
-                cryptor.destroy();
-            }
-            if(directoryProvider != null) {
-                directoryProvider.destroy();
-            }
-            if(filenameProvider != null) {
-                filenameProvider.destroy();
-            }
-        }
+        super.close();
         cryptor = null;
         fileNameCryptor = null;
     }
 
+    // UVF: at this point, we have done the version detection, we can directly go to a delegate, no switch
     protected CryptoFilename createFilenameProvider(final VaultConfig vaultConfig) {
         switch(vaultConfig.version) {
             case VAULT_VERSION_DEPRECATED:
@@ -325,24 +331,20 @@ public class CryptoVault implements Vault {
         }
     }
 
-    protected CryptoDirectory createDirectoryProvider(final VaultConfig vaultConfig) {
+    protected CryptoDirectory createDirectoryProvider(final VaultConfig vaultConfig, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
         switch(vaultConfig.version) {
             case VAULT_VERSION_DEPRECATED:
-                return new CryptoDirectoryV6Provider(vault, this);
+                return new CryptoDirectoryV6Provider(vault, filenameProvider, filenameCryptor);
             default:
-                return new CryptoDirectoryV7Provider(vault, this);
+                return new CryptoDirectoryV7Provider(vault, filenameProvider, filenameCryptor);
         }
     }
 
+    // UVF:  extract to v6/v7/uvf, at this point we know which version
     protected void open(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
-        this.open(vaultConfig, passphrase, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
-    }
-
-    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase,
-                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         try {
-            final Masterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
-            this.open(vaultConfig, masterKey, filenameProvider, directoryProvider);
+            final PerpetualMasterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
+            this.open(vaultConfig, masterKey);
         }
         catch(IllegalArgumentException | IOException e) {
             throw new VaultException("Failure reading key file", e);
@@ -352,391 +354,83 @@ public class CryptoVault implements Vault {
         }
     }
 
-    protected void open(final VaultConfig vaultConfig, final Masterkey masterKey) throws BackgroundException {
-        this.open(vaultConfig, masterKey, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
-    }
-
-    protected void open(final VaultConfig vaultConfig, final Masterkey masterKey,
-                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
+    // UVF: unused?!
+    protected void open(final VaultConfig vaultConfig, final PerpetualMasterkey masterKey) throws BackgroundException {
         this.vaultVersion = vaultConfig.version;
         final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
         log.debug("Initialized crypto provider {}", provider);
         vaultConfig.verify(masterKey.getEncoded(), VAULT_VERSION);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
-        this.filenameProvider = filenameProvider;
-        this.directoryProvider = directoryProvider;
+        this.filenameProvider = this.createFilenameProvider(vaultConfig);
+        this.directoryProvider = this.createDirectoryProvider(vaultConfig, this.filenameProvider, this.fileNameCryptor);
         this.nonceSize = vaultConfig.getNonceSize();
     }
 
-    private Masterkey getMasterKey(final MasterkeyFile mkFile, final CharSequence passphrase) throws IOException {
+    private PerpetualMasterkey getMasterKey(final MasterkeyFile mkFile, final CharSequence passphrase) throws IOException {
         final StringWriter writer = new StringWriter();
         mkFile.write(writer);
         return new MasterkeyFileAccess(pepper, FastSecureRandomProvider.get().provide()).load(
                 new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
     }
 
-    public synchronized boolean isUnlocked() {
-        return cryptor != null;
-    }
-
-    @Override
-    public State getState() {
-        return this.isUnlocked() ? State.open : State.closed;
-    }
-
-    @Override
-    public boolean contains(final Path file) {
-        if(this.isUnlocked()) {
-            return new SimplePathPredicate(file).test(home) || file.isChild(home);
-        }
-        return false;
-    }
-
-    @Override
-    public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
-        return this.encrypt(session, file, file.attributes().getDirectoryId(), false);
-    }
-
-    @Override
-    public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
-        return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
-    }
-
-    public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
-        final Path encrypted;
-        if(file.isFile() || metadata) {
-            if(file.getType().contains(Path.Type.vault)) {
-                log.warn("Skip file {} because it is marked as an internal vault path", file);
-                return file;
-            }
-            if(new SimplePathPredicate(file).test(home)) {
-                log.warn("Skip vault home {} because the root has no metadata file", file);
-                return file;
-            }
-            final Path parent;
-            final String filename;
-            if(file.getType().contains(Path.Type.encrypted)) {
-                final Path decrypted = file.attributes().getDecrypted();
-                parent = directoryProvider.toEncrypted(session, decrypted.getParent().attributes().getDirectoryId(), decrypted.getParent());
-                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), decrypted.getName(), decrypted.getType());
-            }
-            else {
-                parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
-                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            }
-            final PathAttributes attributes = new PathAttributes(file.attributes());
-            attributes.setDirectoryId(null);
-            if(!file.isFile() && !metadata) {
-                // The directory is different from the metadata file used to resolve the actual folder
-                attributes.setVersionId(null);
-                attributes.setFileId(null);
-            }
-            // Translate file size
-            attributes.setSize(this.toCiphertextSize(0L, file.attributes().getSize()));
-            final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-            if(metadata && vaultVersion == VAULT_VERSION_DEPRECATED) {
-                type.remove(Path.Type.directory);
-                type.add(Path.Type.file);
-            }
-            type.remove(Path.Type.decrypted);
-            type.add(Path.Type.encrypted);
-            encrypted = new Path(parent, filename, type, attributes);
-        }
-        else {
-            if(file.getType().contains(Path.Type.encrypted)) {
-                log.warn("Skip file {} because it is already marked as an encrypted path", file);
-                return file;
-            }
-            if(file.getType().contains(Path.Type.vault)) {
-                return directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
-            }
-            encrypted = directoryProvider.toEncrypted(session, directoryId, file);
-        }
-        // Add reference to decrypted file
-        if(!file.getType().contains(Path.Type.encrypted)) {
-            encrypted.attributes().setDecrypted(file);
-        }
-        // Add reference for vault
-        file.attributes().setVault(home);
-        encrypted.attributes().setVault(home);
-        return encrypted;
-    }
-
-    @Override
-    public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
-        if(file.getType().contains(Path.Type.decrypted)) {
-            log.warn("Skip file {} because it is already marked as an decrypted path", file);
-            return file;
-        }
-        if(file.getType().contains(Path.Type.vault)) {
-            log.warn("Skip file {} because it is marked as an internal vault path", file);
-            return file;
-        }
-        final Path inflated = this.inflate(session, file);
-        final Pattern pattern = vaultVersion == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : BASE64URL_PATTERN;
-        final Matcher m = pattern.matcher(inflated.getName());
-        if(m.matches()) {
-            final String ciphertext = m.group(1);
-            try {
-                final String cleartextFilename = fileNameCryptor.decryptFilename(
-                        vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
-                        ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
-                final PathAttributes attributes = new PathAttributes(file.attributes());
-                if(this.isDirectory(inflated)) {
-                    if(Permission.EMPTY != attributes.getPermission()) {
-                        final Permission permission = new Permission(attributes.getPermission());
-                        permission.setUser(permission.getUser().or(Permission.Action.execute));
-                        permission.setGroup(permission.getGroup().or(Permission.Action.execute));
-                        permission.setOther(permission.getOther().or(Permission.Action.execute));
-                        attributes.setPermission(permission);
-                    }
-                    // Reset size for folders
-                    attributes.setSize(-1L);
-                    attributes.setVersionId(null);
-                    attributes.setFileId(null);
-                }
-                else {
-                    // Translate file size
-                    attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
-                }
-                // Add reference to encrypted file
-                attributes.setEncrypted(file);
-                // Add reference for vault
-                attributes.setVault(home);
-                final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-                type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
-                type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
-                type.remove(Path.Type.encrypted);
-                type.add(Path.Type.decrypted);
-                final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
-                if(type.contains(Path.Type.symboliclink)) {
-                    decrypted.setSymlinkTarget(file.getSymlinkTarget());
-                }
-                return decrypted;
-            }
-            catch(AuthenticationFailedException e) {
-                throw new CryptoAuthenticationException(
-                        "Failure to decrypt due to an unauthentic ciphertext", e);
-            }
-        }
-        else {
-            throw new CryptoFilenameMismatchException(
-                    String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern));
-        }
-    }
-
-    private boolean isDirectory(final Path p) {
-        if(vaultVersion == VAULT_VERSION_DEPRECATED) {
-            return p.getName().startsWith(DIR_PREFIX);
-        }
-        return p.isDirectory();
-    }
-
-    @Override
-    public long toCiphertextSize(final long cleartextFileOffset, final long cleartextFileSize) {
-        if(TransferStatus.UNKNOWN_LENGTH == cleartextFileSize) {
-            return TransferStatus.UNKNOWN_LENGTH;
-        }
-        final int headerSize;
-        if(0L == cleartextFileOffset) {
-            headerSize = cryptor.fileHeaderCryptor().headerSize();
-        }
-        else {
-            headerSize = 0;
-        }
-        return headerSize + cryptor.fileContentCryptor().ciphertextSize(cleartextFileSize);
-    }
-
-    @Override
-    public long toCleartextSize(final long cleartextFileOffset, final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
-        if(TransferStatus.UNKNOWN_LENGTH == ciphertextFileSize) {
-            return TransferStatus.UNKNOWN_LENGTH;
-        }
-        final int headerSize;
-        if(0L == cleartextFileOffset) {
-            headerSize = cryptor.fileHeaderCryptor().headerSize();
-        }
-        else {
-            headerSize = 0;
-        }
-        try {
-            return cryptor.fileContentCryptor().cleartextSize(ciphertextFileSize - headerSize);
-        }
-        catch(AssertionError e) {
-            throw new CryptoInvalidFilesizeException(String.format("Encrypted file size must be at least %d bytes", headerSize));
-        }
-        catch(IllegalArgumentException e) {
-            throw new CryptoInvalidFilesizeException(String.format("Invalid file size. %s", e.getMessage()));
-        }
-    }
-
-    private Path inflate(final Session<?> session, final Path file) throws BackgroundException {
-        final String fileName = file.getName();
-        if(filenameProvider.isDeflated(fileName)) {
-            final String filename = filenameProvider.inflate(session, fileName);
-            return new Path(file.getParent(), filename, EnumSet.of(Path.Type.file), file.attributes());
-        }
-        return file;
-    }
-
     public Path getHome() {
         return home;
     }
 
+    @Override
     public Path getMasterkey() {
         return masterkey;
     }
 
+    @Override
     public Path getConfig() {
         return config;
     }
 
+    @Override
+    public Path gethHome() {
+        return home;
+    }
+
+    @Override
+    public int getVersion() {
+        return vaultVersion;
+    }
+
+    @Override
     public FileHeaderCryptor getFileHeaderCryptor() {
         return cryptor.fileHeaderCryptor();
     }
 
+    @Override
     public FileContentCryptor getFileContentCryptor() {
         return cryptor.fileContentCryptor();
     }
 
+    @Override
     public CryptorCache getFileNameCryptor() {
         return fileNameCryptor;
     }
 
+    @Override
     public CryptoFilename getFilenameProvider() {
         return filenameProvider;
     }
 
+    @Override
     public CryptoDirectory getDirectoryProvider() {
         return directoryProvider;
     }
 
-    public int getNonceSize() {
-        return nonceSize;
-    }
-
-    public int numberOfChunks(final long cleartextFileSize) {
-        return (int) (cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
-                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
+    @Override
+    public Cryptor getCryptor() {
+        return cryptor;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
-        if(this.isUnlocked()) {
-            if(type == ListService.class) {
-                return (T) new CryptoListService(session, (ListService) delegate, this);
-            }
-            if(type == Touch.class) {
-                // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Write.class)), session._getFeature(Write.class), this);
-            }
-            if(type == Directory.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class), this) :
-                        new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class), this)
-                );
-            }
-            if(type == Upload.class) {
-                return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);
-            }
-            if(type == Download.class) {
-                return (T) new CryptoDownloadFeature(session, (Download) delegate, session._getFeature(Read.class), this);
-            }
-            if(type == Read.class) {
-                return (T) new CryptoReadFeature(session, (Read) delegate, this);
-            }
-            if(type == Write.class) {
-                return (T) new CryptoWriteFeature(session, (Write) delegate, this);
-            }
-            if(type == MultipartWrite.class) {
-                return (T) new CryptoMultipartWriteFeature(session, (Write) delegate, this);
-            }
-            if(type == Move.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoMoveV6Feature(session, (Move) delegate, this) :
-                        new CryptoMoveV7Feature(session, (Move) delegate, this));
-
-            }
-            if(type == AttributesFinder.class) {
-                return (T) new CryptoAttributesFeature(session, (AttributesFinder) delegate, this);
-            }
-            if(type == Find.class) {
-                return (T) new CryptoFindFeature(session, (Find) delegate, this);
-            }
-            if(type == UrlProvider.class) {
-                return (T) new CryptoUrlProvider(session, (UrlProvider) delegate, this);
-            }
-            if(type == FileIdProvider.class) {
-                return (T) new CryptoFileIdProvider(session, (FileIdProvider) delegate, this);
-            }
-            if(type == VersionIdProvider.class) {
-                return (T) new CryptoVersionIdProvider(session, (VersionIdProvider) delegate, this);
-            }
-            if(type == Delete.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
-                        new CryptoDeleteV7Feature(session, (Delete) delegate, this));
-            }
-            if(type == Trash.class) {
-                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
-                        new CryptoDeleteV7Feature(session, (Delete) delegate, this));
-            }
-            if(type == Symlink.class) {
-                return (T) new CryptoSymlinkFeature(session, (Symlink) delegate, this);
-            }
-            if(type == Headers.class) {
-                return (T) new CryptoHeadersFeature(session, (Headers) delegate, this);
-            }
-            if(type == Compress.class) {
-                return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
-            }
-            if(type == Bulk.class) {
-                return (T) new CryptoBulkFeature(session, (Bulk) delegate, session._getFeature(Delete.class), this);
-            }
-            if(type == UnixPermission.class) {
-                return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);
-            }
-            if(type == AclPermission.class) {
-                return (T) new CryptoAclPermission(session, (AclPermission) delegate, this);
-            }
-            if(type == Copy.class) {
-                return (T) new CryptoCopyFeature(session, (Copy) delegate, this);
-            }
-            if(type == Timestamp.class) {
-                return (T) new CryptoTimestampFeature(session, (Timestamp) delegate, this);
-            }
-            if(type == Encryption.class) {
-                return (T) new CryptoEncryptionFeature(session, (Encryption) delegate, this);
-            }
-            if(type == Lifecycle.class) {
-                return (T) new CryptoLifecycleFeature(session, (Lifecycle) delegate, this);
-            }
-            if(type == Location.class) {
-                return (T) new CryptoLocationFeature(session, (Location) delegate, this);
-            }
-            if(type == Lock.class) {
-                return (T) new CryptoLockFeature(session, (Lock) delegate, this);
-            }
-            if(type == Logging.class) {
-                return (T) new CryptoLoggingFeature(session, (Logging) delegate, this);
-            }
-            if(type == Redundancy.class) {
-                return (T) new CryptoRedundancyFeature(session, (Redundancy) delegate, this);
-            }
-            if(type == Search.class) {
-                return (T) new CryptoSearchFeature(session, (Search) delegate, this);
-            }
-            if(type == TransferAcceleration.class) {
-                return (T) new CryptoTransferAccelerationFeature<>(session, (TransferAcceleration) delegate, this);
-            }
-            if(type == Versioning.class) {
-                return (T) new CryptoVersioningFeature(session, (Versioning) delegate, this);
-            }
-        }
-        return delegate;
+    public int getNonceSize() {
+        return nonceSize;
     }
 
     @Override
