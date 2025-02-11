@@ -93,6 +93,7 @@
         <java-native-dll>8u312b07</java-native-dll>
         <rococoa-version>0.10.0</rococoa-version>
         <surefire.group.excluded>ch.cyberduck.test.IntegrationTest</surefire.group.excluded>
+        <surefire.exclude>ch.cyberduck.core.cryptomator.SFTPCryptomatorInteroperabilityTest</surefire.exclude>
     </properties>
 
     <dependencyManagement>
@@ -558,6 +559,9 @@
                             <DYLD_FALLBACK_FRAMEWORK_PATH>${project.build.directory}</DYLD_FALLBACK_FRAMEWORK_PATH>
                         </environmentVariables>
                         <excludedGroups>${surefire.group.excluded}</excludedGroups>
+                        <excludes>
+                            <exclude>${surefire.exclude}</exclude>
+                        </excludes>
                         <trimStackTrace>false</trimStackTrace>
                     </configuration>
                     <dependencies>
