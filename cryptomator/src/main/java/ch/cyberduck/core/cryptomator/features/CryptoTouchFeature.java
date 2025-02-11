@@ -67,7 +67,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         if(!vault.getFilenameProvider().isValid(filename)) {
             throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
         }
-        proxy.preflight(workdir, filename);
+        proxy.preflight(vault.encrypt(session, workdir), filename);
     }
 
     @Override
