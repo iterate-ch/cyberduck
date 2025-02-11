@@ -38,7 +38,8 @@
     <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
     <!-- Enable hardened runtime -->
     <property name="codesign.options" value="--force --options runtime"/>
-    <property name="codesign.arg" value="--entitlements ${setup}/app/default.entitlements"/>
+    <property name="codesign.arg"
+              value="--entitlements ${setup}/app/default.entitlements --requirements ${codesign.requirement}"/>
 
     <target name="codesign" depends="dotclean,compile-codesign-requirement">
         <echo
