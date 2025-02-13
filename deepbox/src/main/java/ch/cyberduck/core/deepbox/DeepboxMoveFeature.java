@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.CoreRestControllerApi;
@@ -73,7 +74,7 @@ public class DeepboxMoveFeature implements Move {
             }
             fileid.cache(file, null);
             fileid.cache(renamed, sourceId);
-            return renamed.withAttributes(file.attributes().withFileId(sourceId));
+            return renamed.withAttributes(new PathAttributes(file.attributes()).withFileId(sourceId));
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Cannot rename {0}", e, file);
