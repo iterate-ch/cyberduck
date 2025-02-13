@@ -1,7 +1,7 @@
-package ch.cyberduck.core.sparkle;
+package ch.cyberduck.core.updater;
 
 /*
- * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,21 +18,20 @@ package ch.cyberduck.core.sparkle;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
-import ch.cyberduck.core.updater.UpdateChecker;
 import ch.cyberduck.core.updater.UpdateChecker.Handler;
 
 import java.text.MessageFormat;
 
-public class NotificationSparkleUpdateHandler implements Handler, NotificationService.Listener {
+public class NotificationServiceUpdateHandler implements Handler, NotificationService.Listener {
 
     private final NotificationService notifications;
     private final UpdateChecker updater;
 
-    public NotificationSparkleUpdateHandler(final UpdateChecker updater) {
+    public NotificationServiceUpdateHandler(final UpdateChecker updater) {
         this(NotificationServiceFactory.get(), updater);
     }
 
-    public NotificationSparkleUpdateHandler(final NotificationService notifications, final UpdateChecker updater) {
+    public NotificationServiceUpdateHandler(final NotificationService notifications, final UpdateChecker updater) {
         this.notifications = notifications;
         this.notifications.addListener(this);
         this.updater = updater;

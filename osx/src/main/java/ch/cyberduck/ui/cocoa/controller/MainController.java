@@ -70,13 +70,13 @@ import ch.cyberduck.core.profiles.ProfilesUpdater;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.sparkle.MenuItemSparkleUpdateHandler;
-import ch.cyberduck.core.sparkle.NotificationSparkleUpdateHandler;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.updater.NotificationServiceUpdateHandler;
 import ch.cyberduck.core.updater.PeriodicUpdateChecker;
 import ch.cyberduck.core.updater.PeriodicUpdateCheckerFactory;
 import ch.cyberduck.core.urlhandler.SchemeHandler;
@@ -295,7 +295,7 @@ public class MainController extends BundleController implements NSApplication.De
             final NSMenuItem item = this.applicationMenu.itemAtIndex(new NSInteger(1));
             updater.addHandler(new MenuItemSparkleUpdateHandler(item));
             if(preferences.getBoolean("update.check.auto")) {
-                updater.addHandler(new NotificationSparkleUpdateHandler(updater));
+                updater.addHandler(new NotificationServiceUpdateHandler(updater));
             }
         }
         else {
