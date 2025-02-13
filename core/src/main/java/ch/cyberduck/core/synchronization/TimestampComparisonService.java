@@ -47,6 +47,6 @@ public class TimestampComparisonService implements ComparisonService {
         if(-1L == attr.getModificationDate()) {
             return 0;
         }
-        return Long.valueOf(attr.getModificationDate()).hashCode();
+        return Long.valueOf(Timestamp.toSeconds(attr.getModificationDate())).hashCode();
     }
 }

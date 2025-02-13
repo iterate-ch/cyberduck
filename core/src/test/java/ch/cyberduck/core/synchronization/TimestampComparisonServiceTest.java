@@ -18,7 +18,11 @@ public class TimestampComparisonServiceTest {
         TimestampComparisonService s = new TimestampComparisonService();
         final long timestamp = System.currentTimeMillis();
         assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withModificationDate(timestamp), new PathAttributes().withModificationDate(timestamp)));
+        final int hashCode = s.hashCode(Path.Type.file, new PathAttributes().withModificationDate(timestamp));
         assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withModificationDate(timestamp), new PathAttributes().withModificationDate(
+                TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timestamp))
+        )));
+        assertEquals(hashCode, s.hashCode(Path.Type.file, new PathAttributes().withModificationDate(
                 TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timestamp))
         )));
     }
