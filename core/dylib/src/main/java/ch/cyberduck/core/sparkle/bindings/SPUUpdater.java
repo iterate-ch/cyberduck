@@ -21,7 +21,7 @@ import ch.cyberduck.binding.foundation.NSURL;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
-import org.rococoa.cocoa.foundation.NSError;
+import org.rococoa.ObjCObjectByReference;
 
 /**
  * The main API in Sparkle for controlling the update mechanism. This class is used to configure the update
@@ -61,7 +61,7 @@ public abstract class SPUUpdater extends NSObject {
      * @param error The error that is populated if this method fails. Pass NULL if not interested in the error information.
      * @return YES if the updater started otherwise NO with a populated error
      */
-    public abstract boolean startUpdater(final NSError error);
+    public abstract boolean startUpdater(final ObjCObjectByReference error);
 
     /**
      * Checks for updates, and displays progress while doing so if needed.

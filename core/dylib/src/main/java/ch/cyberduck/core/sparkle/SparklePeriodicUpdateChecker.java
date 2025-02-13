@@ -34,6 +34,8 @@ import ch.cyberduck.core.updater.AbstractPeriodicUpdateChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
+import org.rococoa.ObjCObjectByReference;
+import org.rococoa.cocoa.foundation.NSError;
 
 public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker {
     private static final Logger log = LogManager.getLogger(SparklePeriodicUpdateChecker.class);
@@ -60,8 +62,11 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
         updater.setAutomaticallyDownloadsUpdates(preferences.getBoolean("update.check.auto"));
         updater.setUserAgentString(new PreferencesUseragentProvider().get());
         updater.setSendsSystemProfile(false);
-        if(!updater.startUpdater(null)) {
-            log.error("Failure starting updater");
+        // This must be called on the main thread
+        final ObjCObjectByReference error = new ObjCObjectByReference();
+        if(!updater.startUpdater(error)) {
+            final NSError f = error.getValueAs(NSError.class);
+            log.error("Failure {} starting updater", f);
         }
     }
 
