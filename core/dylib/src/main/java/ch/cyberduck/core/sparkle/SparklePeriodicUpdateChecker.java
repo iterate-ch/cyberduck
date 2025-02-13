@@ -40,6 +40,9 @@ import org.rococoa.cocoa.foundation.NSError;
 public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker {
     private static final Logger log = LogManager.getLogger(SparklePeriodicUpdateChecker.class);
 
+    private static final Preferences preferences
+            = PreferencesFactory.get();
+
     static {
         Native.load("core");
     }
@@ -48,14 +51,13 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
 
     @Delegate
     private final SparklePeriodicUpdateCheckerDelegate delegate;
-
-    private static final Preferences preferences
-            = PreferencesFactory.get();
+    private final SPUStandardUserDriver driver;
 
     public SparklePeriodicUpdateChecker(final Controller controller) {
         super(controller);
         delegate = new SparklePeriodicUpdateCheckerDelegate();
-        updater = SPUUpdater.create(SPUStandardUserDriver.create(NSBundle.mainBundle(), delegate.id()), delegate.id());
+        driver = SPUStandardUserDriver.create(NSBundle.mainBundle(), delegate.id());
+        updater = SPUUpdater.create(driver, delegate.id());
         updater.clearFeedURLFromUserDefaults();
         // Update checks are scheduled using own timer from super class
         updater.setAutomaticallyChecksForUpdates(false);
@@ -80,6 +82,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
             else {
                 log.debug("Check for update");
                 updater.checkForUpdates();
+                driver.showUpdateInFocus();
             }
         }
     }
