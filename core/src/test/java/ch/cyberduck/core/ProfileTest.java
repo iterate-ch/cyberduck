@@ -25,7 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ProfileTest {
 
@@ -49,7 +50,7 @@ public class ProfileTest {
 
             @Override
             public Map<String, String> mapForKey(final String key) {
-                return null;
+                return Collections.singletonMap("customprop1", "value1");
             }
 
             @Override
@@ -65,6 +66,8 @@ public class ProfileTest {
         assertTrue(profile.getProperties().containsKey("quota.notification.url"));
         assertEquals("https://www.gmx.net/produkte/cloud/speicher-erweitern/?mc=03962659",
             profile.getProperties().get("quota.notification.url"));
+        assertEquals("value1",
+                profile.getProperties().get("customprop1"));
     }
 
     @Test
@@ -127,7 +130,7 @@ public class ProfileTest {
 
             @Override
             public Map<String, String> mapForKey(final String key) {
-                return null;
+                return Collections.singletonMap("propFromMap", "${application.identifier}");
             }
 
             @Override
@@ -149,5 +152,6 @@ public class ProfileTest {
         assertEquals("${notfound}", profile.getOAuthClientSecret());
         assertEquals("io.cyberduck", profile.getProperties().get("prop"));
         assertEquals("${unknown}", profile.getProperties().get("unknown"));
+        assertEquals("io.cyberduck", profile.getProperties().get("propFromMap"));
     }
 }

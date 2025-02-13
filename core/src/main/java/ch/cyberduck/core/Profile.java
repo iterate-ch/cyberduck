@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -629,13 +630,14 @@ public class Profile implements Protocol {
 
     @Override
     public Map<String, String> getProperties() {
-        final List<String> properties = this.list(PROPERTIES_KEY);
-        if(properties.isEmpty()) {
-            return parent.getProperties();
-        }
-        return properties.stream().distinct().collect(Collectors.toMap(
+        final Map<String, String> properties = new HashMap<>(parent.getProperties());
+        // In profile as array
+        properties.putAll(this.list(PROPERTIES_KEY).stream().distinct().collect(Collectors.toMap(
                 property -> StringUtils.contains(property, '=') ? StringUtils.substringBefore(property, '=') : property,
-                property -> StringUtils.contains(property, '=') ? substitutor.replace(StringUtils.substringAfter(property, '=')) : StringUtils.EMPTY));
+                property -> StringUtils.contains(property, '=') ? substitutor.replace(StringUtils.substringAfter(property, '=')) : StringUtils.EMPTY)));
+        // In profile as dict
+        properties.putAll(this.map(PROPERTIES_KEY));
+        return properties;
     }
 
     @Override
@@ -668,6 +670,18 @@ public class Profile implements Protocol {
         }
         final ArrayList<String> substituted = new ArrayList<>(list);
         substituted.replaceAll(substitutor::replace);
+        return substituted;
+    }
+
+    private Map<String, String> map(final String key) {
+        final Map<String, String> map = dict.mapForKey(key);
+        if(null == map) {
+            return Collections.emptyMap();
+        }
+        final Map<String, String> substituted = new HashMap<>(map);
+        for(Map.Entry<String, String> entry : substituted.entrySet()) {
+            entry.setValue(substitutor.replace(entry.getValue()));
+        }
         return substituted;
     }
 
