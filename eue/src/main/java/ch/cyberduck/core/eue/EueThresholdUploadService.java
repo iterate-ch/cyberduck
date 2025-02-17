@@ -20,9 +20,11 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
@@ -31,6 +33,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+
+import java.text.MessageFormat;
 
 public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> {
 
@@ -56,6 +60,10 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     @Override
     public EueWriteFeature.Chunk upload(final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                         final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+        if(status.getLength() > session.userInfo().getLimits().getFileSize()) {
+            throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"),
+                    file.getName())).withFile(file);
+        }
         if(status.getLength() >= threshold) {
             if(Vault.DISABLED == registry.find(session, file)) {
                 // Only allow concurrent write of chunks when not uploading to vault. Write with default feature multiple 4MB chunks in parallel
