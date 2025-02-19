@@ -47,6 +47,7 @@
         <isset property="sparkle.feed"/>
     </condition>
 
+    <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="app"/>
 
     <property name="build.lipo.arch.remove" value="i386"/>
