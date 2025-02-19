@@ -63,7 +63,7 @@ public class IRODSProtocolTest {
             }
 
             @Override
-            public boolean booleanForKey(final String key) {
+            public Boolean booleanForKey(final String key) {
                 return false;
             }
 
@@ -103,7 +103,7 @@ public class IRODSProtocolTest {
             }
 
             @Override
-            public boolean booleanForKey(final String key) {
+            public Boolean booleanForKey(final String key) {
                 return false;
             }
 
