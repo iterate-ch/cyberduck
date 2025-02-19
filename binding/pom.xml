@@ -24,7 +24,7 @@
     <artifactId>binding</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <rococoa-core.version>0.9.1</rococoa-core.version>
+        <rococoa-core.version>0.10.0</rococoa-core.version>
     </properties>
 
     <dependencies>
