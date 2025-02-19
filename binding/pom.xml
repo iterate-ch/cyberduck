@@ -23,9 +23,6 @@
     </parent>
     <artifactId>binding</artifactId>
     <packaging>jar</packaging>
-    <properties>
-        <rococoa-core.version>0.9.1</rococoa-core.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -36,7 +33,7 @@
         <dependency>
             <groupId>org.rococoa</groupId>
             <artifactId>rococoa-core</artifactId>
-            <version>${rococoa-core.version}</version>
+            <version>${rococoa-version}</version>
         </dependency>
     </dependencies>
 </project>
