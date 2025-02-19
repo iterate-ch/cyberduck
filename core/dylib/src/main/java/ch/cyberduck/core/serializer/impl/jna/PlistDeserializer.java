@@ -53,7 +53,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     @Override
-    public boolean booleanForKey(final String key) {
+    public Boolean booleanForKey(final String key) {
         final String value = this.stringForKey(key);
         if(null == value) {
             return false;

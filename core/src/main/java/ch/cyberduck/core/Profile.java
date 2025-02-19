@@ -177,7 +177,11 @@ public class Profile implements Protocol {
 
     @Override
     public boolean isDeprecated() {
-        return this.bool(DEPRECATED_KEY);
+        final Boolean v = this.bool(DEPRECATED_KEY);
+        if(null == v) {
+            return false;
+        }
+        return v;
     }
 
     @Override
@@ -274,11 +278,11 @@ public class Profile implements Protocol {
     }
 
     public boolean isBundled() {
-        final String v = this.value(BUNDLED_KEY);
-        if(StringUtils.isBlank(v)) {
+        final Boolean v = this.bool(BUNDLED_KEY);
+        if(null == v) {
             return false;
         }
-        return Boolean.parseBoolean(v);
+        return v;
     }
 
     @Override
@@ -479,82 +483,92 @@ public class Profile implements Protocol {
 
     @Override
     public boolean isAnonymousConfigurable() {
-        if(StringUtils.isBlank(this.value(ANONYMOUS_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(ANONYMOUS_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isAnonymousConfigurable();
         }
-        return this.bool(ANONYMOUS_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
     public boolean isUsernameConfigurable() {
-        if(StringUtils.isBlank(this.value(USERNAME_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(USERNAME_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isUsernameConfigurable();
         }
-        return this.bool(USERNAME_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
     public boolean isPasswordConfigurable() {
-        if(StringUtils.isBlank(this.value(PASSWORD_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(PASSWORD_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isPasswordConfigurable();
         }
-        return this.bool(PASSWORD_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
     public boolean isTokenConfigurable() {
-        if(StringUtils.isBlank(this.value(TOKEN_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(TOKEN_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isTokenConfigurable();
         }
-        return this.bool(TOKEN_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
     public boolean isOAuthConfigurable() {
-        if(StringUtils.isNotBlank(this.value(OAUTH_CONFIGURABLE_KEY))) {
-            return this.bool(OAUTH_CONFIGURABLE_KEY);
+        final Boolean v = this.bool(OAUTH_CONFIGURABLE_KEY);
+        if(null == v) {
+            return StringUtils.isNotBlank(this.getOAuthClientId());
         }
-        return StringUtils.isNotBlank(this.getOAuthClientId());
+        return v;
     }
 
     @Override
     public boolean isCertificateConfigurable() {
-        if(StringUtils.isBlank(this.value(CERTIFICATE_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(CERTIFICATE_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isCertificateConfigurable();
         }
-        return this.bool(CERTIFICATE_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
     public boolean isPrivateKeyConfigurable() {
-        if(StringUtils.isBlank(this.value(PRIVATE_KEY_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(PRIVATE_KEY_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isPrivateKeyConfigurable();
         }
-        return this.bool(PRIVATE_KEY_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
     public boolean isHostnameConfigurable() {
-        if(StringUtils.isBlank(this.value(HOSTNAME_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(HOSTNAME_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isHostnameConfigurable();
         }
-        return this.bool(HOSTNAME_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
     public boolean isPortConfigurable() {
-        if(StringUtils.isBlank(this.value(PORT_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(PORT_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isPortConfigurable();
         }
-        return this.bool(PORT_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
     public boolean isPathConfigurable() {
-        if(StringUtils.isBlank(this.value(PATH_CONFIGURABLE_KEY))) {
+        final Boolean v = this.bool(PATH_CONFIGURABLE_KEY);
+        if(null == v) {
             return parent.isPathConfigurable();
         }
-        return this.bool(PATH_CONFIGURABLE_KEY);
+        return v;
     }
 
     @Override
@@ -613,10 +627,11 @@ public class Profile implements Protocol {
 
     @Override
     public boolean isOAuthPKCE() {
-        if(StringUtils.isBlank(this.value(OAUTH_PKCE_KEY))) {
+        final Boolean v = this.bool(OAUTH_PKCE_KEY);
+        if(null == v) {
             return parent.isOAuthPKCE();
         }
-        return this.bool(OAUTH_PKCE_KEY);
+        return v;
     }
 
     @Override
@@ -685,7 +700,7 @@ public class Profile implements Protocol {
         return substituted;
     }
 
-    private boolean bool(final String key) {
+    private Boolean bool(final String key) {
         return dict.booleanForKey(key);
     }
 

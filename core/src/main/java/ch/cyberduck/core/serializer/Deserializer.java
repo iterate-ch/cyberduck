@@ -59,7 +59,7 @@ public interface Deserializer<T> {
      * @param key Key name
      * @return True if key exists and is enabled
      */
-    boolean booleanForKey(String key);
+    Boolean booleanForKey(String key);
 
     /**
      * @return All keys

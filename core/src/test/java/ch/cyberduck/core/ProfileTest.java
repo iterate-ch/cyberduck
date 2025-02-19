@@ -54,7 +54,7 @@ public class ProfileTest {
             }
 
             @Override
-            public boolean booleanForKey(final String key) {
+            public Boolean booleanForKey(final String key) {
                 return false;
             }
 
@@ -94,7 +94,7 @@ public class ProfileTest {
             }
 
             @Override
-            public boolean booleanForKey(final String key) {
+            public Boolean booleanForKey(final String key) {
                 return false;
             }
 
@@ -134,7 +134,7 @@ public class ProfileTest {
             }
 
             @Override
-            public boolean booleanForKey(final String key) {
+            public Boolean booleanForKey(final String key) {
                 return false;
             }
 
