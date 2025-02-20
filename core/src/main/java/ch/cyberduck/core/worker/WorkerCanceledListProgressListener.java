@@ -44,6 +44,7 @@ final class WorkerCanceledListProgressListener extends ProxyListProgressListener
     public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
         log.info("Retrieved chunk of {} items in {}", list.size(), directory);
         if(worker.isCanceled()) {
+            log.warn("Throw failure for canceled worker {}", worker);
             throw new ListCanceledException(list);
         }
         super.chunk(directory, list);
