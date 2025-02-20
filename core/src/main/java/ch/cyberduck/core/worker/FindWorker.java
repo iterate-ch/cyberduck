@@ -41,7 +41,7 @@ public class FindWorker extends Worker<Boolean> {
     public FindWorker(final Cache<Path> cache, final Path file) {
         this.cache = cache;
         this.file = file;
-        this.memory = new MemoryListProgressListener(new WorkerCanceledListProgressListener(this,
+        this.memory = new MemoryListProgressListener(new WorkerListProgressListener(this,
                 new CachingListProgressListener(cache)));
     }
 
