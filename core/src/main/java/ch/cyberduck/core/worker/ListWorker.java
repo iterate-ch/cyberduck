@@ -45,7 +45,7 @@ public class ListWorker extends Worker<AttributedList<Path>> {
     public ListWorker(final Cache<Path> cache, final Path directory, final ListProgressListener listener) {
         this.cache = cache;
         this.directory = directory;
-        this.listener = new WorkerListProgressListener(this, new CachingListProgressListener(cache, listener));
+        this.listener = new WorkerCanceledListProgressListener(this, new CachingListProgressListener(cache, listener));
     }
 
     @Override

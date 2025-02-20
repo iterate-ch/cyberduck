@@ -24,11 +24,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class WorkerListProgressListener implements ListProgressListener {
-    private static final Logger log = LogManager.getLogger(WorkerListProgressListener.class.getName());
 
     private final Worker worker;
     private final ProgressListener delegate;
@@ -40,9 +36,7 @@ public class WorkerListProgressListener implements ListProgressListener {
 
     @Override
     public void chunk(final Path directory, AttributedList<Path> list) throws ConnectionCanceledException {
-        log.debug("Retrieved chunk of {} items in {}", list.size(), directory);
         if(worker.isCanceled()) {
-            log.warn("Throw failure for canceled worker {}", worker);
             throw new ListCanceledException(list);
         }
     }
