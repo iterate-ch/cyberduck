@@ -15,6 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.serializer.Deserializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +52,14 @@ public class ProfileTest {
 
             @Override
             public Map<String, String> mapForKey(final String key) {
-                return Collections.singletonMap("customprop1", "value1");
+                if("Properties".equals(key)) {
+                    final HashMap<String, String> properties = new HashMap<>();
+                    properties.put("customprop1", "value1");
+                    properties.put("custombool1", "true");
+                    properties.put("customint1", "4");
+                    return properties;
+                }
+                return Collections.emptyMap();
             }
 
             @Override
@@ -60,7 +69,7 @@ public class ProfileTest {
 
             @Override
             public List<String> keys() {
-                return null;
+                return Collections.singletonList("Properties");
             }
         });
         assertTrue(profile.getProperties().containsKey("quota.notification.url"));
@@ -68,6 +77,8 @@ public class ProfileTest {
             profile.getProperties().get("quota.notification.url"));
         assertEquals("value1",
                 profile.getProperties().get("customprop1"));
+        assertTrue(new HostPreferences(new Host(profile)).getBoolean("custombool1"));
+        assertEquals(4, new HostPreferences(new Host(profile)).getInteger("customint1"));
     }
 
     @Test
