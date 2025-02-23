@@ -17,7 +17,6 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -50,7 +49,7 @@ public class SecurityScopedFilesystemBookmarkResolverTest {
         new DefaultLocalTouchFeature().touch(l);
         try {
             final SecurityScopedFilesystemBookmarkResolver resolver = new SecurityScopedFilesystemBookmarkResolver();
-            final NSData bookmark = resolver.create(l);
+            final String bookmark = resolver.create(l);
             assertNotNull(bookmark);
             final NSURL resolved = resolver.resolve(bookmark);
             assertNotNull(resolved);

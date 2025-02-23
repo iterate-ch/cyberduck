@@ -18,7 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AttributedList;
@@ -48,7 +47,7 @@ public class FinderLocal extends Local {
         Native.load("core");
     }
 
-    private static final FilesystemBookmarkResolver<NSData, NSURL> resolver
+    private static final FilesystemBookmarkResolver<NSURL> resolver
             = FilesystemBookmarkResolverFactory.get();
 
     public FinderLocal(final Local parent, final String name) {
@@ -153,13 +152,10 @@ public class FinderLocal extends Local {
         return this.lock(interactive, resolver);
     }
 
-    protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSData, NSURL> resolver) throws AccessDeniedException {
+    protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSURL> resolver) throws AccessDeniedException {
         final String path = this.getAbbreviatedPath();
-        NSData bookmark;
-        if(null != this.getBookmark()) {
-            bookmark = NSData.dataWithBase64EncodedString(this.getBookmark());
-        }
-        else {
+        String bookmark = this.getBookmark();
+        if(null == bookmark) {
             try {
                 bookmark = resolver.create(this);
             }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -48,7 +47,7 @@ public class AliasFilesystemBookmarkResolverTest {
         new DefaultLocalTouchFeature().touch(l);
         try {
             final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
-            final NSData bookmark = resolver.create(l);
+            final String bookmark = resolver.create(l);
             assertNull(bookmark);
             final NSURL resolved = resolver.resolve(bookmark);
             assertNull(resolved);
@@ -65,7 +64,7 @@ public class AliasFilesystemBookmarkResolverTest {
         new DefaultLocalTouchFeature().touch(l);
         try {
             final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
-            final NSData bookmark = resolver.create(l);
+            final String bookmark = resolver.create(l);
             assertNotNull(bookmark);
             final NSURL resolved = resolver.resolve(bookmark);
             assertNotNull(resolved);

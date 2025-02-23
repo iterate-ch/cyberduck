@@ -1,12 +1,12 @@
 package ch.cyberduck.core.local;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -17,13 +17,13 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Factory;
 
-public class FilesystemBookmarkResolverFactory<Bookmark, Resolved> extends Factory<FilesystemBookmarkResolver<Bookmark, Resolved>> {
+public class FilesystemBookmarkResolverFactory<Resolved> extends Factory<FilesystemBookmarkResolver<Resolved>> {
 
     private FilesystemBookmarkResolverFactory() {
         super("factory.bookmarkresolver.class");
     }
 
-    public static <Bookmark, Resolved> FilesystemBookmarkResolver<Bookmark, Resolved> get() {
-        return new FilesystemBookmarkResolverFactory<Bookmark, Resolved>().create();
+    public static <Resolved> FilesystemBookmarkResolver<Resolved> get() {
+        return new FilesystemBookmarkResolverFactory<Resolved>().create();
     }
 }

@@ -41,7 +41,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSData, NSURL> {
+public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
     private static final Logger log = LogManager.getLogger(AbstractPromptBookmarkResolver.class);
 
     /**
@@ -68,7 +68,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
     }
 
     @Override
-    public NSData create(final Local file) throws AccessDeniedException {
+    public String create(final Local file) throws AccessDeniedException {
         if(skip(file)) {
             return null;
         }
@@ -78,7 +78,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         return this.create(url);
     }
 
-    private NSData create(final NSURL url) throws LocalAccessDeniedException {
+    private String create(final NSURL url) throws LocalAccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         final NSData data = url.bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
                 create, null, null, error);
@@ -91,17 +91,17 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
             throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         log.trace("Created bookmark {} for {}", data.base64Encoding(), url.path());
-        return data;
+        return data.base64Encoding();
     }
 
     @Override
-    public NSURL resolve(final NSData bookmark) throws AccessDeniedException {
+    public NSURL resolve(final String bookmark) throws AccessDeniedException {
         if(null == bookmark) {
             log.warn("Skip resolving null bookmark");
             return null;
         }
         final ObjCObjectByReference error = new ObjCObjectByReference();
-        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, resolve, error);
+        final NSURL resolved = NSURL.URLByResolvingBookmarkData(NSData.dataWithBase64EncodedString(bookmark), resolve, error);
         if(null == resolved) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {
@@ -136,7 +136,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
      * @return Security scoped bookmark
      */
     @Override
-    public NSData prompt(final Local file) throws AccessDeniedException {
+    public String prompt(final Local file) throws AccessDeniedException {
         if(!file.exists()) {
             log.warn("Skip prompting for non existing file {}", file);
             return null;
