@@ -155,25 +155,24 @@ public class FinderLocal extends Local {
 
     protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSData, NSURL> resolver) throws AccessDeniedException {
         final String path = this.getAbbreviatedPath();
-        NSURL resolved;
+        NSData bookmark;
         if(null != this.getBookmark()) {
-            resolved = resolver.resolve(NSData.dataWithBase64EncodedString(this.getBookmark()));
+            bookmark = NSData.dataWithBase64EncodedString(this.getBookmark());
         }
         else {
             try {
-                resolved = resolver.resolve(resolver.create(this));
+                bookmark = resolver.create(this);
             }
             catch(AccessDeniedException e) {
                 log.warn("Failure {} creating bookmark for {}", e, path);
                 if(interactive) {
                     log.warn("Missing security scoped bookmark for file {}", path);
                     // Prompt user if no bookmark reference is available
-                    final NSData bookmark = resolver.prompt(this);
+                    bookmark = resolver.prompt(this);
                     if(null == bookmark) {
                         // Prompt canceled by user
                         return null;
                     }
-                    resolved = resolver.resolve(bookmark);
                 }
                 else {
                     log.warn("No security scoped bookmark for {}", path);
@@ -182,9 +181,11 @@ public class FinderLocal extends Local {
                 }
             }
         }
-        if(null == resolved) {
+        if(null == bookmark) {
             return null;
         }
+        log.debug("Lock with bookmark {}", bookmark);
+        final NSURL resolved = resolver.resolve(bookmark);
         if(!resolved.startAccessingSecurityScopedResource()) {
             throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", path));
         }
