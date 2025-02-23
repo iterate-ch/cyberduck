@@ -53,8 +53,6 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
      */
     private final int resolve;
 
-    private final Proxy proxy = new Proxy();
-
     private static final Local TEMPORARY = new TemporarySupportDirectoryFinder().find();
     private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
 
@@ -68,14 +66,29 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
     }
 
     @Override
-    public String create(final Local file) throws AccessDeniedException {
+    public String create(final Local file, final boolean prompt) {
         if(skip(file)) {
             return null;
         }
         // Create new security scoped bookmark
         final NSURL url = NSURL.fileURLWithPath(file.getAbsolute());
         log.trace("Resolved file {} to url {}", file, url);
-        return this.create(url);
+        try {
+            return this.create(url);
+        }
+        catch(LocalAccessDeniedException e) {
+            log.warn("Failure {} creating bookmark for {}", e, url);
+            if(prompt) {
+                try {
+                    return this.prompt(file);
+                }
+                catch(LocalAccessDeniedException f) {
+                    // Prompt canceled by user
+                    log.warn("Failure {} creating bookmark for {}", f, url);
+                }
+            }
+            return null;
+        }
     }
 
     private String create(final NSURL url) throws LocalAccessDeniedException {
@@ -132,17 +145,14 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         return false;
     }
 
-    /**
-     * @return Security scoped bookmark
-     */
-    @Override
-    public String prompt(final Local file) throws AccessDeniedException {
+    private String prompt(final Local file) throws LocalAccessDeniedException {
         if(!file.exists()) {
             log.warn("Skip prompting for non existing file {}", file);
             return null;
         }
-        final AtomicReference<NSURL> selected = new AtomicReference<>();
         log.warn("Prompt for file {} to obtain bookmark reference", file);
+        final Proxy proxy = new Proxy();
+        final AtomicReference<NSURL> selected = new AtomicReference<>();
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {

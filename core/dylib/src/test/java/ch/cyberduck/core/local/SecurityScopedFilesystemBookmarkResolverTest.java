@@ -19,13 +19,13 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class SecurityScopedFilesystemBookmarkResolverTest {
 
@@ -33,13 +33,7 @@ public class SecurityScopedFilesystemBookmarkResolverTest {
     public void testCreateNotFound() throws Exception {
         final String name = UUID.randomUUID().toString();
         Local l = new FinderLocal(System.getProperty("user.dir"), name);
-        try {
-            assertNull(new SecurityScopedFilesystemBookmarkResolver().create(l));
-            fail();
-        }
-        catch(LocalAccessDeniedException e) {
-            //
-        }
+        assertNull(new SecurityScopedFilesystemBookmarkResolver().create(l));
     }
 
     @Test

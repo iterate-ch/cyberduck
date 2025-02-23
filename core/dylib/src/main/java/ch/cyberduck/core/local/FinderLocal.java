@@ -154,30 +154,11 @@ public class FinderLocal extends Local {
 
     protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSURL> resolver) throws AccessDeniedException {
         final String path = this.getAbbreviatedPath();
-        String bookmark = this.getBookmark();
         if(null == bookmark) {
-            try {
-                bookmark = resolver.create(this);
-            }
-            catch(AccessDeniedException e) {
-                log.warn("Failure {} creating bookmark for {}", e, path);
-                if(interactive) {
-                    log.warn("Missing security scoped bookmark for file {}", path);
-                    // Prompt user if no bookmark reference is available
-                    bookmark = resolver.prompt(this);
-                    if(null == bookmark) {
-                        // Prompt canceled by user
-                        return null;
-                    }
-                }
-                else {
-                    log.warn("No security scoped bookmark for {}", path);
-                    // Ignore failure resolving path
-                    return null;
-                }
-            }
+            bookmark = resolver.create(this, interactive);
         }
         if(null == bookmark) {
+            log.warn("No security scoped bookmark for {}", path);
             return null;
         }
         log.debug("Lock with bookmark {}", bookmark);

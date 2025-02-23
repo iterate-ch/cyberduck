@@ -20,7 +20,7 @@ import ch.cyberduck.core.Local;
 public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkResolver<Object> {
 
     @Override
-    public String create(final Local file) {
+    public String create(final Local file, final boolean prompt) {
         return null;
     }
 

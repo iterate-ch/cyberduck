@@ -67,8 +67,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     /**
      * Absolute path in local file system
      */
-    private String path;
-    private String bookmark;
+    protected String path;
+    protected String bookmark;
 
     public Local(final String parent, final String name) {
         this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
