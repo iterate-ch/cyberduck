@@ -31,12 +31,12 @@ public class LocalSymlinkFeature implements Symlink {
     }
 
     @Override
-    public void symlink(final Path file, final String target) throws BackgroundException {
+    public void symlink(final Path link, final String target) throws BackgroundException {
         try {
-            Files.createSymbolicLink(session.toPath(file), session.toPath(target));
+            Files.createSymbolicLink(session.toPath(link), session.toPath(target));
         }
         catch(IOException e) {
-            throw new LocalExceptionMappingService().map("Cannot create {0}", e, file);
+            throw new LocalExceptionMappingService().map("Cannot create {0}", e, link);
         }
     }
 }

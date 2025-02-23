@@ -21,5 +21,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 public interface Symlink {
-    void symlink(Local file, String target) throws AccessDeniedException;
+    /**
+     * @param link   Link file to create
+     * @param target Taret path
+     * @throws AccessDeniedException Permission failure
+     */
+    void symlink(Local link, String target) throws AccessDeniedException;
 }

@@ -33,14 +33,14 @@ public class FTPSymlinkFeature implements Symlink {
     }
 
     @Override
-    public void symlink(Path file, String target) throws BackgroundException {
+    public void symlink(Path link, String target) throws BackgroundException {
         try {
-            if(!session.getClient().sendSiteCommand(String.format("SYMLINK %s %s", file.getAbsolute(), target))) {
+            if(!session.getClient().sendSiteCommand(String.format("SYMLINK %s %s", link.getAbsolute(), target))) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot create {0}", e, file);
+            throw new FTPExceptionMappingService().map("Cannot create {0}", e, link);
         }
     }
 }

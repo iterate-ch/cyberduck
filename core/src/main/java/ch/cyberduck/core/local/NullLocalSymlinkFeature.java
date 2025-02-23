@@ -23,7 +23,7 @@ import ch.cyberduck.core.local.features.Symlink;
 public class NullLocalSymlinkFeature implements Symlink {
 
     @Override
-    public void symlink(Local file, String target) {
+    public void symlink(Local link, String target) {
         //
     }
 }

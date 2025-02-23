@@ -1,6 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -23,9 +24,9 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
     @Test
     public void testSymlink() throws Exception {
         final SFTPHomeDirectoryService workdir = new SFTPHomeDirectoryService(session);
-        final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path target = new Path(workdir.find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target, new TransferStatus());
-        final Path link = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        final Path link = new Path(workdir.find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(link, target.getName());
         assertTrue(new SFTPFindFeature(session).find(link));
         assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),

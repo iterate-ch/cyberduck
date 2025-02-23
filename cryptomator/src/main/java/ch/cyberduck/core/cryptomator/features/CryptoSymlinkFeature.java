@@ -33,8 +33,8 @@ public class CryptoSymlinkFeature implements Symlink {
     }
 
     @Override
-    public void symlink(final Path file, final String target) throws BackgroundException {
-        delegate.symlink(vault.encrypt(session, file), target);
+    public void symlink(final Path link, final String target) throws BackgroundException {
+        delegate.symlink(vault.encrypt(session, link), target);
     }
 
     @Override

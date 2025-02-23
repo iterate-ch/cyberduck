@@ -32,12 +32,23 @@ public class SFTPSymlinkFeature implements Symlink {
     }
 
     @Override
-    public void symlink(final Path file, String target) throws BackgroundException {
+    public void symlink(final Path link, final String target) throws BackgroundException {
         try {
-            session.sftp().symlink(target, file.getAbsolute());
+            // Reversal of arguments to SSH_FXP_SYMLINK
+            // When OpenSSH's sftp-server was implemented, the order of the arguments
+            // to the SSH_FXP_SYMLINK method was inadvertently reversed. Unfortunately,
+            // the reversal was not noticed until the server was widely deployed. Since
+            // fixing this to follow the specification would cause incompatibility, the
+            // current order was retained. For correct operation, clients should send
+            // SSH_FXP_SYMLINK as follows:
+            //
+            // uint32        id
+            // string        targetpath
+            // string        linkpath
+            session.sftp().symlink(target, link.getAbsolute());
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot create {0}", e, file);
+            throw new SFTPExceptionMappingService().map("Cannot create {0}", e, link);
         }
     }
 }

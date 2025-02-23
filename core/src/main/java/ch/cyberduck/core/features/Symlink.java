@@ -20,6 +20,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 @Optional
 public interface Symlink {
-
-    void symlink(Path file, String target) throws BackgroundException;
+    /**
+     * @param link   Link file to create
+     * @param target Target file for symbolic link
+     */
+    void symlink(Path link, String target) throws BackgroundException;
 }

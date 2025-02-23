@@ -27,13 +27,13 @@ import java.nio.file.Paths;
 public class DefaultSymlinkFeature implements Symlink {
 
     @Override
-    public void symlink(final Local file, final String target) throws AccessDeniedException {
+    public void symlink(final Local link, final String target) throws AccessDeniedException {
         try {
-            Files.createSymbolicLink(Paths.get(file.getAbsolute()), Paths.get(target));
+            Files.createSymbolicLink(Paths.get(link.getAbsolute()), Paths.get(target));
         }
         catch(IOException | UnsupportedOperationException e) {
             throw new AccessDeniedException(String.format("%s %s",
-                    LocaleFactory.localizedString("Cannot create file", "Error"), file.getAbsolute()), e);
+                    LocaleFactory.localizedString("Cannot create file", "Error"), link.getAbsolute()), e);
         }
     }
 }
