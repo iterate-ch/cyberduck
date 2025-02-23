@@ -3193,6 +3193,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                     }
                     this.transfer(new UploadTransfer(pool.getHost(), uploads));
+                    return true;
                 }
             }
         }
