@@ -176,6 +176,25 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
+    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                     final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
+        final Map<TransferItem, TransferStatus> downloads = new HashMap<>();
+        final Map<TransferItem, TransferStatus> uploads = new HashMap<>();
+        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+            switch(comparison.compare(entry.getKey().remote, entry.getKey().local, new DisabledListProgressListener())) {
+                case remote:
+                    downloads.put(entry.getKey(), entry.getValue());
+                    break;
+                case local:
+                    uploads.put(entry.getKey(), entry.getValue());
+                    break;
+            }
+        }
+        download.post(source, destination, downloads, error, listener, callback);
+        upload.post(source, destination, uploads, error, listener, callback);
+    }
+
+    @Override
     public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
         log.debug("Children for {}", directory);
