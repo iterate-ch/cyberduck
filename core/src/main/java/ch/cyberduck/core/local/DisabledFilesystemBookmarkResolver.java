@@ -25,7 +25,7 @@ public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkRes
     }
 
     @Override
-    public Object resolve(final Object file) {
+    public Object resolve(final Object bookmark) {
         return null;
     }
 }

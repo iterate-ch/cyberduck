@@ -35,11 +35,11 @@ public interface FilesystemBookmarkResolver<Bookmark, Resolved> {
     /**
      * Resolve the security-scoped bookmark
      *
-     * @param file File outside of sandbox
+     * @param bookmark Security-scoped bookmark
      * @return Reference to file by bookmark
-     * @throws AccessDeniedException Failure resolving bookmark for file
+     * @throws AccessDeniedException Failure resolving file with bookmark
      */
-    Resolved resolve(Bookmark file) throws AccessDeniedException;
+    Resolved resolve(Bookmark bookmark) throws AccessDeniedException;
 
     default Bookmark prompt(Local file) throws AccessDeniedException {
         return null;
