@@ -44,7 +44,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSData, NSURL> {
     private static final Logger log = LogManager.getLogger(AbstractPromptBookmarkResolver.class);
 
+    /**
+     * NSURLBookmarkCreationOptions
+     */
     private final int create;
+    /**
+     * NSURLBookmarkResolutionOptions
+     */
     private final int resolve;
 
     private final Proxy proxy = new Proxy();
@@ -53,8 +59,8 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
     private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
 
     /**
-     * @param create  Create options
-     * @param resolve Resolve options
+     * @param create  Create options from NSURLBookmarkCreationOptions
+     * @param resolve Resolve options from NSURLBookmarkResolutionOptions
      */
     public AbstractPromptBookmarkResolver(final int create, final int resolve) {
         this.create = create;
