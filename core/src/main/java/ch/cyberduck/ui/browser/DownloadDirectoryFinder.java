@@ -23,6 +23,7 @@ import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -56,7 +57,7 @@ public class DownloadDirectoryFinder implements DirectoryFinder {
             return;
         }
         log.info("Save default download folder {} for bookmark {}", directory, bookmark);
-        bookmark.setDownloadFolder(directory);
+        bookmark.setDownloadFolder(directory.withBookmark(FilesystemBookmarkResolverFactory.get().create(directory)));
         if(collection.contains(bookmark)) {
             collection.collectionItemChanged(bookmark);
         }
