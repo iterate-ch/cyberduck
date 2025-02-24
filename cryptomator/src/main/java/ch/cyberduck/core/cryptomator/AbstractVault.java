@@ -36,7 +36,6 @@ import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 
-import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -134,7 +133,7 @@ public abstract class AbstractVault implements Vault {
         return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
     }
 
-    public Path encrypt(Session<?> session, Path file, String directoryId, boolean metadata) throws BackgroundException {
+    public Path encrypt(Session<?> session, Path file, byte[] directoryId, boolean metadata) throws BackgroundException {
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
@@ -212,7 +211,7 @@ public abstract class AbstractVault implements Vault {
             try {
                 final String cleartextFilename = this.getFileNameCryptor().decryptFilename(
                         this.getVersion() == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
-                        ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
+                        ciphertext, file.getParent().attributes().getDirectoryId());
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {

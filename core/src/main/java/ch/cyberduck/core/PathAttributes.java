@@ -156,7 +156,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Unique identifier for cryptomator
      */
-    private String directoryId;
+    private byte[] directoryId;
 
     private Map<String, String> custom = Collections.emptyMap();
 
@@ -480,11 +480,11 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
-    public String getDirectoryId() {
+    public byte[] getDirectoryId() {
         return directoryId;
     }
 
-    public PathAttributes setDirectoryId(final String directoryId) {
+    public PathAttributes setDirectoryId(final byte[] directoryId) {
         this.directoryId = directoryId;
         return this;
     }
