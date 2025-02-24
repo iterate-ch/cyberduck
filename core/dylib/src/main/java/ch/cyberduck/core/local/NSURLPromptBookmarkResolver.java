@@ -27,8 +27,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
-import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.logging.log4j.LogManager;
@@ -53,9 +51,6 @@ public class NSURLPromptBookmarkResolver implements FilesystemBookmarkResolver<N
      */
     private final int resolve;
 
-    private static final Local TEMPORARY = new TemporarySupportDirectoryFinder().find();
-    private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
-
     /**
      * @param create  Create options from NSURLBookmarkCreationOptions
      * @param resolve Resolve options from NSURLBookmarkResolutionOptions
@@ -67,9 +62,6 @@ public class NSURLPromptBookmarkResolver implements FilesystemBookmarkResolver<N
 
     @Override
     public String create(final Local file, final boolean prompt) {
-        if(skip(file)) {
-            return null;
-        }
         // Create new security scoped bookmark
         final NSURL url = NSURL.fileURLWithPath(file.getAbsolute());
         log.trace("Resolved file {} to url {}", file, url);
@@ -124,25 +116,6 @@ public class NSURLPromptBookmarkResolver implements FilesystemBookmarkResolver<N
             throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         return resolved;
-    }
-
-    /**
-     * Determine if creating security scoped bookmarks for file should be skipped
-     */
-    private static boolean skip(final Local file) {
-        if(null != TEMPORARY) {
-            if(file.isChild(TEMPORARY)) {
-                // Skip prompt for file in temporary folder where access is not sandboxed
-                return true;
-            }
-        }
-        if(null != GROUP_CONTAINER) {
-            if(file.isChild(GROUP_CONTAINER)) {
-                // Skip prompt for file in application group folder where access is not sandboxed
-                return true;
-            }
-        }
-        return false;
     }
 
     private String prompt(final Local file) throws LocalAccessDeniedException {
