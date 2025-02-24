@@ -52,8 +52,8 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
-        final Path encrypt = vault.encrypt(session, folder, random.random(), false);
-        final String directoryId = encrypt.attributes().getDirectoryId();
+        final Path encrypt = vault.encrypt(session, folder, random.random().getBytes(StandardCharsets.US_ASCII), false);
+        final byte[] directoryId = encrypt.attributes().getDirectoryId();
         // Create metadata file for directory
         final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(
                 session._getFeature(Write.class), vault.encrypt(session, folder, true),
@@ -62,7 +62,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
                 CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE,
                 EnumSet.of(Path.Type.file));
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
-        new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
+        new ContentWriter(session).write(directoryMetadataFile, directoryId);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
