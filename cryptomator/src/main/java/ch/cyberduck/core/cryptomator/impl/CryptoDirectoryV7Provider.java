@@ -55,14 +55,13 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
     }
 
     @Override
-    public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(),
-                filename, directoryId.getBytes(StandardCharsets.UTF_8)) + EXTENSION_REGULAR;
+    public String toEncrypted(final Session<?> session, final byte[] directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
+        final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, directoryId) + EXTENSION_REGULAR;
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return filenameProvider.deflate(session, ciphertextName);
     }
 
-    protected String load(final Session<?> session, final Path directory) throws BackgroundException {
+    protected byte[] load(final Session<?> session, final Path directory) throws BackgroundException {
         final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
         final String cleartextName = directory.getName();
         final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
@@ -71,11 +70,11 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
         try {
             log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
             final Path metadataFile = new Path(metadataParent, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file, Path.Type.encrypted));
-            return new ContentReader(session).read(metadataFile);
+            return new ContentReader(session).readBytes(metadataFile);
         }
         catch(NotfoundException e) {
             log.warn("Missing directory ID for folder {}", directory);
-            return random.random();
+            return random.random().getBytes(StandardCharsets.US_ASCII);
         }
     }
 }
