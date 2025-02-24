@@ -21,10 +21,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,6 +45,19 @@ public class ContentReader {
         final Read read = session._getFeature(Read.class);
         try(final InputStream in = read.read(file, new TransferStatus().setLength(file.attributes().getSize()), new DisabledConnectionCallback())) {
             return IOUtils.toString(in, StandardCharsets.UTF_8);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    public byte[] readBytes(final Path file) throws BackgroundException {
+        final Read read = session._getFeature(Read.class);
+        final TransferStatus status = new TransferStatus().withLength(file.attributes().getSize());
+        try (final InputStream in = read.read(file, status, new DisabledConnectionCallback())) {
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            new StreamCopier(status, status).transfer(in, out);
+            return out.toByteArray();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
