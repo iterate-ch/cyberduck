@@ -32,7 +32,7 @@ public interface CryptoDirectory {
      * @param type        File type
      * @return Encrypted filename
      */
-    String toEncrypted(Session<?> session, String directoryId, String filename, EnumSet<Path.Type> type) throws BackgroundException;
+    String toEncrypted(Session<?> session, byte[] directoryId, String filename, EnumSet<Path.Type> type) throws BackgroundException;
 
     /**
      * Get encrypted reference for clear text directory path.
@@ -41,7 +41,7 @@ public interface CryptoDirectory {
      * @param directoryId Directory ID or null to read directory id from metadata file
      * @param directory   Clear text
      */
-    Path toEncrypted(Session<?> session, String directoryId, Path directory) throws BackgroundException;
+    Path toEncrypted(Session<?> session, byte[] directoryId, Path directory) throws BackgroundException;
 
     /**
      * Remove from cache
