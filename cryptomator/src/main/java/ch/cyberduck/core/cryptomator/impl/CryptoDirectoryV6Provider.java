@@ -102,7 +102,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         throw new NotfoundException(directory.getAbsolute());
     }
 
-    private byte[] toDirectoryId(final Session<?> session, final Path directory, final byte[] directoryId) throws BackgroundException {
+    protected byte[] toDirectoryId(final Session<?> session, final Path directory, final byte[] directoryId) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
             return ROOT_DIR_ID;
         }
