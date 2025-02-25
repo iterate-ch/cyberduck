@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
+import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -84,7 +84,7 @@ public class UVFVault extends AbstractVault {
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor(masterKey.firstRevision())); // TODO revision eventually depends on location - safe?
         this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE); // TODO there is no shortening in UVF defined yet
-        this.directoryProvider = new CryptoDirectoryV7Provider(vault, filenameProvider, fileNameCryptor);
+        this.directoryProvider = new CryptoDirectoryUVFProvider(vault, filenameProvider, fileNameCryptor);
         this.nonceSize = 12;
         return this;
     }
