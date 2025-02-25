@@ -20,6 +20,9 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: maven
+      - name: Add msbuild to PATH
+        if: ${{ runner.os == 'Windows' }}
+        uses: microsoft/setup-msbuild@v2
       - name: Build with Maven
         run: mvn --batch-mode deploy -DskipTests -DskipITs -DskipSign -DskipNotarize
         env:
