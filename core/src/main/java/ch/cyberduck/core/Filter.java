@@ -27,5 +27,7 @@ public interface Filter<E> {
      */
     boolean accept(E file);
 
-    Pattern toPattern();
+    default Pattern toPattern() {
+        return Pattern.compile(".*");
+    }
 }
