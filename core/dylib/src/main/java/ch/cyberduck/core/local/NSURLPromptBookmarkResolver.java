@@ -41,8 +41,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
-    private static final Logger log = LogManager.getLogger(AbstractPromptBookmarkResolver.class);
+public class NSURLPromptBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
+    private static final Logger log = LogManager.getLogger(NSURLPromptBookmarkResolver.class);
 
     /**
      * NSURLBookmarkCreationOptions
@@ -60,7 +60,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
      * @param create  Create options from NSURLBookmarkCreationOptions
      * @param resolve Resolve options from NSURLBookmarkResolutionOptions
      */
-    public AbstractPromptBookmarkResolver(final int create, final int resolve) {
+    public NSURLPromptBookmarkResolver(final int create, final int resolve) {
         this.create = create;
         this.resolve = resolve;
     }

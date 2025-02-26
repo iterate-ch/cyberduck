@@ -20,7 +20,7 @@ import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkCreationOptions
 import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithoutMounting;
 import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithoutUI;
 
-public class AliasFilesystemBookmarkResolver extends AbstractPromptBookmarkResolver {
+public class AliasFilesystemBookmarkResolver extends NSURLPromptBookmarkResolver {
 
     public AliasFilesystemBookmarkResolver() {
         super(NSURLBookmarkCreationSuitableForBookmarkFile | NSURLBookmarkCreationWithoutImplicitSecurityScope, NSURLBookmarkResolutionWithoutUI | NSURLBookmarkResolutionWithoutMounting);
