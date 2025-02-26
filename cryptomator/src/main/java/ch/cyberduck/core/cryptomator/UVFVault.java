@@ -109,7 +109,7 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public Path gethHome() {
+    public Path getHome() {
         return home;
     }
 
@@ -151,11 +151,6 @@ public class UVFVault extends AbstractVault {
     @Override
     public int getVersion() {
         return VAULT_VERSION;
-    }
-
-    @Override
-    public Path getHome() {
-        return home;
     }
 
     @Override

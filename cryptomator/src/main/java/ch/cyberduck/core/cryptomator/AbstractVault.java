@@ -58,8 +58,6 @@ public abstract class AbstractVault implements Vault {
 
     public abstract Path getConfig();
 
-    public abstract Path gethHome();
-
     public abstract int getVersion();
 
     public abstract FileHeaderCryptor getFileHeaderCryptor();
@@ -140,7 +138,7 @@ public abstract class AbstractVault implements Vault {
                 log.warn("Skip file {} because it is marked as an internal vault path", file);
                 return file;
             }
-            if(new SimplePathPredicate(file).test(this.gethHome())) {
+            if(new SimplePathPredicate(file).test(this.getHome())) {
                 log.warn("Skip vault home {} because the root has no metadata file", file);
                 return file;
             }
@@ -179,7 +177,7 @@ public abstract class AbstractVault implements Vault {
                 return file;
             }
             if(file.getType().contains(Path.Type.vault)) {
-                return this.getDirectoryProvider().toEncrypted(session, this.gethHome().attributes().getDirectoryId(), this.gethHome());
+                return this.getDirectoryProvider().toEncrypted(session, this.getHome().attributes().getDirectoryId(), this.getHome());
             }
             encrypted = this.getDirectoryProvider().toEncrypted(session, directoryId, file);
         }
@@ -188,8 +186,8 @@ public abstract class AbstractVault implements Vault {
             encrypted.attributes().setDecrypted(file);
         }
         // Add reference for vault
-        file.attributes().setVault(this.gethHome());
-        encrypted.attributes().setVault(this.gethHome());
+        file.attributes().setVault(this.getHome());
+        encrypted.attributes().setVault(this.getHome());
         return encrypted;
     }
 
@@ -233,7 +231,7 @@ public abstract class AbstractVault implements Vault {
                 // Add reference to encrypted file
                 attributes.setEncrypted(file);
                 // Add reference for vault
-                attributes.setVault(this.gethHome());
+                attributes.setVault(this.getHome());
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
                 type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
                 type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
@@ -279,7 +277,7 @@ public abstract class AbstractVault implements Vault {
     @Override
     public boolean contains(final Path file) {
         if(this.isUnlocked()) {
-            return new SimplePathPredicate(file).test(this.gethHome()) || file.isChild(this.getHome());
+            return new SimplePathPredicate(file).test(this.getHome()) || file.isChild(this.getHome());
         }
         return false;
     }
