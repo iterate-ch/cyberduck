@@ -41,20 +41,24 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSData, NSURL> {
+public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
     private static final Logger log = LogManager.getLogger(AbstractPromptBookmarkResolver.class);
 
+    /**
+     * NSURLBookmarkCreationOptions
+     */
     private final int create;
+    /**
+     * NSURLBookmarkResolutionOptions
+     */
     private final int resolve;
-
-    private final Proxy proxy = new Proxy();
 
     private static final Local TEMPORARY = new TemporarySupportDirectoryFinder().find();
     private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
 
     /**
-     * @param create  Create options
-     * @param resolve Resolve options
+     * @param create  Create options from NSURLBookmarkCreationOptions
+     * @param resolve Resolve options from NSURLBookmarkResolutionOptions
      */
     public AbstractPromptBookmarkResolver(final int create, final int resolve) {
         this.create = create;
@@ -62,17 +66,32 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
     }
 
     @Override
-    public NSData create(final Local file) throws AccessDeniedException {
+    public String create(final Local file, final boolean prompt) {
         if(skip(file)) {
             return null;
         }
         // Create new security scoped bookmark
         final NSURL url = NSURL.fileURLWithPath(file.getAbsolute());
         log.trace("Resolved file {} to url {}", file, url);
-        return this.create(url);
+        try {
+            return this.create(url);
+        }
+        catch(LocalAccessDeniedException e) {
+            log.warn("Failure {} creating bookmark for {}", e, url);
+            if(prompt) {
+                try {
+                    return this.prompt(file);
+                }
+                catch(LocalAccessDeniedException f) {
+                    // Prompt canceled by user
+                    log.warn("Failure {} creating bookmark for {}", f, url);
+                }
+            }
+            return null;
+        }
     }
 
-    private NSData create(final NSURL url) throws LocalAccessDeniedException {
+    private String create(final NSURL url) throws LocalAccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         final NSData data = url.bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
                 create, null, null, error);
@@ -85,17 +104,17 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
             throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         log.trace("Created bookmark {} for {}", data.base64Encoding(), url.path());
-        return data;
+        return data.base64Encoding();
     }
 
     @Override
-    public NSURL resolve(final NSData bookmark) throws AccessDeniedException {
+    public NSURL resolve(final String bookmark) throws AccessDeniedException {
         if(null == bookmark) {
             log.warn("Skip resolving null bookmark");
             return null;
         }
         final ObjCObjectByReference error = new ObjCObjectByReference();
-        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, resolve, error);
+        final NSURL resolved = NSURL.URLByResolvingBookmarkData(NSData.dataWithBase64EncodedString(bookmark), resolve, error);
         if(null == resolved) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {
@@ -126,17 +145,14 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         return false;
     }
 
-    /**
-     * @return Security scoped bookmark
-     */
-    @Override
-    public NSData prompt(final Local file) throws AccessDeniedException {
+    private String prompt(final Local file) throws LocalAccessDeniedException {
         if(!file.exists()) {
             log.warn("Skip prompting for non existing file {}", file);
             return null;
         }
-        final AtomicReference<NSURL> selected = new AtomicReference<>();
         log.warn("Prompt for file {} to obtain bookmark reference", file);
+        final Proxy proxy = new Proxy();
+        final AtomicReference<NSURL> selected = new AtomicReference<>();
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {

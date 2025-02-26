@@ -15,11 +15,12 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.foundation.NSURL;
+import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationSuitableForBookmarkFile;
+import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithoutImplicitSecurityScope;
 
 public class AliasFilesystemBookmarkResolver extends AbstractPromptBookmarkResolver {
 
     public AliasFilesystemBookmarkResolver() {
-        super(NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationSuitableForBookmarkFile, 0);
+        super(NSURLBookmarkCreationSuitableForBookmarkFile | NSURLBookmarkCreationWithoutImplicitSecurityScope, 0);
     }
 }

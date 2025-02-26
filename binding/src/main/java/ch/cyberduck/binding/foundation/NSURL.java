@@ -37,7 +37,7 @@ public abstract class NSURL extends NSObject {
 
     public static NSURL URLByResolvingBookmarkData(NSData bookmark, int options, ObjCObjectByReference error) {
         return CLASS.URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(bookmark,
-            options, null, false, error);
+                options, null, false, error);
     }
 
     public interface _Class extends ObjCClass {
@@ -84,7 +84,7 @@ public abstract class NSURL extends NSObject {
          * @return A new URL made by resolving bookmarkData.
          */
         NSURL URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(
-            NSData bookmarkData, int options, NSURL relativeURL, boolean isStale, ObjCObjectByReference error);
+                NSData bookmarkData, int options, NSURL relativeURL, boolean isStale, ObjCObjectByReference error);
 
     }
 
@@ -304,7 +304,7 @@ public abstract class NSURL extends NSObject {
      * @return Returns a bookmark for the URL, created with specified options and resource values
      */
     public abstract NSData bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-        int options, NSArray keys, NSURL relativeURL, ObjCObjectByReference error);
+            int options, NSArray keys, NSURL relativeURL, ObjCObjectByReference error);
 
     public interface NSURLBookmarkCreationOptions {
         /**
@@ -331,14 +331,50 @@ public abstract class NSURL extends NSObject {
          * Available in OS X v10.7 and later.
          */
         int NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess = (1 << 12);
+
+        /**
+         * Prevents inclusion of a bookmark’s implicit ephemeral security scope, when creating one without security scope.
+         * <p>
+         * Bookmarks that you create without security scope automatically carry implicit ephemeral security scope.
+         * This security scope is valid until reboot at the latest, and confers access to the resource to any other
+         * process that resolves the bookmark. Using this option prevents inclusion of this ephemeral security scope.
+         * <p>
+         * When using this option, other processes can’t call startAccessingSecurityScopedResource on the resolved URL.
+         * The option prevents providing unintended access to resources to other processes, and is also a performance
+         * optimization that reduces the size of the bookmark.
+         */
+        int NSURLBookmarkCreationWithoutImplicitSecurityScope = (1 << 29);
     }
 
     public interface NSURLBookmarkResolutionOptions {
         /**
+         * Specifies that no UI feedback should accompany resolution of the bookmark data.
+         *
+         * @since macOS 10.6+
+         */
+        int NSURLBookmarkResolutionWithoutUI = (1 << 8);
+
+        /**
+         * Specifies that no volume should be mounted during resolution of the bookmark data
+         *
+         * @since macOS 10.6+
+         */
+        int NSURLBookmarkResolutionWithoutMounting = (1 << 9);
+
+        /**
          * Specifies that the security scope, applied to the bookmark when it was created, should be used during
-         * resolution of the bookmark data. Available in OS X v10.7 and later.
+         * resolution of the bookmark data.
+         *
+         * @since macOS 10.7+
          */
         int NSURLBookmarkResolutionWithSecurityScope = (1 << 10);
+
+        /**
+         * A property that specifies that resolution doesn’t implicitly start accessing the ephemeral security-scoped resource.
+         *
+         * @since macOS 11.2+
+         */
+        int NSURLBookmarkResolutionWithoutImplicitStartAccessing = (1 << 15);
     }
 
     /**

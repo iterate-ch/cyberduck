@@ -18,7 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AttributedList;
@@ -48,7 +47,7 @@ public class FinderLocal extends Local {
         Native.load("core");
     }
 
-    private static final FilesystemBookmarkResolver<NSData, NSURL> resolver
+    private static final FilesystemBookmarkResolver<NSURL> resolver
             = FilesystemBookmarkResolverFactory.get();
 
     public FinderLocal(final Local parent, final String name) {
@@ -153,38 +152,17 @@ public class FinderLocal extends Local {
         return this.lock(interactive, resolver);
     }
 
-    protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSData, NSURL> resolver) throws AccessDeniedException {
+    protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSURL> resolver) throws AccessDeniedException {
         final String path = this.getAbbreviatedPath();
-        NSURL resolved;
-        if(null != this.getBookmark()) {
-            resolved = resolver.resolve(NSData.dataWithBase64EncodedString(this.getBookmark()));
+        if(null == bookmark) {
+            bookmark = resolver.create(this, interactive);
         }
-        else {
-            try {
-                resolved = resolver.resolve(resolver.create(this));
-            }
-            catch(AccessDeniedException e) {
-                log.warn("Failure {} creating bookmark for {}", e, path);
-                if(interactive) {
-                    log.warn("Missing security scoped bookmark for file {}", path);
-                    // Prompt user if no bookmark reference is available
-                    final NSData bookmark = resolver.prompt(this);
-                    if(null == bookmark) {
-                        // Prompt canceled by user
-                        return null;
-                    }
-                    resolved = resolver.resolve(bookmark);
-                }
-                else {
-                    log.warn("No security scoped bookmark for {}", path);
-                    // Ignore failure resolving path
-                    return null;
-                }
-            }
-        }
-        if(null == resolved) {
+        if(null == bookmark) {
+            log.warn("No security scoped bookmark for {}", path);
             return null;
         }
+        log.debug("Lock with bookmark {}", bookmark);
+        final NSURL resolved = resolver.resolve(bookmark);
         if(!resolved.startAccessingSecurityScopedResource()) {
             throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", path));
         }

@@ -17,16 +17,15 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class SecurityScopedFilesystemBookmarkResolverTest {
 
@@ -34,13 +33,7 @@ public class SecurityScopedFilesystemBookmarkResolverTest {
     public void testCreateNotFound() throws Exception {
         final String name = UUID.randomUUID().toString();
         Local l = new FinderLocal(System.getProperty("user.dir"), name);
-        try {
-            assertNull(new SecurityScopedFilesystemBookmarkResolver().create(l));
-            fail();
-        }
-        catch(LocalAccessDeniedException e) {
-            //
-        }
+        assertNull(new SecurityScopedFilesystemBookmarkResolver().create(l));
     }
 
     @Test
@@ -50,7 +43,7 @@ public class SecurityScopedFilesystemBookmarkResolverTest {
         new DefaultLocalTouchFeature().touch(l);
         try {
             final SecurityScopedFilesystemBookmarkResolver resolver = new SecurityScopedFilesystemBookmarkResolver();
-            final NSData bookmark = resolver.create(l);
+            final String bookmark = resolver.create(l);
             assertNotNull(bookmark);
             final NSURL resolved = resolver.resolve(bookmark);
             assertNotNull(resolved);
