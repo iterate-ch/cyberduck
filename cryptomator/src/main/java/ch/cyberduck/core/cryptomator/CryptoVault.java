@@ -394,11 +394,6 @@ public class CryptoVault extends AbstractVault {
     }
 
     @Override
-    public Path gethHome() {
-        return home;
-    }
-
-    @Override
     public int getVersion() {
         return vaultVersion;
     }
