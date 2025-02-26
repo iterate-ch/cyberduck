@@ -30,7 +30,7 @@ public final class HostPreferencesFactory {
 
     public static synchronized HostPreferences get(final Host host) {
         if(!preferences.containsKey(host)) {
-            preferences.put(host, HostPreferencesFactory.get(host));
+            preferences.put(host, new HostPreferences(host));
         }
         return preferences.get(host);
     }
