@@ -16,10 +16,17 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.cache.LRUCache;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public class HostPreferences implements PreferencesReader {
+
+    private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty, 1000);
+
+    private static final String MISSING_PROPERTY = String.valueOf(StringUtils.INDEX_NOT_FOUND);
 
     private final PreferencesReader proxy;
     private final Host bookmark;
@@ -35,8 +42,8 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public String getProperty(final String key) {
-        final String value = bookmark.getProperty(key);
-        if(null == value) {
+        final String value = cache.get(key);
+        if(StringUtils.equals(MISSING_PROPERTY, value)) {
             return proxy.getProperty(key);
         }
         return value;
@@ -44,8 +51,8 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public List<String> getList(final String key) {
-        final String value = bookmark.getProperty(key);
-        if(null == value) {
+        final String value = cache.get(key);
+        if(StringUtils.equals(MISSING_PROPERTY, value)) {
             return proxy.getList(key);
         }
         return PreferencesReader.toList(value);
@@ -53,8 +60,8 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public int getInteger(final String key) {
-        final String value = bookmark.getProperty(key);
-        if(null == value) {
+        final String value = cache.get(key);
+        if(StringUtils.equals(MISSING_PROPERTY, value)) {
             return proxy.getInteger(key);
         }
         return PreferencesReader.toInteger(value);
@@ -62,8 +69,8 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public float getFloat(final String key) {
-        final String value = bookmark.getProperty(key);
-        if(null == value) {
+        final String value = cache.get(key);
+        if(StringUtils.equals(MISSING_PROPERTY, value)) {
             return proxy.getFloat(key);
         }
         return PreferencesReader.toFloat(value);
@@ -71,8 +78,8 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public long getLong(final String key) {
-        final String value = bookmark.getProperty(key);
-        if(null == value) {
+        final String value = cache.get(key);
+        if(StringUtils.equals(MISSING_PROPERTY, value)) {
             return proxy.getLong(key);
         }
         return PreferencesReader.toLong(value);
@@ -80,8 +87,8 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public double getDouble(final String key) {
-        final String value = bookmark.getProperty(key);
-        if(null == value) {
+        final String value = cache.get(key);
+        if(StringUtils.equals(MISSING_PROPERTY, value)) {
             return proxy.getDouble(key);
         }
         return PreferencesReader.toDouble(value);
@@ -89,10 +96,18 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public boolean getBoolean(final String key) {
-        final String value = bookmark.getProperty(key);
-        if(null == value) {
+        final String value = cache.get(key);
+        if(StringUtils.equals(MISSING_PROPERTY, value)) {
             return proxy.getBoolean(key);
         }
         return PreferencesReader.toBoolean(value);
+    }
+
+    private String loadProperty(String key) {
+        final String value = bookmark.getProperty(key);
+        if(null == value) {
+            return MISSING_PROPERTY;
+        }
+        return value;
     }
 }
