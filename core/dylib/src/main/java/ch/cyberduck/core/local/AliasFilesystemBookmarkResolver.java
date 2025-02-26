@@ -17,10 +17,12 @@ package ch.cyberduck.core.local;
 
 import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationSuitableForBookmarkFile;
 import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithoutImplicitSecurityScope;
+import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithoutMounting;
+import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithoutUI;
 
 public class AliasFilesystemBookmarkResolver extends AbstractPromptBookmarkResolver {
 
     public AliasFilesystemBookmarkResolver() {
-        super(NSURLBookmarkCreationSuitableForBookmarkFile | NSURLBookmarkCreationWithoutImplicitSecurityScope, 0);
+        super(NSURLBookmarkCreationSuitableForBookmarkFile | NSURLBookmarkCreationWithoutImplicitSecurityScope, NSURLBookmarkResolutionWithoutUI | NSURLBookmarkResolutionWithoutMounting);
     }
 }

@@ -19,8 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope;
-import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope;
-import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithoutImplicitStartAccessing;
+import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkResolutionOptions.*;
 
 /**
  * To provide persistent access to resources located outside of your container, in a way that doesn’t
@@ -29,6 +28,6 @@ import static ch.cyberduck.binding.foundation.NSURL.NSURLBookmarkResolutionOptio
 public class SecurityScopedFilesystemBookmarkResolver extends AbstractPromptBookmarkResolver {
 
     public SecurityScopedFilesystemBookmarkResolver() {
-        super(NSURLBookmarkCreationWithSecurityScope, NSURLBookmarkResolutionWithSecurityScope | NSURLBookmarkResolutionWithoutImplicitStartAccessing);
+        super(NSURLBookmarkCreationWithSecurityScope, NSURLBookmarkResolutionWithoutUI | NSURLBookmarkResolutionWithoutMounting | NSURLBookmarkResolutionWithSecurityScope | NSURLBookmarkResolutionWithoutImplicitStartAccessing);
     }
 }
