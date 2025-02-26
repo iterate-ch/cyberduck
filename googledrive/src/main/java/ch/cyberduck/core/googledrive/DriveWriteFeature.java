@@ -24,7 +24,7 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -90,7 +90,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                     }
                     else {
                         request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsAllDrives=%s&fields=%s",
-                                session.getClient().getRootUrl(), new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"),
+                                session.getClient().getRootUrl(), HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable"),
                                 DriveAttributesFinderFeature.DEFAULT_FIELDS));
                         final StringBuilder metadata = new StringBuilder("{");
                         metadata.append(String.format("\"name\":\"%s\"", file.getName()));

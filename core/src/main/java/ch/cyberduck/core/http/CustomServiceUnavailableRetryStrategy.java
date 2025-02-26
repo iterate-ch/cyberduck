@@ -16,7 +16,7 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ServiceUnavailableRetryStrategy;
@@ -34,7 +34,7 @@ public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavail
     }
 
     public CustomServiceUnavailableRetryStrategy(final Host host, final ServiceUnavailableRetryStrategy... chain) {
-        this(host, new HostPreferences(host).getInteger("connection.retry"), chain);
+        this(host, HostPreferencesFactory.get(host).getInteger("connection.retry"), chain);
     }
 
     public CustomServiceUnavailableRetryStrategy(final Host host, final int executionCount, final ServiceUnavailableRetryStrategy... chain) {
@@ -55,6 +55,6 @@ public class CustomServiceUnavailableRetryStrategy extends ChainedServiceUnavail
 
     @Override
     public long getRetryInterval() {
-        return new HostPreferences(host).getLong("connection.retry.delay") * 1000L;
+        return HostPreferencesFactory.get(host).getLong("connection.retry.delay") * 1000L;
     }
 }

@@ -26,7 +26,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -63,7 +63,7 @@ public class SwiftDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        this.delete(files, prompt, callback, new HostPreferences(session.getHost()).getBoolean("openstack.delete.largeobject.segments"));
+        this.delete(files, prompt, callback, HostPreferencesFactory.get(session.getHost()).getBoolean("openstack.delete.largeobject.segments"));
     }
 
     /**

@@ -15,7 +15,17 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -26,7 +36,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -38,10 +48,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.ExtendedUser;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 import ch.cyberduck.core.threading.CancelCallback;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -70,6 +77,11 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
@@ -88,7 +100,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     protected StoregateApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        final PreferencesReader preferences = new HostPreferences(host);
+        final PreferencesReader preferences = HostPreferencesFactory.get(host);
         authorizationService = new OAuth2RequestInterceptor(configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {

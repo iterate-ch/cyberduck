@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Restore;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -84,8 +84,8 @@ public class Glacier implements Restore {
                 client.restoreObjectV2(new RestoreObjectRequest(container.getName(), session.getFeature(PathContainerService.class).getKey(file))
                     // To restore a specific object version, you can provide a version ID. If you don't provide a version ID, Amazon S3 restores the current version.
                     .withVersionId(file.attributes().getVersionId())
-                    .withExpirationInDays(new HostPreferences(session.getHost()).getInteger("s3.glacier.restore.expiration.days"))
-                    .withGlacierJobParameters(new GlacierJobParameters().withTier(new HostPreferences(session.getHost()).getProperty("s3.glacier.restore.tier")))
+                        .withExpirationInDays(HostPreferencesFactory.get(session.getHost()).getInteger("s3.glacier.restore.expiration.days"))
+                        .withGlacierJobParameters(new GlacierJobParameters().withTier(HostPreferencesFactory.get(session.getHost()).getProperty("s3.glacier.restore.tier")))
                 );
                 // 200 Reply if already restored
             }

@@ -25,7 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -57,7 +57,7 @@ public class SwiftContainerListService implements RootListService {
         log.debug("List containers for {}", session);
         try {
             final AttributedList<Path> containers = new AttributedList<>();
-            final int limit = new HostPreferences(session.getHost()).getInteger("openstack.list.container.limit");
+            final int limit = HostPreferencesFactory.get(session.getHost()).getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
             for(final Region r : client.getRegions()) {
                 if(region.getIdentifier() != null) {

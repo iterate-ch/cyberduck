@@ -16,7 +16,7 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -45,7 +45,7 @@ public class DefaultServiceUnavailableRetryStrategy implements ServiceUnavailabl
 
     @Override
     public long getRetryInterval() {
-        return new HostPreferences(host).getLong("connection.retry.delay") * 1000L;
+        return HostPreferencesFactory.get(host).getLong("connection.retry.delay") * 1000L;
     }
 
     /**

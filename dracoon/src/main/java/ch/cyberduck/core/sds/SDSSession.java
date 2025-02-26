@@ -21,12 +21,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.http.*;
+import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.DefaultHttpRateLimiter;
+import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -34,7 +38,15 @@ import ch.cyberduck.core.sds.io.swagger.client.JSON;
 import ch.cyberduck.core.sds.io.swagger.client.api.ConfigApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.PublicApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
-import ch.cyberduck.core.sds.io.swagger.client.model.*;
+import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfo;
+import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfoList;
+import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.GeneralSettingsInfo;
+import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
+import ch.cyberduck.core.sds.io.swagger.client.model.SystemDefaults;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
@@ -42,17 +54,15 @@ import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.error.CryptoException;
-import com.dracoon.sdk.crypto.error.UnknownVersionException;
-import com.dracoon.sdk.crypto.model.EncryptedFileKey;
-import com.dracoon.sdk.crypto.model.UserKeyPair;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.http.*;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -75,6 +85,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.error.CryptoException;
+import com.dracoon.sdk.crypto.error.UnknownVersionException;
+import com.dracoon.sdk.crypto.model.EncryptedFileKey;
+import com.dracoon.sdk.crypto.model.UserKeyPair;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
@@ -87,7 +105,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private OAuth2RequestInterceptor authorizationService;
 
-    private final PreferencesReader preferences = new HostPreferences(host);
+    private final PreferencesReader preferences = HostPreferencesFactory.get(host);
 
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
             = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
@@ -175,9 +193,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
                 new ExecutionCountServiceUnavailableRetryStrategy(new PreconditionFailedResponseInterceptor(host, authorizationService, prompt),
                         new OAuth2ErrorResponseInterceptor(host, authorizationService))));
-        if(new HostPreferences(host).getBoolean("sds.limit.requests.enable")) {
+        if(HostPreferencesFactory.get(host).getBoolean("sds.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-                    new HostPreferences(host).getInteger("sds.limit.requests.second")
+                    HostPreferencesFactory.get(host).getInteger("sds.limit.requests.second")
             )));
         }
         configuration.addInterceptorLast(authorizationService);
@@ -584,13 +602,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(new HostPreferences(host).getBoolean("sds.upload.s3.enable")) {
+            if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
                 return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }
         if(type == Write.class || type == MultipartWrite.class) {
-            if(new HostPreferences(host).getBoolean("sds.upload.s3.enable")) {
+            if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
                 return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
             }
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));

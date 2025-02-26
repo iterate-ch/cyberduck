@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +41,7 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     private final Long threshold;
 
     public B2ThresholdUploadService(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.threshold"));
+        this(session, fileid, HostPreferencesFactory.get(session.getHost()).getLong("b2.upload.largeobject.threshold"));
     }
 
     public B2ThresholdUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long threshold) {
@@ -78,10 +78,10 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
 
     protected boolean threshold(final TransferStatus status) {
         if(status.getLength() > threshold) {
-            if(status.getLength() > new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.size")) {
-                if(!new HostPreferences(session.getHost()).getBoolean("b2.upload.largeobject")) {
+            if(status.getLength() > HostPreferencesFactory.get(session.getHost()).getLong("b2.upload.largeobject.size")) {
+                if(!HostPreferencesFactory.get(session.getHost()).getBoolean("b2.upload.largeobject")) {
                     // Disabled by user
-                    if(status.getLength() < new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.required.threshold")) {
+                    if(status.getLength() < HostPreferencesFactory.get(session.getHost()).getLong("b2.upload.largeobject.required.threshold")) {
                         log.warn("Large upload is disabled with property b2.upload.largeobject.required.threshold");
                         return false;
                     }

@@ -43,7 +43,7 @@ import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.AutoTransferConnectionLimiter;
 import ch.cyberduck.core.transfer.Speedometer;
@@ -86,7 +86,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         this.symlinkResolver = symlinkResolver;
         this.attribute = attribute;
         this.options = options;
-        this.preferences = new HostPreferences(session.getHost());
+        this.preferences = HostPreferencesFactory.get(session.getHost());
     }
 
     @Override

@@ -33,7 +33,7 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -63,7 +63,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
     private final Integer partsize;
 
     public BrickMultipartWriteFeature(final BrickSession session) {
-        this(session, new HostPreferences(session.getHost()).getInteger("brick.upload.multipart.size"));
+        this(session, HostPreferencesFactory.get(session.getHost()).getInteger("brick.upload.multipart.size"));
     }
 
     public BrickMultipartWriteFeature(final BrickSession session, final Integer partsize) {

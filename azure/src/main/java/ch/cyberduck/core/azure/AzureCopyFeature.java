@@ -28,7 +28,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -67,7 +67,7 @@ public class AzureCopyFeature implements Copy {
             final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(source).getName())
                     .getBlobReferenceFromServer(containerService.getKey(source));
             final BlobRequestOptions options = new BlobRequestOptions();
-            options.setStoreBlobContentMD5(new HostPreferences(session.getHost()).getBoolean("azure.upload.md5"));
+            options.setStoreBlobContentMD5(HostPreferencesFactory.get(session.getHost()).getBoolean("azure.upload.md5"));
             final URI s = session.getHost().getCredentials().isTokenAuthentication() ?
                     URI.create(blob.getUri().toString() + session.getHost().getCredentials().getToken()) : blob.getUri();
             final String id = target.startCopy(s,

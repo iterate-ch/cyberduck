@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -120,7 +120,7 @@ public class DropboxBatchDeleteFeature implements Delete {
                         failure.set(new DropboxExceptionMappingService().map(e));
                         signal.countDown();
                     }
-                }, new HostPreferences(session.getHost()).getLong("dropbox.delete.poll.interval.ms"), TimeUnit.MILLISECONDS);
+                }, HostPreferencesFactory.get(session.getHost()).getLong("dropbox.delete.poll.interval.ms"), TimeUnit.MILLISECONDS);
                 while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
                     try {
                         if(f.isDone()) {

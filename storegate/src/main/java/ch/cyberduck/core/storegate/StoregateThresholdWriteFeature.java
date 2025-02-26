@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -33,7 +33,7 @@ public class StoregateThresholdWriteFeature implements Write<File> {
     private final Long threshold;
 
     public StoregateThresholdWriteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
-        this(session, fileid, new HostPreferences(session.getHost()).getLong("storegate.upload.multipart.threshold"));
+        this(session, fileid, HostPreferencesFactory.get(session.getHost()).getLong("storegate.upload.multipart.threshold"));
     }
 
     public StoregateThresholdWriteFeature(final StoregateSession session, final StoregateIdProvider fileid, final Long threshold) {

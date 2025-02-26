@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFolderRequest;
@@ -57,7 +57,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
-                return this.createRoom(folder, new HostPreferences(session.getHost()).getBoolean("sds.create.dataroom.encrypt"));
+                return this.createRoom(folder, HostPreferencesFactory.get(session.getHost()).getBoolean("sds.create.dataroom.encrypt"));
             }
             else {
                 return this.createFolder(folder);
@@ -105,7 +105,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            if(!new HostPreferences(session.getHost()).getBoolean("sds.create.dataroom.enable")) {
+            if(!HostPreferencesFactory.get(session.getHost()).getBoolean("sds.create.dataroom.enable")) {
                 log.warn("Disallow creating new top level data room {}", filename);
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
             }

@@ -35,7 +35,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -69,7 +69,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
 
     public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<File> writer) {
         this(session, fileid, writer,
-                new HostPreferences(session.getHost()).getInteger("box.upload.multipart.concurrency"));
+                HostPreferencesFactory.get(session.getHost()).getInteger("box.upload.multipart.concurrency"));
     }
 
     public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<File> writer, final Integer concurrency) {

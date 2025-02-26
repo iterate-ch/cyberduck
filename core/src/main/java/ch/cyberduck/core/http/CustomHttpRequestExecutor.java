@@ -23,7 +23,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -90,7 +90,7 @@ public class CustomHttpRequestExecutor extends HttpRequestExecutor {
         if(null != response) {
             // Response received as part of an expect-continue handshake
             this.log(response);
-            if(new HostPreferences(host).getBoolean("request.unauthorized.ntlm.preflight")) {
+            if(HostPreferencesFactory.get(host).getBoolean("request.unauthorized.ntlm.preflight")) {
                 // Unable to authenticate with NTLM for requests with non-zero entity
                 if(HttpStatus.SC_UNAUTHORIZED == response.getStatusLine().getStatusCode()) {
                     if(response.containsHeader(HttpHeaders.WWW_AUTHENTICATE)) {

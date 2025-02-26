@@ -27,7 +27,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.logging.log4j.LogManager;
@@ -66,7 +66,7 @@ public class DAVListService implements ListService {
                 listener.chunk(directory, children);
             }
             for(List<DavResource> list : ListUtils.partition(resources,
-                    new HostPreferences(session.getHost()).getInteger("webdav.listing.chunksize"))) {
+                    HostPreferencesFactory.get(session.getHost()).getInteger("webdav.listing.chunksize"))) {
                 for(final DavResource resource : list) {
                     if(new SimplePathPredicate(new Path(resource.getHref().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
                         log.warn("Ignore resource {}", resource);

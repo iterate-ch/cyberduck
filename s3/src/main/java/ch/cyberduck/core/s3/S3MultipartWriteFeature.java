@@ -13,7 +13,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -74,7 +74,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
         return new HttpResponseOutputStream<StorageObject>(new MemorySegementingOutputStream(proxy,
-                new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.size")),
+                HostPreferencesFactory.get(session.getHost()).getInteger("s3.upload.multipart.size")),
                 new S3AttributesAdapter(session.getHost()), status) {
             @Override
             public StorageObject getStatus() {

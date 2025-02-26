@@ -20,7 +20,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
@@ -64,7 +64,7 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
         // not the MD5 of the object data.
         attributes.setChecksum(Checksum.parse(object.getETag()));
         if(object instanceof S3Object) {
-            if(new HostPreferences(host).getBoolean("s3.listing.versioning.enable")) {
+            if(HostPreferencesFactory.get(host).getBoolean("s3.listing.versioning.enable")) {
                 attributes.setVersionId(((S3Object) object).getVersionId());
             }
         }

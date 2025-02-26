@@ -23,7 +23,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,9 +49,9 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
         this.session = session;
         this.lookup = lookup;
         this.proxy = proxy;
-        this.config = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename");
-        this.masterkey = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename");
-        this.pepper = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
+        this.config = HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename");
+        this.masterkey = HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename");
+        this.pepper = HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
         this.filecount = filecount;
     }
 

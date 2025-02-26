@@ -27,7 +27,7 @@ import ch.cyberduck.core.ftp.FTPExceptionMappingService;
 import ch.cyberduck.core.ftp.FTPParserSelector;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
@@ -104,7 +104,7 @@ public class FTPListService implements ListService {
         log.info("Reset parser to timezone {}", tz);
         final CompositeFileEntryParser parser = new FTPParserSelector().getParser(system, tz);
         implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
-        final PreferencesReader preferences = new HostPreferences(session.getHost());
+        final PreferencesReader preferences = HostPreferencesFactory.get(session.getHost());
         if(preferences.getBoolean("ftp.command.stat")) {
             if(StringUtils.isNotBlank(system)) {
                 if(!system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {

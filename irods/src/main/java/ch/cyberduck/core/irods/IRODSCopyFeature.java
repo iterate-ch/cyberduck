@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.irods.jargon.core.exception.JargonException;
@@ -68,7 +68,7 @@ public class IRODSCopyFeature implements Copy {
                         return CallbackResponse.YES_THIS_FILE;
                     }
                 }, DefaultTransferControlBlock.instance(StringUtils.EMPTY,
-                    new HostPreferences(session.getHost()).getInteger("connection.retry")));
+                            HostPreferencesFactory.get(session.getHost()).getInteger("connection.retry")));
             return target;
         }
         catch(JargonException e) {

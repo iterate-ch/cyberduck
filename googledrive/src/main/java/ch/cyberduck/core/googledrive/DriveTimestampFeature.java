@@ -18,7 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +52,7 @@ public class DriveTimestampFeature implements Timestamp {
                 final File properties = new File();
                 properties.setModifiedTime(status.getModified() != null ? new DateTime(status.getModified()) : null);
                 final File latest = session.getClient().files().update(fileid, properties).setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS).
-                        setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                        setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
                 status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(latest));
             }
         }

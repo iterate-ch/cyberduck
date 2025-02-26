@@ -21,7 +21,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.shared.AbstractHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 
@@ -58,7 +58,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
         ocs {
             @Override
             public Home home(final Host bookmark) {
-                return () -> new Path(new HostPreferences(bookmark).getProperty("nextcloud.root.ocs"), EnumSet.of(Path.Type.directory));
+                return () -> new Path(HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.ocs"), EnumSet.of(Path.Type.directory));
             }
         },
         files {
@@ -78,7 +78,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
             @Override
             public Home home(final Host bookmark) throws BackgroundException {
                 return () -> new Path(MessageFormat.format(
-                        new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.user"), this.name(), StringUtils.EMPTY), EnumSet.of(Path.Type.directory));
+                        HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.webdav.user"), this.name(), StringUtils.EMPTY), EnumSet.of(Path.Type.directory));
             }
         };
 
@@ -108,7 +108,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
                 return null;
             }
             return new Path(MessageFormat.format(
-                    new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.user"), context.name(), username), EnumSet.of(Path.Type.directory));
+                    HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.webdav.user"), context.name(), username), EnumSet.of(Path.Type.directory));
         }
     }
 
@@ -121,7 +121,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
 
         @Override
         public Path find() {
-            return new Path(new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.default"), EnumSet.of(Path.Type.directory));
+            return new Path(HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.webdav.default"), EnumSet.of(Path.Type.directory));
         }
     }
 
@@ -137,8 +137,8 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
         @Override
         public Path find() {
             if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
-                for(String s : Arrays.asList(home.getAbsolute(), new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.default"),
-                        MessageFormat.format(new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.user"), Context.files.name(),
+                for(String s : Arrays.asList(home.getAbsolute(), HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.webdav.default"),
+                        MessageFormat.format(HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.webdav.user"), Context.files.name(),
                                 bookmark.getCredentials().getUsername()))) {
                     if(StringUtils.contains(bookmark.getDefaultPath(), PathNormalizer.normalize(s))) {
                         final String prefix = StringUtils.substringBefore(bookmark.getDefaultPath(), PathNormalizer.normalize(s));
@@ -166,8 +166,8 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
         @Override
         public Path find() {
             if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
-                for(String s : Arrays.asList(home.getAbsolute(), new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.default"),
-                        MessageFormat.format(new HostPreferences(bookmark).getProperty("nextcloud.root.webdav.user"), Context.files.name(),
+                for(String s : Arrays.asList(home.getAbsolute(), HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.webdav.default"),
+                        MessageFormat.format(HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.webdav.user"), Context.files.name(),
                                 bookmark.getCredentials().getUsername()))) {
                     if(StringUtils.contains(bookmark.getDefaultPath(), s)) {
                         final String suffix = StringUtils.substringAfter(bookmark.getDefaultPath(), s);

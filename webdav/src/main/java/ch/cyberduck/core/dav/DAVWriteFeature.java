@@ -26,13 +26,12 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.AbstractHttpWriteFeature;
-import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.HttpExceptionMappingService;
-import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.http.*;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.ETagResponseHandler;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -47,9 +46,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import com.github.sardine.impl.SardineException;
-import com.github.sardine.impl.handler.ETagResponseHandler;
-
 public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements Write<Void> {
     private static final Logger log = LogManager.getLogger(DAVWriteFeature.class);
 
@@ -61,7 +57,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     private final boolean expect;
 
     public DAVWriteFeature(final DAVSession session) {
-        this(session, new HostPreferences(session.getHost()).getBoolean("webdav.expect-continue"));
+        this(session, HostPreferencesFactory.get(session.getHost()).getBoolean("webdav.expect-continue"));
     }
 
     public DAVWriteFeature(final DAVSession session, final boolean expect) {

@@ -27,7 +27,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -71,11 +71,11 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
     private final boolean metadata;
 
     public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl) {
-        this(session, acl, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"));
+        this(session, acl, HostPreferencesFactory.get(session.getHost()).getInteger("s3.listing.concurrency"));
     }
 
     public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl, final Integer concurrency) {
-        this(session, acl, concurrency, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
+        this(session, acl, concurrency, HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.metadata.enable"));
     }
 
     /**
@@ -108,7 +108,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
-                        new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"),
+                        HostPreferencesFactory.get(session.getHost()).getInteger("s3.listing.chunksize"),
                         priorLastKey, priorLastVersionId, false);
                 // Amazon S3 returns object versions in the order in which they were stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {

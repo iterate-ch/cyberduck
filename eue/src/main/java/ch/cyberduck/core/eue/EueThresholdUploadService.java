@@ -28,7 +28,7 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
@@ -42,7 +42,7 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     private Write<EueWriteFeature.Chunk> writer;
 
     public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final VaultRegistry registry) {
-        this(session, fileid, registry, new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold"));
+        this(session, fileid, registry, HostPreferencesFactory.get(session.getHost()).getLong("eue.upload.multipart.threshold"));
     }
 
     public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final VaultRegistry registry, final Long threshold) {

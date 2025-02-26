@@ -27,7 +27,7 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -61,7 +61,7 @@ public class GoogleStorageObjectListService implements ListService {
     private final Integer concurrency;
 
     public GoogleStorageObjectListService(final GoogleStorageSession session) {
-        this(session, new HostPreferences(session.getHost()).getInteger("googlestorage.listing.concurrency"));
+        this(session, HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.concurrency"));
     }
 
     public GoogleStorageObjectListService(final GoogleStorageSession session, final Integer concurrency) {
@@ -77,11 +77,11 @@ public class GoogleStorageObjectListService implements ListService {
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
-        final VersioningConfiguration versioning = new HostPreferences(session.getHost()).getBoolean("googlestorage.listing.versioning.enable") &&
+        final VersioningConfiguration versioning = HostPreferencesFactory.get(session.getHost()).getBoolean("googlestorage.listing.versioning.enable") &&
                 null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
                 containerService.getContainer(directory)
         ) : VersioningConfiguration.empty();
-        return this.list(directory, listener, delimiter, new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"), versioning);
+        return this.list(directory, listener, delimiter, HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.chunksize"), versioning);
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize,

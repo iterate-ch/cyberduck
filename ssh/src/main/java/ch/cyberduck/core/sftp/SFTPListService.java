@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.logging.log4j.LogManager;
@@ -69,7 +69,7 @@ public class SFTPListService implements ListService {
                 listener.chunk(directory, children);
             }
             for(List<RemoteResourceInfo> list : ListUtils.partition(resources,
-                    new HostPreferences(session.getHost()).getInteger("sftp.listing.chunksize"))) {
+                    HostPreferencesFactory.get(session.getHost()).getInteger("sftp.listing.chunksize"))) {
                 for(RemoteResourceInfo f : list) {
                     final PathAttributes attr = attributes.toAttributes(f.getAttributes());
                     final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);

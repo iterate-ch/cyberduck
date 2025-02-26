@@ -30,7 +30,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.ftp.list.FTPDataResponseReader;
 import ch.cyberduck.core.ftp.list.FTPMlsdListResponseReader;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 
@@ -58,7 +58,7 @@ public class FTPAttributesFinderFeature extends VoidAttributesAdapter implements
         }
         try {
             try {
-                final PreferencesReader preferences = new HostPreferences(session.getHost());
+                final PreferencesReader preferences = HostPreferencesFactory.get(session.getHost());
                 if(preferences.getBoolean("ftp.command.mlsd")) {
                     if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
                         if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MLST, file.getAbsolute()))) {

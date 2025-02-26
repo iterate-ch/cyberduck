@@ -15,7 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
@@ -40,6 +40,6 @@ public class ProfileTest {
         assertEquals("http://localhost:9000", profile.getSTSEndpoint());
         assertFalse(profile.getOAuthScopes().isEmpty());
         assertTrue(profile.getOAuthScopes().contains("openid"));
-        assertNull(new HostPreferences(new Host(profile)).getProperty("s3.assumerole.rolearn"));
+        assertNull(HostPreferencesFactory.get(new Host(profile)).getProperty("s3.assumerole.rolearn"));
     }
 }

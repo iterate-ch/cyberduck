@@ -38,7 +38,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Share;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -128,12 +128,12 @@ public class EueShareFeature implements Share<ShareCreationRequestModel, ShareCr
         final ShareCreationRequestEntry shareCreationRequestEntry = new ShareCreationRequestEntry()
                 .name(new AlphanumericRandomStringService().random())
                 .hasPin(false);
-        if(new HostPreferences(session.getHost()).getBoolean("eue.share.writable")) {
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("eue.share.writable")) {
             final Shares.WritableSharesMinimumProtectionEnum writableSharesMinimumProtection = this.getWritableSharesMinimumProtection();
             switch(writableSharesMinimumProtection) {
                 case PIN_AND_EXPIRATION:
                 case EXPIRATION:
-                    final long expirationInMillis = new HostPreferences(session.getHost()).getLong("eue.share.expiration.millis");
+                    final long expirationInMillis = HostPreferencesFactory.get(session.getHost()).getLong("eue.share.expiration.millis");
                     shareCreationRequestEntry.setExpirationMillis(expirationInMillis);
                 case PIN:
                     final String password = callback.prompt(bookmark,
@@ -147,10 +147,10 @@ public class EueShareFeature implements Share<ShareCreationRequestModel, ShareCr
         shareCreationRequestEntry.setGuestEMail(GUEST_E_MAIL);
         final SharePermission sharePermission = new SharePermission();
         sharePermission
-                .readable(new HostPreferences(session.getHost()).getBoolean("eue.share.readable"))
-                .writable(new HostPreferences(session.getHost()).getBoolean("eue.share.writable"))
-                .deletable(new HostPreferences(session.getHost()).getBoolean("eue.share.deletable"));
-        sharePermission.setNotificationEnabled(new HostPreferences(session.getHost()).getBoolean("eue.share.notification.enable"));
+                .readable(HostPreferencesFactory.get(session.getHost()).getBoolean("eue.share.readable"))
+                .writable(HostPreferencesFactory.get(session.getHost()).getBoolean("eue.share.writable"))
+                .deletable(HostPreferencesFactory.get(session.getHost()).getBoolean("eue.share.deletable"));
+        sharePermission.setNotificationEnabled(HostPreferencesFactory.get(session.getHost()).getBoolean("eue.share.notification.enable"));
         shareCreationRequestEntry.setPermission(sharePermission);
         shareCreationRequestEntry.setUnmountable(false);
         final ShareCreationRequestModel shareCreationRequestModel = new ShareCreationRequestModel();

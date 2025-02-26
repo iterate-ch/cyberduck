@@ -23,7 +23,7 @@ import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FoldersApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,7 +43,7 @@ public class BrickListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, new HostPreferences(session.getHost()).getInteger("brick.listing.chunksize"));
+        return this.list(directory, listener, HostPreferencesFactory.get(session.getHost()).getInteger("brick.listing.chunksize"));
     }
 
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {

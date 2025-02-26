@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -59,7 +59,7 @@ public class IRODSDownloadFeature implements Download {
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             if(f.exists()) {
                 final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
-                    new HostPreferences(session.getHost()).getInteger("connection.retry"));
+                        HostPreferencesFactory.get(session.getHost()).getInteger("connection.retry"));
                 final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
                 if(Host.TransferType.unknown.equals(session.getHost().getTransferType())) {
                     options.setUseParallelTransfer(Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type")).equals(Host.TransferType.concurrent));

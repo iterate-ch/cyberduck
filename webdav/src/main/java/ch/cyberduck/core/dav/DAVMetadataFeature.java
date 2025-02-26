@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
@@ -53,7 +53,7 @@ public class DAVMetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault() {
-        return new HostPreferences(session.getHost()).getMap("webdav.metadata.default");
+        return HostPreferencesFactory.get(session.getHost()).getMap("webdav.metadata.default");
     }
 
     @Override

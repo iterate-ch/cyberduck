@@ -25,7 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import java.util.EnumSet;
 
@@ -56,7 +56,7 @@ public class AzureContainerListService implements RootListService {
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
                 result = session.getClient().listContainersSegmented(null, ContainerListingDetails.NONE,
-                        new HostPreferences(session.getHost()).getInteger("azure.listing.chunksize"), token,
+                        HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"), token,
                         options, context);
                 for(CloudBlobContainer container : result.getResults()) {
                     final PathAttributes attributes = new PathAttributes();

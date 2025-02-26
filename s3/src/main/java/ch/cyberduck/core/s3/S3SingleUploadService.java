@@ -30,7 +30,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -94,7 +94,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.checksum.calculate")) {
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.checksum.calculate")) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }

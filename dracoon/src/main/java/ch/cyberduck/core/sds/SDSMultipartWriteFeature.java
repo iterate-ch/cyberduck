@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,7 +61,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
             throw new InteroperabilityException("Missing upload token in server response");
         }
         final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, nodeid, file, status, uploadUrl);
-        return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize")),
+        return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, HostPreferencesFactory.get(session.getHost()).getInteger("sds.upload.multipart.chunksize")),
                 new SDSAttributesAdapter(session), status) {
             private final AtomicBoolean close = new AtomicBoolean();
             private final AtomicReference<Node> node = new AtomicReference<>();

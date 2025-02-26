@@ -28,7 +28,7 @@ import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -74,8 +74,8 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
             }
             final UploadSession upload = Files.createUploadSession(item);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
-            final int partsize = new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.minimum")
-                    * new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
+            final int partsize = HostPreferencesFactory.get(session.getHost()).getInteger("onedrive.upload.multipart.partsize.minimum")
+                    * HostPreferencesFactory.get(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
             return new HttpResponseOutputStream<DriveItem.Metadata>(new MemorySegementingOutputStream(proxy, partsize), new GraphAttributesFinderFeature(session, fileid), status) {
                 @Override
                 public DriveItem.Metadata getStatus() {

@@ -38,7 +38,7 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -73,8 +73,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Write<StorageObject> writer;
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer) {
-        this(session, regionService, writer, new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.size"),
-                new HostPreferences(session.getHost()).getInteger("openstack.upload.largeobject.concurrency"));
+        this(session, regionService, writer, HostPreferencesFactory.get(session.getHost()).getLong("openstack.upload.largeobject.size"),
+                HostPreferencesFactory.get(session.getHost()).getInteger("openstack.upload.largeobject.concurrency"));
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
@@ -119,7 +119,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         else {
             if(status.isExists()) {
                 // Delete existing segments
-                if(new HostPreferences(session.getHost()).getBoolean("openstack.upload.largeobject.cleanup")) {
+                if(HostPreferencesFactory.get(session.getHost()).getBoolean("openstack.upload.largeobject.cleanup")) {
                     // Clean up any old segments
                     new SwiftMultipleDeleteFeature(session).delete(
                             new SwiftSegmentService(session, regionService).list(file), callback, new Delete.DisabledCallback());

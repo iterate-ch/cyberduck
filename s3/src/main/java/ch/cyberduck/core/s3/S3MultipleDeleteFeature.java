@@ -25,7 +25,7 @@ import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -149,7 +149,7 @@ public class S3MultipleDeleteFeature implements Delete {
             else {
                 // Request contains a list of up to 1000 keys that you want to delete
                 for(List<ObjectKeyAndVersion> partition : new Partition<>(keys,
-                    new HostPreferences(session.getHost()).getInteger("s3.delete.multiple.partition"))) {
+                        HostPreferencesFactory.get(session.getHost()).getInteger("s3.delete.multiple.partition"))) {
                     final MultipleDeleteResult result = session.getClient().deleteMultipleObjects(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
                             partition.toArray(new ObjectKeyAndVersion[partition.size()]),
                             // Only include errors in response

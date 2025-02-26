@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import org.apache.logging.log4j.LogManager;
@@ -82,7 +82,7 @@ public class DriveVersioningFeature implements Versioning {
             do {
                 final RevisionList list = session.getClient().revisions().list(fileid.getFileId(file))
                         .setFields(DEFAULT_FIELDS)
-                        .setPageSize(new HostPreferences(session.getHost()).getInteger("googledrive.list.limit"))
+                        .setPageSize(HostPreferencesFactory.get(session.getHost()).getInteger("googledrive.list.limit"))
                         .setPageToken(page).execute();
                 for(Iterator<Revision> iter = list.getRevisions().iterator(); iter.hasNext(); ) {
                     final Revision revision = iter.next();

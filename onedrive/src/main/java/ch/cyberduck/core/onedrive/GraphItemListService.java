@@ -19,12 +19,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
-import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.util.Iterator;
@@ -45,6 +44,6 @@ public class GraphItemListService extends AbstractItemListService {
         log.debug("Return files for folder {}", folder);
         // getQuery(null): return new ODataQuery with default set of parameters
         // require listing Publication/VersionId
-        return Files.getFiles(folder, session.getQuery(null).top(new HostPreferences(session.getHost()).getInteger("onedrive.listing.chunksize")));
+        return Files.getFiles(folder, session.getQuery(null).top(HostPreferencesFactory.get(session.getHost()).getInteger("onedrive.listing.chunksize")));
     }
 }

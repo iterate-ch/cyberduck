@@ -28,7 +28,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptReadFeature;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
@@ -133,7 +133,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
-        final byte[] content = RandomUtils.nextBytes(new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize") + 1);
+        final byte[] content = RandomUtils.nextBytes(HostPreferencesFactory.get(session.getHost()).getInteger("sds.upload.multipart.chunksize") + 1);
         final Path test = new Path(room, new NFDNormalizer().normalize(String.format("ä%s", new AlphanumericRandomStringService().random())).toString(), EnumSet.of(Path.Type.file));
         {
             final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));

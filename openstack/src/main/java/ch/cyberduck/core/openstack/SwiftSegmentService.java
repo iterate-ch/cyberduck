@@ -26,7 +26,7 @@ import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -74,7 +74,7 @@ public class SwiftSegmentService {
     }
 
     public SwiftSegmentService(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new HostPreferences(session.getHost()).getProperty("openstack.upload.largeobject.segments.prefix"));
+        this(session, regionService, HostPreferencesFactory.get(session.getHost()).getProperty("openstack.upload.largeobject.segments.prefix"));
     }
 
     public SwiftSegmentService(final SwiftSession session, final SwiftRegionService regionService, final String prefix) {

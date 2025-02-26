@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
@@ -74,7 +74,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
         final String location = new StoregateWriteFeature(session, fileid).start(file, status);
         final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
         return new HttpResponseOutputStream<File>(new MemorySegementingOutputStream(proxy,
-                new HostPreferences(session.getHost()).getInteger("storegate.upload.multipart.chunksize")),
+                HostPreferencesFactory.get(session.getHost()).getInteger("storegate.upload.multipart.chunksize")),
                 new StoregateAttributesFinderFeature(session, fileid), status) {
             @Override
             public File getStatus() {

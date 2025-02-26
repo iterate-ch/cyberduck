@@ -31,7 +31,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -85,7 +85,7 @@ public class DeepboxReadFeature implements Read {
                 signal.countDown();
             }
         }, "download");
-        final long timeout = new HostPreferences(session.getHost()).getLong("deepbox.download.interrupt.ms");
+        final long timeout = HostPreferencesFactory.get(session.getHost()).getLong("deepbox.download.interrupt.ms");
         final long start = System.currentTimeMillis();
         try {
             final ScheduledFuture<?> f = scheduler.repeat(() -> {
@@ -113,7 +113,7 @@ public class DeepboxReadFeature implements Read {
                     failure.set(new DeepboxExceptionMappingService(fileid).map(e));
                     signal.countDown();
                 }
-            }, new HostPreferences(session.getHost()).getLong("deepbox.download.interval.ms"), TimeUnit.MILLISECONDS);
+            }, HostPreferencesFactory.get(session.getHost()).getLong("deepbox.download.interval.ms"), TimeUnit.MILLISECONDS);
             while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
                 try {
                     if(f.isDone()) {

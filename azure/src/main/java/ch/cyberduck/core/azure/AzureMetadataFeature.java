@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +58,7 @@ public class AzureMetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault() {
-        return new HostPreferences(session.getHost()).getMap("azure.metadata.default");
+        return HostPreferencesFactory.get(session.getHost()).getMap("azure.metadata.default");
     }
 
     @Override

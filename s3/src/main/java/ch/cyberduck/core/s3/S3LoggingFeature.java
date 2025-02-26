@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -101,7 +101,7 @@ public class S3LoggingFeature implements Logging {
                     StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() :
                             bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(), null);
             if(configuration.isEnabled()) {
-                status.setLogfilePrefix(new HostPreferences(session.getHost()).getProperty("s3.logging.prefix"));
+                status.setLogfilePrefix(HostPreferencesFactory.get(session.getHost()).getProperty("s3.logging.prefix"));
             }
             session.getClient().setBucketLoggingStatus(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), status, true);
         }

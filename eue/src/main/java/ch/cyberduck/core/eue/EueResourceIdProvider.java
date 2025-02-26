@@ -25,7 +25,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
@@ -72,7 +72,7 @@ public class EueResourceIdProvider extends CachingFileIdProvider implements File
             }
             int offset = 0;
             UiFsModel fsModel;
-            final int chunksize = new HostPreferences(session.getHost()).getInteger("eue.listing.chunksize");
+            final int chunksize = HostPreferencesFactory.get(session.getHost()).getInteger("eue.listing.chunksize");
             do {
                 final String parentResourceId = this.getFileId(file.getParent());
                 switch(parentResourceId) {

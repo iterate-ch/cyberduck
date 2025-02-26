@@ -15,14 +15,36 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.JSON;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.UserRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Me;
 import ch.cyberduck.core.deepcloud.DeepcloudApiClient;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Restore;
+import ch.cyberduck.core.features.Share;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Trash;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
@@ -30,13 +52,14 @@ import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -58,7 +81,7 @@ import java.io.IOException;
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
 
-    private final PreferencesReader preferences = new HostPreferences(host);
+    private final PreferencesReader preferences = HostPreferencesFactory.get(host);
     private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
 
     private DeepcloudApiClient deepcloudClient;

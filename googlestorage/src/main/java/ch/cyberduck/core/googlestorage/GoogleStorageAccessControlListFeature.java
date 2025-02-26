@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -83,7 +83,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
             else {
                 log.warn("Missing IAM configuration for bucket {}", bucket);
             }
-            return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
+            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.acl.default"));
         }
         catch(IOException e) {
             try {

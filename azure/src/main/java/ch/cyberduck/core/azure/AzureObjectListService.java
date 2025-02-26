@@ -30,7 +30,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -84,7 +84,7 @@ public class AzureObjectListService implements ListService {
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
                 result = container.listBlobsSegmented(prefix, false, EnumSet.noneOf(BlobListingDetails.class),
-                        new HostPreferences(session.getHost()).getInteger("azure.listing.chunksize"), token, options, context);
+                        HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"), token, options, context);
                 for(ListBlobItem object : result.getResults()) {
                     if(new SimplePathPredicate(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
                         log.debug("Skip placeholder key {}", object);

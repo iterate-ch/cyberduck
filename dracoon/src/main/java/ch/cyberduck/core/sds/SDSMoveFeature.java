@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNode;
@@ -95,7 +95,7 @@ public class SDSMoveFeature implements Move {
                             new MoveNodesRequest()
                                     .resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                                     .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
-                                    .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
+                                    .keepShareLinks(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
                             Long.parseLong(nodeid.getVersionId(renamed.getParent())),
                             StringUtils.EMPTY, null));
                 }

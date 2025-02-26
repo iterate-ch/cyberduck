@@ -18,7 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class DriveMetadataFeature implements Metadata {
         try {
             final String fileid = this.fileid.getFileId(file);
             final Map<String, String> properties = session.getClient().files().get(fileid).setFields("properties")
-                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute().getProperties();
+                    .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute().getProperties();
             if(null == properties) {
                 return Collections.emptyMap();
             }
@@ -65,7 +65,7 @@ public class DriveMetadataFeature implements Metadata {
             final File body = new File();
             body.setProperties(status.getMetadata());
             final File properties = session.getClient().files().update(fileid, body).setFields("properties").
-                    setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                    setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(properties));
         }
         catch(IOException e) {

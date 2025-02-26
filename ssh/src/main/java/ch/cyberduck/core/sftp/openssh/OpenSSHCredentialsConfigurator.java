@@ -15,14 +15,9 @@ package ch.cyberduck.core.sftp.openssh;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,14 +57,14 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                 }
                 else {
                     // No custom public key authentication configuration
-                    if(new HostPreferences(host).getBoolean("ssh.authentication.publickey.default.enable")) {
-                        final Local rsa = LocalFactory.get(new HostPreferences(host).getProperty("ssh.authentication.publickey.default.rsa"));
+                    if(HostPreferencesFactory.get(host).getBoolean("ssh.authentication.publickey.default.enable")) {
+                        final Local rsa = LocalFactory.get(HostPreferencesFactory.get(host).getProperty("ssh.authentication.publickey.default.rsa"));
                         if(rsa.exists()) {
                             log.info("Using RSA default host key {} from {}", rsa, configuration);
                             credentials.setIdentity(rsa);
                         }
                         else {
-                            final Local dsa = LocalFactory.get(new HostPreferences(host).getProperty("ssh.authentication.publickey.default.dsa"));
+                            final Local dsa = LocalFactory.get(HostPreferencesFactory.get(host).getProperty("ssh.authentication.publickey.default.dsa"));
                             if(dsa.exists()) {
                                 log.info("Using DSA default host key {} from {}", dsa, configuration);
                                 credentials.setIdentity(dsa);

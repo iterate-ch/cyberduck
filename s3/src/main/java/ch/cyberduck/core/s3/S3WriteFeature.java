@@ -32,7 +32,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -108,7 +108,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             switch(checksum.algorithm) {
                 case sha256:
                     if(!status.isSegment()) {
-                        if(new HostPreferences(session.getHost()).getBoolean("s3.upload.checksum.header")) {
+                        if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.checksum.header")) {
                             object.addMetadata("x-amz-checksum-sha256", checksum.base64);
                         }
                     }

@@ -27,7 +27,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntry;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Trash;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +79,7 @@ public class EueTrashFeature implements Trash {
             if(!resources.isEmpty()) {
                 final EueApiClient client = new EueApiClient(session);
                 for(List<String> partition : new Partition<>(resources.stream().map(resourceId -> String.format("%s/resource/%s", session.getBasePath(), resourceId)).collect(Collectors.toList()),
-                        new HostPreferences(session.getHost()).getInteger("eue.delete.multiple.partition"))) {
+                        HostPreferencesFactory.get(session.getHost()).getInteger("eue.delete.multiple.partition"))) {
                     final ResourceMoveResponseEntries resourceMoveResponseEntries = new MoveChildrenForAliasApiApi(client).resourceAliasAliasChildrenMovePost(
                             EueResourceIdProvider.TRASH, partition,
                             null, null, null, "rename", null);

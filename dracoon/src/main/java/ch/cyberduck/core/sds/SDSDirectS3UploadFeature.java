@@ -37,7 +37,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteS3FileUploadRequest;
@@ -97,8 +97,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             = new SDSPathContainerService();
 
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> writer) {
-        this(session, nodeid, writer, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.size"),
-                new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
+        this(session, nodeid, writer, HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.size"),
+                HostPreferencesFactory.get(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
     }
 
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> writer, final Long partsize, final Integer concurrency) {
@@ -169,7 +169,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             Interruptibles.awaitAll(parts)
                     .forEach(part -> etags.put(part.getPart(), part));
             final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
-                    .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
+                    .keepShareLinks(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                     .resolutionStrategy(CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE);
             if(status.getFilekey() != null) {
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);

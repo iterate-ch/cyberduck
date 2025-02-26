@@ -22,7 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.registry.*;
 
@@ -103,16 +103,16 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
             if(file.attributes().getVault() != null) {
                 return listener.load(session, file.attributes().getVault(),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
             }
             final Path directory = file.getParent();
             if(directory.attributes().getVault() != null) {
                 return listener.load(session, directory.attributes().getVault(),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
             }
         }
         return Vault.DISABLED;

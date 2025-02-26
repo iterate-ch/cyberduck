@@ -19,7 +19,7 @@ package ch.cyberduck.core.transfer.download;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
 public final class DownloadFilterOptions {
@@ -39,7 +39,7 @@ public final class DownloadFilterOptions {
     public boolean open;
 
     public DownloadFilterOptions(final Host bookmark) {
-        final PreferencesReader preferences = new HostPreferences(bookmark);
+        final PreferencesReader preferences = HostPreferencesFactory.get(bookmark);
         segments = preferences.getBoolean("queue.download.segments");
         permissions = preferences.getBoolean("queue.download.permissions.change");
         timestamp = preferences.getBoolean("queue.download.timestamp.change");

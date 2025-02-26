@@ -16,7 +16,7 @@ package ch.cyberduck.core;
  */
 
 
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
@@ -52,7 +52,7 @@ public class ConnectionTimeoutFactory extends Factory<ConnectionTimeout> {
     }
 
     public static ConnectionTimeout get(final Host host) {
-        return get(new HostPreferences(host));
+        return get(HostPreferencesFactory.get(host));
     }
 
     public static synchronized ConnectionTimeout get(final PreferencesReader preferences) {

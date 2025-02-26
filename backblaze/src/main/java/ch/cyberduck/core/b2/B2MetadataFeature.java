@@ -18,7 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ public class B2MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault() {
-        return new HostPreferences(session.getHost()).getMap("b2.metadata.default");
+        return HostPreferencesFactory.get(session.getHost()).getMap("b2.metadata.default");
     }
 
     @Override

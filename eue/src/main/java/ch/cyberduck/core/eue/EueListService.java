@@ -25,7 +25,7 @@ import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.Children;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -44,7 +44,7 @@ public class EueListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, new HostPreferences(session.getHost()).getInteger("eue.listing.chunksize"));
+        return this.list(directory, listener, HostPreferencesFactory.get(session.getHost()).getInteger("eue.listing.chunksize"));
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
