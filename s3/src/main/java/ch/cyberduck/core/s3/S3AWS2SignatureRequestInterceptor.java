@@ -15,7 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -100,7 +100,7 @@ public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor
     final class HttpHeaderFilter implements Predicate<Header> {
         @Override
         public boolean test(final Header header) {
-            return !new HostPreferences(session.getHost()).getList("s3.signature.headers.exclude").stream()
+            return !HostPreferencesFactory.get(session.getHost()).getList("s3.signature.headers.exclude").stream()
                     .filter(s -> StringUtils.equalsIgnoreCase(s, header.getName())).findAny().isPresent();
         }
     }

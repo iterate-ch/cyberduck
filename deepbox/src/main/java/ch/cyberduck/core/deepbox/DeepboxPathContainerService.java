@@ -17,7 +17,7 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,7 +41,7 @@ public class DeepboxPathContainerService extends DefaultPathContainerService {
     }
 
     public String getPinnedLocalization(final String name) {
-        final String localized = new HostPreferences(session.getHost()).getProperty(toPinnedLocalizationPropertyKey(name));
+        final String localized = HostPreferencesFactory.get(session.getHost()).getProperty(toPinnedLocalizationPropertyKey(name));
         if(null == localized) {
             return name;
         }

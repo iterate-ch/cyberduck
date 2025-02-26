@@ -23,7 +23,7 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +52,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
     private final PathContainerService containerService;
 
     public DropboxWriteFeature(final DropboxSession session) {
-        this(session, new HostPreferences(session.getHost()).getLong("dropbox.upload.chunksize"));
+        this(session, HostPreferencesFactory.get(session.getHost()).getLong("dropbox.upload.chunksize"));
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {

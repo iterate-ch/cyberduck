@@ -28,7 +28,7 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteS3FileUploadRequest;
@@ -84,7 +84,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
     private final Integer partsize;
 
     public SDSDirectS3MultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        this(session, nodeid, new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize"));
+        this(session, nodeid, HostPreferencesFactory.get(session.getHost()).getInteger("sds.upload.multipart.chunksize"));
     }
 
     public SDSDirectS3MultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Integer partsize) {
@@ -231,7 +231,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                     this.write(new byte[0]);
                 }
                 final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
-                        .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
+                        .keepShareLinks(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                         .resolutionStrategy(CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE);
                 if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);

@@ -22,7 +22,7 @@ import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.client.HttpResponseException;
@@ -57,7 +57,7 @@ public class DriveBatchTrashFeature implements Trash {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         // Must split otherwise 413 Request Entity Too Large is returned
         for(List<Path> partition : new Partition<>(new ArrayList<>(files.keySet()),
-                new HostPreferences(session.getHost()).getInteger("googledrive.delete.multiple.partition"))) {
+                HostPreferencesFactory.get(session.getHost()).getInteger("googledrive.delete.multiple.partition"))) {
             final BatchRequest batch = session.getClient().batch();
             final List<BackgroundException> failures = new CopyOnWriteArrayList<>();
             for(Path f : partition) {
@@ -75,7 +75,7 @@ public class DriveBatchTrashFeature implements Trash {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileId(f), properties)
-                                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                                .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
                                 .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
                     }
                 }

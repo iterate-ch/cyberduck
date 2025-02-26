@@ -20,7 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,7 +55,7 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(new HostPreferences(session.getHost()).getBoolean("b2.upload.checksum.verify")) {
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("b2.upload.checksum.verify")) {
             try {
                 digest = MessageDigest.getInstance("SHA1");
             }

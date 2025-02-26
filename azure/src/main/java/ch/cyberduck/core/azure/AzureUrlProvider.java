@@ -28,7 +28,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -63,7 +63,7 @@ public class AzureUrlProvider implements UrlProvider {
         list.add(this.toSignedUrl(file, (int) TimeUnit.HOURS.toSeconds(1)));
         // Default signed URL expiring in 24 hours.
         list.add(this.toSignedUrl(file, (int) TimeUnit.SECONDS.toSeconds(
-                new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
+                HostPreferencesFactory.get(session.getHost()).getInteger("s3.url.expire.seconds"))));
         // 1 Week
         list.add(this.toSignedUrl(file, (int) TimeUnit.DAYS.toSeconds(7)));
         // 1 Month

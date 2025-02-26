@@ -33,7 +33,7 @@ import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.*;
@@ -82,7 +82,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
         if(host.getCredentials().isAnonymousLogin()) {
             return false;
         }
-        final PreferencesReader preferences = new HostPreferences(host);
+        final PreferencesReader preferences = HostPreferencesFactory.get(host);
         if(preferences.getBoolean(String.format("connection.unsecure.%s", host.getHostname()))) {
             return false;
         }

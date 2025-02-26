@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultFinderListService;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -45,8 +45,8 @@ public class VaultRegistryListService implements ListService {
         this.proxy = proxy;
         this.registry = registry;
         this.lookup = lookup;
-        this.autodetect = new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
-                && new HostPreferences(session.getHost()).getBoolean("cryptomator.enable");
+        this.autodetect = HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.vault.autodetect")
+                && HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.enable");
     }
 
     @Override

@@ -29,7 +29,7 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -79,7 +79,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
     public StatusOutputStream<BaseB2Response> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<BaseB2Response>(new MemorySegementingOutputStream(proxy,
-                new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")),
+                HostPreferencesFactory.get(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")),
                 new B2AttributesFinderFeature(session, fileid), status) {
             @Override
             public BaseB2Response getStatus() {
@@ -124,7 +124,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                 if(null != overall.getCreated()) {
                     fileinfo.put(X_BZ_INFO_SRC_CREATION_DATE_MILLIS, String.valueOf(overall.getCreated()));
                 }
-                if(0 == partNumber && len < new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")) {
+                if(0 == partNumber && len < HostPreferencesFactory.get(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
                     final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file)));
                     final Checksum checksum = overall.getChecksum();

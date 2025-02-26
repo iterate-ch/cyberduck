@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +39,7 @@ public class VaultFinderListService implements ListService {
         this.session = session;
         this.delegate = delegate;
         this.loader = loader;
-        this.filecount = new HostPreferences(session.getHost()).getInteger("cryptomator.vault.autodetect.filecount");
+        this.filecount = HostPreferencesFactory.get(session.getHost()).getInteger("cryptomator.vault.autodetect.filecount");
     }
 
     @Override

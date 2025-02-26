@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UploadsApi;
@@ -133,7 +133,7 @@ public class SDSUploadService {
     public Node complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
         try {
             final CompleteUploadRequest body = new CompleteUploadRequest()
-                    .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
+                    .keepShareLinks(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                     .resolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
             if(status.getFilekey() != null) {
                 log.debug("Set file key to {} for {}", status.getFilekey(), file);
@@ -254,9 +254,9 @@ public class SDSUploadService {
                         failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
                         signal.countDown();
                     }
-                }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.delay"),
-                new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
-        final long timeout = new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.interrupt.ms");
+                }, HostPreferencesFactory.get(session.getHost()).getLong("sds.upload.s3.status.delay"),
+                HostPreferencesFactory.get(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
+        final long timeout = HostPreferencesFactory.get(session.getHost()).getLong("sds.upload.s3.status.interrupt.ms");
         final long start = System.currentTimeMillis();
         while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
             try {

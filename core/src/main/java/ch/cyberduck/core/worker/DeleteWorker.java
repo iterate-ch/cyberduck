@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -119,7 +120,7 @@ public class DeleteWorker extends Worker<List<Path>> {
         if(delete.isRecursive()) {
             recursive.keySet().removeIf(f -> !f.getType().contains(Path.Type.decrypted) && recursive.keySet().stream().anyMatch(f::isChild));
         }
-        final HostPreferences preferences = new HostPreferences(session.getHost());
+        final HostPreferences preferences = HostPreferencesFactory.get(session.getHost());
         if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.delete.enable")) {
             switch(session.getHost().getProtocol().getVersioningMode()) {
                 case custom:

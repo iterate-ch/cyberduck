@@ -49,7 +49,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -86,7 +86,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.find = find;
         this.attribute = attribute;
         this.options = options;
-        this.preferences = new HostPreferences(session.getHost());
+        this.preferences = HostPreferencesFactory.get(session.getHost());
     }
 
     @Override
@@ -170,7 +170,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     status.setPermission(status.getRemote().getPermission());
                 }
                 else {
-                    if(new HostPreferences(session.getHost()).getBoolean("queue.upload.permissions.default")) {
+                    if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.permissions.default")) {
                         status.setPermission(feature.getDefault(file.getType()));
                     }
                     else {

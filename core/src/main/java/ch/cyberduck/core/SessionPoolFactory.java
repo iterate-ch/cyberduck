@@ -20,6 +20,7 @@ import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -92,7 +93,7 @@ public class SessionPoolFactory {
                 }
                 // Break through to default pool
                 log.info("Create new pooled connection pool for {}", bookmark);
-                final HostPreferences preferences = new HostPreferences(bookmark);
+                final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
                 return new DefaultSessionPool(connect, trust, key, registry, transcript, bookmark)
                         .withMinIdle(preferences.getInteger("connection.pool.minidle"))
                         .withMaxIdle(preferences.getInteger("connection.pool.maxidle"))

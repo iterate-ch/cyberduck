@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -129,7 +129,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
     @Override
     public <T> T _getFeature(final Class<T> type) {
         if(type == Lock.class) {
-            if(new HostPreferences(host).getBoolean("sharepoint.lock.enable")) {
+            if(HostPreferencesFactory.get(host).getBoolean("sharepoint.lock.enable")) {
                 return (T) new GraphLockFeature(this, fileid);
             }
         }

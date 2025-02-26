@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,20 +47,20 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public String getDefault() {
-        return new HostPreferences(session.getHost()).getProperty("s3.storage.class");
+        return HostPreferencesFactory.get(session.getHost()).getProperty("s3.storage.class");
     }
 
     @Override
     public Set<String> getClasses() {
-        return new LinkedHashSet<>(new HostPreferences(session.getHost()).getList("s3.storage.class.options"));
+        return new LinkedHashSet<>(HostPreferencesFactory.get(session.getHost()).getList("s3.storage.class.options"));
     }
 
     @Override
     public String getClass(final Path file) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
-            if(StringUtils.isNotBlank(new HostPreferences(session.getHost()).getProperty(key))) {
-                return new HostPreferences(session.getHost()).getProperty(key);
+            if(StringUtils.isNotBlank(HostPreferencesFactory.get(session.getHost()).getProperty(key))) {
+                return HostPreferencesFactory.get(session.getHost()).getProperty(key);
             }
             return null;
         }

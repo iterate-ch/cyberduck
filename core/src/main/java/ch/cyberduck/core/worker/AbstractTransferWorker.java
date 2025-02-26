@@ -27,7 +27,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.notification.NotificationService;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.SynchronizingTransferErrorCallback;
@@ -388,7 +388,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         final Session<?> s = borrow(Connection.source);
                         final Session<?> d = borrow(Connection.destination);
                         final IconService.Icon icon;
-                        if(new HostPreferences(s.getHost()).getBoolean(String.format("queue.%s.icon.update", transfer.getType().name()))) {
+                        if(HostPreferencesFactory.get(s.getHost()).getBoolean(String.format("queue.%s.icon.update", transfer.getType().name()))) {
                             icon = IconServiceFactory.iconFor(transfer.getType(),
                                     segment.getRename().local != null ? segment.isSegment() ? segment.getRename().local.getParent() : segment.getRename().local : item.local);
                         }

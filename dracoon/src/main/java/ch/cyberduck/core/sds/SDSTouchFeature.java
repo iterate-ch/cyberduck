@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.QuotaException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,7 +45,7 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
 
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         super(new SDSDelegatingWriteFeature(session, nodeid,
-                new HostPreferences(session.getHost()).getBoolean("sds.upload.s3.enable") ?
+                HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.s3.enable") ?
                         new SDSDirectS3MultipartWriteFeature(session, nodeid) : new SDSMultipartWriteFeature(session, nodeid)));
         this.session = session;
         this.nodeid = nodeid;
@@ -74,7 +74,7 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
         if(workdir.attributes().getQuota() != SDSQuotaFeature.unknown) {
-            if(workdir.attributes().getQuota().available <= workdir.attributes().getSize() + new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize")) {
+            if(workdir.attributes().getQuota().available <= workdir.attributes().getSize() + HostPreferencesFactory.get(session.getHost()).getInteger("sds.upload.multipart.chunksize")) {
                 log.warn("Quota {} exceeded with {} in {}", workdir.attributes().getQuota().available, workdir.attributes().getSize(), workdir);
                 throw new QuotaException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
             }

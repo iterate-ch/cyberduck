@@ -32,7 +32,7 @@ import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.PooledSessionFactory;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -114,7 +114,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                                             super.afterWrite(n);
                                             if(this.getByteCount() >= 42768L) {
                                                 // Buffer size
-                                                assertEquals(new HostPreferences(host).getLong("connection.chunksize"), counter.getSent());
+                                                assertEquals(HostPreferencesFactory.get(host).getLong("connection.chunksize"), counter.getSent());
                                                 failed.set(true);
                                                 throw new SocketTimeoutException();
                                             }

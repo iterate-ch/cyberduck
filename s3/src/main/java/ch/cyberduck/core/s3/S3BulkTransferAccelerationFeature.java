@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.TransferAcceleration;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -109,7 +109,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
             log.info("S3 transfer acceleration enabled for file {}", bucket);
             return true;
         }
-        if(new HostPreferences(session.getHost()).getBoolean("s3.accelerate.prompt")) {
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.accelerate.prompt")) {
             if(accelerationService.prompt(session.getHost(), bucket, prompt)) {
                 log.info("S3 transfer acceleration enabled for file {}", bucket);
                 return true;

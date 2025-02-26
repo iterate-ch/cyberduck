@@ -29,7 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.logging.log4j.LogManager;
@@ -74,7 +74,7 @@ public class MountWorker extends Worker<Path> {
         }
         catch(NotfoundException e) {
             log.warn("Mount failed with {}", e.getMessage());
-            if(new HostPreferences(session.getHost()).getBoolean("mount.notfound.skipfallback")) {
+            if(HostPreferencesFactory.get(session.getHost()).getBoolean("mount.notfound.skipfallback")) {
                 throw e;
             }
             // The default path does not exist or is not readable due to possible permission issues. Fallback

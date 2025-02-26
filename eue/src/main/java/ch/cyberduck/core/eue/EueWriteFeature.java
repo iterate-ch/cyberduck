@@ -31,7 +31,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.DecoderException;
@@ -102,7 +102,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
                             if(status.isSegment()) {
                                 // Chunked upload from large upload service
                                 uploadUriWithParameters.append(String.format("&x_offset=%d",
-                                        new HostPreferences(session.getHost()).getLong("eue.upload.multipart.size") * (status.getPart() - 1)));
+                                        HostPreferencesFactory.get(session.getHost()).getLong("eue.upload.multipart.size") * (status.getPart() - 1)));
                                 final HttpPut request = new HttpPut(uploadUriWithParameters.toString());
                                 request.setEntity(entity);
                                 response = session.getClient().execute(request);

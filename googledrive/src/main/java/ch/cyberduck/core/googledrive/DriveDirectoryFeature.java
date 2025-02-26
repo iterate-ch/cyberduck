@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -69,7 +69,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                         .setParents(Collections.singletonList(fileid.getFileId(folder.getParent()))));
                 final File execute = insert
                         .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
-                        .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                        .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
                 fileid.cache(folder, execute.getId());
                 return folder.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
             }

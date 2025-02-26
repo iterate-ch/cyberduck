@@ -26,7 +26,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +45,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
 
     public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
                                        final SwiftWriteFeature writer) {
-        this(session, regionService, writer, new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.threshold"));
+        this(session, regionService, writer, HostPreferencesFactory.get(session.getHost()).getLong("openstack.upload.largeobject.threshold"));
     }
 
 
@@ -81,9 +81,9 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
 
     protected boolean threshold(final TransferStatus status) {
         if(status.getLength() > threshold) {
-            if(!new HostPreferences(session.getHost()).getBoolean("openstack.upload.largeobject")) {
+            if(!HostPreferencesFactory.get(session.getHost()).getBoolean("openstack.upload.largeobject")) {
                 // Disabled by user
-                if(status.getLength() < new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.required.threshold")) {
+                if(status.getLength() < HostPreferencesFactory.get(session.getHost()).getLong("openstack.upload.largeobject.required.threshold")) {
                     log.warn("Large upload is disabled with property openstack.upload.largeobject");
                     return false;
                 }

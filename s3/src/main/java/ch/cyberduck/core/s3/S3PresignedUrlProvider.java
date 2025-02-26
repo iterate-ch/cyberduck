@@ -19,7 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -69,6 +69,6 @@ public class S3PresignedUrlProvider {
         }.createSignedUrlUsingSignatureVersion(
                 session.getSignatureVersion().toString(),
                 region, method, bucket, key, null, null, expiry / 1000, false, true,
-                new HostPreferences(bookmark).getBoolean("s3.bucket.virtualhost.disable"));
+                HostPreferencesFactory.get(bookmark).getBoolean("s3.bucket.virtualhost.disable"));
     }
 }

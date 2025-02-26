@@ -18,7 +18,7 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 public interface VaultRegistry {
     VaultRegistry DISABLED = new DisabledVaultRegistry();
@@ -31,7 +31,7 @@ public interface VaultRegistry {
      * @see Vault#DISABLED
      */
     default Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
-        return this.find(session, file, new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autoload"));
+        return this.find(session, file, HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.vault.autoload"));
     }
 
     /**

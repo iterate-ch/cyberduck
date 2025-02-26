@@ -65,7 +65,7 @@ import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -2434,9 +2434,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
                         new CreateVaultWorker(region, passphrase, VaultFactory.get(folder,
-                                new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                                new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.config.filename"),
-                                new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
+                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.config.filename"),
+                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
                             @Override
                             public void cleanup(final Path vault) {
                                 reload(workdir, Collections.singletonList(folder), Collections.singletonList(folder));

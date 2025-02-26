@@ -32,7 +32,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.codec.binary.Hex;
@@ -114,7 +114,7 @@ public class SwiftUrlProvider implements UrlProvider {
                     list.add(this.toSignedUrl(region, file, (int) TimeUnit.HOURS.toSeconds(1)));
                     // Default signed URL expiring in 24 hours.
                     list.add(this.toSignedUrl(region, file, (int) TimeUnit.SECONDS.toSeconds(
-                            new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
+                            HostPreferencesFactory.get(session.getHost()).getInteger("s3.url.expire.seconds"))));
                     // 1 Week
                     list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(7)));
                     // 1 Month

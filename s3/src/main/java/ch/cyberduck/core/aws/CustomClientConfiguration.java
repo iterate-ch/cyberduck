@@ -24,7 +24,7 @@ import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.ResolveCanceledException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
@@ -69,7 +69,7 @@ public class CustomClientConfiguration extends ClientConfiguration {
         this.setUserAgentSuffix(StringUtils.EMPTY);
         this.setMaxErrorRetry(0);
         this.setMaxConnections(1);
-        this.setUseGzip(new HostPreferences(host).getBoolean("http.compression.enable"));
+        this.setUseGzip(HostPreferencesFactory.get(host).getBoolean("http.compression.enable"));
         final Proxy proxy = ProxyFactory.get().find(new ProxyHostUrlProvider().get(host));
         switch(proxy.getType()) {
             case HTTP:

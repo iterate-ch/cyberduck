@@ -38,7 +38,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -102,7 +102,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     protected IRODSFileSystem configure(final IRODSFileSystem client) {
         final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
         properties.setEncoding(host.getEncoding());
-        final PreferencesReader preferences = new HostPreferences(host);
+        final PreferencesReader preferences = HostPreferencesFactory.get(host);
         final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         properties.setIrodsSocketTimeout(timeout);
         properties.setIrodsParallelSocketTimeout(timeout);

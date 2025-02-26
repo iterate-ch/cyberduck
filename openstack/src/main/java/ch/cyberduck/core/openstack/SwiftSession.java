@@ -35,7 +35,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -69,7 +69,7 @@ public class SwiftSession extends HttpSession<Client> {
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     private final DelegatingSchedulerFeature scheduler = new DelegatingSchedulerFeature(
-            new HostPreferences(host).getBoolean("openstack.account.preload") ? new SwiftAccountLoader(this) {
+            HostPreferencesFactory.get(host).getBoolean("openstack.account.preload") ? new SwiftAccountLoader(this) {
                 @Override
                 protected Map<Region, AccountInfo> operate(final PasswordCallback callback) throws BackgroundException {
                     final Map<Region, AccountInfo> result = super.operate(callback);
@@ -78,7 +78,7 @@ public class SwiftSession extends HttpSession<Client> {
                     return result;
                 }
             } : Scheduler.noop,
-            new HostPreferences(host).getBoolean("openstack.cdn.preload") ? new SwiftDistributionConfigurationLoader(this) {
+            HostPreferencesFactory.get(host).getBoolean("openstack.cdn.preload") ? new SwiftDistributionConfigurationLoader(this) {
                 @Override
                 protected Map<Path, Set<Distribution>> operate(final PasswordCallback callback) throws BackgroundException {
                     final Map<Path, Set<Distribution>> result = super.operate(callback);

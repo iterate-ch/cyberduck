@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +59,7 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.checksum.calculate")) {
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.checksum.calculate")) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }

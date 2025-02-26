@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -46,7 +46,7 @@ public class SFTPWriteFeature implements Write<Void> {
 
     public SFTPWriteFeature(final SFTPSession session) {
         this.session = session;
-        this.preferences = new HostPreferences(session.getHost());
+        this.preferences = HostPreferencesFactory.get(session.getHost());
     }
 
     @Override

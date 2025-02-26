@@ -21,7 +21,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -48,7 +48,7 @@ public class GoogleStorageBucketListService implements ListService {
             String page = null;
             do {
                 final Storage.Buckets.List request = session.getClient().buckets().list(session.getHost().getCredentials().getUsername())
-                        .setMaxResults(new HostPreferences(session.getHost()).getLong("googlestorage.listing.chunksize"))
+                        .setMaxResults(HostPreferencesFactory.get(session.getHost()).getLong("googlestorage.listing.chunksize"))
                         .setPageToken(page);
                 response = request.execute();
                 if(null != response.getItems()) {

@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 
@@ -71,7 +71,7 @@ public class BrickPairingSchedulerFeature {
     }
 
     public void repeat(final PasswordCallback callback) {
-        final long timeout = new HostPreferences(session.getHost()).getLong("brick.pairing.interrupt.ms");
+        final long timeout = HostPreferencesFactory.get(session.getHost()).getLong("brick.pairing.interrupt.ms");
         final long start = System.currentTimeMillis();
         scheduler.repeat(() -> {
             try {
@@ -90,7 +90,7 @@ public class BrickPairingSchedulerFeature {
                 callback.close(null);
                 this.shutdown();
             }
-        }, new HostPreferences(session.getHost()).getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
+        }, HostPreferencesFactory.get(session.getHost()).getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -114,7 +114,7 @@ public class BrickPairingSchedulerFeature {
                 }
             });
             if(json.has("nickname")) {
-                if(new HostPreferences(session.getHost()).getBoolean("brick.pairing.nickname.configure")) {
+                if(HostPreferencesFactory.get(session.getHost()).getBoolean("brick.pairing.nickname.configure")) {
                     final JsonPrimitive nickname = json.getAsJsonPrimitive("nickname");
                     if(StringUtils.isNotBlank(host.getNickname())) {
                         if(!StringUtils.equals(host.getNickname(), nickname.getAsString())) {
@@ -141,7 +141,7 @@ public class BrickPairingSchedulerFeature {
                 throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));
             }
             if(json.has("server")) {
-                if(new HostPreferences(session.getHost()).getBoolean("brick.pairing.hostname.configure")) {
+                if(HostPreferencesFactory.get(session.getHost()).getBoolean("brick.pairing.hostname.configure")) {
                     final String server = json.getAsJsonPrimitive("server").getAsString();
                     try {
                         host.setHostname(new URI(server).getHost());

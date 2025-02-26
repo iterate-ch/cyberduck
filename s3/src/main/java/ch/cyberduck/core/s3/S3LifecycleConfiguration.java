@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +58,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
                 if(configuration.getTransition() != null) {
                     final LifecycleConfig.Transition transition = rule.newTransition();
                     transition.setDays(configuration.getTransition());
-                    transition.setStorageClass(new HostPreferences(session.getHost()).getProperty("s3.lifecycle.transition.class"));
+                    transition.setStorageClass(HostPreferencesFactory.get(session.getHost()).getProperty("s3.lifecycle.transition.class"));
                 }
                 if(configuration.getExpiration() != null) {
                     final LifecycleConfig.Expiration expiration = rule.newExpiration();

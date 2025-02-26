@@ -29,7 +29,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +46,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private Write<StorageObject> writer;
 
     public S3ThresholdUploadService(final S3Session session, final S3AccessControlListFeature acl) {
-        this(session, acl, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.threshold"));
+        this(session, acl, HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.threshold"));
     }
 
     public S3ThresholdUploadService(final S3Session session, final S3AccessControlListFeature acl, final Long threshold) {
@@ -89,10 +89,10 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     protected boolean threshold(final TransferStatus status) {
         if(status.getLength() >= threshold) {
-            if(!new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
+            if(!HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart")) {
                 log.warn("Multipart upload is disabled with property s3.upload.multipart");
                 // Disabled by user
-                if(status.getLength() < new HostPreferences(session.getHost()).getLong("s3.upload.multipart.required.threshold")) {
+                if(status.getLength() < HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.required.threshold")) {
                     return false;
                 }
             }

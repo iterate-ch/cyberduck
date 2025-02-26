@@ -25,7 +25,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.s3.S3AbstractListService;
 import ch.cyberduck.core.s3.S3PathContainerService;
 
@@ -60,7 +60,7 @@ public class SpectraObjectListService extends S3AbstractListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"));
+        return this.list(directory, listener, HostPreferencesFactory.get(session.getHost()).getInteger("s3.listing.chunksize"));
     }
 
     @NotNull

@@ -23,7 +23,7 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
@@ -60,7 +60,7 @@ public class SDSVersioningFeature implements Versioning {
             new NodesApi(session.getClient()).restoreNodes(
                     new RestoreDeletedNodesRequest()
                             .resolutionStrategy(RestoreDeletedNodesRequest.ResolutionStrategyEnum.OVERWRITE)
-                            .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
+                            .keepShareLinks(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                             .addDeletedNodeIdsItem(Long.parseLong(nodeid.getVersionId(file)))
                             .parentId(Long.parseLong(nodeid.getVersionId(file.getParent()))), StringUtils.EMPTY);//todo
         }
@@ -75,7 +75,7 @@ public class SDSVersioningFeature implements Versioning {
         if(file.isDirectory()) {
             return AttributedList.emptyList();
         }
-        final int chunksize = new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize");
+        final int chunksize = HostPreferencesFactory.get(session.getHost()).getInteger("sds.listing.chunksize");
         try {
             int offset = 0;
             DeletedNodeVersionsList nodes;

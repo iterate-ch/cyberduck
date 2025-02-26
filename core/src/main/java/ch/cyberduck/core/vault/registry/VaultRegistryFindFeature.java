@@ -21,7 +21,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -47,8 +47,8 @@ public class VaultRegistryFindFeature implements Find {
         this.proxy = proxy;
         this.registry = registry;
         this.lookup = lookup;
-        this.autodetect = new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
-                && new HostPreferences(session.getHost()).getBoolean("cryptomator.enable");
+        this.autodetect = HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.vault.autodetect")
+                && HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.enable");
     }
 
     @Override
@@ -58,17 +58,17 @@ public class VaultRegistryFindFeature implements Find {
             if(autodetect) {
                 final Path directory = file.getParent();
                 final Path vaultConfig = new Path(directory,
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file));
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file));
                 final Path key = new Path(directory,
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file));
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file));
                 if(proxy.find(vaultConfig, listener) || proxy.find(key, listener)) {
                     log.info("Found vault config {} or masterkey {}", vaultConfig, key);
                     try {
                         log.info("Found vault {}", directory);
                         return lookup.load(session, directory,
-                                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))
+                                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))
                                 .getFeature(session, Find.class, proxy)
                                 .find(file, listener);
                     }
@@ -82,7 +82,7 @@ public class VaultRegistryFindFeature implements Find {
     }
 
     public VaultRegistryFindFeature withAutodetect(final boolean autodetect) {
-        this.autodetect = autodetect && new HostPreferences(session.getHost()).getBoolean("cryptomator.enable");
+        this.autodetect = autodetect && HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.enable");
         return this;
     }
 

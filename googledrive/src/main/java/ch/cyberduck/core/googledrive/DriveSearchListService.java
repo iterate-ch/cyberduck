@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -40,7 +40,7 @@ public class DriveSearchListService extends AbstractDriveListService {
     private final DriveAttributesFinderFeature attributes;
 
     public DriveSearchListService(final DriveSession session, final DriveFileIdProvider fileid, final String query) {
-        super(session, fileid, new HostPreferences(session.getHost()).getInteger("googledrive.list.limit"), DEFAULT_FIELDS);
+        super(session, fileid, HostPreferencesFactory.get(session.getHost()).getInteger("googledrive.list.limit"), DEFAULT_FIELDS);
         this.session = session;
         this.fileid = fileid;
         this.query = query;

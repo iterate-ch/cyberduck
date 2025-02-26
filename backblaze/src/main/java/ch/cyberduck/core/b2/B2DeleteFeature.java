@@ -23,7 +23,7 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +45,7 @@ public class B2DeleteFeature implements Delete {
     private final VersioningConfiguration versioning;
 
     public B2DeleteFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, new VersioningConfiguration(new HostPreferences(session.getHost()).getBoolean("b2.listing.versioning.enable")));
+        this(session, fileid, new VersioningConfiguration(HostPreferencesFactory.get(session.getHost()).getBoolean("b2.listing.versioning.enable")));
     }
 
     public B2DeleteFeature(final B2Session session, final B2VersionIdProvider fileid, final VersioningConfiguration versioning) {

@@ -35,7 +35,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
@@ -113,7 +113,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                             super.afterWrite(n);
                             if(this.getByteCount() >= 42768L) {
                                 // Buffer size
-                                assertEquals(new HostPreferences(host).getLong("connection.chunksize"), counter.getSent());
+                                assertEquals(HostPreferencesFactory.get(host).getLong("connection.chunksize"), counter.getSent());
                                 failed.set(true);
                                 throw new SocketTimeoutException();
                             }

@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.webloc.UrlFileWriter;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
@@ -54,7 +54,7 @@ public abstract class AbstractDriveListService implements ListService {
     private final DriveAttributesFinderFeature attributes;
 
     public AbstractDriveListService(final DriveSession session, final DriveFileIdProvider fileid) {
-        this(session, fileid, new HostPreferences(session.getHost()).getInteger("googledrive.list.limit"));
+        this(session, fileid, HostPreferencesFactory.get(session.getHost()).getInteger("googledrive.list.limit"));
     }
 
     public AbstractDriveListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize) {
@@ -80,7 +80,7 @@ public abstract class AbstractDriveListService implements ListService {
                     // Whether Team Drive items should be included in results
                     .setIncludeItemsFromAllDrives(true)
                     // Whether the requesting application supports Shared Drives
-                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                        .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
                     .setQ(query)
                     // Please note that there is a current limitation for users with approximately one million files in which the requested sort order is ignored
                     .setOrderBy("name")

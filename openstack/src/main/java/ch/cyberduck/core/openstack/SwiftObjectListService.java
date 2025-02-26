@@ -28,7 +28,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -68,7 +68,7 @@ public class SwiftObjectListService implements ListService {
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String prefix) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            final int limit = new HostPreferences(session.getHost()).getInteger("openstack.list.object.limit");
+            final int limit = HostPreferencesFactory.get(session.getHost()).getInteger("openstack.list.object.limit");
             String marker = null;
             List<StorageObject> list;
             final Path container = containerService.getContainer(directory);

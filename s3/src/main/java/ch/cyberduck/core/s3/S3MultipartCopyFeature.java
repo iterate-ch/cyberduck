@@ -23,7 +23,7 @@ import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,8 +61,8 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
         super(session, acl);
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
-        this.pool = ThreadPoolFactory.get("multipart", new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
-        this.partsize = new HostPreferences(session.getHost()).getLong("s3.copy.multipart.size");
+        this.pool = ThreadPoolFactory.get("multipart", HostPreferencesFactory.get(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
+        this.partsize = HostPreferencesFactory.get(session.getHost()).getLong("s3.copy.multipart.size");
     }
 
     @Override

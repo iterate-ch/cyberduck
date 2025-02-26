@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +59,7 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
                                     .setAge(configuration.getTransition()))
                             .setAction(new Bucket.Lifecycle.Rule.Action()
                                     .setType("SetStorageClass").setStorageClass(
-                                            new HostPreferences(session.getHost()).getProperty("googlestorage.lifecycle.transition.class")
+                                            HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.lifecycle.transition.class")
                                     )));
                 }
                 if(configuration.getExpiration() != null) {

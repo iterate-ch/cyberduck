@@ -22,7 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -60,7 +60,7 @@ public class SDSThresholdDeleteFeature implements Delete {
     public void preflight(final Path file) throws BackgroundException {
         final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
         if(containerService.isContainer(file)) {
-            if(new HostPreferences(session.getHost()).getBoolean("sds.delete.dataroom.enable")) {
+            if(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.delete.dataroom.enable")) {
                 // Need the query permission on the parent data room if file itself is subroom
                 if(!new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()), SDSPermissionsFeature.MANAGE_ROLE)) {
                     throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"), file.getName())).withFile(file);

@@ -23,7 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,13 +45,13 @@ public class S3BucketCreateService {
 
     public void create(final Path bucket, final String region) throws BackgroundException {
         log.debug("Create bucket {} in region {}", bucket, region);
-        if(!new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
+        if(!HostPreferencesFactory.get(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
             if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
                 throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
             }
         }
         AccessControlList acl;
-        if(new HostPreferences(session.getHost()).getProperty("s3.acl.default").equals("public-read")) {
+        if(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default").equals("public-read")) {
             acl = AccessControlList.REST_CANNED_PUBLIC_READ;
         }
         else {

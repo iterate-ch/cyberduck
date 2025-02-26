@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -59,11 +59,11 @@ public class S3EncryptionFeature implements Encryption {
     @Override
     public Algorithm getDefault(final Path file) {
         final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-        if(StringUtils.isNotBlank(new HostPreferences(session.getHost()).getProperty(key))) {
-            return Algorithm.fromString(new HostPreferences(session.getHost()).getProperty(key));
+        if(StringUtils.isNotBlank(HostPreferencesFactory.get(session.getHost()).getProperty(key))) {
+            return Algorithm.fromString(HostPreferencesFactory.get(session.getHost()).getProperty(key));
         }
         // Return default setting in preferences
-        final String setting = new HostPreferences(session.getHost()).getProperty("s3.encryption.algorithm");
+        final String setting = HostPreferencesFactory.get(session.getHost()).getProperty("s3.encryption.algorithm");
         if(StringUtils.equals(SSE_AES256.algorithm, setting)) {
             return SSE_AES256;
         }

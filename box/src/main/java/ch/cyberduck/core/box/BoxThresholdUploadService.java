@@ -26,7 +26,7 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
@@ -64,6 +64,6 @@ public class BoxThresholdUploadService implements Upload<File> {
     }
 
     protected boolean threshold(final Long length) {
-        return length >= new HostPreferences(session.getHost()).getLong("box.upload.multipart.threshold");
+        return length >= HostPreferencesFactory.get(session.getHost()).getLong("box.upload.multipart.threshold");
     }
 }

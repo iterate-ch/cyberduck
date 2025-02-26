@@ -31,7 +31,7 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -82,8 +82,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     private Write<BaseB2Response> writer;
 
     public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Write<BaseB2Response> writer) {
-        this(session, fileid, writer, new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.size"),
-                new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.concurrency"));
+        this(session, fileid, writer, HostPreferencesFactory.get(session.getHost()).getLong("b2.upload.largeobject.size"),
+                HostPreferencesFactory.get(session.getHost()).getInteger("b2.upload.largeobject.concurrency"));
     }
 
     public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Write<BaseB2Response> writer, final Long partSize, final Integer concurrency) {

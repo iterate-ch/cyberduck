@@ -19,7 +19,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 public class DAVWindowsIntegratedCredentialsConfigurator implements CredentialsConfigurator {
 
@@ -31,7 +31,7 @@ public class DAVWindowsIntegratedCredentialsConfigurator implements CredentialsC
 
     @Override
     public Credentials configure(final Host host) {
-        if(new HostPreferences(host).getBoolean("webdav.ntlm.windows.authentication.enable")) {
+        if(HostPreferencesFactory.get(host).getBoolean("webdav.ntlm.windows.authentication.enable")) {
             return proxy.configure(host);
         }
         return CredentialsConfigurator.DISABLED.configure(host);

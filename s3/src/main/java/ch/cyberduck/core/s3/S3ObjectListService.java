@@ -29,7 +29,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +51,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     private final boolean metadata;
 
     public S3ObjectListService(final S3Session session, final S3AccessControlListFeature acl) {
-        this(session, acl, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
+        this(session, acl, HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.metadata.enable"));
     }
 
     public S3ObjectListService(final S3Session session, final S3AccessControlListFeature acl, final boolean metadata) {
@@ -68,7 +68,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
-        return this.list(directory, listener, delimiter, new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"));
+        return this.list(directory, listener, delimiter, HostPreferencesFactory.get(session.getHost()).getInteger("s3.listing.chunksize"));
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {

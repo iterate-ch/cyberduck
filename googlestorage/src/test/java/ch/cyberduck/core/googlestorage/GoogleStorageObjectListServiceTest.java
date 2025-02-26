@@ -23,7 +23,7 @@ import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -118,7 +118,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
                 new Path(container, String.format("%s +", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener(), String.valueOf(Path.DELIMITER),
-                new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"), VersioningConfiguration.empty()).contains(placeholder));
+                HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.chunksize"), VersioningConfiguration.empty()).contains(placeholder));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

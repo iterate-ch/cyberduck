@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -135,7 +136,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                             moved.withAttributes(session.getFeature(AttributesFinder.class).find(moved));
                         }
                         result.put(r.getKey(), moved);
-                        final HostPreferences preferences = new HostPreferences(session.getHost());
+                        final HostPreferences preferences = HostPreferencesFactory.get(session.getHost());
                         if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.move.enable")) {
                             switch(session.getHost().getProtocol().getVersioningMode()) {
                                 case custom:

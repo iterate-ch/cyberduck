@@ -28,7 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -108,7 +108,7 @@ public class S3AccessControlListFeature implements AclPermission {
             cache.put(bucket, Acl.EMPTY);
             return Acl.EMPTY;
         }
-        final Acl preference = Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
+        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
         cache.put(bucket, preference);
         return preference;
     }

@@ -37,7 +37,7 @@ import ch.cyberduck.core.deepcloud.io.swagger.client.model.UserFull;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +62,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     public DeepboxIdProvider(final DeepboxSession session) {
         super(session.getCaseSensitivity());
         this.session = session;
-        this.chunksize = new HostPreferences(session.getHost()).getInteger("deepbox.listing.chunksize");
+        this.chunksize = HostPreferencesFactory.get(session.getHost()).getInteger("deepbox.listing.chunksize");
         this.containerService = new DeepboxPathContainerService(session, this);
     }
 

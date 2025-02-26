@@ -27,7 +27,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -56,8 +56,8 @@ public class B2ObjectListService implements ListService {
     private final B2VersionIdProvider fileid;
 
     public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"),
-                new VersioningConfiguration(new HostPreferences(session.getHost()).getBoolean("b2.listing.versioning.enable")));
+        this(session, fileid, HostPreferencesFactory.get(session.getHost()).getInteger("b2.listing.chunksize"),
+                new VersioningConfiguration(HostPreferencesFactory.get(session.getHost()).getBoolean("b2.listing.versioning.enable")));
     }
 
     public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid, final int chunksize, final VersioningConfiguration versioning) {

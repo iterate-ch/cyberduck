@@ -25,7 +25,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.apache.commons.lang3.StringUtils;
@@ -74,7 +74,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         }
         else {
             properties.setProperty("s3service.disable-dns-buckets",
-                    String.valueOf(new HostPreferences(bookmark).getBoolean("s3.bucket.virtualhost.disable")));
+                    String.valueOf(HostPreferencesFactory.get(bookmark).getBoolean("s3.bucket.virtualhost.disable")));
         }
         properties.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         // The maximum number of retries that will be attempted when an S3 connection fails
@@ -138,7 +138,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
     public HttpUriRequest setupConnection(final HTTP_METHOD method, final String bucketName,
                                           final String objectKey, final Map<String, String> requestParameters) throws S3ServiceException {
         final Host host = session.getHost();
-        final PreferencesReader preferences = new HostPreferences(host);
+        final PreferencesReader preferences = HostPreferencesFactory.get(host);
         // Hostname taking into account transfer acceleration and bucket region
         String endpoint = host.getHostname();
         // Apply default configuration
@@ -265,7 +265,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
     }
 
     protected static String createRegionSpecificEndpoint(final Host host, final String region) {
-        final PreferencesReader preferences = new HostPreferences(host);
+        final PreferencesReader preferences = HostPreferencesFactory.get(host);
         final String endpoint = preferences.getBoolean("s3.endpoint.dualstack.enable")
                 ? preferences.getProperty("s3.endpoint.format.ipv6") : preferences.getProperty("s3.endpoint.format.ipv4");
         log.debug("Apply region {} to endpoint {}", region, endpoint);

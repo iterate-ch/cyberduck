@@ -20,7 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +61,7 @@ public class S3UrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file, final EnumSet<DescriptiveUrl.Type> types) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
             list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file, types));
         }
         else {
@@ -83,7 +83,7 @@ public class S3UrlProvider implements UrlProvider {
                     list.add(this.toSignedUrl(file, (int) TimeUnit.HOURS.toSeconds(1)));
                     // Default signed URL expiring in 24 hours.
                     list.add(this.toSignedUrl(file, (int) TimeUnit.SECONDS.toSeconds(
-                            new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
+                            HostPreferencesFactory.get(session.getHost()).getInteger("s3.url.expire.seconds"))));
                     // 1 Week
                     list.add(this.toSignedUrl(file, (int) TimeUnit.DAYS.toSeconds(7)));
                     switch(session.getSignatureVersion()) {

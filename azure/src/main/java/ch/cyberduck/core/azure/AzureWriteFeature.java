@@ -32,7 +32,7 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +67,7 @@ public class AzureWriteFeature implements Write<Void> {
     private final BlobType blobType;
 
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {
-        this(session, BlobType.valueOf(new HostPreferences(session.getHost()).getProperty("azure.upload.blobtype")), context);
+        this(session, BlobType.valueOf(HostPreferencesFactory.get(session.getHost()).getProperty("azure.upload.blobtype")), context);
     }
 
     public AzureWriteFeature(final AzureSession session, final BlobType blobType, final OperationContext context) {
@@ -86,7 +86,7 @@ public class AzureWriteFeature implements Write<Void> {
         try {
             final CloudBlob blob;
             if(status.isExists()) {
-                if(new HostPreferences(session.getHost()).getBoolean("azure.upload.snapshot")) {
+                if(HostPreferencesFactory.get(session.getHost()).getBoolean("azure.upload.snapshot")) {
                     session.getClient().getContainerReference(containerService.getContainer(file).getName())
                             .getBlobReferenceFromServer(containerService.getKey(file)).createSnapshot();
                 }
@@ -146,7 +146,7 @@ public class AzureWriteFeature implements Write<Void> {
             }
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
-            options.setStoreBlobContentMD5(new HostPreferences(session.getHost()).getBoolean("azure.upload.md5"));
+            options.setStoreBlobContentMD5(HostPreferencesFactory.get(session.getHost()).getBoolean("azure.upload.md5"));
             final BlobOutputStream out;
             if(status.isAppend()) {
                 options.setStoreBlobContentMD5(false);

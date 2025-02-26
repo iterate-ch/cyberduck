@@ -15,7 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,8 +77,8 @@ public class ProfileTest {
             profile.getProperties().get("quota.notification.url"));
         assertEquals("value1",
                 profile.getProperties().get("customprop1"));
-        assertTrue(new HostPreferences(new Host(profile)).getBoolean("custombool1"));
-        assertEquals(4, new HostPreferences(new Host(profile)).getInteger("customint1"));
+        assertTrue(HostPreferencesFactory.get(new Host(profile)).getBoolean("custombool1"));
+        assertEquals(4, HostPreferencesFactory.get(new Host(profile)).getInteger("customint1"));
     }
 
     @Test

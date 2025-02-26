@@ -22,7 +22,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
@@ -34,7 +34,7 @@ public class EueThresholdWriteFeature implements Write<EueWriteFeature.Chunk> {
     private final Long threshold;
 
     public EueThresholdWriteFeature(final EueSession session, final EueResourceIdProvider fileid) {
-        this(session, fileid, new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold"));
+        this(session, fileid, HostPreferencesFactory.get(session.getHost()).getLong("eue.upload.multipart.threshold"));
     }
 
     public EueThresholdWriteFeature(final EueSession session, final EueResourceIdProvider fileid, final Long threshold) {

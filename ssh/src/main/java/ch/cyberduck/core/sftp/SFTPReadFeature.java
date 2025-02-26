@@ -21,7 +21,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -76,7 +76,7 @@ public class SFTPReadFeature implements Read {
     }
 
     protected int getMaxUnconfirmedReads(final TransferStatus status) {
-        final PreferencesReader preferences = new HostPreferences(session.getHost());
+        final PreferencesReader preferences = HostPreferencesFactory.get(session.getHost());
         if(TransferStatus.UNKNOWN_LENGTH == status.getLength()) {
             return preferences.getInteger("sftp.read.maxunconfirmed");
         }

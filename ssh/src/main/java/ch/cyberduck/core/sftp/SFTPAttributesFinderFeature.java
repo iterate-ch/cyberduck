@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -112,7 +112,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
     private boolean isServerBlacklisted() {
         if(null == blacklisted.get()) {
             final String serverVersion = session.getClient().getTransport().getServerVersion();
-            for(String server : new HostPreferences(session.getHost()).getList("sftp.permissions.server.blacklist")) {
+            for(String server : HostPreferencesFactory.get(session.getHost()).getList("sftp.permissions.server.blacklist")) {
                 if(StringUtils.contains(
                         /* seq */ serverVersion,
                         /* search seq */ server)) {
