@@ -112,7 +112,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(new Path(version1)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final AttributedList<Path> listAfterDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listAfterDelete.contains(version1));
-        assertTrue(listAfterDelete.find(new DefaultPathPredicate(version1)).attributes().isHidden());
+        assertTrue(listAfterDelete.find(new DefaultPathPredicate(version1)).attributes().isTrashed());
         final Path version2 = new DriveTouchFeature(session, fileid).touch(
                 new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotEquals(f.find(version1), f.find(version2));
