@@ -27,6 +27,7 @@ import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -73,7 +74,7 @@ public class STSAssumeRoleAuthorizationService {
 
     public TemporaryAccessTokens authorize(final String sAMLAssertion) throws BackgroundException {
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
-        final HostPreferences preferences = new HostPreferences(bookmark);
+        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
             request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
         }
@@ -104,7 +105,7 @@ public class STSAssumeRoleAuthorizationService {
         log.debug("Assume role with OIDC Id token for {}", bookmark);
         final String webIdentityToken = this.getWebIdentityToken(oauth);
         request.setWebIdentityToken(webIdentityToken);
-        final HostPreferences preferences = new HostPreferences(bookmark);
+        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
             request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
         }

@@ -52,7 +52,6 @@ import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
@@ -82,9 +81,11 @@ import java.io.IOException;
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
 
+    private final PreferencesReader preferences = HostPreferencesFactory.get(host);
     private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
 
     private DeepcloudApiClient deepcloudClient;
+
     private OAuth2RequestInterceptor authorizationService;
 
     public DeepboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -93,7 +94,6 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     @Override
     protected DeepboxApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final PreferencesReader preferences = HostPreferencesFactory.get(host);
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt) {
             @Override
@@ -151,15 +151,15 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     private String pinLocalization() {
         final String locale;
-        if(null == new HostPreferences(host).getProperty("deepbox.locale")) {
+        if(null == preferences.getProperty("deepbox.locale")) {
             locale = PreferencesFactory.get().locale();
             host.setProperty("deepbox.locale", locale);
         }
         else {
-            locale = new HostPreferences(host).getProperty("deepbox.locale");
+            locale = preferences.getProperty("deepbox.locale");
         }
         for(String name : DeepboxListService.VIRTUALFOLDERS) {
-            final String localized = new HostPreferences(host).getProperty(DeepboxPathContainerService.toPinnedLocalizationPropertyKey(name));
+            final String localized = preferences.getProperty(DeepboxPathContainerService.toPinnedLocalizationPropertyKey(name));
             if(null == localized) {
                 host.setProperty(DeepboxPathContainerService.toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
             }

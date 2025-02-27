@@ -25,7 +25,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
@@ -139,13 +138,14 @@ public class RequestEntityRestStorageService extends RestS3Service {
     public HttpUriRequest setupConnection(final HTTP_METHOD method, final String bucketName,
                                           final String objectKey, final Map<String, String> requestParameters) throws S3ServiceException {
         final Host host = session.getHost();
+        final PreferencesReader preferences = HostPreferencesFactory.get(host);
         // Hostname taking into account transfer acceleration and bucket region
         String endpoint = host.getHostname();
         // Apply default configuration
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             if(StringUtils.isNotBlank(bucketName)) {
                 // Only for AWS set endpoint to region specific
-                if(new HostPreferences(host).getBoolean(String.format("s3.transferacceleration.%s.enable", bucketName))) {
+                if(preferences.getBoolean(String.format("s3.transferacceleration.%s.enable", bucketName))) {
                     // Already set to accelerated endpoint
                     log.debug("Use accelerated endpoint {}", S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME);
                     endpoint = S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME;
@@ -171,7 +171,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                             catch(BackgroundException e) {
                                 // Ignore failure reading location for bucket
                                 log.error("Failure {} determining bucket location for {}", e, bucketName);
-                                endpoint = createRegionSpecificEndpoint(host, new HostPreferences(host).getProperty("s3.location"));
+                                endpoint = createRegionSpecificEndpoint(host, preferences.getProperty("s3.location"));
                             }
                         }
                     }
