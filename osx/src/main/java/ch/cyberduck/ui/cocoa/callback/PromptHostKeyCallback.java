@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
@@ -40,7 +41,9 @@ import java.security.PublicKey;
 public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     private static final Logger log = LogManager.getLogger(PromptHostKeyCallback.class);
 
+    private final Preferences preferences = PreferencesFactory.get();
     private final WindowController controller;
+    private final Local file;
 
     public PromptHostKeyCallback(final WindowController c) {
         this(c, LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
@@ -51,6 +54,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     public PromptHostKeyCallback(final WindowController controller, final Local file) {
         super(file);
         this.controller = controller;
+        this.file = file;
     }
 
     @Override
@@ -59,7 +63,14 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
         final AlertController alert = new UnknownHostKeyAlertController(hostname.getHostname(), fingerprint, key);
         switch(alert.beginSheet(controller)) {
             case SheetCallback.DEFAULT_OPTION:
-                this.allow(hostname, key, alert.isSuppressed());
+                final Object lock = file.lock(true);
+                try {
+                    this.allow(hostname, key, alert.isSuppressed());
+                }
+                finally {
+                    file.release(lock);
+                    preferences.setProperty("ssh.knownhosts.bookmark", file.getBookmark());
+                }
                 return true;
         }
         log.warn("Cannot continue without a valid host key");
@@ -72,7 +83,14 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
         final AlertController alert = new ChangedHostKeyAlertController(hostname.getHostname(), fingerprint, key);
         switch(alert.beginSheet(controller)) {
             case SheetCallback.DEFAULT_OPTION:
-                this.allow(hostname, key, alert.isSuppressed());
+                final Object lock = file.lock(true);
+                try {
+                    this.allow(hostname, key, alert.isSuppressed());
+                }
+                finally {
+                    file.release(lock);
+                    preferences.setProperty("ssh.knownhosts.bookmark", file.getBookmark());
+                }
                 return true;
         }
         log.warn("Cannot continue without a valid host key");

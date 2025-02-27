@@ -26,7 +26,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
+import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
@@ -42,6 +45,10 @@ import java.nio.file.Paths;
 
 public class FinderLocal extends Local {
     private static final Logger log = LogManager.getLogger(FinderLocal.class);
+
+    private static final Local APP_PACKAGE = new BundleApplicationResourcesFinder().find();
+    private static final Local TEMPORARY = new TemporarySupportDirectoryFinder().find();
+    private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
 
     static {
         Native.load("core");
@@ -155,7 +162,9 @@ public class FinderLocal extends Local {
     protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSURL> resolver) throws AccessDeniedException {
         final String path = this.getAbbreviatedPath();
         if(null == bookmark) {
-            bookmark = resolver.create(this, interactive);
+            if(!skip(this)) {
+                bookmark = resolver.create(this, interactive);
+            }
         }
         if(null == bookmark) {
             log.warn("No security scoped bookmark for {}", path);
@@ -167,6 +176,31 @@ public class FinderLocal extends Local {
             throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", path));
         }
         return resolved;
+    }
+
+    /**
+     * Determine if creating security scoped bookmarks for file should be skipped
+     */
+    private static boolean skip(final Local file) {
+        if(null != TEMPORARY) {
+            if(file.isChild(TEMPORARY)) {
+                // Skip prompt for file in temporary folder where access is not sandboxed
+                return true;
+            }
+        }
+        if(null != GROUP_CONTAINER) {
+            if(file.isChild(GROUP_CONTAINER)) {
+                // Skip prompt for file in application group folder where access is not sandboxed
+                return true;
+            }
+        }
+        if(null != APP_PACKAGE) {
+            if(file.isChild(APP_PACKAGE)) {
+                // Skip prompt for file in application bundle resources
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

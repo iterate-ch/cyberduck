@@ -34,6 +34,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.controller.InsecureLoginAlertController;
@@ -134,9 +135,10 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
         };
         final int option = sheet.beginSheet();
         if(option == SheetCallback.DEFAULT_OPTION) {
-            final NSObject selected = select.URLs().lastObject();
-            if(selected != null) {
-                return LocalFactory.get(Rococoa.cast(selected, NSURL.class).path());
+            final NSObject url = select.URLs().lastObject();
+            if(url != null) {
+                final Local selected = LocalFactory.get(Rococoa.cast(url, NSURL.class).path());
+                return selected.withBookmark(FilesystemBookmarkResolverFactory.get().create(selected));
             }
         }
         throw new LoginCanceledException();

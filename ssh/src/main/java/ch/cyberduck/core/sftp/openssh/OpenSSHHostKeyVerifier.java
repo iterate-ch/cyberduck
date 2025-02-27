@@ -30,7 +30,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +37,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -65,12 +63,10 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
 
     public OpenSSHHostKeyVerifier(final Local file) {
         this.file = file;
-        InputStream in = null;
         try {
             if(!file.exists()) {
                 LocalTouchFactory.get().touch(file);
             }
-            in = file.getInputStream();
             database = new OpenSSHKnownHosts(new File(file.getAbsolute()));
         }
         catch(IOException | SSHRuntimeException e) {
@@ -78,9 +74,6 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         }
         catch(AccessDeniedException e) {
             log.warn("Failure reading {}", file);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
         }
     }
 

@@ -38,6 +38,7 @@ import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -1357,7 +1358,8 @@ public class PreferencesController extends ToolbarWindowController {
     private NSPopUpButton downloadPathPopup;
 
     // The currently set download folder
-    private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.get(preferences.getProperty("queue.download.folder"));
+    private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.get(preferences.getProperty("queue.download.folder"))
+            .withBookmark(preferences.getProperty("queue.download.folder.bookmark"));
 
     public void setDownloadPathPopup(NSPopUpButton b) {
         this.downloadPathPopup = b;
@@ -1406,7 +1408,9 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            preferences.setProperty("queue.download.folder", LocalFactory.get(sender.selectedItem().representedObject()).getAbbreviatedPath());
+            final Local folder = LocalFactory.get(sender.selectedItem().representedObject());
+            preferences.setProperty("queue.download.folder", folder.getAbbreviatedPath());
+            preferences.setProperty("queue.download.folder.bookmark", FilesystemBookmarkResolverFactory.get().create(folder));
         }
     }
 
@@ -1416,10 +1420,11 @@ public class PreferencesController extends ToolbarWindowController {
             if(selected != null) {
                 final Local folder = LocalFactory.get(Rococoa.cast(selected, NSURL.class).path());
                 preferences.setProperty("queue.download.folder", folder.getAbbreviatedPath());
-                preferences.setProperty("queue.download.folder.bookmark", folder.getBookmark());
+                preferences.setProperty("queue.download.folder.bookmark", FilesystemBookmarkResolverFactory.get().create(folder));
             }
         }
-        final Local custom = LocalFactory.get(preferences.getProperty("queue.download.folder"));
+        final Local custom = LocalFactory.get(preferences.getProperty("queue.download.folder"))
+                .withBookmark(preferences.getProperty("queue.download.folder.bookmark"));
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
         item.setTitle(custom.getDisplayName());
         item.setRepresentedObject(custom.getAbsolute());

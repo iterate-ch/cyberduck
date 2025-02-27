@@ -43,6 +43,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -234,9 +235,10 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
-                final NSObject selected = sheet.URLs().lastObject();
-                if(selected != null) {
-                    bookmark.setDownloadFolder(LocalFactory.get(Rococoa.cast(selected, NSURL.class).path()));
+                final NSObject url = sheet.URLs().lastObject();
+                if(url != null) {
+                    final Local selected = LocalFactory.get(Rococoa.cast(url, NSURL.class).path());
+                    bookmark.setDownloadFolder(selected.withBookmark(FilesystemBookmarkResolverFactory.get().create(selected)));
                 }
                 break;
         }
