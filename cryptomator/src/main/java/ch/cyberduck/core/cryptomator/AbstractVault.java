@@ -52,7 +52,6 @@ public abstract class AbstractVault implements Vault {
     public static final String DIR_PREFIX = "0";
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
-    private static final Pattern BASE64URL_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+).c9r");
 
     public abstract Path getMasterkey();
 
@@ -202,7 +201,7 @@ public abstract class AbstractVault implements Vault {
             return file;
         }
         final Path inflated = this.inflate(session, file);
-        final Pattern pattern = this.getVersion() == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : BASE64URL_PATTERN;
+        final Pattern pattern = this.getVersion() == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : this.getBase64URLPattern();
         final Matcher m = pattern.matcher(inflated.getName());
         if(m.matches()) {
             final String ciphertext = m.group(1);
@@ -287,6 +286,8 @@ public abstract class AbstractVault implements Vault {
     public abstract String getDirectoryMetadataFilename();
 
     public abstract String getBackupDirectoryMetadataFilename();
+
+    public abstract Pattern getBase64URLPattern();
 
     @Override
     public synchronized void close() {
