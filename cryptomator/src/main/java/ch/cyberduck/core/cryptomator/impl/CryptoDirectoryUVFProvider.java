@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator.impl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptorCache;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,9 +27,9 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
 
     private final Path home;
 
-    public CryptoDirectoryUVFProvider(final Path vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
+    public CryptoDirectoryUVFProvider(final AbstractVault vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
         super(vault, filenameProvider, filenameCryptor);
-        this.home = vault;
+        this.home = vault.getHome();
     }
 
     @Override
