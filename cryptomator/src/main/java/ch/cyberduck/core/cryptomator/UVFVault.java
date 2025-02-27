@@ -41,6 +41,12 @@ public class UVFVault extends AbstractVault {
 
     private static final Logger log = LogManager.getLogger(UVFVault.class);
 
+    private static final String REGULAR_FILE_EXTENSION = ".uvf";
+    private static final String FILENAME_DIRECTORYID = "dir";
+    private static final String DIRECTORY_METADATA_FILENAME = String.format("%s%s", FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
+    private static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
+    private static final String BACKUP_DIRECTORY_METADATA_FILENAME = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
+
     /**
      * Root of vault directory
      */
@@ -84,7 +90,7 @@ public class UVFVault extends AbstractVault {
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor(masterKey.firstRevision())); // TODO revision eventually depends on location - safe?
         this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE); // TODO there is no shortening in UVF defined yet
-        this.directoryProvider = new CryptoDirectoryUVFProvider(vault, filenameProvider, fileNameCryptor);
+        this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider, fileNameCryptor);
         this.nonceSize = 12;
         return this;
     }
@@ -151,6 +157,21 @@ public class UVFVault extends AbstractVault {
     @Override
     public int getVersion() {
         return VAULT_VERSION;
+    }
+
+    @Override
+    public String getRegularFileExtension() {
+        return REGULAR_FILE_EXTENSION;
+    }
+
+    @Override
+    public String getDirectoryMetadataFilename() {
+        return DIRECTORY_METADATA_FILENAME;
+    }
+
+    @Override
+    public String getBackupDirectoryMetadataFilename() {
+        return BACKUP_DIRECTORY_METADATA_FILENAME;
     }
 
     @Override

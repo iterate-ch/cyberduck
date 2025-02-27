@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
-import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -62,8 +61,8 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
             if(!f.equals(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
                 if(f.isDirectory()) {
-                    final Path backup = new Path(encrypt, CryptoDirectoryV7Provider.BACKUP_DIRECTORY_METADATAFILE,
-                            EnumSet.of(Path.Type.file));
+                    final Path backup = new Path(encrypt, vault.getBackupDirectoryMetadataFilename(),
+                            EnumSet.of(AbstractPath.Type.file));
                     try {
                         log.debug("Deleting directory id backup file {}", backup);
                         proxy.delete(Collections.singletonList(backup), prompt, callback);
@@ -87,7 +86,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                 }
                 final Path metadata = vault.encrypt(session, f, true);
                 if(f.isDirectory()) {
-                    final Path metadataFile = new Path(metadata, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file));
+                    final Path metadataFile = new Path(metadata, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file));
                     log.debug("Add metadata file {}", metadataFile);
                     metadataFiles.add(metadataFile);
                     metadataFiles.add(metadata);

@@ -97,6 +97,12 @@ public class CryptoVault extends AbstractVault {
     private static final String JSON_KEY_CIPHERCONFIG = "cipherCombo";
     private static final String JSON_KEY_SHORTENING_THRESHOLD = "shorteningThreshold";
 
+    private static final String REGULAR_FILE_EXTENSION = ".c9r";
+    private static final String FILENAME_DIRECTORYID = "dir";
+    private static final String DIRECTORY_METADATA_FILENAME = String.format("%s%s", FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
+    private static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
+    private static final String BACKUP_DIRECTORY_METADATA_FILENAME = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
+
     /**
      * Root of vault directory
      */
@@ -119,7 +125,6 @@ public class CryptoVault extends AbstractVault {
     private final byte[] pepper;
 
     public CryptoVault(final Path home) {
-        // UVF: readVaultConfig - do we need to try multiple file names for dection "masterkey.cryptomator" and "vault.uvf"?
         this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_VAULTCONFIG_FILE_NAME, VAULT_PEPPER);
     }
 
@@ -341,7 +346,7 @@ public class CryptoVault extends AbstractVault {
             case VAULT_VERSION_DEPRECATED:
                 return new CryptoDirectoryV6Provider(vault, filenameProvider, filenameCryptor);
             default:
-                return new CryptoDirectoryV7Provider(vault, filenameProvider, filenameCryptor);
+                return new CryptoDirectoryV7Provider(this, filenameProvider, filenameCryptor);
         }
     }
 
@@ -431,6 +436,21 @@ public class CryptoVault extends AbstractVault {
     @Override
     public int getNonceSize() {
         return nonceSize;
+    }
+
+    @Override
+    public String getRegularFileExtension() {
+        return REGULAR_FILE_EXTENSION;
+    }
+
+    @Override
+    public String getDirectoryMetadataFilename() {
+        return DIRECTORY_METADATA_FILENAME;
+    }
+
+    @Override
+    public String getBackupDirectoryMetadataFilename() {
+        return BACKUP_DIRECTORY_METADATA_FILENAME;
     }
 
     @Override

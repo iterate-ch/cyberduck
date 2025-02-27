@@ -21,7 +21,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentWriter;
-import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -44,10 +43,10 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     private final AbstractVault vault;
     private final RandomStringService random = new UUIDRandomStringService();
 
-    public CryptoDirectoryV7Feature(final Session<?> session, final Directory<Reply> delegate, final AbstractVault cryptomator) {
+    public CryptoDirectoryV7Feature(final Session<?> session, final Directory<Reply> delegate, final AbstractVault vault) {
         this.session = session;
         this.delegate = delegate;
-        this.vault = cryptomator;
+        this.vault = vault;
     }
 
     @Override
@@ -59,7 +58,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
                 session._getFeature(Write.class), vault.encrypt(session, folder, true),
                 new TransferStatus().setRegion(status.getRegion()));
         final Path directoryMetadataFile = new Path(directoryMetadataFolder,
-                CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE,
+                vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
         new ContentWriter(session).write(directoryMetadataFile, directoryId);
