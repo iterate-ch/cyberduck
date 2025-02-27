@@ -52,9 +52,9 @@ import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -81,7 +81,7 @@ import java.io.IOException;
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
 
-    private final PreferencesReader preferences = HostPreferencesFactory.get(host);
+    private final HostPreferences preferences = HostPreferencesFactory.get(host);
     private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
 
     private DeepcloudApiClient deepcloudClient;
@@ -153,7 +153,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         final String locale;
         if(null == preferences.getProperty("deepbox.locale")) {
             locale = PreferencesFactory.get().locale();
-            host.setProperty("deepbox.locale", locale);
+            preferences.setProperty("deepbox.locale", locale);
         }
         else {
             locale = preferences.getProperty("deepbox.locale");
@@ -161,7 +161,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
         for(String name : DeepboxListService.VIRTUALFOLDERS) {
             final String localized = preferences.getProperty(DeepboxPathContainerService.toPinnedLocalizationPropertyKey(name));
             if(null == localized) {
-                host.setProperty(DeepboxPathContainerService.toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
+                preferences.setProperty(DeepboxPathContainerService.toPinnedLocalizationPropertyKey(name), LocaleFactory.localizedString(name, "Deepbox"));
             }
         }
         return locale;

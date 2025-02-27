@@ -40,6 +40,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -84,6 +85,8 @@ import com.google.gson.JsonParser;
 public class EueSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = LogManager.getLogger(EueSession.class);
 
+    private final HostPreferences preferences = HostPreferencesFactory.get(host);
+
     private OAuth2RequestInterceptor authorizationService;
 
     private String basePath;
@@ -92,7 +95,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     private final EueResourceIdProvider resourceid = new EueResourceIdProvider(this);
 
     private final ExpiringObjectHolder<UserSharesModel> userShares
-            = new ExpiringObjectHolder<>(HostPreferencesFactory.get(host).getLong("eue.shares.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("eue.shares.ttl"));
 
     public EueSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -116,7 +119,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
-                final String identifier = HostPreferencesFactory.get(host).getProperty("apikey");
+                final String identifier = preferences.getProperty("apikey");
                 if(StringUtils.isNotBlank(identifier)) {
                     request.addHeader(new BasicHeader("X-UI-API-KEY", identifier));
                 }
@@ -125,7 +128,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
-                final String identifier = HostPreferencesFactory.get(host).getProperty("app");
+                final String identifier = preferences.getProperty("app");
                 if(StringUtils.isNotBlank(identifier)) {
                     final String app = String.format("%s.%s",
                             PreferencesFactory.get().getProperty("application.version"),
@@ -159,14 +162,14 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                         public void progress(final Integer seconds) {
                             log.warn("Pause for {} seconds because of traffic hint", seconds);
                         }
-                    }, HostPreferencesFactory.get(host).getInteger("eue.limit.hint.second"));
+                    }, preferences.getInteger("eue.limit.hint.second"));
                     pause.await();
                 }
             }
         });
-        if(HostPreferencesFactory.get(host).getBoolean("eue.limit.requests.enable")) {
+        if(preferences.getBoolean("eue.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-                    HostPreferencesFactory.get(host).getInteger("eue.limit.requests.second")
+                    preferences.getInteger("eue.limit.requests.second")
             )));
         }
         return configuration.build();
@@ -212,16 +215,16 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     log.warn("Ignore failure {} running Personal Agent Context Service (PACS) request", e.getMessage());
                 }
             }
-            if(StringUtils.isNotBlank(HostPreferencesFactory.get(host).getProperty("cryptomator.vault.name.default"))) {
-                final Path vault = new Path(HostPreferencesFactory.get(host).getProperty("cryptomator.vault.name.default"), EnumSet.of(Path.Type.directory));
+            if(StringUtils.isNotBlank(preferences.getProperty("cryptomator.vault.name.default"))) {
+                final Path vault = new Path(preferences.getProperty("cryptomator.vault.name.default"), EnumSet.of(Path.Type.directory));
                 try {
                     vaultResourceId = new EueAttributesFinderFeature(this, resourceid).find(vault).getFileId();
-                    host.setProperty("cryptomator.enable", String.valueOf(true));
+                    preferences.setProperty("cryptomator.enable", String.valueOf(true));
                 }
                 catch(NotfoundException e) {
                     log.warn("Disable vault features with no existing vault found at {}", vault);
                     // Disable vault features
-                    host.setProperty("cryptomator.enable", String.valueOf(false));
+                    preferences.setProperty("cryptomator.enable", String.valueOf(false));
                 }
             }
             userShares.set(this.userShares());

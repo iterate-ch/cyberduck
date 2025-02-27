@@ -49,6 +49,11 @@ public class HostPreferences implements PreferencesReader {
         return value;
     }
 
+    public void setProperty(final String key, final String value) {
+        cache.put(key, value);
+        bookmark.setProperty(key, value);
+    }
+
     @Override
     public List<String> getList(final String key) {
         final String value = cache.get(key);

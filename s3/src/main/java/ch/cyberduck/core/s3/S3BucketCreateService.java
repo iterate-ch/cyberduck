@@ -61,7 +61,7 @@ public class S3BucketCreateService {
             if(StringUtils.isNotBlank(region)) {
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                     // Adjust default region to be used when searching for existing bucket will return 404
-                    session.getHost().setProperty("s3.location", region);
+                    HostPreferencesFactory.get(session.getHost()).setProperty("s3.location", region);
                 }
             }
             else {
