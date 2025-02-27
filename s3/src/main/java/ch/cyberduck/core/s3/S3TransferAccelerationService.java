@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.TransferAcceleration;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -91,6 +92,6 @@ public class S3TransferAccelerationService implements TransferAcceleration {
         final Host host = session.getHost();
         log.debug("Set S3 transfer acceleration to {}", enable);
         // Set accelerated endpoint
-        host.setProperty(String.format("s3.transferacceleration.%s.enable", bucket.getName()), String.valueOf(enable));
+        HostPreferencesFactory.get(host).setProperty(String.format("s3.transferacceleration.%s.enable", bucket.getName()), String.valueOf(enable));
     }
 }

@@ -389,7 +389,7 @@ public class OAuth2AuthorizationService {
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     new LoginOptions().icon(bookmark.getProtocol().disk()));
             if(input.isSaved()) {
-                bookmark.setProperty(property, input.getPassword());
+                HostPreferencesFactory.get(bookmark).setProperty(property, input.getPassword());
             }
             return input.getPassword();
         }

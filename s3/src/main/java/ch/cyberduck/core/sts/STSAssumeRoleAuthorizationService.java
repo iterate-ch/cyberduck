@@ -124,7 +124,7 @@ public class STSAssumeRoleAuthorizationService {
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         new LoginOptions().icon(bookmark.getProtocol().disk()));
                 if(input.isSaved()) {
-                    bookmark.setProperty("s3.assumerole.rolearn", input.getPassword());
+                    preferences.setProperty("s3.assumerole.rolearn", input.getPassword());
                 }
                 request.setRoleArn(input.getPassword());
             }

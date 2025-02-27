@@ -45,8 +45,8 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -100,7 +100,7 @@ import static com.amazonaws.services.s3.Headers.*;
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = LogManager.getLogger(S3Session.class);
 
-    private final PreferencesReader preferences
+    private final HostPreferences preferences
             = HostPreferencesFactory.get(host);
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
@@ -360,7 +360,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             log.debug("Retrieved region {}", location);
             if(!Location.unknown.equals(location)) {
                 log.debug("Set default region to {} determined from {}", location, home);
-                host.setProperty("s3.location", location.getIdentifier());
+                preferences.setProperty("s3.location", location.getIdentifier());
             }
         }
     }
@@ -484,7 +484,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3SearchFeature(this, acl);
         }
         if(type == Scheduler.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("s3.cloudfront.preload.enable")) {
+            if(preferences.getBoolean("s3.cloudfront.preload.enable")) {
                 return (T) scheduler;
             }
         }
