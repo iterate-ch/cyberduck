@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
@@ -61,8 +62,8 @@ public class DeleteWorkerTest extends AbstractSDSTest {
         // Find delete marker
         assertFalse(new SDSFindFeature(session, nodeid).find(file));
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
-        assertFalse(new DefaultFindFeature(session).find(file));
-        assertFalse(new DefaultFindFeature(session).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
+        assertThrows(NotfoundException.class, () -> new DefaultFindFeature(session).find(file));
+        assertThrows(NotfoundException.class, () -> new DefaultFindFeature(session).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

@@ -87,7 +87,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes())));
         assertFalse(new DefaultFindFeature(session).find(folder));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(subfolderWithContent.withAttributes(new PathAttributes())));
-        assertFalse(new DefaultFindFeature(session).find(subfolderWithContent));
+        assertThrows(NotfoundException.class, () -> new DefaultFindFeature(session).find(subfolderWithContent));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(file.withAttributes(new PathAttributes())));
         // file not in trash is deleted but not purged (i.e. moved to the trash)
         final Path folderInTrash = new Path(trash, folder.getName(), EnumSet.of(Path.Type.directory));
