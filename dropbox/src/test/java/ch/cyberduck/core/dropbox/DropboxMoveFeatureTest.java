@@ -161,7 +161,8 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new DropboxTouchFeature(session).touch(new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
-        new DropboxMoveFeature(session).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertThrows(InvalidFilenameException.class, () -> new DropboxMoveFeature(session).preflight(file, Optional.of(rename)));
+        assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

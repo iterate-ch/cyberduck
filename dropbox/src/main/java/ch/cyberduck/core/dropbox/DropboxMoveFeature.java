@@ -78,6 +78,9 @@ public class DropboxMoveFeature implements Move {
             if(!DropboxTouchFeature.validate(target.getName())) {
                 throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), target.getName())).withFile(source);
             }
+            if(new CaseInsensitivePathPredicate(source).test(target)) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot rename {0}", "Error"), source.getName())).withFile(source);
+            }
         }
     }
 }
