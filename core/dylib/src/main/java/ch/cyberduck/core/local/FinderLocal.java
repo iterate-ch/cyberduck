@@ -26,6 +26,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
@@ -45,6 +46,7 @@ import java.nio.file.Paths;
 public class FinderLocal extends Local {
     private static final Logger log = LogManager.getLogger(FinderLocal.class);
 
+    private static final Local APP_PACKAGE = new BundleApplicationResourcesFinder().find();
     private static final Local TEMPORARY = new TemporarySupportDirectoryFinder().find();
     private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
 
@@ -189,6 +191,12 @@ public class FinderLocal extends Local {
         if(null != GROUP_CONTAINER) {
             if(file.isChild(GROUP_CONTAINER)) {
                 // Skip prompt for file in application group folder where access is not sandboxed
+                return true;
+            }
+        }
+        if(null != APP_PACKAGE) {
+            if(file.isChild(APP_PACKAGE)) {
+                // Skip prompt for file in application bundle resources
                 return true;
             }
         }
