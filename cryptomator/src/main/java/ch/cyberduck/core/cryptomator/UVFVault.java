@@ -48,7 +48,7 @@ public class UVFVault extends AbstractVault {
     private static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
     private static final String BACKUP_DIRECTORY_METADATA_FILENAME = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
 
-    private static final Pattern BASE64URL_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)." + REGULAR_FILE_EXTENSION);
+    private static final Pattern BASE64URL_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
 
     /**
      * Root of vault directory
