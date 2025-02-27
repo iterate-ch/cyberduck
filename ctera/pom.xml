@@ -44,6 +44,11 @@
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.github.ctera-sdk</groupId>
+            <artifactId>CteraDirectIO</artifactId>
+            <version>1.0.5</version>
+        </dependency>
+        <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>test</artifactId>
             <type>pom</type>
