@@ -95,7 +95,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         assertTrue(new DefaultFindFeature(session).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
         assertFalse(new EueFindFeature(session, fileid).find(sourceFolder));
         assertFalse(new EueFindFeature(session, fileid).find(new Path(sourceFile).withAttributes(PathAttributes.EMPTY)));
-        assertFalse(new DefaultFindFeature(session).find(new Path(sourceFile).withAttributes(PathAttributes.EMPTY)));
+        assertThrows(NotfoundException.class, () -> new DefaultFindFeature(session).find(new Path(sourceFile).withAttributes(PathAttributes.EMPTY)));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
