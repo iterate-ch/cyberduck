@@ -59,9 +59,9 @@ public class DeleteWorkerTest extends AbstractDriveTest {
         worker.run(session);
         assertEquals(hashCode, worker.hashCode());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
-        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener()).isHidden());
+        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener()).isTrashed());
         assertTrue(new DefaultFindFeature(session).find(file));
-        assertTrue(new DefaultAttributesFinderFeature(session).find(file, new DisabledListProgressListener()).isHidden());
+        assertTrue(new DefaultAttributesFinderFeature(session).find(file, new DisabledListProgressListener()).isTrashed());
         assertFalse(new DriveFindFeature(session, fileid).find(file.withAttributes(PathAttributes.EMPTY)));
         assertFalse(new DefaultFindFeature(session).find(file.withAttributes(PathAttributes.EMPTY)));
     }

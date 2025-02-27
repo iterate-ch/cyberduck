@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.CachingListProgressListener;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -64,10 +65,10 @@ public class ListWorkerTest extends AbstractDriveTest {
             session.getClient().files().update(fileid, body).execute();
             folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, new TransferStatus());
             final PathCache cache = new PathCache(10);
-            final ListWorker worker = new ListWorker(cache, parent, new DisabledListProgressListener());
+            final ListWorker worker = new ListWorker(cache, parent, new CachingListProgressListener(cache, new DisabledListProgressListener()));
             final AttributedList<Path> list = worker.run(session);
             assertEquals(2, list.size());
-            worker.cleanup(list);
+            worker.cleanup(list, null);
             assertTrue(cache.containsKey(parent));
             final AttributedList<Path> l = cache.get(parent);
             assertEquals(1, l.filter(new DefaultBrowserFilter()).size());
@@ -80,10 +81,10 @@ public class ListWorkerTest extends AbstractDriveTest {
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();
             final PathCache cache = new PathCache(10);
-            final ListWorker worker = new ListWorker(cache, parent, new DisabledListProgressListener());
+            final ListWorker worker = new ListWorker(cache, parent, new CachingListProgressListener(cache, new DisabledListProgressListener()));
             final AttributedList<Path> list = worker.run(session);
             assertEquals(2, list.size());
-            worker.cleanup(list);
+            worker.cleanup(list, null);
             assertTrue(cache.containsKey(parent));
             final AttributedList<Path> l = cache.get(parent);
             assertEquals(0, l.filter(new DefaultBrowserFilter()).size());
