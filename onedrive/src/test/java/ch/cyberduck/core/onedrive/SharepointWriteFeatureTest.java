@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -57,7 +58,7 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
     public void testWrite() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session, fileid);
         final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path container = drives.get(0);
         final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final PathAttributes folderAttributes = new GraphAttributesFinderFeature(session, fileid).find(folder);

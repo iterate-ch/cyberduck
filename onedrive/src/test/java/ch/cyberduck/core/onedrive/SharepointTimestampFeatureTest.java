@@ -40,6 +40,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -49,7 +50,7 @@ public class SharepointTimestampFeatureTest extends AbstractSharepointTest {
     @Test
     public void testSetTimestamp() throws Exception {
         final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
@@ -68,7 +69,7 @@ public class SharepointTimestampFeatureTest extends AbstractSharepointTest {
     @Test
     public void testSetTimestampDirectory() throws Exception {
         final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session, fileid).mkdir(test, null);

@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -54,7 +55,7 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
     public void testList() throws Exception {
         final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         final Path test = new GraphTouchFeature(session, fileid).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());

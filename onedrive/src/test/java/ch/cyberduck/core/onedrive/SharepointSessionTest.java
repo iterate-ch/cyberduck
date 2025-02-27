@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -29,6 +30,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -42,13 +44,13 @@ public class SharepointSessionTest {
 
     @Test
     public void isAccessible() {
-        assertFalse(session.isAccessible(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertFalse(session.isAccessible(Home.ROOT));
         assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME));
         assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME, false));
         final Path defaultSiteDrive =
                 new Path(
                         new Path(
-                                SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(AbstractPath.Type.directory)),
+                                SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(AbstractPath.Type.directory)),
                         "Drive-Id", EnumSet.of(Path.Type.directory));
         assertTrue(session.isAccessible(defaultSiteDrive));
         assertFalse(session.isAccessible(defaultSiteDrive, false));
@@ -61,7 +63,7 @@ public class SharepointSessionTest {
                 new Path(
                         new Path(
                                 new Path(SharepointListService.SITES_NAME, "Site", EnumSet.of(AbstractPath.Type.directory)),
-                                "Drives", EnumSet.of(AbstractPath.Type.directory)),
+                                DRIVES_CONTAINER, EnumSet.of(AbstractPath.Type.directory)),
                         "Drive-Id", EnumSet.of(Path.Type.directory));
         assertTrue(session.isAccessible(siteDrive));
         assertFalse(session.isAccessible(siteDrive, false));

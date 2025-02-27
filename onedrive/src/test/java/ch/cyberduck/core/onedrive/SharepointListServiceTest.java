@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.PathAttributesHomeFeature;
@@ -32,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -46,7 +48,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
 
     @Test
     public void testListRoot() throws Exception {
-        final AttributedList<Path> list = new SharepointListService(session, fileid).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new SharepointListService(session, fileid).list(Home.ROOT, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(3, list.size());
     }
@@ -59,7 +61,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     @Test
     public void testListDefaultDriveOverwrite() throws Exception {
         final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         new PathAttributesHomeFeature(session, () -> drive, new GraphAttributesFinderFeature(session, fileid), new RootPathContainerService()).find();
         list.list(drive, new DisabledListProgressListener());
