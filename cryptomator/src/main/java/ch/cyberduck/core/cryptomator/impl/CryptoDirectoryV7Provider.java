@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptorCache;
@@ -36,27 +37,23 @@ import com.google.common.io.BaseEncoding;
 public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryV7Provider.class);
 
-    public static final String EXTENSION_REGULAR = ".c9r";
-    public static final String FILENAME_DIRECTORYID = "dir";
-    public static final String DIRECTORY_METADATAFILE = String.format("%s%s", FILENAME_DIRECTORYID, EXTENSION_REGULAR);
-    public static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
-    public static final String BACKUP_DIRECTORY_METADATAFILE = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, EXTENSION_REGULAR);
-
     private final CryptoFilename filenameProvider;
     private final CryptorCache filenameCryptor;
+    private final AbstractVault vault;
 
     private final RandomStringService random
             = new UUIDRandomStringService();
 
-    public CryptoDirectoryV7Provider(final Path vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
-        super(vault, filenameProvider, filenameCryptor);
+    public CryptoDirectoryV7Provider(final AbstractVault vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
+        super(vault.getHome(), filenameProvider, filenameCryptor);
         this.filenameProvider = filenameProvider;
         this.filenameCryptor = filenameCryptor;
+        this.vault = vault;
     }
 
     @Override
     public String toEncrypted(final Session<?> session, final byte[] directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, directoryId) + EXTENSION_REGULAR;
+        final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, directoryId) + vault.getRegularFileExtension();
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return filenameProvider.deflate(session, ciphertextName);
     }
@@ -69,7 +66,7 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
         // Read directory id from file
         try {
             log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
-            final Path metadataFile = new Path(metadataParent, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file, Path.Type.encrypted));
+            final Path metadataFile = new Path(metadataParent, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
             return new ContentReader(session).readBytes(metadataFile);
         }
         catch(NotfoundException e) {
