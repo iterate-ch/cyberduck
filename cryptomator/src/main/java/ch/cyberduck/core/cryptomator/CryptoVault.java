@@ -69,6 +69,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -102,6 +103,8 @@ public class CryptoVault extends AbstractVault {
     private static final String DIRECTORY_METADATA_FILENAME = String.format("%s%s", FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
     private static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
     private static final String BACKUP_DIRECTORY_METADATA_FILENAME = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
+
+    private static final Pattern BASE64URL_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)." + REGULAR_FILE_EXTENSION);
 
     /**
      * Root of vault directory
@@ -451,6 +454,11 @@ public class CryptoVault extends AbstractVault {
     @Override
     public String getBackupDirectoryMetadataFilename() {
         return BACKUP_DIRECTORY_METADATA_FILENAME;
+    }
+
+    @Override
+    public Pattern getBase64URLPattern() {
+        return BASE64URL_PATTERN;
     }
 
     @Override
