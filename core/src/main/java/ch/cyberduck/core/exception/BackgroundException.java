@@ -34,19 +34,25 @@ public class BackgroundException extends Exception {
     private String detail;
 
     public BackgroundException() {
-        this(null, null, null);
+        this.message = null;
+        this.detail = null;
     }
 
     public BackgroundException(final Throwable cause) {
-        this(cause.getMessage(), cause);
+        super(cause);
+        this.message = null;
+        this.detail = null;
     }
 
     public BackgroundException(final String message, final String detail) {
-        this(message, detail, null);
+        this.message = null;
+        this.detail = detail;
     }
 
     public BackgroundException(final String detail, final Throwable cause) {
-        this(null, detail, cause);
+        super(cause);
+        this.message = null;
+        this.detail = detail;
     }
 
     public BackgroundException(final String message, final String detail, final Throwable cause) {
