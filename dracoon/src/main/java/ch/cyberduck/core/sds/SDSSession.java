@@ -30,6 +30,7 @@ import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -602,13 +603,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
+            if(new HostPreferences(host).getBoolean("sds.upload.s3.enable")) {
                 return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }
         if(type == Write.class || type == MultipartWrite.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
+            if(new HostPreferences(host).getBoolean("sds.upload.s3.enable")) {
                 return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
             }
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
