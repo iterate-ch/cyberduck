@@ -45,7 +45,7 @@ public class BackgroundException extends Exception {
     }
 
     public BackgroundException(final String message, final String detail) {
-        this.message = null;
+        this.message = message;
         this.detail = detail;
     }
 
