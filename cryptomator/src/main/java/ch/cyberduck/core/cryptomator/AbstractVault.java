@@ -282,6 +282,12 @@ public abstract class AbstractVault implements Vault {
         return false;
     }
 
+    public abstract String getRegularFileExtension();
+
+    public abstract String getDirectoryMetadataFilename();
+
+    public abstract String getBackupDirectoryMetadataFilename();
+
     @Override
     public synchronized void close() {
         if(this.isUnlocked()) {

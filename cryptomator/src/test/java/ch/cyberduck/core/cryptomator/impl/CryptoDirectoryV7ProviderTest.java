@@ -20,6 +20,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.CryptorCache;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -42,7 +43,7 @@ public class CryptoDirectoryV7ProviderTest {
         final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final Cryptor cryptor = crypto.provide(PerpetualMasterkey.generate(random), random);
-        final CryptoDirectory provider = new CryptoDirectoryV7Provider(home, new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
+        final CryptoDirectory provider = new CryptoDirectoryV7Provider(new CryptoVault(home), new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
         provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/vault/f", EnumSet.of(Path.Type.file)));
     }
 
@@ -52,7 +53,7 @@ public class CryptoDirectoryV7ProviderTest {
         final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final Cryptor cryptor = crypto.provide(PerpetualMasterkey.generate(random), random);
-        final CryptoDirectory provider = new CryptoDirectoryV7Provider(home, new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
+        final CryptoDirectory provider = new CryptoDirectoryV7Provider(new CryptoVault(home), new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
         provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
@@ -63,7 +64,7 @@ public class CryptoDirectoryV7ProviderTest {
         final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final Cryptor cryptor = crypto.provide(PerpetualMasterkey.generate(random), random);
-        final CryptoDirectory provider = new CryptoDirectoryV7Provider(home, new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
+        final CryptoDirectory provider = new CryptoDirectoryV7Provider(new CryptoVault(home), new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
         assertNotNull(provider.toEncrypted(session, null, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));
         assertNotNull(provider.toEncrypted(session, null, f));
