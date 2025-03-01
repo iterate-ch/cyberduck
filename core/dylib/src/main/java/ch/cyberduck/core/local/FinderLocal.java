@@ -172,6 +172,10 @@ public class FinderLocal extends Local {
         }
         log.debug("Lock with bookmark {}", bookmark);
         final NSURL resolved = resolver.resolve(bookmark);
+        if(null == resolved) {
+            log.warn("Unable to resolve bookmark {}", bookmark);
+            return null;
+        }
         if(!resolved.startAccessingSecurityScopedResource()) {
             throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", path));
         }

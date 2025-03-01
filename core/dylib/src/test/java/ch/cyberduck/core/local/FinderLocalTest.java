@@ -253,6 +253,15 @@ public class FinderLocalTest {
     }
 
     @Test
+    public void testLockDisabledResolver() throws Exception {
+        FinderLocal l = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random());
+        new DefaultLocalTouchFeature().touch(l);
+        l.withBookmark(new AliasFilesystemBookmarkResolver().create(l));
+        assertNull(l.lock(false));
+        l.delete();
+    }
+
+    @Test
     public void testFollowLinks() {
         assertTrue(new Local("/tmp").exists());
     }
