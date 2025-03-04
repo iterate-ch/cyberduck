@@ -353,7 +353,7 @@ public class DeepboxListService implements ListService {
                     list.add(new Path(directory,
                             String.format("%s (%s)", DeepboxPathNormalizer.name(box.getCompany().getDisplayName()), DeepboxPathNormalizer.name(box.getBoxName())),
                             EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            new PathAttributes().withFileId(box.getBoxNodeId()).withCustom("deepboxName", box.getDeepBoxName()))
+                            new PathAttributes().withFileId(box.getBoxNodeId()).withCustom(DeepboxIdProvider.DEEPBOX_NAME_PROEPRTY_KEY, box.getDeepBoxName()))
                     );
                 }
                 // Mark duplicates

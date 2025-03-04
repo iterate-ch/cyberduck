@@ -59,6 +59,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
 
     private static final Pattern SHARED = Pattern.compile("(.*)\\s\\((.*)\\)");
 
+    public static final String DEEPBOX_NAME_PROEPRTY_KEY = "deepboxName";
+
     public DeepboxIdProvider(final DeepboxSession session) {
         super(session.getCaseSensitivity());
         this.session = session;
@@ -121,8 +123,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     final EnumSet<Path.Type> type = EnumSet.copyOf(segment.getType());
                     type.add(Path.Type.shared);
                     String deepboxName;
-                    if(combined.attributes().getCustom().containsKey("deepboxName")) {
-                        deepboxName = combined.attributes().getCustom().get("deepboxName");
+                    if(combined.attributes().getCustom().containsKey(DEEPBOX_NAME_PROEPRTY_KEY)) {
+                        deepboxName = combined.attributes().getCustom().get(DEEPBOX_NAME_PROEPRTY_KEY);
                     }
                     else {
                         try {
