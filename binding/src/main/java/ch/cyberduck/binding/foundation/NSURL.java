@@ -241,6 +241,8 @@ public abstract class NSURL extends NSObject {
      * <p/>
      * In some areas of the file system hierarchy, file reference URLs cannot be generated to the leaf node of the URL
      * path.
+     * <p>
+     * A file reference URL's path should never be persistently stored, because it is not valid across system restarts or remounts of volumes.
      *
      * @return Returns a new file reference URL that points to the same resource as the original URL.
      */
