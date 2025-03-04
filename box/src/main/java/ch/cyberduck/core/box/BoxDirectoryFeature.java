@@ -42,7 +42,7 @@ public class BoxDirectoryFeature implements Directory {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            return folder.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
+            return new Path(folder).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                     new FoldersApi(new BoxApiClient(session.getClient())).postFolders(new FoldersBody()
                             .parent(new FoldersParent().id(fileid.getFileId(folder.getParent())))
                             .name(folder.getName()), Collections.emptyList())));

@@ -67,7 +67,7 @@ public class DeepboxCopyFeature implements Copy {
                 new CoreRestControllerApi(session.getClient()).updateNode(nodeUpdate, copied.getNodeId());
             }
             listener.sent(status.getLength());
-            return target.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(copied));
+            return new Path(target).withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(copied));
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Cannot copy {0}", e, file);

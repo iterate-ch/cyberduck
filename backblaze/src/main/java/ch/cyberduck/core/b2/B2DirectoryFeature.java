@@ -66,7 +66,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                         null == status.getRegion() ? BucketType.valueOf(new B2BucketTypeFeature(session, fileid).getDefault().getIdentifier()) : BucketType.valueOf(status.getRegion()));
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
-                return folder.withType(type).withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
+                return new Path(folder).withType(type).withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
             }
             else {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());

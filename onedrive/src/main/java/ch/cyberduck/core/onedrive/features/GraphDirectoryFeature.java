@@ -52,7 +52,7 @@ public class GraphDirectoryFeature implements Directory<Void> {
             final DriveItem.Metadata metadata = Files.createFolder(folder, directory.getName());
             final PathAttributes attr = attributes.toAttributes(metadata);
             fileid.cache(directory, attr.getFileId());
-            return directory.withAttributes(attr);
+            return new Path(directory).withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Cannot create folder {0}", e, directory);

@@ -86,7 +86,7 @@ public class GraphMoveFeature implements Move {
             final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).toAttributes(metadata);
             fileid.cache(file, null);
             fileid.cache(renamed, attributes.getFileId());
-            return renamed.withAttributes(attributes);
+            return new Path(renamed).withAttributes(attributes);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Cannot rename {0}", e, file);

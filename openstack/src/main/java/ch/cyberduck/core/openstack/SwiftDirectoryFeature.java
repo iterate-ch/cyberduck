@@ -71,7 +71,7 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
                 status.setMime(DIRECTORY_MIME_TYPE);
                 status.setLength(0L);
                 new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
-                return folder.withAttributes(status.getResponse());
+                return new Path(folder).withAttributes(status.getResponse());
             }
         }
         catch(GenericException e) {

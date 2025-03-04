@@ -82,7 +82,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             if(f != null) {
                 fileid.cache(folder, f.getNode().getNodeId());
             }
-            return folder.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(f.getNode()));
+            return new Path(folder).withAttributes(new DeepboxAttributesFinderFeature(session, fileid).toAttributes(f.getNode()));
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);

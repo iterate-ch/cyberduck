@@ -64,7 +64,7 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                 final Bucket bucket = request.execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
-                return folder.withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
+                return new Path(folder).withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
             }
             else {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());

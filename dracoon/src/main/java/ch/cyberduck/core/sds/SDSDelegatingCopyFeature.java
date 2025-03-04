@@ -55,7 +55,7 @@ public class SDSDelegatingCopyFeature implements Copy {
         }
         final Path result = copy.copy(source, target, status, callback, listener);
         nodeid.cache(target, null);
-        return result.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(result));
+        return new Path(result).withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(result));
     }
 
     @Override

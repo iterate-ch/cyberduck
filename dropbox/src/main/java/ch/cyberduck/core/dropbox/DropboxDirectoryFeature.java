@@ -44,7 +44,7 @@ public class DropboxDirectoryFeature implements Directory<String> {
         try {
             final CreateFolderResult result = new DbxUserFilesRequests(session.getClient(folder.getParent()))
                     .createFolderV2(containerService.getKey(folder), false);
-            return folder.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
+            return new Path(folder).withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot create folder {0}", e, folder);
