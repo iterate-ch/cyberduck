@@ -34,11 +34,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
 
+import static ch.cyberduck.core.features.Copy.validate;
+
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.RelocationResult;
-
-import static ch.cyberduck.core.features.Copy.validate;
 
 public class DropboxCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(DropboxCopyFeature.class);
@@ -61,7 +61,7 @@ public class DropboxCopyFeature implements Copy {
             // If the source path is a folder all its contents will be copied.
             final RelocationResult result = new DbxUserFilesRequests(session.getClient(file)).copyV2(containerService.getKey(file), containerService.getKey(target));
             listener.sent(status.getLength());
-            return target.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
+            return new Path(target).withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, file);

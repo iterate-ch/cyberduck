@@ -62,7 +62,7 @@ public class SwiftDefaultCopyFeature implements Copy {
                     containerService.getContainer(target).getName(), containerService.getKey(target));
             listener.sent(status.getLength());
             // Copy original file attributes
-            return target.withAttributes(source.attributes());
+            return new Path(target).withAttributes(source.attributes());
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot copy {0}", e, source);

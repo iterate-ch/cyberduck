@@ -59,7 +59,7 @@ public class DAVCopyFeature implements Copy {
                 session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists());
             }
             listener.sent(status.getLength());
-            return copy.withAttributes(new PathAttributes(source.attributes()).withLockId(null));
+            return new Path(copy).withAttributes(new PathAttributes(source.attributes()).withLockId(null));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot copy {0}", e, source);

@@ -90,7 +90,7 @@ public class DriveMoveFeature implements Move {
             }
             fileid.cache(file, null);
             fileid.cache(renamed, id);
-            return renamed.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(result));
+            return new Path(renamed).withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(result));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Cannot rename {0}", e, file);

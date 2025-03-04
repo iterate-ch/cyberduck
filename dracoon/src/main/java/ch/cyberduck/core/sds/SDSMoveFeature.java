@@ -70,7 +70,7 @@ public class SDSMoveFeature implements Move {
                         new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
-                return renamed.withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
+                return new Path(renamed).withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
             }
             else {
                 if(new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
@@ -102,7 +102,7 @@ public class SDSMoveFeature implements Move {
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
                 // Copy original file attributes
-                return renamed.withAttributes(new PathAttributes(file.attributes()).withVersionId(String.valueOf(nodeId)));
+                return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).withVersionId(String.valueOf(nodeId)));
             }
         }
         catch(ApiException e) {

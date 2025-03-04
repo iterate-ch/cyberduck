@@ -52,7 +52,7 @@ public class StoregateCopyFeature implements Copy {
                     fileid.getFileId(source), copy);
             listener.sent(status.getLength());
             fileid.cache(target, file.getId());
-            return target.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));
+            return new Path(target).withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map("Cannot copy {0}", e, source);

@@ -71,7 +71,7 @@ public class BoxMoveFeature implements Move {
                         null, BoxAttributesFinderFeature.DEFAULT_FIELDS);
                 fileid.cache(file, null);
                 fileid.cache(renamed, id);
-                return renamed.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(result));
+                return new Path(renamed).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(result));
             }
             final File result = new FilesApi(new BoxApiClient(session.getClient())).putFilesId(
                     id, new FilesFileIdBody()
@@ -81,7 +81,7 @@ public class BoxMoveFeature implements Move {
                     null, BoxAttributesFinderFeature.DEFAULT_FIELDS);
             fileid.cache(file, null);
             fileid.cache(renamed, id);
-            return renamed.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(result));
+            return new Path(renamed).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(result));
         }
         catch(ApiException e) {
             throw new BoxExceptionMappingService(fileid).map("Cannot rename {0}", e, file);

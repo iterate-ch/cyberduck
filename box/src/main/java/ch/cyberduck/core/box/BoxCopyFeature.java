@@ -68,7 +68,7 @@ public class BoxCopyFeature implements Copy {
                                 BoxAttributesFinderFeature.DEFAULT_FIELDS)
                 ));
             }
-            return target.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
+            return new Path(target).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                     new FilesApi(new BoxApiClient(session.getClient())).postFilesIdCopy(
                             fileid.getFileId(file),
                             new FileIdCopyBody()

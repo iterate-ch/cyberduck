@@ -64,7 +64,7 @@ public class SwiftLargeObjectCopyFeature implements Copy {
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
-        return copy(source, segmentService.list(source), target, status, callback, listener);
+        return this.copy(source, segmentService.list(source), target, status, callback, listener);
     }
 
     @Override
@@ -129,6 +129,6 @@ public class SwiftLargeObjectCopyFeature implements Copy {
         }
         final PathAttributes attributes = new PathAttributes(source.attributes());
         attributes.setChecksum(new Checksum(HashAlgorithm.md5, stored.getMd5sum()));
-        return new Path(target.getParent(), target.getName(), target.getType(), attributes);
+        return new Path(target).withAttributes(attributes);
     }
 }

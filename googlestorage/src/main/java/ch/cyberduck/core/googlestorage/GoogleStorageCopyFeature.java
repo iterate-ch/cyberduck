@@ -74,7 +74,7 @@ public class GoogleStorageCopyFeature implements Copy {
             }
             while(!response.getDone());
             listener.sent(status.getLength());
-            return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
+            return new Path(target).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot copy {0}", e, source);

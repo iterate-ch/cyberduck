@@ -133,9 +133,11 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         };
                         final Path moved = feature.move(r.getKey(), r.getValue(), status, delete, callback);
                         if(PathAttributes.EMPTY.equals(moved.attributes())) {
-                            moved.withAttributes(session.getFeature(AttributesFinder.class).find(moved));
+                            result.put(r.getKey(), new Path(moved).withAttributes(session.getFeature(AttributesFinder.class).find(moved)));
                         }
-                        result.put(r.getKey(), moved);
+                        else {
+                            result.put(r.getKey(), moved);
+                        }
                         final HostPreferences preferences = HostPreferencesFactory.get(session.getHost());
                         if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.move.enable")) {
                             switch(session.getHost().getProtocol().getVersioningMode()) {

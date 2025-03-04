@@ -71,7 +71,7 @@ public class SDSCopyFeature implements Copy {
             nodeid.cache(target, null);
             final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(target);
             nodeid.cache(target, attributes.getVersionId());
-            return target.withAttributes(attributes);
+            return new Path(target).withAttributes(attributes);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Cannot copy {0}", e, source);
