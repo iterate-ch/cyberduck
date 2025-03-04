@@ -27,12 +27,14 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.Range;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -42,9 +44,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class CteraDirectIOReadFeature implements Read {
 
     private final CteraSession session;
+    private final CteraFileIdProvider fileid;
 
-    public CteraDirectIOReadFeature(final CteraSession session) {
+    public CteraDirectIOReadFeature(final CteraSession session, final CteraFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -52,16 +56,19 @@ public class CteraDirectIOReadFeature implements Read {
         try {
             final DirectIO directio = this.getMetadata(file);
             final EncryptInfo key = new EncryptInfo(directio.wrapped_key, System.getenv("CTERA_SECRET_KEY"), true);
-            //TODO add support for range requests -> determine needed chunks and initial skip depending on offset
-            return new ChunkSequenceInputStream(directio.chunks, key);
+            final TransferInfo info = this.getTransferInfo(directio, status);
+            final ChunkSequenceInputStream stream = new ChunkSequenceInputStream(info.chunks, key);
+            // Skip to requested position in first relevant chunk
+            stream.skip(info.offset);
+            return stream;
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 
-    private DirectIO getMetadata(final Path file) throws IOException {
-        final HttpGet request = new HttpGet(String.format("%s/directio/%s", new HostUrlProvider().withPath(false).get(session.getHost()), file.attributes().getFileId()));
+    private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
+        final HttpGet request = new HttpGet(String.format("%s/directio/%s", new HostUrlProvider().withPath(false).get(session.getHost()), fileid.getFileId(file)));
         request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + System.getenv("CTERA_ACCESS_KEY")); // access token
         final HttpResponse response = session.getClient().getClient().execute(request);
         ObjectMapper mapper = new ObjectMapper();
@@ -71,7 +78,63 @@ public class CteraDirectIOReadFeature implements Read {
         return directio;
     }
 
-    public final class ChunkSequenceInputStream extends InputStream {
+    protected TransferInfo getTransferInfo(final DirectIO directio, final TransferStatus status) {
+        long fileSize = directio.chunks.stream().mapToLong(chunk -> chunk.len).sum();
+        if(status.isAppend()) {
+            final List<DirectIO.Chunk> chunks = new ArrayList<>();
+            final Range<Long> requestedRange;
+            if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
+                requestedRange = Range.of(status.getOffset(), fileSize);
+            }
+            else {
+                requestedRange = Range.of(status.getOffset(), status.getOffset() + status.getLength());
+            }
+            long offsetInFirstChunk = 0;
+            long position = 0;
+            for(DirectIO.Chunk chunk : directio.chunks) {
+                final Range<Long> chunkRange = Range.of(position, position + chunk.len);
+                if(chunkRange.getMaximum() > requestedRange.getMinimum()) {
+                    if(chunkRange.contains(requestedRange.getMinimum())) {
+                        // First relevant chunk - calculate offset
+                        offsetInFirstChunk = requestedRange.getMinimum() - position;
+                    }
+                    final Range<Long> readRangeInChunk = Range.of(position, Math.min(position + chunk.len, requestedRange.getMaximum()));
+                    final long toRead = readRangeInChunk.getMaximum() - readRangeInChunk.getMinimum();
+                    if(toRead > 0) {
+                        chunks.add(chunk);
+                    }
+                    else {
+                        return new TransferInfo(chunks, offsetInFirstChunk);
+                    }
+                    if(chunkRange.getMaximum() > requestedRange.getMaximum()) {
+                        // Partial read of chunk
+                        return new TransferInfo(chunks, offsetInFirstChunk);
+                    }
+                }
+                position += chunk.len;
+            }
+            return new TransferInfo(chunks, offsetInFirstChunk);
+        }
+        return new TransferInfo(directio.chunks, 0);
+    }
+
+    protected static final class TransferInfo {
+
+        public List<DirectIO.Chunk> chunks;
+        public long offset;
+
+        /***
+         * @param chunks Normalized list of chunks
+         * @param offset Offset for first chunk
+         */
+        public TransferInfo(final List<DirectIO.Chunk> chunks, final long offset) {
+            this.chunks = chunks;
+            this.offset = offset;
+        }
+    }
+
+    private final class ChunkSequenceInputStream extends InputStream {
+
         private final Enumeration<DirectIO.Chunk> chunks;
         private final EncryptInfo key;
         private InputStream in;
@@ -82,7 +145,7 @@ public class CteraDirectIOReadFeature implements Read {
             this.peekNextStream();
         }
 
-        final void nextStream() throws IOException {
+        private void nextStream() throws IOException {
             if(in != null) {
                 in.close();
             }
@@ -107,7 +170,7 @@ public class CteraDirectIOReadFeature implements Read {
         @Override
         public int available() throws IOException {
             if(in == null) {
-                return 0; // no way to signal EOF from available()
+                return 0;
             }
             return in.available();
         }

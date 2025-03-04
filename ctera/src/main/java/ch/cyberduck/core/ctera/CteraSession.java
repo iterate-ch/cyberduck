@@ -17,7 +17,6 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultFileIdProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
@@ -49,6 +48,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -73,6 +73,8 @@ public class CteraSession extends DAVSession {
 
     protected CteraAuthenticationHandler authentication;
     protected PublicInfo info;
+
+    private final CteraFileIdProvider fileid = new CteraFileIdProvider(this);
 
     public CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -145,12 +147,16 @@ public class CteraSession extends DAVSession {
         }
         finally {
             super.logout();
+            fileid.clear();
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == FileIdProvider.class) {
+            return (T) fileid;
+        }
         if(type == Touch.class) {
             return (T) new CteraTouchFeature(this);
         }
@@ -182,6 +188,9 @@ public class CteraSession extends DAVSession {
             return (T) new CteraListService(this);
         }
         if(type == Read.class) {
+            if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+                return (T) new CteraDirectIOReadFeature(this, fileid);
+            }
             return (T) new CteraReadFeature(this);
         }
         if(type == Write.class) {
@@ -192,9 +201,6 @@ public class CteraSession extends DAVSession {
         }
         if(type == Copy.class) {
             return (T) new CteraCopyFeature(this);
-        }
-        if(type == FileIdProvider.class) {
-            return (T) new DefaultFileIdProvider();
         }
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
