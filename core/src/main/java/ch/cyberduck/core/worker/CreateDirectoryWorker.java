@@ -72,7 +72,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
         status.setRegion(region);
         final Path result = feature.mkdir(folder, status);
         if(PathAttributes.EMPTY.equals(result.attributes())) {
-            return result.withAttributes(session.getFeature(AttributesFinder.class).find(result));
+            return new Path(folder).withAttributes(session.getFeature(AttributesFinder.class).find(result));
         }
         return result;
     }

@@ -36,7 +36,7 @@ public class BrickDirectoryFeature implements Directory<FileEntity> {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            return folder.withAttributes(
+            return new Path(folder).withAttributes(
                     new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(new BrickApiClient(session))
                             .postFoldersPath(StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER)))));
         }
