@@ -97,8 +97,7 @@ public class UVFVault extends AbstractVault {
     @Override
     public synchronized void close() {
         super.close();
-        cryptor = null;
-        fileNameCryptor = null;
+        cryptor.destroy();
     }
 
     @Override
