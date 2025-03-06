@@ -17,7 +17,6 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
@@ -34,7 +33,6 @@ import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -54,7 +52,6 @@ public class UVFVault extends AbstractVault {
      * Root of vault directory
      */
     private final Path home;
-    private final Path vault;
 
     private final String decrypted;
     private Cryptor cryptor;
@@ -67,15 +64,6 @@ public class UVFVault extends AbstractVault {
     public UVFVault(final Path home, final String decryptedPayload, final String config, final byte[] pepper) {
         this.home = home;
         this.decrypted = decryptedPayload;
-        // New vault home with vault flag set for internal use
-        final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
-        type.add(Path.Type.vault);
-        if(home.isRoot()) {
-            this.vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
-        }
-        else {
-            this.vault = new Path(home.getParent(), home.getName(), type, new PathAttributes(home.attributes()));
-        }
     }
 
     @Override
