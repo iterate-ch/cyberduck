@@ -15,6 +15,8 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -33,6 +35,7 @@ import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -53,7 +56,6 @@ public class UVFVault extends AbstractVault {
      */
     private final Path home;
 
-    private final String decrypted;
     private Cryptor cryptor;
     private CryptorCache fileNameCryptor;
     private CryptoFilename filenameProvider;
@@ -61,9 +63,8 @@ public class UVFVault extends AbstractVault {
 
     private int nonceSize;
 
-    public UVFVault(final Path home, final String decryptedPayload, final String config, final byte[] pepper) {
+    public UVFVault(final Path home) {
         this.home = home;
-        this.decrypted = decryptedPayload;
     }
 
     @Override
@@ -74,8 +75,15 @@ public class UVFVault extends AbstractVault {
     // load -> unlock -> open
     @Override
     public UVFVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
-        UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(this.decrypted);
-
+        final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(prompt.prompt(session.getHost(),
+                LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
+                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
+                new LoginOptions()
+                        .save(false)
+                        .user(false)
+                        .anonymous(false)
+                        .icon("cryptomator.tiff")
+                        .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator"))).getPassword());
         final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
         log.debug("Initialized crypto provider {}", provider);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
