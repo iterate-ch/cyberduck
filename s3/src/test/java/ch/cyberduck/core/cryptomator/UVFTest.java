@@ -92,7 +92,7 @@ public class UVFTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, "minio", 9000).withCredentials(new Credentials("cyberduckAccessKey", "cyberduckSecretKey"));
+        }, "localhost", 9000).withCredentials(new Credentials("cyberduckAccessKey", "cyberduckSecretKey"));
         bookmark.setProperty("s3.bucket.virtualhost.disable", "true");
         bookmark.setDefaultPath("/cyberduckbucket");
         final S3Session storage = new S3Session(bookmark);
