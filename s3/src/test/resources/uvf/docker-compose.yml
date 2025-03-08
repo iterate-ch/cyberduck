@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  minio:
+    hostname: minio
+    image: minio/minio:latest
+    restart: on-failure
+    ports:
+      - "${MINIO_PORT}:${MINIO_PORT}"
+      - "${MINIO_CONSOLE_PORT}:${MINIO_CONSOLE_PORT}"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "curl -v --fail 127.0.0.1:${MINIO_PORT}/minio/health/ready" ]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+    command: server /data --console-address :9001
+#    networks:
+#      - testContainerNetwork
+#
+#  minio_setup:
+#    image: minio/mc:latest
+#    depends_on:
+#      minio:
+#        condition: service_healthy
+#    entrypoint: [ "/bin/sh","-c" ]
+#    command:
+#      - |
+#        set -x
+#        set -e
+#        /usr/bin/mc config host add myminio http://minio:${MINIO_PORT} minioadmin minioadmin
+#
+#        # if container is restarted, the bucket already exists...
+#        /usr/bin/mc mb myminio/cyberduckbucket --with-versioning || true
+#        /usr/bin/mc rm --recursive --force myminio/cyberduckbucket
+#
+#        echo "createbuckets successful"
+#    networks:
+#      - testContainerNetwork
+#
+#networks:
+#  testContainerNetwork:
