@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 @Category(TestcontainerTest.class)
 public class UVFTest {
@@ -98,8 +98,8 @@ public class UVFTest {
                 "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/rExOms183v5evFwgIKiW0qvbsor1Hg==.uvf/dir.uvf",
                 "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/dir.uvf",
                 "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/GsMMTRvsuuP_6NjgRwopmWcuof-PyRQ=.uvf",
-                "/d/WV/ZUTJPJT6FR7ZQRRW4FD2DPPBKJOIIF/0rAlpJBOfOCNkoummiK96xSJvAFLPbk=.uvf",
-                "/d/WV/ZUTJPJT6FR7ZQRRW4FD2DPPBKJOIIF/dir.uvf"
+                "/d/TU/EVUUXMHY2HHNQ4BLKNE3GBLEFD4YW6/4RuVMuXcOTOfhSQZAwEV1E4XiNrMVOY=.uvf",
+                "/d/TU/EVUUXMHY2HHNQ4BLKNE3GBLEFD4YW6/dir.uvf"
         );
         final String jwe = "{\n" +
                 "    \"fileFormat\": \"AES-256-GCM-32k\",\n" +
@@ -112,7 +112,8 @@ public class UVFTest {
                 "    \"initialSeed\": \"HDm38i\",\n" +
                 "    \"latestSeed\": \"QBsJFo\",\n" +
                 "    \"kdf\": \"HKDF-SHA512\",\n" +
-                "    \"kdfSalt\": \"NIlr89R7FhochyP4yuXZmDqCnQ0dBB3UZ2D+6oiIjr8=\"\n" +
+                "    \"kdfSalt\": \"NIlr89R7FhochyP4yuXZmDqCnQ0dBB3UZ2D+6oiIjr8=\",\n" +
+                "    \"org.example.customfield\": 42\n" +
                 "}";
 
         try {
@@ -127,7 +128,6 @@ public class UVFTest {
                 IOUtils.copyLarge(UVFTest.class.getResourceAsStream("/uvf/first_vault" + fi), out);
                 out.close();
             }
-
 
             final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
             bookmark.setDefaultPath("/" + bucketName);
@@ -144,10 +144,20 @@ public class UVFTest {
                 attr.setDirectoryId(masterKey.rootDirId());
             }
             storage.withRegistry(vaults);
-            // TODO should be fixed with https://github.com/iterate-ch/cryptolib/pull/12, see https://github.com/cryptomator/cryptolib/pull/51/commits/1e9bd327d6a04f9eb617fe83564eae3ec65a48f8
-            final BackgroundException backgroundException = assertThrows(BackgroundException.class, () -> storage.getFeature(ListService.class).list(vault.getHome().withAttributes(attr).withType(EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.vault)), new DisabledListProgressListener()));
-            assertEquals("File not found", backgroundException.getMessage());
-            assertEquals("/" + bucketName + "/d/RK/HZLENL3PQIW6GZHE3KRRRGLFBHWHRU. Please contact your web hosting service provider for assistance.", backgroundException.getDetail());
+
+            final Path home = vault.getHome().withAttributes(attr).withType(EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.vault));
+            {
+                final AttributedList<Path> list = storage.getFeature(ListService.class).list(home, new DisabledListProgressListener());
+                assertEquals(2, list.size());
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
+            }
+            {
+                final PathAttributes subdir = storage.getFeature(AttributesFinder.class).find(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)));
+                final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)).withAttributes(subdir), new DisabledListProgressListener());
+                assertEquals(1, list.size());
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+            }
         }
         finally {
             storage.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback()));
