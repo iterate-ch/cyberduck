@@ -289,6 +289,8 @@ public abstract class AbstractVault implements Vault {
 
     public abstract Pattern getBase64URLPattern();
 
+    public abstract byte[] getRootDirId();
+
     @Override
     public synchronized void close() {
         if(this.isUnlocked()) {

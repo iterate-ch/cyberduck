@@ -26,16 +26,18 @@ import ch.cyberduck.core.exception.BackgroundException;
 public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
 
     private final Path home;
+    private final AbstractVault vault;
 
     public CryptoDirectoryUVFProvider(final AbstractVault vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
         super(vault, filenameProvider, filenameCryptor);
         this.home = vault.getHome();
+        this.vault = vault;
     }
 
     @Override
     protected byte[] toDirectoryId(final Session<?> session, final Path directory, final byte[] directoryId) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
-            return directoryId;
+            return vault.getRootDirId();
         }
         return super.toDirectoryId(session, directory, directoryId);
     }

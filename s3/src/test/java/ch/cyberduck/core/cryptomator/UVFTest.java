@@ -37,7 +37,6 @@ import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
-import org.cryptomator.cryptolib.api.UVFMasterkey;
 import org.jetbrains.annotations.NotNull;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -139,10 +138,6 @@ public class UVFTest {
                 }
             }));
             final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
-            try(
-                    UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(jwe)) {
-                attr.setDirectoryId(masterKey.rootDirId());
-            }
             storage.withRegistry(vaults);
 
             final Path home = vault.getHome().withAttributes(attr).withType(EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.vault));
