@@ -45,7 +45,6 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryV6Provider.class);
 
     private static final String DATA_DIR_NAME = "d";
-    private static final byte[] ROOT_DIR_ID = new byte[0];
 
     private final Path dataRoot;
     private final Path home;
@@ -59,6 +58,8 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
 
     private final LRUCache<CacheReference<Path>, byte[]> cache = LRUCache.build(
             PreferencesFactory.get().getInteger("cryptomator.cache.size"));
+
+    public static final byte[] ROOT_DIR_ID = new byte[0];
 
     public CryptoDirectoryV6Provider(final Path vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
         this.home = vault;

@@ -62,6 +62,7 @@ public class UVFVault extends AbstractVault {
     private CryptoDirectory directoryProvider;
 
     private int nonceSize;
+    private byte[] rootDirId;
 
     public UVFVault(final Path home) {
         this.home = home;
@@ -88,9 +89,10 @@ public class UVFVault extends AbstractVault {
         log.debug("Initialized crypto provider {}", provider);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor(masterKey.firstRevision())); // TODO revision eventually depends on location - safe?
-        this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE); // TODO there is no shortening in UVF defined yet
+        this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE);
         this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider, fileNameCryptor);
         this.nonceSize = 12;
+        this.rootDirId = masterKey.rootDirId();
         return this;
     }
 
@@ -175,6 +177,10 @@ public class UVFVault extends AbstractVault {
     @Override
     public Pattern getBase64URLPattern() {
         return BASE64URL_PATTERN;
+    }
+
+    public byte[] getRootDirId() {
+        return rootDirId;
     }
 
     @Override
