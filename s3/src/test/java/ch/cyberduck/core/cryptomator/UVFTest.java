@@ -37,6 +37,7 @@ import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
+import org.cryptomator.cryptolib.api.UVFMasterkey;
 import org.jetbrains.annotations.NotNull;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -139,6 +140,9 @@ public class UVFTest {
             }));
             final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
             storage.withRegistry(vaults);
+            try(final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(jwe)) {
+                assertTrue(Arrays.equals(masterKey.rootDirId(), vault.getRootDirId()));
+            }
 
             final Path home = vault.getHome().withAttributes(attr).withType(EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.vault));
             {
@@ -149,6 +153,7 @@ public class UVFTest {
             }
             {
                 final PathAttributes subdir = storage.getFeature(AttributesFinder.class).find(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)));
+                // TODO still fails as test data from org.cryptomator.cryptolib.v3.UVFIntegrationTest uses latestSeed when creating dir.uvf, hard-coded in current implementation for subdir in DirectoryMetadata subDirMetadata = dirContentCryptor.newDirectoryMetadata();)
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)).withAttributes(subdir), new DisabledListProgressListener());
                 assertEquals(1, list.size());
                 assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
@@ -160,6 +165,7 @@ public class UVFTest {
                     storage.getFeature(ListService.class).list(bucket, new DisabledListProgressListener()).toList().stream()
                             .filter(f -> storage.getFeature(Delete.class).isSupported(f)).collect(Collectors.toList()),
                     new DisabledProgressListener()).run(storage);
+            storage.getFeature(Delete.class).delete(Collections.singletonList(bucket), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         }
     }
 
