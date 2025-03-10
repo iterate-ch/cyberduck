@@ -32,6 +32,10 @@ public class DownloadDuplicateFilter extends NullFilter<Path> {
             log.debug("Reject duplicate {}", file);
             return false;
         }
+        if(file.attributes().isTrashed()) {
+            log.debug("Reject duplicate {}", file);
+            return false;
+        }
         return true;
     }
 }
