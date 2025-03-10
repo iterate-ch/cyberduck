@@ -20,6 +20,7 @@ package ch.cyberduck.core.filter;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +33,7 @@ public class UploadRegexFilter implements Filter<Local> {
     private static final Logger log = LogManager.getLogger(UploadRegexFilter.class);
 
     private final Pattern pattern;
+    private final Preferences preferences = PreferencesFactory.get();
 
     public UploadRegexFilter() {
         this(Pattern.compile(PreferencesFactory.get().getProperty("queue.upload.skip.regex")));
@@ -43,9 +45,11 @@ public class UploadRegexFilter implements Filter<Local> {
 
     @Override
     public boolean accept(final Local file) {
-        if(pattern.matcher(file.getName()).matches()) {
-            log.debug("Skip {} excluded with regex", file);
-            return false;
+        if(preferences.getBoolean("queue.upload.skip.enable")) {
+            if(pattern.matcher(file.getName()).matches()) {
+                log.debug("Skip {} excluded with regex", file);
+                return false;
+            }
         }
         return true;
     }

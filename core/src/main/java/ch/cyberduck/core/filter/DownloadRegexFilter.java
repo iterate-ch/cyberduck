@@ -18,7 +18,9 @@ package ch.cyberduck.core.filter;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,10 +29,11 @@ import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class DownloadRegexFilter extends DownloadDuplicateFilter {
+public class DownloadRegexFilter implements Filter<Path> {
     private static final Logger log = LogManager.getLogger(DownloadRegexFilter.class);
 
     private final Pattern pattern;
+    private final Preferences preferences = PreferencesFactory.get();
 
     public DownloadRegexFilter() {
         this(Pattern.compile(PreferencesFactory.get().getProperty("queue.download.skip.regex")));
@@ -42,12 +45,11 @@ public class DownloadRegexFilter extends DownloadDuplicateFilter {
 
     @Override
     public boolean accept(final Path file) {
-        if(!super.accept(file)) {
-            return false;
-        }
-        if(pattern.matcher(file.getName()).matches()) {
-            log.debug("Skip {} excluded with regex", file.getAbsolute());
-            return false;
+        if(preferences.getBoolean("queue.download.skip.enable")) {
+            if(pattern.matcher(file.getName()).matches()) {
+                log.debug("Skip {} excluded with regex", file.getAbsolute());
+                return false;
+            }
         }
         return true;
     }
