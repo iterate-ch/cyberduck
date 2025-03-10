@@ -50,17 +50,16 @@
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-dll</id>
-                                <phase>verify</phase>
+                                <id>install-nupkg</id>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <classifier>net472</classifier>
-                                            <type>dll</type>
-                                            <file>${project.build.directory}/net472/Cyberduck.Bonjour.dll</file>
+                                            <type>nupkg</type>
+                                            <file>${project.build.directory}/Cyberduck.Bonjour.${project.version}.nupkg</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -76,9 +75,8 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
-                    <classifier>net472</classifier>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
-                    <type>dll</type>
                 </dependency>
             </dependencies>
         </profile>

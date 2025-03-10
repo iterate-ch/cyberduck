@@ -50,6 +50,6 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PackageVersions>@(PackageVersion->'%(Identity)'->Replace('.', '')->'Pkg%(Identity)Version=%(Version)')</PackageVersions>
+    <PackageVersions>@(PackageVersion->'%(Identity)'->Replace('.', '_')->'Pkg%(Identity)Version=%(Version)')</PackageVersions>
   </PropertyGroup>
 </Project>

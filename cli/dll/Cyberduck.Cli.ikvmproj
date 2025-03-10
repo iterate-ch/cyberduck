@@ -1,10 +1,7 @@
 <Project Sdk="IKVM.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="$(BuildSupportDir)Cyberduck.Java.props" />
 
   <ItemGroup>
     <CyberduckReference Include="Core;Protocols;Cryptomator" />
@@ -12,5 +9,4 @@
 
     <Convert Include="$(TargetBuildDir)*.jar" />
   </ItemGroup>
-
 </Project>

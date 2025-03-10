@@ -16,16 +16,24 @@
   -->
 <project name="Cyberduck Native Libraries" basedir=".">
 
-    <import file="../../build.xml"/>
+    <import file="../../build.xml" />
 
     <target name="restore" depends="msbuild">
-        <msbuild buildfile="Cyberduck.Cli.msbuildproj">
+        <msbuild buildfile="Cyberduck.Cli.ikvmproj">
             <target name="Restore" />
         </msbuild>
     </target>
 
-    <target name="build" if="platform.windows" depends="restore,msbuild">
-        <msbuild buildfile="Cyberduck.Cli.msbuildproj">
+    <target name="build" depends="restore,msbuild">
+        <msbuild buildfile="Cyberduck.Cli.ikvmproj">
+            <property name="Configuration" value="${msbuild.configuration}" />
+        </msbuild>
+    </target>
+
+    <target name="pack" depends="msbuild">
+        <msbuild buildfile="Cyberduck.Cli.ikvmproj">
+            <target name="Pack" />
+
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
     </target>
