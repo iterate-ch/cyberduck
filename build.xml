@@ -147,4 +147,12 @@
             </filterchain>
         </copy>
     </target>
+
+    <target name="nuget-unpack">
+        <exec dir="." executable="powershell.exe">
+            <arg line="-ExecutionPolicy bypass" />
+            <arg value="-Command" />
+            <arg value="&amp; { &amp; '${home}/src/main/msbuild/NuGet-Unpack.ps1' '${build}/.nuget/packages.list' }" />
+        </exec>
+    </target>
 </project>
