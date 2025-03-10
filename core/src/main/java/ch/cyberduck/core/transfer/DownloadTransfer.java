@@ -24,8 +24,7 @@ import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
-import ch.cyberduck.core.filter.DownloadDuplicateFilter;
-import ch.cyberduck.core.filter.DownloadRegexFilter;
+import ch.cyberduck.core.filter.DownloadFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
@@ -69,8 +68,7 @@ public class DownloadTransfer extends Transfer {
     private DownloadFilterOptions options = new DownloadFilterOptions(host);
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
-        this(host, Collections.singletonList(new TransferItem(root, local)),
-                PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
+        this(host, Collections.singletonList(new TransferItem(root, local)), new DownloadFilter());
     }
 
     public DownloadTransfer(final Host host, final Path root, final Local local, final Filter<Path> f) {
@@ -78,8 +76,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots) {
-        this(host, roots,
-                PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
+        this(host, roots, new DownloadFilter());
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f) {
