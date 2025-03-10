@@ -33,6 +33,10 @@ public class LocalAccessDeniedException extends AccessDeniedException {
         super(detail, cause);
     }
 
+    public LocalAccessDeniedException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
+    }
+
     @Override
     public String getHelp() {
         return LocaleFactory.localizedString("Please verify disk permissions", "Support");

@@ -51,12 +51,12 @@ public class DefaultLocalTouchFeature implements Touch {
             catch(FileAlreadyExistsException e) {
                 log.warn("File {} already exists", file);
                 throw new LocalAccessDeniedException(MessageFormat.format(
-                        LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getAbsolute()), e);
+                        LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getAbsolute()), e.getMessage(), e);
             }
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(
-                LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getAbsolute()), e);
+                    LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getAbsolute()), e.getMessage(), e);
         }
         log.debug("Created file {}", file);
     }
