@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.CoreRefreshMethods;
 
 namespace Cyberduck.Core.Test
 {
@@ -10,8 +10,7 @@ namespace Cyberduck.Core.Test
         public static void TestLoadIndirect()
         {
             string original = "C:\\Windows\\System32\\imageres.dll";
-            string load = SHLoadIndirectString(original);
-            Assert.AreEqual(original, load);
+            Assert.That(SHLoadIndirectString(original), Is.EqualTo(original));
         }
     }
 }
