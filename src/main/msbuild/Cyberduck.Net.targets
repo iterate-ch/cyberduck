@@ -1,0 +1,49 @@
+<Project>
+
+  <PropertyGroup>
+    <AssemblySearchPaths>$(LibDir);$(AssemblySearchPaths)</AssemblySearchPaths>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' != '' ">
+    <LibDirFramework Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net472'))">net472</LibDirFramework>
+    <LibDirFramework Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">net8.0</LibDirFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(LibDirFramework)'!=''">
+    <AssemblySearchPaths>$(LibDir)$(LibDirFramework)\;$(AssemblySearchPaths)</AssemblySearchPaths>
+    <AssemblySearchPaths Condition="!('$(Platform)'=='' or '$(Platform)'=='AnyCPU')">$(LibDir)$(LibDirFramework)\$(Platform)\;$(AssemblySearchpaths)</AssemblySearchPaths>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Fix .NET 8 Sdk RuntimeIdentifiers to align with .NET 9 Sdk -->
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)'=='win7-x86'">win-x86</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)'=='win7-x64'">win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <Target Name="SignAppHost" BeforeTargets="Compile" DependsOnTargets="_CreateAppHost;UsesSignTool" Inputs="$(AppHostIntermediatePath)" Outputs="$(AppHostIntermediatePath)" Condition="'$(AppHostIntermediatePath)'!='' And '$(SignOutput)'=='true'">
+    <ItemGroup>
+      <SignToolPath Include="$(WindowsSDK_ExecutablePath)" />
+    </ItemGroup>
+    <PropertyGroup>
+      <SignTool>SignTool.exe sign /d "$(AppName)" /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n "iterate GmbH"</SignTool>
+      <SignToolPath>PATH=@(SignToolPath, '%3B')</SignToolPath>
+    </PropertyGroup>
+    <Exec Command="$(SignTool) &quot;$(AppHostIntermediatePath)&quot;" EnvironmentVariables="$(SignToolPath)" />
+  </Target>
+
+  <PropertyGroup Condition=" '$(NETCoreSdkVersion)'!='' ">
+    <!-- Treat SDK 6.0.301 as last known to work. -->
+    <NETSDKBeforeFeature>$([MSBuild]::VersionLessThanOrEquals('$(NETCoreSdkVersion)', '6.0.301'))</NETSDKBeforeFeature>
+    <NETSDKAfterFix>$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '6.0.401'))</NETSDKAfterFix>
+    <CoreCompileDependsOn Condition="!($(NETSDKBeforeFeature) or $(NETSDKAfterFix))">SDKFix_RemoveDuplicateAnalyzers;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+  </PropertyGroup>
+
+  <Target Name="SDKFix_RemoveDuplicateAnalyzers">
+    <ItemGroup>
+      <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
+      <Analyzer Remove="@(Analyzer)" />
+      <Analyzer Include="@(FilteredAnalyzer)" />
+      <FilteredAnalyzer Remove="@(FilteredAnalyzer)" />
+    </ItemGroup>
+  </Target>
+
+</Project>
