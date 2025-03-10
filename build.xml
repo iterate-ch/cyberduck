@@ -127,23 +127,34 @@
         </tstamp>
     </target>
 
-    <target name="msbuild" depends="version">
+    <!-- 
+        Windows 
+    -->
+
+    <target name="msbuild">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar" />
         </taskdef>
 
         <condition property="msbuild.configuration" value="Debug">
-            <equals arg1="${configuration}" arg2="debug"/>
+            <equals arg1="${configuration}" arg2="debug" />
         </condition>
-        <property name="msbuild.configuration" value="Release"/>
+        <property name="msbuild.configuration" value="Release" />
+    </target>
 
+    <target name="msbuild-props" depends="version">
+        <condition property="msbuild.sign" value="false">
+            <isset property="skipSign"/>
+        </condition>
+        <property name="msbuild.sign" value=""/>
+        
         <copy todir="${build}/generated/msbuild" overwrite="True">
             <resources>
-                <fileset dir="${home}/src/template/msbuild" erroronmissingdir="false"/>
-                <fileset dir="${module}/src/template/msbuild" erroronmissingdir="false"/>
+                <fileset dir="${home}/src/template/msbuild" erroronmissingdir="false" />
+                <fileset dir="${module}/src/template/msbuild" erroronmissingdir="false" />
             </resources>
             <filterchain>
-                <expandproperties/>
+                <expandproperties />
             </filterchain>
         </copy>
     </target>

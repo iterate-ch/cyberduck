@@ -624,35 +624,35 @@
                             </goals>
                             <configuration>
                                 <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                                <excludeClassifiers>net472,net8.0</excludeClassifiers>
+                                <excludeClassifiers>net472,net8.0,net8.0-x64,net8.0-arm64,aarch64,x86_64</excludeClassifiers>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
                             </configuration>
                         </execution>
                         <execution>
-                            <id>copy-dependencies-dll-net472-target</id>
+                            <id>copy-dependencies-dll-x64-target</id>
                             <phase>generate-sources</phase>
                             <goals>
                                 <goal>copy-dependencies</goal>
                             </goals>
                             <configuration>
-                                <outputDirectory>${project.build.directory}/lib/net472</outputDirectory>
-                                <classifier>net472</classifier>
+                                <outputDirectory>${project.build.directory}/lib/x64</outputDirectory>
+                                <includeClassifiers>x86_64</includeClassifiers>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
                             </configuration>
                         </execution>
                         <execution>
-                            <id>copy-dependencies-dll-net8.0-target</id>
+                            <id>copy-dependencies-dll-arm64-target</id>
                             <phase>generate-sources</phase>
                             <goals>
                                 <goal>copy-dependencies</goal>
                             </goals>
                             <configuration>
-                                <outputDirectory>${project.build.directory}/lib/net8.0</outputDirectory>
-                                <classifier>net8.0</classifier>
+                                <outputDirectory>${project.build.directory}/lib/arm64</outputDirectory>
+                                <includeClassifiers>aarch64</includeClassifiers>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
@@ -1054,11 +1054,72 @@
                             <artifactId>maven-dependency-plugin</artifactId>
                             <executions>
                                 <execution>
+                                    <id>generate-nupkgs</id>
+                                    <phase>generate-sources</phase>
+                                    <goals>
+                                        <goal>copy-dependencies</goal>
+                                        <goal>collect</goal>
+                                    </goals>
+                                    <configuration>
+                                        <includeTypes>nupkg</includeTypes>
+                                        <outputFile>${project.build.directory}/.nuget/packages.list</outputFile>
+                                        <outputDirectory>${project.build.directory}/.nuget/cache</outputDirectory>
+                                    </configuration>
+                                </execution>
+                                <execution>
                                     <id>copy-dependencies-jar-target</id>
                                     <configuration>
                                         <prependGroupId>true</prependGroupId>
                                         <stripVersion>true</stripVersion>
                                         <includeScope>compile</includeScope>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>unpack-nupkg</id>
+                                    <phase>process-sources</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target>
+                                            <property name="home" value="${main.basedir}" />
+                                            <ant antfile="${project.basedir}/build.xml" target="nuget-unpack" dir="." />
+                                        </target>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>run-msbuild-props-target</id>
+                                    <phase>generate-sources</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target>
+                                            <property name="home" value="${main.basedir}" />
+                                            <property name="version" value="${project.version}" />
+                                            <property name="revision" value="${git.commitsCount}" />
+                                            <property name="hash" value="${git.revision}" />
+                                            <property name="sparkle.feed" value="${sparkle.feed}" />
+                                            <ant antfile="${project.basedir}/build.xml" target="msbuild-props" dir="." />
+                                        </target>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>pack-nupkg</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target>
+                                            <property name="home" value="${main.basedir}" />
+                                            <ant antfile="${project.basedir}/build.xml" target="pack" dir="." />
+                                        </target>
                                     </configuration>
                                 </execution>
                             </executions>

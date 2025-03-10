@@ -5,7 +5,7 @@
     <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
     <Platforms>x64;arm64</Platforms>
-    <SelfContained>true</SelfContained>
+    <PublishProfile>win-$(Platform)</PublishProfile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,18 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(CyberduckDir)Acknowledgments.rtf">
-      <Link>$(Filename)$(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
-      <Link>$(Filename)$(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(TargetBuildDir)lib\jnidispatch.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>$(Filename)$(Extension)</Link>
-    </Content>
+    <Content Include="$(CyberduckDir)Acknowledgments.rtf" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(TargetBuildDir)lib\$(Platform)\jnidispatch.dll" CopyToOutputDirectory="PreserveNewest" />
 
     <Content Include="$(CyberduckDir)bookmarks/*.duck">
       <Link>bookmarks/%(Filename)%(Extension)</Link>
@@ -38,11 +29,6 @@
 
   <ItemGroup>
     <None Include="$(CyberduckDir)App.config" Link="App.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="IKVM" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" />
   </ItemGroup>
 
 </Project>
