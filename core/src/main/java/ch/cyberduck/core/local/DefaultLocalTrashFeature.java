@@ -18,12 +18,14 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Trash;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 
 public class DefaultLocalTrashFeature implements Trash {
 
@@ -33,7 +35,8 @@ public class DefaultLocalTrashFeature implements Trash {
             Files.delete(Paths.get(file.getAbsolute()));
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Failed to move %s to Trash", file.getName()), e);
+            throw new LocalAccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot delete {0}", "Error"), file.getName()), e.getMessage(), e);
         }
     }
 }

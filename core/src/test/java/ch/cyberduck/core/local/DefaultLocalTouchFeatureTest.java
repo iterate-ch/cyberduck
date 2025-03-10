@@ -37,8 +37,8 @@ public class DefaultLocalTouchFeatureTest {
         }
         catch(AccessDeniedException e) {
             final String s = l.getName();
-            assertEquals("Cannot create " + PreferencesFactory.get().getProperty("local.delimiter") + s + ". Please verify disk permissions.", e.getDetail());
-            assertEquals("Access denied", e.getMessage());
+            assertEquals(String.format("%s%s: Read-only file system. Please verify disk permissions.", PreferencesFactory.get().getProperty("local.delimiter"), s), e.getDetail());
+            assertEquals(String.format("Cannot create %s%s", PreferencesFactory.get().getProperty("local.delimiter"), s), e.getMessage());
         }
     }
 
