@@ -1,0 +1,12 @@
+<Project>
+
+  <PropertyGroup Condition="'$(Platforms)'==''">
+    <OutputPath>$(BaseOutputPath)</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <OutputPath Condition="'$(OutputPath)'=='' And '$(Platform)'=='AnyCPU'">$(BaseOutputPath)</OutputPath>
+    <OutputPath Condition="'$(OutputPath)'=='' And '$(Platform)'!='AnyCPU'">$(BaseOutputPath)$(Platform)\</OutputPath>
+  </PropertyGroup>
+  
+</Project>

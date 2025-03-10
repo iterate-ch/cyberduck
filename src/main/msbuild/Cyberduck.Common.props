@@ -1,0 +1,40 @@
+<Project>
+
+  <PropertyGroup Label="AssemblyInfo">
+    <Company>iterate GmbH</Company>
+    <Description>Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows.</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetBuildDir>$(ModulePath)target\</TargetBuildDir>
+    <LibDir>$(TargetBuildDir)lib\</LibDir>
+    <GeneratedMSBuildDir>$(TargetBuildDir)generated\msbuild\</GeneratedMSBuildDir>
+
+    <UseArtifactsOutput>false</UseArtifactsOutput>
+    <ArtifactsPath>$(TargetBuildDir)</ArtifactsPath>
+
+    <BaseIntermediateOutputPath>$(ArtifactsPath)obj\$(projectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(ArtifactsPath)</BaseOutputPath>
+
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <LangVersion>12</LangVersion>
+
+    <RestoreAdditionalProjectFallbackFolders Condition="Exists('$(TargetBuildDir).nuget\packages\')">$(TargetBuildDir).nuget\packages\;$(RestoreAdditionalProjectFallbackFolders)</RestoreAdditionalProjectFallbackFolders>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <CyberduckReference>
+      <ProjectPath />
+    </CyberduckReference>
+  </ItemDefinitionGroup>
+
+  <Import Project="$(GeneratedMSBuildDir)Version.props" Condition="Exists('$(GeneratedMSBuildDir)Version.props')" />
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
+  </PropertyGroup>
+
+</Project>
