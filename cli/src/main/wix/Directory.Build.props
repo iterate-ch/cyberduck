@@ -15,14 +15,14 @@
 
 <Project>
 
-    <PropertyGroup>
-        <_CliBasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</_CliBasePath>
-    </PropertyGroup>
-    <Import Project="$(_CliBasePath)windows/Directory.Build.props" />
+  <PropertyGroup>
+    <_CliBasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</_CliBasePath>
+  </PropertyGroup>
+  <Import Project="$(_CliBasePath)windows/Directory.Build.props" />
 
-    <PropertyGroup>
-        <OutputPath>$(OutputPath)$(Configuration)</OutputPath>
-        <SetupDir>$(CyberduckDir)setup\wix\</SetupDir>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+    <SetupDir>$(CyberduckDir)setup\wix\</SetupDir>
+  </PropertyGroup>
 
 </Project>

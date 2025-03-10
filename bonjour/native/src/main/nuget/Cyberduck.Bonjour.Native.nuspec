@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <description>$description$</description>
+    <authors>$authors$</authors>
+
+    <dependencies>
+      <group targetFramework="net472">
+        <dependency id="Cyberduck.Bonjour" version="$version$" />
+        <dependency id="Microsoft.CSharp" version="$PkgMicrosoft_CSharpVersion$" />
+      </group>
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="$buildDir$net472/Cyberduck.Bonjour.Native.dll" target="lib/net472" />
+  </files>
+</package>

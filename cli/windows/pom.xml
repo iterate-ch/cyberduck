@@ -72,6 +72,10 @@
                                     </target>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>pack-nupkg</id>
+                                <phase>none</phase>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
@@ -83,36 +87,32 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Native</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Protocols</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cryptomator</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cli</artifactId>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

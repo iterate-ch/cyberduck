@@ -70,8 +70,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <type>dll</type>
-                                            <file>${project.build.directory}/net8.0/Cyberduck.Cli.dll</file>
+                                            <type>nupkg</type>
+                                            <file>${project.build.directory}/Cyberduck.Cli.${project.version}.nupkg</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -90,29 +90,19 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core.Native</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Protocols</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cryptomator</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

@@ -1,14 +1,14 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package Name="Cyberduck CLI"
     Manufacturer="iterate GmbH"
-    Version="!(bind.Property.ProductVersion)"
+    Version="$(ProductVersion)"
     UpgradeCode="98B2B672-3720-4CAC-BF3E-220757500AE0">
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="true" />
 
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="INSTALLFOLDER" Name="!(bind.Property.ProductName)">
-        <Files Include="!(bindpath.duck)../**" />
+        <Files Include="$(duck.TargetDir)**" />
 
         <Component Id="SetEnvironment" Guid="B429556B-9604-45DD-896C-4AE7BFFBE9EB">
           <Environment Id="PathVar"

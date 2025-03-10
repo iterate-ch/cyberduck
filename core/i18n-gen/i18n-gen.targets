@@ -4,15 +4,16 @@
   </PropertyGroup>
 
   <UsingTask TaskName="ResourceGenTask"
-             AssemblyFile="$(i18n_gen_dll)"
-             TaskFactory="TaskHostFactory" />
+    AssemblyFile="$(i18n_gen_dll)"
+    TaskFactory="TaskHostFactory" />
   <UsingTask TaskName="ImageDiscoverTask"
-             AssemblyFile="$(i18n_gen_dll)"
-             TaskFactory="TaskHostFactory" />
+    AssemblyFile="$(i18n_gen_dll)"
+    TaskFactory="TaskHostFactory" />
 
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)i18n-gen.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="False" />
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="False"
+      SetPlatform="Platform=" />
   </ItemGroup>
 </Project>
