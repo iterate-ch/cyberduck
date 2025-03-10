@@ -21,25 +21,31 @@
  -->
 <project name="Cyberduck Native Libraries" basedir=".">
 
-    <import file="../../build.xml"/>
+    <import file="../../build.xml" />
 
     <target name="restore" depends="msbuild">
-        <msbuild buildfile="build.proj">
-            <target name="Restore"/>
+        <msbuild buildfile="dirs.proj">
+            <target name="Restore" />
         </msbuild>
     </target>
 
     <target name="build" depends="restore,msbuild">
-        <msbuild buildfile="build.proj">
-            <target name="Build"/>
+        <msbuild buildfile="dirs.proj">
+            <target name="Build" />
 
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
     </target>
 
+    <target name="pack" depends="msbuild">
+        <msbuild buildfile="src/main/nuget.proj">
+            <target name="Restore;Pack" />
+        </msbuild>
+    </target>
+
     <target name="test" depends="msbuild" unless="${skip}">
         <msbuild buildfile="../src/test/csharp/Cyberduck.Core.Test.csproj">
-            <target name="Test"/>
+            <target name="Test" />
 
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>

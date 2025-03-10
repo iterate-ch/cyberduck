@@ -13,22 +13,33 @@
     <UseArtifactsOutput>false</UseArtifactsOutput>
     <ArtifactsPath>$(TargetBuildDir)</ArtifactsPath>
 
-    <BaseIntermediateOutputPath>$(ArtifactsPath)obj\$(projectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(ArtifactsPath)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath>$(ArtifactsPath)</BaseOutputPath>
 
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <LangVersion>12</LangVersion>
 
+    <!-- 
+      NuGet hates same-version packages (i.e. -SNAPSHOT).
+      With some Maven-trickery (and PowerShell) extract the .nupkg from Maven
+      Into a common folder (ModulePath\target\.nuget\packages), and specify as fallback folder.
+      Now, NuGet will first check in this folder, before checking in nuget.config
+      for suitable remotes - which is set to a non-existing source, for fast build failure:
+        <packageSource key="MavenFailNuget">
+          <package pattern="Cyberduck*" />
+        </packageSource>
+      As Maven is enforcing dependency versions here this is safe.
+    -->
     <RestoreAdditionalProjectFallbackFolders Condition="Exists('$(TargetBuildDir).nuget\packages\')">$(TargetBuildDir).nuget\packages\;$(RestoreAdditionalProjectFallbackFolders)</RestoreAdditionalProjectFallbackFolders>
   </PropertyGroup>
+
+  <Import Project="$(GeneratedMSBuildDir)Version.props" Condition="Exists('$(GeneratedMSBuildDir)Version.props')" />
 
   <ItemDefinitionGroup>
     <CyberduckReference>
       <ProjectPath />
     </CyberduckReference>
   </ItemDefinitionGroup>
-
-  <Import Project="$(GeneratedMSBuildDir)Version.props" Condition="Exists('$(GeneratedMSBuildDir)Version.props')" />
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>

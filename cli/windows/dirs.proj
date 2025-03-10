@@ -2,10 +2,12 @@
 
   <ItemGroup Condition=" '$(Exe)'=='True' ">
     <ProjectReference Include="..\src\main\csharp\duck.csproj" SetPlatform="Platform=x64" />
+    <ProjectReference Include="..\src\main\csharp\duck.csproj" SetPlatform="Platform=arm64" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Installer)'=='True' ">
-    <ProjectReference Include="..\src\main\wix\Bundle\duck.bundle.wixproj" />
+    <ProjectReference Include="..\src\main\wix\Bundle\duck.bundle.wixproj" SetPlatform="Platform=x64" />
+    <ProjectReference Include="..\src\main\wix\Bundle\duck.bundle.wixproj" SetPlatform="Platform=arm64" />
     <ProjectReference Include="..\src\main\wix\Bootstrapper\duck.bootstrapper.wixproj" />
   </ItemGroup>
 

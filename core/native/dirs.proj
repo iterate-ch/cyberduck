@@ -2,6 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="..\i18n-gen\i18n-gen.csproj" />
     <ProjectReference Include="..\src\main\csharp\Cyberduck.Core.Native.csproj" SetPlatform="Platform=x64" />
+    <ProjectReference Include="..\src\main\csharp\Cyberduck.Core.Native.csproj" SetPlatform="Platform=arm64" />
     <ProjectReference Include="..\src\test\csharp\Cyberduck.Core.Test.csproj" SetPlatform="Platform=x64" />
   </ItemGroup>
 </Project>

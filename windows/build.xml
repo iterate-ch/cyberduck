@@ -30,13 +30,13 @@
     <property name="chocolatey.target" value="${build.deploy}"/>
 
     <target name="restore" depends="msbuild">
-        <msbuild buildfile="build.proj">
+        <msbuild buildfile="dirs.proj">
             <target name="Restore" />
         </msbuild>
     </target>
 
     <target name="build" depends="restore,msbuild">
-        <msbuild buildfile="build.proj">
+        <msbuild buildfile="dirs.proj">
             <target name="Build" />
 
             <property name="BuildModule" value="Project" />
@@ -74,12 +74,11 @@
             <globmapper from="*.template" to="*"/>
         </copy>
 
-        <msbuild buildfile="build.proj">
+        <msbuild buildfile="dirs.proj">
             <target name="Build" />
 
             <property name="BuildModule" value="Installer" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
     </target>
 

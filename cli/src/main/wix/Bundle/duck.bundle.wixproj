@@ -1,12 +1,17 @@
 ﻿<Project Sdk="WixToolset.Sdk">
   <PropertyGroup>
-    <OutputName>duck-$(Version)</OutputName>
+    <OutputName>duck-$(FileVersion)-$(Platform)</OutputName>
     <Platforms>x64;arm64</Platforms>
+    <DefineConstants>
+      ProductVersion=$(FileVersion)
+    </DefineConstants>
   </PropertyGroup>
-  <ItemGroup>
-    <BindPath Include="$(CyberduckDir)profiles\default\" BindName="ProfilesPath" />
-    <PackageReference Include="WixToolset.Heat" />
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\csharp\duck.csproj" Publish="true" />
   </ItemGroup>

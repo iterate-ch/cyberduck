@@ -51,17 +51,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "i18n-gen", "core\i18n-gen\i
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "package", "windows\src\main\package\package.wapproj", "{55CDD736-9A8A-4091-AC99-60E2F9C73269}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Core", "core\dll\Cyberduck.Core.msbuildproj", "{1B4DFDAD-C676-4338-B435-F2F62D79E096}"
+Project("{DAEA77DE-8320-43BA-BA7C-EF5C12478AB5}") = "Cyberduck.Core", "core\dll\Cyberduck.Core.ikvmproj", "{1B4DFDAD-C676-4338-B435-F2F62D79E096}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Bonjour", "bonjour\dll\Cyberduck.Bonjour.msbuildproj", "{B31E6C36-D710-443F-8ED7-16BE3BD51FC4}"
+Project("{DAEA77DE-8320-43BA-BA7C-EF5C12478AB5}") = "Cyberduck.Bonjour", "bonjour\dll\Cyberduck.Bonjour.ikvmproj", "{B31E6C36-D710-443F-8ED7-16BE3BD51FC4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Importer", "importer\dll\Cyberduck.Importer.msbuildproj", "{C9B1C169-1354-4348-9938-7892399C6336}"
+Project("{DAEA77DE-8320-43BA-BA7C-EF5C12478AB5}") = "Cyberduck.Importer", "importer\dll\Cyberduck.Importer.ikvmproj", "{C9B1C169-1354-4348-9938-7892399C6336}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Protocols", "protocols\dll\Cyberduck.Protocols.msbuildproj", "{9C7B827F-AE30-44C4-A210-E49DF883C720}"
+Project("{DAEA77DE-8320-43BA-BA7C-EF5C12478AB5}") = "Cyberduck.Protocols", "protocols\dll\Cyberduck.Protocols.ikvmproj", "{9C7B827F-AE30-44C4-A210-E49DF883C720}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Cryptomator", "cryptomator\dll\Cyberduck.Cryptomator.msbuildproj", "{7EFC0398-8F4D-4850-BBE3-A0CC85410559}"
+Project("{DAEA77DE-8320-43BA-BA7C-EF5C12478AB5}") = "Cyberduck.Cryptomator", "cryptomator\dll\Cyberduck.Cryptomator.ikvmproj", "{7EFC0398-8F4D-4850-BBE3-A0CC85410559}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Cli", "cli\dll\Cyberduck.Cli.msbuildproj", "{2D33598A-21A1-4117-82DC-250F4CE8D5E5}"
+Project("{DAEA77DE-8320-43BA-BA7C-EF5C12478AB5}") = "Cyberduck.Cli", "cli\dll\Cyberduck.Cli.ikvmproj", "{2D33598A-21A1-4117-82DC-250F4CE8D5E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,10 +105,10 @@ Global
 		{65AB4CE3-5AF4-411A-928C-7FFD250C6D85}.Debug|x64.Build.0 = Debug|x86
 		{65AB4CE3-5AF4-411A-928C-7FFD250C6D85}.Release|x64.ActiveCfg = Release|x86
 		{65AB4CE3-5AF4-411A-928C-7FFD250C6D85}.Release|x64.Build.0 = Release|x86
-		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Debug|x64.ActiveCfg = Debug|x86
-		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Debug|x64.Build.0 = Debug|x86
-		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|x64.ActiveCfg = Release|x86
-		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|x64.Build.0 = Release|x86
+		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Debug|x64.ActiveCfg = Debug|x64
+		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Debug|x64.Build.0 = Debug|x64
+		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|x64.ActiveCfg = Release|x64
+		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|x64.Build.0 = Release|x64
 		{F6975079-F730-4A31-9909-DE536E524764}.Debug|x64.ActiveCfg = Debug|x64
 		{F6975079-F730-4A31-9909-DE536E524764}.Debug|x64.Build.0 = Debug|x64
 		{F6975079-F730-4A31-9909-DE536E524764}.Release|x64.ActiveCfg = Release|x64

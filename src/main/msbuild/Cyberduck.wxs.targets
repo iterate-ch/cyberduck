@@ -1,5 +1,7 @@
 <Project>
 
+  <Import Project="Microsoft.WindowsSdk.props" />
+
   <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
     <Exec Command="$(SignTool) &quot;%(SignMsi.FullPath)&quot;" EnvironmentVariables="$(SignToolPath)" />
   </Target>
