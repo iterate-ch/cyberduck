@@ -1,0 +1,13 @@
+<Project>
+
+  <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
+    <Exec Command="$(SignTool) &quot;%(SignMsi.FullPath)&quot;" EnvironmentVariables="$(SignToolPath)" />
+  </Target>
+  <Target Name="SignBundle" DependsOnTargets="UsesSignTool">
+    <Exec Command="$(SignTool) &quot;%(SignBundle.FullPath)&quot;" EnvironmentVariables="$(SignToolPath)" />
+  </Target>
+  <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool">
+    <Exec Command="$(SignTool) &quot;%(SignBundleEngine.FullPath)&quot;" EnvironmentVariables="$(SignToolPath)" />
+  </Target>
+  
+</Project>
