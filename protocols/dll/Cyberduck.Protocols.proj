@@ -1,10 +1,7 @@
 <Project Sdk="IKVM.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net472;net8.0</TargetFrameworks>
   </PropertyGroup>
-
-  <Import Project="$(BuildSupportDir)Cyberduck.Java.props" />
 
   <ItemGroup>
     <CyberduckReference Include="Core" />
@@ -134,8 +131,6 @@
     <Convert Include="$(TargetBuildDir)org.jvnet.mimepull.mimepull.jar" />
     <Convert Include="$(TargetBuildDir)org.objenesis.objenesis.jar" />
     <Convert Include="$(TargetBuildDir)org.slf4j.jcl-over-slf4j.jar" />
-    <Convert Include="$(TargetBuildDir)software.amazon.ion.ion-java.jar" />
     <Convert Include="$(TargetBuildDir)uk.com.robust-it.cloning.jar" />
   </ItemGroup>
-
 </Project>

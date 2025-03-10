@@ -4,8 +4,6 @@
     <TargetFrameworks>net472;net8.0</TargetFrameworks>
   </PropertyGroup>
 
-  <Import Project="$(BuildSupportDir)Cyberduck.Java.props" />
-
   <ItemGroup>
     <Convert Include="$(TargetBuildDir)ch.cyberduck.core.jar" />
     <Convert Include="$(TargetBuildDir)ch.cyberduck.defaults.jar" />

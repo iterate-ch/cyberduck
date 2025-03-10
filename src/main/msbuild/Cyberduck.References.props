@@ -29,13 +29,24 @@
       <ProjectPath>$(CyberduckDir)protocols\dll\Cyberduck.Protocols.proj</ProjectPath>
     </CyberduckReference>
 
-    <CyberduckProjectReference Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildingInsideVisualStudio)'=='true' " />
-    <CyberduckPackageReference Include="@(CyberduckReference->'Cyberduck.%(Identity)')" Exclude="@(CyberduckProjectReference)" />
-    <ProjectReference Include="@(CyberduckProjectReference->'%(ProjectPath)')">
-      <Name>Cyberduck.%(Identity)</Name>
-    </ProjectReference>
-    <PackageReference Include="@(CyberduckPackageReference)" />
+    <CyberduckReferenceIdentity Include="@(CyberduckReference->'Cyberduck.%(Identity)')" />
+    <CyberduckReferenceWithProjectPath Include="@(CyberduckReferenceIdentity->HasMetadata('ProjectPath'))" />
+    <!-- Any CyberduckReference that doesn't have a ProjectPath should be included by PackageReference, by default -->
+    <CyberduckPackageReference Include="@(CyberduckReferenceIdentity)" Exclude="@(CyberduckReferenceWithProjectPath)" />
+  </ItemGroup>
+
+  <!-- If in VisualStudio reference Projects directly -->
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)'=='True'">
+    <ProjectReference Include="@(CyberduckReferenceWithProjectPath->'%(ProjectPath)')" Name="%(Identity)" />
+  </ItemGroup>
+  <!-- Else use PackageReferences -->
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)'!='True'">
+    <CyberduckPackageReference Include="@(CyberduckReferenceIdentity)" Exclude="@(CyberduckPackageReference)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageVersion Include="@(CyberduckPackageReference)" Version="$(Version)" />
+    <PackageReference Include="@(CyberduckPackageReference)" />
   </ItemGroup>
 
 </Project>

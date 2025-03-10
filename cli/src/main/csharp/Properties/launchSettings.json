@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "duck": {
+      "commandName": "Project",
+      "commandLineArgs": "-u jmalek -y -d ftps://truenas-scale.iterate.xc/mnt/NAS/homes/jmalek/vjunos-switch-23.1R1.8.qcow2 T:\\speed --existing overwrite"
+    }
+  }
+}
