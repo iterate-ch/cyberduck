@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageVersion Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
+    <PackageVersion Include="ExceptionReporter " Version="2.4.2" />
+    <PackageVersion Include="IKVM" Version="8.11.2" />
+    <PackageVersion Include="iterate-ch.IKVM.MSBuild.SkipDuplicates" Version="1.1.0" />
+    <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="17.1.0" />
+    <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageVersion Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
+    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.106" />
+    <PackageVersion Include="Microsoft.Windows.SDK.Contracts" Version="10.0.22000.196" />
+    <PackageVersion Include="NUnit" Version="4.2.0" />
+    <PackageVersion Include="NUnit.Console" Version="3.17.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageVersion Include="ObjectListView.Official" Version="2.9.1" />
+    <PackageVersion Include="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.2.3" />
+    <PackageVersion Include="ReactiveUI" Version="17.1.50" />
+    <PackageVersion Include="ReactiveUI.WPF" Version="17.1.50" />
+    <PackageVersion Include="StructureMap" Version="2.6.4.1" />
+    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+    <PackageVersion Include="System.Memory" Version="4.5.5" />
+    <PackageVersion Include="System.Runtime.Caching" Version="8.0.0" />
+    <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <PackageVersion Include="WixToolset.Bal.wixext" Version="5.0.2" />
+    <PackageVersion Include="WixToolset.Heat" Version="5.0.2" />
+    <PackageVersion Include="WixToolset.NetFx.wixext" Version="5.0.2" />
+    <PackageVersion Include="WixToolset.Util.wixext" Version="5.0.2" />    
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageVersions>@(PackageVersion->'%(Identity)'->Replace('.', '')->'Pkg%(Identity)Version=%(Version)')</PackageVersions>
+  </PropertyGroup>
+</Project>
