@@ -39,7 +39,7 @@ public class DeepboxShareFeature implements Share<Object, Object> {
     @Override
     public boolean isSupported(final Path file, final Type type) {
         if(type == Type.download) {
-            return file.getType().contains(Path.Type.file);
+            return file.isFile();
         }
         return false;
     }
