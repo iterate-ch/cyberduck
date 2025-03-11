@@ -60,8 +60,12 @@ import java.util.stream.Stream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Test {@link UVFVault} implementation against test data from
+ * <a href="https://github.com/cryptomator/cryptolib/tree/develop/src/test/java/org/cryptomator/cryptolib/v3/UVFIntegrationTest.java">org.cryptomator.cryptolib.v3.UVFIntegrationTest</a>
+ */
 @Category(TestcontainerTest.class)
-public class UVFTest {
+public class UVFIntegrationTest {
 
     private static final ComposeContainer container = new ComposeContainer(
             new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/uvf/docker-compose.yml").getFile()))
@@ -120,12 +124,12 @@ public class UVFTest {
             for(final String fi : files) {
                 final Path file = new Path("/" + bucketName + "/" + fi, EnumSet.of(AbstractPath.Type.file));
                 byte[] content = new byte[1000];
-                final int size = UVFTest.class.getResourceAsStream("/uvf/first_vault" + fi).read(content);
+                final int size = UVFIntegrationTest.class.getResourceAsStream("/uvf/first_vault" + fi).read(content);
                 final TransferStatus transferStatus = new TransferStatus().withLength(size);
                 transferStatus.setChecksum(storage.getFeature(Write.class).checksum(file, transferStatus).compute(new ByteArrayInputStream(content), transferStatus));
                 storage.getFeature(Bulk.class).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), transferStatus), new DisabledConnectionCallback());
                 final StatusOutputStream<?> out = storage.getFeature(Write.class).write(file, transferStatus, new DisabledConnectionCallback());
-                IOUtils.copyLarge(UVFTest.class.getResourceAsStream("/uvf/first_vault" + fi), out);
+                IOUtils.copyLarge(UVFIntegrationTest.class.getResourceAsStream("/uvf/first_vault" + fi), out);
                 out.close();
             }
 
