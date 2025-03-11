@@ -157,7 +157,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     log.warn("Cannot use temporary filename for upload with missing rename support for {}", file);
                 }
             }
-            status.withMime(new MappingMimeTypeService().getMime(file.getName()));
+            status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         }
         if(file.isDirectory()) {
             status.setLength(0L);
