@@ -153,7 +153,6 @@ public class UVFTest {
             }
             {
                 final PathAttributes subdir = storage.getFeature(AttributesFinder.class).find(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)));
-                // TODO still fails as test data from org.cryptomator.cryptolib.v3.UVFIntegrationTest uses latestSeed when creating dir.uvf, hard-coded in current implementation for subdir in DirectoryMetadata subDirMetadata = dirContentCryptor.newDirectoryMetadata();)
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)).withAttributes(subdir), new DisabledListProgressListener());
                 assertEquals(1, list.size());
                 assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
