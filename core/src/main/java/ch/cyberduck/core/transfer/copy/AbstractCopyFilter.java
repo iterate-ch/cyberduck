@@ -21,6 +21,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -100,6 +101,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
         if(file.isFile()) {
             // Content length
             status.setLength(attributes.getSize());
+            status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         }
         if(file.isDirectory()) {
             status.setLength(0L);
