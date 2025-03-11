@@ -110,13 +110,13 @@ public class DropboxShareFeature implements Share<Void, Void> {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
+        if(file.isRoot()) {
+            return false;
+        }
         switch(type) {
             case download:
                 return true;
             case upload:
-                if(file.isRoot()) {
-                    return false;
-                }
                 return file.isDirectory();
         }
         return false;

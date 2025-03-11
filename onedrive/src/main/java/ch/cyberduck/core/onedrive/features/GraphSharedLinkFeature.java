@@ -40,15 +40,18 @@ public class GraphSharedLinkFeature implements Share {
     }
 
     @Override
-    public boolean isSupported(Path file, Type type) {
+    public boolean isSupported(final Path file, final Type type) {
         if(Type.download == type) {
+            if(session.getContainer(file).isDrive()) {
+                return false;
+            }
             return session.isAccessible(file, true);
         }
         return false;
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(Path file, final Sharee sharee, Object options, PasswordCallback callback)
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback)
             throws BackgroundException {
         final DriveItem item = session.getItem(file);
         try {
@@ -64,7 +67,7 @@ public class GraphSharedLinkFeature implements Share {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(Path file, final Sharee sharee, Object options, PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) {
         return DescriptiveUrl.EMPTY;
     }
 }

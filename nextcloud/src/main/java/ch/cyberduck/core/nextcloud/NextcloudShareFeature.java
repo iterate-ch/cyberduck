@@ -78,6 +78,10 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
     public boolean isSupported(final Path file, final Type type) {
         switch(type) {
             case upload:
+                if(NextcloudHomeFeature.Context.files.home(session.getHost()).equals(file)) {
+                    // You cannot share your root folder
+                    return false;
+                }
                 return file.isDirectory();
         }
         return true;

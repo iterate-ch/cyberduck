@@ -51,7 +51,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
     public enum Context {
         tus {
             @Override
-            public Home home(final Host bookmark) throws BackgroundException {
+            public Home home(final Host bookmark) {
                 return new DefaultDavRoot(bookmark);
             }
         },
@@ -63,7 +63,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
         },
         files {
             @Override
-            public Home home(final Host bookmark) throws BackgroundException {
+            public Home home(final Host bookmark) {
                 return new DelegatingHomeFeature(new UserDavRoot(bookmark, this), new DefaultDavRoot(bookmark));
             }
 
@@ -76,13 +76,13 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
         versions,
         meta {
             @Override
-            public Home home(final Host bookmark) throws BackgroundException {
+            public Home home(final Host bookmark) {
                 return () -> new Path(MessageFormat.format(
                         HostPreferencesFactory.get(bookmark).getProperty("nextcloud.root.webdav.user"), this.name(), StringUtils.EMPTY), EnumSet.of(Path.Type.directory));
             }
         };
 
-        public Home home(final Host bookmark) throws BackgroundException {
+        public Home home(final Host bookmark) {
             return new UserDavRoot(bookmark, this);
         }
 

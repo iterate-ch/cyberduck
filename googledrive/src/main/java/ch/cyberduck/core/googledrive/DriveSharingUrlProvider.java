@@ -39,6 +39,12 @@ public class DriveSharingUrlProvider implements Share {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
+        if(file.isRoot()) {
+            return false;
+        }
+        if(file.isPlaceholder()) {
+            return false;
+        }
         switch(type) {
             case download:
                 return true;
