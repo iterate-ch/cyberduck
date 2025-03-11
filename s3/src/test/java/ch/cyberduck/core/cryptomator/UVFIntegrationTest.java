@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -49,6 +50,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
@@ -99,11 +101,11 @@ public class UVFIntegrationTest {
         new S3BucketCreateService(storage).create(bucket, "us-east-1");
 
         final List<String> files = Arrays.asList(
-                "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/rExOms183v5evFwgIKiW0qvbsor1Hg==.uvf/dir.uvf",
-                "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/dir.uvf",
-                "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/GsMMTRvsuuP_6NjgRwopmWcuof-PyRQ=.uvf",
-                "/d/TU/EVUUXMHY2HHNQ4BLKNE3GBLEFD4YW6/4RuVMuXcOTOfhSQZAwEV1E4XiNrMVOY=.uvf",
-                "/d/TU/EVUUXMHY2HHNQ4BLKNE3GBLEFD4YW6/dir.uvf"
+                "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/rExOms183v5evFwgIKiW0qvbsor1Hg==.uvf/dir.uvf", // -> /subir
+                "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/dir.uvf", // -> /
+                "/d/RZ/K7ZH7KBXULNEKBMGX3CU42PGUIAIX4/GsMMTRvsuuP_6NjgRwopmWcuof-PyRQ=.uvf", // -> /foo.txt
+                "/d/6L/HPWBEU3OJP2EZUCP4CV3HHL47BXVEX/5qTOPMA1BouBRhz_G7qfmKety92geI4=.uvf", // -> /subdir/bar.txt
+                "/d/6L/HPWBEU3OJP2EZUCP4CV3HHL47BXVEX/dir.uvf" // /subdir
         );
         final String jwe = "{\n" +
                 "    \"fileFormat\": \"AES-256-GCM-32k\",\n" +
@@ -152,14 +154,32 @@ public class UVFIntegrationTest {
             {
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(home, new DisabledListProgressListener());
                 assertEquals(2, list.size());
-                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                final Path foo = new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted));
+                assertTrue(Arrays.toString(list.toArray()), list.contains(foo));
                 assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
+
+                final byte[] buf = new byte[300];
+                final TransferStatus status = new TransferStatus();
+                try(final InputStream inputStream = storage.getFeature(Read.class).read(foo, status, new DisabledConnectionCallback())) {
+                    int l = inputStream.read(buf);
+                    assertEquals(9, l);
+                    assertEquals("Hello Foo", new String(Arrays.copyOfRange(buf, 0, l)));
+                }
             }
             {
                 final PathAttributes subdir = storage.getFeature(AttributesFinder.class).find(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)));
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)).withAttributes(subdir), new DisabledListProgressListener());
                 assertEquals(1, list.size());
-                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                final Path bar = new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted));
+                assertTrue(Arrays.toString(list.toArray()), list.contains(bar));
+
+                final byte[] buf = new byte[300];
+                final TransferStatus status = new TransferStatus();
+                try(final InputStream inputStream = storage.getFeature(Read.class).read(bar, status, new DisabledConnectionCallback())) {
+                    int l = inputStream.read(buf);
+                    assertEquals(9, l);
+                    assertEquals("Hello Bar", new String(Arrays.copyOfRange(buf, 0, l)));
+                }
             }
         }
         finally {

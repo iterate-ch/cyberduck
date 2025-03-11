@@ -37,6 +37,8 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
+import com.google.common.io.BaseEncoding;
+
 public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryUVFProvider.class);
 
@@ -47,10 +49,12 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
             = new UUIDRandomStringService();
     private final Path dataRoot;
     private final CryptorCache filenameCryptor;
+    private final CryptoFilename filenameProvider;
 
     public CryptoDirectoryUVFProvider(final AbstractVault vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
         super(vault, filenameProvider, filenameCryptor);
         this.filenameCryptor = filenameCryptor;
+        this.filenameProvider = filenameProvider;
         this.home = vault.getHome();
         this.vault = vault;
         this.dataRoot = new Path(home, "d", home.getType());
@@ -62,6 +66,20 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
             return vault.getRootDirId();
         }
         return super.toDirectoryId(session, directory, directoryId);
+    }
+
+    // interface mismatch: we need parent path to get dirId and revision from dir.uvf
+    public String toEncrypted(final Session<?> session, final Path parent, final String filename) throws BackgroundException {
+        if(new SimplePathPredicate(home).test(parent)) {
+            final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, vault.getRootDirId()) + vault.getRegularFileExtension();
+            log.debug("Encrypted filename {} to {}", filename, ciphertextName);
+            return filenameProvider.deflate(session, ciphertextName);
+
+        }
+        final byte[] directoryId = load(session, parent);
+        final String ciphertextName = vault.getCryptor().fileNameCryptor(loadRevision(session, parent)).encryptFilename(BaseEncoding.base64Url(), filename, directoryId) + vault.getRegularFileExtension();
+        log.debug("Encrypted filename {} to {}", filename, ciphertextName);
+        return filenameProvider.deflate(session, ciphertextName);
     }
 
     @Override
@@ -99,6 +117,9 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
     }
 
     protected byte[] load(final Session<?> session, final Path directory) throws BackgroundException {
+        if(new SimplePathPredicate(home).test(directory)) {
+            return vault.getRootDirId();
+        }
         final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
         final String cleartextName = directory.getName();
         final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
