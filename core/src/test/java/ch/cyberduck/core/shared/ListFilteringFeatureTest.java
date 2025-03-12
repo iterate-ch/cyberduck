@@ -46,14 +46,14 @@ public class ListFilteringFeatureTest {
         assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.ROOT, "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setVersionId("v1"))).test(
                 new Path(Home.ROOT, "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setVersionId("v2"))
         ));
-        assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().withFileId("v1"))).test(
-                new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().withFileId("v1"))
+        assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setFileId("v1"))).test(
+                new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setFileId("v1"))
         ));
-        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().withFileId("v1"))).test(
-                new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().withFileId("v2"))
+        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setFileId("v1"))).test(
+                new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setFileId("v2"))
         ));
-        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.ROOT, "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withFileId("v1"))).test(
-                new Path(Home.ROOT, "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withFileId("v2"))
+        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.ROOT, "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setFileId("v1"))).test(
+                new Path(Home.ROOT, "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setFileId("v2"))
         ));
         assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file))).test(
                 new Path(Home.ROOT, "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setVersionId("v1"))

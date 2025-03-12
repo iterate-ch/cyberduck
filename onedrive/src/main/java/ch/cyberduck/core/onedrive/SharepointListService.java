@@ -59,10 +59,10 @@ public class SharepointListService extends AbstractSharepointListService {
             final Site site = Site.byId(session.getClient(), "root");
             final Site.Metadata metadata = site.getMetadata(null); // query: null: Default return set.
             final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
-            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes().withFileId(metadata.getId()));
+            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes().setFileId(metadata.getId()));
             path.setSymlinkTarget(
                 new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),
-                    new PathAttributes().withFileId(metadata.getId())));
+                        new PathAttributes().setFileId(metadata.getId())));
             return Optional.of(path);
         }
         catch(IOException ex) {

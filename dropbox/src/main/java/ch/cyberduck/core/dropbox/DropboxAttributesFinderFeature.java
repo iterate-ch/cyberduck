@@ -56,7 +56,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder, Attribu
                 // Retrieve the namespace ID for a users home folder and team root folder
                 final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
                 log.debug("Set root namespace {}", account.getRootInfo().getRootNamespaceId());
-                return new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId());
+                return new PathAttributes().setFileId(account.getRootInfo().getRootNamespaceId());
             }
             final Metadata metadata = new DbxUserFilesRequests(session.getClient(file)).getMetadata(containerService.getKey(file));
             if(metadata instanceof FileMetadata) {

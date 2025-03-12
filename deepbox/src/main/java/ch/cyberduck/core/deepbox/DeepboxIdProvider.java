@@ -135,7 +135,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                             return file;
                         }
                     }
-                    final Path deepbox = new Path(result, deepboxName, type, new PathAttributes(combined.attributes()).withFileId(null));
+                    final Path deepbox = new Path(result, deepboxName, type, new PathAttributes(combined.attributes()).setFileId(null));
                     result = new Path(deepbox, boxName, type, segment.attributes());
                 }
                 else {

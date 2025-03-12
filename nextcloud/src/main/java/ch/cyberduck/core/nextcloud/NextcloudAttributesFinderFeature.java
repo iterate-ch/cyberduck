@@ -81,7 +81,7 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         final PathAttributes attr = super.find(file, listener);
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            return attr.setVersionId(file.attributes().getVersionId()).withFileId(file.attributes().getFileId());
+            return attr.setVersionId(file.attributes().getVersionId()).setFileId(file.attributes().getFileId());
         }
         return attr;
     }

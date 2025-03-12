@@ -186,7 +186,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertNull(test.attributes().getFileId());
         assertFalse(new DriveFindFeature(session, fileid).find(test));
-        test.attributes().withFileId(id);
+        test.attributes().setFileId(id);
         assertTrue(new DriveFindFeature(session, fileid).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isTrashed());

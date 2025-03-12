@@ -473,11 +473,6 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
-    public PathAttributes withFileId(final String fileId) {
-        this.setFileId(fileId);
-        return this;
-    }
-
     public String getLockId() {
         return lockId;
     }

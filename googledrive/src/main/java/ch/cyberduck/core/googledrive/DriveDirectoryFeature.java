@@ -51,7 +51,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                 final TeamDrive execute = session.getClient().teamdrives().create(
                         new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
                 ).execute();
-                return folder.withAttributes(new PathAttributes(folder.attributes()).withFileId(execute.getId()));
+                return folder.withAttributes(new PathAttributes(folder.attributes()).setFileId(execute.getId()));
             }
             else {
                 try {

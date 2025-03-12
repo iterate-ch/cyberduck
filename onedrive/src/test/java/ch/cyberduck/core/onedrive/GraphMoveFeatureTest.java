@@ -62,7 +62,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final Path target = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertThrows(NotfoundException.class, () -> new GraphMoveFeature(session, this.fileid).move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
-        file.attributes().withFileId(fileid);
+        file.attributes().setFileId(fileid);
         assertThrows(NotfoundException.class, () -> new GraphMoveFeature(session, this.fileid).move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
     }
 

@@ -120,7 +120,7 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         try {
             new EueDeleteFeature(session, fileid).delete(Collections.singletonList(
-                    file.withAttributes(new PathAttributes().withFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                    file.withAttributes(new PathAttributes().setFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
             fail();
         }
         catch(NotfoundException e) {

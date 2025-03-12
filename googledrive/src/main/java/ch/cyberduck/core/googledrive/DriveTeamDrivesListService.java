@@ -60,7 +60,7 @@ public class DriveTeamDrivesListService implements ListService {
                     .execute();
                 for(TeamDrive f : list.getTeamDrives()) {
                     final Path child = new Path(directory, f.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            new PathAttributes().withFileId(f.getId()));
+                            new PathAttributes().setFileId(f.getId()));
                     children.add(child);
                 }
                 listener.chunk(directory, children);

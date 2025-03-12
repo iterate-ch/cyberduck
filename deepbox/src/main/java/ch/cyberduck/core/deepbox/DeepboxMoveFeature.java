@@ -74,7 +74,7 @@ public class DeepboxMoveFeature implements Move {
             }
             fileid.cache(file, null);
             fileid.cache(renamed, sourceId);
-            return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).withFileId(sourceId));
+            return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).setFileId(sourceId));
         }
         catch(ApiException e) {
             throw new DeepboxExceptionMappingService(fileid).map("Cannot rename {0}", e, file);

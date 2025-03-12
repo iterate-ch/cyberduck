@@ -84,10 +84,10 @@ public class DefaultPathPredicateTest {
 
     @Test
     public void testPredicateFileIdFile() {
-        final Path t = new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withFileId("1"));
+        final Path t = new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().setFileId("1"));
         assertTrue(new DefaultPathPredicate(t).test(t));
-        assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withFileId("1"))));
-        assertFalse(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withFileId("2"))));
+        assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().setFileId("1"))));
+        assertFalse(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().setFileId("2"))));
     }
 
     @Test
@@ -100,10 +100,10 @@ public class DefaultPathPredicateTest {
 
     @Test
     public void testPredicateFileIdDirectory() {
-        final Path t = new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withFileId("1"));
+        final Path t = new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().setFileId("1"));
         assertTrue(new DefaultPathPredicate(t).test(t));
-        assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withFileId("1"))));
-        assertFalse(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withFileId("2"))));
+        assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().setFileId("1"))));
+        assertFalse(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().setFileId("2"))));
     }
 
     @Test

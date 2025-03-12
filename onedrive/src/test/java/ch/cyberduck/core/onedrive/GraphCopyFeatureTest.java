@@ -56,7 +56,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final Path target = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertThrows(NotfoundException.class, () -> new GraphCopyFeature(session, this.fileid).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
-        file.attributes().withFileId(fileid);
+        file.attributes().setFileId(fileid);
         assertThrows(NotfoundException.class, () -> new GraphCopyFeature(session, this.fileid).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
     }
 

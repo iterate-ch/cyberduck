@@ -58,7 +58,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
             assertEquals(bucket.attributes(), new EueAttributesFinderFeature(session, fileid).find(bucket, new DisabledListProgressListener()));
         }
         assertNotNull(list.find(f -> f.attributes().getFileId().equals(EueResourceIdProvider.TRASH)));
-        assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().withFileId("TRASH"))));
+        assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().setFileId("TRASH"))));
         assertEquals(folder.attributes().getFileId(), list.find(new SimplePathPredicate(folder)).attributes().getFileId());
         assertSame(root, list.find(new SimplePathPredicate(folder)).getParent());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

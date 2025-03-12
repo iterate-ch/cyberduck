@@ -146,7 +146,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 final String boxNodeId = fileid.getBoxNodeId(file);
                 // map BoxAccessPolicy to CANLISTCHILDREN and CANADDCHILDREN for third level
                 final Box box = new BoxRestControllerApi(session.getClient()).getBox(deepBoxNodeId, boxNodeId);
-                final PathAttributes attr = new PathAttributes().withFileId(fileId);
+                final PathAttributes attr = new PathAttributes().setFileId(fileId);
                 final Acl acl = new Acl(new Acl.CanonicalUser());
                 final BoxAccessPolicy boxPolicy = box.getBoxPolicy();
                 if(containerService.isInbox(file)) {

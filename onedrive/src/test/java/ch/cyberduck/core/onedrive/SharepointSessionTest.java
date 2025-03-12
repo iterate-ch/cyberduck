@@ -78,7 +78,7 @@ public class SharepointSessionTest {
     public void testContainerEquality() {
         final Path source = new Path("/Default/Drives/Docs", EnumSet.of(Path.Type.directory))
                 .withAttributes(new PathAttributes()
-                        .withFileId("File Id"));
+                        .setFileId("File Id"));
         final Path target = new Path("/Default/Drives/Docs", EnumSet.of(Path.Type.directory));
         final GraphSession.ContainerItem sourceItem = session.getContainer(source);
         final GraphSession.ContainerItem targetItem = session.getContainer(target);

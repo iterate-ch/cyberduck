@@ -148,7 +148,7 @@ public class EueTrashFeatureTest extends AbstractEueSessionTest {
         try {
             // Skip file already in trash
             new EueTrashFeature(session, fileid).delete(Collections.singletonList(
-                    file.withAttributes(new PathAttributes().withFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                    file.withAttributes(new PathAttributes().setFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         catch(NotfoundException e) {
             fail();

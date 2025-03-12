@@ -140,7 +140,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final String resourceId = file.attributes().getFileId();
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         try {
-            new EueMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().withFileId(resourceId)),
+            new EueMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().setFileId(resourceId)),
                     new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
             fail();
         }
@@ -155,7 +155,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String resourceId = file.attributes().getFileId();
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new EueMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().withFileId(resourceId)),
+        new EueMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().setFileId(resourceId)),
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 
