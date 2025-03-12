@@ -42,9 +42,9 @@ public class SMBTouchFeatureTest extends AbstractSMBTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
         final Path test = new SMBTouchFeature(session)
-                .touch(new Path(home, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+                .touch(new Path(home, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         assertThrows(ConflictException.class, () -> new SMBTouchFeature(session)
-                .touch(new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L)));
+                .touch(new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L)));
         assertTrue(new SMBFindFeature(session).find(test));
         assertTrue(new SMBFindFeature(session).find(new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file))));
         assertEquals(new SMBAttributesFinderFeature(session).find(test),

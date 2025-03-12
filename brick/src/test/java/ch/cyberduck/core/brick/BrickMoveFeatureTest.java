@@ -80,7 +80,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         final Path test = new BrickTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
                 StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new BrickMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(),
-                StringUtils.lowerCase(name), EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                StringUtils.lowerCase(name), EnumSet.of(Path.Type.file)), new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertTrue(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
@@ -93,13 +93,13 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         final String lock = new BrickLockFeature(session).lock(test);
         final Path target = new BrickMoveFeature(session).move(test,
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLockId(lock), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLockId(lock), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
@@ -126,7 +126,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         new BrickTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BrickTouchFeature(session).touch(target, new TransferStatus());
-        new BrickMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new BrickMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
         new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

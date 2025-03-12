@@ -34,7 +34,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -82,8 +81,8 @@ public class IRODSWriteFeatureTest extends VaultTest {
 
         final byte[] content = RandomUtils.nextBytes(68400);
 
-        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).withLength(content.length), new DisabledConnectionCallback());
-        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
         // Error code received from iRODS:-23000
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
@@ -131,8 +130,8 @@ public class IRODSWriteFeatureTest extends VaultTest {
 
         final byte[] content = RandomUtils.nextBytes(68400);
 
-        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).withLength(content.length), new DisabledConnectionCallback());
-        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
         new Thread(new Runnable() {
             @Override
             public void run() {

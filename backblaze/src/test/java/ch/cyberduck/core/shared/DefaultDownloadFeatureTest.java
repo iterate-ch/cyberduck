@@ -64,7 +64,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
             final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -72,7 +72,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
             test.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
@@ -94,7 +94,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         final byte[] content = new byte[1];
         new Random().nextBytes(content);
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
             final OutputStream out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -102,7 +102,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
-            final TransferStatus status = new TransferStatus().withLength(-1L);
+            final TransferStatus status = new TransferStatus().setLength(-1L);
             new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,

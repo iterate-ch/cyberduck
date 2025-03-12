@@ -53,8 +53,8 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         new S3TouchFeature(session, acl).touch(test, new TransferStatus()
-                .withMetadata(Collections.singletonMap("app", "cyberduck"))
-                .withMime("text/plain"));
+                .setMetadata(Collections.singletonMap("app", "cyberduck"))
+                .setMime("text/plain"));
         final Map<String, String> metadata = new S3MetadataFeature(session, acl).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("app"));
@@ -78,19 +78,19 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
 
         metadata.put("Content-Disposition", "attachment");
         final TransferStatus status = new TransferStatus();
-        feature.setMetadata(test, status.withMetadata(metadata));
+        feature.setMetadata(test, status.setMetadata(metadata));
         assertEquals(status.getMetadata(), status.getResponse().getMetadata());
         test.withAttributes(status.getResponse());
         assertTrue(feature.getMetadata(test).containsKey("Content-Disposition"));
 
         metadata.put("Cache-Control", "public,max-age=1");
-        feature.setMetadata(test, status.withMetadata(metadata));
+        feature.setMetadata(test, status.setMetadata(metadata));
         assertEquals(status.getMetadata(), status.getResponse().getMetadata());
         test.withAttributes(status.getResponse());
         assertTrue(feature.getMetadata(test).containsKey("Cache-Control"));
 
         metadata.put("Content-Type", "text/html");
-        feature.setMetadata(test, status.withMetadata(metadata));
+        feature.setMetadata(test, status.setMetadata(metadata));
         assertEquals(status.getMetadata(), status.getResponse().getMetadata());
         test.withAttributes(status.getResponse());
         assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
@@ -126,7 +126,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertEquals(reference, feature.getMetadata(test));
 
         final TransferStatus status = new TransferStatus();
-        feature.setMetadata(test, status.withMetadata(Collections.singletonMap("Test", v)));
+        feature.setMetadata(test, status.setMetadata(Collections.singletonMap("Test", v)));
         test.withAttributes(status.getResponse());
 
         final Map<String, String> metadata = feature.getMetadata(test);

@@ -42,7 +42,7 @@ public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        return super.touch(file, status.withChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
+        return super.touch(file, status.setChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 
     @Override

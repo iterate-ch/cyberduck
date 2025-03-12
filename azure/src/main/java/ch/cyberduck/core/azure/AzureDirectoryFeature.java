@@ -72,7 +72,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 return new AzureTouchFeature(session, context).withWriter(writer).touch(folder.withType(type),
-                        status.withChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
+                        status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
             }
         }
         catch(URISyntaxException e) {

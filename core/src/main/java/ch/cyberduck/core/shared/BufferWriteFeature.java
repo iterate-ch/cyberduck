@@ -72,7 +72,7 @@ public class BufferWriteFeature implements MultipartWrite<Void> {
                     }
                     // Reset offset in transfer status because data was already streamed
                     // through StreamCopier when writing to buffer
-                    final TransferStatus range = new TransferStatus(status).withLength(buffer.length()).append(false);
+                    final TransferStatus range = new TransferStatus(status).setLength(buffer.length()).setAppend(false);
                     if(0L == buffer.length()) {
                         session._getFeature(Touch.class).touch(file, new TransferStatus());
                     }

@@ -99,7 +99,7 @@ public class ResumeFilter extends AbstractUploadFilter {
             final Write.Append append = upload.append(file, status);
             if(append.append && append.offset <= status.getLength()) {
                 // Append to existing file
-                status.withRename((Path) null).withDisplayname((Path) null).setAppend(true);
+                status.setRename((Path) null).setDisplayname((Path) null).setAppend(true);
                 status.setLength(status.getLength() - append.offset);
                 status.setOffset(append.offset);
                 log.debug("Resume file {} at offset {} and remaining length {}", file, status.getOffset(), status.getLength());

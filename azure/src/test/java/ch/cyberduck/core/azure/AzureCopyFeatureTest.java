@@ -60,11 +60,11 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         final Path test = new AzureTouchFeature(session, null).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
-        final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final Path copy = new AzureTouchFeature(session, null).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertEquals(1023L, new AzureAttributesFinderFeature(session, null).find(copy).getSize());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));

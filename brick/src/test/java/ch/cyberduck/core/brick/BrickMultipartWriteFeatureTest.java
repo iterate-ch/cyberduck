@@ -65,7 +65,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -93,7 +93,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -121,7 +121,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -145,7 +145,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

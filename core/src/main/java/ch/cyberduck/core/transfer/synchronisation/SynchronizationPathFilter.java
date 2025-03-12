@@ -72,7 +72,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
                 return uploadFilter.prepare(file, local, parent, listener);
         }
         // Equal comparison. Read attributes from server
-        return uploadFilter.prepare(file, local, parent, listener).exists(true);
+        return uploadFilter.prepare(file, local, parent, listener).setExists(true);
     }
 
     @Override

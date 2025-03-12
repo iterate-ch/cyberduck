@@ -46,7 +46,7 @@ public class B2BucketTypeFeatureTest extends AbstractB2Test {
     public void testAllPublic() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new TransferStatus().withRegion("allPublic"));
+                new TransferStatus().setRegion("allPublic"));
         assertEquals("allPublic", new B2BucketTypeFeature(session, fileid).getLocation(bucket).getIdentifier());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

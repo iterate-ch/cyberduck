@@ -71,8 +71,8 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         new DAVTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(copy, new TransferStatus());
-        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
-        new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(test, copy, new TransferStatus().setExists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        new DAVCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
@@ -88,8 +88,8 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         new DAVTouchFeature(session).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(copy, new TransferStatus());
-        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().exists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
-        new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().setExists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DAVFindFeature(session).find(file));
         assertTrue(new DAVFindFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));

@@ -42,7 +42,7 @@ public class SDSTimestampFeatureTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Long revision = test.attributes().getRevision();
         assertNotNull(revision);
-        final TransferStatus status = new TransferStatus().withModified(1599047952805L);
+        final TransferStatus status = new TransferStatus().setModified(1599047952805L);
         new SDSTimestampFeature(session, nodeid).setTimestamp(test, status);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         final PathAttributes attributes = f.find(test);

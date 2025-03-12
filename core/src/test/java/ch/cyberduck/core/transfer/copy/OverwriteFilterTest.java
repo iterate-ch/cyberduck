@@ -56,8 +56,8 @@ public class OverwriteFilterTest {
                 return super._getFeature(type);
             }
         }, files);
-        assertTrue(f.accept(source, null, new TransferStatus().exists(true), new DisabledProgressListener()));
-        final TransferStatus status = f.prepare(source, null, new TransferStatus().exists(true), new DisabledProgressListener());
+        assertTrue(f.accept(source, null, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        final TransferStatus status = f.prepare(source, null, new TransferStatus().setExists(true), new DisabledProgressListener());
         assertTrue(status.isExists());
     }
 

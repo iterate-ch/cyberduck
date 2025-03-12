@@ -43,13 +43,13 @@ public class StoregateTimestampFeatureTest extends AbstractStoregateTest {
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        new StoregateTouchFeature(session, nodeid).touch(file, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(new StoregateAttributesFinderFeature(session, nodeid).find(file));
         final long created = 1695161463630L;
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         final TransferStatus status = new TransferStatus()
-                .withCreated(created)
-                .withModified(modified);
+                .setCreated(created)
+                .setModified(modified);
         new StoregateTimestampFeature(session, nodeid).setTimestamp(file, status);
         final PathAttributes attr = new StoregateAttributesFinderFeature(session, nodeid).find(file);
         assertEquals(created, attr.getCreationDate());

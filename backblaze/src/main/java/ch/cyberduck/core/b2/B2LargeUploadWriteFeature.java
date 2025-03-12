@@ -149,7 +149,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     completed.add(new DefaultRetryCallable<B2UploadPartResponse>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
                         @Override
                         public B2UploadPartResponse call() throws BackgroundException {
-                            final TransferStatus status = new TransferStatus().withLength(len);
+                            final TransferStatus status = new TransferStatus().setLength(len);
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                             final Checksum checksum = sha1.compute(new ByteArrayInputStream(content, off, len), status);
                             try {

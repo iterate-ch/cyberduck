@@ -102,7 +102,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
                 local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -110,7 +110,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         status.setOffset(BYTES_OFFSET);
         final MantaReadFeature read = new MantaReadFeature(session);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.withLength(content.length - BYTES_OFFSET), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.setLength(content.length - BYTES_OFFSET), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - BYTES_OFFSET);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -135,7 +135,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         out.close();
         new DefaultUploadFeature<>(new MantaWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

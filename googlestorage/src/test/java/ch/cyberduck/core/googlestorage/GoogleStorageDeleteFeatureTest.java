@@ -52,7 +52,7 @@ public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testDeleteContainer() throws Exception {
         final Path container = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new GoogleStorageDirectoryFeature(session).mkdir(container, new TransferStatus().withRegion("us"));
+        new GoogleStorageDirectoryFeature(session).mkdir(container, new TransferStatus().setRegion("us"));
         assertTrue(new GoogleStorageFindFeature(session).find(container));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(container));

@@ -63,7 +63,7 @@ public class S3TimestampFeature implements Timestamp {
             final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_CREATION_DATE, status.getCreated());
             metadata.put(StringUtils.lowerCase(header.getName()), header.getValue());
         }
-        feature.setMetadata(file, status.withMetadata(metadata));
+        feature.setMetadata(file, status.setMetadata(metadata));
     }
 
     public static Header toHeader(final String header, final Long millis) {

@@ -66,7 +66,7 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long folderTimestamp = f.find(folder).getModificationDate();
         final Path test = new BrickTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().withModified(1719480508000L));
+                new TransferStatus().setModified(1719480508000L));
         assertEquals(Protocol.DirectoryTimestamp.explicit, session.getHost().getProtocol().getDirectoryTimestamp());
         assertNotEquals(folderTimestamp, f.find(folder).getModificationDate());
         assertEquals(rootAttributes, f.find(root));

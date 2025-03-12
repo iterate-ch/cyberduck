@@ -60,12 +60,12 @@ public class SMBWriteFeatureTest extends AbstractSMBTest {
             assertTrue(new SMBFindFeature(session).find(test));
             assertEquals(content.length, new SMBListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
         {
-            final TransferStatus status = new TransferStatus().exists(true);
+            final TransferStatus status = new TransferStatus().setExists(true);
             final int length = 548576;
             final byte[] content = RandomUtils.nextBytes(length);
             status.setLength(content.length);
@@ -77,7 +77,7 @@ public class SMBWriteFeatureTest extends AbstractSMBTest {
             assertTrue(new SMBFindFeature(session).find(test));
             assertEquals(content.length, new SMBListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }

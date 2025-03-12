@@ -85,8 +85,8 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local n, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = new TransferStatus()
-                .hidden(!hidden.accept(file))
-                .withLockId(parent.getLockId());
+                .setHidden(!hidden.accept(file))
+                .setLockId(parent.getLockId());
         if(parent.isExists()) {
             final Path target = files.get(file);
             if(find.find(target)) {

@@ -79,7 +79,7 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
         assertEquals(folderTimestamp, new GraphAttributesFinderFeature(session, fileid).find(folder).getModificationDate());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -87,7 +87,7 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
         copy.attributes().setCustom(Collections.emptyMap());
         assertEquals(id, fileid.getFileId(copy));
         // Overwrite
-        final StatusOutputStream<DriveItem.Metadata> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> overwrite = feature.write(file, status.setExists(true), new DisabledConnectionCallback());
         assertNotNull(overwrite);
         assertEquals(content.length, IOUtils.copyLarge(new ByteArrayInputStream(content), overwrite));
         overwrite.close();

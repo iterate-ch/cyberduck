@@ -64,8 +64,8 @@ public class SynchronizationPathFilterTest {
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.emptyList()), session),
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.emptyList()), session),
                 TransferAction.mirror);
-        assertTrue(mirror.accept(test, local, new TransferStatus().exists(true), new DisabledProgressListener()));
-        final TransferStatus status = mirror.prepare(test, local, new TransferStatus().exists(true), new DisabledProgressListener());
+        assertTrue(mirror.accept(test, local, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        final TransferStatus status = mirror.prepare(test, local, new TransferStatus().setExists(true), new DisabledProgressListener());
         assertNotNull(status);
         assertEquals(1L, status.getLength());
         final SynchronizationPathFilter download = new SynchronizationPathFilter(
@@ -73,13 +73,13 @@ public class SynchronizationPathFilterTest {
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.emptyList()), session),
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.emptyList()), session),
                 TransferAction.download);
-        assertFalse(download.accept(test, local, new TransferStatus().exists(true), new DisabledProgressListener()));
+        assertFalse(download.accept(test, local, new TransferStatus().setExists(true), new DisabledProgressListener()));
         final SynchronizationPathFilter upload = new SynchronizationPathFilter(
                 new DefaultComparePathFilter(session),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.emptyList()), session),
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.emptyList()), session),
                 TransferAction.upload);
-        assertTrue(upload.accept(test, local, new TransferStatus().exists(true), new DisabledProgressListener()));
+        assertTrue(upload.accept(test, local, new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 
     @Test
@@ -94,6 +94,6 @@ public class SynchronizationPathFilterTest {
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.emptyList()), session),
                 TransferAction.mirror
         );
-        assertTrue(mirror.accept(new Path("/p", EnumSet.of(Path.Type.directory)), null, new TransferStatus().exists(true), new DisabledProgressListener()));
+        assertTrue(mirror.accept(new Path("/p", EnumSet.of(Path.Type.directory)), null, new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 }

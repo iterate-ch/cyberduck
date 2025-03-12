@@ -74,7 +74,7 @@ public class BoxThresholdUploadServiceTest extends AbstractBoxTest {
     @Test
     public void testUploadVaultWithBulkFeature() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().withLength(0L));
+        final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
         final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -100,7 +100,7 @@ public class BoxThresholdUploadServiceTest extends AbstractBoxTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new BoxFindFeature(session, fileid)).find(test));
         assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new BoxAttributesFinderFeature(session, fileid)).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final TransferStatus readStatus = new TransferStatus().withLength(content.length);
+        final TransferStatus readStatus = new TransferStatus().setLength(content.length);
         final InputStream in = new CryptoReadFeature(session, new BoxReadFeature(session, fileid), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());

@@ -58,14 +58,15 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         out.close();
         new DAVUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         // Unknown length in status
         final TransferStatus status = new TransferStatus() {
             @Override
-            public void setLength(long length) {
+            public TransferStatus setLength(long length) {
                 assertEquals(923L, length);
                 // Ignore update. As with unknown length for chunked transfer
+                return this;
             }
         };
         new DefaultDownloadFeature(session.getFeature(Read.class)).download(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -105,13 +106,13 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         out.close();
         new DAVUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DAVReadFeature(session).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DAVReadFeature(session).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -133,7 +134,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         out.close();
         new DAVUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

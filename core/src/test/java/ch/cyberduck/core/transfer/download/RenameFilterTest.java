@@ -30,7 +30,7 @@ public class RenameFilterTest {
             }
         };
         final Path t = new Path(name, EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(t, local, new TransferStatus().exists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(t, local, new TransferStatus().setExists(true), new DisabledProgressListener());
         assertNotNull(status.getRename().local);
         assertEquals(String.format("%s-1", name), status.getRename().local.getName());
     }
@@ -57,7 +57,7 @@ public class RenameFilterTest {
         };
         final Path directory = new Path("t", EnumSet.of(Path.Type.directory));
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
-        final TransferStatus directoryStatus = f.prepare(directory, local, new TransferStatus().exists(true), new DisabledProgressListener());
+        final TransferStatus directoryStatus = f.prepare(directory, local, new TransferStatus().setExists(true), new DisabledProgressListener());
         final TransferStatus fileStatus = f.prepare(file, new NullLocal(local, "f"), directoryStatus, new DisabledProgressListener());
         assertNotNull(fileStatus.getRename().local);
         final String s = System.getProperty("file.separator");

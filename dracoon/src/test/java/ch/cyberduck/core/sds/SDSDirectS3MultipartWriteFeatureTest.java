@@ -100,7 +100,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         assertEquals(1632127025217L, attr.getModificationDate());
         assertEquals(1632127025217L, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -111,7 +111,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-            final StatusOutputStream<Node> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(previousVersion, new SDSAttributesAdapter(session).toAttributes(out.getStatus()).getVersionId());
@@ -154,7 +154,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         assertEquals(1632127025217L, attr.getModificationDate());
         assertEquals(1632127025217L, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback() {
+        final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
@@ -170,7 +170,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
-            final StatusOutputStream<Node> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(previousVersion, new SDSAttributesAdapter(session).toAttributes(out.getStatus()).getVersionId());

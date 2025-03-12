@@ -295,10 +295,10 @@ public class UploadTransferTest {
             }
         }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
-        worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), directoryname), new TransferStatus().exists(true),
+        worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), directoryname), new TransferStatus().setExists(true),
                 TransferAction.overwrite);
-        assertEquals(new TransferStatus().exists(true).withLength(0L), worker.getStatus().get(new TransferItem(test, local)));
-        final TransferStatus expected = new TransferStatus().withLength(0L);
+        assertEquals(new TransferStatus().setExists(true).setLength(0L), worker.getStatus().get(new TransferItem(test, local)));
+        final TransferStatus expected = new TransferStatus().setLength(0L);
         assertEquals(expected, worker.getStatus().get(new TransferItem(new Path(directoryname + "/" + name, EnumSet.of(Path.Type.file)), new Local(local, name))));
     }
 
@@ -339,10 +339,10 @@ public class UploadTransferTest {
             }
         }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
-        worker.prepare(testDirectory, localDirectory, new TransferStatus().exists(true),
+        worker.prepare(testDirectory, localDirectory, new TransferStatus().setExists(true),
                 TransferAction.resume);
-        assertEquals(new TransferStatus().exists(true).withLength(0L), worker.getStatus().get(new TransferItem(testDirectory, localDirectory)));
-        final TransferStatus expected = new TransferStatus().exists(true);
+        assertEquals(new TransferStatus().setExists(true).setLength(0L), worker.getStatus().get(new TransferItem(testDirectory, localDirectory)));
+        final TransferStatus expected = new TransferStatus().setExists(true);
         expected.setAppend(true);
         // Remote size
         expected.setOffset(5L);
@@ -436,7 +436,7 @@ public class UploadTransferTest {
             }
         };
         final TransferPathFilter filter = transfer.filter(session, null, TransferAction.overwrite, new DisabledProgressListener());
-        worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.overwrite);
+        worker.prepare(test, local, new TransferStatus().setExists(true), TransferAction.overwrite);
         assertNotNull(worker.getStatus().get(new TransferItem(test, local)));
         assertNotNull(worker.getStatus().get(new TransferItem(test, local)).getRename());
         worker.transfer(new TransferItem(test, local), TransferAction.overwrite);

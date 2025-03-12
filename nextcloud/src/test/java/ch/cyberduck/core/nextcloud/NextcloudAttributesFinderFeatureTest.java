@@ -68,7 +68,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
     public void testFindFile() throws Exception {
         final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(new NullInputStream(0L), new TransferStatus());
         final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withChecksum(checksum));
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setChecksum(checksum));
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertNotNull(attributes.getFileId());
@@ -113,7 +113,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
         final byte[] source = RandomUtils.nextBytes(3);
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
-            final TransferStatus status = new TransferStatus().withLength(source.length);
+            final TransferStatus status = new TransferStatus().setLength(source.length);
             final HttpResponseOutputStream<Void> out = new NextcloudWriteFeature(session).write(
                     file, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);

@@ -62,7 +62,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
@@ -83,14 +83,14 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         assertTrue(new BrickFindFeature(session).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BrickTouchFeature(session).touch(copy, new TransferStatus());
-        new BrickCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new BrickCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
@@ -106,7 +106,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), file.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();

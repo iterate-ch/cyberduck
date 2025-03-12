@@ -90,7 +90,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
         new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
@@ -103,9 +103,9 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
         }
         assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
         // Overwrite
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.setExists(true)), new DisabledConnectionCallback());
         {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true), new DisabledConnectionCallback());
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status.setExists(true), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }

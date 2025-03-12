@@ -70,7 +70,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new CteraReadFeature(session).read(test, new TransferStatus().withLength(content.length - 1L).append(true).withOffset(1L), new DisabledConnectionCallback());
+            final InputStream in = new CteraReadFeature(session).read(test, new TransferStatus().setLength(content.length - 1L).setAppend(true).setOffset(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];

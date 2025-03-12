@@ -49,7 +49,7 @@ public class AzureMoveFeature implements Move {
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = proxy.copy(file, renamed, new TransferStatus().withLength(file.attributes().getSize()), connectionCallback, new DisabledStreamListener());
+        final Path copy = proxy.copy(file, renamed, new TransferStatus().setLength(file.attributes().getSize()), connectionCallback, new DisabledStreamListener());
         delete.delete(Collections.singletonList(file), connectionCallback, callback);
         return copy;
     }

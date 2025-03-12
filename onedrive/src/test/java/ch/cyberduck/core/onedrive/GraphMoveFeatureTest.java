@@ -57,7 +57,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session, fileid);
         final Delete delete = new GraphDeleteFeature(session, fileid);
         final Path drive = new OneDriveHomeFinderService().find();
-        final Path file = touch.touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("x-application/cyberduck"));
+        final Path file = touch.touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("x-application/cyberduck"));
         final String fileid = file.attributes().getFileId();
         delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final Path target = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -73,7 +73,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Delete delete = new GraphDeleteFeature(session, fileid);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, fileid);
         final Path drive = new OneDriveHomeFinderService().find();
-        final Path file = touch.touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("x-application/cyberduck"));
+        final Path file = touch.touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("x-application/cyberduck"));
         final PathAttributes attributes = attributesFinder.find(file);
         assertNotNull(attributes);
         assertEquals(file.attributes().getFileId(), attributes.getFileId());
@@ -101,7 +101,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributesFinder.find(targetDirectory));
 
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
+        touch.touch(touchedFile, new TransferStatus().setMime("x-application/cyberduck"));
         final PathAttributes attributes = attributesFinder.find(touchedFile);
 
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
@@ -129,7 +129,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributesFinder.find(targetDirectory));
 
         Path touchedFile = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
+        touch.touch(touchedFile, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(touchedFile));
 
         Path rename = new Path(drive, touchedFile.getName(), EnumSet.of(Path.Type.file));
@@ -154,7 +154,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributesFinder.find(targetDirectory));
 
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
+        touch.touch(touchedFile, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(touchedFile));
 
         Path rename = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -170,7 +170,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path temp = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new GraphMoveFeature(session, fileid).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new GraphMoveFeature(session, fileid).move(temp, test, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new GraphItemListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
@@ -185,7 +185,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new GraphTouchFeature(session, fileid).touch(new Path(home, StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
-        new GraphMoveFeature(session, fileid).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new GraphMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

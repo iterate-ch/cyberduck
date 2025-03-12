@@ -335,7 +335,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path bucket = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl);
-        feature.mkdir(bucket, new TransferStatus().withRegion("eu-central-1"));
+        feature.mkdir(bucket, new TransferStatus().setRegion("eu-central-1"));
         // Populate incorrect region in cache
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals("eu-central-1", cache.getRegionForBucketName(bucket.getName()));

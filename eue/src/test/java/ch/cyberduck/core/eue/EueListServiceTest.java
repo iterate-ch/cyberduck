@@ -135,7 +135,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertTrue(new EueListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
         final String filename = String.format("%s%s", new AlphanumericRandomStringService().random(), new NFDNormalizer().normalize("ä"));
         final Path file = new EueTouchFeature(session, fileid)
-                .touch(new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+                .touch(new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertNotNull(list.find(new DefaultPathPredicate(file)));

@@ -60,7 +60,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
                     final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
                     assertTrue(feature.isSupported(test.getParent(), test.getName()));
                     test.attributes().setRegion(region.getIdentifier());
-                    feature.mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+                    feature.mkdir(test, new TransferStatus().setRegion(region.getIdentifier()));
                     assertTrue(new S3FindFeature(session, acl).find(test));
                     assertEquals(region.getIdentifier(), new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(test).getIdentifier());
                     new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -93,7 +93,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             assertTrue(feature.isSupported(test.getParent(), test.getName()));
             test.attributes().setRegion(region.getIdentifier());
-            feature.mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+            feature.mkdir(test, new TransferStatus().setRegion(region.getIdentifier()));
             assertTrue(new S3FindFeature(session, acl).find(test));
             assertEquals(region.getIdentifier(), new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(test).getIdentifier());
             new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -126,7 +126,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             assertTrue(feature.isSupported(test.getParent(), test.getName()));
             test.attributes().setRegion(region.getIdentifier());
-            feature.mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+            feature.mkdir(test, new TransferStatus().setRegion(region.getIdentifier()));
             assertTrue(new S3FindFeature(session, acl).find(test));
             assertEquals(region.getIdentifier(), new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(test).getIdentifier());
             new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -142,7 +142,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new S3DirectoryFeature(virtualhost, new S3WriteFeature(session, acl), acl).isSupported(test.getParent(), test.getName()));
         final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
         test.attributes().setRegion(region.getIdentifier());
-        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(test, new TransferStatus().setRegion(region.getIdentifier()));
         assertTrue(new S3FindFeature(session, acl).find(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

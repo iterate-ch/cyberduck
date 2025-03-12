@@ -67,7 +67,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractMicrosoftIISDAVTest 
         out.close();
         new DAVUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final ExecutorService service = Executors.newCachedThreadPool();
         final BlockingQueue<Future<Void>> queue = new LinkedBlockingQueue<>();

@@ -34,7 +34,7 @@ public interface UnixPermission {
     Permission getUnixPermission(Path file) throws BackgroundException;
 
     default void setUnixPermission(Path file, Permission permission) throws BackgroundException {
-        this.setUnixPermission(file, new TransferStatus().withPermission(permission));
+        this.setUnixPermission(file, new TransferStatus().setPermission(permission));
     }
 
     void setUnixPermission(Path file, TransferStatus status) throws BackgroundException;

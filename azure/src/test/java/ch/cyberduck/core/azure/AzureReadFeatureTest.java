@@ -39,7 +39,7 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        final InputStream in = new AzureReadFeature(session, null).read(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
+        final InputStream in = new AzureReadFeature(session, null).read(test, new TransferStatus().setLength(0L), new DisabledConnectionCallback());
         assertNotNull(in);
         in.close();
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -51,7 +51,7 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
-        final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final TransferStatus status = new TransferStatus();

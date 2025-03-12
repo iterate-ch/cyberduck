@@ -26,12 +26,13 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.*;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
+import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-
-import com.github.sardine.impl.SardineException;
-import com.github.sardine.impl.handler.ETagResponseHandler;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -45,6 +46,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
+import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.ETagResponseHandler;
 
 public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements Write<Void> {
     private static final Logger log = LogManager.getLogger(DAVWriteFeature.class);
@@ -76,7 +80,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
                 if(null != status.getLockId()) {
                     // Handle 412 Precondition Failed with expired token
                     log.warn("Retry failure {} with lock id {} removed", e, status.getLockId());
-                    return this.write(file, this.toHeaders(file, status.withLockId(null), expect), status);
+                    return this.write(file, this.toHeaders(file, status.setLockId(null), expect), status);
                 }
             }
             throw e;
@@ -85,7 +89,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
             if(expect) {
                 // Handle 417 Expectation Failed
                 log.warn("Retry failure {} with Expect: Continue removed", e.getMessage());
-                return this.write(file, this.toHeaders(file, status.withLockId(null), false), status);
+                return this.write(file, this.toHeaders(file, status.setLockId(null), false), status);
             }
             throw e;
         }

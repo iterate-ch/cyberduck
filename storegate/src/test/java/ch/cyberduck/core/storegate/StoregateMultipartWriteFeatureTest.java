@@ -68,7 +68,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         assertEquals(content.length, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
         assertEquals(new StoregateAttributesFinderFeature(session, nodeid).toAttributes(out.getStatus()), new StoregateAttributesFinderFeature(session, nodeid).find(test));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -85,7 +85,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
             new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
-        final TransferStatus status = new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH);
+        final TransferStatus status = new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH);
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         try {
             final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -108,7 +108,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                    EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH));
+                    EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH));
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final BytecountStreamListener listener = new BytecountStreamListener();
@@ -138,7 +138,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -158,7 +158,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1);
-        final TransferStatus status = new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH);
+        final TransferStatus status = new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -178,7 +178,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final TransferStatus status = new TransferStatus().withLength(0L);
+        final TransferStatus status = new TransferStatus().setLength(0L);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());

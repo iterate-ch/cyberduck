@@ -57,7 +57,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         try {
             final byte[] content = RandomUtils.nextBytes(2047);
             final HttpResponseOutputStream<Node> out = new DeepboxWriteFeature(session, nodeid).write(file,
-                    new TransferStatus().exists(true), new DisabledConnectionCallback());
+                    new TransferStatus().setExists(true), new DisabledConnectionCallback());
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
             final BytecountStreamListener count = new BytecountStreamListener();
@@ -145,7 +145,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         assertNotNull(nodeId);
         assertEquals(new DeepboxAttributesFinderFeature(session, nodeid).find(test), attributes);
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new DeepboxReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new DeepboxReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -155,7 +155,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final DeepboxWriteFeature writer = new DeepboxWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<Node> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<Node> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, nodeid).find(test).getFileId());
@@ -186,7 +186,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new DeepboxReadFeature(session, nodeid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new DeepboxReadFeature(session, nodeid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

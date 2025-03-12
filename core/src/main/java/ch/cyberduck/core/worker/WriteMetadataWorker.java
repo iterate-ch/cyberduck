@@ -114,7 +114,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 file.getName()));
             final TransferStatus status = new TransferStatus();
-            feature.setMetadata(file, status.withMetadata(update).withLockId(this.getLockId(file)));
+            feature.setMetadata(file, status.setMetadata(update).setLockId(this.getLockId(file)));
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 file.withAttributes(status.getResponse());
             }

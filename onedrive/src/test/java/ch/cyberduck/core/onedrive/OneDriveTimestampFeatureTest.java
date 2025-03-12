@@ -47,12 +47,12 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
     public void testSetTimestamp() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().setMime("x-application/cyberduck"));
         final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(file);
         assertNotEquals(PathAttributes.EMPTY, attr);
         final long modified = 1671187993791L;
         final TransferStatus status = new TransferStatus();
-        new GraphTimestampFeature(session, fileid).setTimestamp(file, status.withModified(modified));
+        new GraphTimestampFeature(session, fileid).setTimestamp(file, status.setModified(modified));
         final PathAttributes updated = new GraphAttributesFinderFeature(session, fileid).find(file);
         assertEquals(status.getResponse(), updated);
         assertEquals(modified, updated.getModificationDate());
@@ -71,7 +71,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(PathAttributes.EMPTY, attr);
         final long modified = 1671187993791L;
         final TransferStatus status = new TransferStatus();
-        new GraphTimestampFeature(session, fileid).setTimestamp(test, status.withModified(modified));
+        new GraphTimestampFeature(session, fileid).setTimestamp(test, status.setModified(modified));
         final PathAttributes updated = new GraphAttributesFinderFeature(session, fileid).find(test);
         assertEquals(status.getResponse(), updated);
         assertEquals(modified, updated.getModificationDate());

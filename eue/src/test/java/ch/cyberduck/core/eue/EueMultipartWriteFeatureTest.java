@@ -51,7 +51,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final EueMultipartWriteFeature feature = new EueMultipartWriteFeature(session, fileid);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(0);
-        final TransferStatus status = new TransferStatus().withLength(-1L);
+        final TransferStatus status = new TransferStatus().setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -60,7 +60,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -76,8 +76,8 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(100072);
         // Multipart
-        final TransferStatus status = new TransferStatus().withLength(-1L);
-        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+        final TransferStatus status = new TransferStatus().setLength(-1L);
+        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -90,7 +90,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         assertEquals(content.length, attr.getSize());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -106,8 +106,8 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(512000);
         final long ts = System.currentTimeMillis();
-        final TransferStatus status = new TransferStatus().withLength(-1L).withModified(ts);
-        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+        final TransferStatus status = new TransferStatus().setLength(-1L).setModified(ts);
+        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -123,7 +123,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         assertEquals(timestamp, new EueListService(session, fileid).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(file)).attributes().getModificationDate());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -139,8 +139,8 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final long timestamp = System.currentTimeMillis();
         {
             final byte[] content = RandomUtils.nextBytes(8943045);
-            final TransferStatus status = new TransferStatus().withLength(-1L).withModified(timestamp);
-            final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+            final TransferStatus status = new TransferStatus().setLength(-1L).setModified(timestamp);
+            final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -154,7 +154,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
             assertEquals(content.length, out.getStatus().getLength(), 0L);
             assertTrue(new DefaultFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
-            final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
             IOUtils.readFully(stream, compare);
             stream.close();
             assertArrayEquals(content, compare);
@@ -162,8 +162,8 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         // Override
         {
             final byte[] content = RandomUtils.nextBytes(4943045);
-            final TransferStatus status = new TransferStatus().withLength(-1L).exists(true).withModified(timestamp + 1000L);
-            final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+            final TransferStatus status = new TransferStatus().setLength(-1L).setExists(true).setModified(timestamp + 1000L);
+            final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -178,7 +178,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
             assertEquals(timestamp + 1000L, attributes.getModificationDate());
             assertTrue(new DefaultFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
-            final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
             IOUtils.readFully(stream, compare);
             stream.close();
             assertArrayEquals(content, compare);

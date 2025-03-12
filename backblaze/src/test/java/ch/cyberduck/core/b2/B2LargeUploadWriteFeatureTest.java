@@ -63,7 +63,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, ((B2FinishLargeFileResponse) out.getStatus()).getContentLength(), 0L);
         assertTrue(new B2FindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -89,7 +89,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, ((B2FileResponse) out.getStatus()).getContentLength(), 0L);
         assertTrue(new B2FindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -116,7 +116,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, ((B2FileResponse) out.getStatus()).getContentLength(), 0L);
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

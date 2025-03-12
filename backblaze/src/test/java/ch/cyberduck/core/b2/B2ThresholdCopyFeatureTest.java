@@ -48,18 +48,18 @@ public class B2ThresholdCopyFeatureTest extends AbstractB2Test{
         final String name = new AlphanumericRandomStringService().random();
         final byte[] content = RandomUtils.nextBytes(6 * 1000 * 1000);
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus().withLength(content.length)).transfer(new ByteArrayInputStream(content), out);
+        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus().setLength(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final B2ThresholdCopyFeature feature = new B2ThresholdCopyFeature(session, fileid, 5 * 1000L * 1000L);
         final Path copy = feature.copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().withLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(copy, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(copy, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -73,18 +73,18 @@ public class B2ThresholdCopyFeatureTest extends AbstractB2Test{
         final String name = new AlphanumericRandomStringService().random();
         final byte[] content = RandomUtils.nextBytes(4 * 1000 * 1000);
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus().withLength(content.length)).transfer(new ByteArrayInputStream(content), out);
+        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus().setLength(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final B2ThresholdCopyFeature feature = new B2ThresholdCopyFeature(session, fileid, 5 * 1000L * 1000L);
         final Path copy = feature.copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().withLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(copy, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(copy, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

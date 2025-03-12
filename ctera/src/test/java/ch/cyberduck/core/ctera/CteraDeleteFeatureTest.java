@@ -49,7 +49,7 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
             // Not supported
         }
         assertTrue(new DAVFindFeature(session).find(test));
-        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 

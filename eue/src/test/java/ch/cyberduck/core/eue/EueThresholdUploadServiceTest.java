@@ -62,7 +62,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
         assertArrayEquals(content, compare);
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -88,7 +88,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
         assertArrayEquals(content, compare);
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();

@@ -23,7 +23,7 @@ public class MD5ChecksumComputeTest {
         assertEquals("d41d8cd98f00b204e9800998ecf8427e",
             new MD5ChecksumCompute().compute(IOUtils.toInputStream("", Charset.defaultCharset()), new TransferStatus()).hash);
         assertEquals("d41d8cd98f00b204e9800998ecf8427e",
-            new MD5ChecksumCompute().compute(new NullInputStream(0L), new TransferStatus().withLength(0)).hash);
+                new MD5ChecksumCompute().compute(new NullInputStream(0L), new TransferStatus().setLength(0)).hash);
     }
 
     @Test
@@ -33,9 +33,9 @@ public class MD5ChecksumComputeTest {
                 new TransferStatus()).hash);
         assertEquals("a43c1b0aa53a0c908810c06ab1ff3967",
             new MD5ChecksumCompute().compute(IOUtils.toInputStream("_input", Charset.defaultCharset()),
-                new TransferStatus().withOffset(1)).hash);
+                    new TransferStatus().setOffset(1)).hash);
         assertEquals("a43c1b0aa53a0c908810c06ab1ff3967",
             new MD5ChecksumCompute().compute(IOUtils.toInputStream("_input_", Charset.defaultCharset()),
-                new TransferStatus().withOffset(1).withLength(5)).hash);
+                    new TransferStatus().setOffset(1).setLength(5)).hash);
     }
 }

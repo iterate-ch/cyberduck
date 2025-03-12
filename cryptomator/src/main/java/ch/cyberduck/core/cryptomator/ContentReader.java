@@ -41,7 +41,7 @@ public class ContentReader {
 
     public String read(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
-        try (final InputStream in = read.read(file, new TransferStatus().withLength(file.attributes().getSize()), new DisabledConnectionCallback())) {
+        try(final InputStream in = read.read(file, new TransferStatus().setLength(file.attributes().getSize()), new DisabledConnectionCallback())) {
             return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
         catch(IOException e) {
@@ -51,6 +51,6 @@ public class ContentReader {
 
     public Reader getReader(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
-        return new InputStreamReader(read.read(file, new TransferStatus().withLength(file.attributes().getSize()), new DisabledConnectionCallback()), StandardCharsets.UTF_8);
+        return new InputStreamReader(read.read(file, new TransferStatus().setLength(file.attributes().getSize()), new DisabledConnectionCallback()), StandardCharsets.UTF_8);
     }
 }

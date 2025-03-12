@@ -65,8 +65,8 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             return new S3TouchFeature(session, acl).withWriter(writer).touch(folder
                     .withType(type), status
                     // Add placeholder object
-                    .withMime(MIMETYPE)
-                    .withChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
+                    .setMime(MIMETYPE)
+                    .setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
         }
     }
 

@@ -71,7 +71,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new EueReadFeature(session, fileid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new EueReadFeature(session, fileid).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

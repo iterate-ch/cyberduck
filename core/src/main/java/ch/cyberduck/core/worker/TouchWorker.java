@@ -54,13 +54,13 @@ public class TouchWorker extends Worker<Path> {
         final Touch feature = session.getFeature(Touch.class);
         log.debug("Run with feature {}", feature);
         final TransferStatus status = new TransferStatus()
-                .withLength(0L)
-                .withModified(System.currentTimeMillis())
-                .hidden(!SearchFilterFactory.HIDDEN_FILTER.accept(file))
-                .exists(false)
-                .withLength(0L)
-                .withMime(new MappingMimeTypeService().getMime(file.getName()))
-                .withLockId(this.getLockId(file));
+                .setLength(0L)
+                .setModified(System.currentTimeMillis())
+                .setHidden(!SearchFilterFactory.HIDDEN_FILTER.accept(file))
+                .setExists(false)
+                .setLength(0L)
+                .setMime(new MappingMimeTypeService().getMime(file.getName()))
+                .setLockId(this.getLockId(file));
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(file));

@@ -64,7 +64,7 @@ public class LocalReadFeatureTest {
         final int length = 39865;
         final byte[] content = RandomUtils.nextBytes(length);
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
+            final TransferStatus status = new TransferStatus().setLength(content.length).setExists(true);
             final OutputStream out = new LocalWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -95,7 +95,7 @@ public class LocalReadFeatureTest {
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
+            final TransferStatus status = new TransferStatus().setLength(content.length).setExists(true);
             final OutputStream out = new LocalWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);

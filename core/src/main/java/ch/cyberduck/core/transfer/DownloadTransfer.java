@@ -233,7 +233,7 @@ public class DownloadTransfer extends Transfer {
                     filter.complete(
                             status.getRename().remote != null ? status.getRename().remote : entry.getKey().remote,
                             status.getRename().local != null ? status.getRename().local : entry.getKey().local,
-                            status.complete(), progress);
+                            status.setComplete(), progress);
                 }
                 catch(AccessDeniedException e) {
                     if(error.prompt(entry.getKey(), status, e, files.size())) {

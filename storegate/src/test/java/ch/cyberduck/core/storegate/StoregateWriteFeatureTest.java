@@ -82,7 +82,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(nodeId);
         assertEquals(new StoregateAttributesFinderFeature(session, nodeid).toAttributes(version), attributes);
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -92,7 +92,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<File> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertEquals(nodeId, out.getStatus().getId());
@@ -123,7 +123,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new StoregateReadFeature(session, nodeid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new StoregateReadFeature(session, nodeid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

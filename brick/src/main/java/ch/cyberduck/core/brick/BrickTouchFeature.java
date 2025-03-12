@@ -40,7 +40,7 @@ public class BrickTouchFeature implements Touch<FileEntity> {
         try {
             final BrickUploadFeature upload = new BrickUploadFeature(session, new BrickWriteFeature(session));
             final FileUploadPartEntity uploadPartEntity = upload.startUpload(file);
-            status.withLength(0L).withOffset(0L);
+            status.setLength(0L).setOffset(0L);
             status.setUrl(uploadPartEntity.getUploadUri());
             status.setSegment(true);
             status.setModified(System.currentTimeMillis());

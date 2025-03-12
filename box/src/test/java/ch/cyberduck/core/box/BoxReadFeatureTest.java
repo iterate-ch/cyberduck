@@ -40,7 +40,7 @@ public class BoxReadFeatureTest extends AbstractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BoxTouchFeature(session, fileid).touch(test, new TransferStatus());
-        final InputStream in = new BoxReadFeature(session, fileid).read(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
+        final InputStream in = new BoxReadFeature(session, fileid).read(test, new TransferStatus().setLength(0L), new DisabledConnectionCallback());
         assertNotNull(in);
         in.close();
         new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -52,14 +52,14 @@ public class BoxReadFeatureTest extends AbstractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1432);
-        final OutputStream out = new BoxWriteFeature(session, fileid).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new BoxWriteFeature(session, fileid).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new BoxReadFeature(session, fileid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new BoxReadFeature(session, fileid).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -76,7 +76,7 @@ public class BoxReadFeatureTest extends AbstractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1432);
-        final OutputStream out = new BoxWriteFeature(session, fileid).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new BoxWriteFeature(session, fileid).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final TransferStatus status = new TransferStatus();

@@ -87,7 +87,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DeepboxReadFeature(session, nodeid).read(file, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DeepboxReadFeature(session, nodeid).read(file, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -120,7 +120,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DeepboxReadFeature(session, nodeid).read(file, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DeepboxReadFeature(session, nodeid).read(file, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

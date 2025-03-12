@@ -67,7 +67,7 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         assertEquals(content.length, new BoxAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];
-        IOUtils.readFully(new BoxReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
         assertArrayEquals(content, compare);
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();

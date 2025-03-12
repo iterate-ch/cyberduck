@@ -77,7 +77,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
     public void testWhitespaceTouch() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path file = new Path(new OneDriveHomeFinderService().find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(new GraphAttributesFinderFeature(session, fileid).find(file));
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -87,7 +87,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final Path container = new OneDriveHomeFinderService().find();
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
         final Path file = new GraphTouchFeature(session, fileid)
-                .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+                .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         final byte[] content = RandomUtils.nextBytes(254);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);

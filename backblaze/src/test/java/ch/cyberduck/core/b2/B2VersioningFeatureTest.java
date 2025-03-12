@@ -54,7 +54,7 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
         {
             // Make sure there is another versioned copy of a file not to be included when listing
             final byte[] content = RandomUtils.nextBytes(245);
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
             final B2WriteFeature writer = new B2WriteFeature(session, fileid);
             final HttpResponseOutputStream<BaseB2Response> out = writer.write(ignored, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

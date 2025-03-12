@@ -94,7 +94,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         out.close();
         new DefaultUploadFeature<>(new DropboxWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-            new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -102,7 +102,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         status.setOffset(100L);
         final DropboxReadFeature read = new DropboxReadFeature(session);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -135,7 +135,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
     @Test
     public void testReadRevision() throws Exception {
         final byte[] content = RandomUtils.nextBytes(1645);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         final Path directory = new DropboxDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

@@ -47,11 +47,11 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         final Path test = new GoogleStorageTouchFeature(session).touch(
-                new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withMime("text/plain"));
+                new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.setMime("text/plain"));
         final GoogleStorageMetadataFeature feature = new GoogleStorageMetadataFeature(session);
         assertTrue(feature.getMetadata(test).isEmpty());
         final Map<String, String> set = Collections.singletonMap("k", "v");
-        feature.setMetadata(test, status.withMetadata(set));
+        feature.setMetadata(test, status.setMetadata(set));
         assertEquals(set, status.getResponse().getMetadata());
         assertEquals(test.attributes().getVersionId(), status.getResponse().getVersionId());
         final Map<String, String> get = feature.getMetadata(test);

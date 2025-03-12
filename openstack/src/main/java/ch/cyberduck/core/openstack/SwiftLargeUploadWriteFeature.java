@@ -112,7 +112,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                 completed.add(new DefaultRetryCallable<StorageObject>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
-                        final TransferStatus status = new TransferStatus().withLength(len);
+                        final TransferStatus status = new TransferStatus().setLength(len);
                         status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum(file, status)
                                 .compute(new ByteArrayInputStream(content, off, len), status)
                         );
@@ -174,7 +174,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                 if(completed.isEmpty()) {
                     // The minimum sized range is 1 byte. This is the same as the minimum segment size.
                     final HttpResponseOutputStream<StorageObject> out
-                            = new SwiftWriteFeature(session, regionService).write(file, overall.withLength(0L), new DisabledConnectionCallback());
+                            = new SwiftWriteFeature(session, regionService).write(file, overall.setLength(0L), new DisabledConnectionCallback());
                     out.close();
                     response.set(out.getStatus());
                 }

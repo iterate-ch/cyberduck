@@ -27,7 +27,7 @@ public class SkipFilterTest {
                                 public boolean exists() {
                                     return false;
                                 }
-                            }, new TransferStatus().exists(true),
+                            }, new TransferStatus().setExists(true),
                         new DisabledProgressListener())
         );
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)) {
@@ -36,7 +36,7 @@ public class SkipFilterTest {
                                  public boolean exists() {
                                      return true;
                                  }
-                             }, new TransferStatus().exists(true),
+                             }, new TransferStatus().setExists(true),
                         new DisabledProgressListener())
         );
     }
@@ -60,7 +60,7 @@ public class SkipFilterTest {
                                 public boolean exists() {
                                     return true;
                                 }
-                            }, new TransferStatus().exists(true),
+                            }, new TransferStatus().setExists(true),
                         new DisabledProgressListener())
         );
     }

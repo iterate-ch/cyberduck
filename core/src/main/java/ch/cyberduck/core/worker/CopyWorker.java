@@ -87,17 +87,17 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                         // Create directory unless copy implementation is recursive
                         final Directory directory = session.getFeature(Directory.class);
                         result.put(r.getKey(), directory.mkdir(r.getValue(),
-                                new TransferStatus().withLength(0L).withRegion(r.getKey().attributes().getRegion())));
+                                new TransferStatus().setLength(0L).setRegion(r.getKey().attributes().getRegion())));
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
-                                .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                                .withAcl(r.getKey().attributes().getAcl())
-                                .withPermission(r.getKey().attributes().getPermission())
-                                .withEncryption(r.getKey().attributes().getEncryption())
-                                .withStorageClass(r.getKey().attributes().getStorageClass())
-                                .exists(new CachingFindFeature(session, cache).find(r.getValue()))
-                                .withLength(r.getKey().attributes().getSize());
+                                .setMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                                .setAcl(r.getKey().attributes().getAcl())
+                                .setPermission(r.getKey().attributes().getPermission())
+                                .setEncryption(r.getKey().attributes().getEncryption())
+                                .setStorageClass(r.getKey().attributes().getStorageClass())
+                                .setExists(new CachingFindFeature(session, cache).find(r.getValue()))
+                                .setLength(r.getKey().attributes().getSize());
                         final Path copied = copy.copy(r.getKey(), r.getValue(), status, callback, new DisabledStreamListener());
                         if(PathAttributes.EMPTY.equals(copied.attributes())) {
                             copied.withAttributes(session.getFeature(AttributesFinder.class).find(copied));

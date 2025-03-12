@@ -82,7 +82,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             assertTrue(new DAVFindFeature(session).find(file));
             assertEquals(content.length, new DAVAttributesFinderFeature(session).find(file).getSize());
             final byte[] compare = new byte[content.length];
-            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
             assertArrayEquals(content, compare);
         }
         {
@@ -104,7 +104,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             assertTrue(new DAVFindFeature(session).find(file));
             assertEquals(content.length, new DAVAttributesFinderFeature(session).find(file).getSize());
             final byte[] compare = new byte[content.length];
-            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
             assertArrayEquals(content, compare);
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());

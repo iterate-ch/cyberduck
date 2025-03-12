@@ -57,20 +57,20 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
         final NextcloudWriteFeature writer = new NextcloudWriteFeature(session);
         final byte[] initialContent = RandomUtils.nextBytes(32769);
         {
-            new StreamCopier(status, status).transfer(new ByteArrayInputStream(initialContent), writer.write(test, status.withLength(initialContent.length), new DisabledConnectionCallback()));
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(initialContent), writer.write(test, status.setLength(initialContent.length), new DisabledConnectionCallback()));
         }
         final OwncloudVersioningFeature feature = new OwncloudVersioningFeature(session);
         assertEquals(0, feature.list(test.withAttributes(new OwncloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener()).size());
         final PathAttributes initialAttributes = new OwncloudAttributesFinderFeature(session).find(test);
         final byte[] contentUpdate = RandomUtils.nextBytes(16258);
         {
-            new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentUpdate), writer.write(test, status.withLength(contentUpdate.length).exists(true), new DisabledConnectionCallback()));
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentUpdate), writer.write(test, status.setLength(contentUpdate.length).setExists(true), new DisabledConnectionCallback()));
             final AttributedList<Path> versions = feature.list(test.withAttributes(new OwncloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener());
             assertEquals(1, versions.size());
         }
         {
             final byte[] contentLatest = RandomUtils.nextBytes(13247);
-            new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentLatest), writer.write(test, status.withLength(contentLatest.length).exists(true), new DisabledConnectionCallback()));
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentLatest), writer.write(test, status.setLength(contentLatest.length).setExists(true), new DisabledConnectionCallback()));
         }
         final AttributedList<Path> versions = new AttributedList<>();
         do {

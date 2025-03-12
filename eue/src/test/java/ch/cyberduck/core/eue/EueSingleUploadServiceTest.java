@@ -45,14 +45,14 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
     public void testUploadSimpleFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueSingleUploadService service = new EueSingleUploadService(session, fileid, new EueWriteFeature(session, fileid));
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().withLength(0L));
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         {
             final byte[] content = RandomUtils.nextBytes(2881);
             IOUtils.write(content, local.getOutputStream(false));
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             service.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertEquals(content.length, count.getSent());
@@ -60,13 +60,13 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             assertTrue(new EueFindFeature(session, fileid).find(file));
             assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
             final byte[] compare = new byte[content.length];
-            IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+            IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
             assertArrayEquals(content, compare);
         }
         {
             final byte[] content = RandomUtils.nextBytes(526);
             IOUtils.write(content, local.getOutputStream(false));
-            final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
+            final TransferStatus status = new TransferStatus().setLength(content.length).setExists(true);
             final BytecountStreamListener count = new BytecountStreamListener();
             service.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertEquals(content.length, count.getSent());
@@ -74,7 +74,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             assertTrue(new EueFindFeature(session, fileid).find(file));
             assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
             final byte[] compare = new byte[content.length];
-            IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+            IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
             assertArrayEquals(content, compare);
         }
         // Override

@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,7 +32,7 @@ public interface Timestamp {
     }
 
     default void setTimestamp(Path file, Long modified) throws BackgroundException {
-        this.setTimestamp(file, new TransferStatus().withModified(modified));
+        this.setTimestamp(file, new TransferStatus().setModified(modified));
     }
 
     void setTimestamp(Path file, TransferStatus status) throws BackgroundException;

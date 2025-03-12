@@ -28,7 +28,7 @@ public interface Metadata {
     Map<String, String> getMetadata(Path file) throws BackgroundException;
 
     default void setMetadata(Path file, Map<String, String> metadata) throws BackgroundException {
-        this.setMetadata(file, new TransferStatus().withMetadata(metadata));
+        this.setMetadata(file, new TransferStatus().setMetadata(metadata));
     }
 
     void setMetadata(Path file, TransferStatus status) throws BackgroundException;

@@ -47,7 +47,7 @@ public class SkipFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().exists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class SkipFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().exists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 
     @Test(expected = NotfoundException.class)
@@ -99,6 +99,6 @@ public class SkipFilterTest {
             public boolean exists() {
                 return false;
             }
-        }, new TransferStatus().exists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 }

@@ -139,7 +139,7 @@ public class IRODSReadFeatureTest extends VaultTest {
         out.close();
         new DefaultUploadFeature<ObjStat>(new IRODSWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);

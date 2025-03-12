@@ -46,7 +46,7 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractSpectraTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);
-        final HttpResponseOutputStream<StorageObject> out = new SpectraWriteFeature(session).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new SpectraWriteFeature(session).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.write(content, out);
         out.close();
         assertTrue(new SpectraFindFeature(session).find(test));

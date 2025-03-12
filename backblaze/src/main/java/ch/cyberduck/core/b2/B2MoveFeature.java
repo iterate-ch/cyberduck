@@ -49,7 +49,7 @@ public class B2MoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
-        final Path copy = proxy.copy(source, target, status.withLength(source.attributes().getSize()), callback, new DisabledStreamListener());
+        final Path copy = proxy.copy(source, target, status.setLength(source.attributes().getSize()), callback, new DisabledStreamListener());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(source)), callback, delete);
         return copy;
     }

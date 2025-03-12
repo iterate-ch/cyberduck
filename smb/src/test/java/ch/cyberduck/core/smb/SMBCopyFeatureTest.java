@@ -68,7 +68,7 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SMBTouchFeature(session).touch(copy, new TransferStatus());
-        new SMBCopyFeature(session).copy(file, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new SMBCopyFeature(session).copy(file, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         ListService list = new SMBListService(session);
         assertTrue(list.list(sourceFolder, new DisabledListProgressListener()).contains(file));
         assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));

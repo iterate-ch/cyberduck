@@ -78,9 +78,10 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), new TransferStatus() {
                     @Override
-                    public void setLength(long length) {
+                    public TransferStatus setLength(long length) {
                         assertEquals(923L, length);
                         // Ignore update. As with unknown length for chunked transfer
+                        return this;
                     }
                 }, new DisabledLoginCallback());
         assertEquals(923L, local.attributes().getSize());
@@ -129,13 +130,13 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         out.close();
         final BaseB2Response reply = new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -161,7 +162,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         out.close();
         new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -185,7 +186,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final int length = 2048;
         final byte[] content = RandomUtils.nextBytes(length);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -208,7 +209,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         test.attributes().setVersionId(invalidId);
         fileid.cache(test, invalidId);
         try {
-            final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().withRemote(test.attributes()), new DisabledLoginCallback());
+            final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().setRemote(test.attributes()), new DisabledLoginCallback());
             fail();
         }
         catch(NotfoundException e) {

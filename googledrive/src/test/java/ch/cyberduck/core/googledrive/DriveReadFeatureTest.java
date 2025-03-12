@@ -78,13 +78,13 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveUploadFeature(session, fileid).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -158,7 +158,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1645);
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
             final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
             final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -171,9 +171,9 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         // New version
         {
             final byte[] newcontent = RandomUtils.nextBytes(1045);
-            final TransferStatus status = new TransferStatus().withLength(newcontent.length);
+            final TransferStatus status = new TransferStatus().setLength(newcontent.length);
             final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-            final HttpResponseOutputStream<File> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(newcontent), out);
         }
         assertEquals(2, new DriveVersioningFeature(session, fileid).list(test, new DisabledListProgressListener()).size());

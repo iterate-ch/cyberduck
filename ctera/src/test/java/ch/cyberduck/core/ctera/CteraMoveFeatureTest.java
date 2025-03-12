@@ -61,7 +61,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         final Path test = new CteraTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(PathAttributes.EMPTY, test.attributes());
         final TransferStatus status = new TransferStatus();
-        new DAVTimestampFeature(session).setTimestamp(test, status.withModified(5000L));
+        new DAVTimestampFeature(session).setTimestamp(test, status.setModified(5000L));
         final PathAttributes attr = new CteraAttributesFinderFeature(session).find(test);
         Thread.sleep(1000L);
         final Path target = new CteraMoveFeature(session).move(test.withAttributes(status.getResponse()),
@@ -113,9 +113,9 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         Thread.sleep(1000L);
         new CteraTouchFeature(session).touch(target, new TransferStatus());
         final PathAttributes targetAttributes = new CteraAttributesFinderFeature(session).find(target);
-        assertThrows(ConflictException.class, () -> new CteraMoveFeature(session).move(test, target, new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertThrows(ConflictException.class, () -> new CteraMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         Thread.sleep(1000L);
-        new CteraMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new CteraMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(target));
         assertEquals(testAttributes, new CteraAttributesFinderFeature(session).find(target));

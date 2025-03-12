@@ -18,21 +18,22 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface StreamProgress {
-    void setComplete();
+    TransferStatus setComplete();
 
-    void setFailure(final BackgroundException failure);
+    TransferStatus setFailure(final BackgroundException failure);
 
     StreamProgress noop = new StreamProgress() {
         @Override
-        public void setComplete() {
-            //
+        public TransferStatus setComplete() {
+            return null;
         }
 
         @Override
-        public void setFailure(final BackgroundException failure) {
-            //
+        public TransferStatus setFailure(final BackgroundException failure) {
+            return null;
         }
     };
 }

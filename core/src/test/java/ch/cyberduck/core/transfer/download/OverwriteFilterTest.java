@@ -88,7 +88,7 @@ public class OverwriteFilterTest {
     @Test(expected = AccessDeniedException.class)
     public void testOverrideDirectoryWithFile() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
-        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true), new DisabledProgressListener());
+        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().setExists(true), new DisabledProgressListener());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -96,6 +96,6 @@ public class OverwriteFilterTest {
         final OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final NullLocal l = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(l);
-        f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), l, new TransferStatus().exists(true), new DisabledProgressListener());
+        f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), l, new TransferStatus().setExists(true), new DisabledProgressListener());
     }
 }

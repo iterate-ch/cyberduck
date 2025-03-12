@@ -92,7 +92,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         out.close();
         new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -100,7 +100,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         status.setOffset(100L);
         final GraphReadFeature read = new GraphReadFeature(session, fileid);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -117,7 +117,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(test, new TransferStatus());
         final GraphReadFeature read = new GraphReadFeature(session, fileid);
-        final InputStream in = read.read(test, new TransferStatus().withOffset(1).append(true), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, new TransferStatus().setOffset(1).setAppend(true), new DisabledConnectionCallback());
         assertNull(in);
     }
 
@@ -135,7 +135,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         out.close();
         new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

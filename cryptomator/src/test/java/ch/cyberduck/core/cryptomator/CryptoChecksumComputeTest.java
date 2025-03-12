@@ -64,13 +64,13 @@ public class CryptoChecksumComputeTest {
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, cryptomator);
         final RandomNonceGenerator nonces = new RandomNonceGenerator(cryptomator.getNonceSize());
-        assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withLength(1025L).withHeader(header).withNonces(nonces)).hash);
-        assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withLength(1025L).withHeader(header).withNonces(nonces)),
-                compute.compute(new NullInputStream(1025L), new TransferStatus().withLength(1025L).withHeader(header).withNonces(nonces)));
-        assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withLength(0L).withHeader(header).withNonces(nonces)).hash);
-        assertEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)),
-                compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)));
-        assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)),
+        assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().setLength(1025L).setHeader(header).setNonces(nonces)).hash);
+        assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().setLength(1025L).setHeader(header).setNonces(nonces)),
+                compute.compute(new NullInputStream(1025L), new TransferStatus().setLength(1025L).setHeader(header).setNonces(nonces)));
+        assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().setLength(0L).setHeader(header).setNonces(nonces)).hash);
+        assertEquals(compute.compute(new NullInputStream(0L), new TransferStatus().setHeader(header).setNonces(nonces)),
+                compute.compute(new NullInputStream(0L), new TransferStatus().setHeader(header).setNonces(nonces)));
+        assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().setHeader(header).setNonces(nonces)),
                 sha.compute(new NullInputStream(0L), new TransferStatus()));
     }
 }

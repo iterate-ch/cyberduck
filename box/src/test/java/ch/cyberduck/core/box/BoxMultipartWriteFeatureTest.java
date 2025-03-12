@@ -54,10 +54,10 @@ public class BoxMultipartWriteFeatureTest extends AbstractBoxTest {
                 new Path(Home.ROOT, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(21 * 1024 * 1024);
         final TransferStatus status = new TransferStatus()
-                .withRemote(file.attributes())
-                .exists(true)
-                .withChecksum(feature.checksum(file, new TransferStatus()).compute(new ByteArrayInputStream(content), new TransferStatus()))
-                .withLength(content.length);
+                .setRemote(file.attributes())
+                .setExists(true)
+                .setChecksum(feature.checksum(file, new TransferStatus()).compute(new ByteArrayInputStream(content), new TransferStatus()))
+                .setLength(content.length);
         final HttpResponseOutputStream<File> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -72,7 +72,7 @@ public class BoxMultipartWriteFeatureTest extends AbstractBoxTest {
         final PathAttributes attributes = new BoxAttributesFinderFeature(session, fileid).find(file);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BoxReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -87,10 +87,10 @@ public class BoxMultipartWriteFeatureTest extends AbstractBoxTest {
         final Path file = new Path(Home.ROOT, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(21 * 1024 * 1024);
         final TransferStatus status = new TransferStatus()
-                .withRemote(file.attributes())
-                .exists(false)
-                .withChecksum(feature.checksum(file, new TransferStatus()).compute(new ByteArrayInputStream(content), new TransferStatus()))
-                .withLength(content.length);
+                .setRemote(file.attributes())
+                .setExists(false)
+                .setChecksum(feature.checksum(file, new TransferStatus()).compute(new ByteArrayInputStream(content), new TransferStatus()))
+                .setLength(content.length);
         final HttpResponseOutputStream<File> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -105,7 +105,7 @@ public class BoxMultipartWriteFeatureTest extends AbstractBoxTest {
         final PathAttributes attributes = new BoxAttributesFinderFeature(session, fileid).find(file);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BoxReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

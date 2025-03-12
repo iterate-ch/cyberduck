@@ -94,9 +94,9 @@ public class CryptoBulkFeatureTest {
         }, cryptomator);
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         final Path directory = new Path("/vault/directory", EnumSet.of(Path.Type.directory));
-        files.put(new TransferItem(directory, new Local("/tmp/vault/directory")), new TransferStatus().exists(false));
-        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file1")), new TransferStatus().exists(false));
-        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file2")), new TransferStatus().exists(false));
+        files.put(new TransferItem(directory, new Local("/tmp/vault/directory")), new TransferStatus().setExists(false));
+        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file1")), new TransferStatus().setExists(false));
+        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file2")), new TransferStatus().setExists(false));
         final Map<TransferItem, TransferStatus> pre = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertEquals(3, pre.size());
         final Path encryptedDirectory = pre.keySet().stream().filter(new Predicate<TransferItem>() {
@@ -167,9 +167,9 @@ public class CryptoBulkFeatureTest {
         }, cryptomator);
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         final Path directory = new Path("/vault/directory", EnumSet.of(Path.Type.directory));
-        files.put(new TransferItem(directory, new Local("/tmp/vault/directory")), new TransferStatus().exists(false));
-        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file1")), new TransferStatus().exists(false));
-        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file2")), new TransferStatus().exists(false));
+        files.put(new TransferItem(directory, new Local("/tmp/vault/directory")), new TransferStatus().setExists(false));
+        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file1")), new TransferStatus().setExists(false));
+        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file2")), new TransferStatus().setExists(false));
         bulk.post(Transfer.Type.upload, files, new DisabledConnectionCallback());
     }
 }

@@ -50,7 +50,7 @@ public class CryptoReadFeature implements Read {
             // Header
             final TransferStatus headerStatus = new TransferStatus(status);
             headerStatus.setOffset(0);
-            final InputStream in = proxy.read(vault.encrypt(session, file), headerStatus.withLength(status.isAppend() ?
+            final InputStream in = proxy.read(vault.encrypt(session, file), headerStatus.setLength(status.isAppend() ?
                 vault.getFileHeaderCryptor().headerSize() :
                 vault.toCiphertextSize(0L, status.getLength())), callback);
             final ByteBuffer headerBuffer = ByteBuffer.allocate(vault.getFileHeaderCryptor().headerSize());
@@ -58,7 +58,7 @@ public class CryptoReadFeature implements Read {
             final FileHeader header = vault.getFileHeaderCryptor().decryptHeader(headerBuffer);
             if(status.isAppend()) {
                 IOUtils.closeQuietly(in);
-                final TransferStatus s = new TransferStatus(status).withLength(-1L);
+                final TransferStatus s = new TransferStatus(status).setLength(-1L);
                 s.setOffset(this.align(status.getOffset()));
                 final CryptoInputStream crypto = new CryptoInputStream(proxy.read(vault.encrypt(session, file), s, callback), vault.getFileContentCryptor(), header, this.chunk(status.getOffset()));
                 crypto.skip(this.position(status.getOffset()));

@@ -69,9 +69,9 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final Path container = new DefaultHomeFinderService(session).find();
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
         final Path file = new DropboxTouchFeature(session)
-                .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+                .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         new DropboxTouchFeature(session)
-                .touch(new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+                .touch(new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         final byte[] content = RandomUtils.nextBytes(254);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);

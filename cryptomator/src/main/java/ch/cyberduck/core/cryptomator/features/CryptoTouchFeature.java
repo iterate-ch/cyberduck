@@ -51,10 +51,11 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
         final Path target = proxy.touch(vault.encrypt(session, file), new TransferStatus(status) {
             @Override
-            public void setResponse(final PathAttributes attributes) {
+            public TransferStatus setResponse(final PathAttributes attributes) {
                 status.setResponse(attributes);
                 // Will be converted back to clear text when decrypting file below set in default touch feature implementation using writer.
                 super.setResponse(new PathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                return this;
             }
         });
         final Path decrypt = vault.decrypt(session, target);

@@ -65,7 +65,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
         assertArrayEquals(content, compare);
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -94,7 +94,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
         assertArrayEquals(content, compare);
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -120,7 +120,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         assertTrue(new BrickFindFeature(session).find(test));
         assertEquals(content.length, new BrickAttributesFinderFeature(session).find(test).getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
         assertArrayEquals(content, compare);
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();

@@ -45,7 +45,7 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         final SwiftRegionService region = new SwiftRegionService(session);
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, region, new SwiftWriteFeature(session, region));
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path container = feature.mkdir(test, new TransferStatus().withRegion("ORD"));
+        final Path container = feature.mkdir(test, new TransferStatus().setRegion("ORD"));
         assertTrue(new SwiftFindFeature(session, region).find(container));
         // Can create again regardless if exists
         feature.mkdir(test, new TransferStatus());

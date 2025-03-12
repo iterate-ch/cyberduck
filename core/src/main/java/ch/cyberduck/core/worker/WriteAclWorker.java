@@ -92,7 +92,7 @@ public class WriteAclWorker extends Worker<Boolean> {
         }
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), acl));
-        final TransferStatus status = new TransferStatus().withAcl(acl);
+        final TransferStatus status = new TransferStatus().setAcl(acl);
         feature.setPermission(file, status);
         if(!PathAttributes.EMPTY.equals(status.getResponse())) {
             file.withAttributes(status.getResponse());

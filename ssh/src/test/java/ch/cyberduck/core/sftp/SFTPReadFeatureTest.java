@@ -58,7 +58,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         final int length = 39865;
         final byte[] content = RandomUtils.nextBytes(length);
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
             final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -85,7 +85,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
             final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -112,7 +112,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
     @Test
     public void testUnconfirmedReadsNumber() {
         final SFTPReadFeature feature = new SFTPReadFeature(session);
-        assertEquals(33, feature.getMaxUnconfirmedReads(new TransferStatus().withLength(TransferStatus.MEGA * 1L)));
-        assertEquals(64, feature.getMaxUnconfirmedReads(new TransferStatus().withLength((long) (TransferStatus.GIGA * 1.3))));
+        assertEquals(33, feature.getMaxUnconfirmedReads(new TransferStatus().setLength(TransferStatus.MEGA * 1L)));
+        assertEquals(64, feature.getMaxUnconfirmedReads(new TransferStatus().setLength((long) (TransferStatus.GIGA * 1.3))));
     }
 }

@@ -87,13 +87,13 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         out.close();
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));
         assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new CryptoUploadFeature<>(session, new DAVUploadFeature(session), new DAVWriteFeature(session), cryptomator).append(test, status.withRemote(cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(test))).offset, 0L);
+        assertEquals(content.length, new CryptoUploadFeature<>(session, new DAVUploadFeature(session), new DAVWriteFeature(session), cryptomator).append(test, status.setRemote(cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(test))).offset, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);
             final TransferStatus read = new TransferStatus();
             read.setOffset(23); // offset within chunk
             read.setAppend(true);
-            read.withLength(40000); // ensure to read at least two chunks
+            read.setLength(40000); // ensure to read at least two chunks
             final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
@@ -105,7 +105,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
             final TransferStatus read = new TransferStatus();
             read.setOffset(65536); // offset at the beginning of a new chunk
             read.setAppend(true);
-            read.withLength(40000); // ensure to read at least two chunks
+            read.setLength(40000); // ensure to read at least two chunks
             final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
@@ -117,7 +117,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
             final TransferStatus read = new TransferStatus();
             read.setOffset(65537); // offset at the beginning+1 of a new chunk
             read.setAppend(true);
-            read.withLength(40000); // ensure to read at least two chunks
+            read.setLength(40000); // ensure to read at least two chunks
             final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];

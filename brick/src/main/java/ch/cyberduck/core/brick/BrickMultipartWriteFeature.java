@@ -124,7 +124,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                             throw new BrickExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
-                            final TransferStatus status = new TransferStatus().withLength(len);
+                            final TransferStatus status = new TransferStatus().setLength(len);
                             status.setChecksum(writer.checksum(file, status).compute(new ByteArrayInputStream(b, off, len), status));
                             status.setUrl(uploadPartEntity.getUploadUri());
                             status.setSegment(true);

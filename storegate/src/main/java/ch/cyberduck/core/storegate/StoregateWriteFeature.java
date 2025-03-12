@@ -88,7 +88,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
                     if(null == status.getLockId()) {
                         throw e;
                     }
-                    location = start(file, status.withLockId(null));
+                    location = start(file, status.setLockId(null));
                 }
                 final StoregateApiClient client = session.getClient();
                 try {

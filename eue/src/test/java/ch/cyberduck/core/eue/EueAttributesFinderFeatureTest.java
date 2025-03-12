@@ -65,9 +65,9 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final long ts = feature.find(container).getModificationDate();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(4128);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
-        final Checksum checksum = writer.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
-        status.withChecksum(checksum);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        final Checksum checksum = writer.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+        status.setChecksum(checksum);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = writer.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();

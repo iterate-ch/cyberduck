@@ -253,7 +253,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertNotNull(upload);
         assertTrue(upload.getType().contains(Path.Type.upload));
         assertEquals(10L * 1024L * 1024L, feature.append(upload, status).offset, 0L);
-        final TransferStatus append = new TransferStatus().append(true).withLength(2L * 1024L * 1024L).withOffset(10L * 1024L * 1024L);
+        final TransferStatus append = new TransferStatus().setAppend(true).setLength(2L * 1024L * 1024L).setOffset(10L * 1024L * 1024L);
         new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 10L * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, append,
                 new DisabledConnectionCallback());
@@ -311,7 +311,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(0L, status.getOffset());
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
+        final TransferStatus append = new TransferStatus().setAppend(true).setLength(content.length);
         new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 10485760L, 1).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, append,
@@ -334,7 +334,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testAppendBelowLimit() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService feature = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         assertFalse(append.append);
     }
 
@@ -342,7 +342,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testSize() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService feature = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L).withRemote(new PathAttributes().setSize(3L)));
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L).setRemote(new PathAttributes().setSize(3L)));
         assertFalse(append.append);
         assertEquals(0L, append.offset, 0L);
     }
@@ -352,8 +352,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService feature = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
-        assertFalse(feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(Long.MAX_VALUE)).append);
-        assertEquals(Write.override, feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(Long.MAX_VALUE)));
-        assertEquals(Write.override, feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L)));
+        assertFalse(feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(Long.MAX_VALUE)).append);
+        assertEquals(Write.override, feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(Long.MAX_VALUE)));
+        assertEquals(Write.override, feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L)));
     }
 }

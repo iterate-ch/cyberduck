@@ -48,7 +48,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
         final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        touch.touch(file, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(file));
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(file, Optional.of(rename)));
@@ -71,7 +71,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         directory.mkdir(targetDirectory, null);
         assertNotNull(attributesFinder.find(targetDirectory));
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
+        touch.touch(touchedFile, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(touchedFile));
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
@@ -94,7 +94,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         directory.mkdir(targetDirectory, null);
         assertNotNull(attributesFinder.find(targetDirectory));
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
+        touch.touch(touchedFile, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(touchedFile));
         Path rename = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));

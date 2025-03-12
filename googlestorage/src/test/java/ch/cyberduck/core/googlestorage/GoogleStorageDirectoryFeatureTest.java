@@ -46,7 +46,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     public void testMakeBucket() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(),
                 new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus().withRegion("us"));
+        new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus().setRegion("us"));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus()));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

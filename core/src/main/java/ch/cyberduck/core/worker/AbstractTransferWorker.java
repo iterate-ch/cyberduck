@@ -200,7 +200,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             for(TransferItem next : transfer.getRoots()) {
                 // Check if parent directory is found in set to determine status
                 this.prepare(next.remote, next.local, new TransferStatus()
-                        .exists(!transfer.getRoots().stream().anyMatch(f -> next.remote.isChild(f.remote))), action);
+                        .setExists(!transfer.getRoots().stream().anyMatch(f -> next.remote.isChild(f.remote))), action);
             }
             this.await();
             meter.reset();
@@ -423,7 +423,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     log.debug("Ask filter {} to accept retry for segment {} of {}", resume, segment, item);
                                     if(resume.accept(
                                             segment.getRename().remote != null ? segment.getRename().remote : item.remote,
-                                            segment.getRename().local != null ? segment.getRename().local : item.local, new TransferStatus().exists(true), progress)) {
+                                            segment.getRename().local != null ? segment.getRename().local : item.local, new TransferStatus().setExists(true), progress)) {
                                         log.debug("Determine status for retry of {}", segment);
                                         final TransferStatus retry;
                                         if(segment.isSegment()) {
@@ -438,7 +438,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                             // Append to existing file when possible
                                             retry = resume.prepare(
                                                     segment.getRename().remote != null ? segment.getRename().remote : item.remote,
-                                                    segment.getRename().local != null ? segment.getRename().local : item.local, new TransferStatus().exists(true), progress);
+                                                    segment.getRename().local != null ? segment.getRename().local : item.local, new TransferStatus().setExists(true), progress);
                                             log.debug("Determined new transfer status {}", retry);
                                             // Subtract already counted bytes
                                             counter.recv(retry.getOffset() - counter.getRecv());
@@ -447,11 +447,11 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                         // Retry immediately
                                         log.info("Retry segment {} of {} with status {}", segment, item, retry);
                                         this.transferSegment(segment
-                                                .withNonces(retry.getNonces())
-                                                .withChecksum(retry.getChecksum())
-                                                .withLength(retry.getLength())
-                                                .withOffset(retry.getOffset())
-                                                .append(retry.isAppend()));
+                                                .setNonces(retry.getNonces())
+                                                .setChecksum(retry.getChecksum())
+                                                .setLength(retry.getLength())
+                                                .setOffset(retry.getOffset())
+                                                .setAppend(retry.isAppend()));
                                         return;
                                     }
                                 }
@@ -510,7 +510,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 filter.complete(
                                         status.getRename().remote != null ? status.getRename().remote : item.remote,
                                         status.getRename().local != null ? status.getRename().local : item.local,
-                                        status.complete(), progress);
+                                        status.setComplete(), progress);
                             }
                             finally {
                                 release(source, Connection.source, null);

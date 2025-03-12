@@ -75,8 +75,8 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         new DropboxTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(target, new TransferStatus());
-        assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(test, target, new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
-        new DropboxMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        new DropboxMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DropboxFindFeature(session).find(test));
         assertTrue(new DropboxFindFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -108,7 +108,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path temp = new DropboxTouchFeature(session).touch(
             new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(temp));
-        new DropboxMoveFeature(session).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new DropboxMoveFeature(session).move(temp, test, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final AttributedList<Path> files = new DropboxListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
         assertFalse(new DropboxFindFeature(session).find(temp));
@@ -128,7 +128,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path temp = new DropboxTouchFeature(session).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(temp));
-        new DropboxMoveFeature(session).move(temp, new Path(folder, StringUtils.upperCase(test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new DropboxMoveFeature(session).move(temp, new Path(folder, StringUtils.upperCase(test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final AttributedList<Path> list = new DropboxListService(session).list(folder, new DisabledListProgressListener());
         assertNotNull(list.find(new SimplePathPredicate(new Path(folder, StringUtils.upperCase(test.getName()), EnumSet.of(Path.Type.file)))));
         assertNull(list.find(new SimplePathPredicate(test)));
@@ -162,7 +162,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path file = new DropboxTouchFeature(session).touch(new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
         assertThrows(InvalidFilenameException.class, () -> new DropboxMoveFeature(session).preflight(file, Optional.of(rename)));
-        assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -80,21 +80,21 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         out.close();
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length / 2);
+            final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             new DAVUploadFeature(session).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             new DAVUploadFeature(session).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -106,7 +106,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
     public void testAppendZeroBytes() throws Exception {
         final DAVUploadFeature feature = new DAVUploadFeature(session);
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(feature.append(test, new TransferStatus().exists(true).withLength(0L).withRemote(new DAVAttributesFinderFeature(session).find(test))).append);
+        assertTrue(feature.append(test, new TransferStatus().setExists(true).setLength(0L).setRemote(new DAVAttributesFinderFeature(session).find(test))).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

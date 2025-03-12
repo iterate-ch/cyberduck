@@ -49,7 +49,7 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new EueTouchFeature(session, fileid)
-                .touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+                .touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
         assertNotEquals(PathAttributes.EMPTY, attr);
         assertNotNull(attr.getETag());
@@ -81,10 +81,10 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
         assertEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
         final byte[] content = RandomUtils.nextBytes(8235);
         final long ts = System.currentTimeMillis();
-        final TransferStatus status = new TransferStatus().withLength(content.length).withModified(ts);
-        final Checksum checksum = new EueWriteFeature(session, fileid).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
-        status.withChecksum(checksum);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = new EueWriteFeature(session, fileid).write(file, status.exists(true), new DisabledConnectionCallback());
+        final TransferStatus status = new TransferStatus().setLength(content.length).setModified(ts);
+        final Checksum checksum = new EueWriteFeature(session, fileid).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+        status.setChecksum(checksum);
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = new EueWriteFeature(session, fileid).write(file, status.setExists(true), new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();

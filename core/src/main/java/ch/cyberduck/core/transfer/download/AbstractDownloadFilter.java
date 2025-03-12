@@ -140,14 +140,14 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 if(StringUtils.startsWith(attributes.getDisplayname(), "file:")) {
                     final String filename = StringUtils.removeStart(attributes.getDisplayname(), "file:");
                     if(!StringUtils.equals(file.getName(), filename)) {
-                        status.withDisplayname(LocalFactory.get(local.getParent(), filename));
+                        status.setDisplayname(LocalFactory.get(local.getParent(), filename));
                         int no = 0;
                         while(status.getDisplayname().local.exists()) {
                             String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
                             if(StringUtils.isNotBlank(Path.getExtension(filename))) {
                                 proposal += String.format(".%s", Path.getExtension(filename));
                             }
-                            status.withDisplayname(LocalFactory.get(local.getParent(), proposal));
+                            status.setDisplayname(LocalFactory.get(local.getParent(), proposal));
                         }
                     }
                 }
@@ -213,17 +213,17 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                             // Last part can be less than 5 MB. Adjust part size.
                             long length = Math.min(segmentSize, remaining);
                             final TransferStatus segmentStatus = new TransferStatus()
-                                    .segment(true) // Skip completion filter for single segment
-                                    .append(true) // Read with offset
-                                    .withOffset(offset)
-                                    .withLength(length)
-                                    .withRename(segmentFile);
+                                    .setSegment(true) // Skip completion filter for single segment
+                                    .setAppend(true) // Read with offset
+                                    .setOffset(offset)
+                                    .setLength(length)
+                                    .setRename(segmentFile);
                             log.debug("Adding status {} for segment {}", segmentStatus, segmentFile);
                             segments.add(segmentStatus);
                             remaining -= length;
                             offset += length;
                         }
-                        status.withSegments(segments);
+                        status.setSegments(segments);
                     }
                 }
             }

@@ -43,7 +43,7 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
             // Not supported
         }
         assertTrue(new DAVFindFeature(session).find(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 

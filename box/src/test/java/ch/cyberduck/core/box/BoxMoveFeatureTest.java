@@ -77,7 +77,7 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
         final Path target = new BoxTouchFeature(session, fileid).touch(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path override = new BoxMoveFeature(session, fileid).move(test, target,
-                new TransferStatus().exists(true).withRemote(target.attributes()), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new TransferStatus().setExists(true).setRemote(target.attributes()), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new BoxFindFeature(session, fileid).find(test));
         assertTrue(new BoxFindFeature(session, fileid).find(override));
         assertEquals(test.attributes().getModificationDate(), target.attributes().getModificationDate());
@@ -98,7 +98,7 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new BoxTouchFeature(session, fileid).touch(new Path(new DefaultHomeFinderService(session).find(), StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(new DefaultHomeFinderService(session).find(), StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
-        new BoxMoveFeature(session, fileid).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new BoxMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

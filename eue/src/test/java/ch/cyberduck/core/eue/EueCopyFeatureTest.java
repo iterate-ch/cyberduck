@@ -172,15 +172,15 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         final EueWriteFeature.Chunk upload = new EueSingleUploadService(session, fileid, new EueWriteFeature(session, fileid)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertNotNull(upload.getResourceId());
         local.delete();
         assertTrue(new EueFindFeature(session, fileid).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new EueTouchFeature(session, fileid).touch(copy, new TransferStatus().withLength(0L));
-        new EueCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new EueTouchFeature(session, fileid).touch(copy, new TransferStatus().setLength(0L));
+        new EueCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

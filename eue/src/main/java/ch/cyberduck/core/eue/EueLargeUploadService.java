@@ -137,7 +137,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             }
             final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
             // Mark parent status as complete
-            status.withResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
+            status.setResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
             return object;
         }
         catch(NoSuchAlgorithmException e) {
@@ -162,10 +162,10 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(EueWriteFeature.RESOURCE_ID, resourceId);
                 final TransferStatus status = new TransferStatus()
-                        .segment(true)
-                        .withOffset(offset)
-                        .withLength(length)
-                        .withParameters(parameters);
+                        .setSegment(true)
+                        .setOffset(offset)
+                        .setLength(length)
+                        .setParameters(parameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));

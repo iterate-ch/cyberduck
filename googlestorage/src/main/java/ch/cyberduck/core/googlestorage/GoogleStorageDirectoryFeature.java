@@ -71,7 +71,7 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                 type.add(Path.Type.placeholder);
                 // Add placeholder object
                 return new GoogleStorageTouchFeature(session).withWriter(writer).touch(folder.withType(type),
-                        status.withMime(MIMETYPE));
+                        status.setMime(MIMETYPE));
             }
         }
         catch(IOException e) {

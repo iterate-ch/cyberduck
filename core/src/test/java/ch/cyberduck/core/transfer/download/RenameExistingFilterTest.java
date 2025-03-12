@@ -59,7 +59,7 @@ public class RenameExistingFilterTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(1)),
             local.getOutputStream(false));
         final Path p = new Path(name, EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().setExists(true), new DisabledProgressListener());
         assertTrue(status.isExists());
         assertNull(status.getRename().local);
         f.apply(p, local, status, new DisabledProgressListener());
@@ -80,7 +80,7 @@ public class RenameExistingFilterTest {
         };
         new DefaultLocalTouchFeature().touch(local);
         final Path p = new Path(name, EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().setExists(true), new DisabledProgressListener());
         assertTrue(status.isExists());
         assertNull(status.getRename().local);
         f.apply(p, local, status, new DisabledProgressListener());

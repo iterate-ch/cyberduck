@@ -195,7 +195,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 object.addAllMetadata(multipart.getMetadata());
             }
             // Mark parent status as complete
-            status.withResponse(new S3AttributesAdapter(session.getHost()).toAttributes(object)).setComplete();
+            status.setResponse(new S3AttributesAdapter(session.getHost()).toAttributes(object)).setComplete();
             return object;
         }
         catch(ServiceException e) {
@@ -218,8 +218,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             public MultipartPart call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                        .withLength(length)
-                        .withOffset(offset);
+                        .setLength(length)
+                        .setOffset(offset);
                 final Map<String, String> requestParameters = new HashMap<>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));

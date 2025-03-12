@@ -100,7 +100,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         assertArrayEquals(content, buffer);
         assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
         final byte[] overwriteContent = RandomUtils.nextBytes(5);
-        final StatusOutputStream<BaseB2Response> overwrite = new B2WriteFeature(session, fileid).write(test, new TransferStatus().exists(true).withLength(overwriteContent.length), new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> overwrite = new B2WriteFeature(session, fileid).write(test, new TransferStatus().setExists(true).setLength(overwriteContent.length), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(overwriteContent), overwrite);
         assertNotEquals(new B2AttributesFinderFeature(session, fileid).toAttributes(response), new B2AttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()));
         assertNotEquals(((B2FileResponse) response).getFileId(), ((B2FileResponse) overwrite.getStatus()).getFileId());

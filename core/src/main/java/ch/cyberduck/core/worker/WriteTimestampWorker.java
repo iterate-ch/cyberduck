@@ -54,9 +54,9 @@ public class WriteTimestampWorker extends Worker<Boolean> {
         }
         log.debug("Run with feature {}", feature);
         final TransferStatus status = new TransferStatus()
-                .withCreated(created)
-                .withModified(modified)
-                .withLockId(this.getLockId(file));
+                .setCreated(created)
+                .setModified(modified)
+                .setLockId(this.getLockId(file));
         feature.setTimestamp(file, status);
         if(!PathAttributes.EMPTY.equals(status.getResponse())) {
             file.withAttributes(status.getResponse());

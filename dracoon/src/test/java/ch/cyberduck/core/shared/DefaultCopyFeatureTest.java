@@ -62,14 +62,14 @@ public class DefaultCopyFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setExists(true);
         status.setLength(content.length);
         final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new DefaultCopyFeature(session).copy(source, target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new DefaultCopyFeature(session).copy(source, target, new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());

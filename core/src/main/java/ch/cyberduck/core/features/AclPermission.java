@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -24,7 +23,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -48,7 +46,7 @@ public interface AclPermission {
      * @param acl  Access control list to replace any previously set
      */
     default void setPermission(Path file, Acl acl) throws BackgroundException {
-        this.setPermission(file, new TransferStatus().withAcl(acl));
+        this.setPermission(file, new TransferStatus().setAcl(acl));
     }
 
     void setPermission(Path file, TransferStatus status) throws BackgroundException;

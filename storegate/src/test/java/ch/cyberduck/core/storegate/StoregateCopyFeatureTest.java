@@ -85,7 +85,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         new StoregateTouchFeature(session, fileid).touch(copy, new TransferStatus());
         final StoregateCopyFeature feature = new StoregateCopyFeature(session, fileid);
         assertTrue(feature.isSupported(test, Optional.of(copy)));
-        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
+        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new StoregateListService(session, fileid).list(targetFolder, new DisabledListProgressListener());
         assertTrue(find.find(copy));
@@ -102,7 +102,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         final Path test = new StoregateTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path test2 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, fileid).touch(test2, new TransferStatus());
-        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, test2, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
+        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, test2, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new StoregateListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));

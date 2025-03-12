@@ -32,19 +32,20 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
     public CryptoTransferStatus(final CryptoVault vault, final TransferStatus proxy) {
         super(proxy);
         this.vault = vault;
-        this.withLength(vault.toCiphertextSize(proxy.getOffset(), proxy.getLength()))
+        this.setLength(vault.toCiphertextSize(proxy.getOffset(), proxy.getLength()))
                 // Assume single chunk upload
-                .withOffset(0L == proxy.getOffset() ? 0L : vault.toCiphertextSize(0L, proxy.getOffset()))
-                .withMime(null);
+                .setOffset(0L == proxy.getOffset() ? 0L : vault.toCiphertextSize(0L, proxy.getOffset()))
+                .setMime(null);
     }
 
     @Override
-    public void setResponse(final PathAttributes attributes) {
+    public CryptoTransferStatus setResponse(final PathAttributes attributes) {
         try {
             super.setResponse(attributes.setSize(vault.toCleartextSize(0L, attributes.getSize())));
         }
         catch(CryptoInvalidFilesizeException e) {
             log.warn("Failure {} translating file size from response {}", e, attributes);
         }
+        return this;
     }
 }

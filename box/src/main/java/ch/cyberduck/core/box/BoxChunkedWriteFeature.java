@@ -63,8 +63,8 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
             public File call(final HttpEntity entity) throws BackgroundException {
                 try {
                     final HttpRange range = HttpRange.withStatus(new TransferStatus()
-                            .withLength(status.getLength())
-                            .withOffset(status.getOffset()));
+                            .setLength(status.getLength())
+                            .setOffset(status.getOffset()));
                     final String uploadSessionId = status.getParameters().get(BoxLargeUploadService.UPLOAD_SESSION_ID);
                     final String overall_length = status.getParameters().get(BoxLargeUploadService.OVERALL_LENGTH);
                     log.debug("Send range {} for file {}", range, file);

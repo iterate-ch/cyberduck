@@ -56,7 +56,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         assertEquals(folderModification, folder.attributes().getModificationDate());
         // Makes sure to test overwrite
         final Path file = new BoxTouchFeature(session, fileid).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withCreated(1503654615002L));
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setCreated(1503654615002L));
         final byte[] content = RandomUtils.nextBytes(2047);
         final TransferStatus status = new TransferStatus();
         status.setModified(1503654614004L); //GMT: Friday, 25. August 2017 09:50:14.004
@@ -79,7 +79,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         final PathAttributes attributes = new BoxAttributesFinderFeature(session, fileid).find(file);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BoxReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

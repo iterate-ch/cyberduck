@@ -105,7 +105,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
     protected void write(final Session<?> session, final UnixPermission feature, final Path file, final Permission permission) throws BackgroundException {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
             file.getName(), permission));
-        final TransferStatus status = new TransferStatus().withPermission(permission);
+        final TransferStatus status = new TransferStatus().setPermission(permission);
         feature.setUnixPermission(file, status);
         if(!PathAttributes.EMPTY.equals(status.getResponse())) {
             file.withAttributes(status.getResponse());

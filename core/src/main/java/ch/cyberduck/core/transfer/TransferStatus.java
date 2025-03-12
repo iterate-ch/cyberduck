@@ -18,11 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -259,31 +255,29 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     }
 
     @Override
-    public void setComplete() {
+    public TransferStatus setComplete() {
         complete.set(true);
         done.countDown();
-    }
-
-    public TransferStatus complete() {
-        this.setComplete();
         return this;
     }
 
     @Override
-    public void setFailure(final BackgroundException failure) {
+    public TransferStatus setFailure(final BackgroundException failure) {
         complete.set(false);
         done.countDown();
+        return this;
     }
 
     /**
      * If this path is currently transferred, interrupt it as soon as possible
      */
-    public void setCanceled() {
+    public TransferStatus setCanceled() {
         for(TransferStatus segment : segments) {
             segment.setCanceled();
         }
         canceled.set(true);
         done.countDown();
+        return this;
     }
 
     /**
@@ -309,13 +303,9 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     /**
      * @param bytes The already transferred bytes
      */
-    public void setOffset(final long bytes) {
+    public TransferStatus setOffset(final long bytes) {
         offset.set(bytes);
         log.trace("Offset set to {} bytes", bytes);
-    }
-
-    public TransferStatus withOffset(final long bytes) {
-        this.setOffset(bytes);
         return this;
     }
 
@@ -329,15 +319,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     /**
      * @param bytes Transfer content length
      */
-    public void setLength(final long bytes) {
+    public TransferStatus setLength(final long bytes) {
         this.length = bytes;
-    }
-
-    /**
-     * @param bytes Transfer content length
-     */
-    public TransferStatus withLength(final long bytes) {
-        this.setLength(bytes);
         return this;
     }
 
@@ -348,11 +331,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return destinationlength;
     }
 
-    public void setDestinationLength(final long destinationlength) {
-        this.destinationlength = destinationlength;
-    }
-
-    public TransferStatus withDestinationLength(final long destinationlength) {
+    public TransferStatus setDestinationLength(final long destinationlength) {
         this.destinationlength = destinationlength;
         return this;
     }
@@ -361,11 +340,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return exists;
     }
 
-    public void setExists(final boolean exists) {
-        this.exists = exists;
-    }
-
-    public TransferStatus exists(boolean exists) {
+    public TransferStatus setExists(final boolean exists) {
         this.exists = exists;
         return this;
     }
@@ -380,15 +355,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * @param append If false, the current status is cleared
      * @see #setOffset(long)
      */
-    public void setAppend(final boolean append) {
+    public TransferStatus setAppend(final boolean append) {
         if(!append) {
             offset.set(0);
         }
         this.append = append;
-    }
-
-    public TransferStatus append(final boolean append) {
-        this.setAppend(append);
         return this;
     }
 
@@ -396,21 +367,13 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return segment;
     }
 
-    public void setSegment(final boolean segment) {
-        this.segment = segment;
-    }
-
-    public TransferStatus segment(final boolean segment) {
+    public TransferStatus setSegment(final boolean segment) {
         this.segment = segment;
         return this;
     }
 
-    public void setRejected(boolean rejected) {
+    public TransferStatus setRejected(boolean rejected) {
         this.rejected = rejected;
-    }
-
-    public TransferStatus reject(final boolean rejected) {
-        this.setRejected(rejected);
         return this;
     }
 
@@ -422,12 +385,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return hidden;
     }
 
-    public void setHidden(final boolean hidden) {
+    public TransferStatus setHidden(final boolean hidden) {
         this.hidden = hidden;
-    }
-
-    public TransferStatus hidden(final boolean hidden) {
-        this.setHidden(hidden);
         return this;
     }
 
@@ -439,12 +398,12 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return displayname;
     }
 
-    public TransferStatus withRename(final Path renamed) {
+    public TransferStatus setRename(final Path renamed) {
         this.rename.withRemote(renamed);
         return this;
     }
 
-    public TransferStatus withRename(final Local renamed) {
+    public TransferStatus setRename(final Local renamed) {
         this.rename.withLocal(renamed);
         return this;
     }
@@ -452,29 +411,26 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     /**
      * @param finalname Target filename to rename temporary file to
      */
-    public TransferStatus withDisplayname(final Local finalname) {
+    public TransferStatus setDisplayname(final Local finalname) {
         this.displayname.withLocal(finalname);
         return this;
     }
 
-    public TransferStatus withDisplayname(final Path finalname) {
+    public TransferStatus setDisplayname(final Path finalname) {
         this.displayname.withRemote(finalname);
         return this;
     }
 
-    public void setRename(final Rename rename) {
+    public TransferStatus setRename(final Rename rename) {
         this.rename = rename;
+        return this;
     }
 
     public String getMime() {
         return mime;
     }
 
-    public void setMime(final String type) {
-        this.mime = type;
-    }
-
-    public TransferStatus withMime(final String type) {
+    public TransferStatus setMime(final String type) {
         this.mime = type;
         return this;
     }
@@ -483,12 +439,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return checksum;
     }
 
-    public void setChecksum(final Checksum checksum) {
+    public TransferStatus setChecksum(final Checksum checksum) {
         this.checksum = checksum;
-    }
-
-    public TransferStatus withChecksum(final Checksum checksum) {
-        this.setChecksum(checksum);
         return this;
     }
 
@@ -496,12 +448,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return remote;
     }
 
-    public void setRemote(PathAttributes attributes) {
+    public TransferStatus setRemote(final PathAttributes attributes) {
         this.remote = attributes;
-    }
-
-    public TransferStatus withRemote(final PathAttributes attributes) {
-        this.setRemote(attributes);
         return this;
     }
 
@@ -511,12 +459,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     }
 
     @Override
-    public void setResponse(PathAttributes attributes) {
+    public TransferStatus setResponse(PathAttributes attributes) {
         this.response = attributes;
-    }
-
-    public TransferStatus withResponse(final PathAttributes attributes) {
-        this.setResponse(attributes);
         return this;
     }
 
@@ -524,11 +468,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return permission;
     }
 
-    public void setPermission(Permission permission) {
-        this.permission = permission;
-    }
-
-    public TransferStatus withPermission(Permission permission) {
+    public TransferStatus setPermission(Permission permission) {
         this.permission = permission;
         return this;
     }
@@ -537,11 +477,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return acl;
     }
 
-    public void setAcl(Acl acl) {
-        this.acl = acl;
-    }
-
-    public TransferStatus withAcl(Acl acl) {
+    public TransferStatus setAcl(Acl acl) {
         this.acl = acl;
         return this;
     }
@@ -550,11 +486,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return encryption;
     }
 
-    public void setEncryption(final Encryption.Algorithm encryption) {
-        this.encryption = encryption;
-    }
-
-    public TransferStatus withEncryption(final Encryption.Algorithm encryption) {
+    public TransferStatus setEncryption(final Encryption.Algorithm encryption) {
         this.encryption = encryption;
         return this;
     }
@@ -563,11 +495,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return storageClass;
     }
 
-    public void setStorageClass(final String storageClass) {
-        this.storageClass = storageClass;
-    }
-
-    public TransferStatus withStorageClass(final String storageClass) {
+    public TransferStatus setStorageClass(final String storageClass) {
         this.storageClass = storageClass;
         return this;
     }
@@ -576,12 +504,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return modified;
     }
 
-    public void setModified(Long modified) {
+    public TransferStatus setModified(Long modified) {
         this.modified = modified;
-    }
-
-    public TransferStatus withModified(Long timestamp) {
-        this.modified = timestamp;
         return this;
     }
 
@@ -589,11 +513,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return created;
     }
 
-    public void setCreated(final Long created) {
-        this.created = created;
-    }
-
-    public TransferStatus withCreated(final Long created) {
+    public TransferStatus setCreated(final Long created) {
         this.created = created;
         return this;
     }
@@ -602,11 +522,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return parameters;
     }
 
-    public void setParameters(final Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
-
-    public TransferStatus withParameters(final Map<String, String> parameters) {
+    public TransferStatus setParameters(final Map<String, String> parameters) {
         this.parameters = parameters;
         return this;
     }
@@ -615,11 +531,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return metadata;
     }
 
-    public void setMetadata(final Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
-
-    public TransferStatus withMetadata(final Map<String, String> metadata) {
+    public TransferStatus setMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
     }
@@ -628,16 +540,18 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return part;
     }
 
-    public void setPart(final Integer part) {
+    public TransferStatus setPart(final Integer part) {
         this.part = part;
+        return this;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(final String url) {
+    public TransferStatus setUrl(final String url) {
         this.url = url;
+        return this;
     }
 
     public List<TransferStatus> getSegments() {
@@ -647,7 +561,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return segments;
     }
 
-    public TransferStatus withSegments(final List<TransferStatus> segments) {
+    public TransferStatus setSegments(final List<TransferStatus> segments) {
         this.segments = segments;
         return this;
     }
@@ -660,12 +574,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return header;
     }
 
-    public void setHeader(final ByteBuffer header) {
+    public TransferStatus setHeader(final ByteBuffer header) {
         this.header = header;
-    }
-
-    public TransferStatus withHeader(final ByteBuffer header) {
-        this.setHeader(header);
         return this;
     }
 
@@ -673,12 +583,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return filekey;
     }
 
-    public void setFilekey(final ByteBuffer filekey) {
+    public TransferStatus setFilekey(final ByteBuffer filekey) {
         this.filekey = filekey;
-    }
-
-    public TransferStatus withFileKey(final ByteBuffer filekey) {
-        this.setFilekey(filekey);
         return this;
     }
 
@@ -686,12 +592,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return nonces;
     }
 
-    public void setNonces(final NonceGenerator nonces) {
+    public TransferStatus setNonces(final NonceGenerator nonces) {
         this.nonces = nonces;
-    }
-
-    public TransferStatus withNonces(final NonceGenerator nonces) {
-        this.setNonces(nonces);
         return this;
     }
 
@@ -699,12 +601,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return lockId;
     }
 
-    public void setLockId(final Object lockId) {
+    public TransferStatus setLockId(final Object lockId) {
         this.lockId = lockId;
-    }
-
-    public TransferStatus withLockId(final Object lockId) {
-        this.setLockId(lockId);
         return this;
     }
 
@@ -712,12 +610,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return region;
     }
 
-    public void setRegion(final String region) {
+    public TransferStatus setRegion(final String region) {
         this.region = region;
-    }
-
-    public TransferStatus withRegion(final String region) {
-        this.setRegion(region);
         return this;
     }
 

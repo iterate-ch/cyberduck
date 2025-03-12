@@ -51,7 +51,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        files.put(new TransferItem(file), status.withLength(1L));
+        files.put(new TransferItem(file), status.setLength(1L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
@@ -66,9 +66,9 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path directory = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final TransferStatus directoryStatus = new TransferStatus().withLength(0L);
+        final TransferStatus directoryStatus = new TransferStatus().setLength(0L);
         files.put(new TransferItem(directory), directoryStatus);
-        final TransferStatus fileStatus = new TransferStatus().withLength(1L);
+        final TransferStatus fileStatus = new TransferStatus().setLength(1L);
         files.put(new TransferItem(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))), fileStatus);
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final Set<UUID> set = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
@@ -81,7 +81,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
     @Test(expected = NotfoundException.class)
     public void testPreDownloadNotFound() throws Exception {
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
-            new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))), new TransferStatus().withLength(1L)
+                new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))), new TransferStatus().setLength(1L)
         ), new DisabledConnectionCallback());
     }
 
@@ -102,7 +102,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         files.put(new TransferItem(file),
                 // 11GB
-                status.withLength(112640000000L));
+                status.setLength(112640000000L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
@@ -133,11 +133,11 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         files.put(new TransferItem(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))),
             // 11GB
-            status.withLength(118111600640L)
+                status.setLength(118111600640L)
         );
         files.put(new TransferItem(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))),
             // 11GB
-            status.withLength(118111600640L)
+                status.setLength(118111600640L)
         );
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());

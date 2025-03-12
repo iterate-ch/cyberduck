@@ -57,7 +57,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), source.getName());
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(source, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(source));
@@ -77,7 +77,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), sourceFile.getName());
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(sourceFile));
@@ -103,7 +103,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), sourceFile.getName());
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(folder));

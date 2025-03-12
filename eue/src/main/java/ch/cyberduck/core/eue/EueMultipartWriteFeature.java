@@ -154,9 +154,9 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                     final EueWriteFeature writer = new EueWriteFeature(session, fileid);
                     log.warn("Cancel chunked upload for {}", file);
                     writer.cancel(uploadUri);
-                    final TransferStatus status = new TransferStatus(overall).withLength(content.length);
+                    final TransferStatus status = new TransferStatus(overall).setLength(content.length);
                     final HttpResponseOutputStream<EueWriteFeature.Chunk> stream = writer.write(file,
-                            status.withChecksum(writer.checksum(file, overall).compute(new ByteArrayInputStream(content), status)), callback);
+                            status.setChecksum(writer.checksum(file, overall).compute(new ByteArrayInputStream(content), status)), callback);
                     stream.write(content);
                     stream.close();
                     result.set(stream.getStatus());

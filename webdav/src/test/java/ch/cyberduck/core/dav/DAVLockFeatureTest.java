@@ -63,6 +63,6 @@ public class DAVLockFeatureTest extends AbstractDAVTest {
             // Expected
         }
         local.delete();
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

@@ -68,7 +68,7 @@ public class RenameFilter extends AbstractUploadFilter {
                     status.getDisplayname().withRemote(renamed).exists(false);
                 }
                 else {
-                    status.withRename(renamed);
+                    status.setRename(renamed);
                 }
             }
             while(find.find(status.getRename().remote));
@@ -84,7 +84,7 @@ public class RenameFilter extends AbstractUploadFilter {
                     status.getDisplayname().withRemote(renamed).exists(false);
                 }
                 else {
-                    status.withRename(renamed);
+                    status.setRename(renamed);
                 }
             }
             log.info("Changed upload target from {} to {}", file, status.getRename().remote);

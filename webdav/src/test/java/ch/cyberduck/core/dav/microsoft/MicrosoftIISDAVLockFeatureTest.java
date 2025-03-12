@@ -66,7 +66,7 @@ public class MicrosoftIISDAVLockFeatureTest extends AbstractMicrosoftIISDAVTest 
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
         final PathAttributes attributes = new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize(), 0L);
-        assertEquals(content.length, new DAVUploadFeature(session).append(test, status.withRemote(attributes)).offset, 0L);
+        assertEquals(content.length, new DAVUploadFeature(session).append(test, status.setRemote(attributes)).offset, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new MicrosoftIISDAVReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
@@ -74,7 +74,7 @@ public class MicrosoftIISDAVLockFeatureTest extends AbstractMicrosoftIISDAVTest 
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, new TransferStatus().withLength(content.length - 1L).append(true).withOffset(1L), new DisabledConnectionCallback());
+            final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, new TransferStatus().setLength(content.length - 1L).setAppend(true).setOffset(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];

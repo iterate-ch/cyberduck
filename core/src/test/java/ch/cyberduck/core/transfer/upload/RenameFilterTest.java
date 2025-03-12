@@ -54,7 +54,7 @@ public class RenameFilterTest {
         final RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), session,
                 find, attributes,
                 new UploadFilterOptions(session.getHost()).withTemporary(true));
-        final TransferStatus status = f.prepare(file, new NullLocal("t/f"), new TransferStatus().exists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(file, new NullLocal("t/f"), new TransferStatus().setExists(true), new DisabledProgressListener());
         assertTrue(found.get());
         assertFalse(status.isExists());
         f.apply(file, new NullLocal("t/f"), status, new DisabledProgressListener());
@@ -93,7 +93,7 @@ public class RenameFilterTest {
         };
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         final RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), session, find, attributes);
-        final TransferStatus directoryStatus = f.prepare(directory, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
+        final TransferStatus directoryStatus = f.prepare(directory, new NullLocal("t"), new TransferStatus().setExists(true), new DisabledProgressListener());
         assertTrue(found.get());
         assertFalse(directoryStatus.isExists());
         f.apply(directory, new NullLocal("t"), directoryStatus, new DisabledProgressListener());

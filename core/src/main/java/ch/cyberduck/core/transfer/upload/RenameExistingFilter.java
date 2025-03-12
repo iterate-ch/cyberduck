@@ -80,9 +80,9 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             }
             while(find.find(rename));
             log.info("Rename existing file {} to {}", file, rename);
-            move.move(file, rename, new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+            move.move(file, rename, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
             log.debug("Clear exist flag for file {}", file);
-            status.exists(false).getDisplayname().exists(false);
+            status.setExists(false).getDisplayname().exists(false);
         }
         super.apply(file, local, status, listener);
     }

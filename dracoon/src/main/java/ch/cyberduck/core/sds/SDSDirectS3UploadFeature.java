@@ -245,9 +245,9 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             public TransferStatus call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                        .segment(true)
-                        .withLength(length)
-                        .withOffset(offset);
+                        .setSegment(true)
+                        .setLength(length)
+                        .setOffset(offset);
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
@@ -257,7 +257,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 log.info("Received response for part number {}", partNumber);
                 // Delete temporary file if any
                 buffer.close();
-                return status.withChecksum(Checksum.parse(node.getHash()));
+                return status.setChecksum(Checksum.parse(node.getHash()));
             }
         }, overall, counter));
     }

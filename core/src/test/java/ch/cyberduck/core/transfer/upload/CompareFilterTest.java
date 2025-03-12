@@ -56,7 +56,7 @@ public class CompareFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().exists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 
     @Test
@@ -77,6 +77,6 @@ public class CompareFilterTest {
                                 return true;
                             }
                         },
-                        new TransferStatus().exists(true), new DisabledProgressListener()));
+                        new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 }

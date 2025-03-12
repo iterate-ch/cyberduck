@@ -53,7 +53,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final TransferStatus status = new TransferStatus().withLength(5 * 1024L);
+        final TransferStatus status = new TransferStatus().setLength(5 * 1024L);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null);
     }
 

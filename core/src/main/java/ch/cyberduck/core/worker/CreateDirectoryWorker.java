@@ -53,7 +53,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
     public Path run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
         log.debug("Run with feature {}", feature);
-        final TransferStatus status = new TransferStatus().withLength(0L);
+        final TransferStatus status = new TransferStatus().setLength(0L);
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(folder));

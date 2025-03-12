@@ -59,7 +59,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("duck", metadata.get("X-Object-Meta-C"));
-        final OutputStream overwrite = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
+        final OutputStream overwrite = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().setLength(0L), new DisabledConnectionCallback());
         overwrite.close();
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

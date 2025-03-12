@@ -49,7 +49,7 @@ public class BrickDeleteFeatureTest extends AbstractBrickTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().withLength(random.length);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();

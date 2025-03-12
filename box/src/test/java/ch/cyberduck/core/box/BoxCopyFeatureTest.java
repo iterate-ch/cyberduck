@@ -63,7 +63,7 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         new BoxTouchFeature(session, fileid).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path existing = new BoxTouchFeature(session, fileid).touch(copy, new TransferStatus());
-        new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true).withRemote(existing.attributes()), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true).setRemote(existing.attributes()), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

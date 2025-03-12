@@ -43,7 +43,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final String v = new AlphanumericRandomStringService().random();
         final DAVMetadataFeature feature = new DAVMetadataFeature(session);
-        feature.setMetadata(test, status.withMetadata(Collections.singletonMap("Test", v)));
+        feature.setMetadata(test, status.setMetadata(Collections.singletonMap("Test", v)));
         final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
@@ -58,7 +58,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         final String v = new AlphanumericRandomStringService().random();
         final DAVMetadataFeature feature = new DAVMetadataFeature(session);
-        feature.setMetadata(test, status.withMetadata(Collections.singletonMap("Test", v)));
+        feature.setMetadata(test, status.setMetadata(Collections.singletonMap("Test", v)));
         final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));

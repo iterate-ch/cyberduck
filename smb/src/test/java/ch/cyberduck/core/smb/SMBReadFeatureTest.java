@@ -70,7 +70,7 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Write writer = new SMBWriteFeature(session);
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+        final OutputStream out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new SMBFindFeature(session).find(test));
@@ -80,7 +80,7 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
             final TransferStatus read = new TransferStatus();
             read.setOffset(23); // offset within chunk
             read.setAppend(true);
-            read.withLength(40000); // ensure to read at least two chunks
+            read.setLength(40000); // ensure to read at least two chunks
             final InputStream in = new SMBReadFeature(session).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
@@ -92,7 +92,7 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
             final TransferStatus read = new TransferStatus();
             read.setOffset(65536); // offset at the beginning of a new chunk
             read.setAppend(true);
-            read.withLength(40000); // ensure to read at least two chunks
+            read.setLength(40000); // ensure to read at least two chunks
             final InputStream in = new SMBReadFeature(session).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
@@ -104,7 +104,7 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
             final TransferStatus read = new TransferStatus();
             read.setOffset(65537); // offset at the beginning+1 of a new chunk
             read.setAppend(true);
-            read.withLength(40000); // ensure to read at least two chunks
+            read.setLength(40000); // ensure to read at least two chunks
             final InputStream in = new SMBReadFeature(session).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
@@ -133,11 +133,11 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
                             new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
                     final Write writer = new SMBWriteFeature(session);
                     status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
-                    final OutputStream out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+                    final OutputStream out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
                     assertNotNull(out);
                     new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
                     final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-                    final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+                    final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
                     new StreamCopier(status, status).transfer(in, buffer);
                     assertArrayEquals(content, buffer.toByteArray());
                     return null;

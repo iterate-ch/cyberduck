@@ -41,7 +41,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
                 new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new DriveTouchFeature(session, fileid).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("x-application/cyberduck"));
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("x-application/cyberduck"));
         final String id = test.attributes().getFileId();
         assertNotNull(id);
         assertNull(test.attributes().getVersionId());

@@ -50,7 +50,7 @@ public class SwiftMetadataFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus().withMime("text/plain"));
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus().setMime("text/plain"));
         final String v = UUID.randomUUID().toString();
         new SwiftMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);

@@ -69,6 +69,6 @@ public class BrickLockFeatureTest extends AbstractBrickTest {
             // Expected
         }
         feature.unlock(test, lockid);
-        new BrickDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lockid)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lockid)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

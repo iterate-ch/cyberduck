@@ -260,7 +260,7 @@ public class ConcurrentTransferWorkerTest {
                 @Override
                 public TransferStatus call() {
                     entry.countDown();
-                    return new TransferStatus().complete();
+                    return new TransferStatus().setComplete();
                 }
             });
         }

@@ -36,7 +36,7 @@ public class B2TouchFeature extends DefaultTouchFeature<BaseB2Response> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        return super.touch(file, status.withChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
+        return super.touch(file, status.setChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 
     @Override

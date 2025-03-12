@@ -102,8 +102,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         log.debug("Prepare {}", file);
         final TransferStatus status = new TransferStatus()
-                .hidden(!hidden.accept(file))
-                .withLockId(parent.getLockId());
+                .setHidden(!hidden.accept(file))
+                .setLockId(parent.getLockId());
         // Read remote attributes first
         if(parent.isExists()) {
             if(find.find(file)) {
@@ -148,7 +148,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature.isSupported(file, Optional.of(renamed))) {
                     log.debug("Set temporary filename {}", renamed);
                     // Set target name after transfer
-                    status.withRename(renamed).withDisplayname(file);
+                    status.setRename(renamed).setDisplayname(file);
                     // Remember status of target file for later rename
                     status.getDisplayname().exists(status.isExists());
                     // Keep exist flag for subclasses to determine additional rename strategy
@@ -302,7 +302,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                             if(feature != null && feature.getConfiguration(file).isEnabled()) {
                                 if(feature.save(file)) {
                                     log.debug("Clear exist flag for file {}", file);
-                                    status.exists(false).getDisplayname().exists(false);
+                                    status.setExists(false).getDisplayname().exists(false);
                                 }
                             }
                     }
@@ -369,7 +369,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(status.getDisplayname().remote != null) {
                     final Move move = session.getFeature(Move.class);
                     log.info("Rename file {} to {}", file, status.getDisplayname().remote);
-                    move.move(file, status.getDisplayname().remote, new TransferStatus(status).exists(status.getDisplayname().exists),
+                    move.move(file, status.getDisplayname().remote, new TransferStatus(status).setExists(status.getDisplayname().exists),
                             new Delete.DisabledCallback(), new DisabledConnectionCallback());
                 }
             }

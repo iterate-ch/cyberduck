@@ -111,7 +111,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             if(optional.isPresent()) {
                 final File commited = optional.get();
                 // Mark parent status as complete
-                status.withResponse(new BoxAttributesFinderFeature(session, fileid).toAttributes(commited)).setComplete();
+                status.setResponse(new BoxAttributesFinderFeature(session, fileid).toAttributes(commited)).setComplete();
                 return commited;
             }
             throw new NotfoundException(file.getAbsolute());
@@ -132,16 +132,16 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             public Part call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                        .segment(true)
-                        .withOffset(offset)
-                        .withLength(length);
+                        .setSegment(true)
+                        .setOffset(offset)
+                        .setLength(length);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_SESSION_ID, uploadSessionId);
                 parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));
-                status.withParameters(parameters);
+                status.setParameters(parameters);
                 final File response = BoxLargeUploadService.this.upload(
                         file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", response, partNumber);

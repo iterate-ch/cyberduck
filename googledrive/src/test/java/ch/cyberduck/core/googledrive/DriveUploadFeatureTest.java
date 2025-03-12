@@ -62,7 +62,7 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         test.attributes().setFileId(fileid.getFileId(test));
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertEquals(content.length, upload.append(test, status.withRemote(new DriveAttributesFinderFeature(session, fileid).find(test))).offset, 0L);
+        assertEquals(content.length, upload.append(test, status.setRemote(new DriveAttributesFinderFeature(session, fileid).find(test))).offset, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DriveReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
@@ -70,7 +70,7 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DriveReadFeature(session, fileid).read(test, new TransferStatus().withLength(content.length).append(true).withOffset(1L), new DisabledConnectionCallback());
+            final InputStream in = new DriveReadFeature(session, fileid).read(test, new TransferStatus().setLength(content.length).setAppend(true).setOffset(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             IOUtils.closeQuietly(in);
             final byte[] reference = new byte[content.length - 1];

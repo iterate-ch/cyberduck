@@ -35,7 +35,7 @@ public class SFTPUploadFeatureTest extends AbstractSFTPTest {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
-        assertTrue(new SFTPUploadFeature(session).append(test, new TransferStatus().exists(true).withLength(1L).withRemote(new SFTPAttributesFinderFeature(session).find(test))).append);
+        assertTrue(new SFTPUploadFeature(session).append(test, new TransferStatus().setExists(true).setLength(1L).setRemote(new SFTPAttributesFinderFeature(session).find(test))).append);
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

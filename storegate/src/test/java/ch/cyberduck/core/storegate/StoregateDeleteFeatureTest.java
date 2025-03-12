@@ -56,7 +56,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
         new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
         final String lock = new StoregateLockFeature(session, nodeid).lock(fileInRoom);
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonMap(fileInRoom, new TransferStatus().withLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonMap(fileInRoom, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(fileInRoom));
     }
 

@@ -83,7 +83,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
         final Checksum checksumPart2;
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length / 2);
+            final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             final BytecountStreamListener count = new BytecountStreamListener();
             checksumPart1 = new IRODSUploadFeature(session).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
@@ -92,7 +92,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
             assertEquals(content.length / 2, count.getSent());
         }
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             checksumPart2 = new IRODSUploadFeature(session).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
@@ -101,7 +101,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
         }
         assertNotEquals(checksumPart1, checksumPart2);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -130,7 +130,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
         out.close();
         final Checksum checksum;
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         final TransferStatus copy = new TransferStatus(status);
         final BytecountStreamListener count = new BytecountStreamListener();
         checksum = new IRODSUploadFeature(session).upload(
@@ -139,7 +139,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
         assertEquals(content.length, count.getSent());
         assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute()), copy));
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -166,7 +166,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
         IOUtils.write(content, out);
         out.close();
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         final Checksum checksum = new IRODSUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener() {
                     @Override

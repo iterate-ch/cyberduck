@@ -105,8 +105,8 @@ public class BoxMultipartWriteFeature implements Write<File> {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             try {
                 final HttpRange range = HttpRange.withStatus(new TransferStatus()
-                        .withLength(content.length)
-                        .withOffset(byteCounter.getSent()));
+                        .setLength(content.length)
+                        .setOffset(byteCounter.getSent()));
                 log.debug("Send range {} for file {}", range, file);
                 final HttpPut request = new HttpPut(String.format("https://upload.box.com/api/2.0/files/upload_sessions/%s", uploadSession.getId()));
                 // Must not overlap with the range of a part already uploaded this session.

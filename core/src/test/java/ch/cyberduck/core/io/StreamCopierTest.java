@@ -96,7 +96,7 @@ public class StreamCopierTest {
 
     @Test
     public void testTransferFixedLength() throws Exception {
-        final TransferStatus status = new TransferStatus().withLength(432768L);
+        final TransferStatus status = new TransferStatus().setLength(432768L);
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withLimit(432767L).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(0L, status.getOffset());
@@ -107,7 +107,7 @@ public class StreamCopierTest {
 
     @Test
     public void testReadNoEndofStream() throws Exception {
-        final TransferStatus status = new TransferStatus().withLength(432768L);
+        final TransferStatus status = new TransferStatus().setLength(432768L);
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withLimit(432768L).withListener(count).transfer(new NullInputStream(432770L), NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(432768L, count.getRecv());

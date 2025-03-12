@@ -183,7 +183,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             stored.setMd5sum(checksum);
             // Mark parent status as complete
-            status.withResponse(new SwiftAttributesFinderFeature(session).toAttributes(stored)).setComplete();
+            status.setResponse(new SwiftAttributesFinderFeature(session).toAttributes(stored)).setComplete();
             return stored;
         }
         catch(GenericException e) {
@@ -203,8 +203,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             public StorageObject call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                        .withLength(length)
-                        .withOffset(offset);
+                        .setLength(length)
+                        .setOffset(offset);
                 status.setHeader(overall.getHeader());
                 status.setChecksum(writer.checksum(segment, status).compute(local.getInputStream(), status));
                 status.setSegment(true);

@@ -136,8 +136,8 @@ public class AbstractEueSessionTest extends VaultTest {
     protected Path createFile(final EueResourceIdProvider fileid, Path file, final byte[] content) throws Exception {
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final TransferStatus status = new TransferStatus()
-                .withChecksum(feature.checksum(file, new TransferStatus().withLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)))
-                .withLength(content.length);
+                .setChecksum(feature.checksum(file, new TransferStatus().setLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)))
+                .setLength(content.length);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();

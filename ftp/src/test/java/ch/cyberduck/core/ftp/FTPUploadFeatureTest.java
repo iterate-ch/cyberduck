@@ -34,7 +34,7 @@ public class FTPUploadFeatureTest extends AbstractFTPTest {
     public void testAppend() throws Exception {
         final Path f = new Path(new FTPWorkdirService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(f, new TransferStatus());
-        assertTrue(new FTPUploadFeature(session).append(f, new TransferStatus().exists(true).withLength(0L).withRemote(new FTPAttributesFinderFeature(session).find(f))).append);
+        assertTrue(new FTPUploadFeature(session).append(f, new TransferStatus().setExists(true).setLength(0L).setRemote(new FTPAttributesFinderFeature(session).find(f))).append);
         new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

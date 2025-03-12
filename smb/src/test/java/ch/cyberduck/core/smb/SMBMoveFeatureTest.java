@@ -73,7 +73,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         final Path target = new SMBTouchFeature(session).touch(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         // rename file
-        final Path fileRenamed = new SMBMoveFeature(session).move(file, target, new TransferStatus().exists(true),
+        final Path fileRenamed = new SMBMoveFeature(session).move(file, target, new TransferStatus().setExists(true),
                 new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SMBFindFeature(session).find(file));
         assertTrue(new SMBFindFeature(session).find(fileRenamed));
@@ -94,7 +94,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new SMBTouchFeature(session).touch(new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
-        new SMBMoveFeature(session).move(file, rename, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SMBMoveFeature(session).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         new SMBDeleteFeature(session).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

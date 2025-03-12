@@ -46,7 +46,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket,
                         new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                status.withCreated(1695159781972L).withModified(1530305150672L));
+                status.setCreated(1695159781972L).setModified(1530305150672L));
         final String versionId = test.attributes().getVersionId();
         assertEquals(1530305150000L, status.getResponse().getModificationDate());
         assertEquals(1695159781000L, status.getResponse().getCreationDate());
@@ -59,7 +59,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         assertTrue(metadata.containsKey("btime"));
         assertTrue(metadata.containsKey("Content-Type"));
         final S3TimestampFeature feature = new S3TimestampFeature(session);
-        feature.setTimestamp(test, status.withModified(1630305150672L).withCreated(1530305160672L));
+        feature.setTimestamp(test, status.setModified(1630305150672L).setCreated(1530305160672L));
         assertNotEquals(versionId, status.getResponse().getVersionId());
         assertEquals("1630305150", status.getResponse().getMetadata().get("mtime"));
         assertEquals("1530305160", status.getResponse().getMetadata().get("btime"));

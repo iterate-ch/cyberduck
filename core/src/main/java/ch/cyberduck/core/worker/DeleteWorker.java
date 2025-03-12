@@ -175,7 +175,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                     }
                 }
             }
-            recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
+            recursive.put(file, new TransferStatus().setLockId(this.getLockId(file)));
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive() || file.getType().contains(Path.Type.decrypted)) {
@@ -187,7 +187,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                 }
             }
             // Add parent after children
-            recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
+            recursive.put(file, new TransferStatus().setLockId(this.getLockId(file)));
         }
         return recursive;
     }

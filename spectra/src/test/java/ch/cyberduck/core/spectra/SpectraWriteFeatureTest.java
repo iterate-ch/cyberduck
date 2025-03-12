@@ -48,7 +48,7 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
@@ -61,9 +61,9 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
         }
         assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
         // Overwrite
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.setExists(true)), new DisabledConnectionCallback());
         {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true), new DisabledConnectionCallback());
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status.setExists(true), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -80,10 +80,10 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
         new SpectraTouchFeature(session).touch(test, new TransferStatus());
         // Replace content
         final byte[] content = RandomUtils.nextBytes(1023);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.setExists(true)), new DisabledConnectionCallback());
         final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -100,7 +100,7 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         {
             final byte[] content1 = RandomUtils.nextBytes(1000);
-            final TransferStatus status = new TransferStatus().withLength(content1.length);
+            final TransferStatus status = new TransferStatus().setLength(content1.length);
             status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content1), status));
             bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
             final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -117,10 +117,10 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
         }
         {
             final byte[] content2 = RandomUtils.nextBytes(1000);
-            final TransferStatus status = new TransferStatus().withLength(content2.length);
+            final TransferStatus status = new TransferStatus().setLength(content2.length);
             // Overwrite
-            bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true), new DisabledConnectionCallback());
+            bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.setExists(true)), new DisabledConnectionCallback());
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status.setExists(true), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content2), out);
             out.close();
             assertEquals(content2.length, new SpectraAttributesFinderFeature(session).find(test).getSize());

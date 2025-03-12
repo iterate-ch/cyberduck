@@ -53,7 +53,7 @@ public class CompareFilterTest {
         );
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), "f");
-        assertFalse(filter.accept(file, local, new TransferStatus().exists(true), new DisabledProgressListener()));
+        assertFalse(filter.accept(file, local, new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 
 
@@ -71,6 +71,6 @@ public class CompareFilterTest {
         );
         assertTrue(
                 filter.accept(new Path("/n", EnumSet.of(Path.Type.directory)), new NullLocal("/n"),
-                        new TransferStatus().exists(true), new DisabledProgressListener()));
+                        new TransferStatus().setExists(true), new DisabledProgressListener()));
     }
 }

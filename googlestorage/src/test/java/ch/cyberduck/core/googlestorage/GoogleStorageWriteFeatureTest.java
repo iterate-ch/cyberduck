@@ -153,7 +153,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             assertNotNull(out.getStatus().getGeneration());
             assertTrue(new GoogleStorageFindFeature(session).find(test));
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);
@@ -191,7 +191,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertEquals("ARCHIVE", new GoogleStorageStorageClassFeature(session).getClass(test));
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

@@ -57,14 +57,14 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final TransferStatus writeStatus = new TransferStatus().withLength(content.length);
+        final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final SpectraUploadFeature upload = new SpectraUploadFeature(session, new SpectraWriteFeature(session), new SpectraBulkService(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 writeStatus, new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
-        final TransferStatus readStatus = new TransferStatus().withLength(content.length);
+        final TransferStatus readStatus = new TransferStatus().setLength(content.length);
         bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), readStatus), new DisabledConnectionCallback());
         final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -84,7 +84,7 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
             final OutputStream out = local1.getOutputStream(false);
             IOUtils.write(content, out);
             out.close();
-            status1 = new TransferStatus().withLength(content.length);
+            status1 = new TransferStatus().setLength(content.length);
         }
         final Local local2 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final TransferStatus status2;
@@ -94,7 +94,7 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
             final OutputStream out = local2.getOutputStream(false);
             IOUtils.write(content, out);
             out.close();
-            status2 = new TransferStatus().withLength(content.length);
+            status2 = new TransferStatus().setLength(content.length);
         }
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());

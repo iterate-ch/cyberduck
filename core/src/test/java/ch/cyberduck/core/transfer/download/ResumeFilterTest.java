@@ -119,7 +119,7 @@ public class ResumeFilterTest {
                 return true;
             }
         };
-        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().setExists(true), new DisabledProgressListener());
         assertTrue(status.isExists());
     }
 

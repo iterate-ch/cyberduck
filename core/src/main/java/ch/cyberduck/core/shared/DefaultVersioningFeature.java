@@ -114,14 +114,14 @@ public class DefaultVersioningFeature implements Versioning {
         }
         log.debug("Rename existing file {} to {}", file, version);
         feature.move(file, version,
-                new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         return true;
     }
 
     @Override
     public void revert(final Path file) throws BackgroundException {
         final Path target = new Path(file.getParent().getParent(), formatter.fromVersion(file.getName()), file.getType());
-        final TransferStatus status = new TransferStatus().exists(session.getFeature(Find.class).find(target));
+        final TransferStatus status = new TransferStatus().setExists(session.getFeature(Find.class).find(target));
         if(status.isExists()) {
             if(this.save(target)) {
                 status.setExists(false);

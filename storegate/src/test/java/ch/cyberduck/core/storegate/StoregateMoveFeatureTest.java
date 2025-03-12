@@ -70,7 +70,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertEquals(fileid,
-            new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().withLockId(lockId), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getFileId());
+                new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().setLockId(lockId), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getFileId());
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -123,7 +123,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(target, new TransferStatus());
-        new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DefaultFindFeature(session).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new DefaultFindFeature(session).find(target));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -139,7 +139,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(target, new TransferStatus());
-        new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DefaultFindFeature(session).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new DefaultFindFeature(session).find(target));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());

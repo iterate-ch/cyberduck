@@ -89,7 +89,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         final TransferStatus read = new TransferStatus();
         read.setOffset(40000);
         read.setAppend(true);
-        read.withLength(30000); // ensure to read at least two chunks
+        read.setLength(30000); // ensure to read at least two chunks
         final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
         new StreamCopier(read, read).withLimit(30000L).transfer(in, buffer);
         final byte[] reference = new byte[30000];
