@@ -35,7 +35,7 @@ public class DefaultLocalDirectoryFeature implements Directory {
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Cannot create folder {0}", "Error"), file.getName()), e);
+                    "Cannot create folder {0}", "Error"), file.getName()), e.getMessage(), e);
         }
     }
 }

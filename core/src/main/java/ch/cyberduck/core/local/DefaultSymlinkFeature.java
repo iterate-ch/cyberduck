@@ -23,6 +23,7 @@ import ch.cyberduck.core.local.features.Symlink;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 
 public class DefaultSymlinkFeature implements Symlink {
 
@@ -32,8 +33,8 @@ public class DefaultSymlinkFeature implements Symlink {
             Files.createSymbolicLink(Paths.get(link.getAbsolute()), Paths.get(target));
         }
         catch(IOException | UnsupportedOperationException e) {
-            throw new AccessDeniedException(String.format("%s %s",
-                    LocaleFactory.localizedString("Cannot create file", "Error"), link.getAbsolute()), e);
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot create {0}", "Error"), link.getName()), e.getMessage(), e);
         }
     }
 }
