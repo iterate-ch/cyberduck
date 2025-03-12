@@ -97,7 +97,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                                 // Read latest version
                                 try (InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
                                         // Read latest version
-                                        .withVersionId(null)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH), new DisabledConnectionCallback()); OutputStream out = local.getOutputStream(false)) {
+                                        .setVersionId(null)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH), new DisabledConnectionCallback()); OutputStream out = local.getOutputStream(false)) {
                                     IOUtils.copy(in, out);
                                 }
                             }

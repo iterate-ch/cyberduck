@@ -17,12 +17,12 @@ public class TimestampComparisonServiceTest {
     public void testCompareEqual() {
         TimestampComparisonService s = new TimestampComparisonService();
         final long timestamp = System.currentTimeMillis();
-        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withModificationDate(timestamp), new PathAttributes().withModificationDate(timestamp)));
-        final int hashCode = s.hashCode(Path.Type.file, new PathAttributes().withModificationDate(timestamp));
-        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withModificationDate(timestamp), new PathAttributes().withModificationDate(
+        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().setModificationDate(timestamp), new PathAttributes().setModificationDate(timestamp)));
+        final int hashCode = s.hashCode(Path.Type.file, new PathAttributes().setModificationDate(timestamp));
+        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().setModificationDate(timestamp), new PathAttributes().setModificationDate(
                 TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timestamp))
         )));
-        assertEquals(hashCode, s.hashCode(Path.Type.file, new PathAttributes().withModificationDate(
+        assertEquals(hashCode, s.hashCode(Path.Type.file, new PathAttributes().setModificationDate(
                 TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timestamp))
         )));
     }
@@ -32,7 +32,7 @@ public class TimestampComparisonServiceTest {
         TimestampComparisonService s = new TimestampComparisonService();
         final long timestamp = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
         assertEquals(Comparison.local, s.compare(Path.Type.file,
-                new PathAttributes().withModificationDate(timestamp),
+                new PathAttributes().setModificationDate(timestamp),
                 new PathAttributes() {
                     @Override
                     public long getModificationDate() {

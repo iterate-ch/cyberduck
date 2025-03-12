@@ -102,7 +102,7 @@ public class SDSMoveFeature implements Move {
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
                 // Copy original file attributes
-                return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).withVersionId(String.valueOf(nodeId)));
+                return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).setVersionId(String.valueOf(nodeId)));
             }
         }
         catch(ApiException e) {

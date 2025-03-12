@@ -62,6 +62,6 @@ public class RecursiveSearchFilterTest {
     @Test
     public void testAcceptFileVersions() {
         final RecursiveSearchFilter f = new RecursiveSearchFilter(new AttributedList<>(Arrays.asList(new Path("/f", EnumSet.of(Path.Type.file)))));
-        assertTrue(f.accept(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withVersionId("1"))));
+        assertTrue(f.accept(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().setVersionId("1"))));
     }
 }

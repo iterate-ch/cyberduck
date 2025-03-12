@@ -180,7 +180,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertEquals(0L, new GoogleStorageAttributesFinderFeature(session).find(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(initialVersion))).getSize());
+        assertEquals(0L, new GoogleStorageAttributesFinderFeature(session).find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(initialVersion))).getSize());
         // Read previous version
         status.setLength(0L);
         final InputStream in = new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback());

@@ -69,7 +69,7 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
         new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
-        room.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
+        room.attributes().setCustom(KEY_ENCRYPTED, String.valueOf(true));
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -110,7 +110,7 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
         new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
-        room.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
+        room.attributes().setCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);

@@ -81,7 +81,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final Node node = new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
         new NodesApi(session.getClient()).updateRoomUsers(new RoomUsersAddBatchRequest().
                 addItemsItem(new RoomUsersAddBatchRequestItem().id(757L).permissions(new NodePermissions().read(true))), node.getId(), StringUtils.EMPTY);
-        room.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
+        room.attributes().setCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -196,7 +196,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final Node node = new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
         new NodesApi(session.getClient()).updateRoomUsers(new RoomUsersAddBatchRequest().
                 addItemsItem(new RoomUsersAddBatchRequestItem().id(757L).permissions(new NodePermissions().read(true))), node.getId(), StringUtils.EMPTY);
-        room.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
+        room.attributes().setCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);

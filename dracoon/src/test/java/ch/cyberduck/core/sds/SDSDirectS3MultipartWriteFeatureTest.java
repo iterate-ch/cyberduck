@@ -118,7 +118,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         }
         // Read with previous version must fail
         try {
-            test.attributes().withVersionId(previousVersion);
+            test.attributes().setVersionId(previousVersion);
             new SDSReadFeature(session, nodeid).read(test, new TransferStatus(), new DisabledConnectionCallback());
             fail();
         }
@@ -177,7 +177,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         }
         // Read with previous version must fail
         try {
-            test.attributes().withVersionId(previousVersion);
+            test.attributes().setVersionId(previousVersion);
             new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new DisabledConnectionCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

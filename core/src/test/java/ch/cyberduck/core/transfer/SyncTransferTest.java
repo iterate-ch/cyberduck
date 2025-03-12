@@ -118,8 +118,8 @@ public class SyncTransferTest {
     @Test
     public void testFilterMirror() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
-        final Path a = new Path(p, "a", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().withSize(2L));
-        final Path b = new Path(p, "b", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().withSize(1L));
+        final Path a = new Path(p, "a", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setSize(2L));
+        final Path b = new Path(p, "b", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setSize(1L));
         final PathCache cache = new PathCache(1);
         cache.put(p, new AttributedList<>(Arrays.asList(a, b)));
         SyncTransfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));

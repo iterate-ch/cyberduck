@@ -68,8 +68,8 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                 }
                 final PathAttributes remote = attribute.find(file);
                 final PathAttributes current = new PathAttributes()
-                        .withModificationDate(local.attributes().getModificationDate())
-                        .withSize(local.attributes().getSize());
+                        .setModificationDate(local.attributes().getModificationDate())
+                        .setSize(local.attributes().getSize());
                 // We must always compare the size because the download filter will have already created a temporary 0 byte file
                 switch(new SizeComparisonService().compare(Path.Type.file, current, remote)) {
                     case remote:
@@ -84,7 +84,7 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                 else {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                     final Checksum checksum = this.checksum(remote.getChecksum().algorithm, local);
-                    current.withETag(checksum.hash).withChecksum(checksum);
+                    current.setETag(checksum.hash).setChecksum(checksum);
                 }
                 final Comparison result = comparison.compare(Path.Type.file, current, remote);
                 switch(result) {

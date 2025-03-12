@@ -88,7 +88,7 @@ public class MoveWorkerTest {
                 if(type == Move.class) {
                     return (T) new Move() {
                         private final AtomicInteger count = new AtomicInteger();
-                        private final PathAttributes attr = new PathAttributes().withSize(1L);
+                        private final PathAttributes attr = new PathAttributes().setSize(1L);
 
                         @Override
                         public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {

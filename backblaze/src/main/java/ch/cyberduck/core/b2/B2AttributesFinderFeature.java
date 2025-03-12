@@ -70,7 +70,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             // Pending large file upload
             final Write.Append append = new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid)).append(file, new TransferStatus());
             if(append.append) {
-                return new PathAttributes().withSize(append.offset);
+                return new PathAttributes().setSize(append.offset);
             }
             return PathAttributes.EMPTY;
         }

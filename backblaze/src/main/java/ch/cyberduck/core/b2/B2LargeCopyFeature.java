@@ -44,13 +44,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import static ch.cyberduck.core.b2.B2LargeUploadService.X_BZ_INFO_LARGE_FILE_SHA1;
-import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
-import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
-
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2StartLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
+
+import static ch.cyberduck.core.b2.B2LargeUploadService.X_BZ_INFO_LARGE_FILE_SHA1;
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2LargeCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(B2LargeCopyFeature.class);
@@ -129,7 +129,7 @@ public class B2LargeCopyFeature implements Copy {
             session.getClient().finishLargeFileUpload(response.getFileId(), checksums.toArray(new String[checksums.size()]));
             log.info("Finished large file upload {} with {} parts", target, completed.size());
             fileid.cache(target, response.getFileId());
-            return new Path(target).withAttributes(new PathAttributes(source.attributes()).withVersionId(response.getFileId()));
+            return new Path(target).withAttributes(new PathAttributes(source.attributes()).setVersionId(response.getFileId()));
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(fileid).map("Cannot copy {0}", e, source);

@@ -198,7 +198,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         log.debug("Set new value {} for item {}", value, item);
         if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
-                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), new PathAttributes(item.attributes()).withVersionId(null));
+                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), new PathAttributes(item.attributes()).setVersionId(null));
                 new MoveController(controller).rename(item, renamed);
             }
         }

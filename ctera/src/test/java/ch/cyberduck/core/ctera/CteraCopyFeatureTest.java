@@ -42,28 +42,28 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightDirectoryMissingCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        source.setAttributes(source.attributes().withAcl(Acl.EMPTY));
+        source.setAttributes(source.attributes().setAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        target.getParent().setAttributes(target.getParent().attributes().withAcl(Acl.EMPTY));
+        target.getParent().setAttributes(target.getParent().attributes().setAcl(Acl.EMPTY));
         new CteraCopyFeature(session).preflight(source, Optional.of(target));
     }
 
     @Test
     public void testPreflightFileMissingCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        source.setAttributes(source.attributes().withAcl(Acl.EMPTY));
+        source.setAttributes(source.attributes().setAcl(Acl.EMPTY));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        target.getParent().setAttributes(target.getParent().attributes().withAcl(Acl.EMPTY));
+        target.getParent().setAttributes(target.getParent().attributes().setAcl(Acl.EMPTY));
         new CteraCopyFeature(session).preflight(source, Optional.of(target));
     }
 
     @Test
     public void testPreflightDirectoryAccessDeniedTargetNoCreatedirectoriesPermissionCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
+        source.setAttributes(source.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         // target's parent without createdirectories permission
-        target.getParent().setAttributes(target.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        target.getParent().setAttributes(target.getParent().attributes().setAcl(new Acl(new Acl.CanonicalUser())));
         final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session).preflight(source, Optional.of(target)));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), target.getName())));
     }
@@ -71,13 +71,13 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightDirectoryAccessDeniedTargetExistsNotWritablePermissionCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
+        source.setAttributes(source.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        target.setAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
-        target.getParent().setAttributes(target.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)));
+        target.setAttributes(target.attributes().setAcl(new Acl(new Acl.CanonicalUser())));
+        target.getParent().setAttributes(target.getParent().attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)));
         final CteraAttributesFinderFeature mock = mock(CteraAttributesFinderFeature.class);
         // target exists and not writable
-        when(mock.find(eq(target))).thenReturn(new PathAttributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        when(mock.find(eq(target))).thenReturn(new PathAttributes().setAcl(new Acl(new Acl.CanonicalUser())));
         final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session).preflight(source, Optional.of(target)));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), target.getName())));
     }
@@ -85,14 +85,14 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightFileAccessDeniedTargetExistsNotWritableCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
+        source.setAttributes(source.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        target.setAttributes(target.attributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        target.setAttributes(target.attributes().setAcl(new Acl(new Acl.CanonicalUser())));
         // no createfilespermission required for now
-        target.getParent().setAttributes(target.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        target.getParent().setAttributes(target.getParent().attributes().setAcl(new Acl(new Acl.CanonicalUser())));
         final CteraAttributesFinderFeature mock = mock(CteraAttributesFinderFeature.class);
         // target exists and not writable
-        when(mock.find(eq(target))).thenReturn(new PathAttributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        when(mock.find(eq(target))).thenReturn(new PathAttributes().setAcl(new Acl(new Acl.CanonicalUser())));
         final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session).preflight(source, Optional.of(target)));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), target.getName())));
     }
@@ -100,9 +100,9 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightDirectoryAccessGrantedCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)));
+        source.setAttributes(source.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        target.getParent().setAttributes(target.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)));
+        target.getParent().setAttributes(target.getParent().attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)));
         new CteraCopyFeature(session).preflight(source, Optional.of(target));
         // assert no fail
     }
@@ -110,10 +110,10 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightFileAccessGrantedCustomProps() throws Exception {
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        source.setAttributes(source.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)));
+        source.setAttributes(source.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.DELETEPERMISSION)));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // no createfilespermission required for now
-        target.getParent().setAttributes(target.getParent().attributes().withAcl(new Acl(new Acl.CanonicalUser())));
+        target.getParent().setAttributes(target.getParent().attributes().setAcl(new Acl(new Acl.CanonicalUser())));
         new CteraCopyFeature(session).preflight(source, Optional.of(target));
         // assert no fail
     }

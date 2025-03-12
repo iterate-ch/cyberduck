@@ -62,7 +62,7 @@ public class DAVMoveFeature implements Move {
                         status.isExists());
             }
             // Copy original file attributes
-            return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).withLockId(null));
+            return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).setLockId(null));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot rename {0}", e, file);

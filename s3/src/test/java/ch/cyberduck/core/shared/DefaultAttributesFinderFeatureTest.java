@@ -85,10 +85,10 @@ public class DefaultAttributesFinderFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(file, status, new DisabledConnectionCallback());
         IOUtils.copy(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals(initialVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(initialVersion))).getVersionId());
+        assertEquals(initialVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(initialVersion))).getVersionId());
         final String newVersion = ((S3Object) out.getStatus()).getVersionId();
-        assertEquals(newVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(newVersion))).getVersionId());
-        assertNotEquals(initialVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(newVersion))).getVersionId());
+        assertEquals(newVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(newVersion))).getVersionId());
+        assertNotEquals(initialVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(newVersion))).getVersionId());
         assertEquals(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()).getVersionId(), f.find(file).getVersionId());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

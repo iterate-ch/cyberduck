@@ -112,7 +112,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
                 // Try to find pending large file upload
                 final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService, new SwiftWriteFeature(session, regionService)).append(file, new TransferStatus());
                 if(append.append) {
-                    return new PathAttributes().withSize(append.offset);
+                    return new PathAttributes().setSize(append.offset);
                 }
                 throw e;
             }

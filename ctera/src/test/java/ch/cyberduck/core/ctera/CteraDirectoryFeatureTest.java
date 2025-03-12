@@ -53,21 +53,21 @@ public class CteraDirectoryFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightFileMissingCustomProps() throws Exception {
         final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        workdir.setAttributes(workdir.attributes().withAcl(Acl.EMPTY));
+        workdir.setAttributes(workdir.attributes().setAcl(Acl.EMPTY));
         new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random());
     }
 
     @Test
     public void testPreflightFileAccessDeniedCustomProps() throws Exception {
         final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        workdir.setAttributes(workdir.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
+        workdir.setAttributes(workdir.attributes().setAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         assertThrows(AccessDeniedException.class, () -> new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random()));
     }
 
     @Test
     public void testPreflightFileAccessGrantedCustomProps() throws Exception {
         final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        workdir.setAttributes(workdir.attributes().withAcl(new Acl(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)));
+        workdir.setAttributes(workdir.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)));
         new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random());
         // assert no fail
     }

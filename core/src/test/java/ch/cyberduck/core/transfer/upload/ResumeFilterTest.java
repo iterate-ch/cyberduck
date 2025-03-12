@@ -151,7 +151,7 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().withSize(3L))));
+                        .withAttributes(new PathAttributes().setSize(3L))));
                 listener.chunk(folder, list);
                 return list;
             }
@@ -190,7 +190,7 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().withSize(2L))));
+                        .withAttributes(new PathAttributes().setSize(2L))));
                 listener.chunk(folder, list);
                 return list;
             }
@@ -235,7 +235,7 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().withSize(4L))));
+                        .withAttributes(new PathAttributes().setSize(4L))));
                 listener.chunk(folder, list);
                 return list;
             }

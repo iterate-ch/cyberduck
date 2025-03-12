@@ -106,23 +106,23 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(version1))));
+                new PathAttributes(file.attributes()).setVersionId(version1))));
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(version2))));
+                new PathAttributes(file.attributes()).setVersionId(version2))));
         assertTrue(new S3FindFeature(session, acl).find(new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(version1))));
+                new PathAttributes(file.attributes()).setVersionId(version1))));
         assertTrue(new S3FindFeature(session, acl).find(new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(version2))));
+                new PathAttributes(file.attributes()).setVersionId(version2))));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(file).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         // Versioned files are not deleted but with delete marker added
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version1))));
+                new PathAttributes(file.attributes()).setVersionId(version1))));
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version2))));
+                new PathAttributes(file.attributes()).setVersionId(version2))));
         assertTrue(new S3FindFeature(session, acl).find(new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(version1))));
+                new PathAttributes(file.attributes()).setVersionId(version1))));
         assertTrue(new S3FindFeature(session, acl).find(new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(version2))));
+                new PathAttributes(file.attributes()).setVersionId(version2))));
     }
 
     @Test(expected = AccessDeniedException.class)

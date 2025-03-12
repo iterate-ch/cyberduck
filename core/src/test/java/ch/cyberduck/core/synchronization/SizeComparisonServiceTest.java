@@ -12,9 +12,9 @@ public class SizeComparisonServiceTest {
     @Test
     public void testCompare() {
         ComparisonService s = new SizeComparisonService();
-        assertEquals(Comparison.remote, s.compare(Path.Type.file, new PathAttributes().withSize(0L), new PathAttributes().withSize(1L)));
-        assertEquals(Comparison.local, s.compare(Path.Type.file, new PathAttributes().withSize(1L), new PathAttributes().withSize(0L)));
-        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withSize(1L), new PathAttributes().withSize(1L)));
-        assertEquals(Comparison.notequal, s.compare(Path.Type.file, new PathAttributes().withSize(2L), new PathAttributes().withSize(1L)));
+        assertEquals(Comparison.remote, s.compare(Path.Type.file, new PathAttributes().setSize(0L), new PathAttributes().setSize(1L)));
+        assertEquals(Comparison.local, s.compare(Path.Type.file, new PathAttributes().setSize(1L), new PathAttributes().setSize(0L)));
+        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().setSize(1L), new PathAttributes().setSize(1L)));
+        assertEquals(Comparison.notequal, s.compare(Path.Type.file, new PathAttributes().setSize(2L), new PathAttributes().setSize(1L)));
     }
 }

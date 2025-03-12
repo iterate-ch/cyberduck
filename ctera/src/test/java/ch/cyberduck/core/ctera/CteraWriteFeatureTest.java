@@ -123,21 +123,21 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
     @Test
     public void testPreflightFileMissingCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        file.setAttributes(file.attributes().withAcl(Acl.EMPTY));
+        file.setAttributes(file.attributes().setAcl(Acl.EMPTY));
         new CteraWriteFeature(session).preflight(file);
     }
 
     @Test
     public void testPreflightFileAccessDeniedCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
+        file.setAttributes(file.attributes().setAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
         assertThrows(AccessDeniedException.class, () -> new CteraWriteFeature(session).preflight(file));
     }
 
     @Test
     public void testPreflightFileAccessGrantedCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        file.setAttributes(file.attributes().withAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
+        file.setAttributes(file.attributes().setAcl(new Acl(new Acl.CanonicalUser(), WRITEPERMISSION)));
         new CteraWriteFeature(session).preflight(file);
         // assert no fail
     }

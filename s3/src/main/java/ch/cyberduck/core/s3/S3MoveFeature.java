@@ -70,7 +70,7 @@ public class S3MoveFeature implements Move {
                         String.valueOf(Path.DELIMITER), 1, null, null, false);
                 if(marker.getItems().length == 1) {
                     final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
-                    target.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                    target.attributes().setVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                     delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
                 }
                 else {
@@ -85,7 +85,7 @@ public class S3MoveFeature implements Move {
             try {
                 target = proxy.copy(source, renamed, status.withLength(source.attributes().getSize()), connectionCallback, new DisabledStreamListener());
                 // Copy source path and nullify version id to add a delete marker
-                delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).withVersionId(null)), status),
+                delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).setVersionId(null)), status),
                         connectionCallback, callback);
             }
             catch(NotfoundException e) {

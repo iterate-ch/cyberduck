@@ -156,7 +156,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                     if(boxPolicy.isCanAddQueue()) {
                         acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
                     }
-                    return attr.withAcl(acl);
+                    return attr.setAcl(acl);
                 }
                 if(containerService.isDocuments(file)) {
                     if(boxPolicy.isCanListFilesRoot()) {
@@ -165,13 +165,13 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                     if(boxPolicy.isCanAddFilesRoot()) {
                         acl.addAll(new Acl.CanonicalUser(), CANADDCHILDREN);
                     }
-                    return attr.withAcl(acl);
+                    return attr.setAcl(acl);
                 }
                 if(containerService.isTrash(file)) {
                     if(boxPolicy.isCanAccessTrash()) {
                         acl.addAll(new Acl.CanonicalUser(), CANLISTCHILDREN);
                     }
-                    return attr.withAcl(acl).withHidden(true);
+                    return attr.setAcl(acl).setHidden(true);
                 }
                 throw new NotfoundException(file.getAbsolute());
             }

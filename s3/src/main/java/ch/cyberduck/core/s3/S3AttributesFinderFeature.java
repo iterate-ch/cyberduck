@@ -66,7 +66,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         if(file.getType().contains(Path.Type.upload)) {
             final Write.Append append = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl).append(file, new TransferStatus());
             if(append.append) {
-                return new PathAttributes().withSize(append.offset);
+                return new PathAttributes().setSize(append.offset);
             }
             throw new NotfoundException(file.getAbsolute());
         }

@@ -80,7 +80,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         if(new SimplePathPredicate(directory).test(home) || directory.isChild(home)) {
             final PathAttributes attributes = new PathAttributes(directory.attributes());
             // The root of the vault is a different target directory and file ids always correspond to the metadata file
-            attributes.withVersionId(null);
+            attributes.setVersionId(null);
             attributes.withFileId(null);
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);

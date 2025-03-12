@@ -342,7 +342,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testSize() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService feature = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L).withRemote(new PathAttributes().withSize(3L)));
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L).withRemote(new PathAttributes().setSize(3L)));
         assertFalse(append.append);
         assertEquals(0L, append.offset, 0L);
     }

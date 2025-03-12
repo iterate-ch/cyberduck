@@ -73,7 +73,7 @@ public class CryptoCopyFeature implements Copy {
                         public void setResponse(final PathAttributes attributes) {
                             status.setResponse(attributes);
                             // Will be converted back to clear text when decrypting file below set in default copy feature implementation using writer.
-                            super.setResponse(new PathAttributes(attributes).withSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                            super.setResponse(new PathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
                         }
                     } : status,
                     callback, listener);

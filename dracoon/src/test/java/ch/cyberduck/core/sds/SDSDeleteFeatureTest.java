@@ -60,7 +60,7 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
         assertNotNull(versionId);
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         try {
-            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(file.withAttributes(new PathAttributes().withVersionId(versionId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(file.withAttributes(new PathAttributes().setVersionId(versionId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
             fail();
         }
         catch(NotfoundException e) {

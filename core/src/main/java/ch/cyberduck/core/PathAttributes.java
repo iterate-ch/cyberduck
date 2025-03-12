@@ -309,12 +309,8 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * @param size the size of file in bytes.
      */
-    public void setSize(final long size) {
+    public PathAttributes setSize(final long size) {
         this.size = size;
-    }
-
-    public PathAttributes withSize(final long size) {
-        this.setSize(size);
         return this;
     }
 
@@ -322,12 +318,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return quota;
     }
 
-    public void setQuota(final Quota.Space quota) {
+    public PathAttributes setQuota(final Quota.Space quota) {
         this.quota = quota;
-    }
-
-    public PathAttributes withQuota(final Quota.Space quota) {
-        this.setQuota(quota);
         return this;
     }
 
@@ -336,12 +328,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return modified;
     }
 
-    public void setModificationDate(final long millis) {
+    public PathAttributes setModificationDate(final long millis) {
         this.modified = millis;
-    }
-
-    public PathAttributes withModificationDate(final long millis) {
-        this.setModificationDate(millis);
         return this;
     }
 
@@ -350,12 +338,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return created;
     }
 
-    public void setCreationDate(final long millis) {
+    public PathAttributes setCreationDate(final long millis) {
         this.created = millis;
-    }
-
-    public PathAttributes withCreationDate(final long millis) {
-        this.setCreationDate(millis);
         return this;
     }
 
@@ -364,8 +348,9 @@ public class PathAttributes extends Attributes implements Serializable {
         return accessed;
     }
 
-    public void setAccessedDate(final long millis) {
+    public PathAttributes setAccessedDate(final long millis) {
         this.accessed = millis;
+        return this;
     }
 
     /**
@@ -379,12 +364,8 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * @param p UNIX permissions
      */
-    public void setPermission(final Permission p) {
+    public PathAttributes setPermission(final Permission p) {
         this.permission = p;
-    }
-
-    public PathAttributes withPermission(final Permission p) {
-        this.setPermission(p);
         return this;
     }
 
@@ -392,12 +373,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return acl;
     }
 
-    public void setAcl(final Acl acl) {
+    public PathAttributes setAcl(final Acl acl) {
         this.acl = acl;
-    }
-
-    public PathAttributes withAcl(final Acl acl) {
-        this.setAcl(acl);
         return this;
     }
 
@@ -406,8 +383,9 @@ public class PathAttributes extends Attributes implements Serializable {
         return owner;
     }
 
-    public void setOwner(final String o) {
+    public PathAttributes setOwner(final String o) {
         this.owner = o;
+        return this;
     }
 
     @Override
@@ -415,20 +393,17 @@ public class PathAttributes extends Attributes implements Serializable {
         return group;
     }
 
-    public void setGroup(final String g) {
+    public PathAttributes setGroup(final String g) {
         this.group = g;
+        return this;
     }
 
     public Checksum getChecksum() {
         return checksum;
     }
 
-    public void setChecksum(final Checksum checksum) {
+    public PathAttributes setChecksum(final Checksum checksum) {
         this.checksum = checksum;
-    }
-
-    public PathAttributes withChecksum(final Checksum checksum) {
-        this.setChecksum(checksum);
         return this;
     }
 
@@ -436,12 +411,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return etag;
     }
 
-    public void setETag(final String etag) {
+    public PathAttributes setETag(final String etag) {
         this.etag = etag;
-    }
-
-    public PathAttributes withETag(final String etag) {
-        this.setETag(etag);
         return this;
     }
 
@@ -455,16 +426,18 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * @param storageClass Storage redundancy identifier.
      */
-    public void setStorageClass(final String storageClass) {
+    public PathAttributes setStorageClass(final String storageClass) {
         this.storageClass = storageClass;
+        return this;
     }
 
     public Encryption.Algorithm getEncryption() {
         return encryption;
     }
 
-    public void setEncryption(final Encryption.Algorithm encryption) {
+    public PathAttributes setEncryption(final Encryption.Algorithm encryption) {
         this.encryption = encryption;
+        return this;
     }
 
     /**
@@ -481,12 +454,8 @@ public class PathAttributes extends Attributes implements Serializable {
      *
      * @param versionId Revision
      */
-    public void setVersionId(final String versionId) {
+    public PathAttributes setVersionId(final String versionId) {
         this.versionId = versionId;
-    }
-
-    public PathAttributes withVersionId(final String versionId) {
-        this.setVersionId(versionId);
         return this;
     }
 
@@ -499,8 +468,9 @@ public class PathAttributes extends Attributes implements Serializable {
         return fileId;
     }
 
-    public void setFileId(final String fileId) {
+    public PathAttributes setFileId(final String fileId) {
         this.fileId = fileId;
+        return this;
     }
 
     public PathAttributes withFileId(final String fileId) {
@@ -508,21 +478,12 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
-    public PathAttributes withDisplayname(final String displayname) {
-        this.setDisplayname(displayname);
-        return this;
-    }
-
     public String getLockId() {
         return lockId;
     }
 
-    public void setLockId(final String lockId) {
+    public PathAttributes setLockId(final String lockId) {
         this.lockId = lockId;
-    }
-
-    public PathAttributes withLockId(final String lockId) {
-        this.setLockId(lockId);
         return this;
     }
 
@@ -530,8 +491,9 @@ public class PathAttributes extends Attributes implements Serializable {
         return directoryId;
     }
 
-    public void setDirectoryId(final String directoryId) {
+    public PathAttributes setDirectoryId(final String directoryId) {
         this.directoryId = directoryId;
+        return this;
     }
 
     /**
@@ -541,8 +503,9 @@ public class PathAttributes extends Attributes implements Serializable {
         return revision;
     }
 
-    public void setRevision(final Long revision) {
+    public PathAttributes setRevision(final Long revision) {
         this.revision = revision;
+        return this;
     }
 
     /**
@@ -552,8 +515,9 @@ public class PathAttributes extends Attributes implements Serializable {
         return decrypted;
     }
 
-    public void setDecrypted(final Path decrypted) {
+    public PathAttributes setDecrypted(final Path decrypted) {
         this.decrypted = decrypted;
+        return this;
     }
 
     /**
@@ -563,12 +527,14 @@ public class PathAttributes extends Attributes implements Serializable {
         return encrypted;
     }
 
-    public void setEncrypted(final Path encrypted) {
+    public PathAttributes setEncrypted(final Path encrypted) {
         this.encrypted = encrypted;
+        return this;
     }
 
-    public void setVault(final Path vault) {
+    public PathAttributes setVault(final Path vault) {
         this.vault = vault;
+        return this;
     }
 
     public Path getVault() {
@@ -590,20 +556,17 @@ public class PathAttributes extends Attributes implements Serializable {
      *
      * @param duplicate Flag
      */
-    public void setDuplicate(final boolean duplicate) {
+    public PathAttributes setDuplicate(final boolean duplicate) {
         this.duplicate = duplicate;
+        return this;
     }
 
     public Boolean isHidden() {
         return hidden != null && hidden;
     }
 
-    public void setHidden(final boolean hidden) {
+    public PathAttributes setHidden(final boolean hidden) {
         this.hidden = hidden;
-    }
-
-    public PathAttributes withHidden(final boolean hidden) {
-        this.setHidden(hidden);
         return this;
     }
 
@@ -611,12 +574,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return trashed != null && trashed;
     }
 
-    public void setTrashed(final boolean trashed) {
+    public PathAttributes setTrashed(final boolean trashed) {
         this.trashed = trashed;
-    }
-
-    public PathAttributes withTrashed(final boolean trashed) {
-        this.setTrashed(trashed);
         return this;
     }
 
@@ -624,43 +583,48 @@ public class PathAttributes extends Attributes implements Serializable {
         return metadata;
     }
 
-    public void setMetadata(final Map<String, String> metadata) {
+    public PathAttributes setMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
+        return this;
     }
 
     public String getRegion() {
         return region;
     }
 
-    public void setRegion(final String region) {
+    public PathAttributes setRegion(final String region) {
         this.region = region;
+        return this;
     }
 
     public String getDisplayname() {
         return displayname;
     }
 
-    public void setDisplayname(final String displayname) {
+    public PathAttributes setDisplayname(final String displayname) {
         this.displayname = displayname;
+        return this;
     }
 
     public DescriptiveUrl getLink() {
         return link;
     }
 
-    public void setLink(final DescriptiveUrl link) {
+    public PathAttributes setLink(final DescriptiveUrl link) {
         this.link = link;
+        return this;
     }
 
     public Map<String, String> getCustom() {
         return custom;
     }
 
-    public void setCustom(final Map<String, String> custom) {
+    public PathAttributes setCustom(final Map<String, String> custom) {
         this.custom = custom;
+        return this;
     }
 
-    public PathAttributes withCustom(final String key, final String value) {
+    public PathAttributes setCustom(final String key, final String value) {
         custom = new HashMap<>(custom);
         custom.put(key, value);
         return this;
@@ -670,12 +634,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return verdict;
     }
 
-    public void setVerdict(final Verdict verdict) {
+    public PathAttributes setVerdict(final Verdict verdict) {
         this.verdict = verdict;
-    }
-
-    public PathAttributes withVerdict(final Verdict verdict) {
-        this.setVerdict(verdict);
         return this;
     }
 
