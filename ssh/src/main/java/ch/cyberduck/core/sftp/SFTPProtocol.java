@@ -90,6 +90,7 @@ public class SFTPProtocol extends AbstractProtocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == HostnameConfigurator.class) {
             return (T) hostnmame;

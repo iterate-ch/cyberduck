@@ -68,6 +68,7 @@ public class EueProtocol extends AbstractProtocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == ComparisonService.class) {
             return (T) new DefaultComparisonService(DefaultComparisonService.forFiles(this), new ETagComparisonService());

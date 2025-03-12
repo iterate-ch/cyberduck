@@ -90,6 +90,7 @@ public class DAVSSLProtocol extends AbstractProtocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == CredentialsConfigurator.class) {
             return (T) new DAVWindowsIntegratedCredentialsConfigurator(new WindowsIntegratedCredentialsConfigurator(true));
