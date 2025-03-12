@@ -138,7 +138,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
             final NSObject url = select.URLs().lastObject();
             if(url != null) {
                 final Local selected = LocalFactory.get(Rococoa.cast(url, NSURL.class).path());
-                return selected.withBookmark(FilesystemBookmarkResolverFactory.get().create(selected));
+                return selected.setBookmark(FilesystemBookmarkResolverFactory.get().create(selected));
             }
         }
         throw new LoginCanceledException();

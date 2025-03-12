@@ -1359,7 +1359,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     // The currently set download folder
     private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.get(preferences.getProperty("queue.download.folder"))
-            .withBookmark(preferences.getProperty("queue.download.folder.bookmark"));
+            .setBookmark(preferences.getProperty("queue.download.folder.bookmark"));
 
     public void setDownloadPathPopup(NSPopUpButton b) {
         this.downloadPathPopup = b;
@@ -1424,7 +1424,7 @@ public class PreferencesController extends ToolbarWindowController {
             }
         }
         final Local custom = LocalFactory.get(preferences.getProperty("queue.download.folder"))
-                .withBookmark(preferences.getProperty("queue.download.folder.bookmark"));
+                .setBookmark(preferences.getProperty("queue.download.folder.bookmark"));
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
         item.setTitle(custom.getDisplayName());
         item.setRepresentedObject(custom.getAbsolute());

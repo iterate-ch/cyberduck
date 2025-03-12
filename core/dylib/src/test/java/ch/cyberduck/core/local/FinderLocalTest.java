@@ -256,7 +256,7 @@ public class FinderLocalTest {
     public void testLockDisabledResolver() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random());
         new DefaultLocalTouchFeature().touch(l);
-        l.withBookmark(new AliasFilesystemBookmarkResolver().create(l));
+        l.setBookmark(new AliasFilesystemBookmarkResolver().create(l));
         assertNull(l.lock(false));
         l.delete();
     }

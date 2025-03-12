@@ -41,7 +41,7 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
     }
 
     public TerminalHostKeyVerifier(final TerminalPromptReader prompt) {
-        super(LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
+        super(LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).setBookmark(
                 PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
         ));
         this.prompt = prompt;

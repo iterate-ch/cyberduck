@@ -46,7 +46,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     private final Local file;
 
     public PromptHostKeyCallback(final WindowController c) {
-        this(c, LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
+        this(c, LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).setBookmark(
                 PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
         ));
     }
