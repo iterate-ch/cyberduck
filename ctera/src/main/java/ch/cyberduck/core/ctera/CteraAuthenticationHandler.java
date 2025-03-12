@@ -153,7 +153,9 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     public CteraTokens save(final CteraTokens tokens) throws LocalAccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
         final Credentials credentials = host.getCredentials();
-        credentials.withToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()))
+        credentials
+                .withToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()))
+                .withPassword(password)
                 .withSaved(new LoginOptions().save);
         if(credentials.isSaved()) {
             store.save(host);
