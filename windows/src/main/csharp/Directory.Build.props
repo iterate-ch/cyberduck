@@ -17,9 +17,4 @@
 
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(MSBuildThisFileDirectory)../))" />
 
-  <PropertyGroup>
-    <Platforms>x64</Platforms>
-    <Platform Condition=" '$(Platform)'=='' ">x64</Platform>
-  </PropertyGroup>
-
 </Project>
