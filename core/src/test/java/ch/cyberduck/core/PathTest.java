@@ -35,9 +35,19 @@ public class PathTest {
     }
 
     @Test
+    public void testCopy() {
+        Path path = new Path("/path", EnumSet.of(Path.Type.file)).setAlias("a");
+        assertEquals(path, new Path(path));
+        assertEquals("a", new Path(path).getAlias());
+    }
+
+    @Test
     public void testDictionaryFile() {
         Path path = new Path("/path", EnumSet.of(Path.Type.file));
-        assertEquals(path, new PathDictionary<>().deserialize((path.serialize(SerializerFactory.get()))));
+        path.setAlias("a");
+        final Path deserialized = new PathDictionary<>().deserialize((path.serialize(SerializerFactory.get())));
+        assertEquals(path, deserialized);
+        assertEquals("a", deserialized.getAlias());
     }
 
     @Test

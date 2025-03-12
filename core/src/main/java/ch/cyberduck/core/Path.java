@@ -46,11 +46,14 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * The file type
      */
     private EnumSet<Type> type;
-
     /**
      * File attributes
      */
     private PathAttributes attributes;
+    /**
+     * Item identifier
+     */
+    private String alias;
 
     public Path(final Path copy) {
         this.parent = copy.parent;
@@ -58,6 +61,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         this.symlink = null == copy.symlink ? null : new Path(copy.symlink);
         this.type = EnumSet.copyOf(copy.type);
         this.attributes = new PathAttributes(copy.attributes);
+        this.alias = copy.alias;
     }
 
     /**
@@ -112,6 +116,9 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
             dict.setObjectForKey(symlink, "Symbolic Link");
         }
         dict.setObjectForKey(attributes, "Attributes");
+        if(alias != null) {
+            dict.setStringForKey(alias, "Alias");
+        }
         return dict.getSerialized();
     }
 
@@ -240,6 +247,15 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
 
     public void setSymlinkTarget(final Path target) {
         this.symlink = target;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public Path setAlias(final String alias) {
+        this.alias = alias;
+        return this;
     }
 
     /**

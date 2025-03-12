@@ -57,7 +57,7 @@ public class UploadDirectoryFinder implements DirectoryFinder {
             return;
         }
         log.info("Save default upload folder {} for bookmark {}", directory, bookmark);
-        bookmark.setUploadFolder(directory.withBookmark(FilesystemBookmarkResolverFactory.get().create(directory)));
+        bookmark.setUploadFolder(directory.setBookmark(FilesystemBookmarkResolverFactory.get().create(directory)));
         if(collection.contains(bookmark)) {
             collection.collectionItemChanged(bookmark);
         }

@@ -280,12 +280,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     /**
      * @param data Security scoped bookmark to save for later retrieval of file reference or null to remove
      */
-    public void setBookmark(final String data) {
+    public Local setBookmark(final String data) {
         this.bookmark = data;
-    }
-
-    public Local withBookmark(final String data) {
-        this.setBookmark(data);
         return this;
     }
 

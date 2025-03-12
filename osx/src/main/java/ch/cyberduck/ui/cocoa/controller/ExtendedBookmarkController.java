@@ -238,7 +238,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                 final NSObject url = sheet.URLs().lastObject();
                 if(url != null) {
                     final Local selected = LocalFactory.get(Rococoa.cast(url, NSURL.class).path());
-                    bookmark.setDownloadFolder(selected.withBookmark(FilesystemBookmarkResolverFactory.get().create(selected)));
+                    bookmark.setDownloadFolder(selected.setBookmark(FilesystemBookmarkResolverFactory.get().create(selected)));
                 }
                 break;
         }

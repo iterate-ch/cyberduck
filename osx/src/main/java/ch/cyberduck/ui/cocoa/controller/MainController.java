@@ -1278,7 +1278,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(Path.Type.file == detector.detect(h.getDefaultPath())) {
                             final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
                             TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                                    LocalFactory.get(LocalFactory.get(preferences.getProperty("queue.download.folder")).withBookmark(
+                                    LocalFactory.get(LocalFactory.get(preferences.getProperty("queue.download.folder")).setBookmark(
                                             preferences.getProperty("queue.download.folder.bookmark")), file.getName())), new TransferOptions());
                         }
                         else {

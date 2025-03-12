@@ -45,7 +45,7 @@ public class DownloadDirectoryFinder implements DirectoryFinder {
                 return bookmark.getDownloadFolder();
             }
         }
-        final Local directory = LocalFactory.get(preferences.getProperty("queue.download.folder")).withBookmark(
+        final Local directory = LocalFactory.get(preferences.getProperty("queue.download.folder")).setBookmark(
                 preferences.getProperty("queue.download.folder.bookmark"));
         log.info("Suggest default download folder {} for bookmark {}", directory, bookmark);
         return directory;
@@ -57,7 +57,7 @@ public class DownloadDirectoryFinder implements DirectoryFinder {
             return;
         }
         log.info("Save default download folder {} for bookmark {}", directory, bookmark);
-        bookmark.setDownloadFolder(directory.withBookmark(FilesystemBookmarkResolverFactory.get().create(directory)));
+        bookmark.setDownloadFolder(directory.setBookmark(FilesystemBookmarkResolverFactory.get().create(directory)));
         if(collection.contains(bookmark)) {
             collection.collectionItemChanged(bookmark);
         }
