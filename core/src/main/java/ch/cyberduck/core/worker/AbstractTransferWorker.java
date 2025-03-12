@@ -501,6 +501,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                         }
                         if(complete) {
+                            status.setComplete();
                             final Session<?> source = borrow(Connection.source);
                             final Session<?> destination = borrow(Connection.destination);
                             try {
@@ -510,7 +511,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 filter.complete(
                                         status.getRename().remote != null ? status.getRename().remote : item.remote,
                                         status.getRename().local != null ? status.getRename().local : item.local,
-                                        status.setComplete(), progress);
+                                        status, progress);
                             }
                             finally {
                                 release(source, Connection.source, null);

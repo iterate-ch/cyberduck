@@ -255,17 +255,15 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     }
 
     @Override
-    public TransferStatus setComplete() {
+    public void setComplete() {
         complete.set(true);
         done.countDown();
-        return this;
     }
 
     @Override
-    public TransferStatus setFailure(final BackgroundException failure) {
+    public void setFailure(final BackgroundException failure) {
         complete.set(false);
         done.countDown();
-        return this;
     }
 
     /**
@@ -459,9 +457,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     }
 
     @Override
-    public TransferStatus setResponse(PathAttributes attributes) {
+    public void setResponse(PathAttributes attributes) {
         this.response = attributes;
-        return this;
     }
 
     public Permission getPermission() {

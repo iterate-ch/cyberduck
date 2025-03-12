@@ -40,15 +40,13 @@ public class ProxyTransferStatus extends TransferStatus implements StreamCancela
     }
 
     @Override
-    public TransferStatus setComplete() {
+    public void setComplete() {
         progress.setComplete();
-        return this;
     }
 
     @Override
-    public TransferStatus setFailure(final BackgroundException failure) {
+    public void setFailure(final BackgroundException failure) {
         progress.setFailure(failure);
-        return this;
     }
 
     @Override
@@ -57,8 +55,7 @@ public class ProxyTransferStatus extends TransferStatus implements StreamCancela
     }
 
     @Override
-    public TransferStatus setResponse(final PathAttributes attributes) {
+    public void setResponse(final PathAttributes attributes) {
         response.setResponse(attributes);
-        return this;
     }
 }

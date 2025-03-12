@@ -186,7 +186,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             log.info("Finished large file upload {} with {} parts", file, completed.size());
             fileid.cache(file, response.getFileId());
             // Mark parent status as complete
-            status.setResponse(new B2AttributesFinderFeature(session, fileid).toAttributes(response)).setComplete();
+            status.setResponse(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
+            status.setComplete();
             return response;
         }
         catch(B2ApiException e) {

@@ -245,7 +245,8 @@ public class SDSUploadService {
                                 // Set node id in transfer status
                                 nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
                                 // Mark parent status as complete
-                                status.setResponse(new SDSAttributesAdapter(session).toAttributes(uploadStatus.getNode())).setComplete();
+                                status.setResponse(new SDSAttributesAdapter(session).toAttributes(uploadStatus.getNode()));
+                                status.setComplete();
                                 signal.countDown();
                                 break;
                         }

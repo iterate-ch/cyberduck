@@ -28,5 +28,5 @@ public interface TransferResponse {
      *
      * @param attributes Metadata
      */
-    TransferStatus setResponse(PathAttributes attributes);
+    void setResponse(PathAttributes attributes);
 }

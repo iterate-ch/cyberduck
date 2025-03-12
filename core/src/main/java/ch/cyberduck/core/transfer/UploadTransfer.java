@@ -249,11 +249,12 @@ public class UploadTransfer extends Transfer {
             progress.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
             try {
                 mkdir.mkdir(file, status);
+                status.setComplete();
                 // Post process of file
                 filter.complete(
                         status.getRename().remote != null ? status.getRename().remote : entry.getKey().remote,
                         status.getRename().local != null ? status.getRename().local : entry.getKey().local,
-                        status.setComplete(), progress);
+                        status, progress);
             }
             catch(BackgroundException e) {
                 if(error.prompt(entry.getKey(), status, e, files.size())) {
