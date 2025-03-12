@@ -98,6 +98,7 @@ public class PathDictionary<T> {
         if(symlinkObj != null) {
             path.setSymlinkTarget(new PathDictionary<>(factory).deserialize(symlinkObj));
         }
+        path.setAlias(dict.stringForKey("Alias"));
         return path;
     }
 }
