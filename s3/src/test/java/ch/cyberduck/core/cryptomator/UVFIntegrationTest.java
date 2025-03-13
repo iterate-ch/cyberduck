@@ -60,8 +60,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test {@link UVFVault} implementation against test data from
@@ -127,7 +126,10 @@ public class UVFIntegrationTest {
             for(final String fi : files) {
                 final Path file = new Path("/" + bucketName + "/" + fi, EnumSet.of(AbstractPath.Type.file));
                 byte[] content = new byte[1000];
-                final int size = UVFIntegrationTest.class.getResourceAsStream("/uvf/first_vault" + fi).read(content);
+                final int size;
+                try(InputStream in = UVFIntegrationTest.class.getResourceAsStream("/uvf/first_vault" + fi)) {
+                    size = in.read(content);
+                }
                 final TransferStatus transferStatus = new TransferStatus().withLength(size);
                 transferStatus.setChecksum(storage.getFeature(Write.class).checksum(file, transferStatus).compute(new ByteArrayInputStream(content), transferStatus));
                 storage.getFeature(Bulk.class).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), transferStatus), new DisabledConnectionCallback());
@@ -148,7 +150,7 @@ public class UVFIntegrationTest {
             final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
             storage.withRegistry(vaults);
             try(final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(jwe)) {
-                assertTrue(Arrays.equals(masterKey.rootDirId(), vault.getRootDirId()));
+                assertArrayEquals(masterKey.rootDirId(), vault.getRootDirId());
             }
 
             final Path home = vault.getHome().withAttributes(attr).withType(EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.vault));
@@ -158,10 +160,11 @@ public class UVFIntegrationTest {
                 final Path foo = new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted));
                 assertTrue(Arrays.toString(list.toArray()), list.contains(foo));
                 assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
+
                 assertEquals("Hello Foo", readFile(storage, foo));
             }
             {
-                final byte[] expected = writeRandomFile(storage, new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)), 55);
+                final byte[] expected = writeRandomFile(storage, new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)), 57);
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(home, new DisabledListProgressListener());
                 assertEquals(3, list.size());
                 assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
@@ -177,6 +180,15 @@ public class UVFIntegrationTest {
                 final Path bar = new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted));
                 assertTrue(Arrays.toString(list.toArray()), list.contains(bar));
                 assertEquals("Hello Bar", readFile(storage, bar));
+            }
+            {
+                final byte[] expected = writeRandomFile(storage, new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)), 55);
+                final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
+                assertEquals(2, list.size());
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+
+                assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
             }
         }
         finally {
