@@ -55,6 +55,7 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -117,7 +118,7 @@ public class UVFIntegrationTest {
                 final Path file = new Path("/" + bucketName + "/" + fi, EnumSet.of(AbstractPath.Type.file));
                 byte[] content = new byte[1000];
                 final int size;
-                try(InputStream in = UVFIntegrationTest.class.getResourceAsStream("/uvf/first_vault" + fi)) {
+                try(final InputStream in = UVFIntegrationTest.class.getResourceAsStream("/uvf/first_vault" + fi)) {
                     size = in.read(content);
                 }
                 final TransferStatus transferStatus = new TransferStatus().withLength(size);
@@ -146,37 +147,44 @@ public class UVFIntegrationTest {
             final Path home = vault.getHome().withAttributes(attr).withType(EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.vault));
             {
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(home, new DisabledListProgressListener());
-                assertEquals(2, list.size());
-                final Path foo = new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted));
-                assertTrue(Arrays.toString(list.toArray()), list.contains(foo));
-                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
-
-                assertEquals("Hello Foo", readFile(storage, foo));
+                assertEquals(
+                        new HashSet<>(Arrays.asList(
+                                new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)),
+                                new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)))
+                        ),
+                        new HashSet<>(list.toList()));
+                assertEquals("Hello Foo", readFile(storage, new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
             }
             {
                 final byte[] expected = writeRandomFile(storage, new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)), 57);
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(home, new DisabledListProgressListener());
-                assertEquals(3, list.size());
-                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
-                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
-                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
+                assertEquals(
+                        new HashSet<>(Arrays.asList(
+                                new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)),
+                                new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                                new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)))),
+                        new HashSet<>(list.toList()));
 
                 assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
             }
             {
                 final PathAttributes subdir = storage.getFeature(AttributesFinder.class).find(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)));
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)).withAttributes(subdir), new DisabledListProgressListener());
-                assertEquals(1, list.size());
-                final Path bar = new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted));
-                assertTrue(Arrays.toString(list.toArray()), list.contains(bar));
-                assertEquals("Hello Bar", readFile(storage, bar));
+                assertEquals(
+                        new HashSet<>(Collections.singletonList(
+                                new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)))
+                        ),
+                        new HashSet<>(list.toList()));
+                assertEquals("Hello Bar", readFile(storage, new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
             }
             {
                 final byte[] expected = writeRandomFile(storage, new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)), 55);
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
-                assertEquals(2, list.size());
-                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
-                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertEquals(
+                        new HashSet<>(Arrays.asList(
+                                new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                                new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)))),
+                        new HashSet<>(list.toList()));
 
                 assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
             }
@@ -185,6 +193,11 @@ public class UVFIntegrationTest {
                 final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
                 assertEquals(1, list.size());
                 assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertEquals(
+                        new HashSet<>(Collections.singletonList(
+                                new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))
+                        )),
+                        new HashSet<>(list.toList()));
             }
             {
                 storage.getFeature(Move.class).move(
@@ -194,13 +207,19 @@ public class UVFIntegrationTest {
                 );
 
                 final AttributedList<Path> listSubDir = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
-                assertEquals(2, listSubDir.size());
-                assertTrue(Arrays.toString(listSubDir.toArray()), listSubDir.contains(new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
-                assertTrue(Arrays.toString(listSubDir.toArray()), listSubDir.contains(new Path("/cyberduckbucket/subdir/Dave.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertEquals(
+                        new HashSet<>(Arrays.asList(
+                                new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                                new Path("/cyberduckbucket/subdir/Dave.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)))
+                        ),
+                        new HashSet<>(listSubDir.toList()));
                 final AttributedList<Path> listHome = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
-                assertEquals(2, listHome.size());
-                assertTrue(Arrays.toString(listHome.toArray()), listHome.contains(new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
-                assertTrue(Arrays.toString(listHome.toArray()), listHome.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
+                assertEquals(
+                        new HashSet<>(Arrays.asList(
+                                new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                                new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)))
+                        ),
+                        new HashSet<>(listHome.toList()));
             }
         }
         finally {
