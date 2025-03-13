@@ -38,6 +38,7 @@ import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 import org.jetbrains.annotations.NotNull;
 import org.junit.AfterClass;
@@ -157,14 +158,17 @@ public class UVFIntegrationTest {
                 final Path foo = new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted));
                 assertTrue(Arrays.toString(list.toArray()), list.contains(foo));
                 assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
+                assertEquals("Hello Foo", readFile(storage, foo));
+            }
+            {
+                final byte[] expected = writeRandomFile(storage, new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)), 55);
+                final AttributedList<Path> list = storage.getFeature(ListService.class).list(home, new DisabledListProgressListener());
+                assertEquals(3, list.size());
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
 
-                final byte[] buf = new byte[300];
-                final TransferStatus status = new TransferStatus();
-                try(final InputStream inputStream = storage.getFeature(Read.class).read(foo, status, new DisabledConnectionCallback())) {
-                    int l = inputStream.read(buf);
-                    assertEquals(9, l);
-                    assertEquals("Hello Foo", new String(Arrays.copyOfRange(buf, 0, l)));
-                }
+                assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
             }
             {
                 final PathAttributes subdir = storage.getFeature(AttributesFinder.class).find(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)));
@@ -172,14 +176,7 @@ public class UVFIntegrationTest {
                 assertEquals(1, list.size());
                 final Path bar = new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted));
                 assertTrue(Arrays.toString(list.toArray()), list.contains(bar));
-
-                final byte[] buf = new byte[300];
-                final TransferStatus status = new TransferStatus();
-                try(final InputStream inputStream = storage.getFeature(Read.class).read(bar, status, new DisabledConnectionCallback())) {
-                    int l = inputStream.read(buf);
-                    assertEquals(9, l);
-                    assertEquals("Hello Bar", new String(Arrays.copyOfRange(buf, 0, l)));
-                }
+                assertEquals("Hello Bar", readFile(storage, bar));
             }
         }
         finally {
@@ -216,5 +213,25 @@ public class UVFIntegrationTest {
                       },
                 new DisabledCancelCallback());
         return storage;
+    }
+
+    private static byte @NotNull [] writeRandomFile(final Session<?> session, final Path file, int size) throws BackgroundException, IOException {
+        final byte[] content = RandomUtils.nextBytes(size);
+        final TransferStatus transferStatus = new TransferStatus().withLength(content.length);
+        transferStatus.setChecksum(session.getFeature(Write.class).checksum(file, transferStatus).compute(new ByteArrayInputStream(content), transferStatus));
+        session.getFeature(Bulk.class).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), transferStatus), new DisabledConnectionCallback());
+        final StatusOutputStream<?> out = session.getFeature(Write.class).write(file, transferStatus, new DisabledConnectionCallback());
+        IOUtils.copyLarge(new ByteArrayInputStream(content), out);
+        out.close();
+        return content;
+    }
+
+    private static String readFile(final S3Session storage, final Path foo) throws IOException, BackgroundException {
+        final byte[] buf = new byte[300];
+        final TransferStatus status = new TransferStatus();
+        try(final InputStream inputStream = storage.getFeature(Read.class).read(foo, status, new DisabledConnectionCallback())) {
+            int l = inputStream.read(buf);
+            return new String(Arrays.copyOfRange(buf, 0, l));
+        }
     }
 }
