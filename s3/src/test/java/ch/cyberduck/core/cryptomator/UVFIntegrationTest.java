@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -41,8 +42,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 import org.jetbrains.annotations.NotNull;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.ComposeContainer;
@@ -80,15 +79,6 @@ public class UVFIntegrationTest {
                     ).collect(Collectors.toMap(AbstractMap.SimpleImmutableEntry::getKey, AbstractMap.SimpleImmutableEntry::getValue)))
             .withExposedService("minio-1", 9000, Wait.forListeningPort());
 
-    @BeforeClass
-    public static void start() {
-        container.start();
-    }
-
-    @AfterClass
-    public static void shutdown() {
-        container.stop();
-    }
 
     @Test
     public void listMinio() throws BackgroundException, IOException {
@@ -189,6 +179,28 @@ public class UVFIntegrationTest {
                 assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
 
                 assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+            }
+            {
+                storage.getFeature(Delete.class).delete(Collections.singletonList(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+                final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
+                assertEquals(1, list.size());
+                assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+            }
+            {
+                storage.getFeature(Move.class).move(
+                        new Path("/cyberduckbucket/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                        new Path("/cyberduckbucket/subdir/Dave.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                        new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()
+                );
+
+                final AttributedList<Path> listSubDir = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
+                assertEquals(2, listSubDir.size());
+                assertTrue(Arrays.toString(listSubDir.toArray()), listSubDir.contains(new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertTrue(Arrays.toString(listSubDir.toArray()), listSubDir.contains(new Path("/cyberduckbucket/subdir/Dave.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                final AttributedList<Path> listHome = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
+                assertEquals(2, listHome.size());
+                assertTrue(Arrays.toString(listHome.toArray()), listHome.contains(new Path("/cyberduckbucket/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                assertTrue(Arrays.toString(listHome.toArray()), listHome.contains(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted))));
             }
         }
         finally {
