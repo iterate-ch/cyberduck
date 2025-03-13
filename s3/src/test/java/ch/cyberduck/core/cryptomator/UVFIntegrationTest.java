@@ -269,10 +269,10 @@ public class UVFIntegrationTest {
         return content;
     }
 
-    private static String readFile(final S3Session storage, final Path foo) throws IOException, BackgroundException {
+    private static String readFile(final Session<?> session, final Path foo) throws IOException, BackgroundException {
         final byte[] buf = new byte[300];
         final TransferStatus status = new TransferStatus();
-        try(final InputStream inputStream = storage.getFeature(Read.class).read(foo, status, new DisabledConnectionCallback())) {
+        try(final InputStream inputStream = session.getFeature(Read.class).read(foo, status, new DisabledConnectionCallback())) {
             int l = inputStream.read(buf);
             return new String(Arrays.copyOfRange(buf, 0, l));
         }
