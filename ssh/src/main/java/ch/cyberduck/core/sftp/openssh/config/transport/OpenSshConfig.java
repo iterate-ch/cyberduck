@@ -186,7 +186,7 @@ public class OpenSshConfig {
             else if("ProxyJump".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.proxyJump == null) {
-                        c.proxyJump = dequote(argValue);
+                        c.proxyJump = none(dequote(argValue));
                     }
                 }
             }
@@ -213,21 +213,21 @@ public class OpenSshConfig {
             else if("IdentityFile".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.identityFile == null) {
-                        c.identityFile = LocalFactory.get(dequote(argValue));
+                        c.identityFile = none(dequote(argValue));
                     }
                 }
             }
             else if("IdentityAgent".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.identityAgent == null) {
-                        c.identityAgent = LocalFactory.get(dequote(argValue));
+                        c.identityAgent = none(dequote(argValue));
                     }
                 }
             }
             else if("PreferredAuthentications".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.preferredAuthentications == null) {
-                        c.preferredAuthentications = nows(dequote(argValue));
+                        c.preferredAuthentications = none(nows(dequote(argValue)));
                     }
                 }
             }
@@ -289,6 +289,13 @@ public class OpenSshConfig {
         return Boolean.FALSE;
     }
 
+    private static String none(final String value) {
+        if("none".equalsIgnoreCase(value)) {
+            return null;
+        }
+        return value;
+    }
+
     /**
      * Configuration of one "Host" block in the configuration file.
      * <p/>
@@ -304,8 +311,8 @@ public class OpenSshConfig {
         String hostName;
         String proxyJump;
         int port;
-        Local identityFile;
-        Local identityAgent;
+        String identityFile;
+        String identityAgent;
         String user;
         String preferredAuthentications;
         Boolean identitiesOnly;
@@ -363,14 +370,14 @@ public class OpenSshConfig {
          * @return path of the private key file to use for authentication; null if the caller should use default
          * authentication strategies.
          */
-        public Local getIdentityFile() {
+        public String getIdentityFile() {
             return identityFile;
         }
 
         /**
          * @return Specifies the UNIX-domain socket used to communicate with the authentication agent.
          */
-        public Local getIdentityAgent() {
+        public String getIdentityAgent() {
             return identityAgent;
         }
 
