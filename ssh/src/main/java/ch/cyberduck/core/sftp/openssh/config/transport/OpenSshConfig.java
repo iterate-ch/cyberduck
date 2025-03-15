@@ -147,45 +147,35 @@ public class OpenSshConfig {
     }
 
     private Map<String, Host> parse(final InputStream in) throws IOException {
-        final Map<String, Host> m = new LinkedHashMap<String, Host>();
+        final Map<String, Host> m = new LinkedHashMap<>();
         final BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-        final List<Host> current = new ArrayList<Host>(4);
+        final List<Host> current = new ArrayList<>(4);
         String line;
 
         while((line = br.readLine()) != null) {
             line = line.trim();
-            if(line.length() == 0 || line.startsWith("#")) {
+            if(line.isEmpty() || line.startsWith("#")) {
                 continue;
             }
-
             final String[] parts = line.split("[ \t]*[= \t]", 2);
             if(parts.length != 2) {
                 continue;
             }
             final String keyword = parts[0].trim();
             final String argValue = parts[1].trim();
-
             if("Host".equalsIgnoreCase(keyword)) {
                 current.clear();
                 for(final String pattern : argValue.split("[ \t]")) {
                     final String name = dequote(pattern);
-                    Host c = m.get(name);
-                    if(c == null) {
-                        c = new Host();
-                        m.put(name, c);
-                    }
+                    Host c = m.computeIfAbsent(name, k -> new Host());
                     current.add(c);
                 }
                 continue;
             }
-
             if(current.isEmpty()) {
-                // We received an option outside of a Host block. We
-                // don't know who this should match against, so skip.
-                //
+                // We received an option outside a Host block. We don't know who this should match against, so skip.
                 continue;
             }
-
             if("HostName".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.hostName == null) {
@@ -256,7 +246,6 @@ public class OpenSshConfig {
                 }
             }
         }
-
         return m;
     }
 
