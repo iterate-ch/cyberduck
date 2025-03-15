@@ -20,14 +20,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import com.jcraft.jsch.agentproxy.AgentProxy;
-import com.jcraft.jsch.agentproxy.AgentProxyException;
 import com.jcraft.jsch.agentproxy.USocketFactory;
 import com.jcraft.jsch.agentproxy.connector.SSHAgentConnector;
 
 public class WindowsOpenSSHAgentAuthenticator extends OpenSSHAgentAuthenticator {
     private final static String SSH_AGENT_PIPE = "\\\\.\\pipe\\openssh-ssh-agent";
 
-    public WindowsOpenSSHAgentAuthenticator(final String socketPath) throws AgentProxyException {
+    public WindowsOpenSSHAgentAuthenticator(final String socketPath) {
         super(new AgentProxy(new SSHAgentConnector(new RandomAccessFileSocketFactory(), fixupSocketPath(socketPath))));
     }
 
