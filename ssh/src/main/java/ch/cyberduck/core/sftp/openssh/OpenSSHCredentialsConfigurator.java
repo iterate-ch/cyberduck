@@ -53,7 +53,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
             if(!credentials.isPublicKeyAuthentication()) {
                 if(null != entry.getIdentityFile()) {
                     log.info("Using identity {} from {}", entry, configuration);
-                    credentials.setIdentity(entry.getIdentityFile());
+                    credentials.setIdentity(LocalFactory.get(entry.getIdentityFile()));
                 }
                 else {
                     // No custom public key authentication configuration

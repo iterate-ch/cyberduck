@@ -147,45 +147,35 @@ public class OpenSshConfig {
     }
 
     private Map<String, Host> parse(final InputStream in) throws IOException {
-        final Map<String, Host> m = new LinkedHashMap<String, Host>();
+        final Map<String, Host> m = new LinkedHashMap<>();
         final BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-        final List<Host> current = new ArrayList<Host>(4);
+        final List<Host> current = new ArrayList<>(4);
         String line;
 
         while((line = br.readLine()) != null) {
             line = line.trim();
-            if(line.length() == 0 || line.startsWith("#")) {
+            if(line.isEmpty() || line.startsWith("#")) {
                 continue;
             }
-
             final String[] parts = line.split("[ \t]*[= \t]", 2);
             if(parts.length != 2) {
                 continue;
             }
             final String keyword = parts[0].trim();
             final String argValue = parts[1].trim();
-
             if("Host".equalsIgnoreCase(keyword)) {
                 current.clear();
                 for(final String pattern : argValue.split("[ \t]")) {
                     final String name = dequote(pattern);
-                    Host c = m.get(name);
-                    if(c == null) {
-                        c = new Host();
-                        m.put(name, c);
-                    }
+                    Host c = m.computeIfAbsent(name, k -> new Host());
                     current.add(c);
                 }
                 continue;
             }
-
             if(current.isEmpty()) {
-                // We received an option outside of a Host block. We
-                // don't know who this should match against, so skip.
-                //
+                // We received an option outside a Host block. We don't know who this should match against, so skip.
                 continue;
             }
-
             if("HostName".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.hostName == null) {
@@ -196,7 +186,7 @@ public class OpenSshConfig {
             else if("ProxyJump".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.proxyJump == null) {
-                        c.proxyJump = dequote(argValue);
+                        c.proxyJump = none(dequote(argValue));
                     }
                 }
             }
@@ -223,21 +213,21 @@ public class OpenSshConfig {
             else if("IdentityFile".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.identityFile == null) {
-                        c.identityFile = LocalFactory.get(dequote(argValue));
+                        c.identityFile = none(dequote(argValue));
                     }
                 }
             }
             else if("IdentityAgent".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.identityAgent == null) {
-                        c.identityAgent = LocalFactory.get(dequote(argValue));
+                        c.identityAgent = none(dequote(argValue));
                     }
                 }
             }
             else if("PreferredAuthentications".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.preferredAuthentications == null) {
-                        c.preferredAuthentications = nows(dequote(argValue));
+                        c.preferredAuthentications = none(nows(dequote(argValue)));
                     }
                 }
             }
@@ -256,7 +246,6 @@ public class OpenSshConfig {
                 }
             }
         }
-
         return m;
     }
 
@@ -300,6 +289,13 @@ public class OpenSshConfig {
         return Boolean.FALSE;
     }
 
+    private static String none(final String value) {
+        if("none".equalsIgnoreCase(value)) {
+            return null;
+        }
+        return value;
+    }
+
     /**
      * Configuration of one "Host" block in the configuration file.
      * <p/>
@@ -315,8 +311,8 @@ public class OpenSshConfig {
         String hostName;
         String proxyJump;
         int port;
-        Local identityFile;
-        Local identityAgent;
+        String identityFile;
+        String identityAgent;
         String user;
         String preferredAuthentications;
         Boolean identitiesOnly;
@@ -374,14 +370,14 @@ public class OpenSshConfig {
          * @return path of the private key file to use for authentication; null if the caller should use default
          * authentication strategies.
          */
-        public Local getIdentityFile() {
+        public String getIdentityFile() {
             return identityFile;
         }
 
         /**
          * @return Specifies the UNIX-domain socket used to communicate with the authentication agent.
          */
-        public Local getIdentityAgent() {
+        public String getIdentityAgent() {
             return identityAgent;
         }
 

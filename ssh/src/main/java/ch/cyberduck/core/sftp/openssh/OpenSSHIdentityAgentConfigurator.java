@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp.openssh;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
@@ -39,13 +38,13 @@ public class OpenSSHIdentityAgentConfigurator {
     }
 
     public String getIdentityAgent(final String alias) {
-        final Local agent = configuration.lookup(alias).getIdentityAgent();
+        final String agent = configuration.lookup(alias).getIdentityAgent();
         if(null == agent) {
             log.debug("No configuration for alias {}", alias);
             return null;
         }
         log.debug("Found configuration {} for alias {}", agent, alias);
-        return agent.getAbsolute();
+        return agent;
     }
 
     @Override
