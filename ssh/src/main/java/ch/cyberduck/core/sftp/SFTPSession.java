@@ -71,7 +71,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.jcraft.jsch.agentproxy.AgentProxyException;
 import net.schmizz.concurrent.Promise;
 import net.schmizz.keepalive.KeepAlive;
 import net.schmizz.keepalive.KeepAliveProvider;
@@ -283,27 +282,19 @@ public class SFTPSession extends Session<SSHClient> {
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-            final String identityAgent = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
-            log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
-            switch(Platform.getDefault()) {
-                case windows:
-                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
-                    try {
-                        defaultMethods.add(new SFTPAgentAuthentication(client,
-                                new WindowsOpenSSHAgentAuthenticator(identityAgent)));
-                    }
-                    catch(AgentProxyException e) {
-                        log.warn("Agent proxy failed with {}", e.getMessage());
-                    }
-                    break;
-                default:
-                    try {
+            final String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
+            if(configuration != null) {
+                final String identityAgent = LocalFactory.get(configuration).getAbsolute();
+                log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
+                switch(Platform.getDefault()) {
+                    case windows:
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator(identityAgent)));
+                        break;
+                    default:
                         defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(identityAgent)));
-                    }
-                    catch(AgentProxyException e) {
-                        log.warn("Agent proxy failed with {}", e.getMessage());
-                    }
-                    break;
+                        break;
+                }
             }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));

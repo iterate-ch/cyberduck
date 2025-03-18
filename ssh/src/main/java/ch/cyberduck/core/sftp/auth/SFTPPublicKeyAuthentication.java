@@ -24,8 +24,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -106,7 +106,8 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                         pubKey = null;
                         break;
                     default:
-                        throw new InteroperabilityException(String.format("Unknown key format for file %s", privKey.getName()));
+                        log.warn("Unknown key format for file {}", privKey.getName());
+                        throw new LoginFailureException(String.format("Unknown key format for file %s", privKey.getName()));
                 }
                 provider.init(new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8),
                         pubKey != null ? new InputStreamReader(pubKey.getInputStream(), StandardCharsets.UTF_8) : null,

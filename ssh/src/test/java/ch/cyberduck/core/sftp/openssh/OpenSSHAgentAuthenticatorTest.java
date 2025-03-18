@@ -28,18 +28,19 @@ import java.util.Collection;
 import com.jcraft.jsch.agentproxy.AgentProxyException;
 import com.jcraft.jsch.agentproxy.Identity;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 
 public class OpenSSHAgentAuthenticatorTest {
 
-    @Test(expected = AgentProxyException.class)
+    @Test
     public void testGetIdentities() throws Exception {
         assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.mac));
         final OpenSSHAgentAuthenticator authenticator = new OpenSSHAgentAuthenticator(StringUtils.EMPTY);
-        final Collection<Identity> identities = authenticator.getIdentities();
         assertNotNull(authenticator.getProxy());
-        assertFalse(identities.isEmpty());
+        final Collection<Identity> identities = authenticator.getIdentities();
+        assertTrue(identities.isEmpty());
     }
 }

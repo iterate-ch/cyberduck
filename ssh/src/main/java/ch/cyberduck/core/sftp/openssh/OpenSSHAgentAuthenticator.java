@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.jcraft.jsch.agentproxy.AgentProxy;
-import com.jcraft.jsch.agentproxy.AgentProxyException;
 import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.connector.SSHAgentConnector;
 import com.jcraft.jsch.agentproxy.usocket.JNAUSocketFactory;
@@ -39,7 +38,7 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
 
     private final AgentProxy proxy;
 
-    public OpenSSHAgentAuthenticator(final String socket) throws AgentProxyException {
+    public OpenSSHAgentAuthenticator(final String socket) {
         this(new AgentProxy(new SSHAgentConnector(new JNAUSocketFactory(), socket)));
     }
 
