@@ -38,6 +38,13 @@ public final class OAuthTokens {
         this.idToken = idToken;
     }
 
+    public OAuthTokens(final OAuthTokens copy) {
+        this.accessToken = copy.accessToken;
+        this.refreshToken = copy.refreshToken;
+        this.expiryInMilliseconds = copy.expiryInMilliseconds;
+        this.idToken = copy.idToken;
+    }
+
     public boolean validate() {
         return StringUtils.isNotEmpty(accessToken);
     }
