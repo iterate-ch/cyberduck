@@ -155,8 +155,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                             final Date server = rfc1123.parse(svalue);
                             if(server.equals(resource.getModified())) {
                                 // file not touched with a different client
-                                attributes.setModificationDate(
-                                        rfc1123.parse(value).getTime());
+                                attributes.setModificationDate(rfc1123.parse(value).getTime());
                             }
                             else {
                                 // file touched with a different client, use default modified date from server
@@ -173,8 +172,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                         }
                     }
                     else {
-                        attributes.setModificationDate(
-                                rfc1123.parse(value).getTime());
+                        attributes.setModificationDate(rfc1123.parse(value).getTime());
                     }
                 }
                 catch(InvalidDateException e) {
