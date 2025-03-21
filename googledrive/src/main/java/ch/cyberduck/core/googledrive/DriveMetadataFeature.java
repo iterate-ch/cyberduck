@@ -23,9 +23,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.api.services.drive.model.File;
+
+import static com.google.api.client.util.Data.NULL_STRING;
 
 public class DriveMetadataFeature implements Metadata {
 
@@ -63,10 +66,18 @@ public class DriveMetadataFeature implements Metadata {
         try {
             final String fileid = this.fileid.getFileId(file);
             final File body = new File();
-            body.setProperties(status.getMetadata());
-            final File properties = session.getClient().files().update(fileid, body).setFields("properties").
-                    setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
-            status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(properties));
+            final Map<String, String> properties = new HashMap<>(status.getMetadata());
+            for(String key : file.attributes().getMetadata().keySet()) {
+                if(!properties.containsKey(key)) {
+                    // Entries with null values are cleared in update and copy requests
+                    properties.put(key, NULL_STRING);
+                }
+            }
+            body.setProperties(properties);
+            status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(
+                    session.getClient().files().update(fileid, body).setFields("properties").
+                            setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute()
+            ));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
