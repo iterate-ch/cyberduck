@@ -111,16 +111,19 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
     }
 
+    private static final GenericObjectPoolConfig<DiskShareWrapper> config = new GenericObjectPoolConfig<>();
+
+    static {
+        config.setJmxEnabled(false);
+        config.setBlockWhenExhausted(true);
+        config.setMaxIdle(1);
+        config.setMaxTotal(Integer.MAX_VALUE);
+        config.setTestOnBorrow(true);
+    }
+
     private final class DiskSharePool extends GenericObjectPool<DiskShareWrapper> {
         public DiskSharePool(final String shareName) {
-            super(new DiskSharePoolObjectFactory(shareName));
-            final GenericObjectPoolConfig<DiskShareWrapper> config = new GenericObjectPoolConfig<>();
-            config.setJmxEnabled(false);
-            config.setBlockWhenExhausted(true);
-            config.setMaxIdle(1);
-            config.setMaxTotal(Integer.MAX_VALUE);
-            config.setTestOnBorrow(true);
-            this.setConfig(config);
+            super(new DiskSharePoolObjectFactory(shareName), config);
             this.setSwallowedExceptionListener(new SwallowedExceptionListener() {
                 @Override
                 public void onSwallowException(final Exception e) {
