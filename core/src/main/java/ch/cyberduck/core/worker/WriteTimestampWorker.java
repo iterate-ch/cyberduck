@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -59,15 +60,10 @@ public class WriteTimestampWorker extends Worker<Boolean> {
                 .setLockId(this.getLockId(file));
         feature.setTimestamp(file, status);
         if(!PathAttributes.EMPTY.equals(status.getResponse())) {
-            file.withAttributes(status.getResponse());
+            file.setAttributes(status.getResponse());
         }
         else {
-            if(created != null) {
-                file.attributes().setCreationDate(created);
-            }
-            if(modified != null) {
-                file.attributes().setModificationDate(modified);
-            }
+            file.setAttributes(session.getFeature(AttributesFinder.class).find(file));
         }
         return true;
     }
