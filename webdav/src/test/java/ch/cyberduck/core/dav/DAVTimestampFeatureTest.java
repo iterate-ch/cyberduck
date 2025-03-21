@@ -47,6 +47,10 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
         assertEquals(5000L, attr.getModificationDate());
         assertEquals(status.getResponse(), attr);
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
+        new DAVMetadataFeature(session).setMetadata(file, status.setMetadata(Collections.singletonMap("Test", "Value")));
+        assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
+        new DAVMetadataFeature(session).setMetadata(file, status.setMetadata(Collections.emptyMap()));
+        assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
