@@ -128,6 +128,9 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
                         .getBytes(Charset.defaultCharset()).length);
             }
         }
+        if(null != f.getProperties()) {
+            attributes.setMetadata(f.getProperties());
+        }
         return attributes;
     }
 }

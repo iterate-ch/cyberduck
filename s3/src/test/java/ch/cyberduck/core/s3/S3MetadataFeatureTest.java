@@ -55,7 +55,8 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         new S3TouchFeature(session, acl).touch(test, new TransferStatus()
                 .setMetadata(Collections.singletonMap("app", "cyberduck"))
                 .setMime("text/plain"));
-        final Map<String, String> metadata = new S3MetadataFeature(session, acl).getMetadata(test);
+        final S3MetadataFeature feature = new S3MetadataFeature(session, acl);
+        final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("app"));
         assertEquals("cyberduck", metadata.get("app"));
@@ -64,6 +65,8 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertFalse(metadata.containsKey(Constants.KEY_FOR_USER_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_SERVICE_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_COMPLETE_METADATA));
+        feature.setMetadata(test, Collections.emptyMap());
+        assertFalse(feature.getMetadata(test).containsKey("app"));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

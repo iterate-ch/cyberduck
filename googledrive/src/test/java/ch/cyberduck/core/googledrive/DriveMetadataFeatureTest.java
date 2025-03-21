@@ -29,6 +29,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.UUID;
 
 import static ch.cyberduck.core.googledrive.DriveHomeFinderService.MYDRIVE_FOLDER;
@@ -39,14 +40,20 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
 
     @Test
     public void setMetadata() throws Exception {
-        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
-        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-        assertEquals(Collections.emptyMap(), new DriveMetadataFeature(session, fileid).getMetadata(test));
-        new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
-        assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session, fileid).getMetadata(test));
-        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final TransferStatus status = new TransferStatus();
+        new DriveTouchFeature(session, fileid).touch(test, status);
+        final DriveMetadataFeature feature = new DriveMetadataFeature(session, fileid);
+        assertEquals(Collections.emptyMap(), feature.getMetadata(test));
+        feature.setMetadata(test, Collections.singletonMap("test", "t"));
+        final Map<String, String> metadata = feature.getMetadata(test);
+        assertEquals(Collections.singletonMap("test", "t"), metadata);
+        test.attributes().setMetadata(metadata);
+        feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
+        assertFalse(status.getResponse().getMetadata().containsKey("test"));
+        assertFalse(feature.getMetadata(test).containsKey("test"));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
