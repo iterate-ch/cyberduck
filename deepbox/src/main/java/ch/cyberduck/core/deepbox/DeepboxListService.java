@@ -250,17 +250,23 @@ public class DeepboxListService implements ListService {
                 final String deepBoxNodeId = fileid.getDeepBoxNodeId(directory);
                 final String boxNodeId = fileid.getBoxNodeId(directory);
                 final Box box = rest.getBox(deepBoxNodeId, boxNodeId);
-                if(box.getBoxPolicy().isCanListQueue()) {
-                    final Path inbox = new Path(directory, containerService.getPinnedLocalization(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                    list.add(inbox.withAttributes(attributes.find(inbox)));
+                if(HostPreferencesFactory.get(session.getHost()).getBoolean("deepbox.listing.box.inbox")) {
+                    if(box.getBoxPolicy().isCanListQueue()) {
+                        final Path inbox = new Path(directory, containerService.getPinnedLocalization(INBOX), EnumSet.of(Path.Type.directory, Path.Type.volume));
+                        list.add(inbox.withAttributes(attributes.find(inbox)));
+                    }
                 }
-                if(box.getBoxPolicy().isCanListFilesRoot()) {
-                    final Path documents = new Path(directory, containerService.getPinnedLocalization(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                    list.add(documents.withAttributes(attributes.find(documents)));
+                if(HostPreferencesFactory.get(session.getHost()).getBoolean("deepbox.listing.box.documents")) {
+                    if(box.getBoxPolicy().isCanListFilesRoot()) {
+                        final Path documents = new Path(directory, containerService.getPinnedLocalization(DOCUMENTS), EnumSet.of(Path.Type.directory, Path.Type.volume));
+                        list.add(documents.withAttributes(attributes.find(documents)));
+                    }
                 }
-                if(box.getBoxPolicy().isCanAccessTrash()) {
-                    final Path trash = new Path(directory, containerService.getPinnedLocalization(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                    list.add(trash.withAttributes(attributes.find(trash)));
+                if(HostPreferencesFactory.get(session.getHost()).getBoolean("deepbox.listing.box.trash")) {
+                    if(box.getBoxPolicy().isCanAccessTrash()) {
+                        final Path trash = new Path(directory, containerService.getPinnedLocalization(TRASH), EnumSet.of(Path.Type.directory, Path.Type.volume));
+                        list.add(trash.withAttributes(attributes.find(trash)));
+                    }
                 }
                 listener.chunk(directory, list);
                 return list;
