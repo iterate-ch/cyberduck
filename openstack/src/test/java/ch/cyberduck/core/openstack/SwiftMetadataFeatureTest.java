@@ -52,12 +52,15 @@ public class SwiftMetadataFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus().setMime("text/plain"));
         final String v = UUID.randomUUID().toString();
-        new SwiftMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
-        final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
+        final SwiftMetadataFeature feature = new SwiftMetadataFeature(session);
+        feature.setMetadata(test, Collections.singletonMap("Test", v));
+        final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("X-Object-Meta-Test"));
         assertEquals(v, metadata.get("X-Object-Meta-Test"));
         assertEquals("text/plain", metadata.get("Content-Type"));
+        feature.setMetadata(test, Collections.emptyMap());
+        assertFalse(feature.getMetadata(test).containsKey("Test"));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
