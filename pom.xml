@@ -92,7 +92,7 @@
         <jwt.version>4.5.0</jwt.version>
         <ikvm-version>8.0.312.b07-8</ikvm-version>
         <java-native-dll>8u312b07</java-native-dll>
-        <rococoa-version>0.9.1</rococoa-version>
+        <rococoa-version>0.10.0</rococoa-version>
         <surefire.group.excluded>ch.cyberduck.test.IntegrationTest</surefire.group.excluded>
     </properties>
 
@@ -544,7 +544,6 @@
                     <configuration>
                         <argLine>@{argLine} --add-opens=java.base/sun.security.ssl=ALL-UNNAMED
                             --add-opens=java.base/sun.security.util=ALL-UNNAMED
-                            --add-opens=java.base/java.lang=ALL-UNNAMED
                             -Djava.library.path=${project.build.directory}
                         </argLine>
                         <systemPropertyVariables>
@@ -574,7 +573,6 @@
                         <encoding>UTF-8</encoding>
                         <argLine>@{argLine} --add-opens=java.base/sun.security.ssl=ALL-UNNAMED
                             --add-opens=java.base/sun.security.util=ALL-UNNAMED
-                            --add-opens=java.base/java.lang=ALL-UNNAMED
                             -Djava.library.path=${project.build.directory}
                         </argLine>
                         <systemPropertyVariables>
