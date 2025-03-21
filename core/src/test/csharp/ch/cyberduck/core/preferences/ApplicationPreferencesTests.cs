@@ -15,7 +15,7 @@ public class ApplicationPreferencesTests
 
         foreach (string locale in preferences.applicationLocales())
         {
-            Assert.IsNotEmpty(preferences.getDisplayName(locale));
+            Assert.That(preferences.getDisplayName(locale), Is.Not.Empty);
         }
     }
 
@@ -27,10 +27,10 @@ public class ApplicationPreferencesTests
             new("test.empty.default", "DONT")
         ]);
 
-        Assert.AreEqual("DONT", preferences.getDefault("test.empty.default"));
+        Assert.That("DONT", Is.EqualTo(preferences.getDefault("test.empty.default")));
         preferences.setProperty("test.empty.default", "");
-        Assert.AreEqual("DONT", preferences.getDefault("test.empty.default"));
-        Assert.AreEqual("", preferences.getProperty("test.empty.default"));
+        Assert.That("DONT", Is.EqualTo(preferences.getDefault("test.empty.default")));
+        Assert.That("", Is.EqualTo(preferences.getProperty("test.empty.default")));
     }
 
     [TestCase]
@@ -44,7 +44,7 @@ public class ApplicationPreferencesTests
             new("test.core.override", "")
         ]);
 
-        Assert.IsEmpty(preferences.getProperty("test.core.override"));
+        Assert.That(preferences.getProperty("test.core.override"), Is.Empty);
     }
 
     public class TestPreferences : ApplicationPreferences<TestPreferences>
