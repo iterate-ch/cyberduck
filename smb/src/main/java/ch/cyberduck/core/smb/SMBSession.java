@@ -287,10 +287,13 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     public DiskShareWrapper openShare(final Path file) throws BackgroundException {
         try {
             final String shareName = containerService.getContainer(file).getName();
-            final GenericObjectPool<DiskShareWrapper> pool;
+            GenericObjectPool<DiskShareWrapper> pool;
             lock.lock();
             try {
-                pool = pools.getOrDefault(shareName, new DiskSharePool(shareName));
+                pool = pools.get(shareName);
+                if(null == pool) {
+                    pool = new DiskSharePool(shareName);
+                }
                 if(pool.getNumIdle() == 0) {
                     log.warn("No idle share for {} with {} active", shareName, pool.getNumActive());
                 }
