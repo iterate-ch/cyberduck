@@ -151,8 +151,8 @@ public class UploadTransfer extends Transfer {
             attributes = new CachingAttributesFinderFeature(source, cache);
         }
         else {
-            find = source.getFeature(Find.class);
-            attributes = source.getFeature(AttributesFinder.class);
+            find = new CachingFindFeature(source, cache, source.getFeature(Find.class));
+            attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class));
         }
         log.debug("Determined features {} and {}", find, attributes);
         if(action.equals(TransferAction.resume)) {

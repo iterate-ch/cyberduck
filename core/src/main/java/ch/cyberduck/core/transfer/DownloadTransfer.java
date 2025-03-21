@@ -142,7 +142,7 @@ public class DownloadTransfer extends Transfer {
             attributes = new CachingAttributesFinderFeature(source, cache);
         }
         else {
-            attributes = source.getFeature(AttributesFinder.class);
+            attributes = new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class));
         }
         log.debug("Determined feature {}", attributes);
         if(action.equals(TransferAction.resume)) {
