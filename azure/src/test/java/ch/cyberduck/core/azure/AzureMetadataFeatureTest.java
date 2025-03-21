@@ -24,12 +24,16 @@ public class AzureMetadataFeatureTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
         final String v = new AlphanumericRandomStringService().random();
-        new AzureMetadataFeature(session, null).setMetadata(test, Collections.singletonMap("Test", v));
-        final Map<String, String> metadata = new AzureMetadataFeature(session, null).getMetadata(test);
+        final AzureMetadataFeature feature = new AzureMetadataFeature(session, null);
+        feature.setMetadata(test, status.setMetadata(Collections.singletonMap("Test", v)));
+        final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
+        feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
+        assertFalse(feature.getMetadata(test).containsKey("Test"));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
