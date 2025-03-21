@@ -69,6 +69,7 @@ public class DAVTimestampFeature implements Timestamp {
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(null != status.getModified()) {
+                // Obtain latest properties from server to save server modification date in custom property
                 final DavResource resource = this.getResource(file);
                 session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getModified()), Collections.emptyList(),
                         this.getCustomHeaders(file, status));
@@ -106,7 +107,7 @@ public class DAVTimestampFeature implements Timestamp {
     protected List<Element> getCustomProperties(final DavResource resource, final Long modified) {
         final List<Element> props = new ArrayList<>();
         if(resource.getModified() != null) {
-            Element element = SardineUtil.createElement(LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
+            final Element element = SardineUtil.createElement(LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
             element.setTextContent(new RFC1123DateFormatter().format(resource.getModified(), TimeZone.getTimeZone("UTC")));
             props.add(element);
         }
