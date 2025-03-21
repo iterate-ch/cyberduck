@@ -39,7 +39,7 @@ public class ReceiptFactory extends LicenseFactory {
 
     @Override
     protected License open(final Local file) {
-        return new Receipt(file);
+        return unregistered();
     }
 
     @Override
