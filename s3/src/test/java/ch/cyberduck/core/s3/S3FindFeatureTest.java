@@ -9,6 +9,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -73,5 +74,30 @@ public class S3FindFeatureTest extends AbstractS3Test {
         assertFalse(new CachingFindFeature(session, cache).find(directory));
         assertTrue(cache.isCached(directory.getParent()));
         assertFalse(new S3FindFeature(session, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+    }
+
+    @Test
+    public void testFindCommonPrefixWithVirtualHost() throws Exception {
+        final Path container = Home.ROOT;
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
+        assertTrue(new S3FindFeature(virtualhost, acl).find(container));
+        final String prefix = new AlphanumericRandomStringService().random();
+        final Path test = new S3TouchFeature(virtualhost, acl).touch(
+                new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        assertFalse(new S3FindFeature(virtualhost, acl).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
+        assertTrue(new S3FindFeature(virtualhost, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
+        assertTrue(new S3FindFeature(virtualhost, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(new S3ObjectListService(virtualhost, acl).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                new DisabledListProgressListener()).contains(test));
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(virtualhost, acl).find(test));
+        assertFalse(new S3FindFeature(virtualhost, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
+        final PathCache cache = new PathCache(1);
+        final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        assertFalse(new CachingFindFeature(virtualhost, cache).find(directory));
+        assertTrue(cache.isCached(directory.getParent()));
+        assertFalse(new S3FindFeature(virtualhost, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }
 }
