@@ -61,7 +61,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
     @Test
     public void testSetClassFile() throws Exception {
         final S3StorageClassFeature feature = new S3StorageClassFeature(session, new S3AccessControlListFeature(session));
-        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertNull(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(container));
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
@@ -91,7 +91,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetClassPlaceholder() throws Exception {
-        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
