@@ -25,6 +25,10 @@ import java.text.MessageFormat;
 
 @Required
 public interface ListService {
+    default AttributedList<Path> list(Path directory) throws BackgroundException {
+        return this.list(directory, new DisabledListProgressListener());
+    }
+
     AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
     default void preflight(final Path directory) throws BackgroundException {
