@@ -160,6 +160,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         return new XmlResponsesSaxParser(client.getConfiguration(), false);
     }
 
+    public S3CredentialsStrategy getAuthentication() {
+        return authentication;
+    }
+
     /**
      * @return the identifier for the signature algorithm.
      */
@@ -289,21 +293,17 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     );
                 }
                 else {
+                    final Credentials credentials = new S3CredentialsConfigurator(
+                            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
                     // Fetch temporary session token from AWS CLI configuration
-                    interceptor = new S3AuthenticationResponseInterceptor(this, new S3CredentialsStrategy() {
-                        @Override
-                        public Credentials get() throws LoginCanceledException {
-                            return new S3CredentialsConfigurator(
-                                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
-                        }
-                    });
+                    interceptor = new S3AuthenticationResponseInterceptor(this, () -> credentials);
                 }
                 configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                         new ExecutionCountServiceUnavailableRetryStrategy(interceptor)));
                 return interceptor;
             }
             else {
-                return host::getCredentials;
+                return () -> new Credentials(host.getCredentials());
             }
         }
     }
