@@ -54,8 +54,8 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path test = new S3TouchFeature(session, acl).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path renamed = new S3MoveFeature(session, acl).move(test, new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)),
+                new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
         assertTrue(new S3FindFeature(session, acl).find(renamed));
         final PathAttributes targetAttr = new S3AttributesFinderFeature(session, acl).find(renamed);
