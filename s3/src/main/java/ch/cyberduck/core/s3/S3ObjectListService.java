@@ -84,7 +84,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             final AttributedList<Path> objects = new AttributedList<>();
             // Null if listing is complete
             String priorLastKey = null;
-            boolean hasDirectoryPlaceholder = bucket.isRoot() || containerService.isContainer(directory);
+            boolean hasDirectoryPlaceholder = directory.isRoot() || containerService.isContainer(directory);
             do {
                 // Read directory listing in chunks. List results are always returned
                 // in lexicographic (alphabetical) order.
