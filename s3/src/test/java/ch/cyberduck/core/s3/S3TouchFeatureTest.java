@@ -40,7 +40,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3TouchFeature feature = new S3TouchFeature(session, acl);
         final String filename = new AsciiRandomStringService().random();
-        assertFalse(feature.isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), filename));
+        assertFalse(feature.isSupported(Home.ROOT, filename));
         assertTrue(feature.isSupported(container, filename));
         final Path test = feature.touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());

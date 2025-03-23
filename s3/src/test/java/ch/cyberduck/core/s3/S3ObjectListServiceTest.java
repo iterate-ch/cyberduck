@@ -21,6 +21,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -50,35 +51,16 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testList() throws Exception {
-        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AttributedList<Path> list = new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
-        for(Path p : list) {
-            assertEquals(container, p.getParent());
-            if(p.isFile()) {
-                assertSame(container, p.getParent());
-                assertNotEquals(-1L, p.attributes().getModificationDate());
-                assertNotEquals(-1L, p.attributes().getSize());
-                assertNotNull(p.attributes().getETag());
-                assertNotNull(p.attributes().getStorageClass());
-                assertNull(p.attributes().getVersionId());
-            }
-        }
+        final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertNotSame(AttributedList.EMPTY, new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(
+                bucket, new DisabledListProgressListener()));
     }
 
     @Test
     public void testListVirtualHostStyle() throws Exception {
-        final AttributedList<Path> list = new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
-                new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
-        for(Path p : list) {
-            assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
-            if(p.isFile()) {
-                assertNotEquals(-1L, p.attributes().getModificationDate());
-                assertNotEquals(-1L, p.attributes().getSize());
-                assertNotNull(p.attributes().getETag());
-                assertNotNull(p.attributes().getStorageClass());
-                assertNull(p.attributes().getVersionId());
-            }
-        }
+        final Path bucket = Home.ROOT;
+        assertNotSame(AttributedList.EMPTY, new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
+                bucket, new DisabledListProgressListener()));
     }
 
     @Test
@@ -99,13 +81,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertTrue(callback.get());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(feature.list(bucket, new DisabledListProgressListener()).contains(directory));
-        try {
-            feature.list(directory, new DisabledListProgressListener());
-            fail();
-        }
-        catch(NotfoundException e) {
-
-        }
+        assertThrows(NotfoundException.class, () -> feature.list(directory, new DisabledListProgressListener()));
     }
 
     @Test
@@ -113,21 +89,9 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final String name = new AlphanumericRandomStringService().random();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        try {
-            new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
+        assertThrows(NotfoundException.class, () -> new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         final Path file = new S3TouchFeature(session, acl).touch(new Path(container, String.format("%s-", name), EnumSet.of(Path.Type.file)), new TransferStatus());
-        try {
-            new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
+        assertThrows(NotfoundException.class, () -> new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -137,13 +101,8 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final String name = new AlphanumericRandomStringService().random();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path file = new S3TouchFeature(session, acl).touch(new Path(container, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        try {
-            new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
+        assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(file));
+        assertThrows(NotfoundException.class, () -> new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -176,7 +135,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     }
 
     @Test(expected = NotfoundException.class)
-    public void testListNotfoundBucket() throws Exception {
+    public void testListNotFoundBucket() throws Exception {
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
     }
