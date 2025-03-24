@@ -57,6 +57,8 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
         final Map<String, String> get = feature.getMetadata(test);
         assertTrue(get.containsKey("k"));
         assertEquals("v", get.get("k"));
+        feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
+        assertTrue(feature.getMetadata(test).isEmpty());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

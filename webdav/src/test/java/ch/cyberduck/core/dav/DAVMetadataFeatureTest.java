@@ -49,6 +49,9 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
         assertEquals(status.getMetadata(), metadata);
+        test.attributes().setMetadata(metadata);
+        feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
+        assertFalse(feature.getMetadata(test).containsKey("Test"));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -42,6 +42,8 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.util.SardineUtil;
 
+import javax.xml.namespace.QName;
+
 public class DAVMetadataFeature implements Headers {
     private static final Logger log = LogManager.getLogger(DAVMetadataFeature.class);
 
@@ -84,12 +86,20 @@ public class DAVMetadataFeature implements Headers {
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         log.debug("Write metadata {} for file {}", status, file);
         try {
-            final List<Element> props = new ArrayList<>();
+            final List<Element> setProps = new ArrayList<>();
             for(Map.Entry<String, String> entry : status.getMetadata().entrySet()) {
-                Element element = SardineUtil.createElement(
+                final Element element = SardineUtil.createElement(
                         SardineUtil.createQNameWithCustomNamespace(entry.getKey()));
                 element.setTextContent(entry.getValue());
-                props.add(element);
+                setProps.add(element);
+            }
+            final List<QName> removeProps = new ArrayList<>();
+            for(String key : file.attributes().getMetadata().keySet()) {
+                final Element element = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace(key));
+                if(!setProps.contains(element)) {
+                    // Deleted property
+                    removeProps.add(SardineUtil.createQNameWithCustomNamespace(key));
+                }
             }
             final Map<String, String> headers;
             if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
@@ -98,7 +108,7 @@ public class DAVMetadataFeature implements Headers {
             else {
                 headers = Collections.emptyMap();
             }
-            session.getClient().patch(new DAVPathEncoder().encode(file), props, Collections.emptyList(), headers);
+            session.getClient().patch(new DAVPathEncoder().encode(file), setProps, removeProps, headers);
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
