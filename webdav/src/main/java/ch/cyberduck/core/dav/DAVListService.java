@@ -61,7 +61,7 @@ public class DAVListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            final List<DavResource> resources = this.list(directory);
+            final List<DavResource> resources = this.propfind(directory);
             if(resources.isEmpty()) {
                 listener.chunk(directory, children);
             }
@@ -98,7 +98,7 @@ public class DAVListService implements ListService {
         }
     }
 
-    protected List<DavResource> list(final Path directory) throws IOException {
+    protected List<DavResource> propfind(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1,
                 Stream.of(
                                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
