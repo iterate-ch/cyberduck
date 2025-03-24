@@ -104,7 +104,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             String priorLastVersionId = null;
             long revision = 0L;
             String lastKey = null;
-            boolean hasDirectoryPlaceholder = bucket.isRoot() || containerService.isContainer(directory);
+            boolean hasDirectoryPlaceholder = directory.isRoot() || containerService.isContainer(directory);
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
@@ -184,20 +184,16 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 // Only for AWS
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                    if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
-                        log.warn("No placeholder found for directory {}", directory);
-                        throw new NotfoundException(directory.getAbsolute());
-                    }
+                    log.warn("No placeholder found for directory {}", directory);
+                    throw new NotfoundException(directory.getAbsolute());
                 }
-                else {
-                    // Handle missing prefix for directory placeholders in Minio
-                    final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
-                            String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()),
-                            String.valueOf(Path.DELIMITER), 1, null, null, false);
-                    if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
-                        throw new NotfoundException(directory.getAbsolute());
-                    }
+                // Handle missing prefix for directory placeholders in Minio
+                final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                        String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()),
+                        String.valueOf(Path.DELIMITER), 1, null, null, false);
+                if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
+                    throw new NotfoundException(directory.getAbsolute());
                 }
             }
             return objects;

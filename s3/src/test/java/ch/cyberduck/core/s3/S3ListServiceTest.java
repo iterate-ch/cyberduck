@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -37,8 +38,13 @@ public class S3ListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListBucketNameInHostname() throws Exception {
-        new S3ListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
-                new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        new S3ListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(Home.ROOT, new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testList() throws Exception {
+        final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new S3ListService(session, new S3AccessControlListFeature(session)).list(bucket, new DisabledListProgressListener());
     }
 
     @Test

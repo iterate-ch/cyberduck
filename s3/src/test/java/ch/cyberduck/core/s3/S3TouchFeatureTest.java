@@ -7,6 +7,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -27,10 +28,10 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     @Test
     public void testFile() {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        assertFalse(new S3TouchFeature(session, acl).isSupported(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
-        assertTrue(new S3TouchFeature(session, acl).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
-        assertTrue(new S3TouchFeature(virtualhost, acl).isSupported(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
-        assertTrue(new S3TouchFeature(virtualhost, acl).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
+        assertFalse(new S3TouchFeature(session, acl).isSupported(Home.ROOT, StringUtils.EMPTY));
+        assertTrue(new S3TouchFeature(session, acl).isSupported(new Path(Home.ROOT, "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
+        assertTrue(new S3TouchFeature(virtualhost, acl).isSupported(Home.ROOT, StringUtils.EMPTY));
+        assertTrue(new S3TouchFeature(virtualhost, acl).isSupported(new Path(Home.ROOT, "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
     }
 
     @Test
@@ -39,7 +40,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3TouchFeature feature = new S3TouchFeature(session, acl);
         final String filename = new AsciiRandomStringService().random();
-        assertFalse(feature.isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), filename));
+        assertFalse(feature.isSupported(Home.ROOT, filename));
         assertTrue(feature.isSupported(container, filename));
         final Path test = feature.touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
@@ -55,7 +56,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3TouchFeature feature = new S3TouchFeature(virtualhost, acl);
         final String filename = new AsciiRandomStringService().random();
-        assertTrue(feature.isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), filename));
+        assertTrue(feature.isSupported(Home.ROOT, filename));
         final Path test = feature.touch(new Path(filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));

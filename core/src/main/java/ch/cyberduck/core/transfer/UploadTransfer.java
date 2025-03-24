@@ -139,6 +139,13 @@ public class UploadTransfer extends Transfer {
         return children;
     }
 
+    /**
+     * @return True if only single file in transfer
+     */
+    private boolean isSingle() {
+        return roots.size() == 1 && !roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent();
+    }
+
     @Override
     public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         log.debug("Filter transfer with action {} and options {}", action, options);
@@ -146,14 +153,8 @@ public class UploadTransfer extends Transfer {
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
         final Find find;
         final AttributesFinder attributes;
-        if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
-            find = new CachingFindFeature(source, cache);
-            attributes = new CachingAttributesFinderFeature(source, cache);
-        }
-        else {
-            find = source.getFeature(Find.class);
-            attributes = source.getFeature(AttributesFinder.class);
-        }
+        find = this.isSingle() ? new CachingFindFeature(source, cache, source.getFeature(Find.class)) : new CachingFindFeature(source, cache);
+        attributes = this.isSingle() ? new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class)) : new CachingAttributesFinderFeature(source, cache);
         log.debug("Determined features {} and {}", find, attributes);
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, source, find, attributes, options);
@@ -193,7 +194,8 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                if(new CachingFindFeature(source, cache).find(upload.remote)) {
+                final Find find = this.isSingle() ? new CachingFindFeature(source, cache, source.getFeature(Find.class)) : new CachingFindFeature(source, cache);
+                if(find.find(upload.remote)) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
                         if(this.list(source, upload.remote, upload.local, listener).isEmpty()) {

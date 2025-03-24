@@ -31,6 +31,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
@@ -76,9 +77,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
             new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
         assertEquals("us-east-1", cache.getRegionForBucketName("test-us-east-1-cyberduck"));
-        assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(
-                new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))
-        ));
+        assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(Home.ROOT));
         assertEquals("us-east-1", cache.getRegionForBucketName(""));
     }
 
@@ -140,9 +139,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     @Test
     public void testAccessBucketNameInHostname() throws Exception {
         final RegionEndpointCache cache = virtualhost.getClient().getRegionEndpointCache();
-        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(virtualhost, cache).getLocation(
-                new Path("/", EnumSet.of(Path.Type.directory))
-        ));
+        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(virtualhost, cache).getLocation(Home.ROOT));
         assertEquals("eu-central-1", cache.getRegionForBucketName(""));
     }
 

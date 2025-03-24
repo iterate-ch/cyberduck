@@ -18,6 +18,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -36,8 +37,8 @@ public class SpectraTouchFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testFile() {
-        assertFalse(new SpectraTouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
-        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
+        assertFalse(new SpectraTouchFeature(session).isSupported(Home.ROOT, StringUtils.EMPTY));
+        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(Home.ROOT, "/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
     }
 
     @Test
