@@ -296,4 +296,20 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
     }
+
+    @Test
+    public void testTouchUriEncoding() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), new S3AccessControlListFeature(session)).mkdir(
+                new Path(container, String.format("%s-+*~@([", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNull(directory.attributes().getVersionId());
+        assertTrue(new S3FindFeature(session, acl).find(directory));
+        assertEquals(directory.attributes(), new S3AttributesFinderFeature(session, acl).find(directory));
+        final Path test = new S3TouchFeature(session, acl).touch(
+                new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, acl).find(directory));
+    }
 }
