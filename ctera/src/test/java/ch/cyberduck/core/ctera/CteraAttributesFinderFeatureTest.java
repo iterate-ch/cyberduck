@@ -114,7 +114,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final Path home = new Path("/ServicesPortal/webdav/Shared With Me/ACL test (new user)", EnumSet.of(AbstractPath.Type.directory));
 
         // list parent folder to inspect attributes
-        final List<DavResource> noAccess = new CteraListService(session).list(home).stream().filter(r -> r.getName().equals("NoAccess")).collect(Collectors.toList());
+        final List<DavResource> noAccess = new CteraListService(session).propfind(home).stream().filter(r -> r.getName().equals("NoAccess")).collect(Collectors.toList());
         assertEquals(noAccess.size(), 1);
         assertEquals(
                 Stream.of(
