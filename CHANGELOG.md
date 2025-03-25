@@ -1,7 +1,18 @@
 # Changelog
 
-[9.1.3](https://github.com/iterate-ch/cyberduck/compare/release-9-1-2...release-9-1-3)
+[9.1.4](https://github.com/iterate-ch/cyberduck/compare/release-9-1-3...release-9-1-3)
 
+* [Bugfix] Slow file transfers (SMB) ([#16135](https://trac.cyberduck.io/ticket/16135))
+* [Bugfix] Interoperability with Bitwarden SFTP Agent ([#16954](https://trac.cyberduck.io/ticket/16954))
+* [Bugfix] Skip trashed files for downloads (Google Drive) ([#16927](https://trac.cyberduck.io/ticket/16927))
+* [Bugfix] Cannot delete entries from metadata (Google Drive) ([#16976](https://trac.cyberduck.io/ticket/16976))
+* [Bugfix] Error uploading files when bucket name is set in hostname (
+  S3) ([#16939](https://trac.cyberduck.io/ticket/16939))
+* [Bugfix] No pre-signed URLs available when using credentials from AWS Command Line Interface (CLI) connection
+  profile (S3) ([#13738](https://trac.cyberduck.io/ticket/13738))
+* [Bugfix] No pre-signed URLs available when using credentials from OpenID Connect (OIDC) connection profile (S3)
+
+[9.1.3](https://github.com/iterate-ch/cyberduck/compare/release-9-1-2...release-9-1-3)
 * [Bugfix] Invalid progress in Finder transferring multiple files (macOS) ([#16738](https://trac.cyberduck.io/ticket/16738))
 * [Bugfix] Diasble lookup of vaults by default. Must explicitly specify --vault (Cyptomator, CLI)
 * [Bugfix] Duplicate file menu item always disabled (FTP) ([#16798](https://github.com/iterate-ch/cyberduck/issues/16798))
