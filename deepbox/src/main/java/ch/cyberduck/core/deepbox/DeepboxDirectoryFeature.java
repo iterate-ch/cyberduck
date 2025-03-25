@@ -32,7 +32,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,10 +42,12 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
+    private final DeepboxPathContainerService containerService;
 
     public DeepboxDirectoryFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.containerService = new DeepboxPathContainerService(session, fileid);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
             final String deepBoxNodeId = fileid.getDeepBoxNodeId(folder.getParent());
             final String boxNodeId = fileid.getBoxNodeId(folder.getParent());
             final List<FolderAdded> created;
-            if(new DeepboxPathContainerService(session, fileid).isDocuments(folder.getParent())) {
+            if(containerService.isDocuments(folder.getParent())) {
                 created = new PathRestControllerApi(session.getClient()).addFolders1(
                         body,
                         deepBoxNodeId,
@@ -91,8 +92,26 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(workdir.isRoot() || (new DeepboxPathContainerService(session, fileid).isContainer(workdir) && !new DeepboxPathContainerService(session, fileid).isDocuments(workdir))) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
+        if(workdir.isRoot()) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
+        }
+        if(containerService.isCompany(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted at the organisation level", "Deepbox")).withFile(workdir);
+        }
+        if(containerService.isDeepbox(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
+        }
+        if(containerService.isTrash(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
+        }
+        if(containerService.isSharedWithMe(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
+        }
+        if(containerService.isBox(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in the boxes area", "Deepbox")).withFile(workdir);
+        }
+        if(containerService.isInbox(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding folders is not permitted in the inbox", "Deepbox")).withFile(workdir);
         }
         final Acl acl = workdir.attributes().getAcl();
         if(Acl.EMPTY == acl) {
@@ -102,7 +121,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
         }
         if(!acl.get(new Acl.CanonicalUser()).contains(CANADDCHILDREN)) {
             log.warn("ACL {} for {} does not include {}", acl, workdir, CANADDCHILDREN);
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
         }
     }
 }

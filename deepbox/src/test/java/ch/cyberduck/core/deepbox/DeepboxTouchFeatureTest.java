@@ -186,4 +186,22 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
         assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
     }
+
+    @Test
+    public void testTrash() {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory));
+        final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(parent, folder.getName()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).touch(folder, new TransferStatus()));
+    }
+
+    @Test
+    public void testSharedWithMe() {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(parent, file.getName()));
+        assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus()));
+    }
 }
