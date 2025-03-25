@@ -15,7 +15,6 @@ package ch.cyberduck.core.deepbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -34,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
-
-import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
 
 public class DeepboxDirectoryFeature implements Directory<VersionId> {
     private static final Logger log = LogManager.getLogger(DeepboxDirectoryFeature.class);
@@ -92,36 +89,10 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
 
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(workdir.isRoot()) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
-        }
-        if(containerService.isCompany(workdir)) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted at the organisation level", "Deepbox")).withFile(workdir);
-        }
-        if(containerService.isDeepbox(workdir)) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
-        }
-        if(containerService.isTrash(workdir)) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
-        }
-        if(containerService.isSharedWithMe(workdir)) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
-        }
-        if(containerService.isBox(workdir)) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in the boxes area", "Deepbox")).withFile(workdir);
-        }
         if(containerService.isInbox(workdir)) {
             throw new AccessDeniedException(LocaleFactory.localizedString("Adding folders is not permitted in the inbox", "Deepbox")).withFile(workdir);
         }
-        final Acl acl = workdir.attributes().getAcl();
-        if(Acl.EMPTY == acl) {
-            // Missing initialization
-            log.warn("Unknown ACLs on {}", workdir);
-            return;
-        }
-        if(!acl.get(new Acl.CanonicalUser()).contains(CANADDCHILDREN)) {
-            log.warn("ACL {} for {} does not include {}", acl, workdir, CANADDCHILDREN);
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
-        }
+        // Same checks as for new file
+        new DeepboxTouchFeature(session, fileid).preflight(workdir, filename);
     }
 }
