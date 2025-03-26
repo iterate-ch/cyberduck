@@ -27,8 +27,8 @@ public class DefaultConnectionTimeout implements ConnectionTimeout {
 
     private static final Preferences mutablePreferences = PreferencesFactory.get();
 
-    public final static int TIMEOUT_MIN = 10;
-    public final static int TIMEOUT_MAX = 60;
+    public final static int TIMEOUT_MIN = mutablePreferences.getInteger("connection.timeout.min.seconds");
+    public final static int TIMEOUT_MAX = mutablePreferences.getInteger("connection.timeout.max.seconds");
 
     private final PreferencesReader preferences;
 

@@ -684,6 +684,30 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return Convert.ToInt32(connectionTimeoutUpDown.Value); }
             set { connectionTimeoutUpDown.Value = value; }
         }
+        public int ConnectionTimeoutMin
+        {
+            set
+            {
+                connectionTimeoutUpDown.Minimum = new decimal([
+                    value,
+                    0,
+                    0,
+                    0
+                ]);
+            }
+        }
+        public int ConnectionTimeoutMax
+        {
+            set
+            {
+                connectionTimeoutUpDown.Maximum = new decimal([
+                    value,
+                    0,
+                    0,
+                    0
+                ]);
+            }
+        }
 
         public int RetryDelay
         {
