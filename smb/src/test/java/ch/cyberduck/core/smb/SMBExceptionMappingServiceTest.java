@@ -15,12 +15,20 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+
 import org.junit.Test;
 
-import com.hierynomus.mssmb2.SMB2MessageCommandCode;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
+import com.hierynomus.msdfsc.DFSException;
+import com.hierynomus.mserref.NtStatus;
 import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
+import static com.hierynomus.mssmb2.SMB2MessageCommandCode.SMB2_CREATE;
 import static org.junit.Assert.assertEquals;
 
 public class SMBExceptionMappingServiceTest {
@@ -30,7 +38,11 @@ public class SMBExceptionMappingServiceTest {
         assertEquals("Interoperability failure", new SMBExceptionMappingService().map(new SMBRuntimeException("")).getMessage());
         assertEquals("Please contact your web hosting service provider for assistance.", new SMBExceptionMappingService().map(new SMBRuntimeException("")).getDetail());
         assertEquals("STATUS_OBJECT_NAME_NOT_FOUND (0xc0000034). Please contact your web hosting service provider for assistance.",
-                new SMBExceptionMappingService().map(new SMBApiException(3221225524L, SMB2MessageCommandCode.SMB2_CREATE,
+                new SMBExceptionMappingService().map(new SMBApiException(NtStatus.STATUS_OBJECT_NAME_NOT_FOUND.getValue(), SMB2_CREATE,
                         "Create failed for \\\\localhost\\user\\Dk9I5nTZ", null)).getDetail());
+        assertEquals(ConnectionTimeoutException.class,
+                new SMBExceptionMappingService().map(
+                        new SMBApiException(NtStatus.STATUS_OTHER.getValue(), SMB2_CREATE, new DFSException(new TransportException(new ExecutionException(new SMBRuntimeException(new TimeoutException())))))
+                ).getClass());
     }
 }

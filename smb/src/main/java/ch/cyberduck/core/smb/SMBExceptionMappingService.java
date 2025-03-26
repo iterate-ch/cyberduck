@@ -78,12 +78,12 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
                 case STATUS_DISK_FULL:
                     return new QuotaException(buffer.toString(), failure.getCause());
                 case STATUS_IO_TIMEOUT:
+                case STATUS_NETWORK_SESSION_EXPIRED:
                     return new ConnectionTimeoutException(buffer.toString(), failure.getCause());
                 case STATUS_CONNECTION_DISCONNECTED:
                 case STATUS_CONNECTION_RESET:
+                case STATUS_DFS_UNAVAILABLE:
                     return new ConnectionRefusedException(buffer.toString(), failure.getCause());
-                default:
-                    return new InteroperabilityException(buffer.toString(), failure.getCause());
             }
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
