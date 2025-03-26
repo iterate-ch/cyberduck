@@ -654,6 +654,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.connectionTimeoutStepper = b;
         this.connectionTimeoutStepper.setTarget(this.id());
         this.connectionTimeoutStepper.setAction(Foundation.selector("connectionTimeoutStepperClicked:"));
+        this.connectionTimeoutStepper.setMinValue(preferences.getInteger("connection.timeout.min.seconds"));
+        this.connectionTimeoutStepper.setMaxValue(preferences.getInteger("connection.timeout.max.seconds"));
         this.connectionTimeoutStepper.setIntValue(connectionTimeoutPreferences.getTimeout());
     }
 

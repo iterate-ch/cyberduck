@@ -1235,16 +1235,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.connectionTimeoutUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.connectionTimeoutUpDown.AutoSize = true;
 			this.connectionTimeoutUpDown.Location = new System.Drawing.Point(8, 8);
-			this.connectionTimeoutUpDown.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-			this.connectionTimeoutUpDown.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
 			this.connectionTimeoutUpDown.Name = "connectionTimeoutUpDown";
 			this.connectionTimeoutUpDown.Size = new System.Drawing.Size(1, 23);
 			this.connectionTimeoutUpDown.TabIndex = 6;

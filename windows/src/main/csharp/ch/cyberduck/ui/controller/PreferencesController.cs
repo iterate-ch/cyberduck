@@ -31,7 +31,6 @@ using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.Core.Date;
 using ch.cyberduck.core.googlestorage;
 using java.util;
 using java.util.regex;
@@ -39,8 +38,6 @@ using org.apache.logging.log4j;
 using org.apache.logging.log4j.core;
 using StructureMap;
 using Logger = org.apache.logging.log4j.Logger;
-using ch.cyberduck.core.eue.io.swagger.client.model;
-using com.google.common.graph;
 using ch.cyberduck.core.proxy;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -1035,6 +1032,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Retries = PreferencesFactory.get().getInteger("connection.retry");
             View.RetryDelay = PreferencesFactory.get().getInteger("connection.retry.delay");
             View.ConnectionTimeout = connectionTimeoutPreferences.getTimeout();
+            View.ConnectionTimeoutMin = PreferencesFactory.get().getInteger("connection.timeout.min.seconds");
+            View.ConnectionTimeoutMax = PreferencesFactory.get().getInteger("connection.timeout.max.seconds");
             View.UseSystemProxy = PreferencesFactory.get().getBoolean("connection.proxy.enable");
             View.DebugLog = Level.DEBUG.equals(LoggerContext.getContext(false).getConfiguration().getRootLogger().getLevel()) ? true : false;
 
