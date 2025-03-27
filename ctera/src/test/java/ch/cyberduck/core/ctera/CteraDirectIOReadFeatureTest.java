@@ -114,37 +114,37 @@ public class CteraDirectIOReadFeatureTest {
         }
         {
             // Full read with append and explicit values
-            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().append(true).withOffset(0).withLength(600));
+            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().setAppend(true).setOffset(0).setLength(600));
             assertEquals(2, info.chunks.size());
             assertEquals(0, info.offset);
         }
         {
             // Full read of first chunk
-            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().append(true).withOffset(0).withLength(500));
+            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().setAppend(true).setOffset(0).setLength(500));
             assertEquals(1, info.chunks.size());
             assertEquals(0, info.offset);
         }
         {
             // First chunk plus a few bytes
-            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().append(true).withOffset(0).withLength(510));
+            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().setAppend(true).setOffset(0).setLength(510));
             assertEquals(2, info.chunks.size());
             assertEquals(0, info.offset);
         }
         {
             // Within first chunk only with offset
-            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().append(true).withOffset(100).withLength(250));
+            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().setAppend(true).setOffset(100).setLength(250));
             assertEquals(1, info.chunks.size());
             assertEquals(100, info.offset);
         }
         {
             // Offset from second chunk until end
-            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().append(true).withOffset(500).withLength(100));
+            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().setAppend(true).setOffset(500).setLength(100));
             assertEquals(1, info.chunks.size());
             assertEquals(0, info.offset);
         }
         {
             // Offset from second chunk until end
-            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().append(true).withOffset(510).withLength(90));
+            final CteraDirectIOReadFeature.TransferInfo info = read.getTransferInfo(directio, new TransferStatus().setAppend(true).setOffset(510).setLength(90));
             assertEquals(1, info.chunks.size());
             assertEquals(10, info.offset);
         }
@@ -173,14 +173,15 @@ public class CteraDirectIOReadFeatureTest {
         out.close();
         new DAVUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         // Unknown length in status
         final TransferStatus status = new TransferStatus() {
             @Override
-            public void setLength(long length) {
+            public TransferStatus setLength(long length) {
                 assertEquals(923L, length);
                 // Ignore update. As with unknown length for chunked transfer
+                return this;
             }
         };
         new DefaultDownloadFeature(session.getFeature(Read.class)).download(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -200,7 +201,7 @@ public class CteraDirectIOReadFeatureTest {
         out.close();
         new DAVUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
 
         final TransferStatus status = new TransferStatus();
@@ -255,13 +256,13 @@ public class CteraDirectIOReadFeatureTest {
         out.close();
         new DAVUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new CteraDirectIOReadFeature(session, new CteraFileIdProvider(session)).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new CteraDirectIOReadFeature(session, new CteraFileIdProvider(session)).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
