@@ -103,6 +103,17 @@ public class SMBReadFeature implements Read {
         }
 
         @Override
+        protected void handleIOException(final IOException e) throws IOException {
+            try {
+                session.releaseShare(share);
+            }
+            catch(BackgroundException ignored) {
+                // Ignore
+            }
+            throw e;
+        }
+
+        @Override
         public void close() throws IOException {
             try {
                 try {
