@@ -1031,9 +1031,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultUploadThrottle = PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes");
             View.Retries = PreferencesFactory.get().getInteger("connection.retry");
             View.RetryDelay = PreferencesFactory.get().getInteger("connection.retry.delay");
-            View.ConnectionTimeout = connectionTimeoutPreferences.getTimeout();
             View.ConnectionTimeoutMin = PreferencesFactory.get().getInteger("connection.timeout.min.seconds");
             View.ConnectionTimeoutMax = PreferencesFactory.get().getInteger("connection.timeout.max.seconds");
+            View.ConnectionTimeout = connectionTimeoutPreferences.getTimeout();
             View.UseSystemProxy = PreferencesFactory.get().getBoolean("connection.proxy.enable");
             View.DebugLog = Level.DEBUG.equals(LoggerContext.getContext(false).getConfiguration().getRootLogger().getLevel()) ? true : false;
 

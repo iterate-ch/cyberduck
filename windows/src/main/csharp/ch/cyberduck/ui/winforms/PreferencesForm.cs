@@ -686,27 +686,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
         public int ConnectionTimeoutMin
         {
-            set
-            {
-                connectionTimeoutUpDown.Minimum = new decimal([
-                    value,
-                    0,
-                    0,
-                    0
-                ]);
-            }
+            set => connectionTimeoutUpDown.Minimum = value;
         }
         public int ConnectionTimeoutMax
         {
-            set
-            {
-                connectionTimeoutUpDown.Maximum = new decimal([
-                    value,
-                    0,
-                    0,
-                    0
-                ]);
-            }
+            set => connectionTimeoutUpDown.Maximum = value;
         }
 
         public int RetryDelay
