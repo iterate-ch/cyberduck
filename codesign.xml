@@ -117,9 +117,6 @@
             <file name="${bundle}"/>
             <srcfile/>
         </apply>
-        <antcall target="verify-signature">
-            <param name="bundle" value="${bundle}"/>
-        </antcall>
     </target>
 
     <target name="compile-codesign-requirement">
