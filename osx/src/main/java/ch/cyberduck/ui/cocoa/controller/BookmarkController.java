@@ -106,7 +106,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Outlet
     protected NSTextField usernameLabel;
     @Outlet
-    protected NSTextField passwordField;
+    protected NSSecureTextField passwordField;
     @Outlet
     private NSTextField passwordLabel;
     @Outlet
