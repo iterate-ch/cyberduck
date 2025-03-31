@@ -304,7 +304,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _bookmarkCollection.addListener(this);
             View.ViewClosedEvent += delegate { _bookmarkCollection.removeListener(this); };
 
-            PopulateQuickConnect();
             PopulateEncodings();
             UpdateOpenIcon();
 
@@ -462,8 +461,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void collectionLoaded()
         {
-            AsyncDelegate mainAction = delegate { ReloadBookmarks(); };
-            Invoke(mainAction);
+            Invoke(() =>
+            {
+                ReloadBookmarks();
+                PopulateQuickConnect();
+            });
         }
 
         public void collectionItemAdded(object obj)
