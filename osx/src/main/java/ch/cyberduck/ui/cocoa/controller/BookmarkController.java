@@ -317,7 +317,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Action
     public void portInputDidChange(final NSNotification sender) {
         try {
-            bookmark.setPort(Integer.valueOf(portField.stringValue()));
+            bookmark.setPort(Integer.parseInt(portField.stringValue()));
         }
         catch(NumberFormatException e) {
             bookmark.setPort(-1);
