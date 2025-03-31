@@ -69,7 +69,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class CteraSession extends DAVSession {
 
     private static final String PUBLIC_INFO_PATH = "/ServicesPortal/public/publicInfo?format=jsonext";
-    private static final String CURRENT_SESSION_PATH = "/ServicesPortal/api/currentSession?format=jsonext";
+    public static final String CURRENT_SESSION_PATH = "/ServicesPortal/api/currentSession?format=jsonext";
 
     protected CteraAuthenticationHandler authentication;
     protected PublicInfo info;
@@ -86,6 +86,7 @@ public class CteraSession extends DAVSession {
         configuration.disableRedirectHandling();
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt))));
+        configuration.addInterceptorFirst(new CteraDirectIOInterceptor(this));
         configuration.addInterceptorFirst(new CteraCookieInterceptor());
         final DAVClient client = new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
         final HttpGet request = new HttpGet(PUBLIC_INFO_PATH);

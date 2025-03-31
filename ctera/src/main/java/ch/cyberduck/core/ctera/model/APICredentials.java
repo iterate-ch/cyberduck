@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ctera.model;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,23 +15,20 @@ package ch.cyberduck.core.ctera.model;
  * GNU General Public License for more details.
  */
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public final class PortalSession {
-
-    public String username;
-    public String userRef;
-
-    public String getUserIdFromUserRef() {
-        if(StringUtils.isNotBlank(userRef)) {
-            final String[] segments = userRef.split("/");
-            if(segments.length > 1) {
-                return segments[1];
-            }
-        }
-        return null;
+/*
+    {
+      "$class": "CreateApiKeyResponse",
+      "accessKey": "ABC9YNL5KLZQ83O28WF4",
+      "secretKey": "123gYc9nufaXTOxUI9SfgtJR7g3eqWpw4XaFe6ny"
     }
+ */
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public final class APICredentials {
+
+    public String accessKey;
+
+    public String secretKey;
 }

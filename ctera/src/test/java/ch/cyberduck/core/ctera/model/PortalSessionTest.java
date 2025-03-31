@@ -32,5 +32,7 @@ public class PortalSessionTest {
         ObjectMapper mapper = new ObjectMapper();
         final PortalSession api = mapper.readValue(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)), PortalSession.class);
         assertEquals("mountainduck@cterasendbox1.onmicrosoft.com", api.username);
+        assertEquals("objs/5986/mountainduck/PortalUser/mountainduck@cterasendbox1.onmicrosoft.com", api.userRef);
+        assertEquals("5986", api.getUserIdFromUserRef());
     }
 }

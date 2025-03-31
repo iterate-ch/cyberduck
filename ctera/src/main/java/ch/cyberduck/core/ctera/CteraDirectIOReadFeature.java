@@ -16,7 +16,10 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.directio.DirectIOInputStream;
 import ch.cyberduck.core.ctera.directio.EncryptInfo;
@@ -28,7 +31,6 @@ import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.Range;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
@@ -41,21 +43,28 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static ch.cyberduck.core.ctera.CteraDirectIOInterceptor.toAccountName;
+import static ch.cyberduck.core.ctera.CteraDirectIOInterceptor.toServiceNameForSecretKey;
+
 public class CteraDirectIOReadFeature implements Read {
 
     private final CteraSession session;
+    private final HostPasswordStore keychain = PasswordStoreFactory.get();
     private final CteraFileIdProvider fileid;
+    private final Host bookmark;
+
 
     public CteraDirectIOReadFeature(final CteraSession session, final CteraFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.bookmark = session.getHost();
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DirectIO directio = this.getMetadata(file);
-            final EncryptInfo key = new EncryptInfo(directio.wrapped_key, System.getenv("CTERA_SECRET_KEY"), true);
+            final EncryptInfo key = new EncryptInfo(directio.wrapped_key, keychain.getPassword(toServiceNameForSecretKey(bookmark), toAccountName(bookmark)), true);
             final TransferInfo info = this.getTransferInfo(directio, status);
             final ChunkSequenceInputStream stream = new ChunkSequenceInputStream(info.chunks, key);
             // Skip to requested position in first relevant chunk
@@ -68,8 +77,8 @@ public class CteraDirectIOReadFeature implements Read {
     }
 
     private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
-        final HttpGet request = new HttpGet(String.format("%s/directio/%s", new HostUrlProvider().withPath(false).get(session.getHost()), fileid.getFileId(file)));
-        request.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + System.getenv("CTERA_ACCESS_KEY")); // access token
+        final HttpGet request = new HttpGet(String.format("%s/directio/%s", new HostUrlProvider().withPath(false).get(session.getHost()), file.attributes().getCustom().get(CteraAttributesFinderFeature.CTERA_FILEID)));
+        //final HttpGet request = new HttpGet(String.format("%s/directio/%s", new HostUrlProvider().withPath(false).get(session.getHost()), fileid.getFileId(file)));
         final HttpResponse response = session.getClient().getClient().execute(request);
         ObjectMapper mapper = new ObjectMapper();
         final HttpMethodReleaseInputStream stream = new HttpMethodReleaseInputStream(response, new TransferStatus());
