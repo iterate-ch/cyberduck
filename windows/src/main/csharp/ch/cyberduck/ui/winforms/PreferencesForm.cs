@@ -868,13 +868,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             editorComboBox.IconMember = "IconKey";
             editorComboBox.DataSource = editors;
 
-            ImageList imageList = new ImageList();
+            ImageList imageList = new();
             foreach (KeyValueIconTriple<Application, string> triple in editors)
             {
-                if (triple.Key.getIdentifier() != null)
+                if (triple.Key.getIdentifier() != null
+                    && IconProvider.GetApplication(triple.Key, 16) is { } applicationIcon)
                 {
-                    imageList.Images.Add(triple.Value,
-                        IconProvider.GetFileIcon(triple.Key.getIdentifier(), false, true, true));
+                    imageList.Images.Add(triple.Value, applicationIcon);
                 }
             }
             editorComboBox.ICImageList = imageList;
