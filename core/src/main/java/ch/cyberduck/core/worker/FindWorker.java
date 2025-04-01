@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.CachingListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MemoryListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.features.Find;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -64,7 +66,7 @@ public class FindWorker extends Worker<Boolean> {
     }
 
     @Override
-    public final boolean equals(final Object o) {
+    public boolean equals(final Object o) {
         if(this == o) {
             return true;
         }
@@ -72,11 +74,16 @@ public class FindWorker extends Worker<Boolean> {
             return false;
         }
         final FindWorker that = (FindWorker) o;
-        return Objects.equals(file, that.file);
+        return file.equals(that.file);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(file);
+        return Objects.hash(file);
+    }
+
+    @Override
+    public String getActivity() {
+        return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"), file.getName());
     }
 }
