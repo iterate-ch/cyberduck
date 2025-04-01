@@ -43,7 +43,33 @@ public abstract class NSPathControl extends NSControl {
 
     public abstract void setDelegate(ID delegate);
 
+    /**
+     * A set of methods that can be implemented by the delegate of a path control object to support dragging to and from the control.
+     */
     public interface Delegate {
-        void pathControl_willDisplayOpenPanel(NSPathControl control, NSOpenPanel panel);
+        /**
+         * Implement this method to customize the Open panel shown by a pop-up–style path.
+         * <p>
+         * This method is called before the Open panel is shown but after its allowed file types are
+         * set to the cell’s allowed types. At this time, you can further customize the Open panel
+         * as required. This method is called only when the style is set to NSPathStylePopUp.
+         * Implementation of this method is optional.
+         *
+         * @param pathControl The path control displaying the Open panel.
+         * @param panel       The Open panel to be displayed.
+         */
+        void pathControl_willDisplayOpenPanel(NSPathControl pathControl, NSOpenPanel panel);
+
+        /**
+         * Implement this method to customize the menu of a pop-up–style path.
+         * <p>
+         * This method is called before the pop-up menu is shown. At this time, you can further customize
+         * the menu as required, adding and removing items. This method is called only when the style is set
+         * to NSPathStylePopUp. Implementation of this method is optional.
+         *
+         * @param pathControl The path control displaying the pop-up menu.
+         * @param menu        The pop-up menu to be displayed.
+         */
+        void pathControl_willPopUpMenu(NSPathControl pathControl, NSMenu menu);
     }
 }
