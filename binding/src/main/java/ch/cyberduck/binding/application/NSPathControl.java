@@ -39,6 +39,8 @@ public abstract class NSPathControl extends NSControl {
 
     public abstract void setURL(NSURL aString);
 
+    public abstract NSPathControlItem clickedPathItem();
+
     public abstract void setDelegate(ID delegate);
 
     public interface Delegate {
