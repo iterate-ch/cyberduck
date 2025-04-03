@@ -1,7 +1,7 @@
 package ch.cyberduck.binding.foundation;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,10 +18,10 @@ package ch.cyberduck.binding.foundation;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static ch.cyberduck.binding.BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
-import static org.junit.Assert.assertEquals;
 
 public class NSDictionaryTest {
 
@@ -35,7 +35,7 @@ public class NSDictionaryTest {
                         NSAttributedString.ParagraphStyleAttributeName,
                         NSAttributedString.ForegroundColorAttributeName)
         );
-        assertEquals(3, dict.allKeys().count().intValue());
-        assertEquals(3, dict.allValues().count().intValue());
+        Assert.assertEquals(3, dict.allKeys().count().intValue());
+        Assert.assertEquals(3, dict.allValues().count().intValue());
     }
 }

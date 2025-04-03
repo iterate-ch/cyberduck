@@ -1,7 +1,7 @@
 package ch.cyberduck.binding.foundation;
 
 /*
- * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 public class NSNumberTest extends TestCase {
 
     public void testNumberWithBoolean() {
-        assertTrue(NSNumber.numberWithBoolean(true).boolValue());
-        assertFalse(NSNumber.numberWithBoolean(false).boolValue());
+        TestCase.assertTrue(NSNumber.numberWithBoolean(true).boolValue());
+        TestCase.assertFalse(NSNumber.numberWithBoolean(false).boolValue());
     }
 }

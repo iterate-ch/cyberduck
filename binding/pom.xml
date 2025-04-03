@@ -24,6 +24,14 @@
     <artifactId>binding</artifactId>
     <packaging>jar</packaging>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -34,6 +42,20 @@
             <groupId>org.rococoa</groupId>
             <artifactId>rococoa-core</artifactId>
             <version>${rococoa-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>test</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.rococoa</groupId>
+            <artifactId>librococoa</artifactId>
+            <version>${rococoa-version}</version>
+            <type>dylib</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
