@@ -131,7 +131,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertTrue(findException.getCause() instanceof SardineException);
         assertEquals(403, ((SardineException) findException.getCause()).getStatusCode());
         // listing the folder fails with 403 in the backend
-        final SardineException listException = assertThrows(SardineException.class, () -> new CteraListService(session).list(new Path(home, "NoAccess", EnumSet.of(AbstractPath.Type.directory))));
+        final SardineException listException = assertThrows(SardineException.class, () -> new CteraListService(session).propfind(new Path(home, "NoAccess", EnumSet.of(AbstractPath.Type.directory))));
         assertEquals(403, listException.getStatusCode());
     }
 
