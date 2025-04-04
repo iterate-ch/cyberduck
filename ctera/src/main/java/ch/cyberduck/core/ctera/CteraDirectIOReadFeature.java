@@ -26,6 +26,7 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
@@ -106,18 +107,18 @@ public class CteraDirectIOReadFeature implements Read {
         public int read() throws IOException {
             while(in != null) {
                 final int c = in.read();
-                if(c != -1) {
+                if(c != IOUtils.EOF) {
                     return c;
                 }
                 this.nextStream();
             }
-            return -1;
+            return IOUtils.EOF;
         }
 
         @Override
         public int read(final byte[] b, final int off, final int len) throws IOException {
             if(in == null) {
-                return -1;
+                return IOUtils.EOF;
             }
             else if(b == null) {
                 throw new NullPointerException();
@@ -133,10 +134,10 @@ public class CteraDirectIOReadFeature implements Read {
                 if(n > 0) {
                     return n;
                 }
-                nextStream();
+                this.nextStream();
             }
             while(in != null);
-            return -1;
+            return IOUtils.EOF;
         }
 
         @Override
