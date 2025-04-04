@@ -55,6 +55,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractResponseHandler;
@@ -79,6 +80,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrategy {
+
     private static final Logger log = LogManager.getLogger(CteraAuthenticationHandler.class);
 
     public static final String AUTH_PATH = "/ServicesPortal/api/login?format=jsonext";
@@ -365,6 +367,19 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
                 catch(BackgroundException e) {
                     log.error("Failure refreshing cookie. {}", e.getMessage());
                     return false;
+                }
+            case HttpStatus.SC_UNAUTHORIZED:
+                final HttpClientContext clientContext = HttpClientContext.adapt(context);
+                if(StringUtils.startsWith(clientContext.getRequest().getRequestLine().getUri(), CteraDirectIOInterceptor.DIRECTIO_PATH)) {
+                    try {
+                        session.createAPICredentials();
+                        // Try again
+                        return true;
+                    }
+                    catch(BackgroundException e) {
+                        log.error("Failure creating API keys. {}", e.getMessage());
+                        return false;
+                    }
                 }
         }
         return false;
