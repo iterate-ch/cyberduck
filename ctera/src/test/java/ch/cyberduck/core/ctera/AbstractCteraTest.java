@@ -23,8 +23,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.VaultTest;
@@ -50,12 +49,7 @@ public class AbstractCteraTest extends VaultTest {
         host.setDefaultPath("/ServicesPortal/webdav/My Files");
         session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), new TestPasswordStore());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener(), new ProxyFinder() {
-            @Override
-            public Proxy find(final String target) {
-                return new Proxy(Proxy.Type.HTTPS, "localhost", 9090);
-            }
-        });
+                new TestPasswordStore(), new DisabledProgressListener(), new DisabledProxyFinder());
         connect.check(session, new DisabledCancelCallback());
         // set again as reset upon connect
         session.getHost().getCredentials().setPassword(PROPERTIES.get("ctera.directio.password"));
