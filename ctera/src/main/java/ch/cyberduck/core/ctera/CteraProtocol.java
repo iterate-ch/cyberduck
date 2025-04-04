@@ -36,6 +36,7 @@ public class CteraProtocol extends AbstractProtocol {
 
     public static final String CTERA_REDIRECT_URI = String.format("%s:websso",
             PreferencesFactory.get().getProperty("oauth.handler.scheme"));
+    private static final int DIRECTIO_CHUNKSIZE = 4194304;
 
     @Override
     public Type getType() {
@@ -105,8 +106,8 @@ public class CteraProtocol extends AbstractProtocol {
     public Map<String, String> getProperties() {
         final Map<String, String> properties = new HashMap<>();
         properties.put("queue.download.segments.size.dynamic", String.valueOf(false));
-        properties.put("queue.download.segments.size", "4194304");
-        properties.put("queue.download.segments.threshold", "4194304");
+        properties.put("queue.download.segments.size", String.valueOf(DIRECTIO_CHUNKSIZE));
+        properties.put("queue.download.segments.threshold", String.valueOf(DIRECTIO_CHUNKSIZE));
         return properties;
     }
 
