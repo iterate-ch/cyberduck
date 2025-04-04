@@ -16,12 +16,22 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.FileIdProvider;
 
 public class DefaultFileIdProvider implements FileIdProvider {
 
+    private final Session<?> session;
+
+    public DefaultFileIdProvider(final Session<?> session) {
+        this.session = session;
+    }
+
     @Override
     public String getFileId(final Path file) throws BackgroundException {
-        return file.attributes().getFileId();
+        if(null != file.attributes().getFileId()) {
+            return file.attributes().getFileId();
+        }
+        return session.getFeature(AttributesFinder.class).find(file).getFileId();
     }
 }
