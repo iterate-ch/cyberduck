@@ -15,20 +15,7 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.ctera.model.APICredentials;
 import ch.cyberduck.core.ctera.model.PortalSession;
@@ -76,7 +63,7 @@ public class CteraSession extends DAVSession {
     protected PublicInfo info;
 
     private final HostPasswordStore keychain;
-    private final CteraVersionIdProvider versionid = new CteraVersionIdProvider(this);
+    private final VersionIdProvider versionid = new DefaultVersionIdProvider(this);
 
     public CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         this(host, trust, key, PasswordStoreFactory.get());

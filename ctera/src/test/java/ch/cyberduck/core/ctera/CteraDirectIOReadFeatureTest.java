@@ -16,6 +16,7 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultVersionIdProvider;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -65,7 +66,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
         final TransferStatus status = new TransferStatus();
         final TransferStatus segment = new TransferStatus().setSegment(true);
         status.setSegments(Collections.singletonList(segment));
-        final CteraBulkFeature bulk = new CteraBulkFeature(session, new CteraVersionIdProvider(session));
+        final CteraBulkFeature bulk = new CteraBulkFeature(session, new DefaultVersionIdProvider(session));
         bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, new DisabledConnectionCallback());
         assertNotNull(in);

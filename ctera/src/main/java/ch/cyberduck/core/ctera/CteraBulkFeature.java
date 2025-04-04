@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.model.DirectIO;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.TransferCanceledException;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -44,9 +45,9 @@ public class CteraBulkFeature extends DisabledBulkFeature {
 
     private static final Logger log = LogManager.getLogger(CteraBulkFeature.class);
     private final CteraSession session;
-    private final CteraVersionIdProvider versionid;
+    private final VersionIdProvider versionid;
 
-    public CteraBulkFeature(final CteraSession session, final CteraVersionIdProvider versionid) {
+    public CteraBulkFeature(final CteraSession session, final VersionIdProvider versionid) {
         this.session = session;
         this.versionid = versionid;
     }

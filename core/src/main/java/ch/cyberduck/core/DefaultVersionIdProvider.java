@@ -1,4 +1,4 @@
-package ch.cyberduck.core.ctera;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
@@ -15,18 +15,17 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.VersionIdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class CteraVersionIdProvider implements VersionIdProvider {
+public class DefaultVersionIdProvider implements VersionIdProvider {
 
-    private final CteraSession session;
+    private final Session<?> session;
 
-    public CteraVersionIdProvider(final CteraSession session) {
+    public DefaultVersionIdProvider(final Session<?> session) {
         this.session = session;
     }
 
@@ -35,6 +34,6 @@ public class CteraVersionIdProvider implements VersionIdProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        return session._getFeature(AttributesFinder.class).find(file).getVersionId();
+        return session.getFeature(AttributesFinder.class).find(file).getVersionId();
     }
 }
