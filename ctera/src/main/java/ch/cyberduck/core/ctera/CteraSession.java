@@ -196,16 +196,16 @@ public class CteraSession extends DAVSession {
         }
     }
 
-    private String toAccountName(final Host bookmark) {
+    private static String toAccountName(final Host bookmark) {
         return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                 EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl();
     }
 
-    private String toServiceNameForAccessKey(final Host bookmark) {
+    private static String toServiceNameForAccessKey(final Host bookmark) {
         return String.format("API Access Key (%s)", bookmark.getCredentials().getUsername());
     }
 
-    private String toServiceNameForSecretKey(final Host bookmark) {
+    private static String toServiceNameForSecretKey(final Host bookmark) {
         return String.format("API Secret Key (%s)", bookmark.getCredentials().getUsername());
     }
 
