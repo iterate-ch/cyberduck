@@ -37,9 +37,4 @@ public class CteraVersionIdProvider implements VersionIdProvider {
         }
         return session._getFeature(AttributesFinder.class).find(file).getVersionId();
     }
-
-    @Override
-    public void clear() {
-        //
-    }
 }

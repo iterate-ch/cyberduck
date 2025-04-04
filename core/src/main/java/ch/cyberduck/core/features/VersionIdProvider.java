@@ -35,5 +35,7 @@ public interface VersionIdProvider {
     /**
      * Clear any cached values
      */
-    void clear();
+    default void clear() {
+        // No-op
+    }
 }
