@@ -163,7 +163,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
             attributes.setFileId(customProps.get(CTERA_GUID));
         }
         if(customProps.containsKey(CTERA_FILEID)) {
-            attributes.setCustom(CTERA_FILEID, customProps.get(CTERA_FILEID));
+            attributes.setVersionId(customProps.get(CTERA_FILEID));
         }
         return attributes.setAcl(acl);
     }
